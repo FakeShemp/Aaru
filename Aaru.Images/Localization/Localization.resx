@@ -2965,4 +2965,7 @@
     <data name="Overflow_sectors_are_not_supported" xml:space="preserve">
         <value>Overflow sectors are not supported.</value>
     </data>
+    <data name="HxCStream_Name" xml:space="preserve">
+        <value>HxCStream</value>
+    </data>
 </root>

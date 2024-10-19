@@ -49,6 +49,7 @@
     <Compile Include="HaStream.cs"/>
     <Compile Include="Lh5Stream.cs"/>
     <Compile Include="LzdStream.cs"/>
+    <Compile Include="LZ4.cs" />
     <Compile Include="LZFSE.cs"/>
     <Compile Include="LZIP.cs"/>
     <Compile Include="LZMA.cs"/>

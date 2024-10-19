@@ -5907,5 +5907,11 @@ namespace Aaru.Images {
                 return ResourceManager.GetString("Overflow_sectors_are_not_supported", resourceCulture);
             }
         }
+        
+        internal static string HxCStream_Name {
+            get {
+                return ResourceManager.GetString("HxCStream_Name", resourceCulture);
+            }
+        }
     }
 }
