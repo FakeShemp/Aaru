@@ -7,12 +7,5 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Aaru.Checksums" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Aaru.CommonTypes" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Aaru.Console" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Aaru.Decoders" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Aaru.Decryption" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Aaru.Dto" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Aaru.Helpers" vcs="Git" />
   </component>
 </project>

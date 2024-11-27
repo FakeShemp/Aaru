@@ -1,5 +1,6 @@
 <component name="ProjectCodeStyleConfiguration">
   <code_scheme name="Project" version="173">
+    <option name="LINE_SEPARATOR" value="&#10;" />
     <CsvCodeStyleSettings>
       <option name="TRIM_LEADING_WHITE_SPACES" value="true" />
       <option name="TRIM_TRAILING_WHITE_SPACES" value="true" />
@@ -47,7 +48,7 @@
     <Shell_Script>
       <option name="SWITCH_CASES_INDENTED" value="true" />
     </Shell_Script>
-    <SqlCodeStyleSettings version="6">
+    <SqlCodeStyleSettings version="7">
       <option name="KEYWORD_CASE" value="2" />
       <option name="IDENTIFIER_CASE" value="1" />
       <option name="TYPE_CASE" value="2" />
