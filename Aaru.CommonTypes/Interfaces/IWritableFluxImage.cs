@@ -33,7 +33,7 @@
 //     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // ----------------------------------------------------------------------------
-// Copyright © 2011-2024 Rebecca Wallander
+// Copyright © 2011-2025 Rebecca Wallander
 // ****************************************************************************/
 
 using System.Diagnostics.CodeAnalysis;

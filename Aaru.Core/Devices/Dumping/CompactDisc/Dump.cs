@@ -27,7 +27,7 @@
 //     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // ----------------------------------------------------------------------------
-// Copyright © 2011-2024 Natalia Portillo
+// Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
 // ReSharper disable JoinDeclarationAndInitializer
@@ -290,7 +290,7 @@ sealed partial class Dump
 
                     _dumpLog.WriteLine(Localization.Core.Checking_if_drive_supports_READ_6);
                     UpdateStatus?.Invoke(Localization.Core.Checking_if_drive_supports_READ_6);
-                    
+
                     read6 = !_dev.Read6(out cmdBuf, out _, firstLba, 2048, 1, _dev.Timeout, out _) ||
                             !_dev.Read6(out cmdBuf, out _, firstLba + 5, 2048, 1, _dev.Timeout, out _);
 
