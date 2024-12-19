@@ -82,7 +82,7 @@
     </PackageReference>
     <PackageReference Include="SharpCompress" Version="0.37.2" />
     <PackageReference Include="SmartAnalyzers.MultithreadingAnalyzer" Version="1.1.31" />
-    <PackageReference Include="System.Text.Json" Version="9.0.0-rc.2.24473.5" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0"/>
     <PackageReference Include="Text.Analyzers" Version="3.3.4">
       <PrivateAssets>all</PrivateAssets>

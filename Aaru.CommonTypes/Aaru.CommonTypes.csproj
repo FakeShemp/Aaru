@@ -56,8 +56,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Macross.Json.Extensions" Version="3.0.0"/>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0-rc.2.24473.5" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0-rc.2.24473.5" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.10.48">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -81,7 +81,7 @@
     <PackageReference Include="SmartAnalyzers.MultithreadingAnalyzer" Version="1.1.31" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="6.0.0-preview.4.21253.7"/>
     <PackageReference Include="System.Security.Principal.Windows" Version="6.0.0-preview.5.21301.5"/>
-    <PackageReference Include="System.Text.Json" Version="9.0.0-rc.2.24473.5" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0"/>
     <PackageReference Include="Text.Analyzers" Version="3.3.4">
       <PrivateAssets>all</PrivateAssets>

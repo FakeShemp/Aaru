@@ -73,7 +73,7 @@
     <!-- TODO: Abandoned project need to find replacement
     <PackageReference Include="OxyPlot.Avalonia-alpha-2020-04-15" Version="1.0.0"/>
     -->
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.0-rc.2.24473.5" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.0" />
     <PackageReference Include="Text.Analyzers" Version="3.3.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
