@@ -197,7 +197,7 @@ public static class CompactDisc
                 rwOk   = true;
                 @fixed = true;
 
-                subLog.WriteRwFix(lba);
+                subLog?.WriteRwFix(lba);
             }
 
             int aPos;
