@@ -74,7 +74,9 @@ public sealed partial class ISO9660
         if(entry.Flags.HasFlag(FileFlags.Directory) || entry.Extents == null || entry.Extents.Count == 0)
             return ErrorNumber.NoError;
 
-        ErrorNumber errno = _image.ReadSectorLong(entry.Extents[0].extent * _blockSize / 2048, out byte[] sector);
+        ErrorNumber errno = _image.ReadSectorTag(entry.Extents[0].extent * _blockSize / 2048,
+                                                 SectorTagType.CdSectorSubHeader,
+                                                 out byte[] sector);
 
         if(errno != ErrorNumber.NoError) return errno;
 
