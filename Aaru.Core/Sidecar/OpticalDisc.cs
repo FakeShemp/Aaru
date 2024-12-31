@@ -537,9 +537,27 @@ public sealed partial class Sidecar
 
                             if(!fs.Identify(image, partition)) continue;
 
-                            fs.GetInformation(image, partition, encoding, out _, out FileSystem fsMetadata);
-                            lstFs.Add(fsMetadata);
-                            Statistics.AddFilesystem(fsMetadata.Type);
+                            FileSystem fsMetadata = new();
+
+                            if(fs is IReadOnlyFilesystem rofs &&
+                               rofs.Mount(image, partition, encoding, null, null) == ErrorNumber.NoError)
+                            {
+                                UpdateStatus(string.Format(Localization.Core.Mounting_0, rofs.Metadata.Type));
+
+                                rofs.Metadata.Contents = Files(rofs);
+
+                                lstFs.Add(rofs.Metadata);
+                                Statistics.AddFilesystem(rofs.Metadata.Type);
+
+                                rofs.Unmount();
+                            }
+                            else
+                            {
+                                fs.GetInformation(image, partition, encoding, out _, out fsMetadata);
+
+                                lstFs.Add(fsMetadata);
+                                Statistics.AddFilesystem(fsMetadata.Type);
+                            }
 
                             dskType = fsMetadata.Type switch
                                       {
@@ -597,9 +615,27 @@ public sealed partial class Sidecar
 
                         if(!fs.Identify(image, xmlPart)) continue;
 
-                        fs.GetInformation(image, xmlPart, encoding, out _, out FileSystem fsMetadata);
-                        lstFs.Add(fsMetadata);
-                        Statistics.AddFilesystem(fsMetadata.Type);
+                        FileSystem fsMetadata = new();
+
+                        if(fs is IReadOnlyFilesystem rofs &&
+                           rofs.Mount(image, xmlPart, encoding, null, null) == ErrorNumber.NoError)
+                        {
+                            UpdateStatus(string.Format(Localization.Core.Mounting_0, rofs.Metadata.Type));
+
+                            rofs.Metadata.Contents = Files(rofs);
+
+                            lstFs.Add(rofs.Metadata);
+                            Statistics.AddFilesystem(rofs.Metadata.Type);
+
+                            rofs.Unmount();
+                        }
+                        else
+                        {
+                            fs.GetInformation(image, xmlPart, encoding, out _, out fsMetadata);
+
+                            lstFs.Add(fsMetadata);
+                            Statistics.AddFilesystem(fsMetadata.Type);
+                        }
 
                         dskType = fsMetadata.Type switch
                                   {
