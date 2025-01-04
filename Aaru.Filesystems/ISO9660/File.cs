@@ -485,7 +485,7 @@ public sealed partial class ISO9660
                                 byte fileNumber, out byte[] buffer)
     {
         var  ms             = new MemoryStream();
-        long currentFilePos = 0;
+        long currentFilePos = offset;
 
         for(var i = 0; i < extents.Count; i++)
         {
@@ -496,8 +496,8 @@ public sealed partial class ISO9660
                 continue;
             }
 
-            long leftExtentSize      = extents[i].size;
-            uint currentExtentSector = 0;
+            var  currentExtentSector = (uint)(offset / 2048);
+            long leftExtentSize      = extents[i].size - currentFilePos;
 
             while(leftExtentSize > 0)
             {
