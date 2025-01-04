@@ -76,11 +76,9 @@ public sealed partial class ISO9660
 
         ErrorNumber errno = _image.ReadSectorTag(entry.Extents[0].extent * _blockSize / 2048,
                                                  SectorTagType.CdSectorSubHeader,
-                                                 out byte[] sector);
+                                                 out _);
 
         if(errno != ErrorNumber.NoError) return errno;
-
-        if(sector[15] != 2) return ErrorNumber.NoError;
 
         xattrs.Add("org.iso.mode2.subheader");
         xattrs.Add("org.iso.mode2.subheader.copy");
