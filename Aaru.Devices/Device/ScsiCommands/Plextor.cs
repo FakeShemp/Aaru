@@ -110,9 +110,9 @@ public partial class Device
         cdb[3] = (byte)((lba & 0xFF0000) >> 16);
         cdb[4] = (byte)((lba & 0xFF00)   >> 8);
         cdb[5] = (byte)(lba & 0xFF);
-        cdb[3] = (byte)((buffer.Length & 0xFF0000) >> 16);
-        cdb[4] = (byte)((buffer.Length & 0xFF00)   >> 8);
-        cdb[5] = (byte)(buffer.Length & 0xFF);
+        cdb[6] = (byte)((buffer.Length & 0xFF0000) >> 16);
+        cdb[7] = (byte)((buffer.Length & 0xFF00)   >> 8);
+        cdb[8] = (byte)(buffer.Length & 0xFF);
 
         LastError = SendScsiCommand(cdb,
                                     ref buffer,

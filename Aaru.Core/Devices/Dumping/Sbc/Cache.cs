@@ -175,7 +175,7 @@ partial class Dump
 
                 // Write empty data
                 _writeStopwatch.Restart();
-                outputFormat.WriteSectors(new byte[blockSize * _skip], i, _skip);
+                outputFormat.WriteSectorsLong(new byte[blockSize * _skip], i, _skip);
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
 
                 for(ulong b = i; b < i + _skip; b++) _resume.BadBlocks.Add(b);

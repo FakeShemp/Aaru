@@ -508,4 +508,7 @@
     <data name="Remote_error_0_in_OS_Read" xml:space="preserve">
     <value>Remote error {0} in OS Read...</value>
   </data>
+    <data name="LiteOn_READ_DVD_RAW_took_0_ms" xml:space="preserve">
+    <value>Lite-On READ DVD (RAW) took {0} ms.</value>
+  </data>
 </root>

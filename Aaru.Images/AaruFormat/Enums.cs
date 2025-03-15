@@ -298,7 +298,11 @@ public sealed partial class AaruFormat
         /// <summary>DVD ID Error Detection Code (IED)</summary>
         DvdSectorIed = 84,
         /// <summary>DVD Error Detection Code (EDC)</summary>
-        DvdSectorEdc = 85
+        DvdSectorEdc = 85,
+        /// <summary>DVD Error Correction Code (ECC) Parity of Inner Code (PI)</summary>
+        DvdSectorEccPi = 86,
+        /// <summary>DVD Error Correction Code (ECC) Parity of Outer Code (PO)</summary>
+        DvdEccBlockPo = 87,
     }
 
 #endregion

@@ -685,7 +685,8 @@ sealed class DeviceReportCommand : Command
                                  tryHldtst       = false,
                                  tryPioneer      = false,
                                  tryNec          = false,
-                                 tryMediaTekF106 = false;
+                                 tryMediaTekF106 = false,
+                                 tryLiteOn       = false;
 
                             tryPlextor |=
                                 dev.Manufacturer.Equals("plextor", StringComparison.InvariantCultureIgnoreCase);
@@ -697,6 +698,8 @@ sealed class DeviceReportCommand : Command
                                 dev.Manufacturer.Equals("pioneer", StringComparison.InvariantCultureIgnoreCase);
 
                             tryNec |= dev.Manufacturer.Equals("nec", StringComparison.InvariantCultureIgnoreCase);
+
+                            tryLiteOn |= dev.Manufacturer.Equals("lite-on", StringComparison.InvariantCultureIgnoreCase);
 
                             if(!iomegaRev)
                             {
@@ -831,7 +834,8 @@ sealed class DeviceReportCommand : Command
                                                                         tryPioneer,
                                                                         tryNec,
                                                                         tryHldtst,
-                                                                        tryMediaTekF106);
+                                                                        tryMediaTekF106,
+                                                                        tryLiteOn);
 
                                     if(mediaTest is null) continue;
 

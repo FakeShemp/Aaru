@@ -150,7 +150,9 @@ static class HlDtSt
                                           lba,
                                           count,
                                           dev.Timeout,
-                                          out double duration);
+                                          out double duration,
+                                          0xffffff,
+                                          false);
 
     menu:
         AaruConsole.WriteLine(Localization.Device_0, devPath);

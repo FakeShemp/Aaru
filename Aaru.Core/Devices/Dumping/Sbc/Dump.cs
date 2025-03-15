@@ -59,6 +59,7 @@ using DVDDecryption = Aaru.Decryption.DVD.Dump;
 using Track = Aaru.CommonTypes.Structs.Track;
 using TrackType = Aaru.CommonTypes.Enums.TrackType;
 using Version = Aaru.CommonTypes.Interop.Version;
+using Aaru.Decoders.DVD;
 
 // ReSharper disable JoinDeclarationAndInitializer
 
@@ -332,11 +333,19 @@ partial class Dump
             else
             {
                 // Only a block will be read, but it contains 16 sectors and command expect sector number not block number
-                blocksToRead = (uint)(longBlockSize == 37856 ? 16 : 1);
+                blocksToRead = 16;
+
+                mediaTags.TryGetValue(MediaTagType.DVD_PFI, out byte[] pfi);
+                PFI.PhysicalFormatInformation? decodedPfi = PFI.Decode(pfi, dskType);
+
+                scsiReader.layerbreak = decodedPfi?.Layer0EndPSN ?? 0;
+                scsiReader.otp        = decodedPfi is { Layers: 1, TrackPath: false };
+
+                if(scsiReader.HldtstReadRaw) blocksToRead = 1;
 
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_0_raw_bytes_1_cooked_bytes_per_sector,
                                                    longBlockSize,
-                                                   blockSize * blocksToRead));
+                                                   blockSize));
 
                 physicalBlockSize = longBlockSize;
                 blockSize         = longBlockSize;
@@ -835,7 +844,7 @@ partial class Dump
         {
             mediaTags.TryGetValue(MediaTagType.DVD_DiscKey_Decrypted, out byte[] discKey);
 
-            if(scsiReader.HldtstReadRaw)
+            if(scsiReader.HldtstReadRaw || scsiReader.LiteOnReadRaw)
             {
                 ReadCacheData(blocks,
                               blocksToRead,
@@ -913,6 +922,8 @@ partial class Dump
 
 #region Trimming
 
+        mediaTags.TryGetValue(MediaTagType.DVD_DiscKey_Decrypted, out byte[] mediaTag);
+
         if(_resume.BadBlocks.Count > 0 && !_aborted && _trim && newTrim)
         {
             _trimStopwatch.Restart();
@@ -921,7 +932,7 @@ partial class Dump
 
             InitProgress?.Invoke();
 
-            TrimSbcData(scsiReader, extents, currentTry, blankExtents);
+            TrimSbcData(scsiReader, extents, currentTry, blankExtents, mediaTag ?? null);
 
             EndProgress?.Invoke();
             _trimStopwatch.Stop();
@@ -940,14 +951,18 @@ partial class Dump
 #region Error handling
 
         if(_resume.BadBlocks.Count > 0 && !_aborted && _retryPasses > 0)
-            RetrySbcData(scsiReader, currentTry, extents, ref totalDuration, blankExtents);
+            RetrySbcData(scsiReader, currentTry, extents, ref totalDuration, blankExtents, mediaTag ?? null);
 
         if(_resume.MissingTitleKeys?.Count > 0        &&
            !_aborted                                  &&
            _retryPasses > 0                           &&
            Settings.Settings.Current.EnableDecryption &&
            _titleKeys                                 &&
-           mediaTags.TryGetValue(MediaTagType.DVD_DiscKey_Decrypted, out byte[] mediaTag))
+
+           // Unnecessary since keys are already in raw data
+           !scsiReader.LiteOnReadRaw &&
+           !scsiReader.HldtstReadRaw &&
+           mediaTag is not null)
             RetryTitleKeys(dvdDecrypt, mediaTag, ref totalDuration);
 
 #endregion Error handling

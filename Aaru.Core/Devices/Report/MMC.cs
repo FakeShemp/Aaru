@@ -577,7 +577,7 @@ public sealed partial class DeviceReport
     /// <param name="tryMediaTekF106">Try MediaTek vendor commands</param>
     /// <returns></returns>
     public TestedMedia ReportMmcMedia(string mediaType, bool tryPlextor, bool tryPioneer, bool tryNec, bool tryHldtst,
-                                      bool   tryMediaTekF106)
+                                      bool   tryMediaTekF106, bool tryLiteOn)
     {
         var    sense       = true;
         byte[] buffer      = [];
@@ -2743,24 +2743,8 @@ public sealed partial class DeviceReport
             {
                 ctx.AddTask(Localization.Core.Trying_HL_DT_ST_aka_LG_trick_to_raw_read_DVDs).IsIndeterminate();
 
-                // We need to fill the buffer before reading it with the HL-DT-ST command. We don't care about sense,
-                // because the data can be wrong anyway, so we need to check the buffer data later instead.
-                _dev.Read10(out buffer,
-                            out _,
-                            0,
-                            false,
-                            false,
-                            false,
-                            false,
-                            0,
-                            2048,
-                            0,
-                            1,
-                            _dev.Timeout,
-                            out _);
-
                 mediaTest.SupportsHLDTSTReadRawDVD =
-                    !_dev.HlDtStReadRawDvd(out buffer, out senseBuffer, 16, 1, _dev.Timeout, out _);
+                    !_dev.HlDtStReadRawDvd(out buffer, out senseBuffer, 16, 1, _dev.Timeout, out _, 0xffff, false);
             });
 
             AaruConsole.DebugWriteLine(SCSI_MODULE_NAME,
@@ -2771,6 +2755,26 @@ public sealed partial class DeviceReport
                 mediaTest.SupportsHLDTSTReadRawDVD = !ArrayHelpers.ArrayIsNullOrEmpty(buffer);
 
             if(mediaTest.SupportsHLDTSTReadRawDVD == true) mediaTest.HLDTSTReadRawDVDData = buffer;
+        }
+
+        if(tryLiteOn)
+        {
+            Spectre.ProgressSingleSpinner(ctx =>
+            {
+                ctx.AddTask(Localization.Core.Trying_Lite_On_trick_to_raw_read_DVDs).IsIndeterminate();
+
+                mediaTest.SupportsLiteOnReadRawDVD =
+                    !_dev.LiteOnReadRawDvd(out buffer, out senseBuffer, 16, 1, _dev.Timeout, out _, 0xffff, false);
+            });
+
+            AaruConsole.DebugWriteLine(SCSI_MODULE_NAME,
+                                       Localization.Core.Sense_equals_0,
+                                       !mediaTest.SupportsLiteOnReadRawDVD);
+
+            if(mediaTest.SupportsLiteOnReadRawDVD == true)
+                mediaTest.SupportsLiteOnReadRawDVD = !ArrayHelpers.ArrayIsNullOrEmpty(buffer);
+
+            if(mediaTest.SupportsLiteOnReadRawDVD == true) mediaTest.LiteOnReadRawDVDData = buffer;
         }
 
         if(tryMediaTekF106)
