@@ -2203,6 +2203,9 @@ Do you want to proceed? (Y/N): </value>
     <data name="Trying_HL_DT_ST_aka_LG_trick_to_raw_read_DVDs" xml:space="preserve">
     <value>Trying HL-DT-ST (aka LG) trick to raw read DVDs...</value>
   </data>
+    <data name="Trying_Lite_On_trick_to_raw_read_DVDs" xml:space="preserve">
+    <value>Trying Lite-On trick to raw read DVDs...</value>
+  </data>
     <data name="Trying_MediaTek_READ_DRAM_command" xml:space="preserve">
     <value>Trying MediaTek READ DRAM command...</value>
   </data>
@@ -3494,6 +3497,9 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>This image contains low-level flux captures.</value>
   </data>
     <data name="Archive_Information_With_Markup" xml:space="preserve">
-        <value>[bold]Archive information:[/]</value>
-    </data>
+    <value>[bold]Archive information:[/]</value>
+  </data>
+    <data name="Using_Lite-On_raw_DVD_reading" xml:space="preserve">
+    <value>Using Lite-On raw DVD reading.</value>
+  </data>
 </root>

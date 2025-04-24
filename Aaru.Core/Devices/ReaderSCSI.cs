@@ -54,6 +54,9 @@ sealed partial class Reader
 
     // TODO: Raw reading
     public bool HldtstReadRaw;
+    public bool LiteOnReadRaw;
+    public uint layerbreak;
+    public bool otp;
 
     ulong ScsiGetBlocks() => ScsiGetBlockSize() ? 0 : Blocks;
 
@@ -570,16 +573,22 @@ sealed partial class Reader
                 switch(_dev.Manufacturer)
                 {
                     case "HL-DT-ST":
-                        HldtstReadRaw = !_dev.HlDtStReadRawDvd(out _, out senseBuf, 0, 1, _timeout, out _);
+                        HldtstReadRaw =
+                            !_dev.HlDtStReadRawDvd(out _, out senseBuf, 0, 1, _timeout, out _, layerbreak, otp);
 
                         break;
                     case "PLEXTOR":
                         _plextorReadRaw = !_dev.PlextorReadRawDvd(out _, out senseBuf, 0, 1, _timeout, out _);
 
                         break;
+                    case "LITE-ON":
+                        LiteOnReadRaw =
+                            !_dev.LiteOnReadRawDvd(out _, out senseBuf, 0, 1, _timeout, out _, layerbreak, otp);
+
+                        break;
                 }
 
-                if(HldtstReadRaw || _plextorReadRaw)
+                if(HldtstReadRaw || _plextorReadRaw || LiteOnReadRaw)
                 {
                     CanReadRaw    = true;
                     LongBlockSize = 2064;
@@ -612,7 +621,9 @@ sealed partial class Reader
                 AaruConsole.WriteLine(Localization.Core.Using_SyQuest_READ_LONG_6_command);
             else if(HldtstReadRaw)
                 AaruConsole.WriteLine(Localization.Core.Using_HL_DT_ST_raw_DVD_reading);
-            else if(_plextorReadRaw) AaruConsole.WriteLine(Localization.Core.Using_Plextor_raw_DVD_reading);
+            else if(_plextorReadRaw)
+                AaruConsole.WriteLine(Localization.Core.Using_Plextor_raw_DVD_reading);
+            else if(LiteOnReadRaw) AaruConsole.WriteLine(Localization.Core.Using_Lite_On_raw_DVD_reading);
         }
         else if(_read6)
             AaruConsole.WriteLine(Localization.Core.Using_SCSI_READ_6_command);
@@ -674,7 +685,7 @@ sealed partial class Reader
 
         while(true)
         {
-            if(HldtstReadRaw)
+            if(HldtstReadRaw || LiteOnReadRaw)
                 BlocksToRead = 1;
             else if(_read6)
             {
@@ -804,24 +815,14 @@ sealed partial class Reader
             }
             else if(HldtstReadRaw)
             {
-                // We need to fill the buffer before reading it with the HL-DT-ST command. We don't care about sense,
-                // because the data can be wrong anyway, so we need to check the buffer data instead.
-                _dev.Read12(out buffer,
-                            out senseBuf,
-                            0,
-                            false,
-                            false,
-                            false,
-                            false,
-                            (uint)block,
-                            LogicalBlockSize,
-                            0,
-                            16,
-                            false,
-                            _timeout,
-                            out duration);
-
-                sense = _dev.HlDtStReadRawDvd(out buffer, out senseBuf, (uint)block, count, _timeout, out duration);
+                sense = _dev.HlDtStReadRawDvd(out buffer,
+                                              out senseBuf,
+                                              (uint)block,
+                                              count,
+                                              _timeout,
+                                              out duration,
+                                              layerbreak,
+                                              otp);
             }
             else if(_plextorReadRaw)
             {
@@ -831,6 +832,17 @@ sealed partial class Reader
                                                LongBlockSize,
                                                _timeout,
                                                out duration);
+            }
+            else if(LiteOnReadRaw)
+            {
+                sense = _dev.LiteOnReadRawDvd(out buffer,
+                                              out senseBuf,
+                                              (uint)block,
+                                              count,
+                                              _timeout,
+                                              out duration,
+                                              layerbreak,
+                                              otp);
             }
             else
                 return true;

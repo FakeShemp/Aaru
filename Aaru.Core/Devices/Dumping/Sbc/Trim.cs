@@ -28,9 +28,12 @@
 // ReSharper disable InlineOutVariableDeclaration
 // ReSharper disable TooWideLocalVariableScope
 
+using System.Linq;
 using Aaru.CommonTypes.AaruMetadata;
+using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Extents;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.Decryption.DVD;
 
 namespace Aaru.Core.Devices.Dumping;
 
@@ -41,7 +44,7 @@ partial class Dump
     /// <param name="extents">Correctly dump extents</param>
     /// <param name="currentTry">Resume information</param>
     /// <param name="blankExtents">Blank extents</param>
-    void TrimSbcData(Reader scsiReader, ExtentsULong extents, DumpHardware currentTry, ExtentsULong blankExtents)
+    void TrimSbcData(Reader scsiReader, ExtentsULong extents, DumpHardware currentTry, ExtentsULong blankExtents, byte[] discKey)
     {
         ulong[] tmpArray = _resume.BadBlocks.ToArray();
         bool    sense;
@@ -86,9 +89,61 @@ partial class Dump
 
             if((sense || _dev.Error) && !recoveredError) continue;
 
+            if(scsiReader.HldtstReadRaw)
+
+                // The HL-DT-ST buffer is stored and read in 96-sector chunks. If we start to read at an LBA which is
+                // not modulo 96, the data will not be correctly fetched. Therefore, we begin every recovery read with
+                // filling the buffer at a known offset.
+                // TODO: This is very ugly and there probably exist a more elegant way to solve this issue.
+                scsiReader.ReadBlock(out _, badSector - badSector % 96 + 1, out _, out _, out _);
+
             _resume.BadBlocks.Remove(badSector);
             extents.Add(badSector);
-            outputFormat.WriteSector(buffer, badSector);
+
+            if(scsiReader.LiteOnReadRaw || scsiReader.HldtstReadRaw)
+            {
+                byte[] cmi = new byte[1];
+
+                byte[] key = buffer.Skip(7).Take(5).ToArray();
+
+                if(key.All(static k => k == 0))
+                {
+                    outputFormat.WriteSectorTag([0, 0, 0, 0, 0], badSector, SectorTagType.DvdTitleKeyDecrypted);
+
+                    _resume.MissingTitleKeys?.Remove(badSector);
+                }
+                else
+                {
+                    CSS.DecryptTitleKey(discKey, key, out byte[] tmpBuf);
+                    outputFormat.WriteSectorTag(tmpBuf, badSector, SectorTagType.DvdTitleKeyDecrypted);
+                    _resume.MissingTitleKeys?.Remove(badSector);
+
+                    cmi[0] = buffer[6];
+                }
+
+                if(!_storeEncrypted)
+                {
+                    ErrorNumber errno =
+                        outputFormat.ReadSectorsTag(badSector,
+                                                    1,
+                                                    SectorTagType.DvdTitleKeyDecrypted,
+                                                    out byte[] titleKey);
+
+                    if(errno != ErrorNumber.NoError)
+                    {
+                        ErrorMessage?.Invoke(string.Format(Localization.Core.Error_retrieving_title_key_for_sector_0,
+                                                           badSector));
+                    }
+                    else
+                        buffer = CSS.DecryptSectorLong(buffer, titleKey, cmi);
+                }
+
+                _resume.BadBlocks.Remove(badSector);
+                outputFormat.WriteSectorLong(buffer, badSector);
+            }
+            else
+                outputFormat.WriteSector(buffer, badSector);
+
             _mediaGraph?.PaintSectorGood(badSector);
         }
 

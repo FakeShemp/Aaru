@@ -54,7 +54,7 @@ partial class Dump
     /// <param name="scsiReader">SCSI reader</param>
     /// <param name="blankExtents">Blank extents</param>
     void RetrySbcData(Reader       scsiReader, DumpHardware currentTry, ExtentsULong extents, ref double totalDuration,
-                      ExtentsULong blankExtents)
+                      ExtentsULong blankExtents, byte[] discKey)
     {
         var             pass              = 1;
         var             forward           = true;
@@ -312,7 +312,51 @@ partial class Dump
             {
                 _resume.BadBlocks.Remove(badSector);
                 extents.Add(badSector);
-                outputFormat.WriteSector(buffer, badSector);
+
+                if(scsiReader.LiteOnReadRaw || scsiReader.HldtstReadRaw)
+                {
+                    byte[] cmi = new byte[1];
+
+                    byte[] key = buffer.Skip(7).Take(5).ToArray();
+
+                    if(key.All(static k => k == 0))
+                    {
+                        outputFormat.WriteSectorTag([0, 0, 0, 0, 0], badSector, SectorTagType.DvdTitleKeyDecrypted);
+
+                        _resume.MissingTitleKeys?.Remove(badSector);
+                    }
+                    else
+                    {
+                        CSS.DecryptTitleKey(discKey, key, out byte[] tmpBuf);
+                        outputFormat.WriteSectorTag(tmpBuf, badSector, SectorTagType.DvdTitleKeyDecrypted);
+                        _resume.MissingTitleKeys?.Remove(badSector);
+
+                        cmi[0] = buffer[6];
+                    }
+
+                    if(!_storeEncrypted)
+                    {
+                        ErrorNumber errno =
+                            outputFormat.ReadSectorsTag(badSector,
+                                                        1,
+                                                        SectorTagType.DvdTitleKeyDecrypted,
+                                                        out byte[] titleKey);
+
+                        if(errno != ErrorNumber.NoError)
+                        {
+                            ErrorMessage?.Invoke(string.Format(Localization.Core.Error_retrieving_title_key_for_sector_0,
+                                                               badSector));
+                        }
+                        else
+                            buffer = CSS.DecryptSectorLong(buffer, titleKey, cmi);
+                    }
+
+                    _resume.BadBlocks.Remove(badSector);
+                    outputFormat.WriteSectorLong(buffer, badSector);
+                }
+                else
+                    outputFormat.WriteSector(buffer, badSector);
+
                 _mediaGraph?.PaintSectorGood(badSector);
 
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_block_0_in_pass_1,
