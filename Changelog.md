@@ -1,6 +1,66 @@
 # [6.0.0-alpha10] - 2025-04-24
 
-# TODO: BE FILLED
+## Added
+
+### - Archives
+
+- Support for archive formats:
+  - Identify, list contents, extract contents.
+    - Symbian Installation File (SIS, SISX).
+
+### - Dumping
+
+- Add HL-DT-ST raw DVD read support
+- Add Lite-On raw DVD read support
+- Find CSS keys from pattern attack
+
+### - Filesystems
+- Implement full support for mounting, reading and extracting Commodore 1540/1541/1571/1581 filesystems.
+
+### - Fletcher-32 checksum
+
+- ARM NEON implementation if supported by running host.
+- SSSE3 implementation if supported by running host.
+
+### - Formats
+- A2R flux format support
+- HyperFlex floppy formats.
+- SuperCard Pro flux parsing
+
+## Fixes
+
+### - Commands
+- Continue identifying filesystems if one of them throws an exception, and ask user to fill a report about it.
+- Ensure a directory that exists with the same name of a file is considered as file already existing.
+- Fix creation of metadata sidecar for optical media images not mounting supported filesystems.
+
+### - Devices
+- Make Kreon SCSI CDB10 for Linux.
+- Fix spiral maximum sector count for DDCD parameters from a real DDCD-R disc.
+- Workaround some devices not liking oddly sized buffers when calling MODE SENSE (6) / MODE SENSE (10).
+
+### - SCSI response decoders
+- Fix decoding of MODE SENSE (10) pages in page 0 format.
+- Fix handling of corrupt/invalid MODE SENSE (6) block descriptors. Fixes #842
+- Fix SCSI SENSE not being decoded if VALID bit set. Fixes #824
+
+### - Dumping
+- Check title keys resume for null when not a DVD Video (#827)
+- Check sector validity when reading scrambled using Plextor drives.
+- Fix USB field sizes for 64-bit Windows systems.
+- Fix trying to write to subchannel log when there's none available.
+- In CD-i discs with no tracks in TOC and an audio lead-out, fix setting track 1 as data.
+- When trimming or retrying using scrambled mode, fix offset and check validity of data sectors because drive can report no error but return errored data.
+
+### - ISO9660 filesystem
+- Do not declare the presence of MODE 2 sub-headers based on long sector content, but on tag presence on media image.
+- Fixed performance issue caused by reading the whole data previous to the asked offset.
+
+### - VirtualPC disk image
+
+- Create and flush footer separately.
+- Implement support for writing sparse (dynamically allocated) images.
+- Use same CHS calculation as VirtualPC.
 
 # [6.0.0-alpha9] - 2022-12-23
 
@@ -2463,6 +2523,8 @@
 - Apple Partition Map (aka APM).
 - Master Boot Record (aka MBR).
 - NeXT disklabels.
+
+[6.0.0-alpha10]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha10
 
 [6.0.0-alpha9]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha9
 
