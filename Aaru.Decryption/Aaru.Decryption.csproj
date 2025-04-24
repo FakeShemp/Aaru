@@ -7,7 +7,7 @@
     <AssemblyName>Aaru.Decryption</AssemblyName>
     <ReleaseVersion>$(Version)</ReleaseVersion>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <Version>6.0.0-alpha9</Version>
+    <Version>6.0.0-alpha10</Version>
     <Company>Claunia.com</Company>
     <Copyright>Copyright © 2011-2025 Natalia Portillo</Copyright>
     <Product>Aaru Data Preservation Suite</Product>
@@ -96,7 +96,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="SmartAnalyzers.MultithreadingAnalyzer" Version="1.1.31" />
+    <PackageReference Include="SmartAnalyzers.MultithreadingAnalyzer" Version="1.1.31"/>
     <PackageReference Include="Text.Analyzers" Version="3.3.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

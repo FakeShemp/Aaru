@@ -15,7 +15,11 @@ namespace Aaru.Database.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "6.0.0");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true);
 
             modelBuilder.Entity("Aaru.CommonTypes.Metadata.Ata", b =>
                 {
@@ -1643,6 +1647,9 @@ namespace Aaru.Database.Migrations
                     b.Property<byte[]>("LeadOutData")
                         .HasColumnType("BLOB");
 
+                    b.Property<byte[]>("LiteOnReadRawDVDData")
+                        .HasColumnType("BLOB");
+
                     b.Property<ushort?>("LogicalAlignment")
                         .HasColumnType("INTEGER");
 
@@ -1803,6 +1810,9 @@ namespace Aaru.Database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<bool?>("SupportsHLDTSTReadRawDVD")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool?>("SupportsLiteOnReadRawDVD")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool?>("SupportsNECReadCDDA")
