@@ -3475,4 +3475,10 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <data name="Archive_Information_With_Markup" xml:space="preserve">
         <value>[bold]Información del archivo[/]</value>
     </data>
+    <data name="Trying_Lite_On_trick_to_raw_read_DVDs" xml:space="preserve">
+        <value>Intentando truco de Lite-On para leer DVDs in procesar...</value>
+    </data>
+    <data name="Using_Lite-On_raw_DVD_reading" xml:space="preserve">
+        <value>Usando lectura de DVD sin procesar de Lite-On.</value>
+    </data>
 </root>
