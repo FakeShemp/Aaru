@@ -63,7 +63,7 @@
     <PackageVersion Include="System.Text.Encoding.CodePages" Version="10.0.0-preview.7.25380.108" />
     <PackageVersion Include="System.Text.Json" Version="10.0.0-preview.7.25380.108" />
     <PackageVersion Include="System.ValueTuple" Version="4.6.1" />
-    <PackageVersion Include="Text.Analyzers" Version="3.3.4" />
+    <PackageVersion Include="Text.Analyzers" Version="4.14.0" />
     <PackageVersion Include="Unclassified.NetRevisionTask" Version="0.4.3" />
     <PackageVersion Update="Packaging.Targets" Version="0.1.226" />
   </ItemGroup>
