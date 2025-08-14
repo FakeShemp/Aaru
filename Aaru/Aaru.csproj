@@ -7,7 +7,7 @@
     <RootNamespace>Aaru</RootNamespace>
     <AssemblyName>aaru</AssemblyName>
     <ReleaseVersion>$(Version)</ReleaseVersion>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Version>6.0.0-alpha10</Version>
     <Company>Claunia.com</Company>
@@ -17,7 +17,7 @@
     <ApplicationVersion>$(Version)</ApplicationVersion>
     <RuntimeIdentifiers>linux-musl-arm;linux-musl-arm64;linux-musl-x64;linux-arm64;linux-arm;linux-x64;osx-x64;osx-arm64;win-arm64;win-x64;win-x86</RuntimeIdentifiers>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
-    <LangVersion>13</LangVersion>
+    <LangVersion>latest</LangVersion>
     <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <IsPackable>false</IsPackable>

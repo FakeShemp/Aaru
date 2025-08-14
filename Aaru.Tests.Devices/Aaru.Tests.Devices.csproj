@@ -6,7 +6,7 @@
     <RootNamespace>Aaru.Tests.Devices</RootNamespace>
     <AssemblyName>Aaru.Tests.Devices</AssemblyName>
     <ReleaseVersion>$(Version)</ReleaseVersion>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Version>6.0.0-alpha10</Version>
     <Company>Claunia.com</Company>
@@ -14,7 +14,7 @@
     <Product>Aaru Data Preservation Suite</Product>
     <Title>Aaru.Tests.Devices</Title>
     <ApplicationVersion>$(Version)</ApplicationVersion>
-    <LangVersion>13</LangVersion>
+    <LangVersion>latest</LangVersion>
     <Authors>Natalia Portillo &lt;claunia@claunia.com&gt;</Authors>
     <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
   </PropertyGroup>
