@@ -3,12 +3,12 @@
     <PackageVersion Include="Aaru.Checksums.Native" Version="6.0.0-alpha9" />
     <PackageVersion Include="Aaru.Compression.Native" Version="6.0.0-alpha.10" />
     <PackageVersion Include="AsyncFixer" Version="1.6.0" />
-    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Desktop" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.0.10" />
-    <PackageVersion Include="Avalonia" Version="11.0.10" />
+    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.3.3" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.3.3" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.3" />
+    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.3" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.3" />
+    <PackageVersion Include="Avalonia" Version="11.3.3" />
     <PackageVersion Include="Claunia.Encoding" Version="1.9.2" />
     <PackageVersion Include="Claunia.RsrcFork" Version="1.2.0" />
     <PackageVersion Include="DotNetZip" Version="1.16.0" />
