@@ -33,6 +33,7 @@ using Aaru.CommonTypes.Structs;
 using Aaru.Console;
 using Aaru.Decoders;
 using Aaru.Helpers;
+using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
 namespace Aaru.Filesystems;
 
@@ -219,12 +220,13 @@ public sealed partial class LisaFS
         if(!_mounted || !_debug) return ErrorNumber.AccessDenied;
 
         if(fileId is > 4 or <= 0)
-            if(fileId != FILEID_BOOT_SIGNED && fileId != FILEID_LOADER_SIGNED)
-                return ErrorNumber.InvalidArgument;
+        {
+            if(fileId != FILEID_BOOT_SIGNED && fileId != FILEID_LOADER_SIGNED) return ErrorNumber.InvalidArgument;
+        }
 
         if(_systemFileCache.TryGetValue(fileId, out buf) && !tags) return ErrorNumber.NoError;
 
-        var count = 0;
+        int count = 0;
 
         if(fileId == FILEID_SRECORD)
         {
@@ -407,11 +409,11 @@ public sealed partial class LisaFS
         else
             sectorSize = (int)_device.Info.SectorSize;
 
-        var temp = new byte[file.length * sectorSize];
+        byte[] temp = new byte[file.length * sectorSize];
 
-        var offset = 0;
+        int offset = 0;
 
-        for(var i = 0; i < file.extents.Length; i++)
+        for(int i = 0; i < file.extents.Length; i++)
         {
             ErrorNumber errno = !tags
                                     ? _device.ReadSectors((ulong)file.extents[i].start +
@@ -435,8 +437,9 @@ public sealed partial class LisaFS
         if(!tags)
         {
             if(_fileSizeCache.TryGetValue(fileId, out int realSize))
-                if(realSize > temp.Length)
-                    AaruConsole.ErrorWriteLine(Localization.File_0_gets_truncated, fileId);
+            {
+                if(realSize > temp.Length) AaruConsole.ErrorWriteLine(Localization.File_0_gets_truncated, fileId);
+            }
 
             buf = temp;
 
@@ -520,7 +523,7 @@ public sealed partial class LisaFS
             }
         }
 
-        for(var lvl = 0; lvl < pathElements.Length; lvl++)
+        for(int lvl = 0; lvl < pathElements.Length; lvl++)
         {
             string wantedFilename = pathElements[0].Replace('-', '/');
 

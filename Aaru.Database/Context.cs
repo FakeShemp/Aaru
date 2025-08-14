@@ -32,6 +32,8 @@
 
 using Aaru.Database.Models;
 using Microsoft.EntityFrameworkCore;
+using OperatingSystem = Aaru.Database.Models.OperatingSystem;
+using Version = Aaru.Database.Models.Version;
 
 namespace Aaru.Database;
 

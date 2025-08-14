@@ -31,6 +31,7 @@
 // ****************************************************************************/
 
 using Aaru.CommonTypes.Interop;
+using PlatformID = Aaru.CommonTypes.Interop.PlatformID;
 
 namespace Aaru.Core;
 

@@ -37,10 +37,10 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 using Aaru.Console;
 using Aaru.Decoders.Sega;
 using Aaru.Helpers;
+using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -54,8 +54,8 @@ public sealed partial class ISO9660
                              Dictionary<string, string> options,     string    @namespace)
     {
         _encoding = encoding ?? Encoding.GetEncoding(1252);
-        var vdMagic = new byte[5]; // Volume Descriptor magic "CD001"
-        var hsMagic = new byte[5]; // Volume Descriptor magic "CDROM"
+        byte[] vdMagic = new byte[5]; // Volume Descriptor magic "CD001"
+        byte[] hsMagic = new byte[5]; // Volume Descriptor magic "CDROM"
 
         options ??= GetDefaultOptions();
 
@@ -119,7 +119,7 @@ public sealed partial class ISO9660
         int xaOff = vdSector.Length == 2336 ? 8 : 0;
         Array.Copy(vdSector, 0x009 + xaOff, hsMagic, 0, 5);
         _highSierra = _encoding.GetString(hsMagic) == HIGH_SIERRA_MAGIC;
-        var hsOff = 0;
+        int hsOff = 0;
 
         if(_highSierra) hsOff = 8;
 
@@ -359,7 +359,7 @@ public sealed partial class ISO9660
 
                 if(errno != ErrorNumber.NoError) return errno;
 
-                var pvdWrongRoot = false;
+                bool pvdWrongRoot = false;
 
                 if(_highSierra)
                 {
@@ -382,7 +382,7 @@ public sealed partial class ISO9660
                                                Localization
                                                   .PVD_does_not_point_to_correct_root_directory_checking_path_table);
 
-                    var pathTableWrongRoot = false;
+                    bool pathTableWrongRoot = false;
 
                     rootLocation = _pathTable[0].Extent;
 
@@ -617,7 +617,7 @@ public sealed partial class ISO9660
                                         Timestamp = decodedVd.CreationTime
                                     });
 
-            for(var i = 0; i < bvdSectors.Count; i++)
+            for(int i = 0; i < bvdSectors.Count; i++)
             {
                 _rootDirectoryCache.Add(i == 0 ? "$BOOT" : $"$BOOT_{i}",
                                         new DecodedDirectoryEntry
@@ -629,7 +629,7 @@ public sealed partial class ISO9660
                                         });
             }
 
-            for(var i = 0; i < pvdSectors.Count; i++)
+            for(int i = 0; i < pvdSectors.Count; i++)
             {
                 _rootDirectoryCache.Add(i == 0 ? "$PVD" : $"$PVD{i}",
                                         new DecodedDirectoryEntry
@@ -641,7 +641,7 @@ public sealed partial class ISO9660
                                         });
             }
 
-            for(var i = 0; i < svdSectors.Count; i++)
+            for(int i = 0; i < svdSectors.Count; i++)
             {
                 _rootDirectoryCache.Add(i == 0 ? "$SVD" : $"$SVD_{i}",
                                         new DecodedDirectoryEntry
@@ -653,7 +653,7 @@ public sealed partial class ISO9660
                                         });
             }
 
-            for(var i = 0; i < evdSectors.Count; i++)
+            for(int i = 0; i < evdSectors.Count; i++)
             {
                 _rootDirectoryCache.Add(i == 0 ? "$EVD" : $"$EVD_{i}",
                                         new DecodedDirectoryEntry
@@ -665,7 +665,7 @@ public sealed partial class ISO9660
                                         });
             }
 
-            for(var i = 0; i < vpdSectors.Count; i++)
+            for(int i = 0; i < vpdSectors.Count; i++)
             {
                 _rootDirectoryCache.Add(i == 0 ? "$VPD" : $"$VPD_{i}",
                                         new DecodedDirectoryEntry

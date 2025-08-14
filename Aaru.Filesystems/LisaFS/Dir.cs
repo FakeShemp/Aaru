@@ -38,6 +38,7 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Decoders;
 using Aaru.Helpers;
+using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
 namespace Aaru.Filesystems;
 
@@ -150,7 +151,7 @@ public sealed partial class LisaFS
 
             if(error != ErrorNumber.NoError) return error;
 
-            var                  offset    = 0;
+            int                  offset    = 0;
             List<CatalogEntryV2> catalogV2 = [];
 
             // For each entry on the catalog
@@ -281,7 +282,7 @@ public sealed partial class LisaFS
         // Foreach catalog block
         foreach(byte[] buf in catalogBlocks)
         {
-            var offset = 0;
+            int offset = 0;
 
             // Traverse all entries
             while(offset + 64 <= buf.Length)

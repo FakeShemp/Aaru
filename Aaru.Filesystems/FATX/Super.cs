@@ -34,9 +34,9 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 using Aaru.Console;
 using Aaru.Helpers;
+using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 using Marshal = Aaru.Helpers.Marshal;
 using Partition = Aaru.CommonTypes.Partition;
 
@@ -156,8 +156,9 @@ public sealed partial class XboxFatPlugin
             _fat32 = MemoryMarshal.Cast<byte, uint>(buffer).ToArray();
 
             if(!_littleEndian)
-                for(var i = 0; i < _fat32.Length; i++)
-                    _fat32[i] = Swapping.Swap(_fat32[i]);
+            {
+                for(int i = 0; i < _fat32.Length; i++) _fat32[i] = Swapping.Swap(_fat32[i]);
+            }
 
             AaruConsole.DebugWriteLine(MODULE_NAME, "fat32[0] == FATX32_ID = {0}", _fat32[0] == FATX32_ID);
 
@@ -187,8 +188,9 @@ public sealed partial class XboxFatPlugin
             _fat16 = MemoryMarshal.Cast<byte, ushort>(buffer).ToArray();
 
             if(!_littleEndian)
-                for(var i = 0; i < _fat16.Length; i++)
-                    _fat16[i] = Swapping.Swap(_fat16[i]);
+            {
+                for(int i = 0; i < _fat16.Length; i++) _fat16[i] = Swapping.Swap(_fat16[i]);
+            }
 
             AaruConsole.DebugWriteLine(MODULE_NAME, "fat16[0] == FATX16_ID = {0}", _fat16[0] == FATX16_ID);
 
@@ -208,11 +210,11 @@ public sealed partial class XboxFatPlugin
 
         if(rootDirectoryClusters is null) return ErrorNumber.InvalidArgument;
 
-        var rootDirectoryBuffer = new byte[_bytesPerCluster * rootDirectoryClusters.Length];
+        byte[] rootDirectoryBuffer = new byte[_bytesPerCluster * rootDirectoryClusters.Length];
 
         AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Reading_root_directory);
 
-        for(var i = 0; i < rootDirectoryClusters.Length; i++)
+        for(int i = 0; i < rootDirectoryClusters.Length; i++)
         {
             errno = imagePlugin.ReadSectors(_firstClusterSector + (rootDirectoryClusters[i] - 1) * _sectorsPerCluster,
                                             _sectorsPerCluster,
@@ -225,7 +227,7 @@ public sealed partial class XboxFatPlugin
 
         _rootDirectory = new Dictionary<string, DirectoryEntry>();
 
-        var pos = 0;
+        int pos = 0;
 
         while(pos < rootDirectoryBuffer.Length)
         {

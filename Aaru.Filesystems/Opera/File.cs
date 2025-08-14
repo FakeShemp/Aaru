@@ -33,6 +33,7 @@ using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
 namespace Aaru.Filesystems;
 
@@ -194,7 +195,7 @@ public sealed partial class OperaFS
 
         if(pieces.Length == 0) return ErrorNumber.InvalidArgument;
 
-        var parentPath = string.Join("/", pieces, 0, pieces.Length - 1);
+        string parentPath = string.Join("/", pieces, 0, pieces.Length - 1);
 
         if(!_directoryCache.TryGetValue(parentPath, out _))
         {

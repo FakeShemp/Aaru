@@ -31,8 +31,8 @@
 // ****************************************************************************/
 
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interop;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
+using PlatformID = Aaru.CommonTypes.Interop.PlatformID;
 
 namespace Aaru.Devices;
 

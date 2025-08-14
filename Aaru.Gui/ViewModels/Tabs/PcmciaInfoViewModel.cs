@@ -43,6 +43,7 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using JetBrains.Annotations;
 using ReactiveUI;
+using Tuple = Aaru.Decoders.PCMCIA.Tuple;
 
 namespace Aaru.Gui.ViewModels.Tabs;
 

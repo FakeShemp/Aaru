@@ -7,6 +7,7 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Core;
 using NUnit.Framework;
+using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
 namespace Aaru.Tests.Issues;
 
@@ -68,9 +69,9 @@ public abstract class FsExtractIssueTest
             });
         }
 
-        var filesystemFound = false;
+        bool filesystemFound = false;
 
-        for(var i = 0; i < partitions.Count; i++)
+        for(int i = 0; i < partitions.Count; i++)
         {
             Core.Filesystems.Identify(imageFormat, out List<string> idPlugins, partitions[i]);
 
@@ -171,7 +172,7 @@ public abstract class FsExtractIssueTest
                 }
             }
 
-            var         buffer = new byte[stat.Length];
+            byte[]      buffer = new byte[stat.Length];
             ErrorNumber ret    = fs.OpenFile(path + "/" + entry, out IFileNode fileNode);
 
             Assert.That(ret,

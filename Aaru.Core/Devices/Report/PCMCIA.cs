@@ -32,6 +32,7 @@
 
 using Aaru.CommonTypes.Metadata;
 using Aaru.Decoders.PCMCIA;
+using Tuple = Aaru.Decoders.PCMCIA.Tuple;
 
 namespace Aaru.Core.Devices.Report;
 

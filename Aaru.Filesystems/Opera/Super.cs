@@ -33,6 +33,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
+using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -92,7 +93,7 @@ public sealed partial class OperaFS
         };
 
         _image = imagePlugin;
-        var firstRootBlock = BigEndianBitConverter.ToInt32(sbSector, Marshal.SizeOf<SuperBlock>());
+        int firstRootBlock = BigEndianBitConverter.ToInt32(sbSector, Marshal.SizeOf<SuperBlock>());
         _rootDirectoryCache = DecodeDirectory(firstRootBlock);
         _directoryCache     = new Dictionary<string, Dictionary<string, DirectoryEntryWithPointers>>();
         _mounted            = true;

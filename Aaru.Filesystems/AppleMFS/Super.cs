@@ -32,8 +32,8 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
+using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -84,7 +84,7 @@ public sealed partial class AppleMFS
         _volMdb.drNxtFNum  = BigEndianBitConverter.ToUInt32(_mdbBlocks, 0x01E);
         _volMdb.drFreeBks  = BigEndianBitConverter.ToUInt16(_mdbBlocks, 0x022);
         _volMdb.drVNSiz    = _mdbBlocks[0x024];
-        var variableSize = new byte[_volMdb.drVNSiz + 1];
+        byte[] variableSize = new byte[_volMdb.drVNSiz + 1];
         Array.Copy(_mdbBlocks, 0x024, variableSize, 0, _volMdb.drVNSiz + 1);
         _volMdb.drVN = StringHandlers.PascalToString(variableSize, _encoding);
 
@@ -105,10 +105,10 @@ public sealed partial class AppleMFS
         _blockMapBytes = new byte[bytesInBlockMap];
         Array.Copy(wholeMdb, BYTES_BEFORE_BLOCK_MAP, _blockMapBytes, 0, _blockMapBytes.Length);
 
-        var offset = 0;
+        int offset = 0;
         _blockMap = new uint[_volMdb.drNmAlBlks + 2 + 1];
 
-        for(var i = 2; i < _volMdb.drNmAlBlks + 2; i += 8)
+        for(int i = 2; i < _volMdb.drNmAlBlks + 2; i += 8)
         {
             uint tmp1 = 0;
             uint tmp2 = 0;
@@ -163,7 +163,7 @@ public sealed partial class AppleMFS
 
         _mounted = true;
 
-        var bbSig = BigEndianBitConverter.ToUInt16(_bootBlocks, 0x000);
+        ushort bbSig = BigEndianBitConverter.ToUInt16(_bootBlocks, 0x000);
 
         if(bbSig != AppleCommon.BB_MAGIC) _bootBlocks = null;
 

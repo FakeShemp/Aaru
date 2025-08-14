@@ -31,12 +31,12 @@ using System.Collections.Generic;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 using Aaru.Console;
 using Aaru.Decoders;
 using Aaru.Helpers;
 using Claunia.Encoding;
 using Encoding = System.Text.Encoding;
+using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -97,7 +97,7 @@ public sealed partial class LisaFS
                 if(errno != ErrorNumber.NoError) return errno;
 
                 _mddf = new MDDF();
-                var pString = new byte[33];
+                byte[] pString = new byte[33];
 
                 _mddf.fsversion = BigEndianBitConverter.ToUInt16(sector, 0x00);
                 _mddf.volid     = BigEndianBitConverter.ToUInt64(sector, 0x02);
@@ -112,7 +112,7 @@ public sealed partial class LisaFS
                 _mddf.unknown2       = sector[0x4F];
                 _mddf.machine_id     = BigEndianBitConverter.ToUInt32(sector, 0x50);
                 _mddf.master_copy_id = BigEndianBitConverter.ToUInt32(sector, 0x54);
-                var lisaTime = BigEndianBitConverter.ToUInt32(sector, 0x58);
+                uint lisaTime = BigEndianBitConverter.ToUInt32(sector, 0x58);
                 _mddf.dtvc                         = DateHandlers.LisaToDateTime(lisaTime);
                 lisaTime                           = BigEndianBitConverter.ToUInt32(sector, 0x5C);
                 _mddf.dtcc                         = DateHandlers.LisaToDateTime(lisaTime);

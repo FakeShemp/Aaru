@@ -30,11 +30,11 @@ using System.Collections.Generic;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 using Aaru.Console;
 using Aaru.Helpers;
 using Claunia.Encoding;
 using Encoding = System.Text.Encoding;
+using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;

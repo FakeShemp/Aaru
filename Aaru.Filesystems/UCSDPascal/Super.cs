@@ -35,10 +35,10 @@ using System.Collections.Generic;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Claunia.Encoding;
 using Encoding = System.Text.Encoding;
+using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -100,7 +100,7 @@ public sealed partial class PascalPlugin
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        var offset = 26;
+        int offset = 26;
 
         _fileEntries = [];
 
