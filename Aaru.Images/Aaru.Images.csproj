@@ -6,17 +6,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Aaru.Images</RootNamespace>
     <AssemblyName>Aaru.Images</AssemblyName>
-    <ReleaseVersion>$(Version)</ReleaseVersion>
-    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <Version>6.0.0-alpha10</Version>
-    <Company>Claunia.com</Company>
-    <Copyright>Copyright © 2011-2025 Natalia Portillo</Copyright>
-    <Product>Aaru Data Preservation Suite</Product>
     <Title>Aaru.Images</Title>
-    <ApplicationVersion>$(Version)</ApplicationVersion>
-    <TargetFramework>net10.0</TargetFramework>
     <NoWarn>CS0649</NoWarn>
-    <LangVersion>latest</LangVersion>
     <Description>Media image formats used by the Aaru Data Preservation Suite.</Description>
     <PackageProjectUrl>https://github.com/aaru-dps/</PackageProjectUrl>
     <PackageLicenseExpression>LGPL-2.1-only</PackageLicenseExpression>
@@ -27,9 +18,6 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Authors>Natalia Portillo &lt;claunia@claunia.com&gt;</Authors>
-    <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
-    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
-    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <NoWarn>CS1591;CS1574</NoWarn>
@@ -44,51 +32,13 @@
     <NrtShowRevision>true</NrtShowRevision>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AsyncFixer" Version="1.6.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Claunia.Encoding" Version="1.9.2"/>
-    <PackageReference Include="Claunia.RsrcFork" Version="1.2.0"/>
-    <PackageReference Include="DotNetZip" Version="1.16.0"/>
-    <PackageReference Include="ErrorProne.NET.CoreAnalyzers" Version="0.1.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="ErrorProne.NET.Structs" Version="0.1.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.10.48">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Philips.CodeAnalysis.MaintainabilityAnalyzers" Version="1.5.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="plist-cil" Version="2.2.0"/>
-    <PackageReference Include="Roslynator.Analyzers" Version="4.12.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.12.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.12.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="SharpCompress" Version="0.37.2"/>
-    <PackageReference Include="SmartAnalyzers.MultithreadingAnalyzer" Version="1.1.31"/>
-    <PackageReference Include="System.Text.Json" Version="9.0.0"/>
-    <PackageReference Include="System.ValueTuple" Version="4.5.0"/>
-    <PackageReference Include="Text.Analyzers" Version="3.3.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Unclassified.NetRevisionTask" Version="0.4.3" PrivateAssets="all"/>
+    <PackageReference Include="Claunia.Encoding"/>
+    <PackageReference Include="Claunia.RsrcFork"/>
+    <PackageReference Include="DotNetZip"/>
+    <PackageReference Include="plist-cil"/>
+    <PackageReference Include="SharpCompress"/>
+    <PackageReference Include="System.Text.Json"/>
+    <PackageReference Include="System.ValueTuple"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Aaru.CommonTypes\Aaru.CommonTypes.csproj"/>

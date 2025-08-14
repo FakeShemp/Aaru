@@ -6,16 +6,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Aaru.Core</RootNamespace>
     <AssemblyName>Aaru.Core</AssemblyName>
-    <ReleaseVersion>$(Version)</ReleaseVersion>
-    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <Version>6.0.0-alpha10</Version>
-    <Company>Claunia.com</Company>
-    <Copyright>Copyright © 2011-2025 Natalia Portillo</Copyright>
-    <Product>Aaru Data Preservation Suite</Product>
     <Title>Aaru.Core</Title>
-    <ApplicationVersion>$(Version)</ApplicationVersion>
-    <TargetFramework>net10.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
     <Description>Contains core algorithms used by the Aaru Data Preservation Suite.</Description>
     <PackageProjectUrl>https://github.com/aaru-dps/</PackageProjectUrl>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
@@ -26,8 +17,6 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Authors>Natalia Portillo &lt;claunia@claunia.com&gt;</Authors>
-    <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
-    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <NoWarn>CS1591;CS1574</NoWarn>
@@ -73,54 +62,16 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AsyncFixer" Version="1.6.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="ErrorProne.NET.CoreAnalyzers" Version="0.1.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="ErrorProne.NET.Structs" Version="0.1.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Humanizer.Core" Version="2.14.1"/>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0"/>
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.10.48">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Philips.CodeAnalysis.MaintainabilityAnalyzers" Version="1.5.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Roslynator.Analyzers" Version="4.12.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.12.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.12.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="SkiaSharp" Version="2.88.8"/>
-    <PackageReference Include="SmartAnalyzers.MultithreadingAnalyzer" Version="1.1.31"/>
-    <PackageReference Include="Spectre.Console" Version="0.49.1"/>
-    <PackageReference Include="System.ValueTuple" Version="4.5.0"/>
-    <PackageReference Include="Text.Analyzers" Version="3.3.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Unclassified.NetRevisionTask" Version="0.4.3" PrivateAssets="all"/>
-    <PackageReference Include="System.Collections" Version="4.3.0"/>
-    <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0"/>
-    <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0"/>
-    <PackageReference Include="System.Runtime.Extensions" Version="4.3.1"/>
-    <PackageReference Include="System.Runtime.Handles" Version="4.3.0"/>
-    <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0"/>
+    <PackageReference Include="Humanizer.Core"/>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
+    <PackageReference Include="SkiaSharp"/>
+    <PackageReference Include="Spectre.Console"/>
+    <PackageReference Include="System.ValueTuple"/>
+    <PackageReference Include="System.Collections"/>
+    <PackageReference Include="System.Diagnostics.Debug"/>
+    <PackageReference Include="System.IO.FileSystem.Primitives"/>
+    <PackageReference Include="System.Runtime.Extensions"/>
+    <PackageReference Include="System.Runtime.Handles"/>
+    <PackageReference Include="System.Runtime.InteropServices"/>
   </ItemGroup>
 </Project>
