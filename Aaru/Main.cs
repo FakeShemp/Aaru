@@ -53,8 +53,6 @@ using Aaru.Settings;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Serilog.Core;
-using Serilog.Sinks.Spectre;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using ListOptionsCommand = Aaru.Commands.Filesystem.ListOptionsCommand;
@@ -73,15 +71,6 @@ class MainClass
         {
             Out = new AnsiConsoleOutput(System.Console.Error)
         });
-
-        var levelSwitch = new LoggingLevelSwitch();
-
-        Log.Logger = new LoggerConfiguration().MinimumLevel.ControlledBy(levelSwitch)
-                                              .WriteTo
-                                              .Spectre("[{Timestamp:HH:mm:ss} {Level:u3}{Module}] {Message:lj}{NewLine}{Exception}",
-                                                       levelSwitch: levelSwitch,
-                                                       renderTextAsMarkup: true)
-                                              .CreateLogger();
 
         object[] attributes = typeof(MainClass).Assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
         _assemblyTitle = ((AssemblyTitleAttribute)attributes[0]).Title;
@@ -406,7 +395,7 @@ class MainClass
 
             config.AddCommand<RemoteCommand>("remote").WithAlias("rem").WithDescription(UI.Remote_Command_Description);
 
-            config.SetInterceptor(new LogLevelInterceptor(levelSwitch));
+            config.SetInterceptor(new LoggingInterceptor());
         });
 
         int ret = await app.RunAsync(args);

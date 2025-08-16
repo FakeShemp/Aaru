@@ -2,29 +2,44 @@ using Aaru.Commands;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
+using Serilog.Sinks.Spectre;
 using Spectre.Console.Cli;
 
-public class LogLevelInterceptor : ICommandInterceptor
+public class LoggingInterceptor : ICommandInterceptor
 {
-    private readonly LoggingLevelSwitch _levelSwitch;
-
-    public LogLevelInterceptor(LoggingLevelSwitch levelSwitch) => _levelSwitch = levelSwitch;
+    private readonly LoggingLevelSwitch _levelSwitch = new();
 
 #region ICommandInterceptor Members
 
     public void Intercept(CommandContext context, CommandSettings settings)
     {
-        if(settings is BaseSettings global)
-        {
-            if(global.Debug)
-                _levelSwitch.MinimumLevel = LogEventLevel.Debug;
-            else if(global.Verbose)
-                _levelSwitch.MinimumLevel = LogEventLevel.Verbose;
-            else
-                _levelSwitch.MinimumLevel = LogEventLevel.Information;
+        if(settings is not BaseSettings global) return;
 
-            Log.Information("Log level set to {Level}", _levelSwitch.MinimumLevel);
+        // Set log level
+        if(global.Debug)
+            _levelSwitch.MinimumLevel = LogEventLevel.Debug;
+        else if(global.Verbose)
+            _levelSwitch.MinimumLevel = LogEventLevel.Verbose;
+        else
+            _levelSwitch.MinimumLevel = LogEventLevel.Information;
+
+        // Configure Serilog
+        LoggerConfiguration loggerConfig = new LoggerConfiguration().MinimumLevel.ControlledBy(_levelSwitch)
+                                                                    .Enrich.FromLogContext()
+                                                                    .WriteTo.Spectre(levelSwitch: _levelSwitch,
+                                                                         renderTextAsMarkup: true);
+
+        // If logfile is present, add file sink and redirect Spectre.Console output
+        if(!string.IsNullOrWhiteSpace(global.LogFile))
+        {
+            loggerConfig = loggerConfig.WriteTo.File(global.LogFile,
+                                                     outputTemplate:
+                                                     "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}");
         }
+
+        Log.Logger = loggerConfig.CreateLogger();
+        Log.Information("Log level set to {Level}", _levelSwitch.MinimumLevel);
+        if(global.LogFile != null) Log.Information("Logging to file: {Path}", global.LogFile);
     }
 
 #endregion

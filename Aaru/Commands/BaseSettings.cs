@@ -15,6 +15,10 @@ public class BaseSettings : CommandSettings
     [DefaultValue(false)]
     public bool Debug { get; init; }
 
+    [CommandOption("--logfile <PATH>")]
+    [Description("Path to log file.")]
+    public string? LogFile { get; set; }
+
     // TODO: Add support for this
     /*
     [CommandOption("--pause")]
