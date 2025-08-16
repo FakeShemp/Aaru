@@ -41,7 +41,6 @@ using Aaru.Core;
 using Aaru.Database;
 using Aaru.Localization;
 using Microsoft.EntityFrameworkCore;
-using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace Aaru.Commands.Database;
@@ -54,35 +53,6 @@ sealed class UpdateCommand : AsyncCommand<UpdateCommand.Settings>
     public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
-
-        if(settings.Debug)
-        {
-            IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
-            {
-                Out = new AnsiConsoleOutput(System.Console.Error)
-            });
-
-            AaruConsole.DebugWriteLineEvent += (format, objects) =>
-            {
-                if(objects is null)
-                    stderrConsole.MarkupLine(format);
-                else
-                    stderrConsole.MarkupLine(format, objects);
-            };
-
-            AaruConsole.WriteExceptionEvent += ex => stderrConsole.WriteException(ex);
-        }
-
-        if(settings.Verbose)
-        {
-            AaruConsole.WriteEvent += (format, objects) =>
-            {
-                if(objects is null)
-                    AnsiConsole.Markup(format);
-                else
-                    AnsiConsole.Markup(format, objects);
-            };
-        }
 
         AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
         AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);

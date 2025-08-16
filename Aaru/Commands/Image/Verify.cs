@@ -57,35 +57,6 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
     {
         MainClass.PrintCopyright();
 
-        if(settings.Debug)
-        {
-            IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
-            {
-                Out = new AnsiConsoleOutput(System.Console.Error)
-            });
-
-            AaruConsole.DebugWriteLineEvent += (format, objects) =>
-            {
-                if(objects is null)
-                    stderrConsole.MarkupLine(format);
-                else
-                    stderrConsole.MarkupLine(format, objects);
-            };
-
-            AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
-        }
-
-        if(settings.Verbose)
-        {
-            AaruConsole.WriteEvent += (format, objects) =>
-            {
-                if(objects is null)
-                    AnsiConsole.Markup(format);
-                else
-                    AnsiConsole.Markup(format, objects);
-            };
-        }
-
         Statistics.AddCommand("verify");
 
         AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",          settings.Debug);
@@ -226,9 +197,11 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
                                         opticalMediaImage.Info.Sectors);
             }
             else if(settings.CreateGraph)
+            {
                 mediaGraph = new BlockMap((int)settings.Dimensions,
                                           (int)settings.Dimensions,
                                           opticalMediaImage.Info.Sectors);
+            }
 
             List<Track> inputTracks      = opticalMediaImage.Tracks;
             ulong       currentSectorAll = 0;
@@ -427,18 +400,16 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
             if(failingLbas.Count == (int)inputFormat.Info.Sectors)
                 AaruConsole.VerboseWriteLine($"\t[red]{UI.all_sectors}[/]");
             else
-            {
-                foreach(ulong t in failingLbas) AaruConsole.VerboseWriteLine("\t{0}", t);
-            }
+                foreach(ulong t in failingLbas)
+                    AaruConsole.VerboseWriteLine("\t{0}", t);
 
             AaruConsole.WriteLine($"[yellow3_1]{UI.LBAs_without_checksum}[/]");
 
             if(unknownLbas.Count == (int)inputFormat.Info.Sectors)
                 AaruConsole.VerboseWriteLine($"\t[yellow3_1]{UI.all_sectors}[/]");
             else
-            {
-                foreach(ulong t in unknownLbas) AaruConsole.VerboseWriteLine("\t{0}", t);
-            }
+                foreach(ulong t in unknownLbas)
+                    AaruConsole.VerboseWriteLine("\t{0}", t);
         }
 
         // TODO: Convert to table

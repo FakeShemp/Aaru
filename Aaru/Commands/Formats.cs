@@ -51,35 +51,6 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
     {
         MainClass.PrintCopyright();
 
-        if(settings.Debug)
-        {
-            IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
-            {
-                Out = new AnsiConsoleOutput(System.Console.Error)
-            });
-
-            AaruConsole.DebugWriteLineEvent += (format, objects) =>
-            {
-                if(objects is null)
-                    stderrConsole.MarkupLine(format);
-                else
-                    stderrConsole.MarkupLine(format, objects);
-            };
-
-            AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
-        }
-
-        if(settings.Verbose)
-        {
-            AaruConsole.WriteEvent += (format, objects) =>
-            {
-                if(objects is null)
-                    AnsiConsole.Markup(format);
-                else
-                    AnsiConsole.Markup(format, objects);
-            };
-        }
-
         Statistics.AddCommand("formats");
 
         AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);

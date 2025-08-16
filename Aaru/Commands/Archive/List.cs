@@ -53,35 +53,6 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
     {
         MainClass.PrintCopyright();
 
-        if(settings.Debug)
-        {
-            IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
-            {
-                Out = new AnsiConsoleOutput(System.Console.Error)
-            });
-
-            AaruConsole.DebugWriteLineEvent += (format, objects) =>
-            {
-                if(objects is null)
-                    stderrConsole.MarkupLine(Markup.Escape(format));
-                else
-                    stderrConsole.MarkupLine(Markup.Escape(format), objects);
-            };
-
-            AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
-        }
-
-        if(settings.Verbose)
-        {
-            AaruConsole.WriteEvent += (format, objects) =>
-            {
-                if(objects is null)
-                    AnsiConsole.Markup(format);
-                else
-                    AnsiConsole.Markup(format, objects);
-            };
-        }
-
         AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",       settings.Debug);
         AaruConsole.DebugWriteLine(MODULE_NAME, "--encoding={0}",    Markup.Escape(settings.Encoding ?? ""));
         AaruConsole.DebugWriteLine(MODULE_NAME, "--long-format={0}", settings.LongFormat);

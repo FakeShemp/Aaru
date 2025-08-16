@@ -60,7 +60,7 @@ public sealed partial class Nero
             var footerV2 = new FooterV2();
 
             _imageStream.Seek(-8, SeekOrigin.End);
-            var buffer = new byte[8];
+            byte[] buffer = new byte[8];
             _imageStream.EnsureRead(buffer, 0, 8);
             footerV1.ChunkId          = BigEndianBitConverter.ToUInt32(buffer, 0);
             footerV1.FirstChunkOffset = BigEndianBitConverter.ToUInt32(buffer, 4);
@@ -94,7 +94,7 @@ public sealed partial class Nero
                 _imageNewFormat = true;
             else
             {
-                AaruConsole.DebugWrite(MODULE_NAME, Localization.Nero_version_not_recognized);
+                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Nero_version_not_recognized);
 
                 return ErrorNumber.NotSupported;
             }
@@ -105,7 +105,7 @@ public sealed partial class Nero
             else
                 _imageStream.Seek(footerV1.FirstChunkOffset, SeekOrigin.Begin);
 
-            var    parsing        = true;
+            bool   parsing        = true;
             ushort currentSession = 1;
             uint   currentTrack   = 1;
 
@@ -115,18 +115,18 @@ public sealed partial class Nero
             _imageInfo.MediaType  = CommonTypes.MediaType.CD;
             _imageInfo.Sectors    = 0;
             _imageInfo.SectorSize = 0;
-            var oldFormat          = false;
-            int currentLba         = -150;
-            var corruptedTrackMode = false;
+            bool oldFormat          = false;
+            int  currentLba         = -150;
+            bool corruptedTrackMode = false;
 
             // Parse chunks
             while(parsing)
             {
-                var chunkHeaderBuffer = new byte[8];
+                byte[] chunkHeaderBuffer = new byte[8];
 
                 _imageStream.EnsureRead(chunkHeaderBuffer, 0, 8);
-                var chunkId     = BigEndianBitConverter.ToUInt32(chunkHeaderBuffer, 0);
-                var chunkLength = BigEndianBitConverter.ToUInt32(chunkHeaderBuffer, 4);
+                uint chunkId     = BigEndianBitConverter.ToUInt32(chunkHeaderBuffer, 0);
+                uint chunkLength = BigEndianBitConverter.ToUInt32(chunkHeaderBuffer, 4);
 
                 AaruConsole.DebugWriteLine(MODULE_NAME,
                                            "ChunkID = 0x{0:X8} (\"{1}\")",
@@ -150,9 +150,9 @@ public sealed partial class Nero
                             Entries   = []
                         };
 
-                        var tmpBuffer = new byte[8];
+                        byte[] tmpBuffer = new byte[8];
 
-                        for(var i = 0; i < newCuesheetV1.ChunkSize; i += 8)
+                        for(int i = 0; i < newCuesheetV1.ChunkSize; i += 8)
                         {
                             var entry = new CueEntryV1();
                             _imageStream.EnsureRead(tmpBuffer, 0, 8);
@@ -226,9 +226,9 @@ public sealed partial class Nero
                             Entries   = []
                         };
 
-                        var tmpBuffer = new byte[8];
+                        byte[] tmpBuffer = new byte[8];
 
-                        for(var i = 0; i < newCuesheetV2.ChunkSize; i += 8)
+                        for(int i = 0; i < newCuesheetV2.ChunkSize; i += 8)
                         {
                             var entry = new CueEntryV2();
                             _imageStream.EnsureRead(tmpBuffer, 0, 8);
@@ -288,7 +288,7 @@ public sealed partial class Nero
                             ChunkSizeBe = chunkLength
                         };
 
-                        var tmpBuffer = new byte[22];
+                        byte[] tmpBuffer = new byte[22];
                         _imageStream.EnsureRead(tmpBuffer, 0, 22);
                         _neroDaov1.ChunkSizeLe = BigEndianBitConverter.ToUInt32(tmpBuffer, 0);
                         _neroDaov1.Upc         = new byte[14];
@@ -316,7 +316,7 @@ public sealed partial class Nero
 
                         tmpBuffer = new byte[30];
 
-                        for(var i = 0; i < _neroDaov1.ChunkSizeBe - 22; i += 30)
+                        for(int i = 0; i < _neroDaov1.ChunkSizeBe - 22; i += 30)
                         {
                             var entry = new DaoEntryV1();
                             _imageStream.EnsureRead(tmpBuffer, 0, 30);
@@ -423,7 +423,7 @@ public sealed partial class Nero
                             ChunkSizeBe = chunkLength
                         };
 
-                        var tmpBuffer = new byte[22];
+                        byte[] tmpBuffer = new byte[22];
                         _imageStream.EnsureRead(tmpBuffer, 0, 22);
                         _neroDaov2.ChunkSizeLe = BigEndianBitConverter.ToUInt32(tmpBuffer, 0);
                         _neroDaov2.Upc         = new byte[14];
@@ -451,7 +451,7 @@ public sealed partial class Nero
 
                         tmpBuffer = new byte[42];
 
-                        for(var i = 0; i < _neroDaov2.ChunkSizeBe - 22; i += 42)
+                        for(int i = 0; i < _neroDaov2.ChunkSizeBe - 22; i += 42)
                         {
                             var entry = new DaoEntryV2();
                             _imageStream.EnsureRead(tmpBuffer, 0, 42);
@@ -560,9 +560,9 @@ public sealed partial class Nero
                             Packs     = []
                         };
 
-                        var tmpBuffer = new byte[18];
+                        byte[] tmpBuffer = new byte[18];
 
-                        for(var i = 0; i < _cdtxt.ChunkSize; i += 18)
+                        for(int i = 0; i < _cdtxt.ChunkSize; i += 18)
                         {
                             var entry = new CdTextPack();
                             _imageStream.EnsureRead(tmpBuffer, 0, 18);
@@ -628,9 +628,9 @@ public sealed partial class Nero
                             Tracks    = []
                         };
 
-                        var tmpBuffer = new byte[12];
+                        byte[] tmpBuffer = new byte[12];
 
-                        for(var i = 0; i < _taoV0.ChunkSize; i += 12)
+                        for(int i = 0; i < _taoV0.ChunkSize; i += 12)
                         {
                             var entry = new TaoEntryV0();
                             _imageStream.EnsureRead(tmpBuffer, 0, 12);
@@ -699,9 +699,9 @@ public sealed partial class Nero
                             Tracks    = []
                         };
 
-                        var tmpBuffer = new byte[20];
+                        byte[] tmpBuffer = new byte[20];
 
-                        for(var i = 0; i < _taoV1.ChunkSize; i += 20)
+                        for(int i = 0; i < _taoV1.ChunkSize; i += 20)
                         {
                             var entry = new TaoEntryV1();
                             _imageStream.EnsureRead(tmpBuffer, 0, 20);
@@ -781,9 +781,9 @@ public sealed partial class Nero
                             Tracks    = []
                         };
 
-                        var tmpBuffer = new byte[32];
+                        byte[] tmpBuffer = new byte[32];
 
-                        for(var i = 0; i < _taoV2.ChunkSize; i += 32)
+                        for(int i = 0; i < _taoV2.ChunkSize; i += 32)
                         {
                             var entry = new TaoEntryV2();
                             _imageStream.EnsureRead(tmpBuffer, 0, 32);
@@ -871,9 +871,9 @@ public sealed partial class Nero
                                                    Localization.Found_SINF_chunk_parsing_0_bytes,
                                                    chunkLength);
 
-                        var tmpBuffer = new byte[4];
+                        byte[] tmpBuffer = new byte[4];
                         _imageStream.EnsureRead(tmpBuffer, 0, 4);
-                        var sessionTracks = BigEndianBitConverter.ToUInt32(tmpBuffer, 0);
+                        uint sessionTracks = BigEndianBitConverter.ToUInt32(tmpBuffer, 0);
                         _neroSessions.Add(currentSession, sessionTracks);
 
                         AaruConsole.DebugWriteLine(MODULE_NAME,
@@ -898,7 +898,7 @@ public sealed partial class Nero
                             ChunkSize = chunkLength
                         };
 
-                        var tmpBuffer = new byte[4];
+                        byte[] tmpBuffer = new byte[4];
                         _imageStream.EnsureRead(tmpBuffer, 0, 4);
                         _mediaType.Type = BigEndianBitConverter.ToUInt32(tmpBuffer, 0);
 
@@ -924,7 +924,7 @@ public sealed partial class Nero
                             ChunkSize = chunkLength
                         };
 
-                        var tmpBuffer = new byte[4];
+                        byte[] tmpBuffer = new byte[4];
                         _imageStream.EnsureRead(tmpBuffer, 0, 4);
                         _discInfo.Unknown = BigEndianBitConverter.ToUInt32(tmpBuffer, 0);
 
@@ -947,7 +947,7 @@ public sealed partial class Nero
                             ChunkSize = chunkLength
                         };
 
-                        var tmpBuffer = new byte[4];
+                        byte[] tmpBuffer = new byte[4];
                         _imageStream.EnsureRead(tmpBuffer, 0, 4);
                         _relo.Unknown = BigEndianBitConverter.ToUInt32(tmpBuffer, 0);
 
@@ -968,7 +968,7 @@ public sealed partial class Nero
                             ChunkSize = chunkLength
                         };
 
-                        var tmpBuffer = new byte[2];
+                        byte[] tmpBuffer = new byte[2];
                         _imageStream.EnsureRead(tmpBuffer, 0, 2);
                         _toc.Unknown = BigEndianBitConverter.ToUInt16(tmpBuffer, 0);
 
@@ -1060,7 +1060,7 @@ public sealed partial class Nero
             var   currentSessionStruct       = new CommonTypes.Structs.Session();
             ulong partitionSequence          = 0;
             ulong partitionStartByte         = 0;
-            var   trackCounter               = 1;
+            int   trackCounter               = 1;
             _trackFlags = new Dictionary<uint, byte>();
 
             if(currentSessionMaxTrack == 0) currentSessionMaxTrack = 1;
@@ -1200,8 +1200,8 @@ public sealed partial class Nero
                         _imageInfo.ReadableSectorTags.Add(SectorTagType.CdTrackIsrc);
                 }
 
-                var rawMode1 = false;
-                var rawMode2 = false;
+                bool rawMode1 = false;
+                bool rawMode2 = false;
 
                 switch((DaoMode)neroTrack.Mode)
                 {
@@ -1387,9 +1387,9 @@ public sealed partial class Nero
                     }
                 };
 
-                var rawMode1 = false;
-                var rawMode2 = false;
-                var subSize  = 0;
+                bool rawMode1 = false;
+                bool rawMode2 = false;
+                int  subSize  = 0;
 
                 switch((DaoMode)_neroTracks[1].Mode)
                 {
@@ -1549,13 +1549,13 @@ public sealed partial class Nero
 
             if(_imageInfo.MediaType is CommonTypes.MediaType.Unknown or CommonTypes.MediaType.CD)
             {
-                var data       = false;
-                var mode2      = false;
-                var firstAudio = false;
-                var firstData  = false;
-                var audio      = false;
+                bool data       = false;
+                bool mode2      = false;
+                bool firstAudio = false;
+                bool firstData  = false;
+                bool audio      = false;
 
-                for(var i = 0; i < _neroTracks.Count; i++)
+                for(int i = 0; i < _neroTracks.Count; i++)
                 {
                     // First track is audio
                     firstAudio |= i == 0 &&
@@ -1665,7 +1665,7 @@ public sealed partial class Nero
         }
         catch
         {
-            AaruConsole.DebugWrite(MODULE_NAME, Localization.Exception_occurred_opening_file);
+            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Exception_occurred_opening_file);
 
             return ErrorNumber.UnexpectedException;
         }
@@ -1749,7 +1749,7 @@ public sealed partial class Nero
         uint sectorOffset;
         uint sectorSize;
         uint sectorSkip;
-        var  mode2 = false;
+        bool mode2 = false;
 
         switch((DaoMode)aaruTrack.Mode)
         {
@@ -1848,9 +1848,9 @@ public sealed partial class Nero
 
             buffer = br.ReadBytes((int)((sectorSize + sectorSkip) * length));
 
-            for(var i = 0; i < length; i++)
+            for(int i = 0; i < length; i++)
             {
-                var sector = new byte[sectorSize];
+                byte[] sector = new byte[sectorSize];
                 Array.Copy(buffer, (sectorSize + sectorSkip) * i, sector, 0, sectorSize);
                 sector = Sector.GetUserData(sector);
                 mode2Ms.Write(sector, 0, sector.Length);
@@ -1862,7 +1862,7 @@ public sealed partial class Nero
             buffer = br.ReadBytes((int)(sectorSize * length));
         else
         {
-            for(var i = 0; i < length; i++)
+            for(int i = 0; i < length; i++)
             {
                 br.BaseStream.Seek(sectorOffset, SeekOrigin.Current);
                 byte[] sector = br.ReadBytes((int)sectorSize);
@@ -2176,7 +2176,7 @@ public sealed partial class Nero
             buffer = br.ReadBytes((int)(sectorSize * length));
         else
         {
-            for(var i = 0; i < length; i++)
+            for(int i = 0; i < length; i++)
             {
                 br.BaseStream.Seek(sectorOffset, SeekOrigin.Current);
                 byte[] sector = br.ReadBytes((int)sectorSize);
@@ -2287,7 +2287,7 @@ public sealed partial class Nero
             buffer = br.ReadBytes((int)(sectorSize * length));
         else
         {
-            for(var i = 0; i < length; i++)
+            for(int i = 0; i < length; i++)
             {
                 br.BaseStream.Seek(sectorOffset, SeekOrigin.Current);
                 byte[] sector = br.ReadBytes((int)sectorSize);
@@ -2301,8 +2301,8 @@ public sealed partial class Nero
         {
             case DaoMode.Data:
             {
-                var fullSector = new byte[2352];
-                var fullBuffer = new byte[2352 * length];
+                byte[] fullSector = new byte[2352];
+                byte[] fullBuffer = new byte[2352 * length];
 
                 for(uint i = 0; i < length; i++)
                 {
@@ -2318,8 +2318,8 @@ public sealed partial class Nero
             }
             case DaoMode.DataM2F1:
             {
-                var fullSector = new byte[2352];
-                var fullBuffer = new byte[2352 * length];
+                byte[] fullSector = new byte[2352];
+                byte[] fullBuffer = new byte[2352 * length];
 
                 for(uint i = 0; i < length; i++)
                 {
@@ -2337,8 +2337,8 @@ public sealed partial class Nero
             }
             case DaoMode.DataM2F2:
             {
-                var fullSector = new byte[2352];
-                var fullBuffer = new byte[2352 * length];
+                byte[] fullSector = new byte[2352];
+                byte[] fullBuffer = new byte[2352 * length];
 
                 for(uint i = 0; i < length; i++)
                 {

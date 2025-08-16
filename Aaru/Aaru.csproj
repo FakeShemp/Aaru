@@ -75,6 +75,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite"/>
+    <PackageReference Include="Serilog"/>
+    <PackageReference Include="Serilog.Sinks.Spectre"/>
     <PackageReference Include="Spectre.Console"/>
     <PackageReference Include="Spectre.Console.Cli"/>
     <PackageReference Include="System.Text.Encoding.CodePages"/>

@@ -139,15 +139,6 @@ public static class AaruConsole
     /// <summary>Event to receive writings to the standard output console.</summary>
     public static event WriteHandler WriteEvent;
 
-    /// <summary>Event to receive writings to the error output console.</summary>
-    public static event ErrorWriteHandler ErrorWriteEvent;
-
-    /// <summary>Event to receive writings to the verbose output console.</summary>
-    public static event VerboseWriteHandler VerboseWriteEvent;
-
-    /// <summary>Event to receive writings to the debug output console.</summary>
-    public static event DebugWriteHandler DebugWriteEvent;
-
     /// <summary>Event to receive exceptions to write to the debug output console.</summary>
     public static event WriteExceptionHandler WriteExceptionEvent;
 
@@ -185,7 +176,7 @@ public static class AaruConsole
     /// <param name="arg">An array of objects to write using <paramref name="format" />.</param>
     public static void DebugWriteLine(string module, string format, params object[] arg)
     {
-        DebugWriteLineEvent?.Invoke("DEBUG (" + module + "): " + format, arg);
+        DebugWriteLineEvent?.Invoke($"[blue]({module}):[/] {format}", arg);
         DebugWithModuleWriteLineEvent?.Invoke(module, format, arg);
     }
 
@@ -209,32 +200,6 @@ public static class AaruConsole
     /// <param name="arg">An array of objects to write using <paramref name="format" />.</param>
     public static void Write(string format, params object[] arg) => WriteEvent?.Invoke(format, arg);
 
-    /// <summary>
-    ///     Writes the text representation of the specified array of objects to the error output console using the
-    ///     specified format information.
-    /// </summary>
-    /// <param name="format">A composite format string.</param>
-    /// <param name="arg">An array of objects to write using <paramref name="format" />.</param>
-    public static void ErrorWrite(string format, params object[] arg) => ErrorWriteEvent?.Invoke(format, arg);
-
-    /// <summary>
-    ///     Writes the text representation of the specified array of objects to the verbose output console using the
-    ///     specified format information.
-    /// </summary>
-    /// <param name="format">A composite format string.</param>
-    /// <param name="arg">An array of objects to write using <paramref name="format" />.</param>
-    public static void VerboseWrite(string format, params object[] arg) => VerboseWriteEvent?.Invoke(format, arg);
-
-    /// <summary>
-    ///     Writes the text representation of the specified array of objects to the debug output console using the
-    ///     specified format information.
-    /// </summary>
-    /// <param name="module">Description of the module writing to the debug console</param>
-    /// <param name="format">A composite format string.</param>
-    /// <param name="arg">An array of objects to write using <paramref name="format" />.</param>
-    public static void DebugWrite(string module, string format, params object[] arg) =>
-        DebugWriteEvent?.Invoke("DEBUG (" + module + "): " + format, arg);
-
     /// <summary>Writes the specified string value, followed by the current line terminator, to the standard output console.</summary>
     /// <param name="value">The value to write.</param>
     public static void WriteLine(string value) => WriteLineEvent?.Invoke("{0}", value);
@@ -251,7 +216,7 @@ public static class AaruConsole
     /// <param name="module">Description of the module writing to the debug console</param>
     /// <param name="value">The value to write.</param>
     public static void DebugWriteLine(string module, string value) =>
-        DebugWriteLineEvent?.Invoke("{0}", "DEBUG (" + module + "): " + value);
+        DebugWriteLineEvent?.Invoke("[blue]({0}):[/] {1}", module, value);
 
     /// <summary>
     ///     Writes the exception to the debug output console.
