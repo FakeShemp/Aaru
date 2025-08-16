@@ -19,11 +19,8 @@ public class BaseSettings : CommandSettings
     [Description("Path to log file.")]
     public string? LogFile { get; set; }
 
-    // TODO: Add support for this
-    /*
     [CommandOption("--pause")]
     [Description("Pauses before exiting.")]
     [DefaultValue(false)]
-    public bool   Pause { get; init; }
-    */
+    public bool Pause { get; init; }
 }

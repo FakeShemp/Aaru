@@ -61,9 +61,10 @@ namespace Aaru;
 
 class MainClass
 {
-    static string                                _assemblyCopyright;
-    static string                                _assemblyTitle;
-    static AssemblyInformationalVersionAttribute _assemblyVersion;
+    static        string                                _assemblyCopyright;
+    static        string                                _assemblyTitle;
+    static        AssemblyInformationalVersionAttribute _assemblyVersion;
+    public static bool                                  PauseBeforeExiting { get; set; }
 
     public static async Task<int> Main([NotNull] string[] args)
     {
@@ -396,15 +397,17 @@ class MainClass
             config.AddCommand<RemoteCommand>("remote").WithAlias("rem").WithDescription(UI.Remote_Command_Description);
 
             config.SetInterceptor(new LoggingInterceptor());
+            config.SetInterceptor(new PausingInterceptor());
         });
 
         int ret = await app.RunAsync(args);
 
         await Statistics.SaveStatsAsync();
 
-        // TODO: Return pause functionality
-//        AaruConsole.WriteLine(UI.Press_any_key_to_exit);
-//        System.Console.ReadKey();
+        if(!PauseBeforeExiting) return ret;
+
+        AaruConsole.WriteLine(UI.Press_any_key_to_exit);
+        System.Console.ReadKey();
 
         return ret;
     }
