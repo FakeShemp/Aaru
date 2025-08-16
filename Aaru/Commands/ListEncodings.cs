@@ -30,9 +30,6 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
 using System.Linq;
 using System.Text;
 using Aaru.CommonTypes.Enums;
@@ -40,21 +37,20 @@ using Aaru.Console;
 using Aaru.Core;
 using Aaru.Localization;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Aaru.Commands;
 
-sealed class ListEncodingsCommand : Command
+sealed class ListEncodingsCommand : Command<ListEncodingsCommand.Settings>
 {
     const string MODULE_NAME = "List-Encodings command";
 
-    public ListEncodingsCommand() : base("list-encodings", UI.List_Encodings_Command_Description) =>
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
+    public override int Execute(CommandContext context, Settings settings)
 
-    public static int Invoke(bool debug, bool verbose)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -72,7 +68,7 @@ sealed class ListEncodingsCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -85,8 +81,8 @@ sealed class ListEncodingsCommand : Command
 
         Statistics.AddCommand("list-encodings");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
         var encodings = Encoding.GetEncodings()
                                 .Select(info => new CommonEncodingInfo
@@ -122,6 +118,12 @@ sealed class ListEncodingsCommand : Command
         public string Name;
         public string DisplayName;
     }
+
+#endregion
+
+#region Nested type: Settings
+
+    public class Settings : BaseSettings {}
 
 #endregion
 }

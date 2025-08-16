@@ -30,9 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.Console;
@@ -41,30 +39,20 @@ using Aaru.Devices;
 using Aaru.Localization;
 using JetBrains.Annotations;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Aaru.Commands.Device;
 
-sealed class ListDevicesCommand : Command
+sealed class ListDevicesCommand : Command<ListDevicesCommand.Settings>
 {
     const string MODULE_NAME = "List-Devices command";
 
-    public ListDevicesCommand() : base("list", UI.Device_List_Command_Description)
-    {
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ZeroOrOne,
-            Description = UI.aaruremote_host,
-            Name        = "aaru-remote-host"
-        });
+    public override int Execute(CommandContext context, Settings settings)
 
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool debug, bool verbose, [CanBeNull] string aaruRemoteHost)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -82,7 +70,7 @@ sealed class ListDevicesCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -95,8 +83,8 @@ sealed class ListDevicesCommand : Command
 
         Statistics.AddCommand("list-devices");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
         DeviceInfo[] devices = Devices.Device.ListDevices(out bool isRemote,
                                                           out string serverApplication,
@@ -104,7 +92,7 @@ sealed class ListDevicesCommand : Command
                                                           out string serverOperatingSystem,
                                                           out string serverOperatingSystemVersion,
                                                           out string serverArchitecture,
-                                                          aaruRemoteHost);
+                                                          settings.AaruRemoteHost);
 
         if(isRemote)
         {
@@ -142,4 +130,17 @@ sealed class ListDevicesCommand : Command
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : DeviceFamily
+    {
+        [CanBeNull]
+        [Description("aaruremote host")]
+        [CommandArgument(0, "[aaru-remote-host]")]
+        [DefaultValue(null)]
+        public string AaruRemoteHost { get; init; }
+    }
+
+#endregion
 }

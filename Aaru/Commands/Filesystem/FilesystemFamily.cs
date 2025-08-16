@@ -30,21 +30,6 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System.CommandLine;
-using Aaru.Localization;
-
 namespace Aaru.Commands.Filesystem;
 
-sealed class FilesystemFamily : Command
-{
-    public FilesystemFamily() : base("filesystem", UI.Filesystem_Command_Family_Description)
-    {
-        AddAlias("fi");
-        AddAlias("fs");
-
-        AddCommand(new FilesystemInfoCommand());
-        AddCommand(new ListOptionsCommand());
-        AddCommand(new ExtractFilesCommand());
-        AddCommand(new LsCommand());
-    }
-}
+class FilesystemFamily : BaseSettings {}

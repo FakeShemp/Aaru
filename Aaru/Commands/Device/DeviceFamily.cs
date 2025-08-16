@@ -30,19 +30,6 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System.CommandLine;
-using Aaru.Localization;
-
 namespace Aaru.Commands.Device;
 
-sealed class DeviceFamily : Command
-{
-    public DeviceFamily() : base("device", UI.Device_Command_Family_Description)
-    {
-        AddAlias("dev");
-
-        AddCommand(new DeviceInfoCommand());
-        AddCommand(new DeviceReportCommand());
-        AddCommand(new ListDevicesCommand());
-    }
-}
+class DeviceFamily : BaseSettings {}

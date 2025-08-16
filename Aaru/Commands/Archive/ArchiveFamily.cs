@@ -31,19 +31,6 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System.CommandLine;
-using Aaru.Localization;
-
 namespace Aaru.Commands.Archive;
 
-sealed class ArchiveFamily : Command
-{
-    internal ArchiveFamily() : base("archive", UI.Archive_Command_Family_Description)
-    {
-        AddAlias("arc");
-
-        AddCommand(new ArchiveInfoCommand());
-        AddCommand(new ArchiveListCommand());
-        AddCommand(new ArchiveExtractCommand());
-    }
-}
+class ArchiveFamily : BaseSettings {}

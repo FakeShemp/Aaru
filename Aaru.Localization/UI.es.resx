@@ -61,9 +61,6 @@
     <data name="Automation_Device_Serial_Number" xml:space="preserve">
     <value>Número de serie del dispositivo de automatización</value>
   </data>
-    <data name="Barcode_of_the_media_by_image" xml:space="preserve">
-    <value>Código de barras del medio representado por la imagen.</value>
-  </data>
     <data name="Base_Mechanical_Serial_Number" xml:space="preserve">
     <value>Número de serie de la mecánica base</value>
   </data>
@@ -621,9 +618,6 @@
   </data>
     <data name="Decoder_for_sector_tag_type_0_not_yet_implemented_sorry" xml:space="preserve">
     <value>Aún no se ha implementado un descodificador para la etiqueta de sector "{0}".</value>
-  </data>
-    <data name="Decode_media_tags" xml:space="preserve">
-    <value>Descodificar etiquetas del medio.</value>
   </data>
     <data name="Decode_sector_tags" xml:space="preserve">
     <value>Descodificar etiquetas de sector.</value>
@@ -1556,9 +1550,6 @@
     <data name="Media_image_format_statistics" xml:space="preserve">
     <value>Estadísticas de formatos de imagen de medio</value>
   </data>
-    <data name="Media_image_path" xml:space="preserve">
-    <value>Ruta de la imagen</value>
-  </data>
     <data name="Media_Info_Command_Description" xml:space="preserve">
     <value>Obtiene información sobre el medio introducido en un dispositivo.</value>
   </data>
@@ -1630,9 +1621,6 @@
   </data>
     <data name="Migrating_local_database" xml:space="preserve">
     <value>Migrando base de datos local...</value>
-  </data>
-    <data name="Model_of_drive_read_the_media_by_image" xml:space="preserve">
-    <value>Modelo de la uinidad usada para leer el medio representado en la imagen.</value>
   </data>
     <data name="Model_of_media_by_image" xml:space="preserve">
     <value>Modelo del medio representado en la imagen.</value>
@@ -2104,9 +2092,6 @@
   </data>
     <data name="Tape_argument_input_help" xml:space="preserve">
     <value>Al usarse indica que la entrada es una carpeta conteniendo los ficheros ordenados alfabéticamente extraídos de una cinta lineal de bloques de tamaño fijo (por ej. una unidad de cinta SCSI).</value>
-  </data>
-    <data name="Tape_block_size_argument_help" xml:space="preserve">
-    <value>Sólo usado para cintas, indica el tamaño del bloque. Los ficheros en la carpeta cuyo tamaño no sea múltiple de este serán ignorados.</value>
   </data>
     <data name="Text_Authors" xml:space="preserve">
     <value>Desarrolladores:

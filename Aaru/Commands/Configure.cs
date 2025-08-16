@@ -30,27 +30,22 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
 using Aaru.CommonTypes.Enums;
 using Aaru.Console;
 using Aaru.Localization;
 using Aaru.Settings;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Aaru.Commands;
 
-sealed class ConfigureCommand : Command
+sealed class ConfigureCommand : Command<ConfigureCommand.Settings>
 {
-    public ConfigureCommand() : base("configure", UI.Configure_Command_Description) =>
-        Handler = CommandHandler.Create((Func<bool, bool, int>)Invoke);
-
-    int Invoke(bool debug, bool verbose)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -68,7 +63,7 @@ sealed class ConfigureCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -101,7 +96,7 @@ sealed class ConfigureCommand : Command
 
         AaruConsole.WriteLine(UI.Configure_enable_decryption_disclaimer);
 
-        Settings.Settings.Current.EnableDecryption =
+        Aaru.Settings.Settings.Current.EnableDecryption =
             AnsiConsole.Confirm($"[italic]{UI.Do_you_want_to_enable_decryption_of_copy_protected_media_Q}[/]");
 
 #region Device reports
@@ -110,14 +105,14 @@ sealed class ConfigureCommand : Command
 
         AaruConsole.WriteLine(UI.Configure_Device_Report_information_disclaimer);
 
-        Settings.Settings.Current.SaveReportsGlobally = AnsiConsole.Confirm($"[italic]{UI.
+        Aaru.Settings.Settings.Current.SaveReportsGlobally = AnsiConsole.Confirm($"[italic]{UI.
             Configure_Do_you_want_to_save_device_reports_in_shared_folder_of_your_computer_Q}[/]");
 
         AaruConsole.WriteLine();
 
         AaruConsole.WriteLine(UI.Configure_share_report_disclaimer);
 
-        Settings.Settings.Current.ShareReports =
+        Aaru.Settings.Settings.Current.ShareReports =
             AnsiConsole.Confirm($"[italic]{UI.Do_you_want_to_share_your_device_reports_with_us_Q}[/]");
 
 #endregion Device reports
@@ -130,7 +125,7 @@ sealed class ConfigureCommand : Command
 
         if(AnsiConsole.Confirm($"[italic]{UI.Do_you_want_to_save_stats_about_your_Aaru_usage_Q}[/]"))
         {
-            Settings.Settings.Current.Stats = new StatsSettings
+            Aaru.Settings.Settings.Current.Stats = new StatsSettings
             {
                 ShareStats = AnsiConsole.Confirm($"[italic]{UI.Do_you_want_to_share_your_stats__anonymously_Q}[/]"),
                 CommandStats =
@@ -156,13 +151,19 @@ sealed class ConfigureCommand : Command
             };
         }
         else
-            Settings.Settings.Current.Stats = null;
+            Aaru.Settings.Settings.Current.Stats = null;
 
 #endregion Statistics
 
-        Settings.Settings.Current.GdprCompliance = DicSettings.GDPR_LEVEL;
-        Settings.Settings.SaveSettings();
+        Aaru.Settings.Settings.Current.GdprCompliance = DicSettings.GDPR_LEVEL;
+        Aaru.Settings.Settings.SaveSettings();
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : BaseSettings {}
+
+#endregion
 }

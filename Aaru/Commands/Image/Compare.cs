@@ -32,8 +32,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -45,40 +44,20 @@ using Aaru.Core;
 using Aaru.Helpers;
 using Aaru.Localization;
 using Spectre.Console;
+using Spectre.Console.Cli;
 using ImageInfo = Aaru.CommonTypes.Structs.ImageInfo;
 
 namespace Aaru.Commands.Image;
 
-sealed class CompareCommand : Command
+sealed class CompareCommand : Command<CompareCommand.Settings>
 {
     const string MODULE_NAME = "Compare command";
 
-    public CompareCommand() : base("compare", UI.Image_Compare_Command_Description)
-    {
-        AddAlias("cmp");
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.First_media_image_path,
-            Name        = "image-path1"
-        });
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Second_media_image_path,
-            Name        = "image-path2"
-        });
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool debug, bool verbose, string imagePath1, string imagePath2)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -96,7 +75,7 @@ sealed class CompareCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -109,10 +88,10 @@ sealed class CompareCommand : Command
 
         Statistics.AddCommand("compare");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input1={0}",  Markup.Escape(imagePath1 ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input2={0}",  Markup.Escape(imagePath2 ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--input1={0}",  Markup.Escape(settings.ImagePath1 ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--input2={0}",  Markup.Escape(settings.ImagePath2 ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
         IFilter inputFilter1 = null;
         IFilter inputFilter2 = null;
@@ -120,13 +99,13 @@ sealed class CompareCommand : Command
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(UI.Identifying_first_file_filter).IsIndeterminate();
-            inputFilter1 = PluginRegister.Singleton.GetFilter(imagePath1);
+            inputFilter1 = PluginRegister.Singleton.GetFilter(settings.ImagePath1);
         });
 
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(UI.Identifying_second_file_filter).IsIndeterminate();
-            inputFilter2 = PluginRegister.Singleton.GetFilter(imagePath2);
+            inputFilter2 = PluginRegister.Singleton.GetFilter(settings.ImagePath2);
         });
 
         if(inputFilter1 == null)
@@ -165,7 +144,7 @@ sealed class CompareCommand : Command
             return (int)ErrorNumber.UnrecognizedFormat;
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.VerboseWriteLine(UI.First_input_file_format_identified_by_0_1,
                                          input1Format.Name,
@@ -181,7 +160,7 @@ sealed class CompareCommand : Command
             return (int)ErrorNumber.UnrecognizedFormat;
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.VerboseWriteLine(UI.Second_input_file_format_identified_by_0_1,
                                          input2Format.Name,
@@ -235,18 +214,18 @@ sealed class CompareCommand : Command
         table.AddColumn(UI.Title_Second_Media_image);
         table.Columns[0].RightAligned();
 
-        if(verbose)
+        if(settings.Verbose)
         {
-            table.AddRow(UI.Title_File,               Markup.Escape(imagePath1), Markup.Escape(imagePath2));
-            table.AddRow(UI.Title_Media_image_format, input1Format.Name,         input2Format.Name);
+            table.AddRow(UI.Title_File, Markup.Escape(settings.ImagePath1), Markup.Escape(settings.ImagePath2));
+            table.AddRow(UI.Title_Media_image_format, input1Format.Name, input2Format.Name);
         }
         else
         {
-            sb.AppendFormat($"[bold]{UI.Title_First_Media_image}:[/] {imagePath1}").AppendLine();
-            sb.AppendFormat($"[bold]{UI.Title_Second_Media_image}:[/] {imagePath2}").AppendLine();
+            sb.AppendFormat($"[bold]{UI.Title_First_Media_image}:[/] {settings.ImagePath1}").AppendLine();
+            sb.AppendFormat($"[bold]{UI.Title_Second_Media_image}:[/] {settings.ImagePath2}").AppendLine();
         }
 
-        var         imagesDiffer = false;
+        bool        imagesDiffer = false;
         ErrorNumber errno;
 
         ImageInfo                        image1Info       = input1Format.Info;
@@ -276,7 +255,7 @@ sealed class CompareCommand : Command
             }
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             table.AddRow(UI.Has_partitions_Question,
                          image1Info.HasPartitions.ToString(),
@@ -373,35 +352,35 @@ sealed class CompareCommand : Command
             {
                 imagesDiffer = true;
 
-                if(!verbose) sb.AppendLine(UI.Image_partitioned_status_differ);
+                if(!settings.Verbose) sb.AppendLine(UI.Image_partitioned_status_differ);
             }
 
             if(image1Info.HasSessions != image2Info.HasSessions)
             {
                 imagesDiffer = true;
 
-                if(!verbose) sb.AppendLine(UI.Image_session_status_differ);
+                if(!settings.Verbose) sb.AppendLine(UI.Image_session_status_differ);
             }
 
             if(image1Info.Sectors != image2Info.Sectors)
             {
                 imagesDiffer = true;
 
-                if(!verbose) sb.AppendLine(UI.Image_sectors_differ);
+                if(!settings.Verbose) sb.AppendLine(UI.Image_sectors_differ);
             }
 
             if(image1Info.SectorSize != image2Info.SectorSize)
             {
                 imagesDiffer = true;
 
-                if(!verbose) sb.AppendLine(UI.Image_sector_size_differ);
+                if(!settings.Verbose) sb.AppendLine(UI.Image_sector_size_differ);
             }
 
             if(image1Info.MediaType != image2Info.MediaType)
             {
                 imagesDiffer = true;
 
-                if(!verbose) sb.AppendLine(UI.Media_type_differs);
+                if(!settings.Verbose) sb.AppendLine(UI.Media_type_differs);
             }
 
             if(image1Info.Sectors < image2Info.Sectors)
@@ -409,14 +388,14 @@ sealed class CompareCommand : Command
                 imagesDiffer = true;
                 leastSectors = image1Info.Sectors;
 
-                if(!verbose) sb.AppendLine(UI.Second_image_has_more_sectors);
+                if(!settings.Verbose) sb.AppendLine(UI.Second_image_has_more_sectors);
             }
             else if(image1Info.Sectors > image2Info.Sectors)
             {
                 imagesDiffer = true;
                 leastSectors = image2Info.Sectors;
 
-                if(!verbose) sb.AppendLine(UI.First_image_has_more_sectors);
+                if(!settings.Verbose) sb.AppendLine(UI.First_image_has_more_sectors);
             }
             else
                 leastSectors = image1Info.Sectors;
@@ -506,8 +485,8 @@ sealed class CompareCommand : Command
                             ProgressTask task = ctx.AddTask(UI.Comparing_images);
                             task.IsIndeterminate = true;
 
-                            var    data1 = new byte[input1ByteAddressable.Info.Sectors];
-                            var    data2 = new byte[input2ByteAddressable.Info.Sectors];
+                            byte[] data1 = new byte[input1ByteAddressable.Info.Sectors];
+                            byte[] data2 = new byte[input2ByteAddressable.Info.Sectors];
                             byte[] tmp;
 
                             input1ByteAddressable.ReadBytes(data1, 0, data1.Length, out int bytesRead);
@@ -540,11 +519,25 @@ sealed class CompareCommand : Command
 
         sb.AppendLine(imagesDiffer ? UI.Images_differ : UI.Images_do_not_differ);
 
-        if(verbose)
+        if(settings.Verbose)
             AnsiConsole.Write(table);
         else
             AaruConsole.WriteLine(sb.ToString());
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : ImageFamily
+    {
+        [Description("First media image path")]
+        [CommandArgument(0, "<image-path1>")]
+        public string ImagePath1 { get; init; }
+        [Description("Second media image path")]
+        [CommandArgument(1, "<image-path1>")]
+        public string ImagePath2 { get; init; }
+    }
+
+#endregion
 }

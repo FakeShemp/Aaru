@@ -32,7 +32,6 @@
 // ****************************************************************************/
 
 using System;
-using System.CommandLine;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -54,6 +53,8 @@ using Aaru.Settings;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Spectre.Console;
+using Spectre.Console.Cli;
+using ListOptionsCommand = Aaru.Commands.Filesystem.ListOptionsCommand;
 
 namespace Aaru;
 
@@ -176,7 +177,7 @@ class MainClass
 
         await ctx.SaveChangesAsync();
 
-        var mainDbUpdate = false;
+        bool mainDbUpdate = false;
 
         if(!File.Exists(Settings.Settings.MainDbPath))
         {
@@ -222,40 +223,179 @@ class MainClass
         // There are too many places that depend on this being inited to be sure all are covered, so init it here.
         PluginBase.Init();
 
-        var rootCommand = new RootCommand();
+        var app = new CommandApp();
 
-        rootCommand.AddGlobalOption(new Option<bool>(["--verbose", "-v"], () => false, UI.Shows_verbose_output));
+        app.Configure(config =>
+        {
+            config.UseAssemblyInformationalVersion();
 
-        rootCommand.AddGlobalOption(new Option<bool>(["--debug", "-d"],
-                                                     () => false,
-                                                     UI.Shows_debug_output_from_plugins));
+            config.AddBranch<ArchiveFamily>("archive",
+                                            archive =>
+                                            {
+                                                archive.SetDescription(UI.Archive_Command_Family_Description);
 
-        Option<bool> pauseOption = new(["--pause"], () => false, UI.Pauses_before_exiting);
+                                                archive.AddCommand<ArchiveListCommand>("list")
+                                                       .WithAlias("l")
+                                                       .WithAlias("ls")
+                                                       .WithDescription(UI.Archive_List_Command_Description);
 
-        rootCommand.AddGlobalOption(pauseOption);
+                                                archive.AddCommand<ArchiveExtractCommand>("extract")
+                                                       .WithAlias("x")
+                                                       .WithDescription(UI.Archive_Extract_Command_Description);
 
-        rootCommand.Description = $"{_assemblyTitle} {_assemblyVersion?.InformationalVersion}\n{_assemblyCopyright}";
+                                                archive.AddCommand<ArchiveInfoCommand>("info")
+                                                       .WithAlias("i")
+                                                       .WithDescription(UI.Archive_Info_Command_Description);
+                                            })
+                  .WithAlias("arc");
 
-        rootCommand.AddCommand(new DatabaseFamily(mainDbUpdate));
-        rootCommand.AddCommand(new DeviceFamily());
-        rootCommand.AddCommand(new FilesystemFamily());
-        rootCommand.AddCommand(new ImageFamily());
-        rootCommand.AddCommand(new MediaFamily());
-        rootCommand.AddCommand(new ArchiveFamily());
-        rootCommand.AddCommand(new ConfigureCommand());
-        rootCommand.AddCommand(new FormatsCommand());
-        rootCommand.AddCommand(new ListEncodingsCommand());
-        rootCommand.AddCommand(new ListNamespacesCommand());
-        rootCommand.AddCommand(new RemoteCommand());
+            config.AddBranch<DeviceFamily>("device",
+                                           device =>
+                                           {
+                                               device.SetDescription(UI.Device_Command_Family_Description);
 
-        int ret = await rootCommand.InvokeAsync(args);
+                                               device.AddCommand<DeviceReportCommand>("report")
+                                                     .WithDescription(UI.Device_Report_Command_Description);
+
+                                               device.AddCommand<DeviceInfoCommand>("info")
+                                                     .WithAlias("i")
+                                                     .WithDescription(UI.Device_Info_Command_Description);
+
+                                               device.AddCommand<ListDevicesCommand>("list")
+                                                     .WithAlias("l")
+                                                     .WithAlias("ls")
+                                                     .WithDescription(UI.Device_List_Command_Description);
+                                           })
+                  .WithAlias("dev");
+
+            config.AddBranch<FilesystemFamily>("filesystem",
+                                               fs =>
+                                               {
+                                                   fs.SetDescription(UI.Filesystem_Command_Family_Description);
+
+                                                   fs.AddCommand<ExtractFilesCommand>("extract")
+                                                     .WithAlias("x")
+                                                     .WithDescription(UI.Filesystem_Extract_Command_Description);
+
+                                                   fs.AddCommand<FilesystemInfoCommand>("info")
+                                                     .WithAlias("i")
+                                                     .WithDescription(UI.Filesystem_Info_Command_Description);
+
+                                                   fs.AddCommand<LsCommand>("list")
+                                                     .WithAlias("ls")
+                                                     .WithDescription(UI.Filesystem_List_Command_Description);
+
+                                                   fs.AddCommand<ListOptionsCommand>("options")
+                                                     .WithDescription(UI.Filesystem_Options_Command_Description);
+                                               })
+                  .WithAlias("fs")
+                  .WithAlias("fi");
+
+            config.AddBranch<ImageFamily>("image",
+                                          image =>
+                                          {
+                                              image.SetDescription(UI.Image_Command_Family_Description);
+
+                                              image.AddCommand<ChecksumCommand>("checksum")
+                                                   .WithAlias("chk")
+                                                   .WithDescription(UI.Image_Checksum_Command_Description);
+
+                                              image.AddCommand<CompareCommand>("compate")
+                                                   .WithAlias("cmp")
+                                                   .WithDescription(UI.Image_Compare_Command_Description);
+
+                                              image.AddCommand<ConvertImageCommand>("convert")
+                                                   .WithAlias("cvt")
+                                                   .WithDescription(UI.Image_Convert_Command_Description);
+
+                                              image.AddCommand<CreateSidecarCommand>("create-sidecar")
+                                                   .WithAlias("cs")
+                                                   .WithDescription(UI.Image_Create_Sidecar_Command_Description);
+
+                                              image.AddCommand<DecodeCommand>("decode")
+                                                   .WithDescription(UI.Image_Decode_Command_Description);
+
+                                              image.AddCommand<EntropyCommand>("entropy")
+                                                   .WithDescription(UI.Image_Entropy_Command_Description);
+
+                                              image.AddCommand<ImageInfoCommand>("info")
+                                                   .WithAlias("i")
+                                                   .WithDescription(UI.Image_Info_Command_Description);
+
+                                              image.AddCommand<Commands.Image.ListOptionsCommand>("options")
+                                                   .WithDescription(UI.Image_Options_Command_Description);
+
+                                              image.AddCommand<PrintHexCommand>("print-hex")
+                                                   .WithAlias("ph")
+                                                   .WithDescription(UI.Image_Print_Command_Description);
+
+                                              image.AddCommand<VerifyCommand>("verify")
+                                                   .WithAlias("v")
+                                                   .WithDescription(UI.Image_Verify_Command_Description);
+                                          })
+                  .WithAlias("i")
+                  .WithAlias("img");
+
+            config.AddBranch<MediaFamily>("media",
+                                          media =>
+                                          {
+                                              media.SetDescription(UI.Media_Command_Family_Description);
+
+                                              media.AddCommand<MediaInfoCommand>("info")
+                                                   .WithAlias("i")
+                                                   .WithDescription(UI.Media_Info_Command_Description);
+
+                                              media.AddCommand<MediaScanCommand>("scan")
+                                                   .WithAlias("s")
+                                                   .WithDescription(UI.Media_Scan_Command_Description);
+
+                                              media.AddCommand<DumpMediaCommand>("dump")
+                                                   .WithAlias("d")
+                                                   .WithDescription(UI.Media_Dump_Command_Description);
+                                          })
+                  .WithAlias("m");
+
+            config.AddBranch<DatabaseFamily>("database",
+                                             db =>
+                                             {
+                                                 db.SetDescription(UI.Database_Command_Family_Description);
+
+                                                 db.AddCommand<StatisticsCommand>("stats")
+                                                   .WithDescription(UI.Database_Stats_Command_Description);
+
+                                                 db.AddCommand<UpdateCommand>("update")
+                                                   .WithDescription(UI.Database_Update_Command_Description);
+                                             })
+                  .WithAlias("db");
+
+            config.AddCommand<ConfigureCommand>("configure")
+                  .WithAlias("cfg")
+                  .WithDescription(UI.Configure_Command_Description);
+
+            config.AddCommand<FormatsCommand>("formats")
+                  .WithAlias("fmt")
+                  .WithDescription(UI.List_Formats_Command_Description);
+
+            config.AddCommand<ListEncodingsCommand>("list-encodings")
+                  .WithAlias("le")
+                  .WithDescription(UI.List_Encodings_Command_Description);
+
+            config.AddCommand<ListNamespacesCommand>("list-namespaces")
+                  .WithAlias("ln")
+                  .WithDescription(UI.List_Namespaces_Command_Description);
+
+            config.AddCommand<RemoteCommand>("remote").WithAlias("rem").WithDescription(UI.Remote_Command_Description);
+        });
+
+        PrintCopyright();
+
+        int ret = await app.RunAsync(args);
 
         await Statistics.SaveStatsAsync();
 
-        if(!rootCommand.Parse(args).RootCommandResult.GetValueForOption(pauseOption)) return ret;
-
-        AaruConsole.WriteLine(UI.Press_any_key_to_exit);
-        System.Console.ReadKey();
+        // TODO: Return pause functionality
+//        AaruConsole.WriteLine(UI.Press_any_key_to_exit);
+//        System.Console.ReadKey();
 
         return ret;
     }

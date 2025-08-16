@@ -30,10 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using System.Collections.Generic;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
 using System.Linq;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
@@ -42,21 +39,19 @@ using Aaru.Console;
 using Aaru.Core;
 using Aaru.Localization;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Aaru.Commands;
 
-sealed class ListNamespacesCommand : Command
+sealed class ListNamespacesCommand : Command<ListNamespacesCommand.Settings>
 {
     const string MODULE_NAME = "List-Namespaces command";
 
-    public ListNamespacesCommand() : base("list-namespaces", UI.List_Namespaces_Command_Description) =>
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-
-    public static int Invoke(bool debug, bool verbose)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -74,7 +69,7 @@ sealed class ListNamespacesCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -85,8 +80,8 @@ sealed class ListNamespacesCommand : Command
             };
         }
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
         Statistics.AddCommand("list-namespaces");
 
         PluginRegister plugins = PluginRegister.Singleton;
@@ -112,4 +107,10 @@ sealed class ListNamespacesCommand : Command
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : BaseSettings {}
+
+#endregion
 }

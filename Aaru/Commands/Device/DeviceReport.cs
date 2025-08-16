@@ -32,8 +32,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -52,34 +51,20 @@ using Aaru.Decoders.SCSI.MMC;
 using Aaru.Helpers;
 using Aaru.Localization;
 using Spectre.Console;
-using Command = System.CommandLine.Command;
+using Spectre.Console.Cli;
 using Profile = Aaru.Decoders.SCSI.MMC.Profile;
 
 namespace Aaru.Commands.Device;
 
-sealed class DeviceReportCommand : Command
+sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 {
     const string MODULE_NAME = "Device-Report command";
 
-    public DeviceReportCommand() : base("report", UI.Device_Report_Command_Description)
-    {
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Device_path,
-            Name        = "device-path"
-        });
-
-        Add(new Option<bool>(["--trap-disc", "-t"], () => false, UI.Device_report_using_trap_disc));
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(InvokeAsync)) ?? throw new NullReferenceException());
-    }
-
-    public static async Task<int> InvokeAsync(bool debug, bool verbose, string devicePath, bool trapDisc)
+    public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -97,7 +82,7 @@ sealed class DeviceReportCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -110,9 +95,11 @@ sealed class DeviceReportCommand : Command
 
         Statistics.AddCommand("device-report");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--device={0}",  Markup.Escape(devicePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--device={0}",  Markup.Escape(settings.Path ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
+
+        string devicePath = settings.Path;
 
         if(devicePath.Length == 2 && devicePath[1] == ':' && devicePath[0] != '/' && char.IsLetter(devicePath[0]))
             devicePath = "\\\\.\\" + char.ToUpper(devicePath[0]) + ':';
@@ -163,7 +150,7 @@ sealed class DeviceReportCommand : Command
             Type         = dev.Type
         };
 
-        var    removable = false;
+        bool   removable = false;
         string jsonFile;
 
         switch(string.IsNullOrWhiteSpace(dev.Manufacturer))
@@ -189,7 +176,7 @@ sealed class DeviceReportCommand : Command
 
         jsonFile = jsonFile.Replace('\\', '_').Replace('/', '_').Replace('?', '_');
 
-        if(trapDisc && dev.ScsiType != PeripheralDeviceTypes.MultiMediaDevice)
+        if(settings.TrapDisc && dev.ScsiType != PeripheralDeviceTypes.MultiMediaDevice)
         {
             AaruConsole.ErrorWriteLine(UI.Device_does_not_report_with_trap_discs);
 
@@ -400,7 +387,7 @@ sealed class DeviceReportCommand : Command
 
                 string mediumManufacturer;
                 byte[] senseBuffer = [];
-                var    sense       = true;
+                bool   sense       = true;
 
                 switch(dev.ScsiType)
                 {
@@ -416,7 +403,7 @@ sealed class DeviceReportCommand : Command
                             dev.Manufacturer.Equals("iomega", StringComparison.InvariantCultureIgnoreCase) &&
                             dev.Model.StartsWith("rrd", StringComparison.InvariantCultureIgnoreCase);
 
-                        if(trapDisc)
+                        if(settings.TrapDisc)
                         {
                             if(iomegaRev)
                             {
@@ -699,7 +686,8 @@ sealed class DeviceReportCommand : Command
 
                             tryNec |= dev.Manufacturer.Equals("nec", StringComparison.InvariantCultureIgnoreCase);
 
-                            tryLiteOn |= dev.Manufacturer.Equals("lite-on", StringComparison.InvariantCultureIgnoreCase);
+                            tryLiteOn |=
+                                dev.Manufacturer.Equals("lite-on", StringComparison.InvariantCultureIgnoreCase);
 
                             if(!iomegaRev)
                             {
@@ -755,7 +743,7 @@ sealed class DeviceReportCommand : Command
 
                                 System.Console.ReadKey(true);
 
-                                var mediaIsRecognized = true;
+                                bool mediaIsRecognized = true;
 
                                 await AnsiConsole.Status()
                                                  .StartAsync(Localization.Core.Waiting_for_drive_to_become_ready,
@@ -778,7 +766,7 @@ sealed class DeviceReportCommand : Command
                                                                          case 0x04 when decSense.Value.ASCQ == 0x01:
                                                                          case 0x28:
                                                                          {
-                                                                             var leftRetries = 50;
+                                                                             int leftRetries = 50;
 
                                                                              while(leftRetries > 0)
                                                                              {
@@ -857,7 +845,7 @@ sealed class DeviceReportCommand : Command
 
                                                         task.MaxValue = ushort.MaxValue;
 
-                                                        for(var i = (ushort)(mediaTest.BlockSize ?? 0);; i++)
+                                                        for(ushort i = (ushort)(mediaTest.BlockSize ?? 0);; i++)
                                                         {
                                                             task.Description =
                                                                 string.Format(Localization.Core
@@ -969,7 +957,7 @@ sealed class DeviceReportCommand : Command
 
                             mediumModel = AnsiConsole.Ask<string>(Localization.Core.Please_write_media_model);
 
-                            var mediaIsRecognized = true;
+                            bool mediaIsRecognized = true;
 
                             await AnsiConsole.Status()
                                              .StartAsync(Localization.Core.Waiting_for_drive_to_become_ready,
@@ -996,7 +984,7 @@ sealed class DeviceReportCommand : Command
                                                                      case 0x04 when decSense.Value.ASCQ == 0x01:
                                                                      case 0x28:
                                                                      {
-                                                                         var leftRetries = 50;
+                                                                         int leftRetries = 50;
 
                                                                          while(leftRetries > 0)
                                                                          {
@@ -1088,7 +1076,7 @@ sealed class DeviceReportCommand : Command
 
                             System.Console.ReadKey(true);
 
-                            var mediaIsRecognized = true;
+                            bool mediaIsRecognized = true;
 
                             await AnsiConsole.Status()
                                              .StartAsync(Localization.Core.Waiting_for_drive_to_become_ready,
@@ -1111,7 +1099,7 @@ sealed class DeviceReportCommand : Command
                                                                      case 0x04 when decSense.Value.ASCQ == 0x01:
                                                                      case 0x28:
                                                                      {
-                                                                         var leftRetries = 50;
+                                                                         int leftRetries = 50;
 
                                                                          while(leftRetries > 0)
                                                                          {
@@ -1178,7 +1166,7 @@ sealed class DeviceReportCommand : Command
 
                                                     task.MaxValue = ushort.MaxValue;
 
-                                                    for(var i = (ushort)(mediaTest.BlockSize ?? 0);; i++)
+                                                    for(ushort i = (ushort)(mediaTest.BlockSize ?? 0);; i++)
                                                     {
                                                         task.Value = i;
 
@@ -1302,7 +1290,7 @@ sealed class DeviceReportCommand : Command
 
                                 mediumModel = AnsiConsole.Ask<string>(Localization.Core.Please_write_media_model);
 
-                                var mediaIsRecognized = true;
+                                bool mediaIsRecognized = true;
 
                                 await AnsiConsole.Status()
                                                  .StartAsync(Localization.Core.Waiting_for_drive_to_become_ready,
@@ -1323,7 +1311,7 @@ sealed class DeviceReportCommand : Command
                                                                          case 0x3A:
                                                                          case 0x04 when decSense.Value.ASCQ == 0x01:
                                                                          {
-                                                                             var leftRetries = 20;
+                                                                             int leftRetries = 20;
 
                                                                              while(leftRetries > 0)
                                                                              {
@@ -1379,7 +1367,7 @@ sealed class DeviceReportCommand : Command
 
                                                         task.MaxValue = ushort.MaxValue;
 
-                                                        for(var i = (ushort)(mediaTest.BlockSize ?? 0);; i++)
+                                                        for(ushort i = (ushort)(mediaTest.BlockSize ?? 0);; i++)
                                                         {
                                                             task.Value = i;
 
@@ -1496,7 +1484,8 @@ sealed class DeviceReportCommand : Command
 
                                                 task.MaxValue = ushort.MaxValue;
 
-                                                for(var i = (ushort)(report.SCSI.ReadCapabilities.BlockSize ?? 0);; i++)
+                                                for(ushort i = (ushort)(report.SCSI.ReadCapabilities.BlockSize ?? 0);;
+                                                    i++)
                                                 {
                                                     task.Value = i;
 
@@ -1592,15 +1581,30 @@ sealed class DeviceReportCommand : Command
 
         jsonFs.Close();
 
-        await using(var ctx = AaruContext.Create(Settings.Settings.LocalDbPath))
+        await using(var ctx = AaruContext.Create(Aaru.Settings.Settings.LocalDbPath))
         {
             ctx.Reports.Add(new Report(report));
             await ctx.SaveChangesAsync();
         }
 
         // TODO:
-        if(Settings.Settings.Current.ShareReports) await Remote.SubmitReportAsync(report);
+        if(Aaru.Settings.Settings.Current.ShareReports) await Remote.SubmitReportAsync(report);
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : DeviceFamily
+    {
+        [Description("Does a device report using a trap disc.")]
+        [CommandOption("-t|--trap-disc")]
+        public bool TrapDisc { get; init; }
+
+        [Description("Device path")]
+        [CommandArgument(0, "<device-path>")]
+        public string Path { get; init; }
+    }
+
+#endregion
 }

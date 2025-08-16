@@ -31,8 +31,7 @@
 // ****************************************************************************/
 
 using System;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
@@ -42,36 +41,19 @@ using Aaru.Console;
 using Aaru.Core;
 using Aaru.Localization;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Aaru.Commands.Archive;
 
-sealed class ArchiveListCommand : Command
+sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
 {
     const string MODULE_NAME = "Archive list command";
 
-    public ArchiveListCommand() : base("list", "Lists files contained in an archive.")
-    {
-        AddAlias("l");
-
-        Add(new Option<string>(["--encoding", "-e"], () => null, UI.Name_of_character_encoding_to_use));
-
-        Add(new Option<bool>(["--long-format", "-l"], () => false, UI.Use_long_format));
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Archive_file_path,
-            Name        = "archive-path"
-        });
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool debug, bool verbose, string encoding, string archivePath, bool longFormat)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -89,7 +71,7 @@ sealed class ArchiveListCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -100,11 +82,11 @@ sealed class ArchiveListCommand : Command
             };
         }
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",       debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--encoding={0}",    Markup.Escape(encoding ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--long-format={0}", longFormat);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",       Markup.Escape(archivePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",     verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",       settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--encoding={0}",    Markup.Escape(settings.Encoding ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--long-format={0}", settings.LongFormat);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",       Markup.Escape(settings.Path ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",     settings.Verbose);
         Statistics.AddCommand("archive-list");
 
         IFilter inputFilter = null;
@@ -112,7 +94,7 @@ sealed class ArchiveListCommand : Command
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(UI.Identifying_file_filter).IsIndeterminate();
-            inputFilter = PluginRegister.Singleton.GetFilter(archivePath);
+            inputFilter = PluginRegister.Singleton.GetFilter(settings.Path);
         });
 
         if(inputFilter == null)
@@ -124,13 +106,13 @@ sealed class ArchiveListCommand : Command
 
         Encoding encodingClass = null;
 
-        if(encoding != null)
+        if(settings.Encoding != null)
         {
             try
             {
-                encodingClass = Claunia.Encoding.Encoding.GetEncoding(encoding);
+                encodingClass = Claunia.Encoding.Encoding.GetEncoding(settings.Encoding);
 
-                if(verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
+                if(settings.Verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
             }
             catch(ArgumentException)
             {
@@ -159,7 +141,7 @@ sealed class ArchiveListCommand : Command
                 return (int)ErrorNumber.UnrecognizedFormat;
             }
 
-            if(verbose)
+            if(settings.Verbose)
                 AaruConsole.VerboseWriteLine(UI.Archive_format_identified_by_0_1, archive.Name, archive.Id);
             else
                 AaruConsole.WriteLine(UI.Archive_format_identified_by_0, archive.Name);
@@ -197,9 +179,9 @@ sealed class ArchiveListCommand : Command
                 return (int)ErrorNumber.CannotOpenFormat;
             }
 
-            if(!longFormat)
+            if(!settings.LongFormat)
             {
-                for(var i = 0; i < archive.NumberOfEntries; i++)
+                for(int i = 0; i < archive.NumberOfEntries; i++)
                 {
                     ErrorNumber errno = archive.GetFilename(i, out string fileName);
 
@@ -218,8 +200,8 @@ sealed class ArchiveListCommand : Command
             }
 
             var  table             = new Table();
-            var  files             = 0;
-            var  folders           = 0;
+            int  files             = 0;
+            int  folders           = 0;
             long totalSize         = 0;
             long totalUncompressed = 0;
 
@@ -278,7 +260,7 @@ sealed class ArchiveListCommand : Command
 
                             ctx.Refresh();
 
-                            for(var i = 0; i < archive.NumberOfEntries; i++)
+                            for(int i = 0; i < archive.NumberOfEntries; i++)
                             {
                                 ErrorNumber errno = archive.GetFilename(i, out string fileName);
 
@@ -302,7 +284,7 @@ sealed class ArchiveListCommand : Command
                                     continue;
                                 }
 
-                                var attr = new char[5];
+                                char[] attr = new char[5];
 
                                 if(stat.Attributes.HasFlag(FileAttributes.Directory))
                                 {
@@ -422,4 +404,25 @@ sealed class ArchiveListCommand : Command
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : ArchiveFamily
+    {
+        [CommandOption("-e|--encoding")]
+        [Description("Name of character encoding to use.")]
+        [DefaultValue(null)]
+        public string Encoding { get; init; }
+
+        [CommandOption("-l|--long-format")]
+        [Description("Use long format.")]
+        [DefaultValue(false)]
+        public bool LongFormat { get; init; }
+
+        [Description("Archive file path")]
+        [CommandArgument(0, "<path>")]
+        public string Path { get; init; }
+    }
+
+#endregion
 }

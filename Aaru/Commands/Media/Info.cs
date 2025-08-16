@@ -32,8 +32,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
@@ -53,9 +52,9 @@ using Aaru.Decoders.Xbox;
 using Aaru.Localization;
 using Humanizer.Bytes;
 using Spectre.Console;
+using Spectre.Console.Cli;
 using BCA = Aaru.Decoders.Bluray.BCA;
 using Cartridge = Aaru.Decoders.DVD.Cartridge;
-using Command = System.CommandLine.Command;
 using DDS = Aaru.Decoders.DVD.DDS;
 using DMI = Aaru.Decoders.Xbox.DMI;
 using Session = Aaru.Decoders.CD.Session;
@@ -63,29 +62,16 @@ using Spare = Aaru.Decoders.DVD.Spare;
 
 namespace Aaru.Commands.Media;
 
-sealed class MediaInfoCommand : Command
+sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 {
     const string MODULE_NAME = "Media-Info command";
 
-    public MediaInfoCommand() : base("info", UI.Media_Info_Command_Description)
-    {
-        Add(new Option<string>(["--output-prefix", "-w"], () => null, UI.Prefix_for_saving_binary_information));
+    public override int Execute(CommandContext context, Settings settings)
 
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Device_path,
-            Name        = "device-path"
-        });
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool debug, bool verbose, string devicePath, string outputPrefix)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -103,7 +89,7 @@ sealed class MediaInfoCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -116,10 +102,12 @@ sealed class MediaInfoCommand : Command
 
         Statistics.AddCommand("media-info");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "debug={0}",         debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "device={0}",        Markup.Escape(devicePath   ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "output-prefix={0}", Markup.Escape(outputPrefix ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "verbose={0}",       verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "debug={0}",         settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "device={0}",        Markup.Escape(settings.DevicePath   ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "output-prefix={0}", Markup.Escape(settings.OutputPrefix ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "verbose={0}",       settings.Verbose);
+
+        string devicePath = settings.DevicePath;
 
         if(devicePath.Length == 2 && devicePath[1] == ':' && devicePath[0] != '/' && char.IsLetter(devicePath[0]))
             devicePath = "\\\\.\\" + char.ToUpper(devicePath[0]) + ':';
@@ -170,12 +158,12 @@ sealed class MediaInfoCommand : Command
 
                 break;
             case DeviceType.NVMe:
-                DoNvmeMediaInfo(outputPrefix, dev);
+                DoNvmeMediaInfo(settings.OutputPrefix, dev);
 
                 break;
             case DeviceType.ATAPI:
             case DeviceType.SCSI:
-                DoScsiMediaInfo(debug, outputPrefix, dev);
+                DoScsiMediaInfo(settings.Debug, settings.OutputPrefix, dev);
 
                 break;
             default:
@@ -827,7 +815,7 @@ sealed class MediaInfoCommand : Command
 
             AaruConsole.Write($"[bold]{Localization.Core.Media_Serial_Number}:[/] ");
 
-            for(var i = 4; i < scsiInfo.MediaSerialNumber.Length; i++)
+            for(int i = 4; i < scsiInfo.MediaSerialNumber.Length; i++)
                 AaruConsole.Write("{0:X2}", scsiInfo.MediaSerialNumber[i]);
 
             AaruConsole.WriteLine();
@@ -843,13 +831,13 @@ sealed class MediaInfoCommand : Command
 
             if(tracks != null)
             {
-                var firstLba = (uint)tracks.Min(t => t.StartSector);
+                uint firstLba = (uint)tracks.Min(t => t.StartSector);
 
                 bool supportsPqSubchannel = Dump.SupportsPqSubchannel(dev, null, null, firstLba);
                 bool supportsRwSubchannel = Dump.SupportsRwSubchannel(dev, null, null, firstLba);
 
                 // Open main database
-                var ctx = AaruContext.Create(Settings.Settings.MainDbPath);
+                var ctx = AaruContext.Create(Aaru.Settings.Settings.MainDbPath);
 
                 // Search for device in main database
                 Aaru.Database.Models.Device dbDev =
@@ -867,7 +855,7 @@ sealed class MediaInfoCommand : Command
                                        out bool inexactPositioning,
                                        false);
 
-                for(var t = 1; t < tracks.Length; t++) tracks[t - 1].EndSector = tracks[t].StartSector - 1;
+                for(int t = 1; t < tracks.Length; t++) tracks[t - 1].EndSector = tracks[t].StartSector - 1;
 
                 tracks[^1].EndSector = (ulong)lastSector;
 
@@ -969,4 +957,19 @@ sealed class MediaInfoCommand : Command
 
         dev.Close();
     }
+
+#region Nested type: Settings
+
+    public class Settings : MediaFamily
+    {
+        [Description("Prefix for saving binary information from device.")]
+        [DefaultValue(null)]
+        [CommandOption("-w|--output-prefix")]
+        public string OutputPrefix { get; init; }
+        [Description("Device path")]
+        [CommandArgument(0, "<device-path>")]
+        public string DevicePath { get; init; }
+    }
+
+#endregion
 }

@@ -30,9 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using Aaru.CommonTypes.Enums;
 using Aaru.Console;
 using Aaru.Core;
@@ -42,42 +40,20 @@ using Humanizer;
 using Humanizer.Bytes;
 using Humanizer.Localisation;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Aaru.Commands.Media;
 
-sealed class MediaScanCommand : Command
+sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
 {
     const  string       MODULE_NAME = "Media-Scan command";
     static ProgressTask _progressTask1;
 
-    public MediaScanCommand() : base("scan", UI.Media_Scan_Command_Description)
-    {
-        Add(new Option<string>(["--mhdd-log", "-m"],
-                               () => null,
-                               UI.Write_a_log_of_the_scan_in_the_format_used_by_MHDD));
-
-        Add(new Option<string>(["--ibg-log", "-b"],
-                               () => null,
-                               UI.Write_a_log_of_the_scan_in_the_format_used_by_ImgBurn));
-
-        Add(new Option<bool>(["--use-buffered-reads"], () => true, UI.OS_buffered_reads_help));
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Device_path,
-            Name        = "device-path"
-        });
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool debug, bool verbose, string devicePath, string ibgLog, string mhddLog,
-                             bool useBufferedReads)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -95,7 +71,7 @@ sealed class MediaScanCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -108,12 +84,14 @@ sealed class MediaScanCommand : Command
 
         Statistics.AddCommand("media-scan");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",              debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--device={0}",             Markup.Escape(devicePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--ibg-log={0}",            Markup.Escape(ibgLog     ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--mhdd-log={0}",           Markup.Escape(mhddLog    ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",            verbose);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--use-buffered-reads={0}", useBufferedReads);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",              settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--device={0}",             Markup.Escape(settings.DevicePath ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--ibg-log={0}",            Markup.Escape(settings.IbgLog     ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--mhdd-log={0}",           Markup.Escape(settings.MhddLog    ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",            settings.Verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--use-buffered-reads={0}", settings.UseBufferedReads);
+
+        string devicePath = settings.DevicePath;
 
         if(devicePath.Length == 2 && devicePath[1] == ':' && devicePath[0] != '/' && char.IsLetter(devicePath[0]))
             devicePath = "\\\\.\\" + char.ToUpper(devicePath[0]) + ':';
@@ -152,7 +130,7 @@ sealed class MediaScanCommand : Command
 
         Statistics.AddDevice(dev);
 
-        var         scanner = new MediaScan(mhddLog, ibgLog, devicePath, dev, useBufferedReads);
+        var scanner = new MediaScan(settings.MhddLog, settings.IbgLog, devicePath, dev, settings.UseBufferedReads);
         ScanResults results = new();
 
         AnsiConsole.Progress()
@@ -254,4 +232,27 @@ sealed class MediaScanCommand : Command
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : MediaFamily
+    {
+        [Description("Write a log of the scan in the format used by MHDD.")]
+        [DefaultValue(null)]
+        [CommandOption("-m|--mhdd-log")]
+        public string MhddLog { get; init; }
+        [Description("Write a log of the scan in the format used by ImgBurn.")]
+        [DefaultValue(null)]
+        [CommandOption("-b|--ibg-log")]
+        public string IbgLog { get; init; }
+        [Description("For MMC/SD, use OS buffered reads if CMD23 is not supported.")]
+        [DefaultValue(true)]
+        [CommandOption("--use-buffered-reads")]
+        public bool UseBufferedReads { get; init; }
+        [Description("Media device path")]
+        [CommandArgument(0, "<device-path>")]
+        public string DevicePath { get; init; }
+    }
+
+#endregion
 }

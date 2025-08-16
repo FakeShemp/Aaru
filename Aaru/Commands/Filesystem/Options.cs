@@ -31,8 +31,6 @@
 // ****************************************************************************/
 
 using System;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
 using System.Linq;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
@@ -42,21 +40,20 @@ using Aaru.Core;
 using Aaru.Localization;
 using JetBrains.Annotations;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Aaru.Commands.Filesystem;
 
-sealed class ListOptionsCommand : Command
+sealed class ListOptionsCommand : Command<ListOptionsCommand.Settings>
 {
     const string MODULE_NAME = "List-Options command";
 
-    public ListOptionsCommand() : base("options", UI.Filesystem_Options_Command_Description) =>
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
+    public override int Execute(CommandContext context, Settings settings)
 
-    public static int Invoke(bool debug, bool verbose)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -74,7 +71,7 @@ sealed class ListOptionsCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -85,8 +82,8 @@ sealed class ListOptionsCommand : Command
             };
         }
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
         Statistics.AddCommand("list-options");
 
         PluginRegister plugins = PluginRegister.Singleton;
@@ -141,4 +138,10 @@ sealed class ListOptionsCommand : Command
 
         return type == typeof(string) ? UI.TypeToString_string : type.ToString();
     }
+
+#region Nested type: Settings
+
+    public class Settings : FilesystemFamily {}
+
+#endregion
 }

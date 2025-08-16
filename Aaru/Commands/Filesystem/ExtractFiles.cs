@@ -32,8 +32,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -46,50 +45,21 @@ using Aaru.Core;
 using Aaru.Localization;
 using JetBrains.Annotations;
 using Spectre.Console;
+using Spectre.Console.Cli;
 using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
 namespace Aaru.Commands.Filesystem;
 
-sealed class ExtractFilesCommand : Command
+sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
 {
     const long   BUFFER_SIZE = 16777216;
     const string MODULE_NAME = "Extract-Files command";
 
-    public ExtractFilesCommand() : base("extract", UI.Filesystem_Extract_Command_Description)
-    {
-        Add(new Option<string>(["--encoding", "-e"], () => null, UI.Name_of_character_encoding_to_use));
-
-        Add(new Option<string>(["--options", "-O"],
-                               () => null,
-                               UI.Comma_separated_name_value_pairs_of_filesystem_options));
-
-        Add(new Option<bool>(["--xattrs", "-x"], () => false, UI.Extract_extended_attributes_if_present));
-
-        Add(new Option<string>(["--namespace", "-n"], () => null, UI.Namespace_to_use_for_filenames));
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Disc_image_path,
-            Name        = "image-path"
-        });
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Directory_where_extracted_files_will_be_created,
-            Name        = "output-dir"
-        });
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool   debug,      bool   verbose,   string encoding, bool xattrs, string imagePath,
-                             string @namespace, string outputDir, string options)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -107,7 +77,7 @@ sealed class ExtractFilesCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -120,29 +90,29 @@ sealed class ExtractFilesCommand : Command
 
         Statistics.AddCommand("extract-files");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",    debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--encoding={0}", Markup.Escape(encoding  ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",    Markup.Escape(imagePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--options={0}",  Markup.Escape(options   ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--output={0}",   Markup.Escape(outputDir ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",  verbose);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--xattrs={0}",   xattrs);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",    settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--encoding={0}", Markup.Escape(settings.Encoding  ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",    Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--options={0}",  Markup.Escape(settings.Options   ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--output={0}",   Markup.Escape(settings.OutputDir ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",  settings.Verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--xattrs={0}",   settings.Xattrs);
 
         IFilter inputFilter = null;
 
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(UI.Identifying_file_filter).IsIndeterminate();
-            inputFilter = PluginRegister.Singleton.GetFilter(imagePath);
+            inputFilter = PluginRegister.Singleton.GetFilter(settings.ImagePath);
         });
 
-        Dictionary<string, string> parsedOptions = Core.Options.Parse(options);
+        Dictionary<string, string> parsedOptions = Options.Parse(settings.Options);
         AaruConsole.DebugWriteLine(MODULE_NAME, UI.Parsed_options);
 
         foreach(KeyValuePair<string, string> parsedOption in parsedOptions)
             AaruConsole.DebugWriteLine(MODULE_NAME, "{0} = {1}", parsedOption.Key, parsedOption.Value);
 
-        parsedOptions.Add("debug", debug.ToString());
+        parsedOptions.Add("debug", settings.Debug.ToString());
 
         if(inputFilter == null)
         {
@@ -153,13 +123,13 @@ sealed class ExtractFilesCommand : Command
 
         Encoding encodingClass = null;
 
-        if(encoding != null)
+        if(settings.Encoding != null)
         {
             try
             {
-                encodingClass = Claunia.Encoding.Encoding.GetEncoding(encoding);
+                encodingClass = Claunia.Encoding.Encoding.GetEncoding(settings.Encoding);
 
-                if(verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
+                if(settings.Verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
             }
             catch(ArgumentException)
             {
@@ -197,26 +167,26 @@ sealed class ExtractFilesCommand : Command
                 return (int)ErrorNumber.InvalidArgument;
             }
 
-            if(verbose)
+            if(settings.Verbose)
                 AaruConsole.VerboseWriteLine(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
             else
                 AaruConsole.WriteLine(UI.Image_format_identified_by_0, imageFormat.Name);
 
-            if(outputDir == null)
+            if(settings.OutputDir == null)
             {
                 AaruConsole.WriteLine(UI.Output_directory_missing);
 
                 return (int)ErrorNumber.MissingArgument;
             }
 
-            if(Directory.Exists(outputDir) || File.Exists(outputDir))
+            if(Directory.Exists(settings.OutputDir) || File.Exists(settings.OutputDir))
             {
                 AaruConsole.ErrorWriteLine(UI.Destination_exists_aborting);
 
                 return (int)ErrorNumber.FileExists;
             }
 
-            Directory.CreateDirectory(outputDir);
+            Directory.CreateDirectory(settings.OutputDir);
 
             try
             {
@@ -288,7 +258,7 @@ sealed class ExtractFilesCommand : Command
 
             AaruConsole.WriteLine(UI._0_partitions_found, partitions.Count);
 
-            for(var i = 0; i < partitions.Count; i++)
+            for(int i = 0; i < partitions.Count; i++)
             {
                 AaruConsole.WriteLine();
                 AaruConsole.WriteLine($"[bold]{string.Format(UI.Partition_0, partitions[i].Sequence)}[/]");
@@ -326,7 +296,11 @@ sealed class ExtractFilesCommand : Command
                             {
                                 ctx.AddTask(UI.Mounting_filesystem).IsIndeterminate();
 
-                                error = fs.Mount(imageFormat, partitions[i], encodingClass, parsedOptions, @namespace);
+                                error = fs.Mount(imageFormat,
+                                                 partitions[i],
+                                                 encodingClass,
+                                                 parsedOptions,
+                                                 settings.Namespace);
                             });
 
                             if(error == ErrorNumber.NoError)
@@ -335,7 +309,7 @@ sealed class ExtractFilesCommand : Command
                                                         ? "NO NAME"
                                                         : fs.Metadata.VolumeName;
 
-                                ExtractFilesInDir("/", fs, volumeName, outputDir, xattrs);
+                                ExtractFilesInDir("/", fs, volumeName, settings.OutputDir, settings.Xattrs);
 
                                 Statistics.AddFilesystem(fs.Metadata.Type);
                             }
@@ -354,7 +328,12 @@ sealed class ExtractFilesCommand : Command
                         Core.Spectre.ProgressSingleSpinner(ctx =>
                         {
                             ctx.AddTask(UI.Mounting_filesystem).IsIndeterminate();
-                            error = fs.Mount(imageFormat, partitions[i], encodingClass, parsedOptions, @namespace);
+
+                            error = fs.Mount(imageFormat,
+                                             partitions[i],
+                                             encodingClass,
+                                             parsedOptions,
+                                             settings.Namespace);
                         });
 
                         if(error == ErrorNumber.NoError)
@@ -363,7 +342,7 @@ sealed class ExtractFilesCommand : Command
                                                     ? "NO NAME"
                                                     : fs.Metadata.VolumeName;
 
-                            ExtractFilesInDir("/", fs, volumeName, outputDir, xattrs);
+                            ExtractFilesInDir("/", fs, volumeName, settings.OutputDir, settings.Xattrs);
 
                             Statistics.AddFilesystem(fs.Metadata.Type);
                         }
@@ -630,7 +609,7 @@ sealed class ExtractFilesCommand : Command
                                         ctx.AddTask(string.Format(UI.Reading_file_0, Markup.Escape(entry)));
 
                                     task.MaxValue = stat.Length;
-                                    var outBuf = new byte[BUFFER_SIZE];
+                                    byte[] outBuf = new byte[BUFFER_SIZE];
                                     error = fs.OpenFile(path + "/" + entry, out IFileNode fileNode);
 
                                     if(error == ErrorNumber.NoError)
@@ -710,4 +689,34 @@ sealed class ExtractFilesCommand : Command
 
         fs.CloseDir(node);
     }
+
+#region Nested type: Settings
+
+    public class Settings : FilesystemFamily
+    {
+        [CommandOption("-e|--encoding")]
+        [Description("Name of character encoding to use.")]
+        [DefaultValue(null)]
+        public string Encoding { get; init; }
+        [CommandOption("-O|--options")]
+        [Description("Comma separated name=value pairs of options to pass to filesystem plugin.")]
+        [DefaultValue(null)]
+        public string Options { get; init; }
+        [CommandOption("-x|--xattrs")]
+        [Description("Extract extended attributes if present.")]
+        [DefaultValue(false)]
+        public bool Xattrs { get; init; }
+        [CommandOption("-n|--namespace")]
+        [Description("Namespace to use for filenames.")]
+        [DefaultValue(null)]
+        public string Namespace { get; init; }
+        [CommandArgument(1, "<output-dir>")]
+        [Description("Directory where extracted files will be created. Will abort if it exists")]
+        public string OutputDir { get; init; }
+        [CommandArgument(0, "<image-path>")]
+        [Description("Disc image path")]
+        public string ImagePath { get; init; }
+    }
+
+#endregion
 }

@@ -30,19 +30,6 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System.CommandLine;
-using Aaru.Localization;
-
 namespace Aaru.Commands.Media;
 
-sealed class MediaFamily : Command
-{
-    public MediaFamily() : base("media", UI.Media_Command_Family_Description)
-    {
-        AddAlias("m");
-
-        AddCommand(new DumpMediaCommand());
-        AddCommand(new MediaInfoCommand());
-        AddCommand(new MediaScanCommand());
-    }
-}
+class MediaFamily : BaseSettings {}

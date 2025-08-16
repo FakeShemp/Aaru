@@ -506,9 +506,6 @@ In you are unsure, please press N to not continue.</value>
     <data name="Searches_and_interprets_partitions" xml:space="preserve">
     <value>Searches and interprets partitions.</value>
   </data>
-    <data name="Media_image_path" xml:space="preserve">
-    <value>Media image path</value>
-  </data>
     <data name="Image_format_not_identified_not_proceeding_with_analysis" xml:space="preserve">
     <value>Image format not identified, not proceeding with analysis.</value>
   </data>
@@ -898,9 +895,6 @@ In you are unsure, please press N to not continue.</value>
     <data name="Manufacturer_of_drive_read_the_media_by_image" xml:space="preserve">
     <value>Manufacturer of the drive used to read the media represented by the image.</value>
   </data>
-    <data name="Model_of_drive_read_the_media_by_image" xml:space="preserve">
-    <value>Model of the drive used to read the media represented by the image.</value>
-  </data>
     <data name="Firmware_revision_of_drive_read_the_media_by_image" xml:space="preserve">
     <value>Firmware revision of the drive used to read the media represented by the image.</value>
   </data>
@@ -912,9 +906,6 @@ In you are unsure, please press N to not continue.</value>
   </data>
     <data name="Format_of_the_output_image_as_plugin_name_or_plugin_id" xml:space="preserve">
     <value>Format of the output image, as plugin name or plugin id. If not present, will try to detect it from output image extension.</value>
-  </data>
-    <data name="Barcode_of_the_media_by_image" xml:space="preserve">
-    <value>Barcode of the media represented by the image.</value>
   </data>
     <data name="Last_media_of_sequence_by_image" xml:space="preserve">
     <value>Last media of the sequence the media represented by the image corresponds to.</value>
@@ -1172,9 +1163,6 @@ In you are unsure, please press N to not continue.</value>
     <data name="Conversion_done" xml:space="preserve">
     <value>Conversion done.</value>
   </data>
-    <data name="Tape_block_size_argument_help" xml:space="preserve">
-    <value>Only used for tapes, indicates block size. Files in the folder whose size is not a multiple of this value will simply be ignored.</value>
-  </data>
     <data name="Tape_argument_input_help" xml:space="preserve">
     <value>When used indicates that input is a folder containing alphabetically sorted files extracted from a linear block-based tape with fixed block size (e.g. a SCSI tape device).</value>
   </data>
@@ -1186,9 +1174,6 @@ In you are unsure, please press N to not continue.</value>
   </data>
     <data name="The_specified_input_file_cannot_be_found" xml:space="preserve">
     <value>The specified input file cannot be found.</value>
-  </data>
-    <data name="Decode_media_tags" xml:space="preserve">
-    <value>Decode media tags.</value>
   </data>
     <data name="Parameter_response_all_sectors" xml:space="preserve">
     <value>all</value>
@@ -3110,5 +3095,8 @@ Do you want to continue?</value>
     </data>
     <data name="Dialog_Aaru_Resume" xml:space="preserve">
         <value>Aaru resume file</value>
+    </data>
+    <data name="Archive_List_Command_Description" xml:space="preserve">
+        <value>List the contents of an archive file.</value>
     </data>
 </root>

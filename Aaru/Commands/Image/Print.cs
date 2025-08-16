@@ -31,8 +31,7 @@
 // ****************************************************************************/
 
 using System;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -41,39 +40,20 @@ using Aaru.Core;
 using Aaru.Helpers;
 using Aaru.Localization;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Aaru.Commands.Image;
 
-sealed class PrintHexCommand : Command
+sealed class PrintHexCommand : Command<PrintHexCommand.Settings>
 {
     const string MODULE_NAME = "PrintHex command";
 
-    public PrintHexCommand() : base("print", UI.Image_Print_Command_Description)
-    {
-        Add(new Option<ulong>(["--length", "-l"], () => 1, UI.How_many_sectors_to_print));
+    public override int Execute(CommandContext context, Settings settings)
 
-        Add(new Option<bool>(["--long-sectors", "-r"], () => false, UI.Print_sectors_with_tags_included));
-
-        Add(new Option<ulong>(["--start", "-s"], UI.Starting_sector));
-
-        Add(new Option<ushort>(["--width", "-w"], () => 32, UI.How_many_bytes_to_print_per_line));
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Media_image_path,
-            Name        = "image-path"
-        });
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool   debug, bool verbose, string imagePath, ulong length, bool longSectors, ulong start,
-                             ushort width)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -91,7 +71,7 @@ sealed class PrintHexCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -104,20 +84,20 @@ sealed class PrintHexCommand : Command
 
         Statistics.AddCommand("print-hex");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",        debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",        Markup.Escape(imagePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--length={0}",       length);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--long-sectors={0}", longSectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--start={0}",        start);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",      verbose);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--width={0}",        width);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",        settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",        Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--length={0}",       settings.Length);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--long-sectors={0}", settings.LongSectors);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--start={0}",        settings.Start);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",      settings.Verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--width={0}",        settings.Width);
 
         IFilter inputFilter = null;
 
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(UI.Identifying_file_filter).IsIndeterminate();
-            inputFilter = PluginRegister.Singleton.GetFilter(imagePath);
+            inputFilter = PluginRegister.Singleton.GetFilter(settings.ImagePath);
         });
 
         if(inputFilter == null)
@@ -128,6 +108,8 @@ sealed class PrintHexCommand : Command
         }
 
         IBaseImage inputFormat = null;
+
+        bool longSectors = settings.LongSectors;
 
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
@@ -162,36 +144,40 @@ sealed class PrintHexCommand : Command
         {
             var byteAddressableImage = inputFormat as IByteAddressableImage;
 
-            AaruConsole.WriteLine($"[bold][italic]{string.Format(UI.Start_0_as_in_sector_start, start)}[/][/]");
+            AaruConsole.WriteLine($"[bold][italic]{string.Format(UI.Start_0_as_in_sector_start, settings.Start)}[/][/]");
 
-            var         data      = new byte[length];
+            byte[]      data      = new byte[settings.Length];
             ErrorNumber errno     = ErrorNumber.NoError;
-            var         bytesRead = 0;
+            int         bytesRead = 0;
 
             Core.Spectre.ProgressSingleSpinner(ctx =>
             {
                 ctx.AddTask(UI.Reading_data).IsIndeterminate();
 
-                errno = byteAddressableImage?.ReadBytesAt((long)start, data, 0, (int)length, out bytesRead) ??
+                errno = byteAddressableImage?.ReadBytesAt((long)settings.Start,
+                                                          data,
+                                                          0,
+                                                          (int)settings.Length,
+                                                          out bytesRead) ??
                         ErrorNumber.InvalidArgument;
             });
 
             // TODO: Span
-            if(bytesRead != (int)length)
+            if(bytesRead != (int)settings.Length)
             {
-                var tmp = new byte[bytesRead];
+                byte[] tmp = new byte[bytesRead];
                 Array.Copy(data, 0, tmp, 0, bytesRead);
                 data = tmp;
             }
 
             if(errno == ErrorNumber.NoError)
-                AaruConsole.WriteLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(data, width, true)));
+                AaruConsole.WriteLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(data, settings.Width, true)));
             else
-                AaruConsole.ErrorWriteLine(string.Format(UI.Error_0_reading_data_from_1, errno, start));
+                AaruConsole.ErrorWriteLine(string.Format(UI.Error_0_reading_data_from_1, errno, settings.Start));
         }
         else
         {
-            for(ulong i = 0; i < length; i++)
+            for(ulong i = 0; i < settings.Length; i++)
             {
                 if(inputFormat is not IMediaImage blockImage)
                 {
@@ -200,8 +186,9 @@ sealed class PrintHexCommand : Command
                     break;
                 }
 
-                AaruConsole.WriteLine($"[bold][italic]{string.Format(UI.Sector_0_as_in_sector_number, start)}[/][/]" +
-                                      i);
+                AaruConsole
+                   .WriteLine($"[bold][italic]{string.Format(UI.Sector_0_as_in_sector_number, settings.Start)}[/][/]" +
+                              i);
 
                 if(blockImage.Info.ReadableSectorTags == null)
                 {
@@ -227,17 +214,46 @@ sealed class PrintHexCommand : Command
                     ctx.AddTask(UI.Reading_sector).IsIndeterminate();
 
                     errno = longSectors
-                                ? blockImage.ReadSectorLong(start + i, out sector)
-                                : blockImage.ReadSector(start     + i, out sector);
+                                ? blockImage.ReadSectorLong(settings.Start + i, out sector)
+                                : blockImage.ReadSector(settings.Start     + i, out sector);
                 });
 
                 if(errno == ErrorNumber.NoError)
-                    AaruConsole.WriteLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(sector, width, true)));
+                    AaruConsole.WriteLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(sector,
+                                                            settings.Width,
+                                                            true)));
                 else
-                    AaruConsole.ErrorWriteLine(string.Format(UI.Error_0_reading_sector_1, errno, start + i));
+                    AaruConsole.ErrorWriteLine(string.Format(UI.Error_0_reading_sector_1, errno, settings.Start + i));
             }
         }
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : ImageFamily
+    {
+        [Description("How many sectors to print.")]
+        [DefaultValue(1)]
+        [CommandOption("-l|--length")]
+        public ulong Length { get; init; }
+        [Description("Print sectors with tags included.")]
+        [DefaultValue(false)]
+        [CommandOption("-r|--long-sectors")]
+        public bool LongSectors { get; init; }
+        [Description("Starting sector.")]
+        [DefaultValue(0)]
+        [CommandOption("-s|--start")]
+        public ulong Start { get; init; }
+        [Description("How many bytes to print per line.")]
+        [DefaultValue(32)]
+        [CommandOption("-w|--width")]
+        public ushort Width { get; init; }
+        [Description("Media image path")]
+        [CommandArgument(0, "<image-path>")]
+        public string ImagePath { get; init; }
+    }
+
+#endregion
 }

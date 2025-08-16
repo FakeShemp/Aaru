@@ -31,8 +31,7 @@
 // ****************************************************************************/
 
 using System;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -43,31 +42,20 @@ using Aaru.Database;
 using Aaru.Localization;
 using Microsoft.EntityFrameworkCore;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Aaru.Commands.Database;
 
-sealed class UpdateCommand : Command
+sealed class UpdateCommand : AsyncCommand<UpdateCommand.Settings>
 {
     const    string MODULE_NAME = "Update command";
     readonly bool   _mainDbUpdate;
 
-    public UpdateCommand(bool mainDbUpdate) : base("update", UI.Database_Update_Command_Description)
+    public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
     {
-        _mainDbUpdate = mainDbUpdate;
-
-        Add(new Option<bool>("--clear",     () => false, UI.Clear_existing_main_database));
-        Add(new Option<bool>("--clear-all", () => false, UI.Clear_existing_main_and_local_database));
-
-        Handler = CommandHandler.Create((Func<bool, bool, bool, bool, Task<int>>)InvokeAsync);
-    }
-
-    async Task<int> InvokeAsync(bool debug, bool verbose, bool clear, bool clearAll)
-    {
-        if(_mainDbUpdate) return (int)ErrorNumber.NoError;
-
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -85,7 +73,7 @@ sealed class UpdateCommand : Command
             AaruConsole.WriteExceptionEvent += ex => stderrConsole.WriteException(ex);
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -96,16 +84,16 @@ sealed class UpdateCommand : Command
             };
         }
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
-        if(clearAll)
+        if(settings.ClearAll)
         {
             try
             {
-                File.Delete(Settings.Settings.LocalDbPath);
+                File.Delete(Aaru.Settings.Settings.LocalDbPath);
 
-                var ctx = AaruContext.Create(Settings.Settings.LocalDbPath);
+                var ctx = AaruContext.Create(Aaru.Settings.Settings.LocalDbPath);
                 await ctx.Database.MigrateAsync();
                 await ctx.SaveChangesAsync();
             }
@@ -117,11 +105,11 @@ sealed class UpdateCommand : Command
             }
         }
 
-        if(clear || clearAll)
+        if(settings.Clear || settings.ClearAll)
         {
             try
             {
-                File.Delete(Settings.Settings.MainDbPath);
+                File.Delete(Aaru.Settings.Settings.MainDbPath);
             }
             catch(Exception) when(!Debugger.IsAttached)
             {
@@ -131,7 +119,7 @@ sealed class UpdateCommand : Command
             }
         }
 
-        await DoUpdateAsync(clear || clearAll);
+        await DoUpdateAsync(settings.Clear || settings.ClearAll);
 
         return (int)ErrorNumber.NoError;
     }
@@ -141,4 +129,20 @@ sealed class UpdateCommand : Command
         await Remote.UpdateMainDatabaseAsync(create);
         Statistics.AddCommand("update");
     }
+
+#region Nested type: Settings
+
+    public class Settings : DatabaseFamily
+    {
+        [CommandOption("--clear")]
+        [Description("Clear existing main database.")]
+        [DefaultValue(false)]
+        public bool Clear { get; init; }
+        [CommandOption("--clear-all")]
+        [Description("Clear existing main and local database.")]
+        [DefaultValue(false)]
+        public bool ClearAll { get; init; }
+    }
+
+#endregion
 }

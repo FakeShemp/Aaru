@@ -31,8 +31,7 @@
 // ****************************************************************************/
 
 using System;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -44,43 +43,24 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.Console;
 using Aaru.Core;
 using Aaru.Localization;
-using JetBrains.Annotations;
 using Spectre.Console;
+using Spectre.Console.Cli;
 using Directory = System.IO.Directory;
 using File = System.IO.File;
 
 namespace Aaru.Commands.Image;
 
-sealed class CreateSidecarCommand : Command
+sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
 {
     const  string       MODULE_NAME = "Create sidecar command";
     static ProgressTask _progressTask1;
     static ProgressTask _progressTask2;
 
-    public CreateSidecarCommand() : base("create-sidecar", UI.Image_Create_Sidecar_Command_Description)
-    {
-        Add(new Option<int>(["--block-size", "-b"], () => 512, UI.Tape_block_size_argument_help));
-
-        Add(new Option<string>(["--encoding", "-e"], () => null, UI.Name_of_character_encoding_to_use));
-
-        Add(new Option<bool>(["--tape", "-t"], () => false, UI.Tape_argument_input_help));
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Media_image_path,
-            Name        = "image-path"
-        });
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool   debug,     bool verbose, uint blockSize, [CanBeNull] string encodingName,
-                             string imagePath, bool tape)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -98,7 +78,7 @@ sealed class CreateSidecarCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -111,22 +91,22 @@ sealed class CreateSidecarCommand : Command
 
         Statistics.AddCommand("create-sidecar");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--block-size={0}", blockSize);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",      debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--encoding={0}",   Markup.Escape(encodingName ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",      Markup.Escape(imagePath    ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--tape={0}",       tape);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",    verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--block-size={0}", settings.BlockSize);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",      settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--encoding={0}",   Markup.Escape(settings.Encoding  ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",      Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--tape={0}",       settings.Tape);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",    settings.Verbose);
 
         Encoding encodingClass = null;
 
-        if(encodingName != null)
+        if(settings.Encoding != null)
         {
             try
             {
-                encodingClass = Claunia.Encoding.Encoding.GetEncoding(encodingName);
+                encodingClass = Claunia.Encoding.Encoding.GetEncoding(settings.Encoding);
 
-                if(verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
+                if(settings.Verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
             }
             catch(ArgumentException)
             {
@@ -136,9 +116,9 @@ sealed class CreateSidecarCommand : Command
             }
         }
 
-        if(File.Exists(imagePath))
+        if(File.Exists(settings.ImagePath))
         {
-            if(tape)
+            if(settings.Tape)
             {
                 AaruConsole.ErrorWriteLine(UI.You_cannot_use_tape_option_when_input_is_a_file);
 
@@ -150,7 +130,7 @@ sealed class CreateSidecarCommand : Command
             Core.Spectre.ProgressSingleSpinner(ctx =>
             {
                 ctx.AddTask(UI.Identifying_file_filter).IsIndeterminate();
-                inputFilter = PluginRegister.Singleton.GetFilter(imagePath);
+                inputFilter = PluginRegister.Singleton.GetFilter(settings.ImagePath);
             });
 
             if(inputFilter == null)
@@ -177,7 +157,7 @@ sealed class CreateSidecarCommand : Command
                     return (int)ErrorNumber.UnrecognizedFormat;
                 }
 
-                if(verbose)
+                if(settings.Verbose)
                     AaruConsole.VerboseWriteLine(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
                 else
                     AaruConsole.WriteLine(UI.Image_format_identified_by_0, imageFormat.Name);
@@ -214,7 +194,7 @@ sealed class CreateSidecarCommand : Command
                 Statistics.AddMediaFormat(imageFormat.Format);
                 Statistics.AddFilter(inputFilter.Name);
 
-                var      sidecarClass = new Sidecar(imageFormat, imagePath, inputFilter.Id, encodingClass);
+                var      sidecarClass = new Sidecar(imageFormat, settings.ImagePath, inputFilter.Id, encodingClass);
                 Metadata sidecar      = new();
 
                 AnsiConsole.Progress()
@@ -274,9 +254,10 @@ sealed class CreateSidecarCommand : Command
                     ctx.AddTask(Localization.Core.Writing_metadata_sidecar).IsIndeterminate();
 
                     var jsonFs =
-                        new FileStream(Path.Combine(Path.GetDirectoryName(imagePath) ??
+                        new FileStream(Path.Combine(Path.GetDirectoryName(settings.ImagePath) ??
                                                     throw new InvalidOperationException(),
-                                                    Path.GetFileNameWithoutExtension(imagePath) + ".metadata.json"),
+                                                    Path.GetFileNameWithoutExtension(settings.ImagePath) +
+                                                    ".metadata.json"),
                                        FileMode.Create);
 
                     JsonSerializer.Serialize(jsonFs,
@@ -298,17 +279,17 @@ sealed class CreateSidecarCommand : Command
                 return (int)ErrorNumber.UnexpectedException;
             }
         }
-        else if(Directory.Exists(imagePath))
+        else if(Directory.Exists(settings.ImagePath))
         {
-            if(!tape)
+            if(!settings.Tape)
             {
                 AaruConsole.ErrorWriteLine(Localization.Core.Cannot_create_a_sidecar_from_a_directory);
 
                 return (int)ErrorNumber.IsDirectory;
             }
 
-            string[] contents = Directory.GetFiles(imagePath, "*", SearchOption.TopDirectoryOnly);
-            var      files    = contents.Where(file => new FileInfo(file).Length % blockSize == 0).ToList();
+            string[] contents = Directory.GetFiles(settings.ImagePath, "*", SearchOption.TopDirectoryOnly);
+            var      files    = contents.Where(file => new FileInfo(file).Length % settings.BlockSize == 0).ToList();
 
             files.Sort(StringComparer.CurrentCultureIgnoreCase);
 
@@ -361,7 +342,9 @@ sealed class CreateSidecarCommand : Command
                                 sidecarClass.Abort();
                             };
 
-                            sidecar = sidecarClass.BlockTape(Path.GetFileName(imagePath), files, blockSize);
+                            sidecar = sidecarClass.BlockTape(Path.GetFileName(settings.ImagePath),
+                                                             files,
+                                                             settings.BlockSize);
                         });
 
             Core.Spectre.ProgressSingleSpinner(ctx =>
@@ -369,9 +352,10 @@ sealed class CreateSidecarCommand : Command
                 ctx.AddTask(Localization.Core.Writing_metadata_sidecar).IsIndeterminate();
 
                 var jsonFs =
-                    new FileStream(Path.Combine(Path.GetDirectoryName(imagePath) ??
+                    new FileStream(Path.Combine(Path.GetDirectoryName(settings.ImagePath) ??
                                                 throw new InvalidOperationException(),
-                                                Path.GetFileNameWithoutExtension(imagePath) + ".metadata.json"),
+                                                Path.GetFileNameWithoutExtension(settings.ImagePath) +
+                                                ".metadata.json"),
                                    FileMode.Create);
 
                 JsonSerializer.Serialize(jsonFs,
@@ -390,4 +374,27 @@ sealed class CreateSidecarCommand : Command
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : ImageFamily
+    {
+        [CommandOption("-b|--block-size")]
+        [Description("Only used for tapes, indicates block size. Files in the folder whose size is not a multiple of this value will simply be ignored.")]
+        [DefaultValue(512)]
+        public uint BlockSize { get; init; }
+        [CommandOption("-e|--encoding")]
+        [Description("Name of character encoding to use.")]
+        [DefaultValue(null)]
+        public string Encoding { get; init; }
+        [CommandOption("-t|--tape")]
+        [Description("When used indicates that input is a folder containing alphabetically sorted files extracted from a linear block-based tape with fixed block size (e.g. a SCSI tape device).")]
+        [DefaultValue(false)]
+        public bool Tape { get; init; }
+        [Description("Media image path")]
+        [CommandArgument(0, "<image-path>")]
+        public string ImagePath { get; init; }
+    }
+
+#endregion
 }

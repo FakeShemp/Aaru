@@ -31,8 +31,7 @@
 // ****************************************************************************/
 
 using System;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -40,30 +39,19 @@ using Aaru.Console;
 using Aaru.Core;
 using Aaru.Localization;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Aaru.Commands.Image;
 
-sealed class ImageInfoCommand : Command
+sealed class ImageInfoCommand : Command<ImageInfoCommand.Settings>
 {
     const string MODULE_NAME = "Image-info command";
 
-    public ImageInfoCommand() : base("info", UI.Image_Info_Command_Description)
-    {
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Media_image_path,
-            Name        = "image-path"
-        });
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool debug, bool verbose, string imagePath)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -81,7 +69,7 @@ sealed class ImageInfoCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -94,16 +82,16 @@ sealed class ImageInfoCommand : Command
 
         Statistics.AddCommand("image-info");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",   Markup.Escape(imagePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",   Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
         IFilter inputFilter = null;
 
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(UI.Identifying_file_filter).IsIndeterminate();
-            inputFilter = PluginRegister.Singleton.GetFilter(imagePath);
+            inputFilter = PluginRegister.Singleton.GetFilter(settings.ImagePath);
         });
 
         if(inputFilter == null)
@@ -176,4 +164,15 @@ sealed class ImageInfoCommand : Command
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : ImageFamily
+    {
+        [Description("Media image path")]
+        [CommandArgument(0, "<image-path>")]
+        public string ImagePath { get; init; }
+    }
+
+#endregion
 }

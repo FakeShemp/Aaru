@@ -33,38 +33,25 @@
 // TODO: Fix errors returned
 
 using System;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using Aaru.CommonTypes.Enums;
 using Aaru.Console;
 using Aaru.Core;
-using Aaru.Localization;
 using Spectre.Console;
+using Spectre.Console.Cli;
 using Remote = Aaru.Devices.Remote.Remote;
 
 namespace Aaru.Commands;
 
-sealed class RemoteCommand : Command
+sealed class RemoteCommand : Command<RemoteCommand.Settings>
 {
     const string MODULE_NAME = "Remote command";
 
-    public RemoteCommand() : base("remote", UI.Remote_Command_Description)
-    {
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = "aaru host",
-            Name        = "host"
-        });
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool debug, bool verbose, string host)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -82,7 +69,7 @@ sealed class RemoteCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -95,13 +82,13 @@ sealed class RemoteCommand : Command
 
         Statistics.AddCommand("remote");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "debug={0}",   debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "host={0}",    Markup.Escape(host ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "verbose={0}", verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "debug={0}",   settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "host={0}",    Markup.Escape(settings.Host ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "verbose={0}", settings.Verbose);
 
         try
         {
-            var remote = new Remote(new Uri(host));
+            var remote = new Remote(new Uri(settings.Host));
 
             Statistics.AddRemote(remote.ServerApplication,
                                  remote.ServerVersion,
@@ -138,4 +125,15 @@ sealed class RemoteCommand : Command
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : BaseSettings
+    {
+        [CommandArgument(0, "<host>")]
+        [Description("Aaru host")]
+        public string Host { get; init; }
+    }
+
+#endregion
 }

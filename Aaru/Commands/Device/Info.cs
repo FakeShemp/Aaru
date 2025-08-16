@@ -33,8 +33,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using System.Linq;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
@@ -55,36 +54,23 @@ using Aaru.Localization;
 using Humanizer;
 using Humanizer.Localisation;
 using Spectre.Console;
-using Command = System.CommandLine.Command;
+using Spectre.Console.Cli;
 using DeviceInfo = Aaru.Core.Devices.Info.DeviceInfo;
 using Inquiry = Aaru.Decoders.SCSI.Inquiry;
 using Tuple = Aaru.Decoders.PCMCIA.Tuple;
 
 namespace Aaru.Commands.Device;
 
-sealed class DeviceInfoCommand : Command
+[Description("Gets information about a device.")]
+sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
 {
     const string MODULE_NAME = "Device-Info command";
 
-    public DeviceInfoCommand() : base("info", UI.Device_Info_Command_Description)
-    {
-        Add(new Option<string>(["--output-prefix", "-w"], () => null, UI.Prefix_for_saving_binary_information));
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Device_path,
-            Name        = "device-path"
-        });
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool debug, bool verbose, string devicePath, string outputPrefix)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -102,7 +88,7 @@ sealed class DeviceInfoCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -115,10 +101,12 @@ sealed class DeviceInfoCommand : Command
 
         Statistics.AddCommand("device-info");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",         debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--device={0}",        Markup.Escape(devicePath   ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--output-prefix={0}", Markup.Escape(outputPrefix ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",       verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",         settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--device={0}",        Markup.Escape(settings.Path         ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--output-prefix={0}", Markup.Escape(settings.OutputPrefix ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",       settings.Verbose);
+
+        string devicePath = settings.Path;
 
         if(devicePath.Length == 2 && devicePath[1] == ':' && devicePath[0] != '/' && char.IsLetter(devicePath[0]))
             devicePath = "\\\\.\\" + char.ToUpper(devicePath[0]) + ':';
@@ -282,7 +270,11 @@ sealed class DeviceInfoCommand : Command
 
         if(devInfo.AtaIdentify != null)
         {
-            DataFile.WriteTo(MODULE_NAME, outputPrefix, "_ata_identify.bin", "ATA IDENTIFY", devInfo.AtaIdentify);
+            DataFile.WriteTo(MODULE_NAME,
+                             settings.OutputPrefix,
+                             "_ata_identify.bin",
+                             "ATA IDENTIFY",
+                             devInfo.AtaIdentify);
 
             Identify.IdentifyDevice? decodedIdentify = Identify.Decode(devInfo.AtaIdentify);
             AaruConsole.WriteLine(Decoders.ATA.Identify.Prettify(decodedIdentify));
@@ -323,8 +315,8 @@ sealed class DeviceInfoCommand : Command
                 if((devInfo.AtaMcptError.Value.DeviceHead & 0x08) == 0x08)
                     AaruConsole.WriteLine(Localization.Core.Media_card_is_write_protected);
 
-                var specificData = (ushort)(devInfo.AtaMcptError.Value.CylinderHigh * 0x100 +
-                                            devInfo.AtaMcptError.Value.CylinderLow);
+                ushort specificData = (ushort)(devInfo.AtaMcptError.Value.CylinderHigh * 0x100 +
+                                               devInfo.AtaMcptError.Value.CylinderLow);
 
                 if(specificData != 0) AaruConsole.WriteLine(Localization.Core.Card_specific_data_0, specificData);
             }
@@ -368,7 +360,11 @@ sealed class DeviceInfoCommand : Command
 
         if(devInfo.AtapiIdentify != null)
         {
-            DataFile.WriteTo(MODULE_NAME, outputPrefix, "_atapi_identify.bin", "ATAPI IDENTIFY", devInfo.AtapiIdentify);
+            DataFile.WriteTo(MODULE_NAME,
+                             settings.OutputPrefix,
+                             "_atapi_identify.bin",
+                             "ATAPI IDENTIFY",
+                             devInfo.AtapiIdentify);
 
             AaruConsole.WriteLine(Decoders.ATA.Identify.Prettify(devInfo.AtapiIdentify));
         }
@@ -378,7 +374,7 @@ sealed class DeviceInfoCommand : Command
             if(dev.Type != DeviceType.ATAPI) AaruConsole.WriteLine($"[bold]{UI.Title_SCSI_device}[/]");
 
             DataFile.WriteTo(MODULE_NAME,
-                             outputPrefix,
+                             settings.OutputPrefix,
                              "_scsi_inquiry.bin",
                              UI.Title_SCSI_INQUIRY,
                              devInfo.ScsiInquiryData);
@@ -396,7 +392,7 @@ sealed class DeviceInfoCommand : Command
                                                   page.Key,
                                                   EVPD.DecodeASCIIPage(page.Value));
 
-                            DataFile.WriteTo(MODULE_NAME, outputPrefix, page.Value);
+                            DataFile.WriteTo(MODULE_NAME, settings.OutputPrefix, page.Value);
 
                             break;
                         case 0x80:
@@ -404,7 +400,7 @@ sealed class DeviceInfoCommand : Command
                                                   EVPD.DecodePage80(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -414,7 +410,7 @@ sealed class DeviceInfoCommand : Command
                             AaruConsole.WriteLine("{0}", EVPD.PrettifyPage_81(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -425,7 +421,7 @@ sealed class DeviceInfoCommand : Command
                                                   EVPD.DecodePage82(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -435,7 +431,7 @@ sealed class DeviceInfoCommand : Command
                             AaruConsole.WriteLine("{0}", EVPD.PrettifyPage_83(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -445,7 +441,7 @@ sealed class DeviceInfoCommand : Command
                             AaruConsole.WriteLine("{0}", EVPD.PrettifyPage_84(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -455,7 +451,7 @@ sealed class DeviceInfoCommand : Command
                             AaruConsole.WriteLine("{0}", EVPD.PrettifyPage_85(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -465,7 +461,7 @@ sealed class DeviceInfoCommand : Command
                             AaruConsole.WriteLine("{0}", EVPD.PrettifyPage_86(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -475,7 +471,7 @@ sealed class DeviceInfoCommand : Command
                             AaruConsole.WriteLine("{0}", EVPD.PrettifyPage_89(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -485,7 +481,7 @@ sealed class DeviceInfoCommand : Command
                             AaruConsole.WriteLine("{0}", EVPD.PrettifyPage_B0(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -496,7 +492,7 @@ sealed class DeviceInfoCommand : Command
                                                   EVPD.DecodePageB1(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -507,7 +503,7 @@ sealed class DeviceInfoCommand : Command
                                                   EVPD.DecodePageB2(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -518,7 +514,7 @@ sealed class DeviceInfoCommand : Command
                                                   EVPD.DecodePageB3(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -529,7 +525,7 @@ sealed class DeviceInfoCommand : Command
                                                   EVPD.DecodePageB4(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -542,7 +538,7 @@ sealed class DeviceInfoCommand : Command
                             AaruConsole.WriteLine("{0}", EVPD.PrettifyPage_C0_Quantum(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -555,7 +551,7 @@ sealed class DeviceInfoCommand : Command
                             AaruConsole.WriteLine("{0}", EVPD.PrettifyPage_C0_Seagate(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -568,7 +564,7 @@ sealed class DeviceInfoCommand : Command
                             AaruConsole.WriteLine("{0}", EVPD.PrettifyPage_C0_IBM(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -581,7 +577,7 @@ sealed class DeviceInfoCommand : Command
                             AaruConsole.WriteLine("{0}", EVPD.PrettifyPage_C1_IBM(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -595,7 +591,7 @@ sealed class DeviceInfoCommand : Command
                             AaruConsole.WriteLine("{0}", EVPD.PrettifyPage_C0_C1_Certance(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -609,7 +605,7 @@ sealed class DeviceInfoCommand : Command
                             AaruConsole.WriteLine("{0}", EVPD.PrettifyPage_C2_C3_C4_C5_C6_Certance(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -623,7 +619,7 @@ sealed class DeviceInfoCommand : Command
                             AaruConsole.WriteLine("{0}", EVPD.PrettifyPage_C0_to_C5_HP(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -636,7 +632,7 @@ sealed class DeviceInfoCommand : Command
                             AaruConsole.WriteLine("{0}", EVPD.PrettifyPage_DF_Certance(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -651,7 +647,7 @@ sealed class DeviceInfoCommand : Command
                                                        page.Key);
 
                             DataFile.WriteTo(MODULE_NAME,
-                                             outputPrefix,
+                                             settings.OutputPrefix,
                                              $"_scsi_evpd_{page.Key:X2}h.bin",
                                              $"SCSI INQUIRY EVPD {page.Key:X2}h",
                                              page.Value);
@@ -665,7 +661,7 @@ sealed class DeviceInfoCommand : Command
             if(devInfo.ScsiModeSense6 != null)
             {
                 DataFile.WriteTo(MODULE_NAME,
-                                 outputPrefix,
+                                 settings.OutputPrefix,
                                  "_scsi_modesense6.bin",
                                  "SCSI MODE SENSE",
                                  devInfo.ScsiModeSense6);
@@ -674,7 +670,7 @@ sealed class DeviceInfoCommand : Command
             if(devInfo.ScsiModeSense10 != null)
             {
                 DataFile.WriteTo(MODULE_NAME,
-                                 outputPrefix,
+                                 settings.OutputPrefix,
                                  "_scsi_modesense10.bin",
                                  "SCSI MODE SENSE",
                                  devInfo.ScsiModeSense10);
@@ -690,7 +686,7 @@ sealed class DeviceInfoCommand : Command
             if(devInfo.MmcConfiguration != null)
             {
                 DataFile.WriteTo(MODULE_NAME,
-                                 outputPrefix,
+                                 settings.OutputPrefix,
                                  "_mmc_getconfiguration.bin",
                                  "MMC GET CONFIGURATION",
                                  devInfo.MmcConfiguration);
@@ -966,7 +962,7 @@ sealed class DeviceInfoCommand : Command
             if(devInfo.PlextorFeatures?.Eeprom != null)
             {
                 DataFile.WriteTo(MODULE_NAME,
-                                 outputPrefix,
+                                 settings.OutputPrefix,
                                  "_plextor_eeprom.bin",
                                  "PLEXTOR READ EEPROM",
                                  devInfo.PlextorFeatures.Eeprom);
@@ -1144,7 +1140,7 @@ sealed class DeviceInfoCommand : Command
             if(devInfo.BlockLimits != null)
             {
                 DataFile.WriteTo(MODULE_NAME,
-                                 outputPrefix,
+                                 settings.OutputPrefix,
                                  "_ssc_readblocklimits.bin",
                                  "SSC READ BLOCK LIMITS",
                                  devInfo.BlockLimits);
@@ -1156,7 +1152,7 @@ sealed class DeviceInfoCommand : Command
             if(devInfo.DensitySupport != null)
             {
                 DataFile.WriteTo(MODULE_NAME,
-                                 outputPrefix,
+                                 settings.OutputPrefix,
                                  "_ssc_reportdensitysupport.bin",
                                  "SSC REPORT DENSITY SUPPORT",
                                  devInfo.DensitySupport);
@@ -1171,7 +1167,7 @@ sealed class DeviceInfoCommand : Command
             if(devInfo.MediumDensitySupport != null)
             {
                 DataFile.WriteTo(MODULE_NAME,
-                                 outputPrefix,
+                                 settings.OutputPrefix,
                                  "_ssc_reportdensitysupport_medium.bin",
                                  "SSC REPORT DENSITY SUPPORT (MEDIUM)",
                                  devInfo.MediumDensitySupport);
@@ -1190,26 +1186,26 @@ sealed class DeviceInfoCommand : Command
         {
             case DeviceType.MMC:
             {
-                var noInfo = true;
+                bool noInfo = true;
 
                 if(devInfo.CID != null)
                 {
                     noInfo = false;
-                    DataFile.WriteTo(MODULE_NAME, outputPrefix, "_mmc_cid.bin", "MMC CID", devInfo.CID);
+                    DataFile.WriteTo(MODULE_NAME, settings.OutputPrefix, "_mmc_cid.bin", "MMC CID", devInfo.CID);
                     AaruConsole.WriteLine("{0}", Decoders.MMC.Decoders.PrettifyCID(devInfo.CID));
                 }
 
                 if(devInfo.CSD != null)
                 {
                     noInfo = false;
-                    DataFile.WriteTo(MODULE_NAME, outputPrefix, "_mmc_csd.bin", "MMC CSD", devInfo.CSD);
+                    DataFile.WriteTo(MODULE_NAME, settings.OutputPrefix, "_mmc_csd.bin", "MMC CSD", devInfo.CSD);
                     AaruConsole.WriteLine("{0}", Decoders.MMC.Decoders.PrettifyCSD(devInfo.CSD));
                 }
 
                 if(devInfo.OCR != null)
                 {
                     noInfo = false;
-                    DataFile.WriteTo(MODULE_NAME, outputPrefix, "_mmc_ocr.bin", "MMC OCR", devInfo.OCR);
+                    DataFile.WriteTo(MODULE_NAME, settings.OutputPrefix, "_mmc_ocr.bin", "MMC OCR", devInfo.OCR);
                     AaruConsole.WriteLine("{0}", Decoders.MMC.Decoders.PrettifyOCR(devInfo.OCR));
                 }
 
@@ -1218,7 +1214,7 @@ sealed class DeviceInfoCommand : Command
                     noInfo = false;
 
                     DataFile.WriteTo(MODULE_NAME,
-                                     outputPrefix,
+                                     settings.OutputPrefix,
                                      "_mmc_ecsd.bin",
                                      "MMC Extended CSD",
                                      devInfo.ExtendedCSD);
@@ -1232,13 +1228,17 @@ sealed class DeviceInfoCommand : Command
                 break;
             case DeviceType.SecureDigital:
             {
-                var noInfo = true;
+                bool noInfo = true;
 
                 if(devInfo.CID != null)
                 {
                     noInfo = false;
 
-                    DataFile.WriteTo(MODULE_NAME, outputPrefix, "_sd_cid.bin", "SecureDigital CID", devInfo.CID);
+                    DataFile.WriteTo(MODULE_NAME,
+                                     settings.OutputPrefix,
+                                     "_sd_cid.bin",
+                                     "SecureDigital CID",
+                                     devInfo.CID);
 
                     AaruConsole.WriteLine("{0}", Decoders.SecureDigital.Decoders.PrettifyCID(devInfo.CID));
                 }
@@ -1247,7 +1247,11 @@ sealed class DeviceInfoCommand : Command
                 {
                     noInfo = false;
 
-                    DataFile.WriteTo(MODULE_NAME, outputPrefix, "_sd_csd.bin", "SecureDigital CSD", devInfo.CSD);
+                    DataFile.WriteTo(MODULE_NAME,
+                                     settings.OutputPrefix,
+                                     "_sd_csd.bin",
+                                     "SecureDigital CSD",
+                                     devInfo.CSD);
 
                     AaruConsole.WriteLine("{0}", Decoders.SecureDigital.Decoders.PrettifyCSD(devInfo.CSD));
                 }
@@ -1256,7 +1260,11 @@ sealed class DeviceInfoCommand : Command
                 {
                     noInfo = false;
 
-                    DataFile.WriteTo(MODULE_NAME, outputPrefix, "_sd_ocr.bin", "SecureDigital OCR", devInfo.OCR);
+                    DataFile.WriteTo(MODULE_NAME,
+                                     settings.OutputPrefix,
+                                     "_sd_ocr.bin",
+                                     "SecureDigital OCR",
+                                     devInfo.OCR);
 
                     AaruConsole.WriteLine("{0}", Decoders.SecureDigital.Decoders.PrettifyOCR(devInfo.OCR));
                 }
@@ -1265,7 +1273,11 @@ sealed class DeviceInfoCommand : Command
                 {
                     noInfo = false;
 
-                    DataFile.WriteTo(MODULE_NAME, outputPrefix, "_sd_scr.bin", "SecureDigital SCR", devInfo.SCR);
+                    DataFile.WriteTo(MODULE_NAME,
+                                     settings.OutputPrefix,
+                                     "_sd_scr.bin",
+                                     "SecureDigital SCR",
+                                     devInfo.SCR);
 
                     AaruConsole.WriteLine("{0}", Decoders.SecureDigital.Decoders.PrettifySCR(devInfo.SCR));
                 }
@@ -1281,7 +1293,7 @@ sealed class DeviceInfoCommand : Command
         AaruConsole.WriteLine();
 
         // Open main database
-        var ctx = AaruContext.Create(Settings.Settings.MainDbPath);
+        var ctx = AaruContext.Create(Aaru.Settings.Settings.MainDbPath);
 
         // Search for device in main database
         Aaru.Database.Models.Device dbDev =
@@ -1313,4 +1325,19 @@ sealed class DeviceInfoCommand : Command
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : DeviceFamily
+    {
+        [Description("Prefix for saving binary information from device.")]
+        [CommandOption("-w|--output-prefix")]
+        public string OutputPrefix { get; init; }
+
+        [Description("Device path")]
+        [CommandArgument(0, "<device-path>")]
+        public string Path { get; init; }
+    }
+
+#endregion
 }

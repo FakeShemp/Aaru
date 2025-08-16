@@ -32,8 +32,7 @@
 // ****************************************************************************/
 
 using System;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
@@ -42,33 +41,19 @@ using Aaru.Console;
 using Aaru.Core;
 using Aaru.Localization;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Aaru.Commands.Archive;
 
-sealed class ArchiveInfoCommand : Command
+sealed class ArchiveInfoCommand : Command<ArchiveInfoCommand.Settings>
 {
     const string MODULE_NAME = "Analyze command";
 
-    public ArchiveInfoCommand() : base("info", UI.Archive_Info_Command_Description)
-    {
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Archive_file_path,
-            Name        = "archive-path"
-        });
-
-        Add(new Option<string>(["--encoding", "-e"], () => null, UI.Name_of_character_encoding_to_use));
-
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool debug, bool verbose, string archivePath, string encoding)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -86,7 +71,7 @@ sealed class ArchiveInfoCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -99,17 +84,17 @@ sealed class ArchiveInfoCommand : Command
 
         Statistics.AddCommand("archive-info");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "debug={0}",    debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "input={0}",    Markup.Escape(archivePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "verbose={0}",  verbose);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "encoding={0}", Markup.Escape(encoding ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "debug={0}",    settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "input={0}",    Markup.Escape(settings.Path ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "verbose={0}",  settings.Verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "encoding={0}", Markup.Escape(settings.Encoding ?? ""));
 
         IFilter inputFilter = null;
 
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(UI.Identifying_file_filter).IsIndeterminate();
-            inputFilter = PluginRegister.Singleton.GetFilter(archivePath);
+            inputFilter = PluginRegister.Singleton.GetFilter(settings.Path);
         });
 
         if(inputFilter == null)
@@ -121,13 +106,13 @@ sealed class ArchiveInfoCommand : Command
 
         Encoding encodingClass = null;
 
-        if(encoding != null)
+        if(settings.Encoding != null)
         {
             try
             {
-                encodingClass = Claunia.Encoding.Encoding.GetEncoding(encoding);
+                encodingClass = Claunia.Encoding.Encoding.GetEncoding(settings.Encoding);
 
-                if(verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
+                if(settings.Verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
             }
             catch(ArgumentException)
             {
@@ -188,4 +173,20 @@ sealed class ArchiveInfoCommand : Command
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : ArchiveFamily
+    {
+        [CommandOption("-e|--encoding")]
+        [Description("Name of character encoding to use.")]
+        [DefaultValue(null)]
+        public string Encoding { get; init; }
+
+        [Description("Archive file path")]
+        [CommandArgument(0, "<path>")]
+        public string Path { get; init; }
+    }
+
+#endregion
 }

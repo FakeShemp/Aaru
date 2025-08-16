@@ -30,9 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using System.Globalization;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
@@ -44,41 +42,19 @@ using Aaru.Decoders.CD;
 using Aaru.Decoders.SCSI;
 using Aaru.Localization;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Aaru.Commands.Image;
 
-sealed class DecodeCommand : Command
+sealed class DecodeCommand : Command<DecodeCommand.Settings>
 {
     const string MODULE_NAME = "Decode command";
 
-    public DecodeCommand() : base("decode", UI.Image_Decode_Command_Description)
-    {
-        Add(new Option<bool>(["--disk-tags", "-f"], () => true, UI.Decode_media_tags));
-
-        Add(new Option<string>(["--length", "-l"],
-                               () => UI.Parameter_response_all_sectors,
-                               UI.How_many_sectors_to_decode_or_all));
-
-        Add(new Option<bool>(["--sector-tags", "-p"], () => true, UI.Decode_sector_tags));
-
-        Add(new Option<ulong>(["--start", "-s"], () => 0, UI.Sector_to_start_decoding_from));
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Media_image_path,
-            Name        = "image-path"
-        });
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool  verbose, bool debug, bool diskTags, string imagePath, string length, bool sectorTags,
-                             ulong startSector)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -96,7 +72,7 @@ sealed class DecodeCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -109,20 +85,20 @@ sealed class DecodeCommand : Command
 
         Statistics.AddCommand("decode");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",       debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--disk-tags={0}",   diskTags);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",       Markup.Escape(imagePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--length={0}",      Markup.Escape(length    ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--sector-tags={0}", sectorTags);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--start={0}",       startSector);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",     verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",       settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--disk-tags={0}",   settings.DiskTags);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",       Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--length={0}",      Markup.Escape(settings.Length    ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--sector-tags={0}", settings.SectorTags);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--start={0}",       settings.StartSector);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",     settings.Verbose);
 
         IFilter inputFilter = null;
 
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(UI.Identifying_file_filter).IsIndeterminate();
-            inputFilter = PluginRegister.Singleton.GetFilter(imagePath);
+            inputFilter = PluginRegister.Singleton.GetFilter(settings.ImagePath);
         });
 
         if(inputFilter == null)
@@ -176,7 +152,7 @@ sealed class DecodeCommand : Command
         Statistics.AddMedia(inputFormat.Info.MediaType, false);
         Statistics.AddFilter(inputFilter.Name);
 
-        if(diskTags)
+        if(settings.DiskTags)
         {
             if(inputFormat.Info.ReadableMediaTags.Count == 0)
                 AaruConsole.WriteLine(UI.There_are_no_media_tags_in_chosen_disc_image);
@@ -393,14 +369,14 @@ sealed class DecodeCommand : Command
             }
         }
 
-        if(!sectorTags) return (int)ErrorNumber.NoError;
+        if(!settings.SectorTags) return (int)ErrorNumber.NoError;
 
-        if(length.ToLower(CultureInfo.CurrentUICulture) == UI.Parameter_response_all_sectors) {}
+        if(settings.Length.ToLower(CultureInfo.CurrentUICulture) == UI.Parameter_response_all_sectors) {}
         else
         {
-            if(!ulong.TryParse(length, out ulong _))
+            if(!ulong.TryParse(settings.Length, out ulong _))
             {
-                AaruConsole.WriteLine(UI.Value_0_is_not_a_valid_number_for_length, length);
+                AaruConsole.WriteLine(UI.Value_0_is_not_a_valid_number_for_length, settings.Length);
                 AaruConsole.WriteLine(UI.Not_decoding_sectors_tags);
 
                 return 3;
@@ -429,4 +405,31 @@ sealed class DecodeCommand : Command
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : ImageFamily
+    {
+        [Description("Decode media tags.")]
+        [DefaultValue(true)]
+        [CommandOption("-f|--disk-tags")]
+        public bool DiskTags { get; init; }
+        [Description("How many sectors to decode, or \"all\".")]
+        [DefaultValue("all")]
+        [CommandOption("-l|--length")]
+        public string Length { get; init; }
+        [Description("Decode sector tags.")]
+        [DefaultValue(true)]
+        [CommandOption("-p|--sector-tags")]
+        public bool SectorTags { get; init; }
+        [Description("Sector to start decoding from.")]
+        [DefaultValue(0)]
+        [CommandOption("-s|--start")]
+        public ulong StartSector { get; init; }
+        [Description("Media image path")]
+        [CommandArgument(0, "<image-path>")]
+        public string ImagePath { get; init; }
+    }
+
+#endregion
 }

@@ -32,8 +32,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -52,6 +51,7 @@ using Aaru.Devices;
 using Aaru.Localization;
 using Schemas;
 using Spectre.Console;
+using Spectre.Console.Cli;
 using File = System.IO.File;
 using ImageInfo = Aaru.CommonTypes.Structs.ImageInfo;
 using MediaType = Aaru.CommonTypes.MediaType;
@@ -63,95 +63,15 @@ using Version = Aaru.CommonTypes.Interop.Version;
 
 namespace Aaru.Commands.Image;
 
-sealed class ConvertImageCommand : Command
+sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 {
     const string MODULE_NAME = "Convert-image command";
 
-    public ConvertImageCommand() : base("convert", UI.Image_Convert_Command_Description)
-    {
-        Add(new Option<string>(["--cicm-xml", "-x"], () => null, UI.Take_metadata_from_existing_CICM_XML_sidecar));
-
-        Add(new Option<string>("--comments", () => null, UI.Image_comments));
-
-        Add(new Option<int>(["--count", "-c"], () => 64, UI.How_many_sectors_to_convert_at_once));
-
-        Add(new Option<string>("--creator", () => null, UI.Who_person_created_the_image));
-
-        Add(new Option<string>("--drive-manufacturer", () => null, UI.Manufacturer_of_drive_read_the_media_by_image));
-
-        Add(new Option<string>("--drive-model", () => null, UI.Model_of_drive_read_the_media_by_image));
-
-        Add(new Option<string>("--drive-revision", () => null, UI.Firmware_revision_of_drive_read_the_media_by_image));
-
-        Add(new Option<string>("--drive-serial", () => null, UI.Serial_number_of_drive_read_the_media_by_image));
-
-        Add(new Option<bool>(["--force", "-f"], UI.Continue_conversion_even_if_data_lost));
-
-        Add(new Option<string>(["--format", "-p"],
-                               () => null,
-                               UI.Format_of_the_output_image_as_plugin_name_or_plugin_id));
-
-        Add(new Option<string>("--media-barcode", () => null, UI.Barcode_of_the_media_by_image));
-
-        Add(new Option<int>("--media-lastsequence", () => 0, UI.Last_media_of_sequence_by_image));
-
-        Add(new Option<string>("--media-manufacturer", () => null, UI.Manufacturer_of_media_by_image));
-
-        Add(new Option<string>("--media-model",      () => null, UI.Model_of_media_by_image));
-        Add(new Option<string>("--media-partnumber", () => null, UI.Part_number_of_media_by_image));
-        Add(new Option<int>("--media-sequence", () => 0, UI.Number_in_sequence_for_media_by_image));
-        Add(new Option<string>("--media-serial", () => null, UI.Serial_number_of_media_by_image));
-        Add(new Option<string>("--media-title",  () => null, UI.Title_of_media_represented_by_image));
-
-        Add(new Option<string>(["--options", "-O"], () => null, UI.Comma_separated_name_value_pairs_of_image_options));
-
-        Add(new Option<string>(["--resume-file", "-r"], () => null, UI.Take_dump_hardware_from_existing_resume));
-
-        Add(new Option<string>(["--geometry", "-g"], () => null, UI.Force_geometry_help));
-
-        Add(new Option<bool>(["--fix-subchannel-position"], () => true, UI.Fix_subchannel_position_help));
-
-        Add(new Option<bool>(["--fix-subchannel"], () => false, UI.Fix_subchannel_help));
-
-        Add(new Option<bool>(["--fix-subchannel-crc"], () => false, UI.Fix_subchannel_crc_help));
-
-        Add(new Option<bool>(["--generate-subchannels"], () => false, UI.Generates_subchannels_help));
-
-        Add(new Option<bool>(["--decrypt"], () => false, UI.Decrypt_sectors_help));
-
-        Add(new Option<string>(["--aaru-metadata", "-m"],
-                               () => null,
-                               "Take metadata from existing Aaru Metadata sidecar."));
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Input_image_path,
-            Name        = "input-path"
-        });
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Output_image_path,
-            Name        = "output-path"
-        });
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool   verbose, bool debug, string cicmXml, string comments, int count, string creator,
-                             string driveFirmwareRevision, string driveManufacturer, string driveModel,
-                             string driveSerialNumber, bool force, string inputPath, int lastMediaSequence,
-                             string mediaBarcode, string mediaManufacturer, string mediaModel, string mediaPartNumber,
-                             int    mediaSequence, string mediaSerialNumber, string mediaTitle, string outputPath,
-                             string options, string resumeFile, string format, string geometry,
-                             bool   fixSubchannelPosition, bool fixSubchannel, bool fixSubchannelCrc,
-                             bool   generateSubchannels, bool decrypt, string aaruMetadata)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -169,7 +89,7 @@ sealed class ConvertImageCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -180,51 +100,71 @@ sealed class ConvertImageCommand : Command
             };
         }
 
+        bool fixSubchannel         = settings.FixSubchannel;
+        bool fixSubchannelCrc      = settings.FixSubchannelCrc;
+        bool fixSubchannelPosition = settings.FixSubchannelPosition;
+
         if(fixSubchannelCrc) fixSubchannel = true;
 
         if(fixSubchannel) fixSubchannelPosition = true;
 
         Statistics.AddCommand("convert-image");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--cicm-xml={0}", Markup.Escape(cicmXml ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--comments={0}", Markup.Escape(comments ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--count={0}", count);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--creator={0}", Markup.Escape(creator ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}", debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--drive-manufacturer={0}", Markup.Escape(driveManufacturer ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--drive-model={0}", Markup.Escape(driveModel ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--drive-revision={0}", Markup.Escape(driveFirmwareRevision ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--drive-serial={0}", Markup.Escape(driveSerialNumber ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--force={0}", force);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--format={0}", Markup.Escape(format ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--geometry={0}", Markup.Escape(geometry ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}", Markup.Escape(inputPath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-barcode={0}", Markup.Escape(mediaBarcode ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-lastsequence={0}", lastMediaSequence);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-manufacturer={0}", Markup.Escape(mediaManufacturer ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-model={0}", Markup.Escape(mediaModel ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-partnumber={0}", Markup.Escape(mediaPartNumber ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-sequence={0}", mediaSequence);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-serial={0}", Markup.Escape(mediaSerialNumber ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-title={0}", Markup.Escape(mediaTitle ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--options={0}", Markup.Escape(options ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--output={0}", Markup.Escape(outputPath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--resume-file={0}", Markup.Escape(resumeFile ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--cicm-xml={0}", Markup.Escape(settings.CicmXml  ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--comments={0}", Markup.Escape(settings.Comments ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--count={0}",    settings.Count);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--creator={0}",  Markup.Escape(settings.Creator ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",    settings.Debug);
+
+        AaruConsole.DebugWriteLine(MODULE_NAME,
+                                   "--drive-manufacturer={0}",
+                                   Markup.Escape(settings.DriveManufacturer ?? ""));
+
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--drive-model={0}", Markup.Escape(settings.DriveModel ?? ""));
+
+        AaruConsole.DebugWriteLine(MODULE_NAME,
+                                   "--drive-revision={0}",
+                                   Markup.Escape(settings.DriveFirmwareRevision ?? ""));
+
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--drive-serial={0}", Markup.Escape(settings.DriveSerialNumber ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--force={0}", settings.Force);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--format={0}", Markup.Escape(settings.Format ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--geometry={0}", Markup.Escape(settings.Geometry ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}", Markup.Escape(settings.InputPath ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-barcode={0}", Markup.Escape(settings.MediaBarcode ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-lastsequence={0}", settings.LastMediaSequence);
+
+        AaruConsole.DebugWriteLine(MODULE_NAME,
+                                   "--media-manufacturer={0}",
+                                   Markup.Escape(settings.MediaManufacturer ?? ""));
+
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-model={0}", Markup.Escape(settings.MediaModel ?? ""));
+
+        AaruConsole.DebugWriteLine(MODULE_NAME,
+                                   "--media-partnumber={0}",
+                                   Markup.Escape(settings.MediaPartNumber ?? ""));
+
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-sequence={0}", settings.MediaSequence);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-serial={0}", Markup.Escape(settings.MediaSerialNumber ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-title={0}", Markup.Escape(settings.MediaTitle ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--options={0}", Markup.Escape(settings.Options ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--output={0}", Markup.Escape(settings.OutputPath ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--resume-file={0}", Markup.Escape(settings.ResumeFile ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
         AaruConsole.DebugWriteLine(MODULE_NAME, "--fix-subchannel-position={0}", fixSubchannelPosition);
         AaruConsole.DebugWriteLine(MODULE_NAME, "--fix-subchannel={0}", fixSubchannel);
         AaruConsole.DebugWriteLine(MODULE_NAME, "--fix-subchannel-crc={0}", fixSubchannelCrc);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--generate-subchannels={0}", generateSubchannels);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--decrypt={0}", decrypt);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--aaru-metadata={0}", Markup.Escape(aaruMetadata ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--generate-subchannels={0}", settings.GenerateSubchannels);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--decrypt={0}", settings.Decrypt);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--aaru-metadata={0}", Markup.Escape(settings.AaruMetadata ?? ""));
 
-        Dictionary<string, string> parsedOptions = Core.Options.Parse(options);
+        Dictionary<string, string> parsedOptions = Options.Parse(settings.Options);
         AaruConsole.DebugWriteLine(MODULE_NAME, UI.Parsed_options);
 
         foreach(KeyValuePair<string, string> parsedOption in parsedOptions)
             AaruConsole.DebugWriteLine(MODULE_NAME, "{0} = {1}", parsedOption.Key, parsedOption.Value);
 
-        if(count == 0)
+        if(settings.Count == 0)
         {
             AaruConsole.ErrorWriteLine(UI.Need_to_specify_more_than_zero_sectors_to_copy_at_once);
 
@@ -233,11 +173,11 @@ sealed class ConvertImageCommand : Command
 
         (uint cylinders, uint heads, uint sectors)? geometryValues = null;
 
-        if(geometry != null)
+        if(settings.Geometry != null)
         {
-            string[] geometryPieces = geometry.Split('/');
+            string[] geometryPieces = settings.Geometry.Split('/');
 
-            if(geometryPieces.Length == 0) geometryPieces = geometry.Split('-');
+            if(geometryPieces.Length == 0) geometryPieces = settings.Geometry.Split('-');
 
             if(geometryPieces.Length != 3)
             {
@@ -274,14 +214,14 @@ sealed class ConvertImageCommand : Command
         Metadata  sidecar = null;
         MediaType mediaType;
 
-        if(aaruMetadata != null)
+        if(settings.AaruMetadata != null)
 
         {
-            if(File.Exists(aaruMetadata))
+            if(File.Exists(settings.AaruMetadata))
             {
                 try
                 {
-                    var fs = new FileStream(aaruMetadata, FileMode.Open);
+                    var fs = new FileStream(settings.AaruMetadata, FileMode.Open);
 
                     sidecar =
                         (JsonSerializer.Deserialize(fs, typeof(MetadataJson), MetadataJsonContext.Default) as
@@ -305,9 +245,9 @@ sealed class ConvertImageCommand : Command
             }
         }
 
-        else if(cicmXml != null)
+        else if(settings.CicmXml != null)
         {
-            if(File.Exists(cicmXml))
+            if(File.Exists(settings.CicmXml))
             {
                 try
                 {
@@ -316,7 +256,7 @@ sealed class ConvertImageCommand : Command
                     var xs = new XmlSerializer(typeof(CICMMetadataType));
 #pragma warning restore IL2026
 
-                    var sr = new StreamReader(cicmXml);
+                    var sr = new StreamReader(settings.CicmXml);
 
                     // Should be covered by virtue of being the same exact class as the JSON above
 #pragma warning disable IL2026
@@ -341,15 +281,15 @@ sealed class ConvertImageCommand : Command
             }
         }
 
-        if(resumeFile != null)
+        if(settings.ResumeFile != null)
         {
-            if(File.Exists(resumeFile))
+            if(File.Exists(settings.ResumeFile))
             {
                 try
                 {
-                    if(resumeFile.EndsWith(".metadata.json", StringComparison.CurrentCultureIgnoreCase))
+                    if(settings.ResumeFile.EndsWith(".metadata.json", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        var fs = new FileStream(resumeFile, FileMode.Open);
+                        var fs = new FileStream(settings.ResumeFile, FileMode.Open);
 
                         resume =
                             (JsonSerializer.Deserialize(fs,
@@ -365,7 +305,7 @@ sealed class ConvertImageCommand : Command
                         var xs = new XmlSerializer(typeof(Resume));
 #pragma warning restore IL2026
 
-                        var sr = new StreamReader(resumeFile);
+                        var sr = new StreamReader(settings.ResumeFile);
 
                         // Bypassed by JSON source generator used above
 #pragma warning disable IL2026
@@ -396,7 +336,7 @@ sealed class ConvertImageCommand : Command
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(UI.Identifying_file_filter).IsIndeterminate();
-            inputFilter = PluginRegister.Singleton.GetFilter(inputPath);
+            inputFilter = PluginRegister.Singleton.GetFilter(settings.InputPath);
         });
 
         if(inputFilter == null)
@@ -406,7 +346,7 @@ sealed class ConvertImageCommand : Command
             return (int)ErrorNumber.CannotOpenFile;
         }
 
-        if(File.Exists(outputPath))
+        if(File.Exists(settings.OutputPath))
         {
             AaruConsole.ErrorWriteLine(UI.Output_file_already_exists);
 
@@ -439,7 +379,7 @@ sealed class ConvertImageCommand : Command
             return (int)ErrorNumber.InvalidArgument;
         }
 
-        if(verbose)
+        if(settings.Verbose)
             AaruConsole.VerboseWriteLine(UI.Input_image_format_identified_by_0_1, inputFormat.Name, inputFormat.Id);
         else
             AaruConsole.WriteLine(UI.Input_image_format_identified_by_0, inputFormat.Name);
@@ -499,16 +439,16 @@ sealed class ConvertImageCommand : Command
         List<IBaseWritableImage> candidates = [];
 
         // Try extension
-        if(string.IsNullOrEmpty(format))
+        if(string.IsNullOrEmpty(settings.Format))
         {
             candidates.AddRange(from plugin in plugins.WritableImages.Values
                                 where plugin is not null
-                                where plugin.KnownExtensions.Contains(Path.GetExtension(outputPath))
+                                where plugin.KnownExtensions.Contains(Path.GetExtension(settings.OutputPath))
                                 select plugin);
         }
 
         // Try Id
-        else if(Guid.TryParse(format, out Guid outId))
+        else if(Guid.TryParse(settings.Format, out Guid outId))
         {
             candidates.AddRange(from plugin in plugins.WritableImages.Values
                                 where plugin is not null
@@ -521,7 +461,7 @@ sealed class ConvertImageCommand : Command
         {
             candidates.AddRange(from plugin in plugins.WritableImages.Values
                                 where plugin is not null
-                                where plugin.Name.Equals(format, StringComparison.InvariantCultureIgnoreCase)
+                                where plugin.Name.Equals(settings.Format, StringComparison.InvariantCultureIgnoreCase)
                                 select plugin);
         }
 
@@ -539,7 +479,7 @@ sealed class ConvertImageCommand : Command
 
         IBaseWritableImage outputFormat = candidates[0];
 
-        if(verbose)
+        if(settings.Verbose)
             AaruConsole.VerboseWriteLine(UI.Output_image_format_0_1, outputFormat.Name, outputFormat.Id);
         else
             AaruConsole.WriteLine(UI.Output_image_format_0, outputFormat.Name);
@@ -552,7 +492,7 @@ sealed class ConvertImageCommand : Command
         }
 
         foreach(MediaTagType mediaTag in inputFormat.Info.ReadableMediaTags.Where(mediaTag =>
-                    !outputFormat.SupportedMediaTags.Contains(mediaTag) && !force))
+                    !outputFormat.SupportedMediaTags.Contains(mediaTag) && !settings.Force))
         {
             AaruConsole.ErrorWriteLine(UI.Converting_image_will_lose_media_tag_0, mediaTag);
             AaruConsole.ErrorWriteLine(UI.If_you_dont_care_use_force_option);
@@ -565,7 +505,7 @@ sealed class ConvertImageCommand : Command
         foreach(SectorTagType sectorTag in inputFormat.Info.ReadableSectorTags.Where(sectorTag =>
                     !outputFormat.SupportedSectorTags.Contains(sectorTag)))
         {
-            if(force)
+            if(settings.Force)
             {
                 if(sectorTag != SectorTagType.CdTrackFlags &&
                    sectorTag != SectorTagType.CdTrackIsrc  &&
@@ -593,7 +533,7 @@ sealed class ConvertImageCommand : Command
             return (int)ErrorNumber.UnsupportedMedia;
         }
 
-        var ret = false;
+        bool ret = false;
 
         if(inputTape?.IsTape == true && outputTape != null)
         {
@@ -641,13 +581,13 @@ sealed class ConvertImageCommand : Command
             AaruConsole.ErrorWriteLine("Output format does not support sessions, this will end in a loss of data, continuing...");*/
         }
 
-        var created = false;
+        bool created = false;
 
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(UI.Invoke_Opening_image_file).IsIndeterminate();
 
-            created = outputFormat.Create(outputPath,
+            created = outputFormat.Create(settings.OutputPath,
                                           mediaType,
                                           parsedOptions,
                                           inputFormat.Info.Sectors,
@@ -665,25 +605,26 @@ sealed class ConvertImageCommand : Command
         {
             Application           = "Aaru",
             ApplicationVersion    = Version.GetVersion(),
-            Comments              = comments              ?? inputFormat.Info.Comments,
-            Creator               = creator               ?? inputFormat.Info.Creator,
-            DriveFirmwareRevision = driveFirmwareRevision ?? inputFormat.Info.DriveFirmwareRevision,
-            DriveManufacturer     = driveManufacturer     ?? inputFormat.Info.DriveManufacturer,
-            DriveModel            = driveModel            ?? inputFormat.Info.DriveModel,
-            DriveSerialNumber     = driveSerialNumber     ?? inputFormat.Info.DriveSerialNumber,
-            LastMediaSequence     = lastMediaSequence != 0 ? lastMediaSequence : inputFormat.Info.LastMediaSequence,
-            MediaBarcode          = mediaBarcode      ?? inputFormat.Info.MediaBarcode,
-            MediaManufacturer     = mediaManufacturer ?? inputFormat.Info.MediaManufacturer,
-            MediaModel            = mediaModel        ?? inputFormat.Info.MediaModel,
-            MediaPartNumber       = mediaPartNumber   ?? inputFormat.Info.MediaPartNumber,
-            MediaSequence         = mediaSequence != 0 ? mediaSequence : inputFormat.Info.MediaSequence,
-            MediaSerialNumber     = mediaSerialNumber ?? inputFormat.Info.MediaSerialNumber,
-            MediaTitle            = mediaTitle        ?? inputFormat.Info.MediaTitle
+            Comments              = settings.Comments              ?? inputFormat.Info.Comments,
+            Creator               = settings.Creator               ?? inputFormat.Info.Creator,
+            DriveFirmwareRevision = settings.DriveFirmwareRevision ?? inputFormat.Info.DriveFirmwareRevision,
+            DriveManufacturer     = settings.DriveManufacturer     ?? inputFormat.Info.DriveManufacturer,
+            DriveModel            = settings.DriveModel            ?? inputFormat.Info.DriveModel,
+            DriveSerialNumber     = settings.DriveSerialNumber     ?? inputFormat.Info.DriveSerialNumber,
+            LastMediaSequence =
+                settings.LastMediaSequence != 0 ? settings.LastMediaSequence : inputFormat.Info.LastMediaSequence,
+            MediaBarcode      = settings.MediaBarcode      ?? inputFormat.Info.MediaBarcode,
+            MediaManufacturer = settings.MediaManufacturer ?? inputFormat.Info.MediaManufacturer,
+            MediaModel        = settings.MediaModel        ?? inputFormat.Info.MediaModel,
+            MediaPartNumber   = settings.MediaPartNumber   ?? inputFormat.Info.MediaPartNumber,
+            MediaSequence     = settings.MediaSequence != 0 ? settings.MediaSequence : inputFormat.Info.MediaSequence,
+            MediaSerialNumber = settings.MediaSerialNumber ?? inputFormat.Info.MediaSerialNumber,
+            MediaTitle        = settings.MediaTitle        ?? inputFormat.Info.MediaTitle
         };
 
         if(!outputFormat.SetImageInfo(imageInfo))
         {
-            if(!force)
+            if(!settings.Force)
             {
                 AaruConsole.ErrorWriteLine(UI.Error_0_setting_metadata_not_continuing, outputFormat.ErrorMessage);
 
@@ -696,8 +637,8 @@ sealed class ConvertImageCommand : Command
         Metadata           metadata     = inputFormat.AaruMetadata;
         List<DumpHardware> dumpHardware = inputFormat.DumpHardware;
 
-        foreach(MediaTagType mediaTag in inputFormat.Info.ReadableMediaTags.Where(mediaTag =>
-                    !force || outputFormat.SupportedMediaTags.Contains(mediaTag)))
+        foreach(MediaTagType mediaTag in inputFormat.Info.ReadableMediaTags.Where(mediaTag => !settings.Force ||
+                    outputFormat.SupportedMediaTags.Contains(mediaTag)))
         {
             ErrorNumber errorNumber = ErrorNumber.NoError;
 
@@ -712,7 +653,7 @@ sealed class ConvertImageCommand : Command
 
                             if(errno != ErrorNumber.NoError)
                             {
-                                if(force)
+                                if(settings.Force)
                                     AaruConsole.ErrorWriteLine(UI.Error_0_reading_media_tag, errno);
                                 else
                                 {
@@ -726,7 +667,7 @@ sealed class ConvertImageCommand : Command
 
                             if((outputFormat as IWritableImage)?.WriteMediaTag(tag, mediaTag) == true) return;
 
-                            if(force)
+                            if(settings.Force)
                                 AaruConsole.ErrorWriteLine(UI.Error_0_writing_media_tag, outputFormat.ErrorMessage);
                             else
                             {
@@ -756,7 +697,7 @@ sealed class ConvertImageCommand : Command
 
             ErrorNumber errno = ErrorNumber.NoError;
 
-            if(decrypt) AaruConsole.WriteLine("Decrypting encrypted sectors.");
+            if(settings.Decrypt) AaruConsole.WriteLine("Decrypting encrypted sectors.");
 
             AnsiConsole.Progress()
                        .AutoClear(true)
@@ -786,8 +727,8 @@ sealed class ConvertImageCommand : Command
 
                                     uint sectorsToDo;
 
-                                    if(trackSectors - doneSectors >= (ulong)count)
-                                        sectorsToDo = (uint)count;
+                                    if(trackSectors - doneSectors >= (ulong)settings.Count)
+                                        sectorsToDo = (uint)settings.Count;
                                     else
                                         sectorsToDo = (uint)(trackSectors - doneSectors);
 
@@ -796,8 +737,8 @@ sealed class ConvertImageCommand : Command
                                                                           doneSectors + sectorsToDo + track.StartSector,
                                                                           track.Sequence);
 
-                                    var useNotLong = false;
-                                    var result     = false;
+                                    bool useNotLong = false;
+                                    bool result     = false;
 
                                     if(useLong)
                                     {
@@ -821,7 +762,7 @@ sealed class ConvertImageCommand : Command
                                         {
                                             result = true;
 
-                                            if(force)
+                                            if(settings.Force)
                                             {
                                                 AaruConsole.ErrorWriteLine(UI.Error_0_reading_sector_1_continuing,
                                                                            errno,
@@ -841,7 +782,7 @@ sealed class ConvertImageCommand : Command
 
                                         if(!result && sector.Length % 2352 != 0)
                                         {
-                                            if(!force)
+                                            if(!settings.Force)
                                             {
                                                 AaruConsole
                                                    .ErrorWriteLine(UI
@@ -871,7 +812,7 @@ sealed class ConvertImageCommand : Command
                                                                        or MediaType.DVDRDL
                                                                        or MediaType.DVDPR
                                                                        or MediaType.DVDPRDL &&
-                                           decrypt)
+                                           settings.Decrypt)
                                         {
                                             // Only sectors which are MPEG packets can be encrypted.
                                             if(Mpeg.ContainsMpegPackets(sector, sectorsToDo))
@@ -1009,7 +950,7 @@ sealed class ConvertImageCommand : Command
                                         {
                                             result = true;
 
-                                            if(force)
+                                            if(settings.Force)
                                             {
                                                 AaruConsole.ErrorWriteLine(UI.Error_0_reading_sector_1_continuing,
                                                                            errno,
@@ -1030,7 +971,7 @@ sealed class ConvertImageCommand : Command
 
                                     if(!result)
                                     {
-                                        if(force)
+                                        if(settings.Force)
                                         {
                                             AaruConsole.ErrorWriteLine(UI.Error_0_writing_sector_1_continuing,
                                                                        outputOptical.ErrorMessage,
@@ -1066,7 +1007,7 @@ sealed class ConvertImageCommand : Command
             Dictionary<byte, int>    smallestPregapLbaPerTrack = new();
             var                      tracks                    = new Track[inputOptical.Tracks.Count];
 
-            for(var i = 0; i < tracks.Length; i++)
+            for(int i = 0; i < tracks.Length; i++)
             {
                 tracks[i] = new Track
                 {
@@ -1143,7 +1084,7 @@ sealed class ConvertImageCommand : Command
                         continue;
                 }
 
-                if(force && !outputOptical.SupportedSectorTags.Contains(tag)) continue;
+                if(settings.Force && !outputOptical.SupportedSectorTags.Contains(tag)) continue;
 
                 errno = ErrorNumber.NoError;
 
@@ -1186,7 +1127,7 @@ sealed class ConvertImageCommand : Command
                                                     break;
                                                 default:
                                                 {
-                                                    if(force)
+                                                    if(settings.Force)
                                                     {
                                                         AaruConsole.ErrorWriteLine(UI.Error_0_writing_tag_continuing,
                                                             outputOptical.ErrorMessage);
@@ -1205,7 +1146,7 @@ sealed class ConvertImageCommand : Command
 
                                             if(!result)
                                             {
-                                                if(force)
+                                                if(settings.Force)
                                                 {
                                                     AaruConsole.ErrorWriteLine(UI.Error_0_writing_tag_continuing,
                                                                                outputOptical.ErrorMessage);
@@ -1231,8 +1172,8 @@ sealed class ConvertImageCommand : Command
                                     {
                                         uint sectorsToDo;
 
-                                        if(trackSectors - doneSectors >= (ulong)count)
-                                            sectorsToDo = (uint)count;
+                                        if(trackSectors - doneSectors >= (ulong)settings.Count)
+                                            sectorsToDo = (uint)settings.Count;
                                         else
                                             sectorsToDo = (uint)(trackSectors - doneSectors);
 
@@ -1290,7 +1231,7 @@ sealed class ConvertImageCommand : Command
                                             {
                                                 result = true;
 
-                                                if(force)
+                                                if(settings.Force)
                                                 {
                                                     AaruConsole
                                                        .ErrorWriteLine(UI.Error_0_reading_tag_for_sector_1_continuing,
@@ -1358,7 +1299,7 @@ sealed class ConvertImageCommand : Command
                                             {
                                                 result = true;
 
-                                                if(force)
+                                                if(settings.Force)
                                                 {
                                                     AaruConsole
                                                        .ErrorWriteLine(UI.Error_0_reading_tag_for_sector_1_continuing,
@@ -1380,7 +1321,7 @@ sealed class ConvertImageCommand : Command
 
                                         if(!result)
                                         {
-                                            if(force)
+                                            if(settings.Force)
                                             {
                                                 AaruConsole
                                                    .ErrorWriteLine(UI.Error_0_writing_tag_for_sector_1_continuing,
@@ -1409,13 +1350,11 @@ sealed class ConvertImageCommand : Command
                                 }
                             });
 
-                if(errno != ErrorNumber.NoError && !force) return (int)errno;
+                if(errno != ErrorNumber.NoError && !settings.Force) return (int)errno;
             }
 
             foreach(KeyValuePair<byte, string> isrc in isrcs)
-            {
                 outputOptical.WriteSectorTag(Encoding.UTF8.GetBytes(isrc.Value), isrc.Key, SectorTagType.CdTrackIsrc);
-            }
 
             if(trackFlags.Count > 0)
             {
@@ -1466,7 +1405,7 @@ sealed class ConvertImageCommand : Command
                                            or MediaType.VideoNowColor
                                            or MediaType.VideoNowXp
                                            or MediaType.CVD &&
-               generateSubchannels)
+               settings.GenerateSubchannels)
             {
                 Core.Spectre.ProgressSingleSpinner(ctx =>
                 {
@@ -1527,8 +1466,8 @@ sealed class ConvertImageCommand : Command
 
                                 if(inputTape?.IsTape == true)
                                     sectorsToDo = 1;
-                                else if(inputFormat.Info.Sectors - doneSectors >= (ulong)count)
-                                    sectorsToDo = (uint)count;
+                                else if(inputFormat.Info.Sectors - doneSectors >= (ulong)settings.Count)
+                                    sectorsToDo = (uint)settings.Count;
                                 else
                                     sectorsToDo = (uint)(inputFormat.Info.Sectors - doneSectors);
 
@@ -1553,7 +1492,7 @@ sealed class ConvertImageCommand : Command
                                     {
                                         result = true;
 
-                                        if(force)
+                                        if(settings.Force)
                                         {
                                             AaruConsole.ErrorWriteLine(UI.Error_0_reading_sector_1_continuing,
                                                                        errno,
@@ -1585,7 +1524,7 @@ sealed class ConvertImageCommand : Command
                                     {
                                         result = true;
 
-                                        if(force)
+                                        if(settings.Force)
                                         {
                                             AaruConsole.ErrorWriteLine(UI.Error_0_reading_sector_1_continuing,
                                                                        errno,
@@ -1604,7 +1543,7 @@ sealed class ConvertImageCommand : Command
 
                                 if(!result)
                                 {
-                                    if(force)
+                                    if(settings.Force)
                                     {
                                         AaruConsole.ErrorWriteLine(UI.Error_0_writing_sector_1_continuing,
                                                                    outputMedia.ErrorMessage,
@@ -1644,7 +1583,7 @@ sealed class ConvertImageCommand : Command
                                         continue;
                                 }
 
-                                if(force && !outputMedia.SupportedSectorTags.Contains(tag)) continue;
+                                if(settings.Force && !outputMedia.SupportedSectorTags.Contains(tag)) continue;
 
                                 doneSectors = 0;
 
@@ -1655,8 +1594,8 @@ sealed class ConvertImageCommand : Command
                                 {
                                     uint sectorsToDo;
 
-                                    if(inputFormat.Info.Sectors - doneSectors >= (ulong)count)
-                                        sectorsToDo = (uint)count;
+                                    if(inputFormat.Info.Sectors - doneSectors >= (ulong)settings.Count)
+                                        sectorsToDo = (uint)settings.Count;
                                     else
                                         sectorsToDo = (uint)(inputFormat.Info.Sectors - doneSectors);
 
@@ -1684,7 +1623,7 @@ sealed class ConvertImageCommand : Command
                                     {
                                         result = true;
 
-                                        if(force)
+                                        if(settings.Force)
                                         {
                                             AaruConsole.ErrorWriteLine(UI.Error_0_reading_sector_1_continuing,
                                                                        errno,
@@ -1702,7 +1641,7 @@ sealed class ConvertImageCommand : Command
 
                                     if(!result)
                                     {
-                                        if(force)
+                                        if(settings.Force)
                                         {
                                             AaruConsole.ErrorWriteLine(UI.Error_0_writing_sector_1_continuing,
                                                                        outputMedia.ErrorMessage,
@@ -1836,7 +1775,7 @@ sealed class ConvertImageCommand : Command
             if(ret) AaruConsole.WriteLine(UI.Written_Aaru_Metadata_to_output_image);
         }
 
-        var closed = false;
+        bool closed = false;
 
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
@@ -1856,4 +1795,126 @@ sealed class ConvertImageCommand : Command
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : ImageFamily
+    {
+        [Description("Take metadata from existing CICM XML sidecar.")]
+        [DefaultValue(null)]
+        [CommandOption("-x|--cicm-xml")]
+        public string CicmXml { get; init; }
+        [Description("Image comments.")]
+        [DefaultValue(null)]
+        [CommandOption("--comments")]
+        public string Comments { get; init; }
+        [Description("How many sectors to convert at once.")]
+        [DefaultValue(64)]
+        [CommandOption("-c|--count")]
+        public int Count { get; init; }
+        [Description("Who (person) created the image?")]
+        [DefaultValue(null)]
+        [CommandOption("--creator")]
+        public string Creator { get; init; }
+        [Description("Manufacturer of the drive used to read the media represented by the image.")]
+        [DefaultValue(null)]
+        [CommandOption("--drive-manufacturer")]
+        public string DriveManufacturer { get; init; }
+        [Description("Model of the drive used to read the media represented by the image.")]
+        [DefaultValue(null)]
+        [CommandOption("--drive-model")]
+        public string DriveModel { get; init; }
+        [Description("Firmware revision of the drive used to read the media represented by the image.")]
+        [DefaultValue(null)]
+        [CommandOption("--drive-revision")]
+        public string DriveFirmwareRevision { get; init; }
+        [Description("Serial number of the drive used to read the media represented by the image.")]
+        [DefaultValue(null)]
+        [CommandOption("--drive-serial")]
+        public string DriveSerialNumber { get; init; }
+        [Description("Continue conversion even if sector or media tags will be lost in the process.")]
+        [DefaultValue(false)]
+        [CommandOption("-f|--force")]
+        public bool Force { get; init; }
+        [Description("Format of the output image, as plugin name or plugin id. If not present, will try to detect it from output image extension.")]
+        [DefaultValue(null)]
+        [CommandOption("-p|--format")]
+        public string Format { get; init; }
+        [Description("Barcode of the media represented by the image.")]
+        [DefaultValue(null)]
+        [CommandOption("--media-barcode")]
+        public string MediaBarcode { get; init; }
+        [Description("Last media of the sequence the media represented by the image corresponds to.")]
+        [DefaultValue(0)]
+        [CommandOption("--media-lastsequence")]
+        public int LastMediaSequence { get; init; }
+        [Description("Manufacturer of the media represented by the image.")]
+        [DefaultValue(null)]
+        [CommandOption("--media-manufacturer")]
+        public string MediaManufacturer { get; init; }
+        [Description("Model of the media represented by the image.")]
+        [DefaultValue(null)]
+        [CommandOption("--media-model")]
+        public string MediaModel { get; init; }
+        [Description("Part number of the media represented by the image.")]
+        [DefaultValue(null)]
+        [CommandOption("--media-partnumber")]
+        public string MediaPartNumber { get; init; }
+        [Description("Number in sequence for the media represented by the image.")]
+        [DefaultValue(0)]
+        [CommandOption("--media-sequence")]
+        public int MediaSequence { get; init; }
+        [Description("Serial number of the media represented by the image.")]
+        [DefaultValue(null)]
+        [CommandOption("--media-serial")]
+        public string MediaSerialNumber { get; init; }
+        [Description("Title of the media represented by the image.")]
+        [DefaultValue(null)]
+        [CommandOption("--media-title")]
+        public string MediaTitle { get; init; }
+        [Description("Comma separated name=value pairs of options to pass to output image plugin.")]
+        [DefaultValue(null)]
+        [CommandOption("-O|--options")]
+        public string Options { get; init; }
+        [Description("Take list of dump hardware from existing resume file.")]
+        [DefaultValue(null)]
+        [CommandOption("-r|--resume-file")]
+        public string ResumeFile { get; init; }
+        [Description("Force geometry, only supported in not tape block media. Specify as C/H/S.")]
+        [DefaultValue(null)]
+        [CommandOption("-g|--geometry")]
+        public string Geometry { get; init; }
+        [Description("Store subchannel according to the sector they describe.")]
+        [DefaultValue(true)]
+        [CommandOption("--fix-subchannel-position")]
+        public bool FixSubchannelPosition { get; init; }
+        [Description("Try to fix subchannel. Implies fixing subchannel position.")]
+        [DefaultValue(false)]
+        [CommandOption("--fix-subchannel")]
+        public bool FixSubchannel { get; init; }
+        [Description("If subchannel looks OK but CRC fails, rewrite it. Implies fixing subchannel.")]
+        [DefaultValue(false)]
+        [CommandOption("--fix-subchannel-crc")]
+        public bool FixSubchannelCrc { get; init; }
+        [Description("Generates missing subchannels.")]
+        [DefaultValue(false)]
+        [CommandOption("--generate-subchannels")]
+        public bool GenerateSubchannels { get; init; }
+        [Description("Try to decrypt encrypted sectors.")]
+        [DefaultValue(false)]
+        [CommandOption("--decrypt")]
+        public bool Decrypt { get; init; }
+        [Description("Take metadata from existing Aaru Metadata sidecar.")]
+        [DefaultValue(null)]
+        [CommandOption("-m|--aaru-metadata")]
+        public string AaruMetadata { get; init; }
+        [Description("Input image path")]
+        [CommandArgument(0, "<input-image>")]
+        public string InputPath { get; init; }
+        [Description("Output image path")]
+        [CommandArgument(1, "<output-image>")]
+        public string OutputPath { get; init; }
+    }
+
+#endregion
 }

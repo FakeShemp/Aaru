@@ -30,26 +30,6 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System.CommandLine;
-using Aaru.Localization;
-
 namespace Aaru.Commands.Image;
 
-sealed class ImageFamily : Command
-{
-    public ImageFamily() : base("image", UI.Image_Command_Family_Description)
-    {
-        AddAlias("i");
-
-        AddCommand(new ChecksumCommand());
-        AddCommand(new CompareCommand());
-        AddCommand(new ConvertImageCommand());
-        AddCommand(new CreateSidecarCommand());
-        AddCommand(new DecodeCommand());
-        AddCommand(new EntropyCommand());
-        AddCommand(new ImageInfoCommand());
-        AddCommand(new ListOptionsCommand());
-        AddCommand(new PrintHexCommand());
-        AddCommand(new VerifyCommand());
-    }
-}
+class ImageFamily : BaseSettings {}

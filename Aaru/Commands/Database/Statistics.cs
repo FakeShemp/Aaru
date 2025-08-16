@@ -30,8 +30,6 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.CommandLine.NamingConventionBinder;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.Console;
@@ -39,20 +37,19 @@ using Aaru.Database;
 using Aaru.Database.Models;
 using Aaru.Localization;
 using Spectre.Console;
-using Command = System.CommandLine.Command;
+using Spectre.Console.Cli;
+using Command = Aaru.Database.Models.Command;
 
 namespace Aaru.Commands.Database;
 
-sealed class StatisticsCommand : Command
+sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
 {
-    public StatisticsCommand() : base("stats", UI.Database_Stats_Command_Description) =>
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
+    public override int Execute(CommandContext context, Settings settings)
 
-    public static int Invoke(bool debug, bool verbose)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -70,7 +67,7 @@ sealed class StatisticsCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -81,7 +78,7 @@ sealed class StatisticsCommand : Command
             };
         }
 
-        var ctx = AaruContext.Create(Settings.Settings.LocalDbPath);
+        var ctx = AaruContext.Create(Aaru.Settings.Settings.LocalDbPath);
 
         if(!ctx.Commands.Any()     &&
            !ctx.Filesystems.Any()  &&
@@ -96,7 +93,7 @@ sealed class StatisticsCommand : Command
             return (int)ErrorNumber.NothingFound;
         }
 
-        var   thereAreStats = false;
+        bool  thereAreStats = false;
         Table table;
 
         if(ctx.Commands.Any())
@@ -112,7 +109,7 @@ sealed class StatisticsCommand : Command
 
             if(ctx.Commands.Any(c => c.Name == "analyze"))
             {
-                foreach(Aaru.Database.Models.Command oldAnalyze in ctx.Commands.Where(c => c.Name == "analyze"))
+                foreach(Command oldAnalyze in ctx.Commands.Where(c => c.Name == "analyze"))
                 {
                     oldAnalyze.Name = "fs-info";
                     ctx.Commands.Update(oldAnalyze);
@@ -120,8 +117,7 @@ sealed class StatisticsCommand : Command
 
                 ulong count = 0;
 
-                foreach(Aaru.Database.Models.Command fsInfo in ctx.Commands.Where(c => c.Name == "fs-info" &&
-                            c.Synchronized))
+                foreach(Command fsInfo in ctx.Commands.Where(c => c.Name == "fs-info" && c.Synchronized))
                 {
                     count += fsInfo.Count;
                     ctx.Remove(fsInfo);
@@ -129,7 +125,7 @@ sealed class StatisticsCommand : Command
 
                 if(count > 0)
                 {
-                    ctx.Commands.Add(new Aaru.Database.Models.Command
+                    ctx.Commands.Add(new Command
                     {
                         Count        = count,
                         Name         = "fs-info",
@@ -366,4 +362,10 @@ sealed class StatisticsCommand : Command
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : DatabaseFamily {}
+
+#endregion
 }

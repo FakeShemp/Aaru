@@ -30,9 +30,6 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
 using System.Linq;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
@@ -41,21 +38,20 @@ using Aaru.Console;
 using Aaru.Core;
 using Aaru.Localization;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Aaru.Commands;
 
-sealed class FormatsCommand : Command
+sealed class FormatsCommand : Command<FormatsCommand.Settings>
 {
     const string MODULE_NAME = "Formats command";
 
-    public FormatsCommand() : base("formats", UI.List_Formats_Command_Description) =>
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
+    public override int Execute(CommandContext context, Settings settings)
 
-    public static int Invoke(bool verbose, bool debug)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -73,7 +69,7 @@ sealed class FormatsCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -86,8 +82,8 @@ sealed class FormatsCommand : Command
 
         Statistics.AddCommand("formats");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
         PluginRegister plugins = PluginRegister.Singleton;
 
@@ -96,13 +92,13 @@ sealed class FormatsCommand : Command
             Title = new TableTitle(string.Format(UI.Supported_filters_0, PluginRegister.Singleton.Filters.Count))
         };
 
-        if(verbose) table.AddColumn(UI.Title_GUID);
+        if(settings.Verbose) table.AddColumn(UI.Title_GUID);
 
         table.AddColumn(UI.Title_Filter);
 
         foreach(IFilter filter in PluginRegister.Singleton.Filters.Values)
         {
-            if(verbose)
+            if(settings.Verbose)
                 table.AddRow(filter.Id.ToString(), Markup.Escape(filter.Name));
             else
                 table.AddRow(Markup.Escape(filter.Name));
@@ -119,14 +115,14 @@ sealed class FormatsCommand : Command
                                                                               .ContainsKey(t.Key))))
         };
 
-        if(verbose) table.AddColumn(UI.Title_GUID);
+        if(settings.Verbose) table.AddColumn(UI.Title_GUID);
 
         table.AddColumn(UI.Title_Media_image_format);
 
         foreach(IMediaImage imagePlugin in
                 plugins.MediaImages.Values.Where(t => !plugins.WritableImages.ContainsKey(t.Name)))
         {
-            if(verbose)
+            if(settings.Verbose)
                 table.AddRow(imagePlugin.Id.ToString(), Markup.Escape(imagePlugin.Name));
             else
                 table.AddRow(Markup.Escape(imagePlugin.Name));
@@ -141,7 +137,7 @@ sealed class FormatsCommand : Command
             Title = new TableTitle(string.Format(UI.Read_write_media_image_formats_0, plugins.WritableImages.Count))
         };
 
-        if(verbose) table.AddColumn(UI.Title_GUID);
+        if(settings.Verbose) table.AddColumn(UI.Title_GUID);
 
         table.AddColumn(UI.Title_Media_image_format);
 
@@ -149,7 +145,7 @@ sealed class FormatsCommand : Command
         {
             if(plugin is null) continue;
 
-            if(verbose)
+            if(settings.Verbose)
                 table.AddRow(plugin.Id.ToString(), Markup.Escape(plugin.Name));
             else
                 table.AddRow(Markup.Escape(plugin.Name));
@@ -170,13 +166,13 @@ sealed class FormatsCommand : Command
                                                  idOnlyFilesystems.Count))
         };
 
-        if(verbose) table.AddColumn(UI.Title_GUID);
+        if(settings.Verbose) table.AddColumn(UI.Title_GUID);
 
         table.AddColumn(UI.Title_Filesystem);
 
         foreach(IFilesystem fs in idOnlyFilesystems)
         {
-            if(verbose)
+            if(settings.Verbose)
                 table.AddRow(fs.Id.ToString(), Markup.Escape(fs.Name));
             else
                 table.AddRow(Markup.Escape(fs.Name));
@@ -192,7 +188,7 @@ sealed class FormatsCommand : Command
                                                  plugins.ReadOnlyFilesystems.Count))
         };
 
-        if(verbose) table.AddColumn(UI.Title_GUID);
+        if(settings.Verbose) table.AddColumn(UI.Title_GUID);
 
         table.AddColumn(UI.Title_Filesystem);
 
@@ -200,7 +196,7 @@ sealed class FormatsCommand : Command
         {
             if(fs is null) continue;
 
-            if(verbose)
+            if(settings.Verbose)
                 table.AddRow(fs.Id.ToString(), Markup.Escape(fs.Name));
             else
                 table.AddRow(Markup.Escape(fs.Name));
@@ -215,7 +211,7 @@ sealed class FormatsCommand : Command
             Title = new TableTitle(string.Format(UI.Supported_partitioning_schemes_0, plugins.Partitions.Count))
         };
 
-        if(verbose) table.AddColumn(UI.Title_GUID);
+        if(settings.Verbose) table.AddColumn(UI.Title_GUID);
 
         table.AddColumn(UI.Title_Scheme);
 
@@ -223,7 +219,7 @@ sealed class FormatsCommand : Command
         {
             if(plugin is null) continue;
 
-            if(verbose)
+            if(settings.Verbose)
                 table.AddRow(plugin.Id.ToString(), Markup.Escape(plugin.Name));
             else
                 table.AddRow(Markup.Escape(plugin.Name));
@@ -238,7 +234,7 @@ sealed class FormatsCommand : Command
             Title = new TableTitle(string.Format(UI.Supported_archive_formats_0, plugins.Archives.Count))
         };
 
-        if(verbose) table.AddColumn(UI.Title_GUID);
+        if(settings.Verbose) table.AddColumn(UI.Title_GUID);
 
         table.AddColumn("Archive format");
 
@@ -246,7 +242,7 @@ sealed class FormatsCommand : Command
         {
             if(archive is null) continue;
 
-            if(verbose)
+            if(settings.Verbose)
                 table.AddRow(archive.Id.ToString(), Markup.Escape(archive.Name));
             else
                 table.AddRow(Markup.Escape(archive.Name));
@@ -256,4 +252,10 @@ sealed class FormatsCommand : Command
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : BaseSettings {}
+
+#endregion
 }

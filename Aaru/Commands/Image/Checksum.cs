@@ -32,8 +32,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -42,10 +41,11 @@ using Aaru.Console;
 using Aaru.Core;
 using Aaru.Localization;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Aaru.Commands.Image;
 
-sealed class ChecksumCommand : Command
+sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 {
     // How many sectors to read at once
     const uint SECTORS_TO_READ = 256;
@@ -54,51 +54,11 @@ sealed class ChecksumCommand : Command
     const int    BYTES_TO_READ = 65536;
     const string MODULE_NAME   = "Checksum command";
 
-    public ChecksumCommand() : base("checksum", UI.Image_Checksum_Command_Description)
-    {
-        AddAlias("chk");
-
-        Add(new Option<bool>(["--adler32", "-a"], () => false, UI.Calculates_Adler_32));
-
-        Add(new Option<bool>("--crc16", () => true, UI.Calculates_CRC16));
-
-        Add(new Option<bool>(["--crc32", "-c"], () => true, UI.Calculates_CRC32));
-
-        Add(new Option<bool>("--crc64",      () => true,  UI.Calculates_CRC64_ECMA));
-        Add(new Option<bool>("--fletcher16", () => false, UI.Calculates_Fletcher_16));
-        Add(new Option<bool>("--fletcher32", () => false, UI.Calculates_Fletcher_32));
-
-        Add(new Option<bool>(["--md5", "-m"], () => true, UI.Calculates_MD5));
-
-        Add(new Option<bool>(["--separated-tracks", "-t"], () => true, UI.Checksums_each_track_separately));
-
-        Add(new Option<bool>(["--sha1", "-s"], () => true, UI.Calculates_SHA1));
-
-        Add(new Option<bool>("--sha256", () => false, UI.Calculates_SHA256));
-        Add(new Option<bool>("--sha384", () => false, UI.Calculates_SHA384));
-        Add(new Option<bool>("--sha512", () => true,  UI.Calculates_SHA512));
-
-        Add(new Option<bool>(["--spamsum", "-f"], () => true, UI.Calculates_SpamSum_fuzzy_hash));
-
-        Add(new Option<bool>(["--whole-disc", "-w"], () => true, UI.Checksums_the_whole_disc));
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Media_image_path,
-            Name        = "image-path"
-        });
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool debug,      bool verbose,    bool   adler32,   bool crc16, bool crc32, bool crc64,
-                             bool fletcher16, bool fletcher32, bool   md5,       bool sha1, bool sha256, bool sha384,
-                             bool sha512,     bool spamSum,    string imagePath, bool separatedTracks, bool wholeDisc)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -116,7 +76,7 @@ sealed class ChecksumCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -129,30 +89,30 @@ sealed class ChecksumCommand : Command
 
         Statistics.AddCommand("checksum");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--adler32={0}",          adler32);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--crc16={0}",            crc16);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--crc32={0}",            crc32);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--crc64={0}",            crc64);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",            debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--fletcher16={0}",       fletcher16);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--fletcher32={0}",       fletcher32);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",            Markup.Escape(imagePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--md5={0}",              md5);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--separated-tracks={0}", separatedTracks);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--sha1={0}",             sha1);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--sha256={0}",           sha256);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--sha384={0}",           sha384);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--sha512={0}",           sha512);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--spamsum={0}",          spamSum);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",          verbose);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--whole-disc={0}",       wholeDisc);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--adler32={0}",          settings.Adler32);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--crc16={0}",            settings.Crc16);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--crc32={0}",            settings.Crc32);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--crc64={0}",            settings.Crc64);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",            settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--fletcher16={0}",       settings.Fletcher16);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--fletcher32={0}",       settings.Fletcher32);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",            Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--md5={0}",              settings.Md5);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--separated-tracks={0}", settings.SeparatedTracks);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--sha1={0}",             settings.Sha1);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--sha256={0}",           settings.Sha256);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--sha384={0}",           settings.Sha384);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--sha512={0}",           settings.Sha512);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--spamsum={0}",          settings.SpamSum);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",          settings.Verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--whole-disc={0}",       settings.WholeDisc);
 
         IFilter inputFilter = null;
 
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(UI.Identifying_file_filter).IsIndeterminate();
-            inputFilter = PluginRegister.Singleton.GetFilter(imagePath);
+            inputFilter = PluginRegister.Singleton.GetFilter(settings.ImagePath);
         });
 
         if(inputFilter == null)
@@ -198,29 +158,29 @@ sealed class ChecksumCommand : Command
         Statistics.AddFilter(inputFilter.Name);
         var enabledChecksums = new EnableChecksum();
 
-        if(adler32) enabledChecksums |= EnableChecksum.Adler32;
+        if(settings.Adler32) enabledChecksums |= EnableChecksum.Adler32;
 
-        if(crc16) enabledChecksums |= EnableChecksum.Crc16;
+        if(settings.Crc16) enabledChecksums |= EnableChecksum.Crc16;
 
-        if(crc32) enabledChecksums |= EnableChecksum.Crc32;
+        if(settings.Crc32) enabledChecksums |= EnableChecksum.Crc32;
 
-        if(crc64) enabledChecksums |= EnableChecksum.Crc64;
+        if(settings.Crc64) enabledChecksums |= EnableChecksum.Crc64;
 
-        if(md5) enabledChecksums |= EnableChecksum.Md5;
+        if(settings.Md5) enabledChecksums |= EnableChecksum.Md5;
 
-        if(sha1) enabledChecksums |= EnableChecksum.Sha1;
+        if(settings.Sha1) enabledChecksums |= EnableChecksum.Sha1;
 
-        if(sha256) enabledChecksums |= EnableChecksum.Sha256;
+        if(settings.Sha256) enabledChecksums |= EnableChecksum.Sha256;
 
-        if(sha384) enabledChecksums |= EnableChecksum.Sha384;
+        if(settings.Sha384) enabledChecksums |= EnableChecksum.Sha384;
 
-        if(sha512) enabledChecksums |= EnableChecksum.Sha512;
+        if(settings.Sha512) enabledChecksums |= EnableChecksum.Sha512;
 
-        if(spamSum) enabledChecksums |= EnableChecksum.SpamSum;
+        if(settings.SpamSum) enabledChecksums |= EnableChecksum.SpamSum;
 
-        if(fletcher16) enabledChecksums |= EnableChecksum.Fletcher16;
+        if(settings.Fletcher16) enabledChecksums |= EnableChecksum.Fletcher16;
 
-        if(fletcher32) enabledChecksums |= EnableChecksum.Fletcher32;
+        if(settings.Fletcher32) enabledChecksums |= EnableChecksum.Fletcher32;
 
         Checksum mediaChecksum = null;
 
@@ -233,7 +193,7 @@ sealed class ChecksumCommand : Command
                 {
                     Checksum trackChecksum = null;
 
-                    if(wholeDisc) mediaChecksum = new Checksum(enabledChecksums);
+                    if(settings.WholeDisc) mediaChecksum = new Checksum(enabledChecksums);
 
                     List<Track> inputTracks = opticalInput.Tracks;
 
@@ -273,7 +233,7 @@ sealed class ChecksumCommand : Command
                                                                    currentTrack.StartSector,
                                                                    currentTrack.EndSector);
 
-                                        if(separatedTracks) trackChecksum = new Checksum(enabledChecksums);
+                                        if(settings.SeparatedTracks) trackChecksum = new Checksum(enabledChecksums);
 
                                         ulong sectors = currentTrack.EndSector - currentTrack.StartSector + 1;
 
@@ -342,9 +302,9 @@ sealed class ChecksumCommand : Command
                                                 doneSectors += sectors - doneSectors;
                                             }
 
-                                            if(wholeDisc) mediaChecksum?.Update(sector);
+                                            if(settings.WholeDisc) mediaChecksum?.Update(sector);
 
-                                            if(separatedTracks) trackChecksum?.Update(sector);
+                                            if(settings.SeparatedTracks) trackChecksum?.Update(sector);
 
                                             trackTask.Value = doneSectors;
                                         }
@@ -352,7 +312,7 @@ sealed class ChecksumCommand : Command
                                         trackTask.StopTask();
                                         AaruConsole.WriteLine();
 
-                                        if(!separatedTracks) continue;
+                                        if(!settings.SeparatedTracks) continue;
 
                                         if(trackChecksum == null) continue;
 
@@ -376,7 +336,7 @@ sealed class ChecksumCommand : Command
                                         }
                                     */
 
-                                    if(!wholeDisc) return;
+                                    if(!settings.WholeDisc) return;
 
                                     if(mediaChecksum == null) return;
 
@@ -393,7 +353,7 @@ sealed class ChecksumCommand : Command
                 }
                 catch(Exception ex)
                 {
-                    if(debug)
+                    if(settings.Debug)
                         AaruConsole.DebugWriteLine(Localization.Core.Could_not_get_tracks_because_0, ex.Message);
                     else
                         AaruConsole.WriteLine("Unable to get separate tracks, not checksumming them");
@@ -405,7 +365,7 @@ sealed class ChecksumCommand : Command
             {
                 Checksum trackChecksum = null;
 
-                if(wholeDisc) mediaChecksum = new Checksum(enabledChecksums);
+                if(settings.WholeDisc) mediaChecksum = new Checksum(enabledChecksums);
 
                 ulong previousFileEnd = 0;
 
@@ -423,7 +383,7 @@ sealed class ChecksumCommand : Command
                                     tapeTask.Description =
                                         string.Format(UI.Hashing_file_0_of_1, currentFile.File, tapeImage.Files.Count);
 
-                                    if(currentFile.FirstBlock - previousFileEnd != 0 && wholeDisc)
+                                    if(currentFile.FirstBlock - previousFileEnd != 0 && settings.WholeDisc)
                                     {
                                         ProgressTask preFileTask = ctx.AddTask(UI.Hashing_sector);
                                         preFileTask.MaxValue = currentFile.FirstBlock - previousFileEnd;
@@ -457,7 +417,7 @@ sealed class ChecksumCommand : Command
                                                                currentFile.FirstBlock,
                                                                currentFile.LastBlock);
 
-                                    if(separatedTracks) trackChecksum = new Checksum(enabledChecksums);
+                                    if(settings.SeparatedTracks) trackChecksum = new Checksum(enabledChecksums);
 
                                     ulong sectors     = currentFile.LastBlock - currentFile.FirstBlock + 1;
                                     ulong doneSectors = 0;
@@ -524,15 +484,15 @@ sealed class ChecksumCommand : Command
 
                                         fileTask.Value = doneSectors;
 
-                                        if(wholeDisc) mediaChecksum?.Update(sector);
+                                        if(settings.WholeDisc) mediaChecksum?.Update(sector);
 
-                                        if(separatedTracks) trackChecksum?.Update(sector);
+                                        if(settings.SeparatedTracks) trackChecksum?.Update(sector);
                                     }
 
                                     fileTask.StopTask();
                                     AaruConsole.WriteLine();
 
-                                    if(separatedTracks)
+                                    if(settings.SeparatedTracks)
                                     {
                                         if(trackChecksum != null)
                                         {
@@ -549,7 +509,7 @@ sealed class ChecksumCommand : Command
                                     tapeTask.Increment(1);
                                 }
 
-                                if(tapeImage.Info.Sectors - previousFileEnd == 0 || !wholeDisc) return;
+                                if(tapeImage.Info.Sectors - previousFileEnd == 0 || !settings.WholeDisc) return;
 
                                 ProgressTask postFileTask = ctx.AddTask(UI.Hashing_sector);
                                 postFileTask.MaxValue = tapeImage.Info.Sectors - previousFileEnd;
@@ -576,7 +536,7 @@ sealed class ChecksumCommand : Command
 
                 if(errno != ErrorNumber.NoError) return (int)errno;
 
-                if(wholeDisc && mediaChecksum != null)
+                if(settings.WholeDisc && mediaChecksum != null)
                 {
                     AaruConsole.WriteLine();
 
@@ -603,8 +563,8 @@ sealed class ChecksumCommand : Command
                                 ProgressTask imageTask = ctx.AddTask(UI.Hashing_image);
                                 ulong        length    = byteAddressableImage.Info.Sectors;
                                 imageTask.MaxValue = length;
-                                ulong doneBytes = 0;
-                                var   data      = new byte[BYTES_TO_READ];
+                                ulong  doneBytes = 0;
+                                byte[] data      = new byte[BYTES_TO_READ];
 
                                 while(doneBytes < length)
                                 {
@@ -763,4 +723,71 @@ sealed class ChecksumCommand : Command
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : ImageFamily
+    {
+        [Description("Calculates Adler-32.")]
+        [CommandOption("-a|--adler32")]
+        [DefaultValue(false)]
+        public bool Adler32 { get; init; }
+        [Description("Calculates CRC16.")]
+        [CommandOption("--crc16")]
+        [DefaultValue(true)]
+        public bool Crc16 { get; init; }
+        [Description("Calculates CRC32.")]
+        [CommandOption("-c|--crc32")]
+        [DefaultValue(true)]
+        public bool Crc32 { get; init; }
+        [Description("Calculates CRC64 (ECMA).")]
+        [CommandOption("--crc64")]
+        [DefaultValue(true)]
+        public bool Crc64 { get; init; }
+        [Description("Calculates Fletcher-16.")]
+        [CommandOption("--fletcher16")]
+        [DefaultValue(false)]
+        public bool Fletcher16 { get; init; }
+        [Description("Calculates Fletcher-32.")]
+        [CommandOption("--fletcher32")]
+        [DefaultValue(false)]
+        public bool Fletcher32 { get; init; }
+        [Description("Calculates MD5.")]
+        [CommandOption("-m|--md5")]
+        [DefaultValue(true)]
+        public bool Md5 { get; init; }
+        [Description("Calculates SHA1.")]
+        [CommandOption("-s|--sha1")]
+        [DefaultValue(true)]
+        public bool Sha1 { get; init; }
+        [Description("Calculates SHA256.")]
+        [CommandOption("--sha256")]
+        [DefaultValue(false)]
+        public bool Sha256 { get; init; }
+        [Description("Calculates SHA384.")]
+        [CommandOption("--sha384")]
+        [DefaultValue(false)]
+        public bool Sha384 { get; init; }
+        [Description("Calculates SHA512.")]
+        [CommandOption("--sha512")]
+        [DefaultValue(true)]
+        public bool Sha512 { get; init; }
+        [Description("Calculates SpamSum fuzzy hash.")]
+        [CommandOption("-f|--spamsum")]
+        [DefaultValue(true)]
+        public bool SpamSum { get; init; }
+        [Description("Checksums the whole disc.")]
+        [CommandOption("-w|--whole-disc")]
+        [DefaultValue(true)]
+        public bool WholeDisc { get; init; }
+        [Description("Checksums each track separately.")]
+        [CommandOption("-t|--separated-tracks")]
+        [DefaultValue(true)]
+        public bool SeparatedTracks { get; init; }
+        [Description("Media image path")]
+        [CommandArgument(0, "<image-path>")]
+        public string ImagePath { get; init; }
+    }
+
+#endregion
 }

@@ -30,10 +30,8 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using System.Collections.Generic;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using Aaru.CommonTypes;
@@ -47,39 +45,19 @@ using Aaru.Localization;
 using Humanizer;
 using Humanizer.Localisation;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Aaru.Commands.Image;
 
-sealed class VerifyCommand : Command
+sealed class VerifyCommand : Command<VerifyCommand.Settings>
 {
     const string MODULE_NAME = "Verify command";
 
-    public VerifyCommand() : base("verify", UI.Image_Verify_Command_Description)
-    {
-        Add(new Option<bool>(["--verify-disc", "-w"], () => true, UI.Verify_media_image_if_supported));
-
-        Add(new Option<bool>(["--verify-sectors", "-s"], () => true, UI.Verify_all_sectors_if_supported));
-
-        Add(new Option<bool>(["--create-graph", "-g"], () => true, UI.Create_graph_of_verified_disc));
-
-        Add(new Option<uint>(["--dimensions"], () => 1080, UI.Verify_dimensions_paramater_help));
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Disc_image_path,
-            Name        = "image-path"
-        });
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool debug,       bool verbose, string imagePath, bool verifyDisc, bool verifySectors,
-                             bool createGraph, uint dimensions)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -97,7 +75,7 @@ sealed class VerifyCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -110,20 +88,20 @@ sealed class VerifyCommand : Command
 
         Statistics.AddCommand("verify");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",          debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",          Markup.Escape(imagePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",        verbose);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verify-disc={0}",    verifyDisc);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verify-sectors={0}", verifySectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--create-graph={0}",   createGraph);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--dimensions={0}",     dimensions);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",          settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",          Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",        settings.Verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verify-disc={0}",    settings.VerifyDisc);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verify-sectors={0}", settings.VerifySectors);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--create-graph={0}",   settings.CreateGraph);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--dimensions={0}",     settings.Dimensions);
 
         IFilter inputFilter = null;
 
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(UI.Identifying_file_filter).IsIndeterminate();
-            inputFilter = PluginRegister.Singleton.GetFilter(imagePath);
+            inputFilter = PluginRegister.Singleton.GetFilter(settings.ImagePath);
         });
 
         if(inputFilter == null)
@@ -183,7 +161,7 @@ sealed class VerifyCommand : Command
 
         var chkWatch = new Stopwatch();
 
-        if(verifyDisc && verifiableImage != null)
+        if(settings.VerifyDisc && verifiableImage != null)
         {
             bool? discCheckStatus = null;
 
@@ -218,7 +196,7 @@ sealed class VerifyCommand : Command
                                          chkWatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
         }
 
-        if(!verifySectors)
+        if(!settings.VerifySectors)
         {
             return correctImage switch
                    {
@@ -237,17 +215,20 @@ sealed class VerifyCommand : Command
         {
             Spiral.DiscParameters spiralParameters = null;
 
-            if(createGraph) spiralParameters = Spiral.DiscParametersFromMediaType(opticalMediaImage.Info.MediaType);
+            if(settings.CreateGraph)
+                spiralParameters = Spiral.DiscParametersFromMediaType(opticalMediaImage.Info.MediaType);
 
             if(spiralParameters is not null)
             {
-                mediaGraph = new Spiral((int)dimensions,
-                                        (int)dimensions,
+                mediaGraph = new Spiral((int)settings.Dimensions,
+                                        (int)settings.Dimensions,
                                         spiralParameters,
                                         opticalMediaImage.Info.Sectors);
             }
-            else if(createGraph)
-                mediaGraph = new BlockMap((int)dimensions, (int)dimensions, opticalMediaImage.Info.Sectors);
+            else if(settings.CreateGraph)
+                mediaGraph = new BlockMap((int)settings.Dimensions,
+                                          (int)settings.Dimensions,
+                                          opticalMediaImage.Info.Sectors);
 
             List<Track> inputTracks      = opticalMediaImage.Tracks;
             ulong       currentSectorAll = 0;
@@ -439,23 +420,25 @@ sealed class VerifyCommand : Command
         AaruConsole.VerboseWriteLine(UI.Checking_sector_checksums_took_0,
                                      stopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.VerboseWriteLine($"[red]{UI.LBAs_with_error}[/]");
 
             if(failingLbas.Count == (int)inputFormat.Info.Sectors)
                 AaruConsole.VerboseWriteLine($"\t[red]{UI.all_sectors}[/]");
             else
-                foreach(ulong t in failingLbas)
-                    AaruConsole.VerboseWriteLine("\t{0}", t);
+            {
+                foreach(ulong t in failingLbas) AaruConsole.VerboseWriteLine("\t{0}", t);
+            }
 
             AaruConsole.WriteLine($"[yellow3_1]{UI.LBAs_without_checksum}[/]");
 
             if(unknownLbas.Count == (int)inputFormat.Info.Sectors)
                 AaruConsole.VerboseWriteLine($"\t[yellow3_1]{UI.all_sectors}[/]");
             else
-                foreach(ulong t in unknownLbas)
-                    AaruConsole.VerboseWriteLine("\t{0}", t);
+            {
+                foreach(ulong t in unknownLbas) AaruConsole.VerboseWriteLine("\t{0}", t);
+            }
         }
 
         // TODO: Convert to table
@@ -483,4 +466,31 @@ sealed class VerifyCommand : Command
                    true                               => (int)ErrorNumber.NoError
                };
     }
+
+#region Nested type: Settings
+
+    public class Settings : ImageFamily
+    {
+        [Description("Verify media image if supported.")]
+        [DefaultValue(true)]
+        [CommandOption("-w|--verify-disc")]
+        public bool VerifyDisc { get; init; }
+        [Description("Verify all sectors if supported.")]
+        [DefaultValue(true)]
+        [CommandOption("-s|--verify-sectors")]
+        public bool VerifySectors { get; init; }
+        [Description("Create graph of verified disc (currently only implemented for optical discs).")]
+        [DefaultValue(true)]
+        [CommandOption("-g|--create-graph")]
+        public bool CreateGraph { get; init; }
+        [Description("Dimensions, as a square, in pixels, for the graph of verified media.")]
+        [DefaultValue(1080)]
+        [CommandOption("-d|--dimensions")]
+        public uint Dimensions { get; init; }
+        [Description("Disc image path")]
+        [CommandArgument(0, "<image-path>")]
+        public string ImagePath { get; init; }
+    }
+
+#endregion
 }

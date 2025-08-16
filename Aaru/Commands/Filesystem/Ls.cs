@@ -32,8 +32,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Aaru.CommonTypes;
@@ -45,43 +44,19 @@ using Aaru.Core;
 using Aaru.Localization;
 using JetBrains.Annotations;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Aaru.Commands.Filesystem;
 
-sealed class LsCommand : Command
+sealed class LsCommand : Command<LsCommand.Settings>
 {
     const string MODULE_NAME = "Ls command";
 
-    public LsCommand() : base("list", UI.Filesystem_List_Command_Description)
-    {
-        AddAlias("ls");
-
-        Add(new Option<string>(["--encoding", "-e"], () => null, UI.Name_of_character_encoding_to_use));
-
-        Add(new Option<bool>(["--long-format", "-l"], () => true, UI.Use_long_format));
-
-        Add(new Option<string>(["--options", "-O"],
-                               () => null,
-                               UI.Comma_separated_name_value_pairs_of_filesystem_options));
-
-        Add(new Option<string>(["--namespace", "-n"], () => null, UI.Namespace_to_use_for_filenames));
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Media_image_path,
-            Name        = "image-path"
-        });
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool   debug,      bool   verbose, string encoding, string imagePath, bool longFormat,
-                             string @namespace, string options)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -99,7 +74,7 @@ sealed class LsCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -110,11 +85,11 @@ sealed class LsCommand : Command
             };
         }
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",    debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--encoding={0}", Markup.Escape(encoding  ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",    Markup.Escape(imagePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--options={0}",  Markup.Escape(options   ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",  verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",    settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--encoding={0}", Markup.Escape(settings.Encoding  ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",    Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--options={0}",  Markup.Escape(settings.Options   ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",  settings.Verbose);
         Statistics.AddCommand("ls");
 
         IFilter inputFilter = null;
@@ -122,16 +97,16 @@ sealed class LsCommand : Command
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(UI.Identifying_file_filter).IsIndeterminate();
-            inputFilter = PluginRegister.Singleton.GetFilter(imagePath);
+            inputFilter = PluginRegister.Singleton.GetFilter(settings.ImagePath);
         });
 
-        Dictionary<string, string> parsedOptions = Core.Options.Parse(options);
+        Dictionary<string, string> parsedOptions = Options.Parse(settings.Options);
         AaruConsole.DebugWriteLine(MODULE_NAME, UI.Parsed_options);
 
         foreach(KeyValuePair<string, string> parsedOption in parsedOptions)
             AaruConsole.DebugWriteLine(MODULE_NAME, "{0} = {1}", parsedOption.Key, parsedOption.Value);
 
-        parsedOptions.Add("debug", debug.ToString());
+        parsedOptions.Add("debug", settings.Debug.ToString());
 
         if(inputFilter == null)
         {
@@ -142,13 +117,13 @@ sealed class LsCommand : Command
 
         Encoding encodingClass = null;
 
-        if(encoding != null)
+        if(settings.Encoding != null)
         {
             try
             {
-                encodingClass = Claunia.Encoding.Encoding.GetEncoding(encoding);
+                encodingClass = Claunia.Encoding.Encoding.GetEncoding(settings.Encoding);
 
-                if(verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
+                if(settings.Verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
             }
             catch(ArgumentException)
             {
@@ -186,7 +161,7 @@ sealed class LsCommand : Command
                 return (int)ErrorNumber.InvalidArgument;
             }
 
-            if(verbose)
+            if(settings.Verbose)
                 AaruConsole.VerboseWriteLine(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
             else
                 AaruConsole.WriteLine(UI.Image_format_identified_by_0, imageFormat.Name);
@@ -261,7 +236,7 @@ sealed class LsCommand : Command
 
             AaruConsole.WriteLine(UI._0_partitions_found, partitions.Count);
 
-            for(var i = 0; i < partitions.Count; i++)
+            for(int i = 0; i < partitions.Count; i++)
             {
                 AaruConsole.WriteLine();
                 AaruConsole.WriteLine($"[bold]{string.Format(UI.Partition_0, partitions[i].Sequence)}[/]");
@@ -298,12 +273,16 @@ sealed class LsCommand : Command
                             {
                                 ctx.AddTask(UI.Mounting_filesystem).IsIndeterminate();
 
-                                error = fs.Mount(imageFormat, partitions[i], encodingClass, parsedOptions, @namespace);
+                                error = fs.Mount(imageFormat,
+                                                 partitions[i],
+                                                 encodingClass,
+                                                 parsedOptions,
+                                                 settings.Namespace);
                             });
 
                             if(error == ErrorNumber.NoError)
                             {
-                                ListFilesInDir("/", fs, longFormat);
+                                ListFilesInDir("/", fs, settings.LongFormat);
 
                                 Statistics.AddFilesystem(fs.Metadata.Type);
                             }
@@ -322,12 +301,17 @@ sealed class LsCommand : Command
                         Core.Spectre.ProgressSingleSpinner(ctx =>
                         {
                             ctx.AddTask(UI.Mounting_filesystem).IsIndeterminate();
-                            error = fs.Mount(imageFormat, partitions[i], encodingClass, parsedOptions, @namespace);
+
+                            error = fs.Mount(imageFormat,
+                                             partitions[i],
+                                             encodingClass,
+                                             parsedOptions,
+                                             settings.Namespace);
                         });
 
                         if(error == ErrorNumber.NoError)
                         {
-                            ListFilesInDir("/", fs, longFormat);
+                            ListFilesInDir("/", fs, settings.LongFormat);
 
                             Statistics.AddFilesystem(fs.Metadata.Type);
                         }
@@ -442,4 +426,31 @@ sealed class LsCommand : Command
                 stats.Where(e => e.Value?.Attributes.HasFlag(FileAttributes.Directory) == true))
             ListFilesInDir(path + "/" + subdirectory.Key, fs, longFormat);
     }
+
+#region Nested type: Settings
+
+    public class Settings : FilesystemFamily
+    {
+        [Description("Name of character encoding to use.")]
+        [CommandOption("-e|--encoding")]
+        [DefaultValue(null)]
+        public string Encoding { get; init; }
+        [Description("Use long format.")]
+        [CommandOption("-l|--long-format")]
+        [DefaultValue(true)]
+        public bool LongFormat { get; init; }
+        [Description("Comma separated name=value pairs of options to pass to filesystem plugin.")]
+        [CommandOption("-O|--options")]
+        [DefaultValue(null)]
+        public string Options { get; init; }
+        [Description("Namespace to use for filenames.")]
+        [CommandOption("-n|--namespace")]
+        [DefaultValue(null)]
+        public string Namespace { get; init; }
+        [Description("Media image path")]
+        [CommandArgument(0, "<image-path>")]
+        public string ImagePath { get; init; }
+    }
+
+#endregion
 }

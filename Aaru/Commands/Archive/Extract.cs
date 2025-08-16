@@ -32,8 +32,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -46,45 +45,20 @@ using Aaru.Core;
 using Aaru.Helpers;
 using Aaru.Localization;
 using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Aaru.Commands.Archive;
 
-sealed class ArchiveExtractCommand : Command
+sealed class ArchiveExtractCommand : Command<ArchiveExtractCommand.Settings>
 {
     const int    BUFFER_SIZE = 16777216;
     const string MODULE_NAME = "Extract-Files command";
 
-    public ArchiveExtractCommand() : base("extract", UI.Archive_Extract_Command_Description)
-    {
-        AddAlias("x");
-
-        Add(new Option<string>(["--encoding", "-e"], () => null, UI.Name_of_character_encoding_to_use));
-
-        Add(new Option<bool>(["--xattrs", "-x"], () => false, UI.Extract_extended_attributes_if_present));
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Archive_file_path,
-            Name        = "archive-path"
-        });
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Directory_where_extracted_files_will_be_created,
-            Name        = "output-dir"
-        });
-
-        Handler = CommandHandler.Create(GetType().GetMethod(nameof(Invoke)) ?? throw new NullReferenceException());
-    }
-
-    public static int Invoke(bool   debug, bool verbose, string encoding, bool xattrs, string archivePath,
-                             string outputDir)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -102,7 +76,7 @@ sealed class ArchiveExtractCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -115,19 +89,19 @@ sealed class ArchiveExtractCommand : Command
 
         Statistics.AddCommand("archive-extract");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",    debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--encoding={0}", Markup.Escape(encoding    ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",    Markup.Escape(archivePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--output={0}",   Markup.Escape(outputDir   ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",  verbose);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--xattrs={0}",   xattrs);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",    settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--encoding={0}", Markup.Escape(settings.Encoding  ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",    Markup.Escape(settings.Path      ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--output={0}",   Markup.Escape(settings.OutputDir ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",  settings.Verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--xattrs={0}",   settings.XAttrs);
 
         IFilter inputFilter = null;
 
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(UI.Identifying_file_filter).IsIndeterminate();
-            inputFilter = PluginRegister.Singleton.GetFilter(archivePath);
+            inputFilter = PluginRegister.Singleton.GetFilter(settings.Path);
         });
 
         if(inputFilter == null)
@@ -139,13 +113,13 @@ sealed class ArchiveExtractCommand : Command
 
         Encoding encodingClass = null;
 
-        if(encoding != null)
+        if(settings.Encoding != null)
         {
             try
             {
-                encodingClass = Claunia.Encoding.Encoding.GetEncoding(encoding);
+                encodingClass = Claunia.Encoding.Encoding.GetEncoding(settings.Encoding);
 
-                if(verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
+                if(settings.Verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
             }
             catch(ArgumentException)
             {
@@ -172,7 +146,7 @@ sealed class ArchiveExtractCommand : Command
                 return (int)ErrorNumber.UnrecognizedFormat;
             }
 
-            if(verbose)
+            if(settings.Verbose)
                 AaruConsole.VerboseWriteLine(UI.Archive_format_identified_by_0_1, archive.Name, archive.Id);
             else
                 AaruConsole.WriteLine(UI.Archive_format_identified_by_0, archive.Name);
@@ -211,7 +185,7 @@ sealed class ArchiveExtractCommand : Command
             }
 
 
-            for(var i = 0; i < archive.NumberOfEntries; i++)
+            for(int i = 0; i < archive.NumberOfEntries; i++)
             {
                 ErrorNumber errno = archive.GetFilename(i, out string fileName);
 
@@ -264,7 +238,7 @@ sealed class ArchiveExtractCommand : Command
                 // Prevent absolute path attack
                 fileName = fileName.TrimStart('\\').TrimStart('/');
 
-                string outputPath     = Path.Combine(outputDir, fileName);
+                string outputPath     = Path.Combine(settings.OutputDir, fileName);
                 string destinationDir = Path.GetDirectoryName(outputPath);
 
                 if(File.Exists(destinationDir))
@@ -284,7 +258,7 @@ sealed class ArchiveExtractCommand : Command
                                .Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn())
                                .Start(ctx =>
                                 {
-                                    var position = 0;
+                                    int position = 0;
 
                                     var outputFile =
                                         new FileStream(outputPath,
@@ -296,7 +270,7 @@ sealed class ArchiveExtractCommand : Command
                                         ctx.AddTask(string.Format(UI.Reading_file_0, Markup.Escape(fileName)));
 
                                     task.MaxValue = uncompressedSize;
-                                    var    outBuf    = new byte[BUFFER_SIZE];
+                                    byte[] outBuf    = new byte[BUFFER_SIZE];
                                     Stream inputFile = filter.GetDataForkStream();
 
                                     while(position < stat.Length)
@@ -357,7 +331,7 @@ sealed class ArchiveExtractCommand : Command
                 else
                     AaruConsole.ErrorWriteLine(UI.Cannot_write_file_0_output_exists, Markup.Escape(fileName));
 
-                if(!xattrs) continue;
+                if(!settings.XAttrs) continue;
 
                 errno = archive.ListXAttr(i, out List<string> xattrNames);
 
@@ -389,7 +363,7 @@ sealed class ArchiveExtractCommand : Command
                         continue;
                     }
 
-                    outputPath = Path.Combine(outputDir, ".xattrs", xattrName, fileName);
+                    outputPath = Path.Combine(settings.OutputDir, ".xattrs", xattrName, fileName);
 
                     if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     {
@@ -469,4 +443,29 @@ sealed class ArchiveExtractCommand : Command
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : ArchiveFamily
+    {
+        [Description("Name of character encoding to use.")]
+        [DefaultValue(null)]
+        [CommandOption("-e|--encoding")]
+        public string Encoding { get; init; }
+
+        [Description("Extract extended attributes if present.")]
+        [DefaultValue(false)]
+        [CommandOption("-x|--xattrs")]
+        public bool XAttrs { get; init; }
+
+        [Description("Archive file path")]
+        [CommandArgument(0, "<path>")]
+        public string Path { get; init; }
+
+        [Description("Directory where extracted files will be created. Will abort if it exists")]
+        [CommandArgument(1, "<output>")]
+        public string OutputDir { get; init; }
+    }
+
+#endregion
 }

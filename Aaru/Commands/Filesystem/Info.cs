@@ -32,8 +32,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.ComponentModel;
 using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
@@ -43,40 +42,20 @@ using Aaru.Console;
 using Aaru.Core;
 using Aaru.Localization;
 using Spectre.Console;
+using Spectre.Console.Cli;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Commands.Filesystem;
 
-sealed class FilesystemInfoCommand : Command
+sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
 {
     const string MODULE_NAME = "Fs-info command";
 
-    public FilesystemInfoCommand() : base("info", UI.Filesystem_Info_Command_Description)
-    {
-        Add(new Option<string>(["--encoding", "-e"], () => null, UI.Name_of_character_encoding_to_use));
-
-        Add(new Option<bool>(["--filesystems", "-f"],
-                             () => true,
-                             UI.Searches_and_prints_information_about_filesystems));
-
-        Add(new Option<bool>(["--partitions", "-p"], () => true, UI.Searches_and_interprets_partitions));
-
-        AddArgument(new Argument<string>
-        {
-            Arity       = ArgumentArity.ExactlyOne,
-            Description = UI.Media_image_path,
-            Name        = "image-path"
-        });
-
-        Handler = CommandHandler.Create(typeof(FilesystemInfoCommand).GetMethod(nameof(Invoke)));
-    }
-
-    public static int Invoke(bool   verbose, bool debug, string encoding, bool filesystems, bool partitions,
-                             string imagePath)
+    public override int Execute(CommandContext context, Settings settings)
     {
         MainClass.PrintCopyright();
 
-        if(debug)
+        if(settings.Debug)
         {
             IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
             {
@@ -94,7 +73,7 @@ sealed class FilesystemInfoCommand : Command
             AaruConsole.WriteExceptionEvent += ex => { stderrConsole.WriteException(ex); };
         }
 
-        if(verbose)
+        if(settings.Verbose)
         {
             AaruConsole.WriteEvent += (format, objects) =>
             {
@@ -107,19 +86,19 @@ sealed class FilesystemInfoCommand : Command
 
         Statistics.AddCommand("fs-info");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",       debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--encoding={0}",    Markup.Escape(encoding ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--filesystems={0}", filesystems);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",       Markup.Escape(imagePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--partitions={0}",  partitions);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",     verbose);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",       settings.Debug);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--encoding={0}",    Markup.Escape(settings.Encoding ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--filesystems={0}", settings.Filesystems);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",       Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--partitions={0}",  settings.Partitions);
+        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",     settings.Verbose);
 
         IFilter inputFilter = null;
 
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(UI.Identifying_file_filter).IsIndeterminate();
-            inputFilter = PluginRegister.Singleton.GetFilter(imagePath);
+            inputFilter = PluginRegister.Singleton.GetFilter(settings.ImagePath);
         });
 
         if(inputFilter == null)
@@ -131,13 +110,13 @@ sealed class FilesystemInfoCommand : Command
 
         Encoding encodingClass = null;
 
-        if(encoding != null)
+        if(settings.Encoding != null)
         {
             try
             {
-                encodingClass = Claunia.Encoding.Encoding.GetEncoding(encoding);
+                encodingClass = Claunia.Encoding.Encoding.GetEncoding(settings.Encoding);
 
-                if(verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
+                if(settings.Verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
             }
             catch(ArgumentException)
             {
@@ -149,7 +128,7 @@ sealed class FilesystemInfoCommand : Command
 
         PluginRegister plugins = PluginRegister.Singleton;
 
-        var checkRaw = false;
+        bool checkRaw = false;
 
         try
         {
@@ -177,7 +156,7 @@ sealed class FilesystemInfoCommand : Command
                 return (int)ErrorNumber.InvalidArgument;
             }
 
-            if(verbose)
+            if(settings.Verbose)
                 AaruConsole.VerboseWriteLine(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
             else
                 AaruConsole.WriteLine(UI.Image_format_identified_by_0, imageFormat.Name);
@@ -202,7 +181,7 @@ sealed class FilesystemInfoCommand : Command
                     return (int)opened;
                 }
 
-                if(verbose)
+                if(settings.Verbose)
                 {
                     ImageInfo.PrintImageInfo(imageFormat);
                     AaruConsole.WriteLine();
@@ -225,7 +204,7 @@ sealed class FilesystemInfoCommand : Command
             IFilesystem  fs;
             string       information;
 
-            if(partitions)
+            if(settings.Partitions)
             {
                 List<Partition> partitionsList = null;
 
@@ -241,7 +220,7 @@ sealed class FilesystemInfoCommand : Command
                 {
                     AaruConsole.DebugWriteLine(MODULE_NAME, UI.No_partitions_found);
 
-                    if(!filesystems)
+                    if(!settings.Filesystems)
                     {
                         AaruConsole.WriteLine(UI.No_partitions_found_not_searching_for_filesystems);
 
@@ -254,7 +233,7 @@ sealed class FilesystemInfoCommand : Command
                 {
                     AaruConsole.WriteLine(UI._0_partitions_found, partitionsList.Count);
 
-                    for(var i = 0; i < partitionsList.Count; i++)
+                    for(int i = 0; i < partitionsList.Count; i++)
                     {
                         Table table = new()
                         {
@@ -283,7 +262,7 @@ sealed class FilesystemInfoCommand : Command
 
                         AnsiConsole.Write(table);
 
-                        if(!filesystems) continue;
+                        if(!settings.Filesystems) continue;
 
                         Core.Spectre.ProgressSingleSpinner(ctx =>
                         {
@@ -425,4 +404,27 @@ sealed class FilesystemInfoCommand : Command
 
         return (int)ErrorNumber.NoError;
     }
+
+#region Nested type: Settings
+
+    public class Settings : FilesystemFamily
+    {
+        [Description("Name of character encoding to use.")]
+        [DefaultValue(null)]
+        [CommandOption("-e|--encoding")]
+        public string Encoding { get; init; }
+        [Description("Searches and prints information about filesystems.")]
+        [DefaultValue(true)]
+        [CommandOption("-p|--partitions")]
+        public bool Partitions { get; init; }
+        [Description("Searches and interprets partitions.")]
+        [CommandOption("-f|--filesystems")]
+        [DefaultValue(true)]
+        public bool Filesystems { get; init; }
+        [Description("Media image path")]
+        [CommandArgument(0, "<image-path>")]
+        public string ImagePath { get; init; }
+    }
+
+#endregion
 }

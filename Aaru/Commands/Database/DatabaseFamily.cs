@@ -30,18 +30,6 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System.CommandLine;
-using Aaru.Localization;
-
 namespace Aaru.Commands.Database;
 
-sealed class DatabaseFamily : Command
-{
-    internal DatabaseFamily(bool mainDbUpdate) : base("database", UI.Database_Command_Family_Description)
-    {
-        AddAlias("db");
-
-        AddCommand(new StatisticsCommand());
-        AddCommand(new UpdateCommand(mainDbUpdate));
-    }
-}
+class DatabaseFamily : BaseSettings {}
