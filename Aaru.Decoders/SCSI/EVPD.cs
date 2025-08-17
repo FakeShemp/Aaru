@@ -558,12 +558,12 @@ public static class EVPD
                           .AppendLine();
                     else
                     {
-                        sb.AppendFormat($"\t[slateblue1]{Localization.IEEE_EUI_64_0_X2}[/]",
+                        sb.AppendFormat($"\t[slateblue1]{Localization.IEEE_EUI_64_0_X2}",
                                         $"[teal]{descriptor.Binary[0]}");
 
                         for(int i = 1; i < descriptor.Binary.Length; i++) sb.Append($":{descriptor.Binary[i]:X2}");
 
-                        sb.AppendLine("[/]");
+                        sb.AppendLine("[/][/]");
                     }
 
                     break;
@@ -574,11 +574,11 @@ public static class EVPD
                           .AppendLine();
                     else
                     {
-                        sb.AppendFormat($"\t[slateblue1]{Localization.NAA_0_X2}[/]", $"[teal]{descriptor.Binary[0]}");
+                        sb.AppendFormat($"\t[slateblue1]{Localization.NAA_0_X2}", $"[teal]{descriptor.Binary[0]}");
 
                         for(int i = 1; i < descriptor.Binary.Length; i++) sb.Append($":{descriptor.Binary[i]:X2}");
 
-                        sb.AppendLine("[/]");
+                        sb.AppendLine("[/][/]");
                     }
 
                     break;
@@ -635,12 +635,12 @@ public static class EVPD
                     }
                     else
                     {
-                        sb.AppendFormat($"\t[slateblue1]{Localization.MD5_logical_unit_identifier_0_x2}[/]",
+                        sb.AppendFormat($"\t[slateblue1]{Localization.MD5_logical_unit_identifier_0_x2}",
                                         $"[teal]{descriptor.Binary[0]}");
 
                         for(int i = 1; i < descriptor.Binary.Length; i++) sb.Append($"{descriptor.Binary[i]:x2}");
 
-                        sb.AppendLine("[/]");
+                        sb.AppendLine("[/][/]");
                     }
 
                     break;
