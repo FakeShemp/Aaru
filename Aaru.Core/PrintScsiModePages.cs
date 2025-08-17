@@ -64,12 +64,16 @@ public static class PrintScsiModePages
                     {
                         if(page.Subpage != 0)
                         {
-                            AaruLogging.WriteLine(Localization.Core.Found_unknown_vendor_mode_page_0_subpage_1,
-                                                  page.Page,
-                                                  page.Subpage);
+                            AaruLogging
+                               .WriteLine($"[red]{Localization.Core.Found_unknown_vendor_mode_page_0_subpage_1}[/]",
+                                          $"[teal]{page.Page}[/]",
+                                          $"[teal]{page.Subpage}[/]");
                         }
                         else
-                            AaruLogging.WriteLine(Localization.Core.Found_unknown_vendor_mode_page_0, page.Page);
+                        {
+                            AaruLogging.WriteLine($"[red]{Localization.Core.Found_unknown_vendor_mode_page_0}[/]",
+                                                  $"[teal]{page.Page}[/]");
+                        }
                     }
 
                     break;
@@ -376,12 +380,15 @@ public static class PrintScsiModePages
                 {
                     if(page.Subpage != 0)
                     {
-                        AaruLogging.WriteLine(Localization.Core.Found_unknown_mode_page_0_subpage_1,
-                                              page.Page,
-                                              page.Subpage);
+                        AaruLogging.WriteLine($"[red]{Localization.Core.Found_unknown_mode_page_0_subpage_1}[/]",
+                                              $"[teal]{page.Page}[/]",
+                                              $"[teal]{page.Subpage}[/]");
                     }
                     else
-                        AaruLogging.WriteLine(Localization.Core.Found_unknown_mode_page_0, page.Page);
+                    {
+                        AaruLogging.WriteLine($"[red]{Localization.Core.Found_unknown_mode_page_0}[/]",
+                                              $"[teal]{page.Page}[/]");
+                    }
 
                     break;
                 }

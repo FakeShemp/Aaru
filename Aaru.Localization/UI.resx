@@ -3114,4 +3114,16 @@ Do you want to continue?</value>
     <data name="List_devices_command" xml:space="preserve">
         <value>List devices</value>
     </data>
+    <data name="CD_reading_offset_not_found_in_database" xml:space="preserve">
+        <value>CD reading offset not found in database.</value>
+    </data>
+    <data name="CD_reading_offset_is_0_samples_1_bytes" xml:space="preserve">
+        <value>CD reading offset is {0} samples ({1} bytes).</value>
+    </data>
+    <data name="Could_not_get_any_kind_of_information_from_the_device" xml:space="preserve">
+        <value>Could not get any kind of information from the device !!!</value>
+    </data>
+    <data name="Optimal_multiple_read_is_0_sectors" xml:space="preserve">
+        <value>Optimal multiple read is {0} sectors.</value>
+    </data>
 </root>

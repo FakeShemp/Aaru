@@ -6075,5 +6075,29 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("List_devices_command", resourceCulture);
             }
         }
+        
+        public static string CD_reading_offset_not_found_in_database {
+            get {
+                return ResourceManager.GetString("CD_reading_offset_not_found_in_database", resourceCulture);
+            }
+        }
+        
+        public static string CD_reading_offset_is_0_samples_1_bytes {
+            get {
+                return ResourceManager.GetString("CD_reading_offset_is_0_samples_1_bytes", resourceCulture);
+            }
+        }
+        
+        public static string Could_not_get_any_kind_of_information_from_the_device {
+            get {
+                return ResourceManager.GetString("Could_not_get_any_kind_of_information_from_the_device", resourceCulture);
+            }
+        }
+        
+        public static string Optimal_multiple_read_is_0_sectors {
+            get {
+                return ResourceManager.GetString("Optimal_multiple_read_is_0_sectors", resourceCulture);
+            }
+        }
     }
 }
