@@ -59,37 +59,37 @@ public sealed partial class PartClone
         stream.EnsureRead(pHdrB, 0, Marshal.SizeOf<Header>());
         _pHdr = Marshal.ByteArrayToStructureLittleEndian<Header>(pHdrB);
 
-        AaruConsole.Debug(MODULE_NAME, "pHdr.magic = {0}", StringHandlers.CToString(_pHdr.magic));
+        AaruLogging.Debug(MODULE_NAME, "pHdr.magic = {0}", StringHandlers.CToString(_pHdr.magic));
 
-        AaruConsole.Debug(MODULE_NAME, "pHdr.filesystem = {0}", StringHandlers.CToString(_pHdr.filesystem));
+        AaruLogging.Debug(MODULE_NAME, "pHdr.filesystem = {0}", StringHandlers.CToString(_pHdr.filesystem));
 
-        AaruConsole.Debug(MODULE_NAME, "pHdr.version = {0}", StringHandlers.CToString(_pHdr.version));
+        AaruLogging.Debug(MODULE_NAME, "pHdr.version = {0}", StringHandlers.CToString(_pHdr.version));
 
-        AaruConsole.Debug(MODULE_NAME, "pHdr.blockSize = {0}",   _pHdr.blockSize);
-        AaruConsole.Debug(MODULE_NAME, "pHdr.deviceSize = {0}",  _pHdr.deviceSize);
-        AaruConsole.Debug(MODULE_NAME, "pHdr.totalBlocks = {0}", _pHdr.totalBlocks);
-        AaruConsole.Debug(MODULE_NAME, "pHdr.usedBlocks = {0}",  _pHdr.usedBlocks);
+        AaruLogging.Debug(MODULE_NAME, "pHdr.blockSize = {0}",   _pHdr.blockSize);
+        AaruLogging.Debug(MODULE_NAME, "pHdr.deviceSize = {0}",  _pHdr.deviceSize);
+        AaruLogging.Debug(MODULE_NAME, "pHdr.totalBlocks = {0}", _pHdr.totalBlocks);
+        AaruLogging.Debug(MODULE_NAME, "pHdr.usedBlocks = {0}",  _pHdr.usedBlocks);
 
         _byteMap = new byte[_pHdr.totalBlocks];
-        AaruConsole.Debug(MODULE_NAME, Localization.Reading_bytemap_0_bytes, _byteMap.Length);
+        AaruLogging.Debug(MODULE_NAME, Localization.Reading_bytemap_0_bytes, _byteMap.Length);
         stream.EnsureRead(_byteMap, 0, _byteMap.Length);
 
         byte[] bitmagic = new byte[8];
         stream.EnsureRead(bitmagic, 0, 8);
 
-        AaruConsole.Debug(MODULE_NAME, "pHdr.bitmagic = {0}", StringHandlers.CToString(bitmagic));
+        AaruLogging.Debug(MODULE_NAME, "pHdr.bitmagic = {0}", StringHandlers.CToString(bitmagic));
 
         if(!_biTmAgIc.SequenceEqual(bitmagic))
         {
-            AaruConsole.Error(Localization.Could_not_find_partclone_BiTmAgIc_not_continuing);
+            AaruLogging.Error(Localization.Could_not_find_partclone_BiTmAgIc_not_continuing);
 
             return ErrorNumber.InvalidArgument;
         }
 
         _dataOff = stream.Position;
-        AaruConsole.Debug(MODULE_NAME, "pHdr.dataOff = {0}", _dataOff);
+        AaruLogging.Debug(MODULE_NAME, "pHdr.dataOff = {0}", _dataOff);
 
-        AaruConsole.Debug(MODULE_NAME, Localization.Filling_extents);
+        AaruLogging.Debug(MODULE_NAME, Localization.Filling_extents);
         var extentFillStopwatch = new Stopwatch();
         extentFillStopwatch.Start();
         _extents    = new ExtentsULong();
@@ -124,7 +124,7 @@ public sealed partial class PartClone
 
         extentFillStopwatch.Stop();
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Took_0_seconds_to_fill_extents,
                                    extentFillStopwatch.Elapsed.TotalSeconds);
 

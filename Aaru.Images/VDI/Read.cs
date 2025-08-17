@@ -60,38 +60,38 @@ public sealed partial class Vdi
         stream.EnsureRead(vHdrB, 0, Marshal.SizeOf<Header>());
         _vHdr = Marshal.ByteArrayToStructureLittleEndian<Header>(vHdrB);
 
-        AaruConsole.Debug(MODULE_NAME, "vHdr.creator = {0}", _vHdr.creator);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.magic = {0}",   _vHdr.magic);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.creator = {0}", _vHdr.creator);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.magic = {0}",   _vHdr.magic);
 
-        AaruConsole.Debug(MODULE_NAME, "vHdr.version = {0}.{1}", _vHdr.majorVersion, _vHdr.minorVersion);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.version = {0}.{1}", _vHdr.majorVersion, _vHdr.minorVersion);
 
-        AaruConsole.Debug(MODULE_NAME, "vHdr.headerSize = {0}",        _vHdr.headerSize);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.imageType = {0}",         _vHdr.imageType);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.imageFlags = {0}",        _vHdr.imageFlags);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.description = {0}",       _vHdr.comments);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.offsetBlocks = {0}",      _vHdr.offsetBlocks);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.offsetData = {0}",        _vHdr.offsetData);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.cylinders = {0}",         _vHdr.cylinders);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.heads = {0}",             _vHdr.heads);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.spt = {0}",               _vHdr.spt);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.sectorSize = {0}",        _vHdr.sectorSize);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.size = {0}",              _vHdr.size);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.blockSize = {0}",         _vHdr.blockSize);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.blockExtraData = {0}",    _vHdr.blockExtraData);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.blocks = {0}",            _vHdr.blocks);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.allocatedBlocks = {0}",   _vHdr.allocatedBlocks);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.uuid = {0}",              _vHdr.uuid);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.snapshotUuid = {0}",      _vHdr.snapshotUuid);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.linkUuid = {0}",          _vHdr.linkUuid);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.parentUuid = {0}",        _vHdr.parentUuid);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.logicalCylinders = {0}",  _vHdr.logicalCylinders);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.logicalHeads = {0}",      _vHdr.logicalHeads);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.logicalSpt = {0}",        _vHdr.logicalSpt);
-        AaruConsole.Debug(MODULE_NAME, "vHdr.logicalSectorSize = {0}", _vHdr.logicalSectorSize);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.headerSize = {0}",        _vHdr.headerSize);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.imageType = {0}",         _vHdr.imageType);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.imageFlags = {0}",        _vHdr.imageFlags);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.description = {0}",       _vHdr.comments);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.offsetBlocks = {0}",      _vHdr.offsetBlocks);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.offsetData = {0}",        _vHdr.offsetData);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.cylinders = {0}",         _vHdr.cylinders);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.heads = {0}",             _vHdr.heads);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.spt = {0}",               _vHdr.spt);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.sectorSize = {0}",        _vHdr.sectorSize);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.size = {0}",              _vHdr.size);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.blockSize = {0}",         _vHdr.blockSize);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.blockExtraData = {0}",    _vHdr.blockExtraData);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.blocks = {0}",            _vHdr.blocks);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.allocatedBlocks = {0}",   _vHdr.allocatedBlocks);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.uuid = {0}",              _vHdr.uuid);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.snapshotUuid = {0}",      _vHdr.snapshotUuid);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.linkUuid = {0}",          _vHdr.linkUuid);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.parentUuid = {0}",        _vHdr.parentUuid);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.logicalCylinders = {0}",  _vHdr.logicalCylinders);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.logicalHeads = {0}",      _vHdr.logicalHeads);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.logicalSpt = {0}",        _vHdr.logicalSpt);
+        AaruLogging.Debug(MODULE_NAME, "vHdr.logicalSectorSize = {0}", _vHdr.logicalSectorSize);
 
         if(_vHdr.imageType != VdiImageType.Normal)
         {
-            AaruConsole.Error(string.Format(Localization.Support_for_image_type_0_not_yet_implemented,
+            AaruLogging.Error(string.Format(Localization.Support_for_image_type_0_not_yet_implemented,
                                                      _vHdr.imageType));
 
             return ErrorNumber.InvalidArgument;
@@ -99,14 +99,14 @@ public sealed partial class Vdi
 
         var blockMapStopwatch = new Stopwatch();
         blockMapStopwatch.Start();
-        AaruConsole.Debug(MODULE_NAME, Localization.Reading_Image_Block_Map);
+        AaruLogging.Debug(MODULE_NAME, Localization.Reading_Image_Block_Map);
         stream.Seek(_vHdr.offsetBlocks, SeekOrigin.Begin);
         byte[] ibmB = new byte[_vHdr.blocks * 4];
         stream.EnsureRead(ibmB, 0, ibmB.Length);
         _ibm = MemoryMarshal.Cast<byte, uint>(ibmB).ToArray();
         blockMapStopwatch.Stop();
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Reading_Image_Block_Map_took_0_ms,
                                    blockMapStopwatch.Elapsed.TotalMilliseconds);
 

@@ -253,7 +253,7 @@ public sealed class ImageSidecarViewModel : ViewModelBase
         _sidecarClass.EndProgressEvent2    += EndProgress2;
         Metadata sidecar = _sidecarClass.Create();
 
-        AaruConsole.WriteLine(Localization.Core.Writing_metadata_sidecar);
+        AaruLogging.WriteLine(Localization.Core.Writing_metadata_sidecar);
 
         var jsonFs = new FileStream(DestinationText, FileMode.Create);
 

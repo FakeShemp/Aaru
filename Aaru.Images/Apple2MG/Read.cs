@@ -68,38 +68,38 @@ public sealed partial class Apple2Mg
         {
             _imageHeader.DataSize = 0x000C8000;
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        Localization.Detected_incorrect_endian_on_data_size_field_correcting);
         }
 
-        AaruConsole.Debug(MODULE_NAME, "ImageHeader.magic = \"{0}\"", Encoding.ASCII.GetString(magic));
+        AaruLogging.Debug(MODULE_NAME, "ImageHeader.magic = \"{0}\"", Encoding.ASCII.GetString(magic));
 
-        AaruConsole.Debug(MODULE_NAME, "ImageHeader.creator = \"{0}\"", Encoding.ASCII.GetString(creator));
+        AaruLogging.Debug(MODULE_NAME, "ImageHeader.creator = \"{0}\"", Encoding.ASCII.GetString(creator));
 
-        AaruConsole.Debug(MODULE_NAME, "ImageHeader.headerSize = {0}",      _imageHeader.HeaderSize);
-        AaruConsole.Debug(MODULE_NAME, "ImageHeader.version = {0}",         _imageHeader.Version);
-        AaruConsole.Debug(MODULE_NAME, "ImageHeader.imageFormat = {0}",     _imageHeader.ImageFormat);
-        AaruConsole.Debug(MODULE_NAME, "ImageHeader.flags = 0x{0:X8}",      _imageHeader.Flags);
-        AaruConsole.Debug(MODULE_NAME, "ImageHeader.blocks = {0}",          _imageHeader.Blocks);
-        AaruConsole.Debug(MODULE_NAME, "ImageHeader.dataOffset = 0x{0:X8}", _imageHeader.DataOffset);
-        AaruConsole.Debug(MODULE_NAME, "ImageHeader.dataSize = {0}",        _imageHeader.DataSize);
+        AaruLogging.Debug(MODULE_NAME, "ImageHeader.headerSize = {0}",      _imageHeader.HeaderSize);
+        AaruLogging.Debug(MODULE_NAME, "ImageHeader.version = {0}",         _imageHeader.Version);
+        AaruLogging.Debug(MODULE_NAME, "ImageHeader.imageFormat = {0}",     _imageHeader.ImageFormat);
+        AaruLogging.Debug(MODULE_NAME, "ImageHeader.flags = 0x{0:X8}",      _imageHeader.Flags);
+        AaruLogging.Debug(MODULE_NAME, "ImageHeader.blocks = {0}",          _imageHeader.Blocks);
+        AaruLogging.Debug(MODULE_NAME, "ImageHeader.dataOffset = 0x{0:X8}", _imageHeader.DataOffset);
+        AaruLogging.Debug(MODULE_NAME, "ImageHeader.dataSize = {0}",        _imageHeader.DataSize);
 
-        AaruConsole.Debug(MODULE_NAME, "ImageHeader.commentOffset = 0x{0:X8}", _imageHeader.CommentOffset);
+        AaruLogging.Debug(MODULE_NAME, "ImageHeader.commentOffset = 0x{0:X8}", _imageHeader.CommentOffset);
 
-        AaruConsole.Debug(MODULE_NAME, "ImageHeader.commentSize = {0}", _imageHeader.CommentSize);
+        AaruLogging.Debug(MODULE_NAME, "ImageHeader.commentSize = {0}", _imageHeader.CommentSize);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "ImageHeader.creatorSpecificOffset = 0x{0:X8}",
                                    _imageHeader.CreatorSpecificOffset);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "ImageHeader.creatorSpecificSize = {0}",
                                    _imageHeader.CreatorSpecificSize);
 
-        AaruConsole.Debug(MODULE_NAME, "ImageHeader.reserved1 = 0x{0:X8}", _imageHeader.Reserved1);
-        AaruConsole.Debug(MODULE_NAME, "ImageHeader.reserved2 = 0x{0:X8}", _imageHeader.Reserved2);
-        AaruConsole.Debug(MODULE_NAME, "ImageHeader.reserved3 = 0x{0:X8}", _imageHeader.Reserved3);
-        AaruConsole.Debug(MODULE_NAME, "ImageHeader.reserved4 = 0x{0:X8}", _imageHeader.Reserved4);
+        AaruLogging.Debug(MODULE_NAME, "ImageHeader.reserved1 = 0x{0:X8}", _imageHeader.Reserved1);
+        AaruLogging.Debug(MODULE_NAME, "ImageHeader.reserved2 = 0x{0:X8}", _imageHeader.Reserved2);
+        AaruLogging.Debug(MODULE_NAME, "ImageHeader.reserved3 = 0x{0:X8}", _imageHeader.Reserved3);
+        AaruLogging.Debug(MODULE_NAME, "ImageHeader.reserved4 = 0x{0:X8}", _imageHeader.Reserved4);
 
         if(_imageHeader is { DataSize: 0, Blocks: 0 } && _imageHeader.ImageFormat != SectorOrder.ProDos)
             return ErrorNumber.InvalidArgument;
@@ -219,10 +219,10 @@ public sealed partial class Apple2Mg
 
         _imageInfo.MetadataMediaType = MetadataMediaType.BlockMedia;
 
-        AaruConsole.Verbose(Localization._2MG_image_contains_a_disk_of_type_0, _imageInfo.MediaType);
+        AaruLogging.Verbose(Localization._2MG_image_contains_a_disk_of_type_0, _imageInfo.MediaType);
 
         if(!string.IsNullOrEmpty(_imageInfo.Comments))
-            AaruConsole.Verbose(Localization._2MG_comments_0, _imageInfo.Comments);
+            AaruLogging.Verbose(Localization._2MG_comments_0, _imageInfo.Comments);
 
         switch(_imageInfo.MediaType)
         {

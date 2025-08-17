@@ -89,15 +89,15 @@ public sealed partial class BFS
         Array.Copy(bfsSbSector, 0x22, sbStrings, 0, 6);
         bfsSb.s_volume = StringHandlers.CToString(sbStrings, encoding);
 
-        AaruConsole.Debug(MODULE_NAME, "bfs_sb.s_magic: 0x{0:X8}", bfsSb.s_magic);
-        AaruConsole.Debug(MODULE_NAME, "bfs_sb.s_start: 0x{0:X8}", bfsSb.s_start);
-        AaruConsole.Debug(MODULE_NAME, "bfs_sb.s_end: 0x{0:X8}",   bfsSb.s_end);
-        AaruConsole.Debug(MODULE_NAME, "bfs_sb.s_from: 0x{0:X8}",  bfsSb.s_from);
-        AaruConsole.Debug(MODULE_NAME, "bfs_sb.s_to: 0x{0:X8}",    bfsSb.s_to);
-        AaruConsole.Debug(MODULE_NAME, "bfs_sb.s_bfrom: 0x{0:X8}", bfsSb.s_bfrom);
-        AaruConsole.Debug(MODULE_NAME, "bfs_sb.s_bto: 0x{0:X8}",   bfsSb.s_bto);
-        AaruConsole.Debug(MODULE_NAME, "bfs_sb.s_fsname: 0x{0}",   bfsSb.s_fsname);
-        AaruConsole.Debug(MODULE_NAME, "bfs_sb.s_volume: 0x{0}",   bfsSb.s_volume);
+        AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_magic: 0x{0:X8}", bfsSb.s_magic);
+        AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_start: 0x{0:X8}", bfsSb.s_start);
+        AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_end: 0x{0:X8}",   bfsSb.s_end);
+        AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_from: 0x{0:X8}",  bfsSb.s_from);
+        AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_to: 0x{0:X8}",    bfsSb.s_to);
+        AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_bfrom: 0x{0:X8}", bfsSb.s_bfrom);
+        AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_bto: 0x{0:X8}",   bfsSb.s_bto);
+        AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_fsname: 0x{0}",   bfsSb.s_fsname);
+        AaruLogging.Debug(MODULE_NAME, "bfs_sb.s_volume: 0x{0}",   bfsSb.s_volume);
 
         sb.AppendLine(Localization.UNIX_Boot_Filesystem);
 

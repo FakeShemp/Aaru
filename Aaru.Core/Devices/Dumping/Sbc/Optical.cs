@@ -88,7 +88,7 @@ partial class Dump
 
             // TODO: Find a place where MEDIUM SCAN works properly
             else if(buffer?.Length > 0 && !ArrayHelpers.ArrayIsNullOrEmpty(buffer))
-                AaruConsole.WriteLine(Localization.Core.MEDIUM_SCAN_github_plead_message);
+                AaruLogging.WriteLine(Localization.Core.MEDIUM_SCAN_github_plead_message);
 
             changingCounter = false;
             changingWritten = false;

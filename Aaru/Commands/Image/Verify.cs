@@ -59,13 +59,13 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
 
         Statistics.AddCommand("verify");
 
-        AaruConsole.Debug(MODULE_NAME, "--debug={0}",          settings.Debug);
-        AaruConsole.Debug(MODULE_NAME, "--input={0}",          Markup.Escape(settings.ImagePath ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",        settings.Verbose);
-        AaruConsole.Debug(MODULE_NAME, "--verify-disc={0}",    settings.VerifyDisc);
-        AaruConsole.Debug(MODULE_NAME, "--verify-sectors={0}", settings.VerifySectors);
-        AaruConsole.Debug(MODULE_NAME, "--create-graph={0}",   settings.CreateGraph);
-        AaruConsole.Debug(MODULE_NAME, "--dimensions={0}",     settings.Dimensions);
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}",          settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--input={0}",          Markup.Escape(settings.ImagePath ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}",        settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--verify-disc={0}",    settings.VerifyDisc);
+        AaruLogging.Debug(MODULE_NAME, "--verify-sectors={0}", settings.VerifySectors);
+        AaruLogging.Debug(MODULE_NAME, "--create-graph={0}",   settings.CreateGraph);
+        AaruLogging.Debug(MODULE_NAME, "--dimensions={0}",     settings.Dimensions);
 
         IFilter inputFilter = null;
 
@@ -77,7 +77,7 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
 
         if(inputFilter == null)
         {
-            AaruConsole.Error(UI.Cannot_open_specified_file);
+            AaruLogging.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -92,7 +92,7 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
 
         if(inputFormat == null)
         {
-            AaruConsole.Error(UI.Unable_to_recognize_image_format_not_verifying);
+            AaruLogging.Error(UI.Unable_to_recognize_image_format_not_verifying);
 
             return (int)ErrorNumber.FormatNotFound;
         }
@@ -107,8 +107,8 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
 
         if(opened != ErrorNumber.NoError)
         {
-            AaruConsole.WriteLine(UI.Unable_to_open_image_format);
-            AaruConsole.WriteLine(Localization.Core.Error_0, opened);
+            AaruLogging.WriteLine(UI.Unable_to_open_image_format);
+            AaruLogging.WriteLine(Localization.Core.Error_0, opened);
 
             return (int)opened;
         }
@@ -125,7 +125,7 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
 
         if(verifiableImage is null && verifiableSectorsImage is null)
         {
-            AaruConsole.Error(UI.The_specified_image_does_not_support_any_kind_of_verification);
+            AaruLogging.Error(UI.The_specified_image_does_not_support_any_kind_of_verification);
 
             return (int)ErrorNumber.NotVerifiable;
         }
@@ -148,22 +148,22 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
             switch(discCheckStatus)
             {
                 case true:
-                    AaruConsole.WriteLine(UI.Disc_image_checksums_are_correct);
+                    AaruLogging.WriteLine(UI.Disc_image_checksums_are_correct);
 
                     break;
                 case false:
-                    AaruConsole.WriteLine(UI.Disc_image_checksums_are_incorrect);
+                    AaruLogging.WriteLine(UI.Disc_image_checksums_are_incorrect);
 
                     break;
                 case null:
-                    AaruConsole.WriteLine(UI.Disc_image_does_not_contain_checksums);
+                    AaruLogging.WriteLine(UI.Disc_image_does_not_contain_checksums);
 
                     break;
             }
 
             correctImage = discCheckStatus;
 
-            AaruConsole.Verbose(UI.Checking_disc_image_checksums_took_0,
+            AaruLogging.Verbose(UI.Checking_disc_image_checksums_took_0,
                                          chkWatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
         }
 
@@ -383,42 +383,42 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
         }
 
         if(unknownLbas.Count > 0)
-            AaruConsole.WriteLine(UI.There_is_at_least_one_sector_that_does_not_contain_a_checksum);
+            AaruLogging.WriteLine(UI.There_is_at_least_one_sector_that_does_not_contain_a_checksum);
 
         if(failingLbas.Count > 0)
-            AaruConsole.WriteLine(UI.There_is_at_least_one_sector_with_incorrect_checksum_or_errors);
+            AaruLogging.WriteLine(UI.There_is_at_least_one_sector_with_incorrect_checksum_or_errors);
 
-        if(unknownLbas.Count == 0 && failingLbas.Count == 0) AaruConsole.WriteLine(UI.All_sector_checksums_are_correct);
+        if(unknownLbas.Count == 0 && failingLbas.Count == 0) AaruLogging.WriteLine(UI.All_sector_checksums_are_correct);
 
-        AaruConsole.Verbose(UI.Checking_sector_checksums_took_0,
+        AaruLogging.Verbose(UI.Checking_sector_checksums_took_0,
                                      stopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
 
         if(settings.Verbose)
         {
-            AaruConsole.Verbose($"[red]{UI.LBAs_with_error}[/]");
+            AaruLogging.Verbose($"[red]{UI.LBAs_with_error}[/]");
 
             if(failingLbas.Count == (int)inputFormat.Info.Sectors)
-                AaruConsole.Verbose($"\t[red]{UI.all_sectors}[/]");
+                AaruLogging.Verbose($"\t[red]{UI.all_sectors}[/]");
             else
             {
-                foreach(ulong t in failingLbas) AaruConsole.Verbose("\t{0}", t);
+                foreach(ulong t in failingLbas) AaruLogging.Verbose("\t{0}", t);
             }
 
-            AaruConsole.WriteLine($"[yellow3_1]{UI.LBAs_without_checksum}[/]");
+            AaruLogging.WriteLine($"[yellow3_1]{UI.LBAs_without_checksum}[/]");
 
             if(unknownLbas.Count == (int)inputFormat.Info.Sectors)
-                AaruConsole.Verbose($"\t[yellow3_1]{UI.all_sectors}[/]");
+                AaruLogging.Verbose($"\t[yellow3_1]{UI.all_sectors}[/]");
             else
             {
-                foreach(ulong t in unknownLbas) AaruConsole.Verbose("\t{0}", t);
+                foreach(ulong t in unknownLbas) AaruLogging.Verbose("\t{0}", t);
             }
         }
 
         // TODO: Convert to table
-        AaruConsole.WriteLine($"[italic]{UI.Total_sectors}[/] {inputFormat.Info.Sectors}");
-        AaruConsole.WriteLine($"[italic]{UI.Total_errors}[/] {failingLbas.Count}");
-        AaruConsole.WriteLine($"[italic]{UI.Total_unknowns}[/] {unknownLbas.Count}");
-        AaruConsole.WriteLine($"[italic]{UI.Total_errors_plus_unknowns}[/] {failingLbas.Count + unknownLbas.Count}");
+        AaruLogging.WriteLine($"[italic]{UI.Total_sectors}[/] {inputFormat.Info.Sectors}");
+        AaruLogging.WriteLine($"[italic]{UI.Total_errors}[/] {failingLbas.Count}");
+        AaruLogging.WriteLine($"[italic]{UI.Total_unknowns}[/] {unknownLbas.Count}");
+        AaruLogging.WriteLine($"[italic]{UI.Total_errors_plus_unknowns}[/] {failingLbas.Count + unknownLbas.Count}");
 
         mediaGraph?.WriteTo($"{Path.GetFileNameWithoutExtension(inputFilter.Filename)}.verify.png");
 

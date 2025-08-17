@@ -113,7 +113,7 @@ public sealed partial class CPM
                 }
 
                 // TODO: Implement CYLINDERS ordering
-                AaruConsole.Debug(MODULE_NAME, Localization.CYLINDERS_ordering_not_yet_implemented);
+                AaruLogging.Debug(MODULE_NAME, Localization.CYLINDERS_ordering_not_yet_implemented);
 
                 return ErrorNumber.NotImplemented;
             }
@@ -122,7 +122,7 @@ public sealed partial class CPM
             else if(string.Compare(_workingDefinition.order, "COLUMBIA", StringComparison.InvariantCultureIgnoreCase) ==
                     0)
             {
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            Localization
                                               .Dont_know_how_to_handle_COLUMBIA_ordering_not_proceeding_with_this_definition);
 
@@ -132,7 +132,7 @@ public sealed partial class CPM
             // TODO: Implement EAGLE ordering
             else if(string.Compare(_workingDefinition.order, "EAGLE", StringComparison.InvariantCultureIgnoreCase) == 0)
             {
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            Localization
                                               .Don_know_how_to_handle_EAGLE_ordering_not_proceeding_with_this_definition);
 
@@ -140,7 +140,7 @@ public sealed partial class CPM
             }
             else
             {
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            Localization.Unknown_order_type_0_not_proceeding_with_this_definition,
                                            _workingDefinition.order);
 
@@ -154,7 +154,7 @@ public sealed partial class CPM
         if(_workingDefinition.sides                                                                       == 1 ||
            string.Compare(_workingDefinition.order, "SIDES", StringComparison.InvariantCultureIgnoreCase) == 0)
         {
-            AaruConsole.Debug(MODULE_NAME, Localization.Deinterleaving_whole_volume);
+            AaruLogging.Debug(MODULE_NAME, Localization.Deinterleaving_whole_volume);
 
             for(int p = 0; p <= (int)(partition.End - partition.Start); p++)
             {
@@ -180,7 +180,7 @@ public sealed partial class CPM
         int                       sectorsPerBlock  = 0;
         Dictionary<ulong, byte[]> allocationBlocks = new();
 
-        AaruConsole.Debug(MODULE_NAME, Localization.Creating_allocation_blocks);
+        AaruLogging.Debug(MODULE_NAME, Localization.Creating_allocation_blocks);
 
         // For each volume sector
         for(ulong a = 0; a < (ulong)deinterleavedSectors.Count; a++)
@@ -216,7 +216,7 @@ public sealed partial class CPM
                 allocationBlocks.Add(blockNo++, sector);
         }
 
-        AaruConsole.Debug(MODULE_NAME, Localization.Reading_directory);
+        AaruLogging.Debug(MODULE_NAME, Localization.Reading_directory);
 
         int dirOff;
         int dirSectors = (_dpb.drm + 1) * 32 / _workingDefinition.bytesPerSector;
@@ -254,7 +254,7 @@ public sealed partial class CPM
         _labelUpdateDate   = null;
         _passwordCache     = new Dictionary<string, byte[]>();
 
-        AaruConsole.Debug(MODULE_NAME, Localization.Traversing_directory);
+        AaruLogging.Debug(MODULE_NAME, Localization.Traversing_directory);
 
         // For each directory entry
         for(int dOff = 0; dOff < directory.Length; dOff += 32)
@@ -716,7 +716,7 @@ public sealed partial class CPM
 
         // Cache all files. As CP/M maximum volume size is 8 Mib
         // this should not be a problem
-        AaruConsole.Debug(MODULE_NAME, "Reading files.");
+        AaruLogging.Debug(MODULE_NAME, "Reading files.");
         long usedBlocks = 0;
         _fileCache = new Dictionary<string, byte[]>();
 

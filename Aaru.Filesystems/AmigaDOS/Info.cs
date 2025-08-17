@@ -83,8 +83,8 @@ public sealed partial class AmigaDOSPlugin
         sector[4] = sector[5] = sector[6] = sector[7] = 0;
         uint bsum             = AmigaBootChecksum(sector);
 
-        AaruConsole.Debug(MODULE_NAME, "bblk.checksum = 0x{0:X8}", bblk.checksum);
-        AaruConsole.Debug(MODULE_NAME, "bsum = 0x{0:X8}",          bsum);
+        AaruLogging.Debug(MODULE_NAME, "bblk.checksum = 0x{0:X8}", bblk.checksum);
+        AaruLogging.Debug(MODULE_NAME, "bsum = 0x{0:X8}",          bsum);
 
         ulong bRootPtr = 0;
 
@@ -92,7 +92,7 @@ public sealed partial class AmigaDOSPlugin
         if(bsum == bblk.checksum)
         {
             bRootPtr = bblk.root_ptr + partition.Start;
-            AaruConsole.Debug(MODULE_NAME, Localization.Bootblock_points_to_0_as_Rootblock, bRootPtr);
+            AaruLogging.Debug(MODULE_NAME, Localization.Bootblock_points_to_0_as_Rootblock, bRootPtr);
         }
 
         ulong[] rootPtrs =
@@ -108,26 +108,26 @@ public sealed partial class AmigaDOSPlugin
         // So to handle even number of sectors
         foreach(ulong rootPtr in rootPtrs.Where(rootPtr => rootPtr < partition.End && rootPtr >= partition.Start))
         {
-            AaruConsole.Debug(MODULE_NAME, Localization.Searching_for_Rootblock_in_sector_0, rootPtr);
+            AaruLogging.Debug(MODULE_NAME, Localization.Searching_for_Rootblock_in_sector_0, rootPtr);
 
             errno = imagePlugin.ReadSector(rootPtr, out sector);
 
             if(errno != ErrorNumber.NoError) continue;
 
             rblk.type = BigEndianBitConverter.ToUInt32(sector, 0x00);
-            AaruConsole.Debug(MODULE_NAME, "rblk.type = {0}", rblk.type);
+            AaruLogging.Debug(MODULE_NAME, "rblk.type = {0}", rblk.type);
 
             if(rblk.type != TYPE_HEADER) continue;
 
             rblk.hashTableSize = BigEndianBitConverter.ToUInt32(sector, 0x0C);
 
-            AaruConsole.Debug(MODULE_NAME, "rblk.hashTableSize = {0}", rblk.hashTableSize);
+            AaruLogging.Debug(MODULE_NAME, "rblk.hashTableSize = {0}", rblk.hashTableSize);
 
             uint blockSize       = (rblk.hashTableSize + 56) * 4;
             uint sectorsPerBlock = (uint)(blockSize / sector.Length);
 
-            AaruConsole.Debug(MODULE_NAME, "blockSize = {0}",       blockSize);
-            AaruConsole.Debug(MODULE_NAME, "sectorsPerBlock = {0}", sectorsPerBlock);
+            AaruLogging.Debug(MODULE_NAME, "blockSize = {0}",       blockSize);
+            AaruLogging.Debug(MODULE_NAME, "sectorsPerBlock = {0}", sectorsPerBlock);
 
             if(blockSize % sector.Length > 0) sectorsPerBlock++;
 
@@ -142,11 +142,11 @@ public sealed partial class AmigaDOSPlugin
             sector[20]    = sector[21] = sector[22] = sector[23] = 0;
             uint rsum                  = AmigaChecksum(sector);
 
-            AaruConsole.Debug(MODULE_NAME, "rblk.checksum = 0x{0:X8}", rblk.checksum);
-            AaruConsole.Debug(MODULE_NAME, "rsum = 0x{0:X8}",          rsum);
+            AaruLogging.Debug(MODULE_NAME, "rblk.checksum = 0x{0:X8}", rblk.checksum);
+            AaruLogging.Debug(MODULE_NAME, "rsum = 0x{0:X8}",          rsum);
 
             rblk.sec_type = BigEndianBitConverter.ToUInt32(sector, sector.Length - 4);
-            AaruConsole.Debug(MODULE_NAME, "rblk.sec_type = {0}", rblk.sec_type);
+            AaruLogging.Debug(MODULE_NAME, "rblk.sec_type = {0}", rblk.sec_type);
 
             if(rblk.sec_type == SUBTYPE_ROOT && rblk.checksum == rsum) return true;
         }
@@ -178,7 +178,7 @@ public sealed partial class AmigaDOSPlugin
         if(bsum == bootBlk.checksum)
         {
             bRootPtr = bootBlk.root_ptr + partition.Start;
-            AaruConsole.Debug(MODULE_NAME, Localization.Bootblock_points_to_0_as_Rootblock, bRootPtr);
+            AaruLogging.Debug(MODULE_NAME, Localization.Bootblock_points_to_0_as_Rootblock, bRootPtr);
         }
 
         ulong[] rootPtrs =
@@ -198,26 +198,26 @@ public sealed partial class AmigaDOSPlugin
         // So to handle even number of sectors
         foreach(ulong rootPtr in rootPtrs.Where(rootPtr => rootPtr < partition.End && rootPtr >= partition.Start))
         {
-            AaruConsole.Debug(MODULE_NAME, Localization.Searching_for_Rootblock_in_sector_0, rootPtr);
+            AaruLogging.Debug(MODULE_NAME, Localization.Searching_for_Rootblock_in_sector_0, rootPtr);
 
             errno = imagePlugin.ReadSector(rootPtr, out rootBlockSector);
 
             if(errno != ErrorNumber.NoError) continue;
 
             rootBlk.type = BigEndianBitConverter.ToUInt32(rootBlockSector, 0x00);
-            AaruConsole.Debug(MODULE_NAME, "rootBlk.type = {0}", rootBlk.type);
+            AaruLogging.Debug(MODULE_NAME, "rootBlk.type = {0}", rootBlk.type);
 
             if(rootBlk.type != TYPE_HEADER) continue;
 
             rootBlk.hashTableSize = BigEndianBitConverter.ToUInt32(rootBlockSector, 0x0C);
 
-            AaruConsole.Debug(MODULE_NAME, "rootBlk.hashTableSize = {0}", rootBlk.hashTableSize);
+            AaruLogging.Debug(MODULE_NAME, "rootBlk.hashTableSize = {0}", rootBlk.hashTableSize);
 
             blockSize = (rootBlk.hashTableSize + 56) * 4;
             uint sectorsPerBlock = (uint)(blockSize / rootBlockSector.Length);
 
-            AaruConsole.Debug(MODULE_NAME, "blockSize = {0}",       blockSize);
-            AaruConsole.Debug(MODULE_NAME, "sectorsPerBlock = {0}", sectorsPerBlock);
+            AaruLogging.Debug(MODULE_NAME, "blockSize = {0}",       blockSize);
+            AaruLogging.Debug(MODULE_NAME, "sectorsPerBlock = {0}", sectorsPerBlock);
 
             if(blockSize % rootBlockSector.Length > 0) sectorsPerBlock++;
 
@@ -232,11 +232,11 @@ public sealed partial class AmigaDOSPlugin
             rootBlockSector[20] = rootBlockSector[21] = rootBlockSector[22] = rootBlockSector[23] = 0;
             uint rsum                                 = AmigaChecksum(rootBlockSector);
 
-            AaruConsole.Debug(MODULE_NAME, "rootBlk.checksum = 0x{0:X8}", rootBlk.checksum);
-            AaruConsole.Debug(MODULE_NAME, "rsum = 0x{0:X8}",             rsum);
+            AaruLogging.Debug(MODULE_NAME, "rootBlk.checksum = 0x{0:X8}", rootBlk.checksum);
+            AaruLogging.Debug(MODULE_NAME, "rsum = 0x{0:X8}",             rsum);
 
             rootBlk.sec_type = BigEndianBitConverter.ToUInt32(rootBlockSector, rootBlockSector.Length - 4);
-            AaruConsole.Debug(MODULE_NAME, "rootBlk.sec_type = {0}", rootBlk.sec_type);
+            AaruLogging.Debug(MODULE_NAME, "rootBlk.sec_type = {0}", rootBlk.sec_type);
 
             if(rootBlk.sec_type != SUBTYPE_ROOT || rootBlk.checksum != rsum) continue;
 

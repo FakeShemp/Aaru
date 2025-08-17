@@ -90,7 +90,7 @@ partial class Dump
 
             if(!isAdmin)
             {
-                AaruConsole.Error(Localization.Core
+                AaruLogging.Error(Localization.Core
                                                        .Because_of_commands_sent_dumping_XGD_must_be_administrative_Cannot_continue);
 
                 _dumpLog.WriteLine(Localization.Core.Cannot_dump_XGD_without_administrative_privileges);
@@ -162,7 +162,7 @@ partial class Dump
         mediaTags.Add(MediaTagType.Xbox_SecuritySector, tmpBuf);
 
         // Get video partition size
-        AaruConsole.Debug(MODULE_NAME, Localization.Core.Getting_video_partition_size);
+        AaruLogging.Debug(MODULE_NAME, Localization.Core.Getting_video_partition_size);
         UpdateStatus?.Invoke(Localization.Core.Locking_drive);
         _dumpLog.WriteLine(Localization.Core.Locking_drive);
         sense = _dev.KreonLock(out senseBuf, _dev.Timeout, out _);
@@ -217,7 +217,7 @@ partial class Dump
         Array.Copy(readBuffer, 4, tmpBuf, 0, readBuffer.Length - 4);
         mediaTags.Add(MediaTagType.DVD_PFI, tmpBuf);
 
-        AaruConsole.Debug(MODULE_NAME, Localization.Core.Video_partition_total_size_0_sectors, totalSize);
+        AaruLogging.Debug(MODULE_NAME, Localization.Core.Video_partition_total_size_0_sectors, totalSize);
 
         ulong l0Video = (PFI.Decode(readBuffer, MediaType.DVDROM)?.Layer0EndPSN     ?? 0) -
                         (PFI.Decode(readBuffer, MediaType.DVDROM)?.DataAreaStartPSN ?? 0) +
@@ -266,7 +266,7 @@ partial class Dump
             mediaTags.Remove(MediaTagType.DVD_PFI);
             mediaTags.Add(MediaTagType.DVD_PFI, tmpBuf);
 
-            AaruConsole.Debug(MODULE_NAME, Localization.Core.Video_partition_total_size_0_sectors, totalSize);
+            AaruLogging.Debug(MODULE_NAME, Localization.Core.Video_partition_total_size_0_sectors, totalSize);
 
             l0Video = (PFI.Decode(coldPfi, MediaType.DVDROM)?.Layer0EndPSN     ?? 0) -
                       (PFI.Decode(coldPfi, MediaType.DVDROM)?.DataAreaStartPSN ?? 0) +
@@ -285,7 +285,7 @@ partial class Dump
         }
 
         // Get game partition size
-        AaruConsole.Debug(MODULE_NAME, Localization.Core.Getting_game_partition_size);
+        AaruLogging.Debug(MODULE_NAME, Localization.Core.Getting_game_partition_size);
         UpdateStatus?.Invoke(Localization.Core.Unlocking_drive_Xtreme_);
         _dumpLog.WriteLine(Localization.Core.Unlocking_drive_Xtreme_);
         sense = _dev.KreonUnlockXtreme(out senseBuf, _dev.Timeout, out _);
@@ -316,10 +316,10 @@ partial class Dump
              0xFFFFFFFF) +
             1;
 
-        AaruConsole.Debug(MODULE_NAME, Localization.Core.Game_partition_total_size_0_sectors, gameSize);
+        AaruLogging.Debug(MODULE_NAME, Localization.Core.Game_partition_total_size_0_sectors, gameSize);
 
         // Get middle zone size
-        AaruConsole.Debug(MODULE_NAME, Localization.Core.Getting_middle_zone_size);
+        AaruLogging.Debug(MODULE_NAME, Localization.Core.Getting_middle_zone_size);
         UpdateStatus?.Invoke(Localization.Core.Unlocking_drive_Wxripper);
         _dumpLog.WriteLine(Localization.Core.Unlocking_drive_Wxripper);
         sense = _dev.KreonUnlockWxripper(out senseBuf, _dev.Timeout, out _);
@@ -369,7 +369,7 @@ partial class Dump
             return;
         }
 
-        AaruConsole.Debug(MODULE_NAME, Localization.Core.Unlocked_total_size_0_sectors, totalSize);
+        AaruLogging.Debug(MODULE_NAME, Localization.Core.Unlocked_total_size_0_sectors, totalSize);
         ulong blocks = totalSize + 1;
 
         PFI.PhysicalFormatInformation? wxRipperPfiNullable = PFI.Decode(readBuffer, MediaType.DVDROM);
@@ -772,7 +772,7 @@ partial class Dump
 
                     for(ulong b = i; b < i + _skip; b++) _resume.BadBlocks.Add(b);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                Localization.Core.READ_error_0,
                                                Sense.PrettifySense(senseBuf));
 
@@ -984,7 +984,7 @@ partial class Dump
                 // TODO: Handle errors in video partition
                 //errored += blocksToRead;
                 //resume.BadBlocks.Add(l1);
-                AaruConsole.Debug(MODULE_NAME, Localization.Core.READ_error_0, Sense.PrettifySense(senseBuf));
+                AaruLogging.Debug(MODULE_NAME, Localization.Core.READ_error_0, Sense.PrettifySense(senseBuf));
                 mhddLog.Write(l1, cmdDuration < 500 ? 65535 : cmdDuration, _skip);
 
                 ibgLog.Write(l1, 0);
@@ -1037,7 +1037,7 @@ partial class Dump
         }
 
         _dumpStopwatch.Stop();
-        AaruConsole.WriteLine();
+        AaruLogging.WriteLine();
         mhddLog.Close();
 
         ibgLog.Close(_dev,
@@ -1261,7 +1261,7 @@ partial class Dump
                     UpdateStatus?.Invoke(Localization.Core
                                                      .Drive_did_not_accept_MODE_SELECT_command_for_persistent_error_reading);
 
-                    AaruConsole.Debug(Localization.Core.Error_0, Sense.PrettifySense(senseBuf));
+                    AaruLogging.Debug(Localization.Core.Error_0, Sense.PrettifySense(senseBuf));
 
                     _dumpLog.WriteLine(Localization.Core
                                                    .Drive_did_not_accept_MODE_SELECT_command_for_persistent_error_reading);
@@ -1384,7 +1384,7 @@ partial class Dump
         {
             if(tag.Value is null)
             {
-                AaruConsole.Error(Localization.Core.Error_Tag_type_0_is_null_skipping, tag.Key);
+                AaruLogging.Error(Localization.Core.Error_Tag_type_0_is_null_skipping, tag.Key);
 
                 continue;
             }

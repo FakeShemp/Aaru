@@ -88,12 +88,12 @@ public sealed partial class Vhd
         uint headerCalculatedChecksum = VhdChecksum(header);
         uint footerCalculatedChecksum = VhdChecksum(footer);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Header_checksum_equals_0_X8_calculated_equals_1_X8,
                                    headerChecksum,
                                    headerCalculatedChecksum);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Header_checksum_equals_0_X8_calculated_equals_1_X8,
                                    footerChecksum,
                                    footerCalculatedChecksum);
@@ -113,7 +113,7 @@ public sealed partial class Vhd
         }
         else
         {
-            AaruConsole.Error(Localization
+            AaruLogging.Error(Localization
                                           .VirtualPC_plugin_Both_header_and_footer_are_corrupt_image_cannot_be_opened);
 
             return ErrorNumber.InvalidArgument;
@@ -147,50 +147,50 @@ public sealed partial class Vhd
         var sha1Ctx = new Sha1Context();
         sha1Ctx.Update(_thisFooter.Reserved);
 
-        AaruConsole.Debug(MODULE_NAME, "footer.cookie = 0x{0:X8}",   _thisFooter.Cookie);
-        AaruConsole.Debug(MODULE_NAME, "footer.features = 0x{0:X8}", _thisFooter.Features);
-        AaruConsole.Debug(MODULE_NAME, "footer.version = 0x{0:X8}",  _thisFooter.Version);
-        AaruConsole.Debug(MODULE_NAME, "footer.offset = {0}",        _thisFooter.Offset);
+        AaruLogging.Debug(MODULE_NAME, "footer.cookie = 0x{0:X8}",   _thisFooter.Cookie);
+        AaruLogging.Debug(MODULE_NAME, "footer.features = 0x{0:X8}", _thisFooter.Features);
+        AaruLogging.Debug(MODULE_NAME, "footer.version = 0x{0:X8}",  _thisFooter.Version);
+        AaruLogging.Debug(MODULE_NAME, "footer.offset = {0}",        _thisFooter.Offset);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "footer.timestamp = 0x{0:X8} ({1})",
                                    _thisFooter.Timestamp,
                                    _thisDateTime);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "footer.creatorApplication = 0x{0:X8} (\"{1}\")",
                                    _thisFooter.CreatorApplication,
                                    Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(_thisFooter
                                                                .CreatorApplication)));
 
-        AaruConsole.Debug(MODULE_NAME, "footer.creatorVersion = 0x{0:X8}", _thisFooter.CreatorVersion);
+        AaruLogging.Debug(MODULE_NAME, "footer.creatorVersion = 0x{0:X8}", _thisFooter.CreatorVersion);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "footer.creatorHostOS = 0x{0:X8} (\"{1}\")",
                                    _thisFooter.CreatorHostOs,
                                    Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(_thisFooter.CreatorHostOs)));
 
-        AaruConsole.Debug(MODULE_NAME, "footer.originalSize = {0}", _thisFooter.OriginalSize);
-        AaruConsole.Debug(MODULE_NAME, "footer.currentSize = {0}",  _thisFooter.CurrentSize);
+        AaruLogging.Debug(MODULE_NAME, "footer.originalSize = {0}", _thisFooter.OriginalSize);
+        AaruLogging.Debug(MODULE_NAME, "footer.currentSize = {0}",  _thisFooter.CurrentSize);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "footer.diskGeometry = 0x{0:X8} (C/H/S: {1}/{2}/{3})",
                                    _thisFooter.DiskGeometry,
                                    (_thisFooter.DiskGeometry & 0xFFFF0000) >> 16,
                                    (_thisFooter.DiskGeometry & 0xFF00)     >> 8,
                                    _thisFooter.DiskGeometry & 0xFF);
 
-        AaruConsole.Debug(MODULE_NAME, "footer.diskType = 0x{0:X8}",     _thisFooter.DiskType);
-        AaruConsole.Debug(MODULE_NAME, "footer.checksum = 0x{0:X8}",     _thisFooter.Checksum);
-        AaruConsole.Debug(MODULE_NAME, "footer.uniqueId = {0}",          _thisFooter.UniqueId);
-        AaruConsole.Debug(MODULE_NAME, "footer.savedState = 0x{0:X2}",   _thisFooter.SavedState);
-        AaruConsole.Debug(MODULE_NAME, "footer.reserved's SHA1 = 0x{0}", sha1Ctx.End());
+        AaruLogging.Debug(MODULE_NAME, "footer.diskType = 0x{0:X8}",     _thisFooter.DiskType);
+        AaruLogging.Debug(MODULE_NAME, "footer.checksum = 0x{0:X8}",     _thisFooter.Checksum);
+        AaruLogging.Debug(MODULE_NAME, "footer.uniqueId = {0}",          _thisFooter.UniqueId);
+        AaruLogging.Debug(MODULE_NAME, "footer.savedState = 0x{0:X2}",   _thisFooter.SavedState);
+        AaruLogging.Debug(MODULE_NAME, "footer.reserved's SHA1 = 0x{0}", sha1Ctx.End());
 
         if(_thisFooter.Version == VERSION1)
             _imageInfo.Version = "1.0";
         else
         {
-            AaruConsole.Error(string.Format(Localization.VirtualPC_plugin_Unknown_image_type_0_found,
+            AaruLogging.Error(string.Format(Localization.VirtualPC_plugin_Unknown_image_type_0_found,
                                                      _thisFooter.DiskType));
 
             return ErrorNumber.InvalidArgument;
@@ -370,14 +370,14 @@ public sealed partial class Vhd
 
             uint dynamicChecksumCalculated = VhdChecksum(dynamicBytes);
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        Localization.Dynamic_header_checksum_equals_0_X8_calculated_1_X8,
                                        dynamicChecksum,
                                        dynamicChecksumCalculated);
 
             if(dynamicChecksum != dynamicChecksumCalculated)
             {
-                AaruConsole.Error(Localization
+                AaruLogging.Error(Localization
                                               .VirtualPC_plugin_Both_header_and_footer_are_corrupt_image_cannot_be_opened);
 
                 return ErrorNumber.InvalidArgument;
@@ -429,61 +429,61 @@ public sealed partial class Vhd
             sha1Ctx = new Sha1Context();
             sha1Ctx.Update(_thisDynamic.Reserved2);
 
-            AaruConsole.Debug(MODULE_NAME, "dynamic.cookie = 0x{0:X8}", _thisDynamic.Cookie);
-            AaruConsole.Debug(MODULE_NAME, "dynamic.dataOffset = {0}",  _thisDynamic.DataOffset);
-            AaruConsole.Debug(MODULE_NAME, "dynamic.tableOffset = {0}", _thisDynamic.TableOffset);
+            AaruLogging.Debug(MODULE_NAME, "dynamic.cookie = 0x{0:X8}", _thisDynamic.Cookie);
+            AaruLogging.Debug(MODULE_NAME, "dynamic.dataOffset = {0}",  _thisDynamic.DataOffset);
+            AaruLogging.Debug(MODULE_NAME, "dynamic.tableOffset = {0}", _thisDynamic.TableOffset);
 
-            AaruConsole.Debug(MODULE_NAME, "dynamic.headerVersion = 0x{0:X8}", _thisDynamic.HeaderVersion);
+            AaruLogging.Debug(MODULE_NAME, "dynamic.headerVersion = 0x{0:X8}", _thisDynamic.HeaderVersion);
 
-            AaruConsole.Debug(MODULE_NAME, "dynamic.maxTableEntries = {0}", _thisDynamic.MaxTableEntries);
+            AaruLogging.Debug(MODULE_NAME, "dynamic.maxTableEntries = {0}", _thisDynamic.MaxTableEntries);
 
-            AaruConsole.Debug(MODULE_NAME, "dynamic.blockSize = {0}",     _thisDynamic.BlockSize);
-            AaruConsole.Debug(MODULE_NAME, "dynamic.checksum = 0x{0:X8}", _thisDynamic.Checksum);
-            AaruConsole.Debug(MODULE_NAME, "dynamic.parentID = {0}",      _thisDynamic.ParentId);
+            AaruLogging.Debug(MODULE_NAME, "dynamic.blockSize = {0}",     _thisDynamic.BlockSize);
+            AaruLogging.Debug(MODULE_NAME, "dynamic.checksum = 0x{0:X8}", _thisDynamic.Checksum);
+            AaruLogging.Debug(MODULE_NAME, "dynamic.parentID = {0}",      _thisDynamic.ParentId);
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        "dynamic.parentTimestamp = 0x{0:X8} ({1})",
                                        _thisDynamic.ParentTimestamp,
                                        _parentDateTime);
 
-            AaruConsole.Debug(MODULE_NAME, "dynamic.reserved = 0x{0:X8}", _thisDynamic.Reserved);
+            AaruLogging.Debug(MODULE_NAME, "dynamic.reserved = 0x{0:X8}", _thisDynamic.Reserved);
 
             for(int i = 0; i < 8; i++)
             {
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "dynamic.locatorEntries[{0}].platformCode = 0x{1:X8} (\"{2}\")",
                                            i,
                                            _thisDynamic.LocatorEntries[i].PlatformCode,
                                            Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(_thisDynamic
                                                                        .LocatorEntries[i].PlatformCode)));
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "dynamic.locatorEntries[{0}].platformDataSpace = {1}",
                                            i,
                                            _thisDynamic.LocatorEntries[i].PlatformDataSpace);
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "dynamic.locatorEntries[{0}].platformDataLength = {1}",
                                            i,
                                            _thisDynamic.LocatorEntries[i].PlatformDataLength);
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "dynamic.locatorEntries[{0}].reserved = 0x{1:X8}",
                                            i,
                                            _thisDynamic.LocatorEntries[i].Reserved);
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "dynamic.locatorEntries[{0}].platformDataOffset = {1}",
                                            i,
                                            _thisDynamic.LocatorEntries[i].PlatformDataOffset);
             }
 
-            AaruConsole.Debug(MODULE_NAME, "dynamic.parentName = \"{0}\"",     _thisDynamic.ParentName);
-            AaruConsole.Debug(MODULE_NAME, "dynamic.reserved2's SHA1 = 0x{0}", sha1Ctx.End());
+            AaruLogging.Debug(MODULE_NAME, "dynamic.parentName = \"{0}\"",     _thisDynamic.ParentName);
+            AaruLogging.Debug(MODULE_NAME, "dynamic.reserved2's SHA1 = 0x{0}", sha1Ctx.End());
 
             if(_thisDynamic.HeaderVersion != VERSION1)
             {
-                AaruConsole.Error(string.Format(Localization.VirtualPC_plugin_Unknown_image_type_0_found,
+                AaruLogging.Error(string.Format(Localization.VirtualPC_plugin_Unknown_image_type_0_found,
                                                          _thisFooter.DiskType));
 
                 return ErrorNumber.InvalidArgument;
@@ -502,7 +502,7 @@ public sealed partial class Vhd
 
             batStopwatch.Stop();
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        Localization.Filling_the_BAT_took_0_seconds,
                                        batStopwatch.Elapsed.TotalSeconds);
 
@@ -517,7 +517,7 @@ public sealed partial class Vhd
                                             /
                                              512);
 
-            AaruConsole.Debug(MODULE_NAME, Localization.Bitmap_is_0_sectors, _bitmapSize);
+            AaruLogging.Debug(MODULE_NAME, Localization.Bitmap_is_0_sectors, _bitmapSize);
         }
 
         _imageInfo.MetadataMediaType = MetadataMediaType.BlockMedia;
@@ -550,7 +550,7 @@ public sealed partial class Vhd
                         {
                             case PLATFORM_CODE_WINDOWS_ABSOLUTE:
                             case PLATFORM_CODE_WINDOWS_RELATIVE:
-                                AaruConsole.Debug(MODULE_NAME,
+                                AaruLogging.Debug(MODULE_NAME,
                                                            "dynamic.locatorEntries[{0}] = \"{1}\"",
                                                            i,
                                                            Encoding.ASCII.GetString(_locatorEntriesData[i]));
@@ -558,21 +558,21 @@ public sealed partial class Vhd
                                 break;
                             case PLATFORM_CODE_WINDOWS_ABSOLUTE_U:
                             case PLATFORM_CODE_WINDOWS_RELATIVE_U:
-                                AaruConsole.Debug(MODULE_NAME,
+                                AaruLogging.Debug(MODULE_NAME,
                                                            "dynamic.locatorEntries[{0}] = \"{1}\"",
                                                            i,
                                                            Encoding.BigEndianUnicode.GetString(_locatorEntriesData[i]));
 
                                 break;
                             case PLATFORM_CODE_MACINTOSH_URI:
-                                AaruConsole.Debug(MODULE_NAME,
+                                AaruLogging.Debug(MODULE_NAME,
                                                            "dynamic.locatorEntries[{0}] = \"{1}\"",
                                                            i,
                                                            Encoding.UTF8.GetString(_locatorEntriesData[i]));
 
                                 break;
                             default:
-                                AaruConsole.Debug(MODULE_NAME, "dynamic.locatorEntries[{0}] =", i);
+                                AaruLogging.Debug(MODULE_NAME, "dynamic.locatorEntries[{0}] =", i);
                                 PrintHex.PrintHexArray(_locatorEntriesData[i], 64);
 
                                 break;
@@ -606,7 +606,7 @@ public sealed partial class Vhd
                                 parentPath = parentPath.Remove(0, 16);
                             else
                             {
-                                AaruConsole.Debug(MODULE_NAME,
+                                AaruLogging.Debug(MODULE_NAME,
                                                            Localization
                                                               .Unsupported_protocol_classified_found_in_URI_parent_path_0,
                                                            parentPath);
@@ -619,7 +619,7 @@ public sealed partial class Vhd
 
                     if(parentPath != null)
                     {
-                        AaruConsole.Debug(MODULE_NAME, Localization.Possible_parent_path_0, parentPath);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Possible_parent_path_0, parentPath);
 
                         IFilter parentFilter =
                             PluginRegister.Singleton.GetFilter(Path.Combine(imageFilter.ParentFolder, parentPath));
@@ -634,7 +634,7 @@ public sealed partial class Vhd
 
                 if(!locatorFound)
                 {
-                    AaruConsole.Error(Localization
+                    AaruLogging.Error(Localization
                                                   .VirtualPC_plugin_Cannot_find_parent_file_for_differencing_disk_image);
 
                     return ErrorNumber.NoSuchFile;
@@ -648,7 +648,7 @@ public sealed partial class Vhd
 
                     if(parentFilter == null)
                     {
-                        AaruConsole.Error(Localization.VirtualPC_plugin_Cannot_find_parent_image_filter);
+                        AaruLogging.Error(Localization.VirtualPC_plugin_Cannot_find_parent_image_filter);
 
                         return ErrorNumber.NoSuchFile;
                     }
@@ -656,13 +656,13 @@ public sealed partial class Vhd
                                                 plugins.RegisterAllPlugins();
                                                 if (!plugins.ImagePluginsList.TryGetValue(Name.ToLower(), out parentImage))
                                                 {
-                                                    AaruConsole.ErrorWriteLine("(VirtualPC plugin): Unable to open myself");
+                                                    AaruLogging.ErrorWriteLine("(VirtualPC plugin): Unable to open myself");
                                                     return ErrorNumber.InvalidArgument;
                                                 }*/
 
                     if(!_parentImage.Identify(parentFilter))
                     {
-                        AaruConsole.Error(Localization
+                        AaruLogging.Error(Localization
                                                       .VirtualPC_plugin_Parent_image_is_not_a_Virtual_PC_disk_image);
 
                         return ErrorNumber.InvalidArgument;
@@ -672,7 +672,7 @@ public sealed partial class Vhd
 
                     if(parentError != ErrorNumber.NoError)
                     {
-                        AaruConsole.Error(string.Format(Localization
+                        AaruLogging.Error(string.Format(Localization
                                                                     .VirtualPC_plugin_Error_0_opening_parent_disk_image,
                                                                  parentError));
 
@@ -686,7 +686,7 @@ public sealed partial class Vhd
                     // More funny even, tested parent images show an empty host OS, and child images a correct one.
                     if(_parentImage.Info.Sectors == _imageInfo.Sectors) return ErrorNumber.NoError;
 
-                    AaruConsole.Error(Localization.VirtualPC_plugin_Parent_image_is_of_different_size);
+                    AaruLogging.Error(Localization.VirtualPC_plugin_Parent_image_is_of_different_size);
 
                     return ErrorNumber.InvalidArgument;
                 }
@@ -695,12 +695,12 @@ public sealed partial class Vhd
             case TYPE_DEPRECATED1:
             case TYPE_DEPRECATED2:
             case TYPE_DEPRECATED3:
-                AaruConsole.Error(Localization.VirtualPC_plugin_Deprecated_image_type_found);
+                AaruLogging.Error(Localization.VirtualPC_plugin_Deprecated_image_type_found);
 
                 return ErrorNumber.NotImplemented;
 
             default:
-                AaruConsole.Error(string.Format(Localization.VirtualPC_plugin_Unknown_image_type_0_found,
+                AaruLogging.Error(string.Format(Localization.VirtualPC_plugin_Unknown_image_type_0_found,
                                                          _thisFooter.DiskType));
 
                 return ErrorNumber.InvalidArgument;
@@ -746,22 +746,22 @@ public sealed partial class Vhd
                 bool dirty = (bitmap[bitmapByte] & mask) == mask;
 
                 /*
-                AaruConsole.DebugWriteLine(MODULE_NAME, "bitmapSize = {0}", bitmapSize);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "blockNumber = {0}", blockNumber);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "sectorInBlock = {0}", sectorInBlock);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "blockOffset = {0}", blockOffset);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "bitmapByte = {0}", bitmapByte);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "bitmapBit = {0}", bitmapBit);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "mask = 0x{0:X2}", mask);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "dirty = 0x{0}", dirty);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "bitmap = ");
+                AaruLogging.DebugWriteLine(MODULE_NAME, "bitmapSize = {0}", bitmapSize);
+                AaruLogging.DebugWriteLine(MODULE_NAME, "blockNumber = {0}", blockNumber);
+                AaruLogging.DebugWriteLine(MODULE_NAME, "sectorInBlock = {0}", sectorInBlock);
+                AaruLogging.DebugWriteLine(MODULE_NAME, "blockOffset = {0}", blockOffset);
+                AaruLogging.DebugWriteLine(MODULE_NAME, "bitmapByte = {0}", bitmapByte);
+                AaruLogging.DebugWriteLine(MODULE_NAME, "bitmapBit = {0}", bitmapBit);
+                AaruLogging.DebugWriteLine(MODULE_NAME, "mask = 0x{0:X2}", mask);
+                AaruLogging.DebugWriteLine(MODULE_NAME, "dirty = 0x{0}", dirty);
+                AaruLogging.DebugWriteLine(MODULE_NAME, "bitmap = ");
                 PrintHex.PrintHexArray(bitmap, 64);
                 */
 
                 // Sector has been written, read from child image
                 if(!dirty) return _parentImage.ReadSector(sectorAddress, out buffer);
                 /* Too noisy
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "Sector {0} is dirty", sectorAddress);
+                    AaruLogging.DebugWriteLine(MODULE_NAME, "Sector {0} is dirty", sectorAddress);
                     */
 
                 buffer = new byte[512];
@@ -774,7 +774,7 @@ public sealed partial class Vhd
                 return ErrorNumber.NoError;
 
                 /* Too noisy
-                AaruConsole.DebugWriteLine(MODULE_NAME, "Sector {0} is clean", sectorAddress);
+                AaruLogging.DebugWriteLine(MODULE_NAME, "Sector {0} is clean", sectorAddress);
                 */
 
                 // Read sector from parent image
@@ -894,12 +894,12 @@ public sealed partial class Vhd
             case TYPE_DEPRECATED1:
             case TYPE_DEPRECATED2:
             case TYPE_DEPRECATED3:
-                AaruConsole.Error(Localization.VirtualPC_plugin_Deprecated_image_type_found);
+                AaruLogging.Error(Localization.VirtualPC_plugin_Deprecated_image_type_found);
 
                 return ErrorNumber.NotImplemented;
 
             default:
-                AaruConsole.Error(string.Format(Localization.VirtualPC_plugin_Unknown_image_type_0_found,
+                AaruLogging.Error(string.Format(Localization.VirtualPC_plugin_Unknown_image_type_0_found,
                                                          _thisFooter.DiskType));
 
                 return ErrorNumber.InvalidArgument;

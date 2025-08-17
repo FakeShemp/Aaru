@@ -55,10 +55,10 @@ sealed class ArchiveInfoCommand : Command<ArchiveInfoCommand.Settings>
 
         Statistics.AddCommand("archive-info");
 
-        AaruConsole.Debug(MODULE_NAME, "debug={0}",    settings.Debug);
-        AaruConsole.Debug(MODULE_NAME, "input={0}",    Markup.Escape(settings.Path ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "verbose={0}",  settings.Verbose);
-        AaruConsole.Debug(MODULE_NAME, "encoding={0}", Markup.Escape(settings.Encoding ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "debug={0}",    settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "input={0}",    Markup.Escape(settings.Path ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "verbose={0}",  settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "encoding={0}", Markup.Escape(settings.Encoding ?? ""));
 
         IFilter inputFilter = null;
 
@@ -70,7 +70,7 @@ sealed class ArchiveInfoCommand : Command<ArchiveInfoCommand.Settings>
 
         if(inputFilter == null)
         {
-            AaruConsole.Error(UI.Cannot_open_specified_file);
+            AaruLogging.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -83,11 +83,11 @@ sealed class ArchiveInfoCommand : Command<ArchiveInfoCommand.Settings>
             {
                 encodingClass = Claunia.Encoding.Encoding.GetEncoding(settings.Encoding);
 
-                if(settings.Verbose) AaruConsole.Verbose(UI.encoding_for_0, encodingClass.EncodingName);
+                if(settings.Verbose) AaruLogging.Verbose(UI.encoding_for_0, encodingClass.EncodingName);
             }
             catch(ArgumentException)
             {
-                AaruConsole.Error(UI.Specified_encoding_is_not_supported);
+                AaruLogging.Error(UI.Specified_encoding_is_not_supported);
 
                 return (int)ErrorNumber.EncodingUnknown;
             }
@@ -105,13 +105,13 @@ sealed class ArchiveInfoCommand : Command<ArchiveInfoCommand.Settings>
 
             if(archiveFormat == null)
             {
-                AaruConsole.WriteLine(UI.Archive_format_not_identified);
+                AaruLogging.WriteLine(UI.Archive_format_not_identified);
 
                 return (int)ErrorNumber.UnrecognizedFormat;
             }
 
-            AaruConsole.WriteLine(UI.Archive_format_identified_by_0_1, archiveFormat.Name, archiveFormat.Id);
-            AaruConsole.WriteLine();
+            AaruLogging.WriteLine(UI.Archive_format_identified_by_0_1, archiveFormat.Name, archiveFormat.Id);
+            AaruLogging.WriteLine();
 
             try
             {
@@ -127,17 +127,17 @@ sealed class ArchiveInfoCommand : Command<ArchiveInfoCommand.Settings>
             }
             catch(Exception ex)
             {
-                AaruConsole.Error(UI.Unable_to_get_information_about_archive);
-                AaruConsole.Error(Localization.Core.Error_0, ex.Message);
-                AaruConsole.Exception(ex);
+                AaruLogging.Error(UI.Unable_to_get_information_about_archive);
+                AaruLogging.Error(Localization.Core.Error_0, ex.Message);
+                AaruLogging.Exception(ex);
 
                 return (int)ErrorNumber.CannotOpenFormat;
             }
         }
         catch(Exception ex)
         {
-            AaruConsole.Error(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
-            AaruConsole.Exception(ex);
+            AaruLogging.Error(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
+            AaruLogging.Exception(ex);
 
             return (int)ErrorNumber.UnexpectedException;
         }

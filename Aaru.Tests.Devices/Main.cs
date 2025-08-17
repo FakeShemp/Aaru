@@ -37,18 +37,18 @@ static partial class MainClass
 {
     public static void Main()
     {
-        AaruConsole.WriteLineEvent        += Console.WriteLine;
-        AaruConsole.WriteEvent            += Console.Write;
-        AaruConsole.ErrorEvent   += Console.Error.WriteLine;
-        AaruConsole.DebugEvent   += Console.Error.WriteLine;
-        AaruConsole.VerboseEvent += Console.WriteLine;
-        AaruConsole.WriteExceptionEvent   += Console.Error.WriteLine;
+        AaruLogging.WriteLineEvent        += Console.WriteLine;
+        AaruLogging.WriteEvent            += Console.Write;
+        AaruLogging.ErrorEvent   += Console.Error.WriteLine;
+        AaruLogging.DebugEvent   += Console.Error.WriteLine;
+        AaruLogging.VerboseEvent += Console.WriteLine;
+        AaruLogging.WriteExceptionEvent   += Console.Error.WriteLine;
 
         DeviceInfo[] devices = Aaru.Devices.Device.ListDevices();
 
         if(devices == null || devices.Length == 0)
         {
-            AaruConsole.WriteLine(Localization.No_known_devices_attached);
+            AaruLogging.WriteLine(Localization.No_known_devices_attached);
 
             return;
         }
@@ -59,9 +59,9 @@ static partial class MainClass
         {
             Console.Clear();
 
-            AaruConsole.WriteLine(Localization.Aaru_device_handling_tests);
+            AaruLogging.WriteLine(Localization.Aaru_device_handling_tests);
 
-            AaruConsole.WriteLine("{6,-8}|{0,-22}|{1,-16}|{2,-24}|{3,-24}|{4,-10}|{5,-10}",
+            AaruLogging.WriteLine("{6,-8}|{0,-22}|{1,-16}|{2,-24}|{3,-24}|{4,-10}|{5,-10}",
                                   Localization.Path,
                                   Localization.Vendor,
                                   Localization.Model,
@@ -70,7 +70,7 @@ static partial class MainClass
                                   Localization.Supported,
                                   Localization.Number);
 
-            AaruConsole.WriteLine("{6,-8}|{0,-22}+{1,-16}+{2,-24}+{3,-24}+{4,-10}+{5,-10}",
+            AaruLogging.WriteLine("{6,-8}|{0,-22}+{1,-16}+{2,-24}+{3,-24}+{4,-10}+{5,-10}",
                                   "----------------------",
                                   "----------------",
                                   "------------------------",
@@ -81,7 +81,7 @@ static partial class MainClass
 
             for(int i = 0; i < devices.Length; i++)
             {
-                AaruConsole.WriteLine("{6,-8}|{0,-22}|{1,-16}|{2,-24}|{3,-24}|{4,-10}|{5,-10}",
+                AaruLogging.WriteLine("{6,-8}|{0,-22}|{1,-16}|{2,-24}|{3,-24}|{4,-10}|{5,-10}",
                                       devices[i].Path,
                                       devices[i].Vendor,
                                       devices[i].Model,
@@ -91,12 +91,12 @@ static partial class MainClass
                                       i + 1);
             }
 
-            AaruConsole.Write(Localization.Please_choose_which_drive_to_test_zero_to_exit);
+            AaruLogging.Write(Localization.Please_choose_which_drive_to_test_zero_to_exit);
             string strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out int item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -104,14 +104,14 @@ static partial class MainClass
 
             if(item == 0)
             {
-                AaruConsole.WriteLine(Localization.Exiting);
+                AaruLogging.WriteLine(Localization.Exiting);
 
                 return;
             }
 
             if(item > devices.Length)
             {
-                AaruConsole.WriteLine(Localization.No_such_device_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.No_such_device_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;

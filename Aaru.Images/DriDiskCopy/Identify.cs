@@ -57,43 +57,43 @@ public sealed partial class DriDiskCopy
 
         string sig = StringHandlers.CToString(tmpFooter.signature);
 
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.signature = \"{0}\"", sig);
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb.five = {0}",      tmpFooter.bpb.five);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.signature = \"{0}\"", sig);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.five = {0}",      tmpFooter.bpb.five);
 
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb._driveCode = {0}", tmpFooter.bpb._driveCode);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb._driveCode = {0}", tmpFooter.bpb._driveCode);
 
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb.unknown = {0}", tmpFooter.bpb.unknown);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.unknown = {0}", tmpFooter.bpb.unknown);
 
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb.cylinders = {0}", tmpFooter.bpb.cylinders);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.cylinders = {0}", tmpFooter.bpb.cylinders);
 
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb.unknown2 = {0}", tmpFooter.bpb.unknown2);
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb.bps = {0}",      tmpFooter.bpb.bps);
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb.spc = {0}",      tmpFooter.bpb.spc);
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb.rsectors = {0}", tmpFooter.bpb.rsectors);
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb.fats_no = {0}",  tmpFooter.bpb.fats_no);
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb.sectors = {0}",  tmpFooter.bpb.sectors);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.unknown2 = {0}", tmpFooter.bpb.unknown2);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.bps = {0}",      tmpFooter.bpb.bps);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.spc = {0}",      tmpFooter.bpb.spc);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.rsectors = {0}", tmpFooter.bpb.rsectors);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.fats_no = {0}",  tmpFooter.bpb.fats_no);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.sectors = {0}",  tmpFooter.bpb.sectors);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "tmp_footer.bpb.media_descriptor = {0}",
                                    tmpFooter.bpb.media_descriptor);
 
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb.spfat = {0}",    tmpFooter.bpb.spfat);
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb.sptrack = {0}",  tmpFooter.bpb.sptrack);
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb.heads = {0}",    tmpFooter.bpb.heads);
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb.hsectors = {0}", tmpFooter.bpb.hsectors);
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb.drive_no = {0}", tmpFooter.bpb.drive_no);
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb.unknown3 = {0}", tmpFooter.bpb.unknown3);
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb.unknown4 = {0}", tmpFooter.bpb.unknown4);
-        AaruConsole.Debug(MODULE_NAME, "tmp_footer.bpb.sptrack2 = {0}", tmpFooter.bpb.sptrack2);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.spfat = {0}",    tmpFooter.bpb.spfat);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.sptrack = {0}",  tmpFooter.bpb.sptrack);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.heads = {0}",    tmpFooter.bpb.heads);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.hsectors = {0}", tmpFooter.bpb.hsectors);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.drive_no = {0}", tmpFooter.bpb.drive_no);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.unknown3 = {0}", tmpFooter.bpb.unknown3);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.unknown4 = {0}", tmpFooter.bpb.unknown4);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.sptrack2 = {0}", tmpFooter.bpb.sptrack2);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "ArrayHelpers.ArrayIsNullOrEmpty(tmp_footer.bpb.unknown5) = {0}",
                                    ArrayHelpers.ArrayIsNullOrEmpty(tmpFooter.bpb.unknown5));
 
         var   regexSignature = new Regex(REGEX_DRI);
         Match matchSignature = regexSignature.Match(sig);
 
-        AaruConsole.Debug(MODULE_NAME, "MatchSignature.Success? = {0}", matchSignature.Success);
+        AaruLogging.Debug(MODULE_NAME, "MatchSignature.Success? = {0}", matchSignature.Success);
 
         if(!matchSignature.Success) return false;
 

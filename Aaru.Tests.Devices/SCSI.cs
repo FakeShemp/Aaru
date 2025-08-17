@@ -40,33 +40,33 @@ static partial class MainClass
         while(true)
         {
             Console.Clear();
-            AaruConsole.WriteLine(Localization.Device_0, devPath);
-            AaruConsole.WriteLine(Localization.Send_a_SCSI_command_to_the_device);
-            AaruConsole.WriteLine(Localization._1_Send_an_Adaptec_vendor_command_to_the_device);
-            AaruConsole.WriteLine(Localization._2_Send_an_Archive_vendor_command_to_the_device);
-            AaruConsole.WriteLine(Localization._3_Send_a_Certance_vendor_command_to_the_device);
-            AaruConsole.WriteLine(Localization._4_Send_a_Fujitsu_vendor_command_to_the_device);
-            AaruConsole.WriteLine(Localization._5_Send_an_HLDTST_vendor_command_to_the_device);
-            AaruConsole.WriteLine(Localization._6_Send_a_Hewlett_Packard_vendor_command_to_the_device);
-            AaruConsole.WriteLine(Localization._7_Send_a_Kreon_vendor_command_to_the_device);
-            AaruConsole.WriteLine(Localization._8_Send_a_SCSI_MultiMedia_Command_to_the_device);
-            AaruConsole.WriteLine(Localization._9_Send_a_NEC_vendor_command_to_the_device);
-            AaruConsole.WriteLine(Localization._10_Send_a_Pioneer_vendor_command_to_the_device);
-            AaruConsole.WriteLine(Localization._11_Send_a_Plasmon_vendor_command_to_the_device);
-            AaruConsole.WriteLine(Localization._12_Send_a_Plextor_vendor_command_to_the_device);
-            AaruConsole.WriteLine(Localization._13_Send_a_SCSI_Block_Command_to_the_device);
-            AaruConsole.WriteLine(Localization._14_Send_a_SCSI_Media_Changer_command_to_the_device);
-            AaruConsole.WriteLine(Localization._15_Send_a_SCSI_Primary_Command_to_the_device);
-            AaruConsole.WriteLine(Localization._16_Send_a_SCSI_Streaming_Command_to_the_device);
-            AaruConsole.WriteLine(Localization._17_Send_a_SyQuest_vendor_command_to_the_device);
-            AaruConsole.WriteLine(Localization.Return_to_command_class_menu);
-            AaruConsole.Write(Localization.Choose);
+            AaruLogging.WriteLine(Localization.Device_0, devPath);
+            AaruLogging.WriteLine(Localization.Send_a_SCSI_command_to_the_device);
+            AaruLogging.WriteLine(Localization._1_Send_an_Adaptec_vendor_command_to_the_device);
+            AaruLogging.WriteLine(Localization._2_Send_an_Archive_vendor_command_to_the_device);
+            AaruLogging.WriteLine(Localization._3_Send_a_Certance_vendor_command_to_the_device);
+            AaruLogging.WriteLine(Localization._4_Send_a_Fujitsu_vendor_command_to_the_device);
+            AaruLogging.WriteLine(Localization._5_Send_an_HLDTST_vendor_command_to_the_device);
+            AaruLogging.WriteLine(Localization._6_Send_a_Hewlett_Packard_vendor_command_to_the_device);
+            AaruLogging.WriteLine(Localization._7_Send_a_Kreon_vendor_command_to_the_device);
+            AaruLogging.WriteLine(Localization._8_Send_a_SCSI_MultiMedia_Command_to_the_device);
+            AaruLogging.WriteLine(Localization._9_Send_a_NEC_vendor_command_to_the_device);
+            AaruLogging.WriteLine(Localization._10_Send_a_Pioneer_vendor_command_to_the_device);
+            AaruLogging.WriteLine(Localization._11_Send_a_Plasmon_vendor_command_to_the_device);
+            AaruLogging.WriteLine(Localization._12_Send_a_Plextor_vendor_command_to_the_device);
+            AaruLogging.WriteLine(Localization._13_Send_a_SCSI_Block_Command_to_the_device);
+            AaruLogging.WriteLine(Localization._14_Send_a_SCSI_Media_Changer_command_to_the_device);
+            AaruLogging.WriteLine(Localization._15_Send_a_SCSI_Primary_Command_to_the_device);
+            AaruLogging.WriteLine(Localization._16_Send_a_SCSI_Streaming_Command_to_the_device);
+            AaruLogging.WriteLine(Localization._17_Send_a_SyQuest_vendor_command_to_the_device);
+            AaruLogging.WriteLine(Localization.Return_to_command_class_menu);
+            AaruLogging.Write(Localization.Choose);
 
             string strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out int item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -75,7 +75,7 @@ static partial class MainClass
             switch(item)
             {
                 case 0:
-                    AaruConsole.WriteLine(Localization.Returning_to_command_class_menu);
+                    AaruLogging.WriteLine(Localization.Returning_to_command_class_menu);
 
                     return;
                 case 1:
@@ -147,7 +147,7 @@ static partial class MainClass
 
                     continue;
                 default:
-                    AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                    AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                     Console.ReadKey();
 
                     continue;

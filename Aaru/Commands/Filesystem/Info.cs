@@ -57,12 +57,12 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
 
         Statistics.AddCommand("fs-info");
 
-        AaruConsole.Debug(MODULE_NAME, "--debug={0}",       settings.Debug);
-        AaruConsole.Debug(MODULE_NAME, "--encoding={0}",    Markup.Escape(settings.Encoding ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--filesystems={0}", settings.Filesystems);
-        AaruConsole.Debug(MODULE_NAME, "--input={0}",       Markup.Escape(settings.ImagePath ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--partitions={0}",  settings.Partitions);
-        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",     settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}",       settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--encoding={0}",    Markup.Escape(settings.Encoding ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--filesystems={0}", settings.Filesystems);
+        AaruLogging.Debug(MODULE_NAME, "--input={0}",       Markup.Escape(settings.ImagePath ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--partitions={0}",  settings.Partitions);
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}",     settings.Verbose);
 
         IFilter inputFilter = null;
 
@@ -74,7 +74,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
 
         if(inputFilter == null)
         {
-            AaruConsole.Error(UI.Cannot_open_specified_file);
+            AaruLogging.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -87,11 +87,11 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
             {
                 encodingClass = Claunia.Encoding.Encoding.GetEncoding(settings.Encoding);
 
-                if(settings.Verbose) AaruConsole.Verbose(UI.encoding_for_0, encodingClass.EncodingName);
+                if(settings.Verbose) AaruLogging.Verbose(UI.encoding_for_0, encodingClass.EncodingName);
             }
             catch(ArgumentException)
             {
-                AaruConsole.Error(UI.Specified_encoding_is_not_supported);
+                AaruLogging.Error(UI.Specified_encoding_is_not_supported);
 
                 return (int)ErrorNumber.EncodingUnknown;
             }
@@ -115,24 +115,24 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
 
             if(baseImage == null)
             {
-                AaruConsole.WriteLine(UI.Image_format_not_identified_not_proceeding_with_analysis);
+                AaruLogging.WriteLine(UI.Image_format_not_identified_not_proceeding_with_analysis);
 
                 return (int)ErrorNumber.UnrecognizedFormat;
             }
 
             if(imageFormat == null)
             {
-                AaruConsole.WriteLine(UI.Command_not_supported_for_this_image_type);
+                AaruLogging.WriteLine(UI.Command_not_supported_for_this_image_type);
 
                 return (int)ErrorNumber.InvalidArgument;
             }
 
             if(settings.Verbose)
-                AaruConsole.Verbose(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
+                AaruLogging.Verbose(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
             else
-                AaruConsole.WriteLine(UI.Image_format_identified_by_0, imageFormat.Name);
+                AaruLogging.WriteLine(UI.Image_format_identified_by_0, imageFormat.Name);
 
-            AaruConsole.WriteLine();
+            AaruLogging.WriteLine();
 
             try
             {
@@ -146,8 +146,8 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
 
                 if(opened != ErrorNumber.NoError)
                 {
-                    AaruConsole.WriteLine(UI.Unable_to_open_image_format);
-                    AaruConsole.WriteLine(Localization.Core.Error_0, opened);
+                    AaruLogging.WriteLine(UI.Unable_to_open_image_format);
+                    AaruLogging.WriteLine(Localization.Core.Error_0, opened);
 
                     return (int)opened;
                 }
@@ -155,7 +155,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
                 if(settings.Verbose)
                 {
                     ImageInfo.PrintImageInfo(imageFormat);
-                    AaruConsole.WriteLine();
+                    AaruLogging.WriteLine();
                 }
 
                 Statistics.AddMediaFormat(imageFormat.Format);
@@ -164,9 +164,9 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
             }
             catch(Exception ex)
             {
-                AaruConsole.Error(UI.Unable_to_open_image_format);
-                AaruConsole.Error(Localization.Core.Error_0, ex.Message);
-                AaruConsole.Exception(ex);
+                AaruLogging.Error(UI.Unable_to_open_image_format);
+                AaruLogging.Error(Localization.Core.Error_0, ex.Message);
+                AaruLogging.Exception(ex);
 
                 return (int)ErrorNumber.CannotOpenFormat;
             }
@@ -189,11 +189,11 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
 
                 if(partitionsList.Count == 0)
                 {
-                    AaruConsole.Debug(MODULE_NAME, UI.No_partitions_found);
+                    AaruLogging.Debug(MODULE_NAME, UI.No_partitions_found);
 
                     if(!settings.Filesystems)
                     {
-                        AaruConsole.WriteLine(UI.No_partitions_found_not_searching_for_filesystems);
+                        AaruLogging.WriteLine(UI.No_partitions_found_not_searching_for_filesystems);
 
                         return (int)ErrorNumber.NothingFound;
                     }
@@ -202,7 +202,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
                 }
                 else
                 {
-                    AaruConsole.WriteLine(UI._0_partitions_found, partitionsList.Count);
+                    AaruLogging.WriteLine(UI._0_partitions_found, partitionsList.Count);
 
                     for(int i = 0; i < partitionsList.Count; i++)
                     {
@@ -244,12 +244,12 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
                         switch(idPlugins.Count)
                         {
                             case 0:
-                                AaruConsole.WriteLine($"[bold]{UI.Filesystem_not_identified}[/]");
+                                AaruLogging.WriteLine($"[bold]{UI.Filesystem_not_identified}[/]");
 
                                 break;
                             case > 1:
                             {
-                                AaruConsole.WriteLine($"[italic]{string.Format(UI.Identified_by_0_plugins,
+                                AaruLogging.WriteLine($"[italic]{string.Format(UI.Identified_by_0_plugins,
                                                                                idPlugins.Count)}[/]");
 
                                 foreach(string pluginName in idPlugins)
@@ -257,7 +257,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
                                     if(!plugins.Filesystems.TryGetValue(pluginName, out fs)) continue;
                                     if(fs is null) continue;
 
-                                    AaruConsole.WriteLine($"[bold]{string.Format(UI.As_identified_by_0, fs.Name)
+                                    AaruLogging.WriteLine($"[bold]{string.Format(UI.As_identified_by_0, fs.Name)
                                     }[/]");
 
                                     fs.GetInformation(imageFormat,
@@ -266,7 +266,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
                                                       out information,
                                                       out FileSystem fsMetadata);
 
-                                    AaruConsole.Write(information);
+                                    AaruLogging.Write(information);
                                     Statistics.AddFilesystem(fsMetadata.Type);
                                 }
 
@@ -278,7 +278,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
 
                                 if(fs is null) continue;
 
-                                AaruConsole.WriteLine($"[bold]{string.Format(UI.Identified_by_0, fs.Name)}[/]");
+                                AaruLogging.WriteLine($"[bold]{string.Format(UI.Identified_by_0, fs.Name)}[/]");
 
                                 fs.GetInformation(imageFormat,
                                                   partitionsList[i],
@@ -286,14 +286,14 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
                                                   out information,
                                                   out FileSystem fsMetadata);
 
-                                AaruConsole.Write("{0}", information);
+                                AaruLogging.Write("{0}", information);
                                 Statistics.AddFilesystem(fsMetadata.Type);
 
                                 break;
                             }
                         }
 
-                        AaruConsole.WriteLine();
+                        AaruLogging.WriteLine();
                     }
                 }
             }
@@ -316,12 +316,12 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
                 switch(idPlugins.Count)
                 {
                     case 0:
-                        AaruConsole.WriteLine($"[bold]{UI.Filesystem_not_identified}[/]");
+                        AaruLogging.WriteLine($"[bold]{UI.Filesystem_not_identified}[/]");
 
                         break;
                     case > 1:
                     {
-                        AaruConsole.WriteLine($"[italic]{string.Format(UI.Identified_by_0_plugins, idPlugins.Count)
+                        AaruLogging.WriteLine($"[italic]{string.Format(UI.Identified_by_0_plugins, idPlugins.Count)
                         }[/]");
 
                         foreach(string pluginName in idPlugins)
@@ -329,7 +329,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
                             if(!plugins.Filesystems.TryGetValue(pluginName, out fs)) continue;
                             if(fs is null) continue;
 
-                            AaruConsole.WriteLine($"[bold]{string.Format(UI.As_identified_by_0, fs.Name)}[/]");
+                            AaruLogging.WriteLine($"[bold]{string.Format(UI.As_identified_by_0, fs.Name)}[/]");
 
                             fs.GetInformation(imageFormat,
                                               wholePart,
@@ -337,7 +337,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
                                               out information,
                                               out FileSystem fsMetadata);
 
-                            AaruConsole.Write(information);
+                            AaruLogging.Write(information);
                             Statistics.AddFilesystem(fsMetadata.Type);
                         }
 
@@ -349,7 +349,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
 
                         if(fs is null) break;
 
-                        AaruConsole.WriteLine($"[bold]{string.Format(UI.Identified_by_0, fs.Name)}[/]");
+                        AaruLogging.WriteLine($"[bold]{string.Format(UI.Identified_by_0, fs.Name)}[/]");
 
                         fs.GetInformation(imageFormat,
                                           wholePart,
@@ -357,7 +357,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
                                           out information,
                                           out FileSystem fsMetadata);
 
-                        AaruConsole.Write(information);
+                        AaruLogging.Write(information);
                         Statistics.AddFilesystem(fsMetadata.Type);
 
                         break;
@@ -367,8 +367,8 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
         }
         catch(Exception ex)
         {
-            AaruConsole.Error(Markup.Escape(string.Format(UI.Error_reading_file_0, ex.Message)));
-            AaruConsole.Exception(ex);
+            AaruLogging.Error(Markup.Escape(string.Format(UI.Error_reading_file_0, ex.Message)));
+            AaruLogging.Exception(ex);
 
             return (int)ErrorNumber.UnexpectedException;
         }

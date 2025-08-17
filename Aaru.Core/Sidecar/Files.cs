@@ -62,7 +62,7 @@ public sealed partial class Sidecar
 
             if(ret != ErrorNumber.NoError)
             {
-                AaruConsole.Debug(MODULE_NAME, Localization.Core.Cannot_stat_0, dirent);
+                AaruLogging.Debug(MODULE_NAME, Localization.Core.Cannot_stat_0, dirent);
 
                 continue;
             }
@@ -118,7 +118,7 @@ public sealed partial class Sidecar
 
             if(ret != ErrorNumber.NoError)
             {
-                AaruConsole.Debug(MODULE_NAME, Localization.Core.Cannot_stat_0, dirent);
+                AaruLogging.Debug(MODULE_NAME, Localization.Core.Cannot_stat_0, dirent);
 
                 continue;
             }

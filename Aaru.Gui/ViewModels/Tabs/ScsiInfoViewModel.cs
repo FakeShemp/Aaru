@@ -606,7 +606,7 @@ public sealed class ScsiInfoViewModel : ViewModelBase
                         evpdPageTitle   = string.Format(UI.Page_0_h, page.Key);
                         evpdDecodedPage = UI.Undecoded;
 
-                        AaruConsole.Debug(MODULE_NAME,
+                        AaruLogging.Debug(MODULE_NAME,
                                                    Localization.Core.Found_undecoded_SCSI_VPD_page_0,
                                                    page.Key);
 
@@ -627,9 +627,9 @@ public sealed class ScsiInfoViewModel : ViewModelBase
 
         Features.SeparatedFeatures ftr = Features.Separate(_configuration);
 
-        AaruConsole.Debug(MODULE_NAME, Localization.Core.GET_CONFIGURATION_length_is_0, ftr.DataLength);
+        AaruLogging.Debug(MODULE_NAME, Localization.Core.GET_CONFIGURATION_length_is_0, ftr.DataLength);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Core.GET_CONFIGURATION_current_profile_is_0,
                                    ftr.CurrentProfile);
 
@@ -638,7 +638,7 @@ public sealed class ScsiInfoViewModel : ViewModelBase
             foreach(Features.FeatureDescriptor desc in ftr.Descriptors)
             {
                 string featureNumber = string.Format(Localization.Core.Feature_0, desc.Code);
-                AaruConsole.Debug(MODULE_NAME, Localization.Core.Feature_0, desc.Code);
+                AaruLogging.Debug(MODULE_NAME, Localization.Core.Feature_0, desc.Code);
 
                 string featureDescription = desc.Code switch
                                             {
@@ -712,7 +712,7 @@ public sealed class ScsiInfoViewModel : ViewModelBase
         }
         else
         {
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        Localization.Core.GET_CONFIGURATION_returned_no_feature_descriptors);
         }
     }

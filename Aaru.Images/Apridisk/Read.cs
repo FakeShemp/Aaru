@@ -69,36 +69,36 @@ public sealed partial class Apridisk
             {
                 // Deleted record, just skip it
                 case RecordType.Deleted:
-                    AaruConsole.Debug(MODULE_NAME, Localization.Found_deleted_record_at_0, stream.Position);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Found_deleted_record_at_0, stream.Position);
 
                     stream.Seek(record.headerSize - recordSize + record.dataSize, SeekOrigin.Current);
 
                     break;
                 case RecordType.Comment:
-                    AaruConsole.Debug(MODULE_NAME, Localization.Found_comment_record_at_0, stream.Position);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Found_comment_record_at_0, stream.Position);
 
                     stream.Seek(record.headerSize - recordSize, SeekOrigin.Current);
                     byte[] commentB = new byte[record.dataSize];
                     stream.EnsureRead(commentB, 0, commentB.Length);
                     _imageInfo.Comments = StringHandlers.CToString(commentB);
-                    AaruConsole.Debug(MODULE_NAME, Localization.Comment_0, _imageInfo.Comments);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Comment_0, _imageInfo.Comments);
 
                     break;
                 case RecordType.Creator:
-                    AaruConsole.Debug(MODULE_NAME, Localization.Found_creator_record_at_0, stream.Position);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Found_creator_record_at_0, stream.Position);
 
                     stream.Seek(record.headerSize - recordSize, SeekOrigin.Current);
                     byte[] creatorB = new byte[record.dataSize];
                     stream.EnsureRead(creatorB, 0, creatorB.Length);
                     _imageInfo.Creator = StringHandlers.CToString(creatorB);
-                    AaruConsole.Debug(MODULE_NAME, Localization.Creator_0, _imageInfo.Creator);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Creator_0, _imageInfo.Creator);
 
                     break;
                 case RecordType.Sector:
                     if(record.compression != CompressType.Compressed && record.compression != CompressType.Uncompresed)
                         return ErrorNumber.NotSupported;
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                record.compression == CompressType.Compressed
                                                    ? Localization
                                                       .Found_compressed_sector_record_at_0_for_cylinder_1_head_2_sector_3
@@ -136,7 +136,7 @@ public sealed partial class Apridisk
         _imageInfo.Cylinders = (ushort)totalCylinders;
         _imageInfo.Heads     = (byte)totalHeads;
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Found_0_cylinders_and_1_heads_with_a_maximum_sector_number_of_2,
                                    totalCylinders,
                                    totalHeads,
@@ -197,7 +197,7 @@ public sealed partial class Apridisk
             }
         }
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Found_a_minimum_of_0_bytes_per_sector,
                                    _imageInfo.SectorSize);
 
@@ -214,7 +214,7 @@ public sealed partial class Apridisk
 
         _imageInfo.SectorsPerTrack = spt;
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Found_a_minimum_of_0_sectors_per_track,
                                    _imageInfo.SectorsPerTrack);
 

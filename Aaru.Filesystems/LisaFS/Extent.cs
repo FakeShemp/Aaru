@@ -190,34 +190,34 @@ public sealed partial class LisaFS
 
         if(_printedExtents.Contains(fileId)) return ErrorNumber.NoError;
 
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].filenameLen = {1}", fileId, file.filenameLen);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].filenameLen = {1}", fileId, file.filenameLen);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "ExtentFile[{0}].filename = {1}",
                                    fileId,
                                    StringHandlers.CToString(file.filename, _encoding));
 
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].unknown1 = 0x{1:X4}",  fileId, file.unknown1);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].file_uid = 0x{1:X16}", fileId, file.file_uid);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].unknown2 = 0x{1:X2}",  fileId, file.unknown2);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].etype = 0x{1:X2}",     fileId, file.etype);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].ftype = {1}",          fileId, file.ftype);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].unknown3 = 0x{1:X2}",  fileId, file.unknown3);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].dtc = {1}",            fileId, file.dtc);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].dta = {1}",            fileId, file.dta);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].dtm = {1}",            fileId, file.dtm);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].dtb = {1}",            fileId, file.dtb);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].dts = {1}",            fileId, file.dts);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].serial = {1}",         fileId, file.serial);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].unknown4 = 0x{1:X2}",  fileId, file.unknown4);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].locked = {1}",         fileId, file.locked    > 0);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].protect = {1}",        fileId, file.protect   > 0);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].master = {1}",         fileId, file.master    > 0);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].scavenged = {1}",      fileId, file.scavenged > 0);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].closed = {1}",         fileId, file.closed    > 0);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].open = {1}",           fileId, file.open      > 0);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown1 = 0x{1:X4}",  fileId, file.unknown1);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].file_uid = 0x{1:X16}", fileId, file.file_uid);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown2 = 0x{1:X2}",  fileId, file.unknown2);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].etype = 0x{1:X2}",     fileId, file.etype);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].ftype = {1}",          fileId, file.ftype);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown3 = 0x{1:X2}",  fileId, file.unknown3);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].dtc = {1}",            fileId, file.dtc);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].dta = {1}",            fileId, file.dta);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].dtm = {1}",            fileId, file.dtm);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].dtb = {1}",            fileId, file.dtb);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].dts = {1}",            fileId, file.dts);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].serial = {1}",         fileId, file.serial);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown4 = 0x{1:X2}",  fileId, file.unknown4);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].locked = {1}",         fileId, file.locked    > 0);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].protect = {1}",        fileId, file.protect   > 0);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].master = {1}",         fileId, file.master    > 0);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].scavenged = {1}",      fileId, file.scavenged > 0);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].closed = {1}",         fileId, file.closed    > 0);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].open = {1}",           fileId, file.open      > 0);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "ExtentFile[{0}].unknown5 = 0x{1:X2}{2:X2}{3:X2}{4:X2}{5:X2}{6:X2}{7:X2}{8:X2}{9:X2}" +
                                    "{10:X2}{11:X2}",
                                    fileId,
@@ -233,34 +233,34 @@ public sealed partial class LisaFS
                                    file.unknown5[9],
                                    file.unknown5[10]);
 
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].release = {1}", fileId, file.release);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].build = {1}",   fileId, file.build);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].release = {1}", fileId, file.release);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].build = {1}",   fileId, file.build);
 
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].compatibility = {1}", fileId, file.compatibility);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].compatibility = {1}", fileId, file.compatibility);
 
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].revision = {1}",      fileId, file.revision);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].unknown6 = 0x{1:X4}", fileId, file.unknown6);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].revision = {1}",      fileId, file.revision);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown6 = 0x{1:X4}", fileId, file.unknown6);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "ExtentFile[{0}].password_valid = {1}",
                                    fileId,
                                    file.password_valid > 0);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "ExtentFile[{0}].password = {1}",
                                    fileId,
                                    _encoding.GetString(file.password));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "ExtentFile[{0}].unknown7 = 0x{1:X2}{2:X2}{3:X2}",
                                    fileId,
                                    file.unknown7[0],
                                    file.unknown7[1],
                                    file.unknown7[2]);
 
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].overhead = {1}", fileId, file.overhead);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].overhead = {1}", fileId, file.overhead);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "ExtentFile[{0}].unknown8 = 0x{1:X2}{2:X2}{3:X2}{4:X2}{5:X2}{6:X2}{7:X2}{8:X2}{9:X2}" +
                                    "{10:X2}{11:X2}{12:X2}{13:X2}{14:X2}{15:X2}{16:X2}",
                                    fileId,
@@ -281,25 +281,25 @@ public sealed partial class LisaFS
                                    file.unknown8[14],
                                    file.unknown8[15]);
 
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].length = {1}",        fileId, file.length);
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].unknown9 = 0x{1:X8}", fileId, file.unknown9);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].length = {1}",        fileId, file.length);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown9 = 0x{1:X8}", fileId, file.unknown9);
 
         for(int ext = 0; ext < file.extents.Length; ext++)
         {
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        "ExtentFile[{0}].extents[{1}].start = {2}",
                                        fileId,
                                        ext,
                                        file.extents[ext].start);
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        "ExtentFile[{0}].extents[{1}].length = {2}",
                                        fileId,
                                        ext,
                                        file.extents[ext].length);
         }
 
-        AaruConsole.Debug(MODULE_NAME, "ExtentFile[{0}].unknown10 = 0x{1:X4}", fileId, file.unknown10);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown10 = 0x{1:X4}", fileId, file.unknown10);
 
         _printedExtents.Add(fileId);
 

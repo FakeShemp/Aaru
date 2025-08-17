@@ -56,11 +56,11 @@ sealed class LsCommand : Command<LsCommand.Settings>
     {
         MainClass.PrintCopyright();
 
-        AaruConsole.Debug(MODULE_NAME, "--debug={0}",    settings.Debug);
-        AaruConsole.Debug(MODULE_NAME, "--encoding={0}", Markup.Escape(settings.Encoding  ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--input={0}",    Markup.Escape(settings.ImagePath ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--options={0}",  Markup.Escape(settings.Options   ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",  settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}",    settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--encoding={0}", Markup.Escape(settings.Encoding  ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--input={0}",    Markup.Escape(settings.ImagePath ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--options={0}",  Markup.Escape(settings.Options   ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}",  settings.Verbose);
         Statistics.AddCommand("ls");
 
         IFilter inputFilter = null;
@@ -72,16 +72,16 @@ sealed class LsCommand : Command<LsCommand.Settings>
         });
 
         Dictionary<string, string> parsedOptions = Options.Parse(settings.Options);
-        AaruConsole.Debug(MODULE_NAME, UI.Parsed_options);
+        AaruLogging.Debug(MODULE_NAME, UI.Parsed_options);
 
         foreach(KeyValuePair<string, string> parsedOption in parsedOptions)
-            AaruConsole.Debug(MODULE_NAME, "{0} = {1}", parsedOption.Key, parsedOption.Value);
+            AaruLogging.Debug(MODULE_NAME, "{0} = {1}", parsedOption.Key, parsedOption.Value);
 
         parsedOptions.Add("debug", settings.Debug.ToString());
 
         if(inputFilter == null)
         {
-            AaruConsole.Error(UI.Cannot_open_specified_file);
+            AaruLogging.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -94,11 +94,11 @@ sealed class LsCommand : Command<LsCommand.Settings>
             {
                 encodingClass = Claunia.Encoding.Encoding.GetEncoding(settings.Encoding);
 
-                if(settings.Verbose) AaruConsole.Verbose(UI.encoding_for_0, encodingClass.EncodingName);
+                if(settings.Verbose) AaruLogging.Verbose(UI.encoding_for_0, encodingClass.EncodingName);
             }
             catch(ArgumentException)
             {
-                AaruConsole.Error(UI.Specified_encoding_is_not_supported);
+                AaruLogging.Error(UI.Specified_encoding_is_not_supported);
 
                 return (int)ErrorNumber.EncodingUnknown;
             }
@@ -120,22 +120,22 @@ sealed class LsCommand : Command<LsCommand.Settings>
 
             if(baseImage == null)
             {
-                AaruConsole.WriteLine(UI.Image_format_not_identified_not_proceeding_with_listing);
+                AaruLogging.WriteLine(UI.Image_format_not_identified_not_proceeding_with_listing);
 
                 return (int)ErrorNumber.UnrecognizedFormat;
             }
 
             if(imageFormat == null)
             {
-                AaruConsole.WriteLine(UI.Command_not_supported_for_this_image_type);
+                AaruLogging.WriteLine(UI.Command_not_supported_for_this_image_type);
 
                 return (int)ErrorNumber.InvalidArgument;
             }
 
             if(settings.Verbose)
-                AaruConsole.Verbose(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
+                AaruLogging.Verbose(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
             else
-                AaruConsole.WriteLine(UI.Image_format_identified_by_0, imageFormat.Name);
+                AaruLogging.WriteLine(UI.Image_format_identified_by_0, imageFormat.Name);
 
             try
             {
@@ -149,21 +149,21 @@ sealed class LsCommand : Command<LsCommand.Settings>
 
                 if(opened != ErrorNumber.NoError)
                 {
-                    AaruConsole.WriteLine(UI.Unable_to_open_image_format);
-                    AaruConsole.WriteLine(Localization.Core.Error_0, opened);
+                    AaruLogging.WriteLine(UI.Unable_to_open_image_format);
+                    AaruLogging.WriteLine(Localization.Core.Error_0, opened);
 
                     return (int)opened;
                 }
 
-                AaruConsole.Debug(MODULE_NAME, UI.Correctly_opened_image_file);
+                AaruLogging.Debug(MODULE_NAME, UI.Correctly_opened_image_file);
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            UI.Image_without_headers_is_0_bytes,
                                            imageFormat.Info.ImageSize);
 
-                AaruConsole.Debug(MODULE_NAME, UI.Image_has_0_sectors, imageFormat.Info.Sectors);
+                AaruLogging.Debug(MODULE_NAME, UI.Image_has_0_sectors, imageFormat.Info.Sectors);
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            UI.Image_identifies_media_type_as_0,
                                            imageFormat.Info.MediaType);
 
@@ -173,9 +173,9 @@ sealed class LsCommand : Command<LsCommand.Settings>
             }
             catch(Exception ex)
             {
-                AaruConsole.Error(UI.Unable_to_open_image_format);
-                AaruConsole.Error(Localization.Core.Error_0, ex.Message);
-                AaruConsole.Exception(ex);
+                AaruLogging.Error(UI.Unable_to_open_image_format);
+                AaruLogging.Error(Localization.Core.Error_0, ex.Message);
+                AaruLogging.Exception(ex);
 
                 return (int)ErrorNumber.CannotOpenFormat;
             }
@@ -192,7 +192,7 @@ sealed class LsCommand : Command<LsCommand.Settings>
 
             if(partitions.Count == 0)
             {
-                AaruConsole.Debug(MODULE_NAME, UI.No_partitions_found);
+                AaruLogging.Debug(MODULE_NAME, UI.No_partitions_found);
 
                 partitions.Add(new Partition
                 {
@@ -205,12 +205,12 @@ sealed class LsCommand : Command<LsCommand.Settings>
                 });
             }
 
-            AaruConsole.WriteLine(UI._0_partitions_found, partitions.Count);
+            AaruLogging.WriteLine(UI._0_partitions_found, partitions.Count);
 
             for(int i = 0; i < partitions.Count; i++)
             {
-                AaruConsole.WriteLine();
-                AaruConsole.WriteLine($"[bold]{string.Format(UI.Partition_0, partitions[i].Sequence)}[/]");
+                AaruLogging.WriteLine();
+                AaruLogging.WriteLine($"[bold]{string.Format(UI.Partition_0, partitions[i].Sequence)}[/]");
 
                 List<string> idPlugins = null;
 
@@ -221,14 +221,14 @@ sealed class LsCommand : Command<LsCommand.Settings>
                 });
 
                 if(idPlugins.Count == 0)
-                    AaruConsole.WriteLine(UI.Filesystem_not_identified);
+                    AaruLogging.WriteLine(UI.Filesystem_not_identified);
                 else
                 {
                     ErrorNumber error = ErrorNumber.InvalidArgument;
 
                     if(idPlugins.Count > 1)
                     {
-                        AaruConsole.WriteLine($"[italic]{string.Format(UI.Identified_by_0_plugins, idPlugins.Count)
+                        AaruLogging.WriteLine($"[italic]{string.Format(UI.Identified_by_0_plugins, idPlugins.Count)
                         }[/]");
 
                         foreach(string pluginName in idPlugins)
@@ -238,7 +238,7 @@ sealed class LsCommand : Command<LsCommand.Settings>
 
                             if(fs is null) continue;
 
-                            AaruConsole.WriteLine($"[bold]{string.Format(UI.As_identified_by_0, fs.Name)}[/]");
+                            AaruLogging.WriteLine($"[bold]{string.Format(UI.As_identified_by_0, fs.Name)}[/]");
 
                             Core.Spectre.ProgressSingleSpinner(ctx =>
                             {
@@ -258,7 +258,7 @@ sealed class LsCommand : Command<LsCommand.Settings>
                                 Statistics.AddFilesystem(fs.Metadata.Type);
                             }
                             else
-                                AaruConsole.Error(UI.Unable_to_mount_volume_error_0, error.ToString());
+                                AaruLogging.Error(UI.Unable_to_mount_volume_error_0, error.ToString());
                         }
                     }
                     else
@@ -267,7 +267,7 @@ sealed class LsCommand : Command<LsCommand.Settings>
 
                         if(fs is null) continue;
 
-                        AaruConsole.WriteLine($"[bold]{string.Format(UI.Identified_by_0, fs.Name)}[/]");
+                        AaruLogging.WriteLine($"[bold]{string.Format(UI.Identified_by_0, fs.Name)}[/]");
 
                         Core.Spectre.ProgressSingleSpinner(ctx =>
                         {
@@ -287,15 +287,15 @@ sealed class LsCommand : Command<LsCommand.Settings>
                             Statistics.AddFilesystem(fs.Metadata.Type);
                         }
                         else
-                            AaruConsole.Error(UI.Unable_to_mount_volume_error_0, error.ToString());
+                            AaruLogging.Error(UI.Unable_to_mount_volume_error_0, error.ToString());
                     }
                 }
             }
         }
         catch(Exception ex)
         {
-            AaruConsole.Error(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
-            AaruConsole.Exception(ex);
+            AaruLogging.Error(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
+            AaruLogging.Exception(ex);
 
             return (int)ErrorNumber.UnexpectedException;
         }
@@ -310,7 +310,7 @@ sealed class LsCommand : Command<LsCommand.Settings>
 
         if(path.StartsWith('/')) path = path[1..];
 
-        AaruConsole.WriteLine(string.IsNullOrEmpty(path)
+        AaruLogging.WriteLine(string.IsNullOrEmpty(path)
                                   ? UI.Root_directory
                                   : string.Format(UI.Directory_0, Markup.Escape(path)));
 
@@ -322,7 +322,7 @@ sealed class LsCommand : Command<LsCommand.Settings>
 
         if(error != ErrorNumber.NoError)
         {
-            AaruConsole.Error(UI.Error_0_reading_directory_1, error.ToString(), path);
+            AaruLogging.Error(UI.Error_0_reading_directory_1, error.ToString(), path);
 
             return;
         }
@@ -352,14 +352,14 @@ sealed class LsCommand : Command<LsCommand.Settings>
                 {
                     if(entry.Value.Attributes.HasFlag(FileAttributes.Directory))
                     {
-                        AaruConsole.WriteLine("{0, 10:d} {0, 12:T}  {1, -20}  {2}",
+                        AaruLogging.WriteLine("{0, 10:d} {0, 12:T}  {1, -20}  {2}",
                                               entry.Value.CreationTimeUtc,
                                               UI.Directory_abbreviation,
                                               Markup.Escape(entry.Key));
                     }
                     else
                     {
-                        AaruConsole.WriteLine("{0, 10:d} {0, 12:T}  {1, 6}{2, 14:N0}  {3}",
+                        AaruLogging.WriteLine("{0, 10:d} {0, 12:T}  {1, 6}{2, 14:N0}  {3}",
                                               entry.Value.CreationTimeUtc,
                                               entry.Value.Inode,
                                               entry.Value.Length,
@@ -376,22 +376,22 @@ sealed class LsCommand : Command<LsCommand.Settings>
                         error = fs.GetXattr(path + "/" + entry.Key, xattr, ref xattrBuf);
 
                         if(error == ErrorNumber.NoError)
-                            AaruConsole.WriteLine("\t\t{0}\t{1:##,#}", Markup.Escape(xattr), xattrBuf.Length);
+                            AaruLogging.WriteLine("\t\t{0}\t{1:##,#}", Markup.Escape(xattr), xattrBuf.Length);
                     }
                 }
                 else
-                    AaruConsole.WriteLine("{0, 47}{1}", string.Empty, Markup.Escape(entry.Key));
+                    AaruLogging.WriteLine("{0, 47}{1}", string.Empty, Markup.Escape(entry.Key));
             }
             else
             {
-                AaruConsole.WriteLine(entry.Value?.Attributes.HasFlag(FileAttributes.Directory) == true
+                AaruLogging.WriteLine(entry.Value?.Attributes.HasFlag(FileAttributes.Directory) == true
                                           ? "{0}/"
                                           : "{0}",
                                       entry.Key);
             }
         }
 
-        AaruConsole.WriteLine();
+        AaruLogging.WriteLine();
 
         foreach(KeyValuePair<string, FileEntryInfo> subdirectory in
                 stats.Where(e => e.Value?.Attributes.HasFlag(FileAttributes.Directory) == true))

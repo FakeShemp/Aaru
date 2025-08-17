@@ -99,7 +99,7 @@ public sealed partial class CopyTape
 
             if(!partialBlockMt.Success)
             {
-                AaruConsole.Error(Localization.Found_unhandled_header_cannot_open);
+                AaruLogging.Error(Localization.Found_unhandled_header_cannot_open);
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -118,7 +118,7 @@ public sealed partial class CopyTape
 
             if(!blockMt.Success)
             {
-                AaruConsole.Error(Localization.Cannot_decode_block_header_cannot_open);
+                AaruLogging.Error(Localization.Cannot_decode_block_header_cannot_open);
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -127,21 +127,21 @@ public sealed partial class CopyTape
 
             if(string.IsNullOrWhiteSpace(blkSize))
             {
-                AaruConsole.Error(Localization.Cannot_decode_block_header_cannot_open);
+                AaruLogging.Error(Localization.Cannot_decode_block_header_cannot_open);
 
                 return ErrorNumber.InvalidArgument;
             }
 
             if(!uint.TryParse(blkSize, out uint blockSize))
             {
-                AaruConsole.Error(Localization.Cannot_decode_block_header_cannot_open);
+                AaruLogging.Error(Localization.Cannot_decode_block_header_cannot_open);
 
                 return ErrorNumber.InvalidArgument;
             }
 
             if(blockSize == 0 || blockSize + 17 > imageFilter.DataForkLength)
             {
-                AaruConsole.Error(Localization.Cannot_decode_block_header_cannot_open);
+                AaruLogging.Error(Localization.Cannot_decode_block_header_cannot_open);
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -152,7 +152,7 @@ public sealed partial class CopyTape
 
             if(newLine != 0x0A)
             {
-                AaruConsole.Error(Localization.Cannot_decode_block_header_cannot_open);
+                AaruLogging.Error(Localization.Cannot_decode_block_header_cannot_open);
 
                 return ErrorNumber.InvalidArgument;
             }

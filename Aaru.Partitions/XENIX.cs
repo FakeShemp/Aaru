@@ -77,7 +77,7 @@ public sealed class XENIX : IPartition
 
         Partable xnxtbl = Marshal.ByteArrayToStructureLittleEndian<Partable>(tblsector);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "xnxtbl.p_magic = 0x{0:X4} (should be 0x{1:X4})",
                                    xnxtbl.p_magic,
                                    PAMAGIC);
@@ -86,8 +86,8 @@ public sealed class XENIX : IPartition
 
         for(int i = 0; i < MAXPARTS; i++)
         {
-            AaruConsole.Debug(MODULE_NAME, "xnxtbl.p[{0}].p_off = {1}",  i, xnxtbl.p[i].p_off);
-            AaruConsole.Debug(MODULE_NAME, "xnxtbl.p[{0}].p_size = {1}", i, xnxtbl.p[i].p_size);
+            AaruLogging.Debug(MODULE_NAME, "xnxtbl.p[{0}].p_off = {1}",  i, xnxtbl.p[i].p_off);
+            AaruLogging.Debug(MODULE_NAME, "xnxtbl.p[{0}].p_size = {1}", i, xnxtbl.p[i].p_size);
 
             if(xnxtbl.p[i].p_size <= 0) continue;
 

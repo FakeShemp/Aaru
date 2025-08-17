@@ -41,30 +41,30 @@ static class Plextor
         while(true)
         {
             Console.Clear();
-            AaruConsole.WriteLine(Localization.Device_0, devPath);
-            AaruConsole.WriteLine(Localization.Send_a_Plextor_vendor_command_to_the_device);
-            AaruConsole.WriteLine(Localization.Send_GET_BOOK_BITSETTING_command);
-            AaruConsole.WriteLine(Localization.Send_GET_GIGAREC_command);
-            AaruConsole.WriteLine(Localization.Send_GET_SECUREC_command);
-            AaruConsole.WriteLine(Localization.Send_GET_SILENT_MODE_command);
-            AaruConsole.WriteLine(Localization.Send_GET_SINGLE_SESSION_HIDE_CD_R_command);
-            AaruConsole.WriteLine(Localization.Send_GET_SPEEDREAD_command);
-            AaruConsole.WriteLine(Localization.Send_GET_TEST_WRITE_DVD_PLUS_command);
-            AaruConsole.WriteLine(Localization.Send_GET_VARIREC_command);
-            AaruConsole.WriteLine(Localization.Send_POWEREC_GET_SPEEDS_command);
-            AaruConsole.WriteLine(Localization.Send_READ_CD_DA_command);
-            AaruConsole.WriteLine(Localization._11_Send_READ_DVD_RAW_command);
-            AaruConsole.WriteLine(Localization.Send_READ_EEPROM_CD_recorders_command);
-            AaruConsole.WriteLine(Localization.Send_READ_EEPROM_DVD_recorders_command);
-            AaruConsole.WriteLine(Localization.Send_READ_EEPROM_PX_708_and_PX_712_command);
-            AaruConsole.WriteLine(Localization.Return_to_SCSI_commands_menu);
-            AaruConsole.Write(Localization.Choose);
+            AaruLogging.WriteLine(Localization.Device_0, devPath);
+            AaruLogging.WriteLine(Localization.Send_a_Plextor_vendor_command_to_the_device);
+            AaruLogging.WriteLine(Localization.Send_GET_BOOK_BITSETTING_command);
+            AaruLogging.WriteLine(Localization.Send_GET_GIGAREC_command);
+            AaruLogging.WriteLine(Localization.Send_GET_SECUREC_command);
+            AaruLogging.WriteLine(Localization.Send_GET_SILENT_MODE_command);
+            AaruLogging.WriteLine(Localization.Send_GET_SINGLE_SESSION_HIDE_CD_R_command);
+            AaruLogging.WriteLine(Localization.Send_GET_SPEEDREAD_command);
+            AaruLogging.WriteLine(Localization.Send_GET_TEST_WRITE_DVD_PLUS_command);
+            AaruLogging.WriteLine(Localization.Send_GET_VARIREC_command);
+            AaruLogging.WriteLine(Localization.Send_POWEREC_GET_SPEEDS_command);
+            AaruLogging.WriteLine(Localization.Send_READ_CD_DA_command);
+            AaruLogging.WriteLine(Localization._11_Send_READ_DVD_RAW_command);
+            AaruLogging.WriteLine(Localization.Send_READ_EEPROM_CD_recorders_command);
+            AaruLogging.WriteLine(Localization.Send_READ_EEPROM_DVD_recorders_command);
+            AaruLogging.WriteLine(Localization.Send_READ_EEPROM_PX_708_and_PX_712_command);
+            AaruLogging.WriteLine(Localization.Return_to_SCSI_commands_menu);
+            AaruLogging.Write(Localization.Choose);
 
             string strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out int item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -73,7 +73,7 @@ static class Plextor
             switch(item)
             {
                 case 0:
-                    AaruConsole.WriteLine(Localization.Returning_to_SCSI_commands_menu);
+                    AaruLogging.WriteLine(Localization.Returning_to_SCSI_commands_menu);
 
                     return;
                 case 1:
@@ -133,7 +133,7 @@ static class Plextor
 
                     continue;
                 default:
-                    AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                    AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                     Console.ReadKey();
 
                     continue;
@@ -152,20 +152,20 @@ static class Plextor
         while(true)
         {
             Console.Clear();
-            AaruConsole.WriteLine(Localization.Device_0, devPath);
-            AaruConsole.WriteLine(Localization.Parameters_for_GET_BOOK_BITSETTING_command);
-            AaruConsole.WriteLine(Localization.Dual_layer_0, dl);
-            AaruConsole.WriteLine();
-            AaruConsole.WriteLine(Localization.Choose_what_to_do);
-            AaruConsole.WriteLine(Localization._1_Change_parameters);
-            AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
-            AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+            AaruLogging.WriteLine(Localization.Device_0, devPath);
+            AaruLogging.WriteLine(Localization.Parameters_for_GET_BOOK_BITSETTING_command);
+            AaruLogging.WriteLine(Localization.Dual_layer_0, dl);
+            AaruLogging.WriteLine();
+            AaruLogging.WriteLine(Localization.Choose_what_to_do);
+            AaruLogging.WriteLine(Localization._1_Change_parameters);
+            AaruLogging.WriteLine(Localization._2_Send_command_with_these_parameters);
+            AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
 
             strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -174,16 +174,16 @@ static class Plextor
             switch(item)
             {
                 case 0:
-                    AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                    AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                     return;
                 case 1:
-                    AaruConsole.Write(Localization.Dual_layer);
+                    AaruLogging.Write(Localization.Dual_layer);
                     strDev = Console.ReadLine();
 
                     if(!bool.TryParse(strDev, out dl))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_boolean_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_boolean_Press_any_key_to_continue);
                         dl = false;
                         Console.ReadKey();
                     }
@@ -204,34 +204,34 @@ static class Plextor
                                               out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.Sending_GET_BOOK_BITSETTING_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0, sense);
-        AaruConsole.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
-        AaruConsole.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Sending_GET_BOOK_BITSETTING_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0, sense);
+        AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization.Print_buffer);
-        AaruConsole.WriteLine(Localization._2_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._3_Decode_sense_buffer);
-        AaruConsole.WriteLine(Localization._4_Send_command_again);
-        AaruConsole.WriteLine(Localization._5_Change_parameters);
-        AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization.Print_buffer);
+        AaruLogging.WriteLine(Localization._2_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._3_Decode_sense_buffer);
+        AaruLogging.WriteLine(Localization._4_Send_command_again);
+        AaruLogging.WriteLine(Localization._5_Change_parameters);
+        AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -241,44 +241,44 @@ static class Plextor
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_BOOK_BITSETTING_response);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_BOOK_BITSETTING_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_BOOK_BITSETTING_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_BOOK_BITSETTING_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_BOOK_BITSETTING_decoded_sense);
-                AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_BOOK_BITSETTING_decoded_sense);
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 4:
@@ -286,7 +286,7 @@ static class Plextor
             case 5:
                 goto parameters;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 
@@ -302,33 +302,33 @@ static class Plextor
         bool sense = dev.PlextorGetGigaRec(out byte[] buffer, out byte[] senseBuffer, dev.Timeout, out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.Sending_GET_GIGAREC_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0, sense);
-        AaruConsole.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
-        AaruConsole.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Sending_GET_GIGAREC_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0, sense);
+        AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization.Print_buffer);
-        AaruConsole.WriteLine(Localization._2_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._3_Decode_sense_buffer);
-        AaruConsole.WriteLine(Localization._4_Send_command_again);
-        AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization.Print_buffer);
+        AaruLogging.WriteLine(Localization._2_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._3_Decode_sense_buffer);
+        AaruLogging.WriteLine(Localization._4_Send_command_again);
+        AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         string strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out int item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -338,50 +338,50 @@ static class Plextor
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_GIGAREC_response);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_GIGAREC_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_GIGAREC_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_GIGAREC_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_GIGAREC_decoded_sense);
-                AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_GIGAREC_decoded_sense);
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 4:
                 goto start;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 
@@ -397,33 +397,33 @@ static class Plextor
         bool sense = dev.PlextorGetSecuRec(out byte[] buffer, out byte[] senseBuffer, dev.Timeout, out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.Sending_GET_SECUREC_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0, sense);
-        AaruConsole.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
-        AaruConsole.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Sending_GET_SECUREC_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0, sense);
+        AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization.Print_buffer);
-        AaruConsole.WriteLine(Localization._2_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._3_Decode_sense_buffer);
-        AaruConsole.WriteLine(Localization._4_Send_command_again);
-        AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization.Print_buffer);
+        AaruLogging.WriteLine(Localization._2_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._3_Decode_sense_buffer);
+        AaruLogging.WriteLine(Localization._4_Send_command_again);
+        AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         string strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out int item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -433,50 +433,50 @@ static class Plextor
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_SECUREC_response);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_SECUREC_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_SECUREC_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_SECUREC_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_SECUREC_decoded_sense);
-                AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_SECUREC_decoded_sense);
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 4:
                 goto start;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 
@@ -493,33 +493,33 @@ static class Plextor
             dev.PlextorGetSilentMode(out byte[] buffer, out byte[] senseBuffer, dev.Timeout, out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.Sending_GET_SILENT_MODE_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0, sense);
-        AaruConsole.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
-        AaruConsole.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Sending_GET_SILENT_MODE_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0, sense);
+        AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization.Print_buffer);
-        AaruConsole.WriteLine(Localization._2_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._3_Decode_sense_buffer);
-        AaruConsole.WriteLine(Localization._4_Send_command_again);
-        AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization.Print_buffer);
+        AaruLogging.WriteLine(Localization._2_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._3_Decode_sense_buffer);
+        AaruLogging.WriteLine(Localization._4_Send_command_again);
+        AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         string strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out int item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -529,50 +529,50 @@ static class Plextor
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_SILENT_MODE_response);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_SILENT_MODE_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_SILENT_MODE_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_SILENT_MODE_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_SILENT_MODE_decoded_sense);
-                AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_SILENT_MODE_decoded_sense);
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 4:
                 goto start;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 
@@ -588,33 +588,33 @@ static class Plextor
         bool sense = dev.PlextorGetHiding(out byte[] buffer, out byte[] senseBuffer, dev.Timeout, out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.Sending_GET_SINGLE_SESSION_HIDE_CD_R_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0, sense);
-        AaruConsole.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
-        AaruConsole.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Sending_GET_SINGLE_SESSION_HIDE_CD_R_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0, sense);
+        AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization.Print_buffer);
-        AaruConsole.WriteLine(Localization._2_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._3_Decode_sense_buffer);
-        AaruConsole.WriteLine(Localization._4_Send_command_again);
-        AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization.Print_buffer);
+        AaruLogging.WriteLine(Localization._2_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._3_Decode_sense_buffer);
+        AaruLogging.WriteLine(Localization._4_Send_command_again);
+        AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         string strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out int item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -624,50 +624,50 @@ static class Plextor
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_SINGLE_SESSION_HIDE_CD_R_response);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_SINGLE_SESSION_HIDE_CD_R_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_SINGLE_SESSION_HIDE_CD_R_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_SINGLE_SESSION_HIDE_CD_R_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_SINGLE_SESSION_HIDE_CD_R_decoded_sense);
-                AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_SINGLE_SESSION_HIDE_CD_R_decoded_sense);
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 4:
                 goto start;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 
@@ -684,33 +684,33 @@ static class Plextor
             dev.PlextorGetSpeedRead(out byte[] buffer, out byte[] senseBuffer, dev.Timeout, out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.Sending_GET_SPEEDREAD_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0, sense);
-        AaruConsole.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
-        AaruConsole.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Sending_GET_SPEEDREAD_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0, sense);
+        AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization.Print_buffer);
-        AaruConsole.WriteLine(Localization._2_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._3_Decode_sense_buffer);
-        AaruConsole.WriteLine(Localization._4_Send_command_again);
-        AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization.Print_buffer);
+        AaruLogging.WriteLine(Localization._2_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._3_Decode_sense_buffer);
+        AaruLogging.WriteLine(Localization._4_Send_command_again);
+        AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         string strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out int item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -720,50 +720,50 @@ static class Plextor
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_SPEEDREAD_response);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_SPEEDREAD_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_SPEEDREAD_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_SPEEDREAD_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_SPEEDREAD_decoded_sense);
-                AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_SPEEDREAD_decoded_sense);
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 4:
                 goto start;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 
@@ -780,33 +780,33 @@ static class Plextor
             dev.PlextorGetTestWriteDvdPlus(out byte[] buffer, out byte[] senseBuffer, dev.Timeout, out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.Sending_GET_TEST_WRITE_DVD_Plus_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0, sense);
-        AaruConsole.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
-        AaruConsole.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Sending_GET_TEST_WRITE_DVD_Plus_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0, sense);
+        AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization.Print_buffer);
-        AaruConsole.WriteLine(Localization._2_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._3_Decode_sense_buffer);
-        AaruConsole.WriteLine(Localization._4_Send_command_again);
-        AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization.Print_buffer);
+        AaruLogging.WriteLine(Localization._2_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._3_Decode_sense_buffer);
+        AaruLogging.WriteLine(Localization._4_Send_command_again);
+        AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         string strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out int item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -816,50 +816,50 @@ static class Plextor
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_TEST_WRITE_DVD_Plus_response);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_TEST_WRITE_DVD_Plus_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_TEST_WRITE_DVD_Plus_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_TEST_WRITE_DVD_Plus_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_TEST_WRITE_DVD_Plus_decoded_sense);
-                AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_TEST_WRITE_DVD_Plus_decoded_sense);
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 4:
                 goto start;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 
@@ -878,20 +878,20 @@ static class Plextor
         while(true)
         {
             Console.Clear();
-            AaruConsole.WriteLine(Localization.Device_0, devPath);
-            AaruConsole.WriteLine(Localization.Parameters_for_GET_VARIREC_command);
-            AaruConsole.WriteLine(Localization.DVD_0, dvd);
-            AaruConsole.WriteLine();
-            AaruConsole.WriteLine(Localization.Choose_what_to_do);
-            AaruConsole.WriteLine(Localization._1_Change_parameters);
-            AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
-            AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+            AaruLogging.WriteLine(Localization.Device_0, devPath);
+            AaruLogging.WriteLine(Localization.Parameters_for_GET_VARIREC_command);
+            AaruLogging.WriteLine(Localization.DVD_0, dvd);
+            AaruLogging.WriteLine();
+            AaruLogging.WriteLine(Localization.Choose_what_to_do);
+            AaruLogging.WriteLine(Localization._1_Change_parameters);
+            AaruLogging.WriteLine(Localization._2_Send_command_with_these_parameters);
+            AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
 
             strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -900,16 +900,16 @@ static class Plextor
             switch(item)
             {
                 case 0:
-                    AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                    AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                     return;
                 case 1:
-                    AaruConsole.Write(Localization.DVD_Q);
+                    AaruLogging.Write(Localization.DVD_Q);
                     strDev = Console.ReadLine();
 
                     if(!bool.TryParse(strDev, out dvd))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_boolean_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_boolean_Press_any_key_to_continue);
                         dvd = false;
                         Console.ReadKey();
                     }
@@ -930,34 +930,34 @@ static class Plextor
                                            out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.Sending_GET_VARIREC_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0, sense);
-        AaruConsole.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
-        AaruConsole.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Sending_GET_VARIREC_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0, sense);
+        AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization.Print_buffer);
-        AaruConsole.WriteLine(Localization._2_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._3_Decode_sense_buffer);
-        AaruConsole.WriteLine(Localization._4_Send_command_again);
-        AaruConsole.WriteLine(Localization._5_Change_parameters);
-        AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization.Print_buffer);
+        AaruLogging.WriteLine(Localization._2_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._3_Decode_sense_buffer);
+        AaruLogging.WriteLine(Localization._4_Send_command_again);
+        AaruLogging.WriteLine(Localization._5_Change_parameters);
+        AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -967,44 +967,44 @@ static class Plextor
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_VARIREC_response);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_VARIREC_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_VARIREC_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_VARIREC_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.GET_VARIREC_decoded_sense);
-                AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.GET_VARIREC_decoded_sense);
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 4:
@@ -1012,7 +1012,7 @@ static class Plextor
             case 5:
                 goto parameters;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 
@@ -1032,33 +1032,33 @@ static class Plextor
                                            out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.Sending_POWEREC_GET_SPEEDS_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0,        sense);
-        AaruConsole.WriteLine(enabled ? Localization.PoweRec_is_enabled : Localization.PoweRec_is_disabled);
-        AaruConsole.WriteLine(Localization.Speed_0, speed);
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Sending_POWEREC_GET_SPEEDS_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0,        sense);
+        AaruLogging.WriteLine(enabled ? Localization.PoweRec_is_enabled : Localization.PoweRec_is_disabled);
+        AaruLogging.WriteLine(Localization.Speed_0, speed);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine(Localization.POWEREC_GET_SPEEDS_decoded_sense);
-        AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization._1_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._2_Send_command_again);
-        AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine(Localization.POWEREC_GET_SPEEDS_decoded_sense);
+        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization._1_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._2_Send_command_again);
+        AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         string strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out int item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -1068,26 +1068,26 @@ static class Plextor
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.POWEREC_GET_SPEEDS_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.POWEREC_GET_SPEEDS_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 goto start;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 
@@ -1109,23 +1109,23 @@ static class Plextor
         while(true)
         {
             Console.Clear();
-            AaruConsole.WriteLine(Localization.Device_0, devPath);
-            AaruConsole.WriteLine(Localization.Parameters_for_READ_CD_DA_command);
-            AaruConsole.WriteLine(Localization.LBA_0,                   address);
-            AaruConsole.WriteLine(Localization.Will_transfer_0_sectors, length);
-            AaruConsole.WriteLine(Localization.Subchannel_mode_0,       subchan);
-            AaruConsole.WriteLine(Localization._0_bytes_per_sector,     blockSize);
-            AaruConsole.WriteLine();
-            AaruConsole.WriteLine(Localization.Choose_what_to_do);
-            AaruConsole.WriteLine(Localization._1_Change_parameters);
-            AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
-            AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+            AaruLogging.WriteLine(Localization.Device_0, devPath);
+            AaruLogging.WriteLine(Localization.Parameters_for_READ_CD_DA_command);
+            AaruLogging.WriteLine(Localization.LBA_0,                   address);
+            AaruLogging.WriteLine(Localization.Will_transfer_0_sectors, length);
+            AaruLogging.WriteLine(Localization.Subchannel_mode_0,       subchan);
+            AaruLogging.WriteLine(Localization._0_bytes_per_sector,     blockSize);
+            AaruLogging.WriteLine();
+            AaruLogging.WriteLine(Localization.Choose_what_to_do);
+            AaruLogging.WriteLine(Localization._1_Change_parameters);
+            AaruLogging.WriteLine(Localization._2_Send_command_with_these_parameters);
+            AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
 
             strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -1134,49 +1134,49 @@ static class Plextor
             switch(item)
             {
                 case 0:
-                    AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                    AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                     return;
                 case 1:
-                    AaruConsole.Write(Localization.Logical_Block_Address_Q);
+                    AaruLogging.Write(Localization.Logical_Block_Address_Q);
                     strDev = Console.ReadLine();
 
                     if(!uint.TryParse(strDev, out address))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         address = 0;
                         Console.ReadKey();
 
                         continue;
                     }
 
-                    AaruConsole.Write(Localization.How_many_sectors_to_transfer_Q);
+                    AaruLogging.Write(Localization.How_many_sectors_to_transfer_Q);
                     strDev = Console.ReadLine();
 
                     if(!uint.TryParse(strDev, out length))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         length = 1;
                         Console.ReadKey();
 
                         continue;
                     }
 
-                    AaruConsole.WriteLine(Localization.Subchannel_mode);
+                    AaruLogging.WriteLine(Localization.Subchannel_mode);
 
-                    AaruConsole.WriteLine(Localization.Available_values_0_1_2_3_4,
+                    AaruLogging.WriteLine(Localization.Available_values_0_1_2_3_4,
                                           PlextorSubchannel.None,
                                           PlextorSubchannel.Q16,
                                           PlextorSubchannel.All,
                                           PlextorSubchannel.Pack,
                                           PlextorSubchannel.RawC2);
 
-                    AaruConsole.Write(Localization.Choose_Q);
+                    AaruLogging.Write(Localization.Choose_Q);
                     strDev = Console.ReadLine();
 
                     if(!Enum.TryParse(strDev, true, out subchan))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_correct_subchannel_mode_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_correct_subchannel_mode_Press_any_key_to_continue);
                         subchan = PlextorSubchannel.None;
                         Console.ReadKey();
 
@@ -1210,34 +1210,34 @@ static class Plextor
                                          out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.Sending_READ_CD_DA_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0, sense);
-        AaruConsole.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
-        AaruConsole.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Sending_READ_CD_DA_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0, sense);
+        AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization.Print_buffer);
-        AaruConsole.WriteLine(Localization._2_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._3_Decode_sense_buffer);
-        AaruConsole.WriteLine(Localization._4_Send_command_again);
-        AaruConsole.WriteLine(Localization._5_Change_parameters);
-        AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization.Print_buffer);
+        AaruLogging.WriteLine(Localization._2_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._3_Decode_sense_buffer);
+        AaruLogging.WriteLine(Localization._4_Send_command_again);
+        AaruLogging.WriteLine(Localization._5_Change_parameters);
+        AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -1247,44 +1247,44 @@ static class Plextor
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_CD_DA_response);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_CD_DA_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_CD_DA_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_CD_DA_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_CD_DA_decoded_sense);
-                AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_CD_DA_decoded_sense);
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 4:
@@ -1292,7 +1292,7 @@ static class Plextor
             case 5:
                 goto parameters;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 
@@ -1312,21 +1312,21 @@ static class Plextor
         while(true)
         {
             Console.Clear();
-            AaruConsole.WriteLine(Localization.Device_0, devPath);
-            AaruConsole.WriteLine(Localization.Parameters_for_READ_DVD_RAW_command);
-            AaruConsole.WriteLine(Localization.LBA_0,   lba);
-            AaruConsole.WriteLine(Localization.Count_0, count);
-            AaruConsole.WriteLine();
-            AaruConsole.WriteLine(Localization.Choose_what_to_do);
-            AaruConsole.WriteLine(Localization._1_Change_parameters);
-            AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
-            AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+            AaruLogging.WriteLine(Localization.Device_0, devPath);
+            AaruLogging.WriteLine(Localization.Parameters_for_READ_DVD_RAW_command);
+            AaruLogging.WriteLine(Localization.LBA_0,   lba);
+            AaruLogging.WriteLine(Localization.Count_0, count);
+            AaruLogging.WriteLine();
+            AaruLogging.WriteLine(Localization.Choose_what_to_do);
+            AaruLogging.WriteLine(Localization._1_Change_parameters);
+            AaruLogging.WriteLine(Localization._2_Send_command_with_these_parameters);
+            AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
 
             strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -1335,28 +1335,28 @@ static class Plextor
             switch(item)
             {
                 case 0:
-                    AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                    AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                     return;
                 case 1:
-                    AaruConsole.Write(Localization.How_many_sectors);
+                    AaruLogging.Write(Localization.How_many_sectors);
                     strDev = Console.ReadLine();
 
                     if(!uint.TryParse(strDev, out count))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         count = 1;
                         Console.ReadKey();
 
                         continue;
                     }
 
-                    AaruConsole.Write(Localization.LBA_Q);
+                    AaruLogging.Write(Localization.LBA_Q);
                     strDev = Console.ReadLine();
 
                     if(!uint.TryParse(strDev, out lba))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         lba = 0;
                         Console.ReadKey();
                     }
@@ -1378,34 +1378,34 @@ static class Plextor
                                            out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.Sending_READ_DVD_RAW_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0, sense);
-        AaruConsole.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
-        AaruConsole.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Sending_READ_DVD_RAW_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0, sense);
+        AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization.Print_buffer);
-        AaruConsole.WriteLine(Localization._2_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._3_Decode_sense_buffer);
-        AaruConsole.WriteLine(Localization._4_Send_command_again);
-        AaruConsole.WriteLine(Localization._5_Change_parameters);
-        AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization.Print_buffer);
+        AaruLogging.WriteLine(Localization._2_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._3_Decode_sense_buffer);
+        AaruLogging.WriteLine(Localization._4_Send_command_again);
+        AaruLogging.WriteLine(Localization._5_Change_parameters);
+        AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -1415,44 +1415,44 @@ static class Plextor
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_DVD_RAW_response);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_DVD_RAW_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_DVD_RAW_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_DVD_RAW_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_DVD_RAW_decoded_sense);
-                AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_DVD_RAW_decoded_sense);
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 4:
@@ -1460,7 +1460,7 @@ static class Plextor
             case 5:
                 goto parameters;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 
@@ -1477,33 +1477,33 @@ static class Plextor
             dev.PlextorReadEepromCdr(out byte[] buffer, out byte[] senseBuffer, dev.Timeout, out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.Sending_READ_EEPROM_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0, sense);
-        AaruConsole.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
-        AaruConsole.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Sending_READ_EEPROM_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0, sense);
+        AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization.Print_buffer);
-        AaruConsole.WriteLine(Localization._2_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._3_Decode_sense_buffer);
-        AaruConsole.WriteLine(Localization._4_Send_command_again);
-        AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization.Print_buffer);
+        AaruLogging.WriteLine(Localization._2_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._3_Decode_sense_buffer);
+        AaruLogging.WriteLine(Localization._4_Send_command_again);
+        AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         string strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out int item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -1513,50 +1513,50 @@ static class Plextor
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_EEPROM_response);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_EEPROM_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_EEPROM_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_EEPROM_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_EEPROM_decoded_sense);
-                AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_EEPROM_decoded_sense);
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 4:
                 goto start;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 
@@ -1576,21 +1576,21 @@ static class Plextor
         while(true)
         {
             Console.Clear();
-            AaruConsole.WriteLine(Localization.Device_0, devPath);
-            AaruConsole.WriteLine(Localization.Parameters_for_READ_EEPROM_command);
-            AaruConsole.WriteLine(Localization.EEPROM_block_to_read_0, block);
-            AaruConsole.WriteLine(Localization.EEPROM_block_size_0,    blockSize);
-            AaruConsole.WriteLine();
-            AaruConsole.WriteLine(Localization.Choose_what_to_do);
-            AaruConsole.WriteLine(Localization._1_Change_parameters);
-            AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
-            AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+            AaruLogging.WriteLine(Localization.Device_0, devPath);
+            AaruLogging.WriteLine(Localization.Parameters_for_READ_EEPROM_command);
+            AaruLogging.WriteLine(Localization.EEPROM_block_to_read_0, block);
+            AaruLogging.WriteLine(Localization.EEPROM_block_size_0,    blockSize);
+            AaruLogging.WriteLine();
+            AaruLogging.WriteLine(Localization.Choose_what_to_do);
+            AaruLogging.WriteLine(Localization._1_Change_parameters);
+            AaruLogging.WriteLine(Localization._2_Send_command_with_these_parameters);
+            AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
 
             strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -1599,28 +1599,28 @@ static class Plextor
             switch(item)
             {
                 case 0:
-                    AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                    AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                     return;
                 case 1:
-                    AaruConsole.Write(Localization.EEPROM_block_to_read_Q);
+                    AaruLogging.Write(Localization.EEPROM_block_to_read_Q);
                     strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out block))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         block = 0;
                         Console.ReadKey();
 
                         continue;
                     }
 
-                    AaruConsole.Write(Localization.EEPROM_block_size_Q);
+                    AaruLogging.Write(Localization.EEPROM_block_size_Q);
                     strDev = Console.ReadLine();
 
                     if(!ushort.TryParse(strDev, out blockSize))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         blockSize = 0;
                         Console.ReadKey();
                     }
@@ -1642,34 +1642,34 @@ static class Plextor
                                                 out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.Sending_READ_EEPROM_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0, sense);
-        AaruConsole.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
-        AaruConsole.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Sending_READ_EEPROM_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0, sense);
+        AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization.Print_buffer);
-        AaruConsole.WriteLine(Localization._2_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._3_Decode_sense_buffer);
-        AaruConsole.WriteLine(Localization._4_Send_command_again);
-        AaruConsole.WriteLine(Localization._5_Change_parameters);
-        AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization.Print_buffer);
+        AaruLogging.WriteLine(Localization._2_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._3_Decode_sense_buffer);
+        AaruLogging.WriteLine(Localization._4_Send_command_again);
+        AaruLogging.WriteLine(Localization._5_Change_parameters);
+        AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -1679,44 +1679,44 @@ static class Plextor
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_EEPROM_response);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_EEPROM_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_EEPROM_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_EEPROM_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_EEPROM_decoded_sense);
-                AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_EEPROM_decoded_sense);
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 4:
@@ -1724,7 +1724,7 @@ static class Plextor
             case 5:
                 goto parameters;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 
@@ -1740,33 +1740,33 @@ static class Plextor
         bool sense = dev.PlextorReadEeprom(out byte[] buffer, out byte[] senseBuffer, dev.Timeout, out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.Sending_READ_EEPROM_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0, sense);
-        AaruConsole.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
-        AaruConsole.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Sending_READ_EEPROM_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0, sense);
+        AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization.Print_buffer);
-        AaruConsole.WriteLine(Localization._2_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._3_Decode_sense_buffer);
-        AaruConsole.WriteLine(Localization._4_Send_command_again);
-        AaruConsole.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization.Print_buffer);
+        AaruLogging.WriteLine(Localization._2_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._3_Decode_sense_buffer);
+        AaruLogging.WriteLine(Localization._4_Send_command_again);
+        AaruLogging.WriteLine(Localization.Return_to_Plextor_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         string strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out int item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -1776,50 +1776,50 @@ static class Plextor
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_Plextor_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_EEPROM_response);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_EEPROM_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_EEPROM_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_EEPROM_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_EEPROM_decoded_sense);
-                AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_EEPROM_decoded_sense);
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 4:
                 goto start;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 

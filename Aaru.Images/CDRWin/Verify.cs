@@ -83,8 +83,8 @@ public sealed partial class CdrWin
             }
 
             string verifySha1 = ctx.End();
-            AaruConsole.Debug(MODULE_NAME, Localization.Calculated_SHA1_0, verifySha1);
-            AaruConsole.Debug(MODULE_NAME, Localization.Expected_SHA1_0,   sha1);
+            AaruLogging.Debug(MODULE_NAME, Localization.Calculated_SHA1_0, verifySha1);
+            AaruLogging.Debug(MODULE_NAME, Localization.Expected_SHA1_0,   sha1);
 
             return verifySha1 == sha1;
         }
@@ -111,8 +111,8 @@ public sealed partial class CdrWin
             }
 
             string verifyMd5 = ctx.End();
-            AaruConsole.Debug(MODULE_NAME, Localization.Calculated_MD5_0, verifyMd5);
-            AaruConsole.Debug(MODULE_NAME, Localization.Expected_MD5_0,   md5);
+            AaruLogging.Debug(MODULE_NAME, Localization.Calculated_MD5_0, verifyMd5);
+            AaruLogging.Debug(MODULE_NAME, Localization.Expected_MD5_0,   md5);
 
             return verifyMd5 == md5;
         }
@@ -139,14 +139,14 @@ public sealed partial class CdrWin
             }
 
             string verifyCrc = ctx.End();
-            AaruConsole.Debug(MODULE_NAME, Localization.Calculated_CRC32_0, verifyCrc);
-            AaruConsole.Debug(MODULE_NAME, Localization.Expected_CRC32_0,   crc32);
+            AaruLogging.Debug(MODULE_NAME, Localization.Calculated_CRC32_0, verifyCrc);
+            AaruLogging.Debug(MODULE_NAME, Localization.Expected_CRC32_0,   crc32);
 
             return verifyCrc == crc32;
         }
 
         foreach(string hash in _discImage.DiscHashes.Keys)
-            AaruConsole.Debug(MODULE_NAME, Localization.Found_unsupported_hash_0, hash);
+            AaruLogging.Debug(MODULE_NAME, Localization.Found_unsupported_hash_0, hash);
 
         return null;
     }

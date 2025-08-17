@@ -56,13 +56,13 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
 
         Statistics.AddCommand("decode");
 
-        AaruConsole.Debug(MODULE_NAME, "--debug={0}",       settings.Debug);
-        AaruConsole.Debug(MODULE_NAME, "--disk-tags={0}",   settings.DiskTags);
-        AaruConsole.Debug(MODULE_NAME, "--input={0}",       Markup.Escape(settings.ImagePath ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--length={0}",      Markup.Escape(settings.Length    ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--sector-tags={0}", settings.SectorTags);
-        AaruConsole.Debug(MODULE_NAME, "--start={0}",       settings.StartSector);
-        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",     settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}",       settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--disk-tags={0}",   settings.DiskTags);
+        AaruLogging.Debug(MODULE_NAME, "--input={0}",       Markup.Escape(settings.ImagePath ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--length={0}",      Markup.Escape(settings.Length    ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--sector-tags={0}", settings.SectorTags);
+        AaruLogging.Debug(MODULE_NAME, "--start={0}",       settings.StartSector);
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}",     settings.Verbose);
 
         IFilter inputFilter = null;
 
@@ -74,7 +74,7 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
 
         if(inputFilter == null)
         {
-            AaruConsole.Error(UI.Cannot_open_specified_file);
+            AaruLogging.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -91,14 +91,14 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
 
         if(baseImage == null)
         {
-            AaruConsole.Error(UI.Unable_to_recognize_image_format_not_decoding);
+            AaruLogging.Error(UI.Unable_to_recognize_image_format_not_decoding);
 
             return (int)ErrorNumber.UnrecognizedFormat;
         }
 
         if(inputFormat == null)
         {
-            AaruConsole.WriteLine(UI.Command_not_supported_for_this_image_type);
+            AaruLogging.WriteLine(UI.Command_not_supported_for_this_image_type);
 
             return (int)ErrorNumber.InvalidArgument;
         }
@@ -113,8 +113,8 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
 
         if(opened != ErrorNumber.NoError)
         {
-            AaruConsole.WriteLine(UI.Unable_to_open_image_format);
-            AaruConsole.WriteLine(Localization.Core.Error_0, opened);
+            AaruLogging.WriteLine(UI.Unable_to_open_image_format);
+            AaruLogging.WriteLine(Localization.Core.Error_0, opened);
 
             return (int)opened;
         }
@@ -126,7 +126,7 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
         if(settings.DiskTags)
         {
             if(inputFormat.Info.ReadableMediaTags.Count == 0)
-                AaruConsole.WriteLine(UI.There_are_no_media_tags_in_chosen_disc_image);
+                AaruLogging.WriteLine(UI.There_are_no_media_tags_in_chosen_disc_image);
             else
             {
                 foreach(MediaTagType tag in inputFormat.Info.ReadableMediaTags)
@@ -140,17 +140,17 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
                             errno = inputFormat.ReadMediaTag(MediaTagType.SCSI_INQUIRY, out byte[] inquiry);
 
                             if(inquiry == null)
-                                AaruConsole.WriteLine(UI.Error_0_reading_SCSI_INQUIRY_response_from_disc_image, errno);
+                                AaruLogging.WriteLine(UI.Error_0_reading_SCSI_INQUIRY_response_from_disc_image, errno);
                             else
                             {
-                                AaruConsole.WriteLine($"[bold]{UI.SCSI_INQUIRY_command_response}[/]");
+                                AaruLogging.WriteLine($"[bold]{UI.SCSI_INQUIRY_command_response}[/]");
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
 
-                                AaruConsole.WriteLine(Inquiry.Prettify(inquiry));
+                                AaruLogging.WriteLine(Inquiry.Prettify(inquiry));
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
                             }
 
@@ -162,19 +162,19 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
 
                             if(errno != ErrorNumber.NoError)
                             {
-                                AaruConsole.WriteLine(UI.Error_0_reading_ATA_IDENTIFY_DEVICE_response_from_disc_image,
+                                AaruLogging.WriteLine(UI.Error_0_reading_ATA_IDENTIFY_DEVICE_response_from_disc_image,
                                                       errno);
                             }
                             else
                             {
-                                AaruConsole.WriteLine($"[bold]{UI.ATA_IDENTIFY_DEVICE_command_response}[/]");
+                                AaruLogging.WriteLine($"[bold]{UI.ATA_IDENTIFY_DEVICE_command_response}[/]");
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
 
-                                AaruConsole.WriteLine(Identify.Prettify(identify));
+                                AaruLogging.WriteLine(Identify.Prettify(identify));
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
                             }
 
@@ -186,20 +186,20 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
 
                             if(identify == null)
                             {
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine(UI.Error_0_reading_ATA_IDENTIFY_PACKET_DEVICE_response_from_disc_image,
                                               errno);
                             }
                             else
                             {
-                                AaruConsole.WriteLine($"[bold]{UI.ATA_IDENTIFY_PACKET_DEVICE_command_response}[/]");
+                                AaruLogging.WriteLine($"[bold]{UI.ATA_IDENTIFY_PACKET_DEVICE_command_response}[/]");
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
 
-                                AaruConsole.WriteLine(Identify.Prettify(identify));
+                                AaruLogging.WriteLine(Identify.Prettify(identify));
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
                             }
 
@@ -210,17 +210,17 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
                             errno = inputFormat.ReadMediaTag(MediaTagType.CD_ATIP, out byte[] atip);
 
                             if(errno != ErrorNumber.NoError)
-                                AaruConsole.WriteLine(UI.Error_0_reading_CD_ATIP_from_disc_image, errno);
+                                AaruLogging.WriteLine(UI.Error_0_reading_CD_ATIP_from_disc_image, errno);
                             else
                             {
-                                AaruConsole.WriteLine($"[bold]{UI.CD_ATIP}[/]");
+                                AaruLogging.WriteLine($"[bold]{UI.CD_ATIP}[/]");
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
 
-                                AaruConsole.WriteLine(ATIP.Prettify(atip));
+                                AaruLogging.WriteLine(ATIP.Prettify(atip));
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
                             }
 
@@ -231,17 +231,17 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
                             errno = inputFormat.ReadMediaTag(MediaTagType.CD_FullTOC, out byte[] fullToc);
 
                             if(errno != ErrorNumber.NoError)
-                                AaruConsole.WriteLine(UI.Error_0_reading_CD_full_TOC_from_disc_image, errno);
+                                AaruLogging.WriteLine(UI.Error_0_reading_CD_full_TOC_from_disc_image, errno);
                             else
                             {
-                                AaruConsole.WriteLine($"[bold]{UI.CD_full_TOC}[/]");
+                                AaruLogging.WriteLine($"[bold]{UI.CD_full_TOC}[/]");
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
 
-                                AaruConsole.WriteLine(FullTOC.Prettify(fullToc));
+                                AaruLogging.WriteLine(FullTOC.Prettify(fullToc));
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
                             }
 
@@ -252,17 +252,17 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
                             errno = inputFormat.ReadMediaTag(MediaTagType.CD_PMA, out byte[] pma);
 
                             if(errno != ErrorNumber.NoError)
-                                AaruConsole.WriteLine(UI.Error_0_reading_CD_PMA_from_disc_image, errno);
+                                AaruLogging.WriteLine(UI.Error_0_reading_CD_PMA_from_disc_image, errno);
                             else
                             {
-                                AaruConsole.WriteLine($"[bold]{UI.CD_PMA}[/]");
+                                AaruLogging.WriteLine($"[bold]{UI.CD_PMA}[/]");
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
 
-                                AaruConsole.WriteLine(PMA.Prettify(pma));
+                                AaruLogging.WriteLine(PMA.Prettify(pma));
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
                             }
 
@@ -273,17 +273,17 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
                             errno = inputFormat.ReadMediaTag(MediaTagType.CD_SessionInfo, out byte[] sessionInfo);
 
                             if(errno != ErrorNumber.NoError)
-                                AaruConsole.WriteLine(UI.Error_0_reading_CD_session_information_from_disc_image, errno);
+                                AaruLogging.WriteLine(UI.Error_0_reading_CD_session_information_from_disc_image, errno);
                             else
                             {
-                                AaruConsole.WriteLine($"[bold]{UI.CD_session_information}[/]");
+                                AaruLogging.WriteLine($"[bold]{UI.CD_session_information}[/]");
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
 
-                                AaruConsole.WriteLine(Session.Prettify(sessionInfo));
+                                AaruLogging.WriteLine(Session.Prettify(sessionInfo));
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
                             }
 
@@ -294,17 +294,17 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
                             errno = inputFormat.ReadMediaTag(MediaTagType.CD_TEXT, out byte[] cdText);
 
                             if(errno != ErrorNumber.NoError)
-                                AaruConsole.WriteLine(UI.Error_reading_CD_TEXT_from_disc_image);
+                                AaruLogging.WriteLine(UI.Error_reading_CD_TEXT_from_disc_image);
                             else
                             {
-                                AaruConsole.WriteLine($"[bold]{UI.CD_TEXT}[/]");
+                                AaruLogging.WriteLine($"[bold]{UI.CD_TEXT}[/]");
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
 
-                                AaruConsole.WriteLine(CDTextOnLeadIn.Prettify(cdText));
+                                AaruLogging.WriteLine(CDTextOnLeadIn.Prettify(cdText));
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
                             }
 
@@ -315,24 +315,24 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
                             errno = inputFormat.ReadMediaTag(MediaTagType.CD_TOC, out byte[] toc);
 
                             if(toc == null || errno != ErrorNumber.NoError)
-                                AaruConsole.WriteLine(UI.Error_reading_CD_TOC_from_disc_image);
+                                AaruLogging.WriteLine(UI.Error_reading_CD_TOC_from_disc_image);
                             else
                             {
-                                AaruConsole.WriteLine($"[bold]{UI.CD_TOC}[/]");
+                                AaruLogging.WriteLine($"[bold]{UI.CD_TOC}[/]");
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
 
-                                AaruConsole.WriteLine(TOC.Prettify(toc));
+                                AaruLogging.WriteLine(TOC.Prettify(toc));
 
-                                AaruConsole
+                                AaruLogging
                                    .WriteLine("================================================================================");
                             }
 
                             break;
                         }
                         default:
-                            AaruConsole.WriteLine(UI.Decoder_for_media_tag_type_0_not_yet_implemented_sorry, tag);
+                            AaruLogging.WriteLine(UI.Decoder_for_media_tag_type_0_not_yet_implemented_sorry, tag);
 
                             break;
                     }
@@ -347,15 +347,15 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
         {
             if(!ulong.TryParse(settings.Length, out ulong _))
             {
-                AaruConsole.WriteLine(UI.Value_0_is_not_a_valid_number_for_length, settings.Length);
-                AaruConsole.WriteLine(UI.Not_decoding_sectors_tags);
+                AaruLogging.WriteLine(UI.Value_0_is_not_a_valid_number_for_length, settings.Length);
+                AaruLogging.WriteLine(UI.Not_decoding_sectors_tags);
 
                 return 3;
             }
         }
 
         if(inputFormat.Info.ReadableSectorTags.Count == 0)
-            AaruConsole.WriteLine(UI.There_are_no_sector_tags_in_chosen_disc_image);
+            AaruLogging.WriteLine(UI.There_are_no_sector_tags_in_chosen_disc_image);
         else
         {
             foreach(SectorTagType tag in inputFormat.Info.ReadableSectorTags)
@@ -364,7 +364,7 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
                 {
 #pragma warning disable PH2077 // TODO: Implement some!
                     default:
-                        AaruConsole.WriteLine(UI.Decoder_for_sector_tag_type_0_not_yet_implemented_sorry, tag);
+                        AaruLogging.WriteLine(UI.Decoder_for_sector_tag_type_0_not_yet_implemented_sorry, tag);
 
                         break;
 #pragma warning restore PH2077

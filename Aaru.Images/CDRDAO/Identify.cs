@@ -95,8 +95,8 @@ public sealed partial class Cdrdao
         }
         catch(Exception ex)
         {
-            AaruConsole.Error(Localization.Exception_trying_to_identify_image_file_0, _cdrdaoFilter.Filename);
-            AaruConsole.Exception(ex);
+            AaruLogging.Error(Localization.Exception_trying_to_identify_image_file_0, _cdrdaoFilter.Filename);
+            AaruLogging.Exception(ex);
 
             return false;
         }

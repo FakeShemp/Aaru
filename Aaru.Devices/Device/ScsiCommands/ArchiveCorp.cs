@@ -67,7 +67,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(SCSI_MODULE_NAME,
+        AaruLogging.Debug(SCSI_MODULE_NAME,
                                    Localization.ARCHIVE_CORP_REQUEST_BLOCK_ADDRESS_took_0_ms,
                                    duration);
 
@@ -112,7 +112,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.ARCHIVE_CORP_SEEK_BLOCK_took_0_ms, duration);
+        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.ARCHIVE_CORP_SEEK_BLOCK_took_0_ms, duration);
 
         return sense;
     }

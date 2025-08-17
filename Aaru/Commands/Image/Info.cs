@@ -53,9 +53,9 @@ sealed class ImageInfoCommand : Command<ImageInfoCommand.Settings>
 
         Statistics.AddCommand("image-info");
 
-        AaruConsole.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
-        AaruConsole.Debug(MODULE_NAME, "--input={0}",   Markup.Escape(settings.ImagePath ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--input={0}",   Markup.Escape(settings.ImagePath ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
         IFilter inputFilter = null;
 
@@ -67,7 +67,7 @@ sealed class ImageInfoCommand : Command<ImageInfoCommand.Settings>
 
         if(inputFilter == null)
         {
-            AaruConsole.Error(UI.Cannot_open_specified_file);
+            AaruLogging.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -84,13 +84,13 @@ sealed class ImageInfoCommand : Command<ImageInfoCommand.Settings>
 
             if(imageFormat == null)
             {
-                AaruConsole.WriteLine(UI.Image_format_not_identified);
+                AaruLogging.WriteLine(UI.Image_format_not_identified);
 
                 return (int)ErrorNumber.UnrecognizedFormat;
             }
 
-            AaruConsole.WriteLine(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
-            AaruConsole.WriteLine();
+            AaruLogging.WriteLine(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
+            AaruLogging.WriteLine();
 
             try
             {
@@ -104,8 +104,8 @@ sealed class ImageInfoCommand : Command<ImageInfoCommand.Settings>
 
                 if(opened != ErrorNumber.NoError)
                 {
-                    AaruConsole.WriteLine(UI.Unable_to_open_image_format);
-                    AaruConsole.WriteLine(Localization.Core.Error_0, opened);
+                    AaruLogging.WriteLine(UI.Unable_to_open_image_format);
+                    AaruLogging.WriteLine(Localization.Core.Error_0, opened);
 
                     return (int)opened;
                 }
@@ -118,17 +118,17 @@ sealed class ImageInfoCommand : Command<ImageInfoCommand.Settings>
             }
             catch(Exception ex)
             {
-                AaruConsole.Error(UI.Unable_to_open_image_format);
-                AaruConsole.Error(Localization.Core.Error_0, ex.Message);
-                AaruConsole.Exception(ex);
+                AaruLogging.Error(UI.Unable_to_open_image_format);
+                AaruLogging.Error(Localization.Core.Error_0, ex.Message);
+                AaruLogging.Exception(ex);
 
                 return (int)ErrorNumber.CannotOpenFormat;
             }
         }
         catch(Exception ex)
         {
-            AaruConsole.Error(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
-            AaruConsole.Exception(ex);
+            AaruLogging.Error(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
+            AaruLogging.Exception(ex);
 
             return (int)ErrorNumber.UnexpectedException;
         }

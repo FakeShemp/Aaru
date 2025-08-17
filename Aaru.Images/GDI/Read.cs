@@ -88,7 +88,7 @@ public sealed partial class Gdi
                 {
                     if(int.TryParse(line, out _)) continue;
 
-                    AaruConsole.Error(Localization.Not_a_correct_Dreamcast_GDI_image);
+                    AaruLogging.Error(Localization.Not_a_correct_Dreamcast_GDI_image);
 
                     return ErrorNumber.InvalidArgument;
                 }
@@ -97,12 +97,12 @@ public sealed partial class Gdi
 
                 if(!trackMatch.Success)
                 {
-                    AaruConsole.Error(string.Format(Localization.Unknown_line_0_at_line_1, line, lineNumber));
+                    AaruLogging.Error(string.Format(Localization.Unknown_line_0_at_line_1, line, lineNumber));
 
                     return ErrorNumber.InvalidArgument;
                 }
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            Localization
                                               .Found_track_0_starts_at_1_flags_2_type_3_file_4_offset_5_at_line_6,
                                            trackMatch.Groups["track"].Value,
@@ -147,7 +147,7 @@ public sealed partial class Gdi
 
                 if((currentTrack.TrackFilter.DataForkLength - currentTrack.Offset) % currentTrack.Bps != 0)
                 {
-                    AaruConsole.Error(Localization.Track_size_not_a_multiple_of_sector_size);
+                    AaruLogging.Error(Localization.Track_size_not_a_multiple_of_sector_size);
 
                     return ErrorNumber.InvalidArgument;
                 }
@@ -212,68 +212,68 @@ public sealed partial class Gdi
             _discImage.Disktype = MediaType.GDROM;
 
             // DEBUG information
-            AaruConsole.Debug(MODULE_NAME, Localization.Disc_image_parsing_results);
+            AaruLogging.Debug(MODULE_NAME, Localization.Disc_image_parsing_results);
 
-            AaruConsole.Debug(MODULE_NAME, Localization.Session_information);
+            AaruLogging.Debug(MODULE_NAME, Localization.Session_information);
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        "\t" + Localization.Disc_contains_0_sessions,
                                        _discImage.Sessions.Count);
 
             for(int i = 0; i < _discImage.Sessions.Count; i++)
             {
-                AaruConsole.Debug(MODULE_NAME, "\t" + Localization.Session_0_information, i + 1);
+                AaruLogging.Debug(MODULE_NAME, "\t" + Localization.Session_0_information, i + 1);
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "\t\t" + Localization.Starting_track_0,
                                            _discImage.Sessions[i].StartTrack);
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "\t\t" + Localization.Starting_sector_0,
                                            _discImage.Sessions[i].StartSector);
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "\t\t" + Localization.Ending_track_0,
                                            _discImage.Sessions[i].EndTrack);
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "\t\t" + Localization.Ending_sector_0,
                                            _discImage.Sessions[i].EndSector);
             }
 
-            AaruConsole.Debug(MODULE_NAME, Localization.Track_information);
+            AaruLogging.Debug(MODULE_NAME, Localization.Track_information);
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        "\t" + Localization.Disc_contains_0_tracks,
                                        _discImage.Tracks.Count);
 
             for(int i = 0; i < _discImage.Tracks.Count; i++)
             {
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "\t" + Localization.Track_0_information,
                                            _discImage.Tracks[i].Sequence);
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "\t\t" + Localization._0_bytes_per_sector,
                                            _discImage.Tracks[i].Bps);
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "\t\t" + Localization.Pregap_0_sectors,
                                            _discImage.Tracks[i].Pregap);
 
                 if((_discImage.Tracks[i].Flags & 0x8) == 0x8)
-                    AaruConsole.Debug(MODULE_NAME, "\t\t" + Localization.Track_is_flagged_as_quadraphonic);
+                    AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Track_is_flagged_as_quadraphonic);
 
                 if((_discImage.Tracks[i].Flags & 0x4) == 0x4)
-                    AaruConsole.Debug(MODULE_NAME, "\t\t" + Localization.Track_is_data);
+                    AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Track_is_data);
 
                 if((_discImage.Tracks[i].Flags & 0x2) == 0x2)
-                    AaruConsole.Debug(MODULE_NAME, "\t\t" + Localization.Track_allows_digital_copy);
+                    AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Track_allows_digital_copy);
 
                 if((_discImage.Tracks[i].Flags & 0x1) == 0x1)
-                    AaruConsole.Debug(MODULE_NAME, "\t\t" + Localization.Track_has_pre_emphasis_applied);
+                    AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Track_has_pre_emphasis_applied);
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "\t\t" +
                                            Localization.Track_resides_in_file_0_type_defined_as_1_starting_at_byte_2,
                                            _discImage.Tracks[i].TrackFilter,
@@ -281,7 +281,7 @@ public sealed partial class Gdi
                                            _discImage.Tracks[i].Offset);
             }
 
-            AaruConsole.Debug(MODULE_NAME, Localization.Building_offset_map);
+            AaruLogging.Debug(MODULE_NAME, Localization.Building_offset_map);
 
             Partitions = [];
             ulong byteOffset = 0;
@@ -290,7 +290,7 @@ public sealed partial class Gdi
             {
                 if(_discImage.Tracks[i].Sequence == 1 && i != 0)
                 {
-                    AaruConsole.Error(Localization.Unordered_tracks);
+                    AaruLogging.Error(Localization.Unordered_tracks);
 
                     return ErrorNumber.InvalidArgument;
                 }
@@ -342,7 +342,7 @@ public sealed partial class Gdi
 
             _imageInfo.MetadataMediaType = MetadataMediaType.OpticalDisc;
 
-            AaruConsole.Verbose(Localization.GDI_image_describes_a_disc_of_type_0, _imageInfo.MediaType);
+            AaruLogging.Verbose(Localization.GDI_image_describes_a_disc_of_type_0, _imageInfo.MediaType);
 
             _sectorBuilder = new SectorBuilder();
 
@@ -350,8 +350,8 @@ public sealed partial class Gdi
         }
         catch(Exception ex)
         {
-            AaruConsole.Error(Localization.Exception_trying_to_identify_image_file_0, imageFilter.BasePath);
-            AaruConsole.Exception(ex);
+            AaruLogging.Error(Localization.Exception_trying_to_identify_image_file_0, imageFilter.BasePath);
+            AaruLogging.Exception(ex);
 
             return ErrorNumber.UnexpectedException;
         }

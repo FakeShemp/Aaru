@@ -193,25 +193,25 @@ sealed partial class Reader
         }
 
         if(_ataReadDmaLba48)
-            AaruConsole.WriteLine(Localization.Core.Using_ATA_READ_DMA_EXT_command);
+            AaruLogging.WriteLine(Localization.Core.Using_ATA_READ_DMA_EXT_command);
         else if(_ataReadLba48)
-            AaruConsole.WriteLine(Localization.Core.Using_ATA_READ_EXT_command);
+            AaruLogging.WriteLine(Localization.Core.Using_ATA_READ_EXT_command);
         else if(_ataReadDmaRetryLba)
-            AaruConsole.WriteLine(Localization.Core.Using_ATA_READ_DMA_command_with_retries_LBA);
+            AaruLogging.WriteLine(Localization.Core.Using_ATA_READ_DMA_command_with_retries_LBA);
         else if(_ataReadDmaLba)
-            AaruConsole.WriteLine(Localization.Core.Using_ATA_READ_DMA_command_LBA);
+            AaruLogging.WriteLine(Localization.Core.Using_ATA_READ_DMA_command_LBA);
         else if(_ataReadRetryLba)
-            AaruConsole.WriteLine(Localization.Core.Using_ATA_READ_command_with_retries_LBA);
+            AaruLogging.WriteLine(Localization.Core.Using_ATA_READ_command_with_retries_LBA);
         else if(_ataReadLba)
-            AaruConsole.WriteLine(Localization.Core.Using_ATA_READ_command_LBA);
+            AaruLogging.WriteLine(Localization.Core.Using_ATA_READ_command_LBA);
         else if(_ataReadDmaRetry)
-            AaruConsole.WriteLine(Localization.Core.Using_ATA_READ_DMA_command_with_retries_CHS);
+            AaruLogging.WriteLine(Localization.Core.Using_ATA_READ_DMA_command_with_retries_CHS);
         else if(_ataReadDma)
-            AaruConsole.WriteLine(Localization.Core.Using_ATA_READ_DMA_command_CHS);
+            AaruLogging.WriteLine(Localization.Core.Using_ATA_READ_DMA_command_CHS);
         else if(_ataReadRetry)
-            AaruConsole.WriteLine(Localization.Core.Using_ATA_READ_command_with_retries_CHS);
+            AaruLogging.WriteLine(Localization.Core.Using_ATA_READ_command_with_retries_CHS);
         else if(_ataRead)
-            AaruConsole.WriteLine(Localization.Core.Using_ATA_READ_command_CHS);
+            AaruLogging.WriteLine(Localization.Core.Using_ATA_READ_command_CHS);
         else
         {
             ErrorMessage = Localization.Core.Could_not_get_a_working_read_command;
@@ -395,7 +395,7 @@ sealed partial class Reader
 
         if((status & 0x04) == 0x04) recoveredError = true;
 
-        AaruConsole.Debug(ATA_MODULE_NAME, Localization.Core.ATA_ERROR_0_STATUS_1, errorByte, status);
+        AaruLogging.Debug(ATA_MODULE_NAME, Localization.Core.ATA_ERROR_0_STATUS_1, errorByte, status);
 
         return true;
     }
@@ -454,7 +454,7 @@ sealed partial class Reader
 
         if((status & 0x04) == 0x04) recoveredError = true;
 
-        AaruConsole.Debug(ATA_MODULE_NAME, Localization.Core.ATA_ERROR_0_STATUS_1, errorByte, status);
+        AaruLogging.Debug(ATA_MODULE_NAME, Localization.Core.ATA_ERROR_0_STATUS_1, errorByte, status);
 
         return true;
     }

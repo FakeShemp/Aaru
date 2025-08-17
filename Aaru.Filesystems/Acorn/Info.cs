@@ -74,8 +74,8 @@ public sealed partial class AcornADFS
             byte          oldChk1 = AcornMapChecksum(sector, 255);
             OldMapSector1 oldMap1 = Marshal.ByteArrayToStructureLittleEndian<OldMapSector1>(sector);
 
-            AaruConsole.Debug(MODULE_NAME, "oldMap0.checksum = {0}", oldMap0.checksum);
-            AaruConsole.Debug(MODULE_NAME, "oldChk0 = {0}",          oldChk0);
+            AaruLogging.Debug(MODULE_NAME, "oldMap0.checksum = {0}", oldMap0.checksum);
+            AaruLogging.Debug(MODULE_NAME, "oldChk0 = {0}",          oldChk0);
 
             // According to documentation map1 MUST start on sector 1. On ADFS-D it starts at 0x100, not on sector 1 (0x400)
             if(oldMap0.checksum == oldChk0 && oldMap1.checksum != oldChk1 && sector.Length >= 512)
@@ -90,8 +90,8 @@ public sealed partial class AcornADFS
                 oldMap1 = Marshal.ByteArrayToStructureLittleEndian<OldMapSector1>(tmp);
             }
 
-            AaruConsole.Debug(MODULE_NAME, "oldMap1.checksum = {0}", oldMap1.checksum);
-            AaruConsole.Debug(MODULE_NAME, "oldChk1 = {0}",          oldChk1);
+            AaruLogging.Debug(MODULE_NAME, "oldMap1.checksum = {0}", oldMap1.checksum);
+            AaruLogging.Debug(MODULE_NAME, "oldChk1 = {0}",          oldChk1);
 
             if(oldMap0.checksum == oldChk0 &&
                oldMap1.checksum == oldChk1 &&
@@ -118,15 +118,15 @@ public sealed partial class AcornADFS
                 OldDirectory oldRoot = Marshal.ByteArrayToStructureLittleEndian<OldDirectory>(sector);
                 byte         dirChk  = AcornDirectoryChecksum(sector, (int)OLD_DIRECTORY_SIZE - 1);
 
-                AaruConsole.Debug(MODULE_NAME, "oldRoot.header.magic at 0x200 = {0}", oldRoot.header.magic);
+                AaruLogging.Debug(MODULE_NAME, "oldRoot.header.magic at 0x200 = {0}", oldRoot.header.magic);
 
-                AaruConsole.Debug(MODULE_NAME, "oldRoot.tail.magic at 0x200 = {0}", oldRoot.tail.magic);
+                AaruLogging.Debug(MODULE_NAME, "oldRoot.tail.magic at 0x200 = {0}", oldRoot.tail.magic);
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "oldRoot.tail.checkByte at 0x200 = {0}",
                                            oldRoot.tail.checkByte);
 
-                AaruConsole.Debug(MODULE_NAME, "dirChk at 0x200 = {0}", dirChk);
+                AaruLogging.Debug(MODULE_NAME, "dirChk at 0x200 = {0}", dirChk);
 
                 if(oldRoot.header.magic == OLD_DIR_MAGIC && oldRoot.tail.magic == OLD_DIR_MAGIC ||
                    oldRoot.header.magic == NEW_DIR_MAGIC && oldRoot.tail.magic == NEW_DIR_MAGIC)
@@ -153,15 +153,15 @@ public sealed partial class AcornADFS
                 oldRoot = Marshal.ByteArrayToStructureLittleEndian<OldDirectory>(sector);
                 dirChk  = AcornDirectoryChecksum(sector, (int)OLD_DIRECTORY_SIZE - 1);
 
-                AaruConsole.Debug(MODULE_NAME, "oldRoot.header.magic at 0x400 = {0}", oldRoot.header.magic);
+                AaruLogging.Debug(MODULE_NAME, "oldRoot.header.magic at 0x400 = {0}", oldRoot.header.magic);
 
-                AaruConsole.Debug(MODULE_NAME, "oldRoot.tail.magic at 0x400 = {0}", oldRoot.tail.magic);
+                AaruLogging.Debug(MODULE_NAME, "oldRoot.tail.magic at 0x400 = {0}", oldRoot.tail.magic);
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "oldRoot.tail.checkByte at 0x400 = {0}",
                                            oldRoot.tail.checkByte);
 
-                AaruConsole.Debug(MODULE_NAME, "dirChk at 0x400 = {0}", dirChk);
+                AaruLogging.Debug(MODULE_NAME, "dirChk at 0x400 = {0}", dirChk);
 
                 if(oldRoot.header.magic == OLD_DIR_MAGIC && oldRoot.tail.magic == OLD_DIR_MAGIC ||
                    oldRoot.header.magic == NEW_DIR_MAGIC && oldRoot.tail.magic == NEW_DIR_MAGIC)
@@ -177,8 +177,8 @@ public sealed partial class AcornADFS
         if(errno != ErrorNumber.NoError) return false;
 
         byte newChk = NewMapChecksum(sector);
-        AaruConsole.Debug(MODULE_NAME, "newChk = {0}",           newChk);
-        AaruConsole.Debug(MODULE_NAME, "map.zoneChecksum = {0}", sector[0]);
+        AaruLogging.Debug(MODULE_NAME, "newChk = {0}",           newChk);
+        AaruLogging.Debug(MODULE_NAME, "map.zoneChecksum = {0}", sector[0]);
 
         sbSector      = BOOT_BLOCK_LOCATION / imagePlugin.Info.SectorSize;
         sectorsToRead = BOOT_BLOCK_SIZE     / imagePlugin.Info.SectorSize;
@@ -197,8 +197,8 @@ public sealed partial class AcornADFS
 
         for(int i = 0; i < 0x1FF; i++) bootChk = (bootChk & 0xFF) + (bootChk >> 8) + bootSector[i];
 
-        AaruConsole.Debug(MODULE_NAME, "bootChk = {0}",         bootChk);
-        AaruConsole.Debug(MODULE_NAME, "bBlock.checksum = {0}", bootSector[0x1FF]);
+        AaruLogging.Debug(MODULE_NAME, "bootChk = {0}",         bootChk);
+        AaruLogging.Debug(MODULE_NAME, "bBlock.checksum = {0}", bootSector[0x1FF]);
 
         if(newChk == sector[0] && newChk != 0)
         {
@@ -213,12 +213,12 @@ public sealed partial class AcornADFS
         else
             return false;
 
-        AaruConsole.Debug(MODULE_NAME, "drSb.log2secsize = {0}",    drSb.log2secsize);
-        AaruConsole.Debug(MODULE_NAME, "drSb.idlen = {0}",          drSb.idlen);
-        AaruConsole.Debug(MODULE_NAME, "drSb.disc_size_high = {0}", drSb.disc_size_high);
-        AaruConsole.Debug(MODULE_NAME, "drSb.disc_size = {0}",      drSb.disc_size);
+        AaruLogging.Debug(MODULE_NAME, "drSb.log2secsize = {0}",    drSb.log2secsize);
+        AaruLogging.Debug(MODULE_NAME, "drSb.idlen = {0}",          drSb.idlen);
+        AaruLogging.Debug(MODULE_NAME, "drSb.disc_size_high = {0}", drSb.disc_size_high);
+        AaruLogging.Debug(MODULE_NAME, "drSb.disc_size = {0}",      drSb.disc_size);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "IsNullOrEmpty(drSb.reserved) = {0}",
                                    ArrayHelpers.ArrayIsNullOrEmpty(drSb.reserved));
 
@@ -411,8 +411,8 @@ public sealed partial class AcornADFS
         if(errno != ErrorNumber.NoError) return;
 
         byte newChk = NewMapChecksum(sector);
-        AaruConsole.Debug(MODULE_NAME, "newChk = {0}",           newChk);
-        AaruConsole.Debug(MODULE_NAME, "map.zoneChecksum = {0}", sector[0]);
+        AaruLogging.Debug(MODULE_NAME, "newChk = {0}",           newChk);
+        AaruLogging.Debug(MODULE_NAME, "map.zoneChecksum = {0}", sector[0]);
 
         sbSector      = BOOT_BLOCK_LOCATION / imagePlugin.Info.SectorSize;
         sectorsToRead = BOOT_BLOCK_SIZE     / imagePlugin.Info.SectorSize;
@@ -427,8 +427,8 @@ public sealed partial class AcornADFS
 
         for(int i = 0; i < 0x1FF; i++) bootChk = (bootChk & 0xFF) + (bootChk >> 8) + bootSector[i];
 
-        AaruConsole.Debug(MODULE_NAME, "bootChk = {0}",         bootChk);
-        AaruConsole.Debug(MODULE_NAME, "bBlock.checksum = {0}", bootSector[0x1FF]);
+        AaruLogging.Debug(MODULE_NAME, "bootChk = {0}",         bootChk);
+        AaruLogging.Debug(MODULE_NAME, "bBlock.checksum = {0}", bootSector[0x1FF]);
 
         if(newChk == sector[0] && newChk != 0)
         {
@@ -443,31 +443,31 @@ public sealed partial class AcornADFS
         else
             return;
 
-        AaruConsole.Debug(MODULE_NAME, "drSb.log2secsize = {0}", drSb.log2secsize);
-        AaruConsole.Debug(MODULE_NAME, "drSb.spt = {0}",         drSb.spt);
-        AaruConsole.Debug(MODULE_NAME, "drSb.heads = {0}",       drSb.heads);
-        AaruConsole.Debug(MODULE_NAME, "drSb.density = {0}",     drSb.density);
-        AaruConsole.Debug(MODULE_NAME, "drSb.idlen = {0}",       drSb.idlen);
-        AaruConsole.Debug(MODULE_NAME, "drSb.log2bpmb = {0}",    drSb.log2bpmb);
-        AaruConsole.Debug(MODULE_NAME, "drSb.skew = {0}",        drSb.skew);
-        AaruConsole.Debug(MODULE_NAME, "drSb.bootoption = {0}",  drSb.bootoption);
-        AaruConsole.Debug(MODULE_NAME, "drSb.lowsector = {0}",   drSb.lowsector);
-        AaruConsole.Debug(MODULE_NAME, "drSb.nzones = {0}",      drSb.nzones);
-        AaruConsole.Debug(MODULE_NAME, "drSb.zone_spare = {0}",  drSb.zone_spare);
-        AaruConsole.Debug(MODULE_NAME, "drSb.root = {0}",        drSb.root);
-        AaruConsole.Debug(MODULE_NAME, "drSb.disc_size = {0}",   drSb.disc_size);
-        AaruConsole.Debug(MODULE_NAME, "drSb.disc_id = {0}",     drSb.disc_id);
+        AaruLogging.Debug(MODULE_NAME, "drSb.log2secsize = {0}", drSb.log2secsize);
+        AaruLogging.Debug(MODULE_NAME, "drSb.spt = {0}",         drSb.spt);
+        AaruLogging.Debug(MODULE_NAME, "drSb.heads = {0}",       drSb.heads);
+        AaruLogging.Debug(MODULE_NAME, "drSb.density = {0}",     drSb.density);
+        AaruLogging.Debug(MODULE_NAME, "drSb.idlen = {0}",       drSb.idlen);
+        AaruLogging.Debug(MODULE_NAME, "drSb.log2bpmb = {0}",    drSb.log2bpmb);
+        AaruLogging.Debug(MODULE_NAME, "drSb.skew = {0}",        drSb.skew);
+        AaruLogging.Debug(MODULE_NAME, "drSb.bootoption = {0}",  drSb.bootoption);
+        AaruLogging.Debug(MODULE_NAME, "drSb.lowsector = {0}",   drSb.lowsector);
+        AaruLogging.Debug(MODULE_NAME, "drSb.nzones = {0}",      drSb.nzones);
+        AaruLogging.Debug(MODULE_NAME, "drSb.zone_spare = {0}",  drSb.zone_spare);
+        AaruLogging.Debug(MODULE_NAME, "drSb.root = {0}",        drSb.root);
+        AaruLogging.Debug(MODULE_NAME, "drSb.disc_size = {0}",   drSb.disc_size);
+        AaruLogging.Debug(MODULE_NAME, "drSb.disc_id = {0}",     drSb.disc_id);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "drSb.disc_name = {0}",
                                    StringHandlers.CToString(drSb.disc_name, encoding));
 
-        AaruConsole.Debug(MODULE_NAME, "drSb.disc_type = {0}",      drSb.disc_type);
-        AaruConsole.Debug(MODULE_NAME, "drSb.disc_size_high = {0}", drSb.disc_size_high);
-        AaruConsole.Debug(MODULE_NAME, "drSb.flags = {0}",          drSb.flags);
-        AaruConsole.Debug(MODULE_NAME, "drSb.nzones_high = {0}",    drSb.nzones_high);
-        AaruConsole.Debug(MODULE_NAME, "drSb.format_version = {0}", drSb.format_version);
-        AaruConsole.Debug(MODULE_NAME, "drSb.root_size = {0}",      drSb.root_size);
+        AaruLogging.Debug(MODULE_NAME, "drSb.disc_type = {0}",      drSb.disc_type);
+        AaruLogging.Debug(MODULE_NAME, "drSb.disc_size_high = {0}", drSb.disc_size_high);
+        AaruLogging.Debug(MODULE_NAME, "drSb.flags = {0}",          drSb.flags);
+        AaruLogging.Debug(MODULE_NAME, "drSb.nzones_high = {0}",    drSb.nzones_high);
+        AaruLogging.Debug(MODULE_NAME, "drSb.format_version = {0}", drSb.format_version);
+        AaruLogging.Debug(MODULE_NAME, "drSb.root_size = {0}",      drSb.root_size);
 
         if(drSb.log2secsize is < 8 or > 10) return;
 

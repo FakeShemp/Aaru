@@ -61,21 +61,21 @@ public sealed partial class Virtual98
 
         if(!_v98Hdr.signature.SequenceEqual(_signature)) return false;
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "v98hdr.signature = \"{0}\"",
                                    StringHandlers.CToString(_v98Hdr.signature, shiftjis));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "v98hdr.comment = \"{0}\"",
                                    StringHandlers.CToString(_v98Hdr.comment, shiftjis));
 
-        AaruConsole.Debug(MODULE_NAME, "v98hdr.padding = {0}",    _v98Hdr.padding);
-        AaruConsole.Debug(MODULE_NAME, "v98hdr.mbsize = {0}",     _v98Hdr.mbsize);
-        AaruConsole.Debug(MODULE_NAME, "v98hdr.sectorsize = {0}", _v98Hdr.sectorsize);
-        AaruConsole.Debug(MODULE_NAME, "v98hdr.sectors = {0}",    _v98Hdr.sectors);
-        AaruConsole.Debug(MODULE_NAME, "v98hdr.surfaces = {0}",   _v98Hdr.surfaces);
-        AaruConsole.Debug(MODULE_NAME, "v98hdr.cylinders = {0}",  _v98Hdr.cylinders);
-        AaruConsole.Debug(MODULE_NAME, "v98hdr.totals = {0}",     _v98Hdr.totals);
+        AaruLogging.Debug(MODULE_NAME, "v98hdr.padding = {0}",    _v98Hdr.padding);
+        AaruLogging.Debug(MODULE_NAME, "v98hdr.mbsize = {0}",     _v98Hdr.mbsize);
+        AaruLogging.Debug(MODULE_NAME, "v98hdr.sectorsize = {0}", _v98Hdr.sectorsize);
+        AaruLogging.Debug(MODULE_NAME, "v98hdr.sectors = {0}",    _v98Hdr.sectors);
+        AaruLogging.Debug(MODULE_NAME, "v98hdr.surfaces = {0}",   _v98Hdr.surfaces);
+        AaruLogging.Debug(MODULE_NAME, "v98hdr.cylinders = {0}",  _v98Hdr.cylinders);
+        AaruLogging.Debug(MODULE_NAME, "v98hdr.totals = {0}",     _v98Hdr.totals);
 
         return true;
     }

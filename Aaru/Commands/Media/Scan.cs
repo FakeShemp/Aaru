@@ -56,12 +56,12 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
 
         Statistics.AddCommand("media-scan");
 
-        AaruConsole.Debug(MODULE_NAME, "--debug={0}",              settings.Debug);
-        AaruConsole.Debug(MODULE_NAME, "--device={0}",             Markup.Escape(settings.DevicePath ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--ibg-log={0}",            Markup.Escape(settings.IbgLog     ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--mhdd-log={0}",           Markup.Escape(settings.MhddLog    ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",            settings.Verbose);
-        AaruConsole.Debug(MODULE_NAME, "--use-buffered-reads={0}", settings.UseBufferedReads);
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}",              settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--device={0}",             Markup.Escape(settings.DevicePath ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--ibg-log={0}",            Markup.Escape(settings.IbgLog     ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--mhdd-log={0}",           Markup.Escape(settings.MhddLog    ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}",            settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--use-buffered-reads={0}", settings.UseBufferedReads);
 
         string devicePath = settings.DevicePath;
 
@@ -80,7 +80,7 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
         switch(dev)
         {
             case null:
-                AaruConsole.Error(string.Format(UI.Could_not_open_device_error_0, devErrno));
+                AaruLogging.Error(string.Format(UI.Could_not_open_device_error_0, devErrno));
 
                 return (int)devErrno;
             case Devices.Remote.Device remoteDev:
@@ -95,7 +95,7 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
 
         if(dev.Error)
         {
-            AaruConsole.Error(Error.Print(dev.LastError));
+            AaruLogging.Error(Error.Print(dev.LastError));
 
             return (int)ErrorNumber.CannotOpenDevice;
         }
@@ -111,11 +111,11 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
                    .Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn())
                    .Start(ctx =>
                     {
-                        scanner.UpdateStatus += text => { AaruConsole.WriteLine(Markup.Escape(text)); };
+                        scanner.UpdateStatus += text => { AaruLogging.WriteLine(Markup.Escape(text)); };
 
                         scanner.StoppingErrorMessage += text =>
                             {
-                                AaruConsole.Error($"[red]{Markup.Escape(text)}[/]");
+                                AaruLogging.Error($"[red]{Markup.Escape(text)}[/]");
                             };
 
                         scanner.UpdateProgress += (text, current, maximum) =>
@@ -154,45 +154,45 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
                         results = scanner.Scan();
                     });
 
-        AaruConsole.WriteLine(Localization.Core.Took_a_total_of_0_1_processing_commands,
+        AaruLogging.WriteLine(Localization.Core.Took_a_total_of_0_1_processing_commands,
                               results.TotalTime.Seconds().Humanize(minUnit: TimeUnit.Second),
                               results.ProcessingTime.Seconds().Humanize(minUnit: TimeUnit.Second));
 
-        AaruConsole.WriteLine(Localization.Core.Average_speed_0,
+        AaruLogging.WriteLine(Localization.Core.Average_speed_0,
                               ByteSize.FromBytes(results.AvgSpeed).Per(1.Seconds()).Humanize());
 
-        AaruConsole.WriteLine(Localization.Core.Fastest_speed_burst_0,
+        AaruLogging.WriteLine(Localization.Core.Fastest_speed_burst_0,
                               ByteSize.FromBytes(results.MaxSpeed).Per(1.Seconds()).Humanize());
 
-        AaruConsole.WriteLine(Localization.Core.Slowest_speed_burst_0,
+        AaruLogging.WriteLine(Localization.Core.Slowest_speed_burst_0,
                               ByteSize.FromBytes(results.MinSpeed).Per(1.Seconds()).Humanize());
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine($"[bold]{Localization.Core.Summary}:[/]");
-        AaruConsole.WriteLine($"[lime]{string.Format(Localization.Core._0_sectors_took_less_than_3_ms, results.A)}[/]");
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine($"[bold]{Localization.Core.Summary}:[/]");
+        AaruLogging.WriteLine($"[lime]{string.Format(Localization.Core._0_sectors_took_less_than_3_ms, results.A)}[/]");
 
-        AaruConsole.WriteLine($"[green]{string.Format(Localization.Core._0_sectors_took_less_than_10_ms_but_more_than_3_ms, results.B)}[/]");
+        AaruLogging.WriteLine($"[green]{string.Format(Localization.Core._0_sectors_took_less_than_10_ms_but_more_than_3_ms, results.B)}[/]");
 
-        AaruConsole.WriteLine($"[darkorange]{string.Format(Localization.Core._0_sectors_took_less_than_50_ms_but_more_than_10_ms, results.C)}[/]");
+        AaruLogging.WriteLine($"[darkorange]{string.Format(Localization.Core._0_sectors_took_less_than_50_ms_but_more_than_10_ms, results.C)}[/]");
 
-        AaruConsole.WriteLine($"[olive]{string.Format(Localization.Core._0_sectors_took_less_than_150_ms_but_more_than_50_ms, results.D)}[/]");
+        AaruLogging.WriteLine($"[olive]{string.Format(Localization.Core._0_sectors_took_less_than_150_ms_but_more_than_50_ms, results.D)}[/]");
 
-        AaruConsole.WriteLine($"[orange3]{string.Format(Localization.Core._0_sectors_took_less_than_500_ms_but_more_than_150_ms, results.E)}[/]");
+        AaruLogging.WriteLine($"[orange3]{string.Format(Localization.Core._0_sectors_took_less_than_500_ms_but_more_than_150_ms, results.E)}[/]");
 
-        AaruConsole.WriteLine($"[red]{string.Format(Localization.Core._0_sectors_took_more_than_500_ms, results.F)}[/]");
+        AaruLogging.WriteLine($"[red]{string.Format(Localization.Core._0_sectors_took_more_than_500_ms, results.F)}[/]");
 
-        AaruConsole.WriteLine($"[maroon]{string.Format(Localization.Core._0_sectors_could_not_be_read,
+        AaruLogging.WriteLine($"[maroon]{string.Format(Localization.Core._0_sectors_could_not_be_read,
                                                        results.UnreadableSectors.Count)}[/]");
 
         foreach(ulong bad in results.UnreadableSectors)
-            AaruConsole.WriteLine(Localization.Core.Sector_0_could_not_be_read, bad);
+            AaruLogging.WriteLine(Localization.Core.Sector_0_could_not_be_read, bad);
 
-        AaruConsole.WriteLine();
+        AaruLogging.WriteLine();
 
         if(results.SeekTotal > 0 || results.SeekMin < double.MaxValue || results.SeekMax > double.MinValue)
 
         {
-            AaruConsole.WriteLine(Localization.Core
+            AaruLogging.WriteLine(Localization.Core
                                               .Testing_0_seeks_longest_seek_took_1_ms_fastest_one_took_2_ms_3_ms_average,
                                   results.SeekTimes,
                                   results.SeekMax,

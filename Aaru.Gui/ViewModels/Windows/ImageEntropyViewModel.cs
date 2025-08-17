@@ -316,7 +316,7 @@ public sealed class ImageEntropyViewModel : ViewModelBase
 
         if(WholeDiscChecked && _inputFormat is IOpticalMediaImage { Sessions.Count: > 1 })
         {
-            AaruConsole.Error(UI.Calculating_disc_entropy_of_multisession_images_is_not_yet_implemented);
+            AaruLogging.Error(UI.Calculating_disc_entropy_of_multisession_images_is_not_yet_implemented);
             WholeDiscChecked = false;
         }
 
@@ -329,11 +329,11 @@ public sealed class ImageEntropyViewModel : ViewModelBase
 
                 foreach(EntropyResults trackEntropy in _tracksEntropy)
                 {
-                    AaruConsole.WriteLine(UI.Entropy_for_track_0_is_1, trackEntropy.Track, trackEntropy.Entropy);
+                    AaruLogging.WriteLine(UI.Entropy_for_track_0_is_1, trackEntropy.Track, trackEntropy.Entropy);
 
                     if(trackEntropy.UniqueSectors != null)
                     {
-                        AaruConsole.WriteLine(UI.Track_0_has_1_unique_sectors_2,
+                        AaruLogging.WriteLine(UI.Track_0_has_1_unique_sectors_2,
                                               trackEntropy.Track,
                                               trackEntropy.UniqueSectors,
                                               (double)trackEntropy.UniqueSectors / trackEntropy.Sectors);

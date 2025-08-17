@@ -118,14 +118,14 @@ public abstract class OpticalImageConvertIssueTest
         foreach(MediaTagType mediaTag in inputFormat.Info.ReadableMediaTags.Where(mediaTag =>
                     outputOptical.SupportedMediaTags.Contains(mediaTag)))
         {
-            AaruConsole.WriteLine(Localization.Converting_media_tag_0, mediaTag);
+            AaruLogging.WriteLine(Localization.Converting_media_tag_0, mediaTag);
             errno = inputFormat.ReadMediaTag(mediaTag, out byte[] tag);
 
             Assert.That(errno, Is.EqualTo(ErrorNumber.NoError));
             Assert.That(outputOptical.WriteMediaTag(tag, mediaTag));
         }
 
-        AaruConsole.WriteLine(Localization._0_sectors_to_convert, inputFormat.Info.Sectors);
+        AaruLogging.WriteLine(Localization._0_sectors_to_convert, inputFormat.Info.Sectors);
         ulong doneSectors;
 
         Assert.That(outputOptical.SetTracks(inputOptical.Tracks),

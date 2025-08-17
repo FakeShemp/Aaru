@@ -87,35 +87,35 @@ public sealed partial class ReFS
 
         VolumeHeader vhdr = Marshal.ByteArrayToStructureLittleEndian<VolumeHeader>(sector);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "VolumeHeader.jump empty? = {0}",
                                    ArrayHelpers.ArrayIsNullOrEmpty(vhdr.jump));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "VolumeHeader.signature = {0}",
                                    StringHandlers.CToString(vhdr.signature));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "VolumeHeader.mustBeZero empty? = {0}",
                                    ArrayHelpers.ArrayIsNullOrEmpty(vhdr.mustBeZero));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "VolumeHeader.identifier = {0}",
                                    StringHandlers.CToString(BitConverter.GetBytes(vhdr.identifier)));
 
-        AaruConsole.Debug(MODULE_NAME, "VolumeHeader.length = {0}",         vhdr.length);
-        AaruConsole.Debug(MODULE_NAME, "VolumeHeader.checksum = 0x{0:X4}",  vhdr.checksum);
-        AaruConsole.Debug(MODULE_NAME, "VolumeHeader.sectors = {0}",        vhdr.sectors);
-        AaruConsole.Debug(MODULE_NAME, "VolumeHeader.bytesPerSector = {0}", vhdr.bytesPerSector);
+        AaruLogging.Debug(MODULE_NAME, "VolumeHeader.length = {0}",         vhdr.length);
+        AaruLogging.Debug(MODULE_NAME, "VolumeHeader.checksum = 0x{0:X4}",  vhdr.checksum);
+        AaruLogging.Debug(MODULE_NAME, "VolumeHeader.sectors = {0}",        vhdr.sectors);
+        AaruLogging.Debug(MODULE_NAME, "VolumeHeader.bytesPerSector = {0}", vhdr.bytesPerSector);
 
-        AaruConsole.Debug(MODULE_NAME, "VolumeHeader.sectorsPerCluster = {0}", vhdr.sectorsPerCluster);
+        AaruLogging.Debug(MODULE_NAME, "VolumeHeader.sectorsPerCluster = {0}", vhdr.sectorsPerCluster);
 
-        AaruConsole.Debug(MODULE_NAME, "VolumeHeader.unknown1 zero? = {0}", vhdr.unknown1 == 0);
-        AaruConsole.Debug(MODULE_NAME, "VolumeHeader.unknown2 zero? = {0}", vhdr.unknown2 == 0);
-        AaruConsole.Debug(MODULE_NAME, "VolumeHeader.unknown3 zero? = {0}", vhdr.unknown3 == 0);
-        AaruConsole.Debug(MODULE_NAME, "VolumeHeader.unknown4 zero? = {0}", vhdr.unknown4 == 0);
+        AaruLogging.Debug(MODULE_NAME, "VolumeHeader.unknown1 zero? = {0}", vhdr.unknown1 == 0);
+        AaruLogging.Debug(MODULE_NAME, "VolumeHeader.unknown2 zero? = {0}", vhdr.unknown2 == 0);
+        AaruLogging.Debug(MODULE_NAME, "VolumeHeader.unknown3 zero? = {0}", vhdr.unknown3 == 0);
+        AaruLogging.Debug(MODULE_NAME, "VolumeHeader.unknown4 zero? = {0}", vhdr.unknown4 == 0);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "VolumeHeader.unknown5 empty? = {0}",
                                    ArrayHelpers.ArrayIsNullOrEmpty(vhdr.unknown5));
 

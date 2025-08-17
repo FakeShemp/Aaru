@@ -47,27 +47,27 @@ public sealed partial class DiskCopy42
         byte[] tags    = new byte[header.TagSize];
         uint   tagsChk = 0;
 
-        AaruConsole.Debug(MODULE_NAME, Localization.Reading_data);
+        AaruLogging.Debug(MODULE_NAME, Localization.Reading_data);
         Stream dataStream = dc42ImageFilter.GetDataForkStream();
         dataStream.Seek(dataOffset, SeekOrigin.Begin);
         dataStream.EnsureRead(data, 0, (int)header.DataSize);
 
-        AaruConsole.Debug(MODULE_NAME, Localization.Calculating_data_checksum);
+        AaruLogging.Debug(MODULE_NAME, Localization.Calculating_data_checksum);
         uint dataChk = CheckSum(data);
-        AaruConsole.Debug(MODULE_NAME, Localization.Calculated_data_checksum_equals_0_X8, dataChk);
-        AaruConsole.Debug(MODULE_NAME, Localization.Stored_data_checksum_equals_0_X8,     header.DataChecksum);
+        AaruLogging.Debug(MODULE_NAME, Localization.Calculated_data_checksum_equals_0_X8, dataChk);
+        AaruLogging.Debug(MODULE_NAME, Localization.Stored_data_checksum_equals_0_X8,     header.DataChecksum);
 
         if(header.TagSize <= 0) return dataChk == header.DataChecksum && tagsChk == header.TagChecksum;
 
-        AaruConsole.Debug(MODULE_NAME, Localization.Reading_tags);
+        AaruLogging.Debug(MODULE_NAME, Localization.Reading_tags);
         Stream tagStream = dc42ImageFilter.GetDataForkStream();
         tagStream.Seek(tagOffset, SeekOrigin.Begin);
         tagStream.EnsureRead(tags, 0, (int)header.TagSize);
 
-        AaruConsole.Debug(MODULE_NAME, Localization.Calculating_tag_checksum);
+        AaruLogging.Debug(MODULE_NAME, Localization.Calculating_tag_checksum);
         tagsChk = CheckSum(tags);
-        AaruConsole.Debug(MODULE_NAME, Localization.Calculated_tag_checksum_equals_0_X8, tagsChk);
-        AaruConsole.Debug(MODULE_NAME, Localization.Stored_tag_checksum_equals_0_X8,     header.TagChecksum);
+        AaruLogging.Debug(MODULE_NAME, Localization.Calculated_tag_checksum_equals_0_X8, tagsChk);
+        AaruLogging.Debug(MODULE_NAME, Localization.Stored_tag_checksum_equals_0_X8,     header.TagChecksum);
 
         return dataChk == header.DataChecksum && tagsChk == header.TagChecksum;
     }

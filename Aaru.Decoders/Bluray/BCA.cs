@@ -87,7 +87,7 @@ public static class BCA
 
         if(BCAResponse.Length != 68)
         {
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        Localization.Found_incorrect_Blu_ray_BCA_size_0_bytes,
                                        BCAResponse.Length);
 

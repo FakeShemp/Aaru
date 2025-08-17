@@ -808,7 +808,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                                                         icon: Icon.Error)
                                                                    .ShowWindowDialogAsync(_view));
 
-            AaruConsole.Error(UI.Error_0_creating_output_image, outputFormat.ErrorMessage);
+            AaruLogging.Error(UI.Error_0_creating_output_image, outputFormat.ErrorMessage);
 
             return;
         }
@@ -857,13 +857,13 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                                                                 icon: Icon.Error)
                                                                            .ShowWindowDialogAsync(_view));
 
-                    AaruConsole.Error(UI.Error_0_setting_metadata_not_continuing, outputFormat.ErrorMessage);
+                    AaruLogging.Error(UI.Error_0_setting_metadata_not_continuing, outputFormat.ErrorMessage);
 
                     return;
                 }
 
                 warning = true;
-                AaruConsole.Error(Localization.Core.Error_0_setting_metadata, outputFormat.ErrorMessage);
+                AaruLogging.Error(Localization.Core.Error_0_setting_metadata, outputFormat.ErrorMessage);
             }
         }
 
@@ -889,7 +889,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                                                             icon: Icon.Error)
                                                                        .ShowWindowDialogAsync(_view));
 
-                AaruConsole.Error(UI.Error_0_sending_tracks_list_to_output_image, outputFormat.ErrorMessage);
+                AaruLogging.Error(UI.Error_0_sending_tracks_list_to_output_image, outputFormat.ErrorMessage);
 
                 return;
             }
@@ -918,9 +918,9 @@ public sealed class ImageConvertViewModel : ViewModelBase
                 warning = true;
 
                 if(errno == ErrorNumber.NoError)
-                    AaruConsole.Error(UI.Error_0_writing_media_tag, outputFormat.ErrorMessage);
+                    AaruLogging.Error(UI.Error_0_writing_media_tag, outputFormat.ErrorMessage);
                 else
-                    AaruConsole.Error(UI.Error_0_reading_media_tag, errno);
+                    AaruLogging.Error(UI.Error_0_reading_media_tag, errno);
             }
             else
             {
@@ -936,7 +936,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                                                                 icon: Icon.Error)
                                                                            .ShowWindowDialogAsync(_view));
 
-                    AaruConsole.Error(UI.Error_0_writing_media_tag_not_continuing, outputFormat.ErrorMessage);
+                    AaruLogging.Error(UI.Error_0_writing_media_tag_not_continuing, outputFormat.ErrorMessage);
                 }
                 else
                 {
@@ -949,7 +949,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                                                                 icon: Icon.Error)
                                                                            .ShowWindowDialogAsync(_view));
 
-                    AaruConsole.Error(UI.Error_0_reading_media_tag_not_continuing, errno);
+                    AaruLogging.Error(UI.Error_0_reading_media_tag_not_continuing, errno);
                 }
 
                 return;
@@ -978,7 +978,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
             {
                 warning = true;
 
-                AaruConsole.Error(UI.Error_0_setting_geometry_image_may_be_incorrect_continuing,
+                AaruLogging.Error(UI.Error_0_setting_geometry_image_may_be_incorrect_continuing,
                                            outputFormat.ErrorMessage);
             }
 
@@ -1038,7 +1038,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                         {
                             warning = true;
 
-                            AaruConsole.Error(UI.Error_0_reading_sector_1_continuing, errno, doneSectors);
+                            AaruLogging.Error(UI.Error_0_reading_sector_1_continuing, errno, doneSectors);
                         }
                         else
                         {
@@ -1052,7 +1052,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                                                                       icon: Icon.Error)
                                                                                  .ShowWindowDialogAsync(_view));
 
-                            AaruConsole.Error(UI.Error_0_reading_sector_1_not_continuing, errno, doneSectors);
+                            AaruLogging.Error(UI.Error_0_reading_sector_1_not_continuing, errno, doneSectors);
 
                             return;
                         }
@@ -1078,7 +1078,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                         {
                             warning = true;
 
-                            AaruConsole.Error(UI.Error_0_reading_sector_1_continuing, errno, doneSectors);
+                            AaruLogging.Error(UI.Error_0_reading_sector_1_continuing, errno, doneSectors);
                         }
                         else
                         {
@@ -1092,7 +1092,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                                                                       icon: Icon.Error)
                                                                                  .ShowWindowDialogAsync(_view));
 
-                            AaruConsole.Error(UI.Error_0_reading_sector_1_not_continuing, errno, doneSectors);
+                            AaruLogging.Error(UI.Error_0_reading_sector_1_not_continuing, errno, doneSectors);
 
                             return;
                         }
@@ -1105,7 +1105,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                     {
                         warning = true;
 
-                        AaruConsole.Error(UI.Error_0_writing_sector_1_continuing,
+                        AaruLogging.Error(UI.Error_0_writing_sector_1_continuing,
                                                    outputFormat.ErrorMessage,
                                                    doneSectors);
                     }
@@ -1122,7 +1122,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                                                                   icon: Icon.Error)
                                                                              .ShowWindowDialogAsync(_view));
 
-                        AaruConsole.Error(UI.Error_0_writing_sector_1_not_continuing,
+                        AaruLogging.Error(UI.Error_0_writing_sector_1_not_continuing,
                                                    outputFormat.ErrorMessage,
                                                    doneSectors);
 
@@ -1286,7 +1286,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                             {
                                 warning = true;
 
-                                AaruConsole.Error(UI.Error_0_reading_sector_1_continuing, errno, doneSectors);
+                                AaruLogging.Error(UI.Error_0_reading_sector_1_continuing, errno, doneSectors);
                             }
                             else
                             {
@@ -1300,7 +1300,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                                                               icon: Icon.Error)
                                                                          .ShowWindowDialogAsync(_view));
 
-                                AaruConsole.Error(UI.Error_0_reading_sector_1_not_continuing,
+                                AaruLogging.Error(UI.Error_0_reading_sector_1_not_continuing,
                                                            errno,
                                                            doneSectors);
 
@@ -1355,7 +1355,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                             {
                                 warning = true;
 
-                                AaruConsole.Error(UI.Error_0_reading_sector_1_continuing, errno, doneSectors);
+                                AaruLogging.Error(UI.Error_0_reading_sector_1_continuing, errno, doneSectors);
                             }
                             else
                             {
@@ -1369,7 +1369,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                                                               icon: Icon.Error)
                                                                          .ShowWindowDialogAsync(_view));
 
-                                AaruConsole.Error(UI.Error_0_reading_sector_1_not_continuing,
+                                AaruLogging.Error(UI.Error_0_reading_sector_1_not_continuing,
                                                            errno,
                                                            doneSectors);
 
@@ -1384,7 +1384,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                         {
                             warning = true;
 
-                            AaruConsole.Error(UI.Error_0_writing_sector_1_continuing,
+                            AaruLogging.Error(UI.Error_0_writing_sector_1_continuing,
                                                        outputFormat.ErrorMessage,
                                                        doneSectors);
                         }
@@ -1401,7 +1401,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                                                                       icon: Icon.Error)
                                                                                  .ShowWindowDialogAsync(_view));
 
-                            AaruConsole.Error(UI.Error_0_writing_sector_1_not_continuing,
+                            AaruLogging.Error(UI.Error_0_writing_sector_1_not_continuing,
                                                        outputFormat.ErrorMessage,
                                                        doneSectors);
 
@@ -1505,7 +1505,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                             {
                                 warning = true;
 
-                                AaruConsole.Error(UI.Error_0_reading_sector_1_continuing, errno, doneSectors);
+                                AaruLogging.Error(UI.Error_0_reading_sector_1_continuing, errno, doneSectors);
                             }
                             else
                             {
@@ -1547,7 +1547,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                             {
                                 warning = true;
 
-                                AaruConsole.Error(UI.Error_0_reading_sector_1_continuing, errno, doneSectors);
+                                AaruLogging.Error(UI.Error_0_reading_sector_1_continuing, errno, doneSectors);
                             }
                             else
                             {
@@ -1572,7 +1572,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                         {
                             warning = true;
 
-                            AaruConsole.Error(UI.Error_0_writing_sector_1_continuing,
+                            AaruLogging.Error(UI.Error_0_writing_sector_1_continuing,
                                                        outputFormat.ErrorMessage,
                                                        doneSectors);
                         }
@@ -1658,7 +1658,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                 {
                                     warning = true;
 
-                                    AaruConsole.Error(UI.Error_0_reading_media_tag, errno);
+                                    AaruLogging.Error(UI.Error_0_reading_media_tag, errno);
                                 }
                                 else
                                 {
@@ -1683,7 +1683,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                 {
                                     warning = true;
 
-                                    AaruConsole.Error(UI.Error_0_writing_tag_continuing,
+                                    AaruLogging.Error(UI.Error_0_writing_tag_continuing,
                                                                outputFormat.ErrorMessage);
                                 }
                                 else
@@ -1755,7 +1755,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                             {
                                 warning = true;
 
-                                AaruConsole.Error(UI.Error_0_reading_tag_for_sector_1_continuing,
+                                AaruLogging.Error(UI.Error_0_reading_tag_for_sector_1_continuing,
                                                            errno,
                                                            doneSectors);
                             }
@@ -1781,7 +1781,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                             {
                                 warning = true;
 
-                                AaruConsole.Error(UI.Error_0_writing_tag_for_sector_1_continuing,
+                                AaruLogging.Error(UI.Error_0_writing_tag_for_sector_1_continuing,
                                                            outputFormat.ErrorMessage,
                                                            doneSectors);
                             }
@@ -1827,7 +1827,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
             ret = outputFormat.SetDumpHardware(_dumpHardware);
 
             if(!ret)
-                AaruConsole.WriteLine(UI.Error_0_writing_dump_hardware_list_to_output_image, outputFormat.ErrorMessage);
+                AaruLogging.WriteLine(UI.Error_0_writing_dump_hardware_list_to_output_image, outputFormat.ErrorMessage);
         }
 
         ret = false;
@@ -1842,7 +1842,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
 
             outputFormat.SetMetadata(_aaruMetadata);
 
-            if(!ret) AaruConsole.WriteLine(UI.Error_0_writing_Aaru_Metadata_to_output_image, outputFormat.ErrorMessage);
+            if(!ret) AaruLogging.WriteLine(UI.Error_0_writing_Aaru_Metadata_to_output_image, outputFormat.ErrorMessage);
         }
 
         await Dispatcher.UIThread.InvokeAsync(() =>

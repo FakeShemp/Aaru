@@ -61,21 +61,21 @@ public sealed partial class Nhdr0
 
         if(!_nhdhdr.szFileID.SequenceEqual(_signature)) return false;
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "nhdhdr.szFileID = \"{0}\"",
                                    StringHandlers.CToString(_nhdhdr.szFileID, shiftjis));
 
-        AaruConsole.Debug(MODULE_NAME, "nhdhdr.reserved1 = {0}", _nhdhdr.reserved1);
+        AaruLogging.Debug(MODULE_NAME, "nhdhdr.reserved1 = {0}", _nhdhdr.reserved1);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "nhdhdr.szComment = \"{0}\"",
                                    StringHandlers.CToString(_nhdhdr.szComment, shiftjis));
 
-        AaruConsole.Debug(MODULE_NAME, "nhdhdr.dwHeadSize = {0}", _nhdhdr.dwHeadSize);
-        AaruConsole.Debug(MODULE_NAME, "nhdhdr.dwCylinder = {0}", _nhdhdr.dwCylinder);
-        AaruConsole.Debug(MODULE_NAME, "nhdhdr.wHead = {0}",      _nhdhdr.wHead);
-        AaruConsole.Debug(MODULE_NAME, "nhdhdr.wSect = {0}",      _nhdhdr.wSect);
-        AaruConsole.Debug(MODULE_NAME, "nhdhdr.wSectLen = {0}",   _nhdhdr.wSectLen);
+        AaruLogging.Debug(MODULE_NAME, "nhdhdr.dwHeadSize = {0}", _nhdhdr.dwHeadSize);
+        AaruLogging.Debug(MODULE_NAME, "nhdhdr.dwCylinder = {0}", _nhdhdr.dwCylinder);
+        AaruLogging.Debug(MODULE_NAME, "nhdhdr.wHead = {0}",      _nhdhdr.wHead);
+        AaruLogging.Debug(MODULE_NAME, "nhdhdr.wSect = {0}",      _nhdhdr.wSect);
+        AaruLogging.Debug(MODULE_NAME, "nhdhdr.wSectLen = {0}",   _nhdhdr.wSectLen);
 
         return true;
     }

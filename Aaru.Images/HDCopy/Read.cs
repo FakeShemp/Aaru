@@ -57,7 +57,7 @@ public sealed partial class HdCopy
 
         if(!TryReadHeader(stream, ref fheader, ref currentOffset)) return ErrorNumber.InvalidArgument;
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Detected_HD_Copy_image_with_0_tracks_and_1_sectors_per_track,
                                    fheader.lastCylinder + 1,
                                    fheader.sectorsPerTrack);
@@ -96,7 +96,7 @@ public sealed partial class HdCopy
                 // assume block sizes are positive
                 if(blkLength < 0) return ErrorNumber.InvalidArgument;
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            Localization.Track_0_offset_1_size_equals_2,
                                            i,
                                            currentOffset,

@@ -59,7 +59,7 @@ public sealed partial class LisaFS
             // However with some effort the code may be modified to ignore them.
             if(_device.Info.ReadableSectorTags?.Contains(SectorTagType.AppleSectorTag) != true)
             {
-                AaruConsole.Debug(MODULE_NAME, Localization.Underlying_device_does_not_support_Lisa_tags);
+                AaruLogging.Debug(MODULE_NAME, Localization.Underlying_device_does_not_support_Lisa_tags);
 
                 return ErrorNumber.InOutError;
             }
@@ -67,7 +67,7 @@ public sealed partial class LisaFS
             // Minimal LisaOS disk is 3.5" single sided double density, 800 sectors
             if(_device.Info.Sectors < 800)
             {
-                AaruConsole.Debug(MODULE_NAME, Localization.Device_is_too_small);
+                AaruLogging.Debug(MODULE_NAME, Localization.Device_is_too_small);
 
                 return ErrorNumber.InOutError;
             }
@@ -84,7 +84,7 @@ public sealed partial class LisaFS
 
                 DecodeTag(tag, out LisaTag.PriamTag searchTag);
 
-                AaruConsole.Debug(MODULE_NAME, Localization.Sector_0_file_ID_1, i, searchTag.FileId);
+                AaruLogging.Debug(MODULE_NAME, Localization.Sector_0_file_ID_1, i, searchTag.FileId);
 
                 if(_volumePrefix == _device.Info.Sectors && searchTag.FileId == FILEID_LOADER_SIGNED)
                     _volumePrefix = i - 1;
@@ -188,7 +188,7 @@ public sealed partial class LisaFS
                    _mddf.blocksize        < _device.Info.SectorSize                             ||
                    _mddf.datasize         != _device.Info.SectorSize)
                 {
-                    AaruConsole.Debug(MODULE_NAME, Localization.Incorrect_MDDF_found);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Incorrect_MDDF_found);
 
                     return ErrorNumber.InvalidArgument;
                 }
@@ -197,19 +197,19 @@ public sealed partial class LisaFS
                 switch(_mddf.fsversion)
                 {
                     case LISA_V1:
-                        AaruConsole.Debug(MODULE_NAME, Localization.Mounting_LisaFS_v1);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Mounting_LisaFS_v1);
 
                         break;
                     case LISA_V2:
-                        AaruConsole.Debug(MODULE_NAME, Localization.Mounting_LisaFS_v2);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Mounting_LisaFS_v2);
 
                         break;
                     case LISA_V3:
-                        AaruConsole.Debug(MODULE_NAME, Localization.Mounting_LisaFS_v3);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Mounting_LisaFS_v3);
 
                         break;
                     default:
-                        AaruConsole.Error(Localization.Cannot_mount_LisaFS_version_0,
+                        AaruLogging.Error(Localization.Cannot_mount_LisaFS_version_0,
                                                    _mddf.fsversion.ToString());
 
                         return ErrorNumber.NotSupported;
@@ -236,7 +236,7 @@ public sealed partial class LisaFS
 
                 if(error != ErrorNumber.NoError)
                 {
-                    AaruConsole.Error(Localization.Error_0_reading_S_Records_file, error);
+                    AaruLogging.Error(Localization.Error_0_reading_S_Records_file, error);
 
                     return error;
                 }
@@ -253,7 +253,7 @@ public sealed partial class LisaFS
 
                 if(error != ErrorNumber.NoError)
                 {
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                Localization.Cannot_read_Catalog_File_error_0,
                                                error.ToString());
 
@@ -269,7 +269,7 @@ public sealed partial class LisaFS
 
                     if(error != ErrorNumber.NoError)
                     {
-                        AaruConsole.Debug(MODULE_NAME, Localization.Unable_to_read_boot_blocks);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Unable_to_read_boot_blocks);
                         _mounted = false;
 
                         return error;
@@ -279,7 +279,7 @@ public sealed partial class LisaFS
 
                     if(error != ErrorNumber.NoError)
                     {
-                        AaruConsole.Debug(MODULE_NAME, Localization.Unable_to_read_boot_loader);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Unable_to_read_boot_loader);
                         _mounted = false;
 
                         return error;
@@ -289,7 +289,7 @@ public sealed partial class LisaFS
 
                     if(error != ErrorNumber.NoError)
                     {
-                        AaruConsole.Debug(MODULE_NAME, Localization.Unable_to_read_MDDF);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Unable_to_read_MDDF);
                         _mounted = false;
 
                         return error;
@@ -299,7 +299,7 @@ public sealed partial class LisaFS
 
                     if(error != ErrorNumber.NoError)
                     {
-                        AaruConsole.Debug(MODULE_NAME, Localization.Unable_to_read_volume_bitmap);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Unable_to_read_volume_bitmap);
                         _mounted = false;
 
                         return error;
@@ -309,7 +309,7 @@ public sealed partial class LisaFS
 
                     if(error != ErrorNumber.NoError)
                     {
-                        AaruConsole.Debug(MODULE_NAME, Localization.Unable_to_read_S_Records_file);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Unable_to_read_S_Records_file);
                         _mounted = false;
 
                         return error;
@@ -336,13 +336,13 @@ public sealed partial class LisaFS
                 return ErrorNumber.NoError;
             }
 
-            AaruConsole.Debug(MODULE_NAME, Localization.Not_a_Lisa_filesystem);
+            AaruLogging.Debug(MODULE_NAME, Localization.Not_a_Lisa_filesystem);
 
             return ErrorNumber.NotSupported;
         }
         catch(Exception ex)
         {
-            AaruConsole.Exception(ex);
+            AaruLogging.Exception(ex);
 
             return ErrorNumber.InOutError;
         }

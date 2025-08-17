@@ -54,8 +54,8 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
 
         Statistics.AddCommand("formats");
 
-        AaruConsole.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
-        AaruConsole.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
         PluginRegister plugins = PluginRegister.Singleton;
 
@@ -93,7 +93,7 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
 
         AnsiConsole.Write(table);
 
-        AaruConsole.WriteLine();
+        AaruLogging.WriteLine();
 
         table = new Table
         {
@@ -133,7 +133,7 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
 
         AnsiConsole.Write(table);
 
-        AaruConsole.WriteLine();
+        AaruLogging.WriteLine();
 
         table = new Table
         {
@@ -213,7 +213,7 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
 
         AnsiConsole.Write(table);
 
-        AaruConsole.WriteLine();
+        AaruLogging.WriteLine();
 
         table = new Table
         {
@@ -251,7 +251,7 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
 
         AnsiConsole.Write(table);
 
-        AaruConsole.WriteLine();
+        AaruLogging.WriteLine();
 
         table = new Table
         {
@@ -289,7 +289,7 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
 
         AnsiConsole.Write(table);
 
-        AaruConsole.WriteLine();
+        AaruLogging.WriteLine();
 
         table = new Table
         {

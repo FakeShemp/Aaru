@@ -41,18 +41,18 @@ static class ArchiveCorp
         while(true)
         {
             Console.Clear();
-            AaruConsole.WriteLine(Localization.Device_0, devPath);
-            AaruConsole.WriteLine(Localization.Send_an_Archive_vendor_command_to_the_device);
-            AaruConsole.WriteLine(Localization.Send_REQUEST_BLOCK_ADDRESS_command);
-            AaruConsole.WriteLine(Localization.Send_SEEK_BLOCK_command);
-            AaruConsole.WriteLine(Localization.Return_to_SCSI_commands_menu);
-            AaruConsole.Write(Localization.Choose);
+            AaruLogging.WriteLine(Localization.Device_0, devPath);
+            AaruLogging.WriteLine(Localization.Send_an_Archive_vendor_command_to_the_device);
+            AaruLogging.WriteLine(Localization.Send_REQUEST_BLOCK_ADDRESS_command);
+            AaruLogging.WriteLine(Localization.Send_SEEK_BLOCK_command);
+            AaruLogging.WriteLine(Localization.Return_to_SCSI_commands_menu);
+            AaruLogging.Write(Localization.Choose);
 
             string strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out int item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -61,7 +61,7 @@ static class ArchiveCorp
             switch(item)
             {
                 case 0:
-                    AaruConsole.WriteLine(Localization.Returning_to_SCSI_commands_menu);
+                    AaruLogging.WriteLine(Localization.Returning_to_SCSI_commands_menu);
 
                     return;
                 case 1:
@@ -73,7 +73,7 @@ static class ArchiveCorp
 
                     continue;
                 default:
-                    AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                    AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                     Console.ReadKey();
 
                     continue;
@@ -92,23 +92,23 @@ static class ArchiveCorp
         while(true)
         {
             Console.Clear();
-            AaruConsole.WriteLine(Localization.Device_0, devPath);
+            AaruLogging.WriteLine(Localization.Device_0, devPath);
 
-            AaruConsole.WriteLine(Localization
+            AaruLogging.WriteLine(Localization
                                      .ArchiveCorp_RequestBlockAddress_Parameters_for_REQUEST_BLOCK_ADDRESS_command);
 
-            AaruConsole.WriteLine(Localization.LBA_0, lba);
-            AaruConsole.WriteLine();
-            AaruConsole.WriteLine(Localization.Choose_what_to_do);
-            AaruConsole.WriteLine(Localization._1_Change_parameters);
-            AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
-            AaruConsole.WriteLine(Localization.ArchiveCorp_RequestBlockAddress_Return_to_Archive_vendor_commands_menu);
+            AaruLogging.WriteLine(Localization.LBA_0, lba);
+            AaruLogging.WriteLine();
+            AaruLogging.WriteLine(Localization.Choose_what_to_do);
+            AaruLogging.WriteLine(Localization._1_Change_parameters);
+            AaruLogging.WriteLine(Localization._2_Send_command_with_these_parameters);
+            AaruLogging.WriteLine(Localization.ArchiveCorp_RequestBlockAddress_Return_to_Archive_vendor_commands_menu);
 
             strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -117,17 +117,17 @@ static class ArchiveCorp
             switch(item)
             {
                 case 0:
-                    AaruConsole.WriteLine(Localization
+                    AaruLogging.WriteLine(Localization
                                              .ArchiveCorp_RequestBlockAddress_Returning_to_Archive_vendor_commands_menu);
 
                     return;
                 case 1:
-                    AaruConsole.Write(Localization.LBA_Q);
+                    AaruLogging.Write(Localization.LBA_Q);
                     strDev = Console.ReadLine();
 
                     if(!uint.TryParse(strDev, out lba))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         lba = 0;
                         Console.ReadKey();
                     }
@@ -149,34 +149,34 @@ static class ArchiveCorp
                                                out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.ArchiveCorp_RequestBlockAddress_Sending_REQUEST_BLOCK_ADDRESS_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0, sense);
-        AaruConsole.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
-        AaruConsole.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.ArchiveCorp_RequestBlockAddress_Sending_REQUEST_BLOCK_ADDRESS_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0, sense);
+        AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization.Print_buffer);
-        AaruConsole.WriteLine(Localization._2_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._3_Decode_sense_buffer);
-        AaruConsole.WriteLine(Localization._4_Send_command_again);
-        AaruConsole.WriteLine(Localization._5_Change_parameters);
-        AaruConsole.WriteLine(Localization.ArchiveCorp_RequestBlockAddress_Return_to_Archive_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization.Print_buffer);
+        AaruLogging.WriteLine(Localization._2_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._3_Decode_sense_buffer);
+        AaruLogging.WriteLine(Localization._4_Send_command_again);
+        AaruLogging.WriteLine(Localization._5_Change_parameters);
+        AaruLogging.WriteLine(Localization.ArchiveCorp_RequestBlockAddress_Return_to_Archive_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -186,45 +186,45 @@ static class ArchiveCorp
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization
+                AaruLogging.WriteLine(Localization
                                          .ArchiveCorp_RequestBlockAddress_Returning_to_Archive_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.ArchiveCorp_RequestBlockAddress_REQUEST_BLOCK_ADDRESS_response);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.ArchiveCorp_RequestBlockAddress_REQUEST_BLOCK_ADDRESS_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.ArchiveCorp_RequestBlockAddress_REQUEST_BLOCK_ADDRESS_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.ArchiveCorp_RequestBlockAddress_REQUEST_BLOCK_ADDRESS_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.ArchiveCorp_RequestBlockAddress_REQUEST_BLOCK_ADDRESS_decoded_sense);
-                AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.ArchiveCorp_RequestBlockAddress_REQUEST_BLOCK_ADDRESS_decoded_sense);
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 4:
@@ -232,7 +232,7 @@ static class ArchiveCorp
             case 5:
                 goto parameters;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 
@@ -252,21 +252,21 @@ static class ArchiveCorp
         while(true)
         {
             Console.Clear();
-            AaruConsole.WriteLine(Localization.Device_0, devPath);
-            AaruConsole.WriteLine(Localization.Parameters_for_SEEK_BLOCK_command);
-            AaruConsole.WriteLine(Localization.Immediate_0, immediate);
-            AaruConsole.WriteLine(Localization.LBA_0,       lba);
-            AaruConsole.WriteLine();
-            AaruConsole.WriteLine(Localization.Choose_what_to_do);
-            AaruConsole.WriteLine(Localization._1_Change_parameters);
-            AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
-            AaruConsole.WriteLine(Localization.ArchiveCorp_RequestBlockAddress_Return_to_Archive_vendor_commands_menu);
+            AaruLogging.WriteLine(Localization.Device_0, devPath);
+            AaruLogging.WriteLine(Localization.Parameters_for_SEEK_BLOCK_command);
+            AaruLogging.WriteLine(Localization.Immediate_0, immediate);
+            AaruLogging.WriteLine(Localization.LBA_0,       lba);
+            AaruLogging.WriteLine();
+            AaruLogging.WriteLine(Localization.Choose_what_to_do);
+            AaruLogging.WriteLine(Localization._1_Change_parameters);
+            AaruLogging.WriteLine(Localization._2_Send_command_with_these_parameters);
+            AaruLogging.WriteLine(Localization.ArchiveCorp_RequestBlockAddress_Return_to_Archive_vendor_commands_menu);
 
             strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -275,29 +275,29 @@ static class ArchiveCorp
             switch(item)
             {
                 case 0:
-                    AaruConsole.WriteLine(Localization
+                    AaruLogging.WriteLine(Localization
                                              .ArchiveCorp_RequestBlockAddress_Returning_to_Archive_vendor_commands_menu);
 
                     return;
                 case 1:
-                    AaruConsole.Write(Localization.Immediate_Q);
+                    AaruLogging.Write(Localization.Immediate_Q);
                     strDev = Console.ReadLine();
 
                     if(!bool.TryParse(strDev, out immediate))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_boolean_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_boolean_Press_any_key_to_continue);
                         immediate = false;
                         Console.ReadKey();
 
                         continue;
                     }
 
-                    AaruConsole.Write(Localization.LBA_Q);
+                    AaruLogging.Write(Localization.LBA_Q);
                     strDev = Console.ReadLine();
 
                     if(!uint.TryParse(strDev, out lba))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         lba = 0;
                         Console.ReadKey();
                     }
@@ -314,32 +314,32 @@ static class ArchiveCorp
         bool sense = dev.ArchiveCorpSeekBlock(out byte[] senseBuffer, immediate, lba, dev.Timeout, out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.Sending_SEEK_BLOCK_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0,        sense);
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Sending_SEEK_BLOCK_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0,        sense);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine(Localization.SEEK_BLOCK_decoded_sense);
-        AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization._1_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._2_Send_command_again);
-        AaruConsole.WriteLine(Localization._3_Change_parameters);
-        AaruConsole.WriteLine(Localization.ArchiveCorp_RequestBlockAddress_Return_to_Archive_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine(Localization.SEEK_BLOCK_decoded_sense);
+        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization._1_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._2_Send_command_again);
+        AaruLogging.WriteLine(Localization._3_Change_parameters);
+        AaruLogging.WriteLine(Localization.ArchiveCorp_RequestBlockAddress_Return_to_Archive_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -349,21 +349,21 @@ static class ArchiveCorp
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization
+                AaruLogging.WriteLine(Localization
                                          .ArchiveCorp_RequestBlockAddress_Returning_to_Archive_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.SEEK_BLOCK_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.SEEK_BLOCK_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
@@ -371,7 +371,7 @@ static class ArchiveCorp
             case 3:
                 goto parameters;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 

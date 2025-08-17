@@ -54,16 +54,16 @@ public sealed partial class MaxiDisk
 
         Header tmpHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(buffer);
 
-        AaruConsole.Debug(MODULE_NAME, "tmp_header.unknown = {0}",        tmpHeader.unknown);
-        AaruConsole.Debug(MODULE_NAME, "tmp_header.diskType = {0}",       tmpHeader.diskType);
-        AaruConsole.Debug(MODULE_NAME, "tmp_header.heads = {0}",          tmpHeader.heads);
-        AaruConsole.Debug(MODULE_NAME, "tmp_header.cylinders = {0}",      tmpHeader.cylinders);
-        AaruConsole.Debug(MODULE_NAME, "tmp_header.bytesPerSector = {0}", tmpHeader.bytesPerSector);
+        AaruLogging.Debug(MODULE_NAME, "tmp_header.unknown = {0}",        tmpHeader.unknown);
+        AaruLogging.Debug(MODULE_NAME, "tmp_header.diskType = {0}",       tmpHeader.diskType);
+        AaruLogging.Debug(MODULE_NAME, "tmp_header.heads = {0}",          tmpHeader.heads);
+        AaruLogging.Debug(MODULE_NAME, "tmp_header.cylinders = {0}",      tmpHeader.cylinders);
+        AaruLogging.Debug(MODULE_NAME, "tmp_header.bytesPerSector = {0}", tmpHeader.bytesPerSector);
 
-        AaruConsole.Debug(MODULE_NAME, "tmp_header.sectorsPerTrack = {0}", tmpHeader.sectorsPerTrack);
+        AaruLogging.Debug(MODULE_NAME, "tmp_header.sectorsPerTrack = {0}", tmpHeader.sectorsPerTrack);
 
-        AaruConsole.Debug(MODULE_NAME, "tmp_header.unknown2 = {0}", tmpHeader.unknown2);
-        AaruConsole.Debug(MODULE_NAME, "tmp_header.unknown3 = {0}", tmpHeader.unknown3);
+        AaruLogging.Debug(MODULE_NAME, "tmp_header.unknown2 = {0}", tmpHeader.unknown2);
+        AaruLogging.Debug(MODULE_NAME, "tmp_header.unknown3 = {0}", tmpHeader.unknown3);
 
         // This is hardcoded
         // But its possible values are unknown...

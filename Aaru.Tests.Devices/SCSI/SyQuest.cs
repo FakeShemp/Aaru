@@ -41,21 +41,21 @@ static class SyQuest
         while(true)
         {
             Console.Clear();
-            AaruConsole.WriteLine(Localization.Device_0, devPath);
-            AaruConsole.WriteLine(Localization.Send_a_SyQuest_vendor_command_to_the_device);
-            AaruConsole.WriteLine(Localization._1_Send_READ_6_command);
-            AaruConsole.WriteLine(Localization._2_Send_READ_10_command);
-            AaruConsole.WriteLine(Localization._3_Send_READ_LONG_6_command);
-            AaruConsole.WriteLine(Localization._4_Send_READ_LONG_10_command);
-            AaruConsole.WriteLine(Localization._5_Send_READ_RESET_USAGE_COUNTER_command);
-            AaruConsole.WriteLine(Localization.Return_to_SCSI_commands_menu);
-            AaruConsole.Write(Localization.Choose);
+            AaruLogging.WriteLine(Localization.Device_0, devPath);
+            AaruLogging.WriteLine(Localization.Send_a_SyQuest_vendor_command_to_the_device);
+            AaruLogging.WriteLine(Localization._1_Send_READ_6_command);
+            AaruLogging.WriteLine(Localization._2_Send_READ_10_command);
+            AaruLogging.WriteLine(Localization._3_Send_READ_LONG_6_command);
+            AaruLogging.WriteLine(Localization._4_Send_READ_LONG_10_command);
+            AaruLogging.WriteLine(Localization._5_Send_READ_RESET_USAGE_COUNTER_command);
+            AaruLogging.WriteLine(Localization.Return_to_SCSI_commands_menu);
+            AaruLogging.Write(Localization.Choose);
 
             string strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out int item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -64,7 +64,7 @@ static class SyQuest
             switch(item)
             {
                 case 0:
-                    AaruConsole.WriteLine(Localization.Returning_to_SCSI_commands_menu);
+                    AaruLogging.WriteLine(Localization.Returning_to_SCSI_commands_menu);
 
                     return;
                 case 1:
@@ -88,7 +88,7 @@ static class SyQuest
 
                     continue;
                 default:
-                    AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                    AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                     Console.ReadKey();
 
                     continue;
@@ -110,27 +110,27 @@ static class SyQuest
         while(true)
         {
             Console.Clear();
-            AaruConsole.WriteLine(Localization.Device_0, devPath);
+            AaruLogging.WriteLine(Localization.Device_0, devPath);
 
-            AaruConsole.WriteLine(readlong
+            AaruLogging.WriteLine(readlong
                                       ? Localization.Parameters_for_READ_LONG_6_command
                                       : Localization.Parameters_for_READ_6_command);
 
-            AaruConsole.WriteLine(Localization.LBA_0,                       lba);
-            AaruConsole.WriteLine(Localization._0_blocks_to_read,           count == 0 ? 256 : count);
-            AaruConsole.WriteLine(Localization._0_bytes_expected_per_block, blockSize);
-            AaruConsole.WriteLine(Localization.Inhibit_DMA_0,               noDma);
-            AaruConsole.WriteLine();
-            AaruConsole.WriteLine(Localization.Choose_what_to_do);
-            AaruConsole.WriteLine(Localization._1_Change_parameters);
-            AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
-            AaruConsole.WriteLine(Localization.Return_to_SyQuest_vendor_commands_menu);
+            AaruLogging.WriteLine(Localization.LBA_0,                       lba);
+            AaruLogging.WriteLine(Localization._0_blocks_to_read,           count == 0 ? 256 : count);
+            AaruLogging.WriteLine(Localization._0_bytes_expected_per_block, blockSize);
+            AaruLogging.WriteLine(Localization.Inhibit_DMA_0,               noDma);
+            AaruLogging.WriteLine();
+            AaruLogging.WriteLine(Localization.Choose_what_to_do);
+            AaruLogging.WriteLine(Localization._1_Change_parameters);
+            AaruLogging.WriteLine(Localization._2_Send_command_with_these_parameters);
+            AaruLogging.WriteLine(Localization.Return_to_SyQuest_vendor_commands_menu);
 
             strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -139,16 +139,16 @@ static class SyQuest
             switch(item)
             {
                 case 0:
-                    AaruConsole.WriteLine(Localization.Returning_to_SyQuest_vendor_commands_menu);
+                    AaruLogging.WriteLine(Localization.Returning_to_SyQuest_vendor_commands_menu);
 
                     return;
                 case 1:
-                    AaruConsole.Write(Localization.LBA_Q);
+                    AaruLogging.Write(Localization.LBA_Q);
                     strDev = Console.ReadLine();
 
                     if(!uint.TryParse(strDev, out lba))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         lba = 0;
                         Console.ReadKey();
 
@@ -157,40 +157,40 @@ static class SyQuest
 
                     if(lba > 0x1FFFFF)
                     {
-                        AaruConsole.WriteLine(Localization.Max_LBA_is_0_setting_to_0, 0x1FFFFF);
+                        AaruLogging.WriteLine(Localization.Max_LBA_is_0_setting_to_0, 0x1FFFFF);
                         lba = 0x1FFFFF;
                     }
 
-                    AaruConsole.Write(Localization.Blocks_to_read_zero_for_256_blocks);
+                    AaruLogging.Write(Localization.Blocks_to_read_zero_for_256_blocks);
                     strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out count))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         count = 1;
                         Console.ReadKey();
 
                         continue;
                     }
 
-                    AaruConsole.Write(Localization.How_many_bytes_to_expect_per_block_Q);
+                    AaruLogging.Write(Localization.How_many_bytes_to_expect_per_block_Q);
                     strDev = Console.ReadLine();
 
                     if(!uint.TryParse(strDev, out blockSize))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         blockSize = 512;
                         Console.ReadKey();
 
                         continue;
                     }
 
-                    AaruConsole.Write(Localization.Inhibit_DMA_Q);
+                    AaruLogging.Write(Localization.Inhibit_DMA_Q);
                     strDev = Console.ReadLine();
 
                     if(!bool.TryParse(strDev, out noDma))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_boolean_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_boolean_Press_any_key_to_continue);
                         noDma = false;
                         Console.ReadKey();
                     }
@@ -215,38 +215,38 @@ static class SyQuest
                                       out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
 
-        AaruConsole.WriteLine(readlong
+        AaruLogging.WriteLine(readlong
                                   ? Localization.Sending_READ_LONG_6_to_the_device
                                   : Localization.Sending_READ_6_to_the_device);
 
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0, sense);
-        AaruConsole.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
-        AaruConsole.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0, sense);
+        AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization.Print_buffer);
-        AaruConsole.WriteLine(Localization._2_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._3_Decode_sense_buffer);
-        AaruConsole.WriteLine(Localization._4_Send_command_again);
-        AaruConsole.WriteLine(Localization._5_Change_parameters);
-        AaruConsole.WriteLine(Localization.Return_to_SyQuest_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization.Print_buffer);
+        AaruLogging.WriteLine(Localization._2_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._3_Decode_sense_buffer);
+        AaruLogging.WriteLine(Localization._4_Send_command_again);
+        AaruLogging.WriteLine(Localization._5_Change_parameters);
+        AaruLogging.WriteLine(Localization.Return_to_SyQuest_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -256,48 +256,48 @@ static class SyQuest
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_SyQuest_vendor_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_SyQuest_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(readlong ? Localization.READ_LONG_6_response : Localization.READ_6_response);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(readlong ? Localization.READ_LONG_6_response : Localization.READ_6_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(readlong ? Localization.READ_LONG_6_sense : Localization.READ_6_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(readlong ? Localization.READ_LONG_6_sense : Localization.READ_6_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
-                AaruConsole.WriteLine(readlong
+                AaruLogging.WriteLine(readlong
                                           ? Localization.READ_LONG_6_decoded_sense
                                           : Localization.READ_6_decoded_sense);
 
-                AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 4:
@@ -305,7 +305,7 @@ static class SyQuest
             case 5:
                 goto parameters;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 
@@ -327,27 +327,27 @@ static class SyQuest
         while(true)
         {
             Console.Clear();
-            AaruConsole.WriteLine(Localization.Device_0, devPath);
+            AaruLogging.WriteLine(Localization.Device_0, devPath);
 
-            AaruConsole.WriteLine(readlong
+            AaruLogging.WriteLine(readlong
                                       ? Localization.Parameters_for_READ_LONG_10_command
                                       : Localization.Parameters_for_READ_10_command);
 
-            AaruConsole.WriteLine(Localization.LBA_0,                       lba);
-            AaruConsole.WriteLine(Localization._0_blocks_to_read,           count == 0 ? 256 : count);
-            AaruConsole.WriteLine(Localization._0_bytes_expected_per_block, blockSize);
-            AaruConsole.WriteLine(Localization.Inhibit_DMA_0,               noDma);
-            AaruConsole.WriteLine();
-            AaruConsole.WriteLine(Localization.Choose_what_to_do);
-            AaruConsole.WriteLine(Localization._1_Change_parameters);
-            AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
-            AaruConsole.WriteLine(Localization.Return_to_SyQuest_vendor_commands_menu);
+            AaruLogging.WriteLine(Localization.LBA_0,                       lba);
+            AaruLogging.WriteLine(Localization._0_blocks_to_read,           count == 0 ? 256 : count);
+            AaruLogging.WriteLine(Localization._0_bytes_expected_per_block, blockSize);
+            AaruLogging.WriteLine(Localization.Inhibit_DMA_0,               noDma);
+            AaruLogging.WriteLine();
+            AaruLogging.WriteLine(Localization.Choose_what_to_do);
+            AaruLogging.WriteLine(Localization._1_Change_parameters);
+            AaruLogging.WriteLine(Localization._2_Send_command_with_these_parameters);
+            AaruLogging.WriteLine(Localization.Return_to_SyQuest_vendor_commands_menu);
 
             strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -356,52 +356,52 @@ static class SyQuest
             switch(item)
             {
                 case 0:
-                    AaruConsole.WriteLine(Localization.Returning_to_SyQuest_vendor_commands_menu);
+                    AaruLogging.WriteLine(Localization.Returning_to_SyQuest_vendor_commands_menu);
 
                     return;
                 case 1:
-                    AaruConsole.Write(Localization.LBA_Q);
+                    AaruLogging.Write(Localization.LBA_Q);
                     strDev = Console.ReadLine();
 
                     if(!uint.TryParse(strDev, out lba))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         lba = 0;
                         Console.ReadKey();
 
                         continue;
                     }
 
-                    AaruConsole.Write(Localization.Blocks_to_read_zero_for_256_blocks);
+                    AaruLogging.Write(Localization.Blocks_to_read_zero_for_256_blocks);
                     strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out count))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         count = 1;
                         Console.ReadKey();
 
                         continue;
                     }
 
-                    AaruConsole.Write(Localization.How_many_bytes_to_expect_per_block_Q);
+                    AaruLogging.Write(Localization.How_many_bytes_to_expect_per_block_Q);
                     strDev = Console.ReadLine();
 
                     if(!uint.TryParse(strDev, out blockSize))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         blockSize = 512;
                         Console.ReadKey();
 
                         continue;
                     }
 
-                    AaruConsole.Write(Localization.Inhibit_DMA_Q);
+                    AaruLogging.Write(Localization.Inhibit_DMA_Q);
                     strDev = Console.ReadLine();
 
                     if(!bool.TryParse(strDev, out noDma))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_boolean_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_boolean_Press_any_key_to_continue);
                         noDma = false;
                         Console.ReadKey();
                     }
@@ -426,38 +426,38 @@ static class SyQuest
                                        out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
 
-        AaruConsole.WriteLine(readlong
+        AaruLogging.WriteLine(readlong
                                   ? Localization.Sending_READ_LONG_10_to_the_device
                                   : Localization.Sending_READ_10_to_the_device);
 
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0, sense);
-        AaruConsole.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
-        AaruConsole.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0, sense);
+        AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization.Print_buffer);
-        AaruConsole.WriteLine(Localization._2_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._3_Decode_sense_buffer);
-        AaruConsole.WriteLine(Localization._4_Send_command_again);
-        AaruConsole.WriteLine(Localization._5_Change_parameters);
-        AaruConsole.WriteLine(Localization.Return_to_SyQuest_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization.Print_buffer);
+        AaruLogging.WriteLine(Localization._2_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._3_Decode_sense_buffer);
+        AaruLogging.WriteLine(Localization._4_Send_command_again);
+        AaruLogging.WriteLine(Localization._5_Change_parameters);
+        AaruLogging.WriteLine(Localization.Return_to_SyQuest_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -467,48 +467,48 @@ static class SyQuest
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_SyQuest_vendor_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_SyQuest_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(readlong ? Localization.READ_LONG_10_response : Localization.READ_10_response);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(readlong ? Localization.READ_LONG_10_response : Localization.READ_10_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(readlong ? Localization.READ_LONG_10_sense : Localization.READ_10_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(readlong ? Localization.READ_LONG_10_sense : Localization.READ_10_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
-                AaruConsole.WriteLine(readlong
+                AaruLogging.WriteLine(readlong
                                           ? Localization.READ_LONG_10_decoded_sense
                                           : Localization.READ_10_decoded_sense);
 
-                AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 4:
@@ -516,7 +516,7 @@ static class SyQuest
             case 5:
                 goto parameters;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 
@@ -533,33 +533,33 @@ static class SyQuest
             dev.SyQuestReadUsageCounter(out byte[] buffer, out byte[] senseBuffer, dev.Timeout, out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.Sending_READ_RESET_USAGE_COUNTER_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0, sense);
-        AaruConsole.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
-        AaruConsole.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Sending_READ_RESET_USAGE_COUNTER_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0, sense);
+        AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_0_bytes,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
                               senseBuffer?.Length.ToString() ?? Localization._null);
 
-        AaruConsole.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
                               ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
 
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization.Print_buffer);
-        AaruConsole.WriteLine(Localization._2_Print_sense_buffer);
-        AaruConsole.WriteLine(Localization._3_Decode_sense_buffer);
-        AaruConsole.WriteLine(Localization._4_Send_command_again);
-        AaruConsole.WriteLine(Localization.Return_to_SyQuest_vendor_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization.Print_buffer);
+        AaruLogging.WriteLine(Localization._2_Print_sense_buffer);
+        AaruLogging.WriteLine(Localization._3_Decode_sense_buffer);
+        AaruLogging.WriteLine(Localization._4_Send_command_again);
+        AaruLogging.WriteLine(Localization.Return_to_SyQuest_vendor_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         string strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out int item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -569,50 +569,50 @@ static class SyQuest
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_SyQuest_vendor_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_SyQuest_vendor_commands_menu);
 
                 return;
             case 1:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_RESET_USAGE_COUNTER_response);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_RESET_USAGE_COUNTER_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_RESET_USAGE_COUNTER_sense);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_RESET_USAGE_COUNTER_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
-                AaruConsole.WriteLine(Localization.READ_RESET_USAGE_COUNTER_decoded_sense);
-                AaruConsole.Write("{0}", Sense.PrettifySense(senseBuffer));
-                AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.READ_RESET_USAGE_COUNTER_decoded_sense);
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
-                AaruConsole.WriteLine(Localization.Device_0, devPath);
+                AaruLogging.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 4:
                 goto start;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 

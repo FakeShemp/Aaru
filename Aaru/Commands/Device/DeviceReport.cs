@@ -66,9 +66,9 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
         Statistics.AddCommand("device-report");
 
-        AaruConsole.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
-        AaruConsole.Debug(MODULE_NAME, "--device={0}",  Markup.Escape(settings.Path ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--device={0}",  Markup.Escape(settings.Path ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
         string devicePath = settings.Path;
 
@@ -80,7 +80,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
         switch(dev)
         {
             case null:
-                AaruConsole.Error(string.Format(UI.Could_not_open_device_error_0, devErrno));
+                AaruLogging.Error(string.Format(UI.Could_not_open_device_error_0, devErrno));
 
                 return (int)devErrno;
             case Devices.Remote.Device remoteDev:
@@ -95,7 +95,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
         if(dev.Error)
         {
-            AaruConsole.Error(Error.Print(dev.LastError));
+            AaruLogging.Error(Error.Print(dev.LastError));
 
             return (int)ErrorNumber.CannotOpenDevice;
         }
@@ -106,9 +106,9 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
         if(!isAdmin)
         {
-            AaruConsole.Error(UI.Device_report_must_be_run_as_admin);
+            AaruLogging.Error(UI.Device_report_must_be_run_as_admin);
 
-            AaruConsole.Error(UI.Not_continuing);
+            AaruLogging.Error(UI.Not_continuing);
 
             return (int)ErrorNumber.NotPermitted;
         }
@@ -149,7 +149,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
         if(settings.TrapDisc && dev.ScsiType != PeripheralDeviceTypes.MultiMediaDevice)
         {
-            AaruConsole.Error(UI.Device_does_not_report_with_trap_discs);
+            AaruLogging.Error(UI.Device_does_not_report_with_trap_discs);
 
             return (int)ErrorNumber.InvalidArgument;
         }
@@ -227,7 +227,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                 if(removable)
                 {
-                    AaruConsole.WriteLine(UI.Please_remove_any_media);
+                    AaruLogging.WriteLine(UI.Please_remove_any_media);
 
                     Console.ReadKey(true);
 
@@ -242,7 +242,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                     while(AnsiConsole.Confirm($"[italic]{UI.Do_you_have_media_you_can_insert}[/]"))
                     {
-                        AaruConsole.WriteLine(UI.Please_insert_it_in_the_drive);
+                        AaruLogging.WriteLine(UI.Please_insert_it_in_the_drive);
                         Console.ReadKey(true);
 
                         mediumTypeName =
@@ -306,7 +306,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                         break;
                     default:
                     {
-                        AaruConsole.Error(UI.Unsupported_device_type_for_report);
+                        AaruLogging.Error(UI.Unsupported_device_type_for_report);
 
                         throw new IOException();
                     }
@@ -340,7 +340,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                             break;
                     }
 
-                    AaruConsole.WriteLine(UI.Please_remove_any_media);
+                    AaruLogging.WriteLine(UI.Please_remove_any_media);
 
                     Console.ReadKey(true);
                 }
@@ -378,7 +378,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                         {
                             if(iomegaRev)
                             {
-                                AaruConsole.Error(UI.Device_does_not_report_with_trap_discs);
+                                AaruLogging.Error(UI.Device_does_not_report_with_trap_discs);
 
                                 return (int)ErrorNumber.InvalidArgument;
                             }
@@ -388,7 +388,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                             if(!AnsiConsole.Confirm($"[italic]{UI.Do_you_have_audio_trap_disc}[/]"))
                             {
-                                AaruConsole.Error(UI.Please_burn_audio_trap_disc);
+                                AaruLogging.Error(UI.Please_burn_audio_trap_disc);
 
                                 return (int)ErrorNumber.NoError;
                             }
@@ -710,7 +710,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                 }[/]"))
                                     continue;
 
-                                AaruConsole.WriteLine(UI.Please_insert_it_in_the_drive);
+                                AaruLogging.WriteLine(UI.Please_insert_it_in_the_drive);
 
                                 Console.ReadKey(true);
 
@@ -755,14 +755,14 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                                  leftRetries--;
                                                                              }
 
-                                                                             AaruConsole.WriteLine();
+                                                                             AaruLogging.WriteLine();
 
                                                                              mediaIsRecognized &= !sense;
 
                                                                              break;
                                                                          }
                                                                          default:
-                                                                             AaruConsole.Debug(MODULE_NAME,
+                                                                             AaruLogging.Debug(MODULE_NAME,
                                                                                  Localization.Core
                                                                                     .Device_not_ready_Sense,
                                                                                  decSense.Value.SenseKey,
@@ -776,7 +776,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                  }
                                                                  else
                                                                  {
-                                                                     AaruConsole.Debug(MODULE_NAME,
+                                                                     AaruLogging.Debug(MODULE_NAME,
                                                                          Localization.Core
                                                                             .Got_sense_status_but_no_sense_buffer);
 
@@ -916,7 +916,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                         while(AnsiConsole.Confirm($"[italic]{UI.Do_you_have_media_you_can_insert}[/]"))
                         {
-                            AaruConsole.WriteLine(UI.Please_insert_it_in_the_drive);
+                            AaruLogging.WriteLine(UI.Please_insert_it_in_the_drive);
 
                             Console.ReadKey(true);
 
@@ -938,7 +938,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                  dev.Timeout,
                                                                  out _);
 
-                                                             AaruConsole.Debug(MODULE_NAME,
+                                                             AaruLogging.Debug(MODULE_NAME,
                                                                  "sense = {0}",
                                                                  sense);
 
@@ -971,14 +971,14 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                              leftRetries--;
                                                                          }
 
-                                                                         AaruConsole.WriteLine();
+                                                                         AaruLogging.WriteLine();
 
                                                                          mediaIsRecognized &= !sense;
 
                                                                          break;
                                                                      }
                                                                      default:
-                                                                         AaruConsole.Debug(MODULE_NAME,
+                                                                         AaruLogging.Debug(MODULE_NAME,
                                                                              Localization.Core.Device_not_ready_Sense,
                                                                              decSense.Value.SenseKey,
                                                                              decSense.Value.ASC,
@@ -991,7 +991,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                              }
                                                              else
                                                              {
-                                                                 AaruConsole.Debug(MODULE_NAME,
+                                                                 AaruLogging.Debug(MODULE_NAME,
                                                                      Localization.Core
                                                                         .Got_sense_status_but_no_sense_buffer);
 
@@ -1043,7 +1043,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                             if(!AnsiConsole.Confirm($"[italic]{string.Format(UI.Do_you_have_a_0_disc, mediaType)}[/]"))
                                 continue;
 
-                            AaruConsole.WriteLine(UI.Please_insert_it_in_the_drive);
+                            AaruLogging.WriteLine(UI.Please_insert_it_in_the_drive);
 
                             Console.ReadKey(true);
 
@@ -1091,7 +1091,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                          break;
                                                                      }
                                                                      default:
-                                                                         AaruConsole.Debug(MODULE_NAME,
+                                                                         AaruLogging.Debug(MODULE_NAME,
                                                                              Localization.Core.Device_not_ready_Sense,
                                                                              decSense.Value.SenseKey,
                                                                              decSense.Value.ASC,
@@ -1104,7 +1104,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                              }
                                                              else
                                                              {
-                                                                 AaruConsole.Debug(MODULE_NAME,
+                                                                 AaruLogging.Debug(MODULE_NAME,
                                                                      Localization.Core
                                                                         .Got_sense_status_but_no_sense_buffer);
 
@@ -1173,7 +1173,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                         if(i == ushort.MaxValue) break;
                                                     }
 
-                                                    AaruConsole.WriteLine();
+                                                    AaruLogging.WriteLine();
                                                 });
                                 }
 
@@ -1249,7 +1249,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                             while(AnsiConsole.Confirm($"[italic]{UI.Do_you_have_media_you_can_insert}[/]"))
                             {
-                                AaruConsole.WriteLine(UI.Please_insert_it_in_the_drive);
+                                AaruLogging.WriteLine(UI.Please_insert_it_in_the_drive);
 
                                 Console.ReadKey(true);
 
@@ -1374,7 +1374,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                             if(i == ushort.MaxValue) break;
                                                         }
 
-                                                        AaruConsole.WriteLine();
+                                                        AaruLogging.WriteLine();
                                                     });
                                     }
 
@@ -1491,7 +1491,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                     if(i == ushort.MaxValue) break;
                                                 }
 
-                                                AaruConsole.WriteLine();
+                                                AaruLogging.WriteLine();
                                             });
                             }
 

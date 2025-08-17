@@ -170,8 +170,8 @@ public sealed partial class ISO9660
         }
         catch(Exception ex)
         {
-            AaruConsole.Debug(MODULE_NAME, Localization.Exception_reading_CD_i_audio_file);
-            AaruConsole.Exception(ex);
+            AaruLogging.Debug(MODULE_NAME, Localization.Exception_reading_CD_i_audio_file);
+            AaruLogging.Exception(ex);
 
             read = 0;
 

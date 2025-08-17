@@ -148,7 +148,7 @@ public class PcmciaInfoViewModel : ViewModelBase
             }
         }
         else
-            AaruConsole.Debug(MODULE_NAME, UI.PCMCIA_CIS_returned_no_tuples);
+            AaruLogging.Debug(MODULE_NAME, UI.PCMCIA_CIS_returned_no_tuples);
     }
 
     public string CisLabel           => UI.Title_CIS;

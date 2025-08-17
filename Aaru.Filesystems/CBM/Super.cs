@@ -249,7 +249,7 @@ public sealed partial class CBM
 
             if((dirEntry.fileType & 0x07) == 4 && !relativeFileWarningShown)
             {
-                AaruConsole.WriteLine(Localization.CBM_Mount_REL_file_warning);
+                AaruLogging.WriteLine(Localization.CBM_Mount_REL_file_warning);
                 relativeFileWarningShown = true;
             }
 

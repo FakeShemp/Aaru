@@ -800,7 +800,7 @@ public static class Identify
 
         if(IdentifyDeviceResponse.Length != 512)
         {
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        Localization.IDENTIFY_response_is_different_than_512_bytes_not_decoding);
 
             return null;

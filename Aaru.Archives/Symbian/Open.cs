@@ -62,41 +62,41 @@ public sealed partial class Symbian
         _stream.EnsureRead(buffer, 0, buffer.Length);
         SymbianHeader sh = Marshal.ByteArrayToStructureLittleEndian<SymbianHeader>(buffer);
 
-        AaruConsole.Debug(MODULE_NAME, "sh.uid1 = {0}",         sh.uid1);
-        AaruConsole.Debug(MODULE_NAME, "sh.uid2 = {0}",         sh.uid2);
-        AaruConsole.Debug(MODULE_NAME, "sh.uid3 = {0}",         sh.uid3);
-        AaruConsole.Debug(MODULE_NAME, "sh.uid4 = {0}",         sh.uid4);
-        AaruConsole.Debug(MODULE_NAME, "sh.crc16 = {0}",        sh.crc16);
-        AaruConsole.Debug(MODULE_NAME, "sh.languages = {0}",    sh.languages);
-        AaruConsole.Debug(MODULE_NAME, "sh.files = {0}",        sh.files);
-        AaruConsole.Debug(MODULE_NAME, "sh.requisites = {0}",   sh.requisites);
-        AaruConsole.Debug(MODULE_NAME, "sh.inst_lang = {0}",    sh.inst_lang);
-        AaruConsole.Debug(MODULE_NAME, "sh.inst_files = {0}",   sh.inst_files);
-        AaruConsole.Debug(MODULE_NAME, "sh.inst_drive = {0}",   sh.inst_drive);
-        AaruConsole.Debug(MODULE_NAME, "sh.capabilities = {0}", sh.capabilities);
-        AaruConsole.Debug(MODULE_NAME, "sh.inst_version = {0}", sh.inst_version);
-        AaruConsole.Debug(MODULE_NAME, "sh.options = {0}",      sh.options);
-        AaruConsole.Debug(MODULE_NAME, "sh.type = {0}",         sh.type);
-        AaruConsole.Debug(MODULE_NAME, "sh.major = {0}",        sh.major);
-        AaruConsole.Debug(MODULE_NAME, "sh.minor = {0}",        sh.minor);
-        AaruConsole.Debug(MODULE_NAME, "sh.variant = {0}",      sh.variant);
-        AaruConsole.Debug(MODULE_NAME, "sh.lang_ptr = {0}",     sh.lang_ptr);
-        AaruConsole.Debug(MODULE_NAME, "sh.files_ptr = {0}",    sh.files_ptr);
-        AaruConsole.Debug(MODULE_NAME, "sh.reqs_ptr = {0}",     sh.reqs_ptr);
-        AaruConsole.Debug(MODULE_NAME, "sh.certs_ptr = {0}",    sh.certs_ptr);
-        AaruConsole.Debug(MODULE_NAME, "sh.comp_ptr = {0}",     sh.comp_ptr);
-        AaruConsole.Debug(MODULE_NAME, "sh.sig_ptr = {0}",      sh.sig_ptr);
-        AaruConsole.Debug(MODULE_NAME, "sh.caps_ptr = {0}",     sh.caps_ptr);
-        AaruConsole.Debug(MODULE_NAME, "sh.instspace = {0}",    sh.instspace);
-        AaruConsole.Debug(MODULE_NAME, "sh.maxinsspc = {0}",    sh.maxinsspc);
-        AaruConsole.Debug(MODULE_NAME, "sh.reserved1 = {0}",    sh.reserved1);
-        AaruConsole.Debug(MODULE_NAME, "sh.reserved2 = {0}",    sh.reserved2);
+        AaruLogging.Debug(MODULE_NAME, "sh.uid1 = {0}",         sh.uid1);
+        AaruLogging.Debug(MODULE_NAME, "sh.uid2 = {0}",         sh.uid2);
+        AaruLogging.Debug(MODULE_NAME, "sh.uid3 = {0}",         sh.uid3);
+        AaruLogging.Debug(MODULE_NAME, "sh.uid4 = {0}",         sh.uid4);
+        AaruLogging.Debug(MODULE_NAME, "sh.crc16 = {0}",        sh.crc16);
+        AaruLogging.Debug(MODULE_NAME, "sh.languages = {0}",    sh.languages);
+        AaruLogging.Debug(MODULE_NAME, "sh.files = {0}",        sh.files);
+        AaruLogging.Debug(MODULE_NAME, "sh.requisites = {0}",   sh.requisites);
+        AaruLogging.Debug(MODULE_NAME, "sh.inst_lang = {0}",    sh.inst_lang);
+        AaruLogging.Debug(MODULE_NAME, "sh.inst_files = {0}",   sh.inst_files);
+        AaruLogging.Debug(MODULE_NAME, "sh.inst_drive = {0}",   sh.inst_drive);
+        AaruLogging.Debug(MODULE_NAME, "sh.capabilities = {0}", sh.capabilities);
+        AaruLogging.Debug(MODULE_NAME, "sh.inst_version = {0}", sh.inst_version);
+        AaruLogging.Debug(MODULE_NAME, "sh.options = {0}",      sh.options);
+        AaruLogging.Debug(MODULE_NAME, "sh.type = {0}",         sh.type);
+        AaruLogging.Debug(MODULE_NAME, "sh.major = {0}",        sh.major);
+        AaruLogging.Debug(MODULE_NAME, "sh.minor = {0}",        sh.minor);
+        AaruLogging.Debug(MODULE_NAME, "sh.variant = {0}",      sh.variant);
+        AaruLogging.Debug(MODULE_NAME, "sh.lang_ptr = {0}",     sh.lang_ptr);
+        AaruLogging.Debug(MODULE_NAME, "sh.files_ptr = {0}",    sh.files_ptr);
+        AaruLogging.Debug(MODULE_NAME, "sh.reqs_ptr = {0}",     sh.reqs_ptr);
+        AaruLogging.Debug(MODULE_NAME, "sh.certs_ptr = {0}",    sh.certs_ptr);
+        AaruLogging.Debug(MODULE_NAME, "sh.comp_ptr = {0}",     sh.comp_ptr);
+        AaruLogging.Debug(MODULE_NAME, "sh.sig_ptr = {0}",      sh.sig_ptr);
+        AaruLogging.Debug(MODULE_NAME, "sh.caps_ptr = {0}",     sh.caps_ptr);
+        AaruLogging.Debug(MODULE_NAME, "sh.instspace = {0}",    sh.instspace);
+        AaruLogging.Debug(MODULE_NAME, "sh.maxinsspc = {0}",    sh.maxinsspc);
+        AaruLogging.Debug(MODULE_NAME, "sh.reserved1 = {0}",    sh.reserved1);
+        AaruLogging.Debug(MODULE_NAME, "sh.reserved2 = {0}",    sh.reserved2);
 
         _release6 = false;
 
         if(sh.uid1 == SYMBIAN9_MAGIC)
         {
-            AaruConsole.Error("Symbian Installation Files from Symbian OS 9 or later are not yet supported.");
+            AaruLogging.Error("Symbian Installation Files from Symbian OS 9 or later are not yet supported.");
 
             return ErrorNumber.NotSupported;
         }

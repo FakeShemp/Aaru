@@ -536,7 +536,7 @@ public partial class Dump
                     UpdateStatus?.Invoke(Localization.Core
                                                      .Drive_did_not_accept_MODE_SELECT_command_for_persistent_error_reading);
 
-                    AaruConsole.Debug(Localization.Core.Error_0, Sense.PrettifySense(senseBuf));
+                    AaruLogging.Debug(Localization.Core.Error_0, Sense.PrettifySense(senseBuf));
 
                     _dumpLog.WriteLine(Localization.Core
                                                    .Drive_did_not_accept_MODE_SELECT_command_for_persistent_error_reading);
@@ -643,7 +643,7 @@ public partial class Dump
             }
 
             EndProgress?.Invoke();
-            AaruConsole.WriteLine();
+            AaruLogging.WriteLine();
         }
 
 #endregion Error handling

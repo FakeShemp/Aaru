@@ -100,7 +100,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.HP_READ_LONG_took_0_ms, duration);
+        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.HP_READ_LONG_took_0_ms, duration);
 
         return sense;
     }

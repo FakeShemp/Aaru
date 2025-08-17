@@ -572,7 +572,7 @@ public sealed partial class Sidecar
                         catch
 #pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
                         {
-                            //AaruConsole.DebugWriteLine(MODULE_NAME, "Plugin {0} crashed", _plugin.Name);
+                            //AaruLogging.DebugWriteLine(MODULE_NAME, "Plugin {0} crashed", _plugin.Name);
                         }
                     }
 
@@ -650,7 +650,7 @@ public sealed partial class Sidecar
                     catch
 #pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
                     {
-                        //AaruConsole.DebugWriteLine(MODULE_NAME, "Plugin {0} crashed", _plugin.Name);
+                        //AaruLogging.DebugWriteLine(MODULE_NAME, "Plugin {0} crashed", _plugin.Name);
                     }
                 }
 

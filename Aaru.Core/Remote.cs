@@ -161,12 +161,12 @@ public static class Remote
             if(lastUpdate == 0)
             {
                 create = true;
-                AaruConsole.WriteLine(Localization.Core.Creating_main_database);
+                AaruLogging.WriteLine(Localization.Core.Creating_main_database);
             }
             else
             {
-                AaruConsole.WriteLine(Localization.Core.Updating_main_database);
-                AaruConsole.WriteLine(Localization.Core.Last_update_0, latest);
+                AaruLogging.WriteLine(Localization.Core.Updating_main_database);
+                AaruLogging.WriteLine(Localization.Core.Last_update_0, latest);
             }
 
             DateTime updateStart = DateTime.UtcNow;
@@ -179,7 +179,7 @@ public static class Remote
 
             if(!response.IsSuccessStatusCode)
             {
-                AaruConsole.Error(Localization.Core.Error_0_when_trying_to_get_updated_entities,
+                AaruLogging.Error(Localization.Core.Error_0_when_trying_to_get_updated_entities,
                                            response.StatusCode);
 
                 return;
@@ -209,7 +209,7 @@ public static class Remote
                                       return Task.CompletedTask;
                                   });
 
-                AaruConsole.WriteLine(Localization.Core.Added_0_usb_vendors, sync.UsbVendors.Count);
+                AaruLogging.WriteLine(Localization.Core.Added_0_usb_vendors, sync.UsbVendors.Count);
 
                 await AnsiConsole.Progress()
                                  .AutoClear(true)
@@ -232,7 +232,7 @@ public static class Remote
                                       return Task.CompletedTask;
                                   });
 
-                AaruConsole.WriteLine(Localization.Core.Added_0_usb_products, sync.UsbProducts.Count);
+                AaruLogging.WriteLine(Localization.Core.Added_0_usb_products, sync.UsbProducts.Count);
 
                 await AnsiConsole.Progress()
                                  .AutoClear(true)
@@ -258,7 +258,7 @@ public static class Remote
                                       return Task.CompletedTask;
                                   });
 
-                AaruConsole.WriteLine(Localization.Core.Added_0_CompactDisc_read_offsets, sync.Offsets.Count);
+                AaruLogging.WriteLine(Localization.Core.Added_0_CompactDisc_read_offsets, sync.Offsets.Count);
 
                 await AnsiConsole.Progress()
                                  .AutoClear(true)
@@ -283,7 +283,7 @@ public static class Remote
                                       return Task.CompletedTask;
                                   });
 
-                AaruConsole.WriteLine(Localization.Core.Added_0_known_devices, sync.Devices.Count);
+                AaruLogging.WriteLine(Localization.Core.Added_0_known_devices, sync.Devices.Count);
 
                 await AnsiConsole.Progress()
                                  .AutoClear(true)
@@ -323,7 +323,7 @@ public static class Remote
                                       return Task.CompletedTask;
                                   });
 
-                AaruConsole.WriteLine(Localization.Core.Added_0_known_iNES_NES_2_0_headers,
+                AaruLogging.WriteLine(Localization.Core.Added_0_known_iNES_NES_2_0_headers,
                                       sync.NesHeaders?.Count ?? 0);
             }
             else
@@ -370,8 +370,8 @@ public static class Remote
                                       }
                                   });
 
-                AaruConsole.WriteLine(Localization.Core.Added_0_usb_vendors,    addedVendors);
-                AaruConsole.WriteLine(Localization.Core.Modified_0_USB_vendors, modifiedVendors);
+                AaruLogging.WriteLine(Localization.Core.Added_0_usb_vendors,    addedVendors);
+                AaruLogging.WriteLine(Localization.Core.Modified_0_USB_vendors, modifiedVendors);
 
                 await AnsiConsole.Progress()
                                  .AutoClear(true)
@@ -409,8 +409,8 @@ public static class Remote
                                       }
                                   });
 
-                AaruConsole.WriteLine(Localization.Core.Added_0_usb_products,    addedProducts);
-                AaruConsole.WriteLine(Localization.Core.Modified_0_USB_products, modifiedProducts);
+                AaruLogging.WriteLine(Localization.Core.Added_0_usb_products,    addedProducts);
+                AaruLogging.WriteLine(Localization.Core.Modified_0_USB_products, modifiedProducts);
 
                 await AnsiConsole.Progress()
                                  .AutoClear(true)
@@ -453,8 +453,8 @@ public static class Remote
                                       }
                                   });
 
-                AaruConsole.WriteLine(Localization.Core.Added_0_CompactDisc_read_offsets,    addedOffsets);
-                AaruConsole.WriteLine(Localization.Core.Modified_0_CompactDisc_read_offsets, modifiedOffsets);
+                AaruLogging.WriteLine(Localization.Core.Added_0_CompactDisc_read_offsets,    addedOffsets);
+                AaruLogging.WriteLine(Localization.Core.Modified_0_CompactDisc_read_offsets, modifiedOffsets);
 
                 await AnsiConsole.Progress()
                                  .AutoClear(true)
@@ -501,8 +501,8 @@ public static class Remote
                                       }
                                   });
 
-                AaruConsole.WriteLine(Localization.Core.Added_0_known_devices,    addedDevices);
-                AaruConsole.WriteLine(Localization.Core.Modified_0_known_devices, modifiedDevices);
+                AaruLogging.WriteLine(Localization.Core.Added_0_known_devices,    addedDevices);
+                AaruLogging.WriteLine(Localization.Core.Modified_0_known_devices, modifiedDevices);
 
                 await AnsiConsole.Progress()
                                  .AutoClear(true)
@@ -578,14 +578,14 @@ public static class Remote
                                       }
                                   });
 
-                AaruConsole.WriteLine(Localization.Core.Added_0_known_iNES_NES_2_0_headers,    addedNesHeaders);
-                AaruConsole.WriteLine(Localization.Core.Modified_0_known_iNES_NES_2_0_headers, modifiedNesHeaders);
+                AaruLogging.WriteLine(Localization.Core.Added_0_known_iNES_NES_2_0_headers,    addedNesHeaders);
+                AaruLogging.WriteLine(Localization.Core.Modified_0_known_iNES_NES_2_0_headers, modifiedNesHeaders);
             }
         }
         catch(Exception ex)
         {
-            AaruConsole.Error(Localization.Core.Exception_0_when_updating_database, ex);
-            AaruConsole.Exception(ex);
+            AaruLogging.Error(Localization.Core.Exception_0_when_updating_database, ex);
+            AaruLogging.Exception(ex);
         }
         finally
         {

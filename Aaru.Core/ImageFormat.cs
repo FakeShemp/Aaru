@@ -62,7 +62,7 @@ public static class ImageFormat
 
                 try
                 {
-                    AaruConsole.Debug(MODULE_NAME, Localization.Core.Trying_plugin_0, imagePlugin.Name);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Core.Trying_plugin_0, imagePlugin.Name);
 
                     if(!imagePlugin.Identify(imageFilter)) continue;
 
@@ -88,7 +88,7 @@ public static class ImageFormat
 
                     if(imagePlugin.Id == new Guid("12345678-AAAA-BBBB-CCCC-123456789000")) continue;
 
-                    AaruConsole.Debug(MODULE_NAME, Localization.Core.Trying_plugin_0, imagePlugin.Name);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Core.Trying_plugin_0, imagePlugin.Name);
 
                     if(!imagePlugin.Identify(imageFilter)) continue;
 
@@ -114,7 +114,7 @@ public static class ImageFormat
 
                 try
                 {
-                    AaruConsole.Debug(MODULE_NAME, Localization.Core.Trying_plugin_0, imagePlugin.Name);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Core.Trying_plugin_0, imagePlugin.Name);
 
                     if(!imagePlugin.Identify(imageFilter)) continue;
 

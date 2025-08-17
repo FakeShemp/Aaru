@@ -56,25 +56,25 @@ public sealed partial class SaveDskF
         stream.EnsureRead(hdr, 0, 40);
         _header = Marshal.ByteArrayToStructureLittleEndian<Header>(hdr);
 
-        AaruConsole.Debug(MODULE_NAME, "header.magic = 0x{0:X4}",      _header.magic);
-        AaruConsole.Debug(MODULE_NAME, "header.mediaType = 0x{0:X2}",  _header.mediaType);
-        AaruConsole.Debug(MODULE_NAME, "header.sectorSize = {0}",      _header.sectorSize);
-        AaruConsole.Debug(MODULE_NAME, "header.clusterMask = {0}",     _header.clusterMask);
-        AaruConsole.Debug(MODULE_NAME, "header.clusterShift = {0}",    _header.clusterShift);
-        AaruConsole.Debug(MODULE_NAME, "header.reservedSectors = {0}", _header.reservedSectors);
-        AaruConsole.Debug(MODULE_NAME, "header.fatCopies = {0}",       _header.fatCopies);
-        AaruConsole.Debug(MODULE_NAME, "header.rootEntries = {0}",     _header.rootEntries);
-        AaruConsole.Debug(MODULE_NAME, "header.firstCluster = {0}",    _header.firstCluster);
-        AaruConsole.Debug(MODULE_NAME, "header.clustersCopied = {0}",  _header.clustersCopied);
-        AaruConsole.Debug(MODULE_NAME, "header.sectorsPerFat = {0}",   _header.sectorsPerFat);
-        AaruConsole.Debug(MODULE_NAME, "header.checksum = 0x{0:X8}",   _header.checksum);
-        AaruConsole.Debug(MODULE_NAME, "header.cylinders = {0}",       _header.cylinders);
-        AaruConsole.Debug(MODULE_NAME, "header.heads = {0}",           _header.heads);
-        AaruConsole.Debug(MODULE_NAME, "header.sectorsPerTrack = {0}", _header.sectorsPerTrack);
-        AaruConsole.Debug(MODULE_NAME, "header.padding = {0}",         _header.padding);
-        AaruConsole.Debug(MODULE_NAME, "header.sectorsCopied = {0}",   _header.sectorsCopied);
-        AaruConsole.Debug(MODULE_NAME, "header.commentOffset = {0}",   _header.commentOffset);
-        AaruConsole.Debug(MODULE_NAME, "header.dataOffset = {0}",      _header.dataOffset);
+        AaruLogging.Debug(MODULE_NAME, "header.magic = 0x{0:X4}",      _header.magic);
+        AaruLogging.Debug(MODULE_NAME, "header.mediaType = 0x{0:X2}",  _header.mediaType);
+        AaruLogging.Debug(MODULE_NAME, "header.sectorSize = {0}",      _header.sectorSize);
+        AaruLogging.Debug(MODULE_NAME, "header.clusterMask = {0}",     _header.clusterMask);
+        AaruLogging.Debug(MODULE_NAME, "header.clusterShift = {0}",    _header.clusterShift);
+        AaruLogging.Debug(MODULE_NAME, "header.reservedSectors = {0}", _header.reservedSectors);
+        AaruLogging.Debug(MODULE_NAME, "header.fatCopies = {0}",       _header.fatCopies);
+        AaruLogging.Debug(MODULE_NAME, "header.rootEntries = {0}",     _header.rootEntries);
+        AaruLogging.Debug(MODULE_NAME, "header.firstCluster = {0}",    _header.firstCluster);
+        AaruLogging.Debug(MODULE_NAME, "header.clustersCopied = {0}",  _header.clustersCopied);
+        AaruLogging.Debug(MODULE_NAME, "header.sectorsPerFat = {0}",   _header.sectorsPerFat);
+        AaruLogging.Debug(MODULE_NAME, "header.checksum = 0x{0:X8}",   _header.checksum);
+        AaruLogging.Debug(MODULE_NAME, "header.cylinders = {0}",       _header.cylinders);
+        AaruLogging.Debug(MODULE_NAME, "header.heads = {0}",           _header.heads);
+        AaruLogging.Debug(MODULE_NAME, "header.sectorsPerTrack = {0}", _header.sectorsPerTrack);
+        AaruLogging.Debug(MODULE_NAME, "header.padding = {0}",         _header.padding);
+        AaruLogging.Debug(MODULE_NAME, "header.sectorsCopied = {0}",   _header.sectorsCopied);
+        AaruLogging.Debug(MODULE_NAME, "header.commentOffset = {0}",   _header.commentOffset);
+        AaruLogging.Debug(MODULE_NAME, "header.dataOffset = {0}",      _header.dataOffset);
 
         if(_header is { dataOffset: 0, magic: SDF_MAGIC_OLD }) _header.dataOffset = 512;
 
@@ -96,7 +96,7 @@ public sealed partial class SaveDskF
             if(b >= 0) _calculatedChk += (uint)b;
         } while(b >= 0);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Calculated_checksum_equals_0_X8_1,
                                    _calculatedChk,
                                    _calculatedChk == _header.checksum);
@@ -114,15 +114,15 @@ public sealed partial class SaveDskF
 
         _imageInfo.MetadataMediaType = MetadataMediaType.BlockMedia;
 
-        AaruConsole.Verbose(Localization.SaveDskF_image_contains_a_disk_of_type_0, _imageInfo.MediaType);
+        AaruLogging.Verbose(Localization.SaveDskF_image_contains_a_disk_of_type_0, _imageInfo.MediaType);
 
         if(!string.IsNullOrEmpty(_imageInfo.Comments))
-            AaruConsole.Verbose(Localization.SaveDskF_comments_0, _imageInfo.Comments);
+            AaruLogging.Verbose(Localization.SaveDskF_comments_0, _imageInfo.Comments);
 
         // TODO: Support compressed images
         if(_header.magic == SDF_MAGIC_COMPRESSED)
         {
-            AaruConsole.Error(Localization.Compressed_SaveDskF_images_are_not_supported);
+            AaruLogging.Error(Localization.Compressed_SaveDskF_images_are_not_supported);
 
             return ErrorNumber.NotSupported;
         }

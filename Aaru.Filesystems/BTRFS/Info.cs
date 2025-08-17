@@ -71,10 +71,10 @@ public sealed partial class BTRFS
             return false;
         }
 
-        AaruConsole.Debug(MODULE_NAME, "sbSectorOff = {0}",                    sbSectorOff);
-        AaruConsole.Debug(MODULE_NAME, "sbSectorSize = {0}",                   sbSectorSize);
-        AaruConsole.Debug(MODULE_NAME, "partition.PartitionStartSector = {0}", partition.Start);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.magic = 0x{0:X16}",            btrfsSb.magic);
+        AaruLogging.Debug(MODULE_NAME, "sbSectorOff = {0}",                    sbSectorOff);
+        AaruLogging.Debug(MODULE_NAME, "sbSectorSize = {0}",                   sbSectorSize);
+        AaruLogging.Debug(MODULE_NAME, "partition.PartitionStartSector = {0}", partition.Start);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.magic = 0x{0:X16}",            btrfsSb.magic);
 
         return btrfsSb.magic == BTRFS_MAGIC;
     }
@@ -96,61 +96,61 @@ public sealed partial class BTRFS
 
         SuperBlock btrfsSb = Marshal.ByteArrayToStructureLittleEndian<SuperBlock>(sector);
 
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.checksum = {0}",          btrfsSb.checksum);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.uuid = {0}",              btrfsSb.uuid);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.pba = {0}",               btrfsSb.pba);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.flags = {0}",             btrfsSb.flags);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.magic = {0}",             btrfsSb.magic);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.generation = {0}",        btrfsSb.generation);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.root_lba = {0}",          btrfsSb.root_lba);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.chunk_lba = {0}",         btrfsSb.chunk_lba);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.log_lba = {0}",           btrfsSb.log_lba);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.log_root_transid = {0}",  btrfsSb.log_root_transid);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.total_bytes = {0}",       btrfsSb.total_bytes);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.bytes_used = {0}",        btrfsSb.bytes_used);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.root_dir_objectid = {0}", btrfsSb.root_dir_objectid);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.num_devices = {0}",       btrfsSb.num_devices);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.sectorsize = {0}",        btrfsSb.sectorsize);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.nodesize = {0}",          btrfsSb.nodesize);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.leafsize = {0}",          btrfsSb.leafsize);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.stripesize = {0}",        btrfsSb.stripesize);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.n = {0}",                 btrfsSb.n);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.checksum = {0}",          btrfsSb.checksum);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.uuid = {0}",              btrfsSb.uuid);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.pba = {0}",               btrfsSb.pba);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.flags = {0}",             btrfsSb.flags);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.magic = {0}",             btrfsSb.magic);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.generation = {0}",        btrfsSb.generation);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.root_lba = {0}",          btrfsSb.root_lba);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.chunk_lba = {0}",         btrfsSb.chunk_lba);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.log_lba = {0}",           btrfsSb.log_lba);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.log_root_transid = {0}",  btrfsSb.log_root_transid);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.total_bytes = {0}",       btrfsSb.total_bytes);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.bytes_used = {0}",        btrfsSb.bytes_used);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.root_dir_objectid = {0}", btrfsSb.root_dir_objectid);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.num_devices = {0}",       btrfsSb.num_devices);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.sectorsize = {0}",        btrfsSb.sectorsize);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.nodesize = {0}",          btrfsSb.nodesize);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.leafsize = {0}",          btrfsSb.leafsize);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.stripesize = {0}",        btrfsSb.stripesize);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.n = {0}",                 btrfsSb.n);
 
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.chunk_root_generation = {0}", btrfsSb.chunk_root_generation);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.chunk_root_generation = {0}", btrfsSb.chunk_root_generation);
 
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.compat_flags = 0x{0:X16}",    btrfsSb.compat_flags);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.compat_ro_flags = 0x{0:X16}", btrfsSb.compat_ro_flags);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.incompat_flags = 0x{0:X16}",  btrfsSb.incompat_flags);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.csum_type = {0}",             btrfsSb.csum_type);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.root_level = {0}",            btrfsSb.root_level);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.chunk_root_level = {0}",      btrfsSb.chunk_root_level);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.log_root_level = {0}",        btrfsSb.log_root_level);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.dev_item.id = 0x{0:X16}",     btrfsSb.dev_item.id);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.dev_item.bytes = {0}",        btrfsSb.dev_item.bytes);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.dev_item.used = {0}",         btrfsSb.dev_item.used);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.compat_flags = 0x{0:X16}",    btrfsSb.compat_flags);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.compat_ro_flags = 0x{0:X16}", btrfsSb.compat_ro_flags);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.incompat_flags = 0x{0:X16}",  btrfsSb.incompat_flags);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.csum_type = {0}",             btrfsSb.csum_type);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.root_level = {0}",            btrfsSb.root_level);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.chunk_root_level = {0}",      btrfsSb.chunk_root_level);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.log_root_level = {0}",        btrfsSb.log_root_level);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.dev_item.id = 0x{0:X16}",     btrfsSb.dev_item.id);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.dev_item.bytes = {0}",        btrfsSb.dev_item.bytes);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.dev_item.used = {0}",         btrfsSb.dev_item.used);
 
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.dev_item.optimal_align = {0}", btrfsSb.dev_item.optimal_align);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.dev_item.optimal_align = {0}", btrfsSb.dev_item.optimal_align);
 
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.dev_item.optimal_width = {0}", btrfsSb.dev_item.optimal_width);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.dev_item.optimal_width = {0}", btrfsSb.dev_item.optimal_width);
 
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.dev_item.minimal_size = {0}", btrfsSb.dev_item.minimal_size);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.dev_item.minimal_size = {0}", btrfsSb.dev_item.minimal_size);
 
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.dev_item.type = {0}", btrfsSb.dev_item.type);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.dev_item.type = {0}", btrfsSb.dev_item.type);
 
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.dev_item.generation = {0}", btrfsSb.dev_item.generation);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.dev_item.generation = {0}", btrfsSb.dev_item.generation);
 
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.dev_item.start_offset = {0}", btrfsSb.dev_item.start_offset);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.dev_item.start_offset = {0}", btrfsSb.dev_item.start_offset);
 
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.dev_item.dev_group = {0}", btrfsSb.dev_item.dev_group);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.dev_item.dev_group = {0}", btrfsSb.dev_item.dev_group);
 
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.dev_item.seek_speed = {0}", btrfsSb.dev_item.seek_speed);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.dev_item.seek_speed = {0}", btrfsSb.dev_item.seek_speed);
 
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.dev_item.bandwidth = {0}", btrfsSb.dev_item.bandwidth);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.dev_item.bandwidth = {0}", btrfsSb.dev_item.bandwidth);
 
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.dev_item.device_uuid = {0}", btrfsSb.dev_item.device_uuid);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.dev_item.device_uuid = {0}", btrfsSb.dev_item.device_uuid);
 
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.dev_item.uuid = {0}", btrfsSb.dev_item.uuid);
-        AaruConsole.Debug(MODULE_NAME, "btrfsSb.label = {0}",         btrfsSb.label);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.dev_item.uuid = {0}", btrfsSb.dev_item.uuid);
+        AaruLogging.Debug(MODULE_NAME, "btrfsSb.label = {0}",         btrfsSb.label);
 
         sbInformation.AppendLine(Localization.B_tree_filesystem);
         sbInformation.AppendFormat(Localization.UUID_0, btrfsSb.uuid).AppendLine();

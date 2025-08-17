@@ -265,7 +265,7 @@ public static class Apple2
                 // Prologue found
                 if(data[position] == 0xD5 && data[position + 1] == 0xAA)
                 {
-                    AaruConsole.Debug(MODULE_NAME, Localization.Prologue_found_at_0, position);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Prologue_found_at_0, position);
 
                     // Epilogue not in correct position
                     if(data[position + 11] != 0xDE || data[position + 12] != 0xAA) return null;
@@ -283,31 +283,31 @@ public static class Apple2
                         }
                     };
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                Localization.Volume_0,
                                                ((sector.addressField.volume[0] & 0x55) << 1 |
                                                 sector.addressField.volume[1] & 0x55) &
                                                0xFF);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                Core.Track_0,
                                                ((sector.addressField.track[0] & 0x55) << 1 |
                                                 sector.addressField.track[1] & 0x55) &
                                                0xFF);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                Localization.Sector_0,
                                                ((sector.addressField.sector[0] & 0x55) << 1 |
                                                 sector.addressField.sector[1] & 0x55) &
                                                0xFF);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                Localization.Checksum_0,
                                                ((sector.addressField.checksum[0] & 0x55) << 1 |
                                                 sector.addressField.checksum[1] & 0x55) &
                                                0xFF);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                Localization.Epilogue_0_1_2,
                                                sector.addressField.epilogue[0],
                                                sector.addressField.epilogue[1],
@@ -335,9 +335,9 @@ public static class Apple2
                     sector.innerGap  = gaps.ToArray();
                     sector.dataField = new RawDataField();
 
-                    AaruConsole.Debug(MODULE_NAME, Localization.Inner_gap_has_0_bytes, sector.innerGap.Length);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Inner_gap_has_0_bytes, sector.innerGap.Length);
 
-                    AaruConsole.Debug(MODULE_NAME, Localization.Prologue_found_at_0, position);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Prologue_found_at_0, position);
                     sector.dataField.prologue    =  new byte[3];
                     sector.dataField.prologue[0] =  data[position];
                     sector.dataField.prologue[1] =  data[position + 1];
@@ -358,7 +358,7 @@ public static class Apple2
 
                     sector.dataField.data = gaps.ToArray();
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                Localization.Data_has_0_bytes,
                                                sector.dataField.data.Length);
 
@@ -390,9 +390,9 @@ public static class Apple2
                     // Return current position to be able to read separate sectors
                     endOffset = position;
 
-                    AaruConsole.Debug(MODULE_NAME, Localization.Got_0_bytes_of_gap, sector.gap.Length);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Got_0_bytes_of_gap, sector.gap.Length);
 
-                    AaruConsole.Debug(MODULE_NAME, Localization.Finished_sector_at_0, position);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Finished_sector_at_0, position);
 
                     return sector;
                 }
@@ -495,7 +495,7 @@ public static class Apple2
                 break;
             }
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        Localization.Adding_sector_0_of_track_1,
                                        ((sector.addressField.sector[0] & 0x55) << 1 |
                                         sector.addressField.sector[1] & 0x55) &

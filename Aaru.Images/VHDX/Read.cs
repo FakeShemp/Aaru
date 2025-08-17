@@ -76,7 +76,7 @@ public sealed partial class Vhdx
 
             if(_vHdr.Signature != VHDX_HEADER_SIG)
             {
-                AaruConsole.Error(Localization.VHDX_header_not_found);
+                AaruLogging.Error(Localization.VHDX_header_not_found);
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -96,7 +96,7 @@ public sealed partial class Vhdx
 
             if(_vRegHdr.signature != VHDX_REGION_SIG)
             {
-                AaruConsole.Error(Localization.VHDX_region_table_not_found);
+                AaruLogging.Error(Localization.VHDX_region_table_not_found);
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -116,7 +116,7 @@ public sealed partial class Vhdx
                 _metadataOffset = (long)_vRegs[i].offset;
             else if((_vRegs[i].flags & REGION_FLAGS_REQUIRED) == REGION_FLAGS_REQUIRED)
             {
-                AaruConsole.Error(string.Format(Localization
+                AaruLogging.Error(string.Format(Localization
                                                             .Found_unsupported_and_required_region_Guid_0_not_proceeding_with_image,
                                                          _vRegs[i].guid));
 
@@ -126,14 +126,14 @@ public sealed partial class Vhdx
 
         if(_batOffset == 0)
         {
-            AaruConsole.Error(Localization.BAT_not_found_cannot_continue);
+            AaruLogging.Error(Localization.BAT_not_found_cannot_continue);
 
             return ErrorNumber.InvalidArgument;
         }
 
         if(_metadataOffset == 0)
         {
-            AaruConsole.Error(Localization.Metadata_not_found_cannot_continue);
+            AaruLogging.Error(Localization.Metadata_not_found_cannot_continue);
 
             return ErrorNumber.InvalidArgument;
         }
@@ -167,7 +167,7 @@ public sealed partial class Vhdx
                 parentOff = _vMets[i].offset;
             else if((_vMets[i].flags & METADATA_FLAGS_REQUIRED) == METADATA_FLAGS_REQUIRED)
             {
-                AaruConsole.Error(string.Format(Localization
+                AaruLogging.Error(string.Format(Localization
                                                             .Found_unsupported_and_required_metadata_Guid_0_not_proceeding_with_image,
                                                          _vMets[i].itemId));
 
@@ -191,7 +191,7 @@ public sealed partial class Vhdx
         }
         else
         {
-            AaruConsole.Error(Localization.File_parameters_not_found);
+            AaruLogging.Error(Localization.File_parameters_not_found);
 
             return ErrorNumber.InvalidArgument;
         }
@@ -205,7 +205,7 @@ public sealed partial class Vhdx
         }
         else
         {
-            AaruConsole.Error(Localization.Virtual_disk_size_not_found);
+            AaruLogging.Error(Localization.Virtual_disk_size_not_found);
 
             return ErrorNumber.InvalidArgument;
         }
@@ -227,7 +227,7 @@ public sealed partial class Vhdx
         }
         else
         {
-            AaruConsole.Error(Localization.Logical_sector_size_not_found);
+            AaruLogging.Error(Localization.Logical_sector_size_not_found);
 
             return ErrorNumber.InvalidArgument;
         }
@@ -241,7 +241,7 @@ public sealed partial class Vhdx
         }
         else
         {
-            AaruConsole.Error(Localization.Physical_sector_size_not_found);
+            AaruLogging.Error(Localization.Physical_sector_size_not_found);
 
             return ErrorNumber.InvalidArgument;
         }
@@ -255,7 +255,7 @@ public sealed partial class Vhdx
 
             if(_vParHdr.locatorType != _parentTypeVhdxGuid)
             {
-                AaruConsole.Error(string.Format(Localization
+                AaruLogging.Error(string.Format(Localization
                                                             .Found_unsupported_and_required_parent_locator_type_0_not_proceeding_with_image,
                                                          _vParHdr.locatorType));
 
@@ -273,7 +273,7 @@ public sealed partial class Vhdx
         }
         else if((_vFileParms.flags & FILE_FLAGS_HAS_PARENT) == FILE_FLAGS_HAS_PARENT)
         {
-            AaruConsole.Error(Localization.Parent_locator_not_found);
+            AaruLogging.Error(Localization.Parent_locator_not_found);
 
             return ErrorNumber.NoSuchFile;
         }
@@ -363,7 +363,7 @@ public sealed partial class Vhdx
 
             if(!parentWorks)
             {
-                AaruConsole.Error(Localization.Image_is_differential_but_parent_cannot_be_opened);
+                AaruLogging.Error(Localization.Image_is_differential_but_parent_cannot_be_opened);
 
                 return ErrorNumber.InOutError;
             }
@@ -391,7 +391,7 @@ public sealed partial class Vhdx
         else
             batEntries = (long)(_dataBlocks + (_dataBlocks - 1) / (ulong)_chunkRatio);
 
-        AaruConsole.Debug(MODULE_NAME, Localization.Reading_BAT);
+        AaruLogging.Debug(MODULE_NAME, Localization.Reading_BAT);
 
         long readChunks = 0;
         _blockAllocationTable = new ulong[_dataBlocks];
@@ -420,7 +420,7 @@ public sealed partial class Vhdx
 
         if(_hasParent)
         {
-            AaruConsole.Debug(MODULE_NAME, Localization.Reading_Sector_Bitmap);
+            AaruLogging.Debug(MODULE_NAME, Localization.Reading_Sector_Bitmap);
 
             var sectorBmpMs = new MemoryStream();
 
@@ -442,7 +442,7 @@ public sealed partial class Vhdx
                     default:
                         if((pt & BAT_FLAGS_MASK) != 0)
                         {
-                            AaruConsole.Error(string.Format(Localization
+                            AaruLogging.Error(string.Format(Localization
                                                                         .Unsupported_sector_bitmap_block_flags_0_found_not_proceeding,
                                                                      pt & BAT_FLAGS_MASK));
 
@@ -501,7 +501,7 @@ public sealed partial class Vhdx
 
         if((blkPtr & BAT_RESERVED_MASK) != 0)
         {
-            AaruConsole.Error($"Unknown flags (0x{blkPtr & BAT_RESERVED_MASK:X16}) set in block pointer");
+            AaruLogging.Error($"Unknown flags (0x{blkPtr & BAT_RESERVED_MASK:X16}) set in block pointer");
 
             return ErrorNumber.InvalidArgument;
         }

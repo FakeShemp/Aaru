@@ -73,8 +73,8 @@ public sealed partial class Ndif
         }
         catch(InvalidCastException ex)
         {
-            AaruConsole.Error(Localization.Exception_trying_to_open_image_file_0, imageFilter.BasePath);
-            AaruConsole.Exception(ex);
+            AaruLogging.Error(Localization.Exception_trying_to_open_image_file_0, imageFilter.BasePath);
+            AaruLogging.Exception(ex);
 
             return ErrorNumber.UnexpectedException;
         }
@@ -87,30 +87,30 @@ public sealed partial class Ndif
 
             _header = Marshal.ByteArrayToStructureBigEndian<ChunkHeader>(bcem);
 
-            AaruConsole.Debug(MODULE_NAME, "footer.type = {0}",   _header.version);
-            AaruConsole.Debug(MODULE_NAME, "footer.driver = {0}", _header.driver);
+            AaruLogging.Debug(MODULE_NAME, "footer.type = {0}",   _header.version);
+            AaruLogging.Debug(MODULE_NAME, "footer.driver = {0}", _header.driver);
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        "footer.name = {0}",
                                        StringHandlers.PascalToString(_header.name, Encoding.GetEncoding("macintosh")));
 
-            AaruConsole.Debug(MODULE_NAME, "footer.sectors = {0}", _header.sectors);
+            AaruLogging.Debug(MODULE_NAME, "footer.sectors = {0}", _header.sectors);
 
-            AaruConsole.Debug(MODULE_NAME, "footer.maxSectorsPerChunk = {0}", _header.maxSectorsPerChunk);
+            AaruLogging.Debug(MODULE_NAME, "footer.maxSectorsPerChunk = {0}", _header.maxSectorsPerChunk);
 
-            AaruConsole.Debug(MODULE_NAME, "footer.dataOffset = {0}",      _header.dataOffset);
-            AaruConsole.Debug(MODULE_NAME, "footer.crc = 0x{0:X7}",        _header.crc);
-            AaruConsole.Debug(MODULE_NAME, "footer.segmented = {0}",       _header.segmented);
-            AaruConsole.Debug(MODULE_NAME, "footer.p1 = 0x{0:X8}",         _header.p1);
-            AaruConsole.Debug(MODULE_NAME, "footer.p2 = 0x{0:X8}",         _header.p2);
-            AaruConsole.Debug(MODULE_NAME, "footer.unknown[0] = 0x{0:X8}", _header.unknown[0]);
-            AaruConsole.Debug(MODULE_NAME, "footer.unknown[1] = 0x{0:X8}", _header.unknown[1]);
-            AaruConsole.Debug(MODULE_NAME, "footer.unknown[2] = 0x{0:X8}", _header.unknown[2]);
-            AaruConsole.Debug(MODULE_NAME, "footer.unknown[3] = 0x{0:X8}", _header.unknown[3]);
-            AaruConsole.Debug(MODULE_NAME, "footer.unknown[4] = 0x{0:X8}", _header.unknown[4]);
-            AaruConsole.Debug(MODULE_NAME, "footer.encrypted = {0}",       _header.encrypted);
-            AaruConsole.Debug(MODULE_NAME, "footer.hash = 0x{0:X8}",       _header.hash);
-            AaruConsole.Debug(MODULE_NAME, "footer.chunks = {0}",          _header.chunks);
+            AaruLogging.Debug(MODULE_NAME, "footer.dataOffset = {0}",      _header.dataOffset);
+            AaruLogging.Debug(MODULE_NAME, "footer.crc = 0x{0:X7}",        _header.crc);
+            AaruLogging.Debug(MODULE_NAME, "footer.segmented = {0}",       _header.segmented);
+            AaruLogging.Debug(MODULE_NAME, "footer.p1 = 0x{0:X8}",         _header.p1);
+            AaruLogging.Debug(MODULE_NAME, "footer.p2 = 0x{0:X8}",         _header.p2);
+            AaruLogging.Debug(MODULE_NAME, "footer.unknown[0] = 0x{0:X8}", _header.unknown[0]);
+            AaruLogging.Debug(MODULE_NAME, "footer.unknown[1] = 0x{0:X8}", _header.unknown[1]);
+            AaruLogging.Debug(MODULE_NAME, "footer.unknown[2] = 0x{0:X8}", _header.unknown[2]);
+            AaruLogging.Debug(MODULE_NAME, "footer.unknown[3] = 0x{0:X8}", _header.unknown[3]);
+            AaruLogging.Debug(MODULE_NAME, "footer.unknown[4] = 0x{0:X8}", _header.unknown[4]);
+            AaruLogging.Debug(MODULE_NAME, "footer.encrypted = {0}",       _header.encrypted);
+            AaruLogging.Debug(MODULE_NAME, "footer.hash = 0x{0:X8}",       _header.hash);
+            AaruLogging.Debug(MODULE_NAME, "footer.chunks = {0}",          _header.chunks);
 
             // Block chunks and headers
             _chunks = new Dictionary<ulong, BlockChunk>();
@@ -127,10 +127,10 @@ public sealed partial class Ndif
                 bChnk.offset = BigEndianBitConverter.ToUInt32(bcem, 128 + 4 + i * 12);
                 bChnk.length = BigEndianBitConverter.ToUInt32(bcem, 128 + 8 + i * 12);
 
-                AaruConsole.Debug(MODULE_NAME, "bHdr.chunk[{0}].type = 0x{1:X2}", i, bChnk.type);
-                AaruConsole.Debug(MODULE_NAME, "bHdr.chunk[{0}].sector = {1}",    i, bChnk.sector);
-                AaruConsole.Debug(MODULE_NAME, "bHdr.chunk[{0}].offset = {1}",    i, bChnk.offset);
-                AaruConsole.Debug(MODULE_NAME, "bHdr.chunk[{0}].length = {1}",    i, bChnk.length);
+                AaruLogging.Debug(MODULE_NAME, "bHdr.chunk[{0}].type = 0x{1:X2}", i, bChnk.type);
+                AaruLogging.Debug(MODULE_NAME, "bHdr.chunk[{0}].sector = {1}",    i, bChnk.sector);
+                AaruLogging.Debug(MODULE_NAME, "bHdr.chunk[{0}].offset = {1}",    i, bChnk.offset);
+                AaruLogging.Debug(MODULE_NAME, "bHdr.chunk[{0}].length = {1}",    i, bChnk.length);
 
                 if(bChnk.type == CHUNK_TYPE_END) break;
 
@@ -141,15 +141,15 @@ public sealed partial class Ndif
                 switch(bChnk.type)
                 {
                     case CHUNK_TYPE_KENCODE:
-                        AaruConsole.Error(Localization.Chunks_compressed_with_KenCode_are_not_yet_supported);
+                        AaruLogging.Error(Localization.Chunks_compressed_with_KenCode_are_not_yet_supported);
 
                         return ErrorNumber.NotImplemented;
                     case CHUNK_TYPE_LZH:
-                        AaruConsole.Error(Localization.Chunks_compressed_with_LZH_are_not_yet_supported);
+                        AaruLogging.Error(Localization.Chunks_compressed_with_LZH_are_not_yet_supported);
 
                         return ErrorNumber.NotImplemented;
                     case CHUNK_TYPE_STUFFIT:
-                        AaruConsole.Error(Localization.Chunks_compressed_with_StuffIt_are_not_yet_supported);
+                        AaruLogging.Error(Localization.Chunks_compressed_with_StuffIt_are_not_yet_supported);
 
                         return ErrorNumber.NotImplemented;
                 }
@@ -160,7 +160,7 @@ public sealed partial class Ndif
                               or > CHUNK_TYPE_STUFFIT and < CHUNK_TYPE_END
                               or 1)
                 {
-                    AaruConsole.Error(string.Format(Localization.Unsupported_chunk_type_0_found, bChnk.type));
+                    AaruLogging.Error(string.Format(Localization.Unsupported_chunk_type_0_found, bChnk.type));
 
                     return ErrorNumber.InvalidArgument;
                 }
@@ -173,14 +173,14 @@ public sealed partial class Ndif
 
         if(_header.segmented > 0)
         {
-            AaruConsole.Error(Localization.Segmented_images_are_not_yet_supported);
+            AaruLogging.Error(Localization.Segmented_images_are_not_yet_supported);
 
             return ErrorNumber.NotImplemented;
         }
 
         if(_header.encrypted > 0)
         {
-            AaruConsole.Error(Localization.Encrypted_images_are_not_yet_supported);
+            AaruLogging.Error(Localization.Encrypted_images_are_not_yet_supported);
 
             return ErrorNumber.NotImplemented;
         }
@@ -237,7 +237,7 @@ public sealed partial class Ndif
             }
         }
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Image_application_0_version_1,
                                    _imageInfo.Application,
                                    _imageInfo.ApplicationVersion);

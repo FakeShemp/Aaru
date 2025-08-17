@@ -60,23 +60,23 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
         Statistics.AddCommand("checksum");
 
-        AaruConsole.Debug(MODULE_NAME, "--adler32={0}",          settings.Adler32);
-        AaruConsole.Debug(MODULE_NAME, "--crc16={0}",            settings.Crc16);
-        AaruConsole.Debug(MODULE_NAME, "--crc32={0}",            settings.Crc32);
-        AaruConsole.Debug(MODULE_NAME, "--crc64={0}",            settings.Crc64);
-        AaruConsole.Debug(MODULE_NAME, "--debug={0}",            settings.Debug);
-        AaruConsole.Debug(MODULE_NAME, "--fletcher16={0}",       settings.Fletcher16);
-        AaruConsole.Debug(MODULE_NAME, "--fletcher32={0}",       settings.Fletcher32);
-        AaruConsole.Debug(MODULE_NAME, "--input={0}",            Markup.Escape(settings.ImagePath ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--md5={0}",              settings.Md5);
-        AaruConsole.Debug(MODULE_NAME, "--separated-tracks={0}", settings.SeparatedTracks);
-        AaruConsole.Debug(MODULE_NAME, "--sha1={0}",             settings.Sha1);
-        AaruConsole.Debug(MODULE_NAME, "--sha256={0}",           settings.Sha256);
-        AaruConsole.Debug(MODULE_NAME, "--sha384={0}",           settings.Sha384);
-        AaruConsole.Debug(MODULE_NAME, "--sha512={0}",           settings.Sha512);
-        AaruConsole.Debug(MODULE_NAME, "--spamsum={0}",          settings.SpamSum);
-        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",          settings.Verbose);
-        AaruConsole.Debug(MODULE_NAME, "--whole-disc={0}",       settings.WholeDisc);
+        AaruLogging.Debug(MODULE_NAME, "--adler32={0}",          settings.Adler32);
+        AaruLogging.Debug(MODULE_NAME, "--crc16={0}",            settings.Crc16);
+        AaruLogging.Debug(MODULE_NAME, "--crc32={0}",            settings.Crc32);
+        AaruLogging.Debug(MODULE_NAME, "--crc64={0}",            settings.Crc64);
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}",            settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--fletcher16={0}",       settings.Fletcher16);
+        AaruLogging.Debug(MODULE_NAME, "--fletcher32={0}",       settings.Fletcher32);
+        AaruLogging.Debug(MODULE_NAME, "--input={0}",            Markup.Escape(settings.ImagePath ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--md5={0}",              settings.Md5);
+        AaruLogging.Debug(MODULE_NAME, "--separated-tracks={0}", settings.SeparatedTracks);
+        AaruLogging.Debug(MODULE_NAME, "--sha1={0}",             settings.Sha1);
+        AaruLogging.Debug(MODULE_NAME, "--sha256={0}",           settings.Sha256);
+        AaruLogging.Debug(MODULE_NAME, "--sha384={0}",           settings.Sha384);
+        AaruLogging.Debug(MODULE_NAME, "--sha512={0}",           settings.Sha512);
+        AaruLogging.Debug(MODULE_NAME, "--spamsum={0}",          settings.SpamSum);
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}",          settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--whole-disc={0}",       settings.WholeDisc);
 
         IFilter inputFilter = null;
 
@@ -88,7 +88,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
         if(inputFilter == null)
         {
-            AaruConsole.Error(UI.Cannot_open_specified_file);
+            AaruLogging.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -103,7 +103,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
         if(inputFormat == null)
         {
-            AaruConsole.Error(UI.Unable_to_recognize_image_format_not_checksumming);
+            AaruLogging.Error(UI.Unable_to_recognize_image_format_not_checksumming);
 
             return (int)ErrorNumber.UnrecognizedFormat;
         }
@@ -118,8 +118,8 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
         if(opened != ErrorNumber.NoError)
         {
-            AaruConsole.WriteLine(UI.Unable_to_open_image_format);
-            AaruConsole.WriteLine(Localization.Core.Error_0, opened);
+            AaruLogging.WriteLine(UI.Unable_to_open_image_format);
+            AaruLogging.WriteLine(Localization.Core.Error_0, opened);
 
             return (int)opened;
         }
@@ -190,7 +190,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         if(currentTrack.StartSector - previousTrackEnd != 0 && wholeDisc)
                                             for(ulong i = previousTrackEnd + 1; i < currentTrack.StartSector; i++)
                                             {
-                                                AaruConsole.Write("\rHashing track-less sector {0}", i);
+                                                AaruLogging.Write("\rHashing track-less sector {0}", i);
 
                                                 byte[] hiddenSector = inputFormat.ReadSector(i);
 
@@ -198,7 +198,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                             }
                                         */
 
-                                        AaruConsole.Debug(MODULE_NAME,
+                                        AaruLogging.Debug(MODULE_NAME,
                                                                    UI.Track_0_starts_at_sector_1_and_ends_at_sector_2,
                                                                    currentTrack.Sequence,
                                                                    currentTrack.StartSector,
@@ -231,7 +231,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                                 if(errno != ErrorNumber.NoError)
                                                 {
-                                                    AaruConsole
+                                                    AaruLogging
                                                        .Error(string
                                                                           .Format(UI
                                                                                   .Error_0_while_reading_1_sectors_from_sector_2,
@@ -259,7 +259,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                                 if(errno != ErrorNumber.NoError)
                                                 {
-                                                    AaruConsole
+                                                    AaruLogging
                                                        .Error(string
                                                                           .Format(UI
                                                                                   .Error_0_while_reading_1_sectors_from_sector_2,
@@ -281,7 +281,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         }
 
                                         trackTask.StopTask();
-                                        AaruConsole.WriteLine();
+                                        AaruLogging.WriteLine();
 
                                         if(!settings.SeparatedTracks) continue;
 
@@ -289,7 +289,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                         foreach(CommonTypes.AaruMetadata.Checksum chk in trackChecksum.End())
                                         {
-                                            AaruConsole.WriteLine($"[bold]{string.Format(UI.Checksums_Track_0_has_1,
+                                            AaruLogging.WriteLine($"[bold]{string.Format(UI.Checksums_Track_0_has_1,
                                                 currentTrack.Sequence, chk.Type)}[/] {chk.Value}");
                                         }
 
@@ -300,7 +300,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                     if(opticalInput.Info.Sectors - previousTrackEnd != 0 && wholeDisc)
                                         for(ulong i = previousTrackEnd + 1; i < opticalInput.Info.Sectors; i++)
                                         {
-                                            AaruConsole.Write("\rHashing track-less sector {0}", i);
+                                            AaruLogging.Write("\rHashing track-less sector {0}", i);
 
                                             byte[] hiddenSector = inputFormat.ReadSector(i);
                                             mediaChecksum?.Update(hiddenSector);
@@ -311,11 +311,11 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                     if(mediaChecksum == null) return;
 
-                                    AaruConsole.WriteLine();
+                                    AaruLogging.WriteLine();
 
                                     foreach(CommonTypes.AaruMetadata.Checksum chk in mediaChecksum.End())
                                     {
-                                        AaruConsole.WriteLine($"[bold]{string.Format(UI.Checksums_Disc_has_0, chk.Type)
+                                        AaruLogging.WriteLine($"[bold]{string.Format(UI.Checksums_Disc_has_0, chk.Type)
                                         }:[/] {chk.Value}");
                                     }
                                 });
@@ -325,9 +325,9 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                 catch(Exception ex)
                 {
                     if(settings.Debug)
-                        AaruConsole.Debug(Localization.Core.Could_not_get_tracks_because_0, ex.Message);
+                        AaruLogging.Debug(Localization.Core.Could_not_get_tracks_because_0, ex.Message);
                     else
-                        AaruConsole.WriteLine("Unable to get separate tracks, not checksumming them");
+                        AaruLogging.WriteLine("Unable to get separate tracks, not checksumming them");
                 }
 
                 break;
@@ -367,7 +367,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                             if(errno != ErrorNumber.NoError)
                                             {
-                                                AaruConsole
+                                                AaruLogging
                                                    .Error(string.Format(UI.Error_0_while_reading_block_1,
                                                                        errno,
                                                                        i));
@@ -382,7 +382,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         preFileTask.StopTask();
                                     }
 
-                                    AaruConsole.Debug(MODULE_NAME,
+                                    AaruLogging.Debug(MODULE_NAME,
                                                                UI.File_0_starts_at_block_1_and_ends_at_block_2,
                                                                currentFile.File,
                                                                currentFile.FirstBlock,
@@ -408,7 +408,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                             if(errno != ErrorNumber.NoError)
                                             {
-                                                AaruConsole
+                                                AaruLogging
                                                    .Error(string
                                                                       .Format(UI
                                                                                  .Error_0_while_reading_1_sectors_from_sector_2,
@@ -434,7 +434,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                             if(errno != ErrorNumber.NoError)
                                             {
-                                                AaruConsole
+                                                AaruLogging
                                                    .Error(string
                                                                       .Format(UI
                                                                                  .Error_0_while_reading_1_sectors_from_sector_2,
@@ -461,7 +461,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                     }
 
                                     fileTask.StopTask();
-                                    AaruConsole.WriteLine();
+                                    AaruLogging.WriteLine();
 
                                     if(settings.SeparatedTracks)
                                     {
@@ -469,7 +469,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         {
                                             foreach(CommonTypes.AaruMetadata.Checksum chk in trackChecksum.End())
                                             {
-                                                AaruConsole.WriteLine($"[bold]{string.Format(UI.Checksums_File_0_has_1,
+                                                AaruLogging.WriteLine($"[bold]{string.Format(UI.Checksums_File_0_has_1,
                                                     currentFile.File, chk.Type)}[/]: {chk.Value}");
                                             }
                                         }
@@ -493,7 +493,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                     if(errno != ErrorNumber.NoError)
                                     {
-                                        AaruConsole.Error(string.Format(UI.Error_0_while_reading_block_1,
+                                        AaruLogging.Error(string.Format(UI.Error_0_while_reading_block_1,
                                                                        errno,
                                                                        i));
 
@@ -509,11 +509,11 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                 if(settings.WholeDisc && mediaChecksum != null)
                 {
-                    AaruConsole.WriteLine();
+                    AaruLogging.WriteLine();
 
                     foreach(CommonTypes.AaruMetadata.Checksum chk in mediaChecksum.End())
                     {
-                        AaruConsole.WriteLine($"[bold]{string.Format(UI.Checksums_Tape_has_0, chk.Type)}[/] {chk.Value
+                        AaruLogging.WriteLine($"[bold]{string.Format(UI.Checksums_Tape_has_0, chk.Type)}[/] {chk.Value
                         }");
                     }
                 }
@@ -547,7 +547,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                         if(errno != ErrorNumber.NoError)
                                         {
-                                            AaruConsole
+                                            AaruLogging
                                                .Error(string.Format(UI.Error_0_while_reading_1_bytes_from_2,
                                                                              errno,
                                                                              BYTES_TO_READ,
@@ -574,7 +574,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                         if(errno != ErrorNumber.NoError)
                                         {
-                                            AaruConsole
+                                            AaruLogging
                                                .Error(string.Format(UI.Error_0_while_reading_1_bytes_from_2,
                                                                              errno,
                                                                              length - doneBytes,
@@ -598,10 +598,10 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                 if(errno != ErrorNumber.NoError) return (int)errno;
 
-                AaruConsole.WriteLine();
+                AaruLogging.WriteLine();
 
                 foreach(CommonTypes.AaruMetadata.Checksum chk in mediaChecksum.End())
-                    AaruConsole.WriteLine($"[bold]{string.Format(UI.Checksums_Media_has_0, chk.Type)}[/] {chk.Value}");
+                    AaruLogging.WriteLine($"[bold]{string.Format(UI.Checksums_Media_has_0, chk.Type)}[/] {chk.Value}");
 
                 break;
             }
@@ -632,7 +632,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                         if(errno != ErrorNumber.NoError)
                                         {
-                                            AaruConsole
+                                            AaruLogging
                                                .Error(string
                                                                   .Format(UI
                                                                              .Error_0_while_reading_1_sectors_from_sector_2,
@@ -658,7 +658,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                         if(errno != ErrorNumber.NoError)
                                         {
-                                            AaruConsole
+                                            AaruLogging
                                                .Error(string
                                                                   .Format(UI
                                                                              .Error_0_while_reading_1_sectors_from_sector_2,
@@ -683,10 +683,10 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                 if(errno != ErrorNumber.NoError) return (int)errno;
 
-                AaruConsole.WriteLine();
+                AaruLogging.WriteLine();
 
                 foreach(CommonTypes.AaruMetadata.Checksum chk in mediaChecksum.End())
-                    AaruConsole.WriteLine($"[bold]{string.Format(UI.Checksums_Disk_has_0, chk.Type)}[/] {chk.Value}");
+                    AaruLogging.WriteLine($"[bold]{string.Format(UI.Checksums_Disk_has_0, chk.Type)}[/] {chk.Value}");
 
                 break;
             }

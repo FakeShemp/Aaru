@@ -90,7 +90,7 @@ public static class Spare
 
         if(SAIResponse.Length != 16)
         {
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        Localization
                                           .Spare_Decode_Found_incorrect_Blu_ray_Spare_Area_Information_size_0_bytes,
                                        SAIResponse.Length);

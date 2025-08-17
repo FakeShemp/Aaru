@@ -55,7 +55,7 @@ public sealed partial class Fossil
 
         Header hdr = Marshal.ByteArrayToStructureBigEndian<Header>(sector);
 
-        AaruConsole.Debug(MODULE_NAME, Localization.magic_at_0_expected_1, hdr.magic, FOSSIL_HDR_MAGIC);
+        AaruLogging.Debug(MODULE_NAME, Localization.magic_at_0_expected_1, hdr.magic, FOSSIL_HDR_MAGIC);
 
         return hdr.magic == FOSSIL_HDR_MAGIC;
     }
@@ -79,7 +79,7 @@ public sealed partial class Fossil
 
         Header hdr = Marshal.ByteArrayToStructureBigEndian<Header>(sector);
 
-        AaruConsole.Debug(MODULE_NAME, Localization.magic_at_0_expected_1, hdr.magic, FOSSIL_HDR_MAGIC);
+        AaruLogging.Debug(MODULE_NAME, Localization.magic_at_0_expected_1, hdr.magic, FOSSIL_HDR_MAGIC);
 
         var sb = new StringBuilder();
 
@@ -105,7 +105,7 @@ public sealed partial class Fossil
             imagePlugin.ReadSector(sbLocation, out sector);
             SuperBlock fsb = Marshal.ByteArrayToStructureBigEndian<SuperBlock>(sector);
 
-            AaruConsole.Debug(MODULE_NAME, Localization.magic_0_expected_1, fsb.magic, FOSSIL_SB_MAGIC);
+            AaruLogging.Debug(MODULE_NAME, Localization.magic_0_expected_1, fsb.magic, FOSSIL_SB_MAGIC);
 
             if(fsb.magic == FOSSIL_SB_MAGIC)
             {

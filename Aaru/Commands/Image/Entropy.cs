@@ -54,12 +54,12 @@ sealed class EntropyCommand : Command<EntropyCommand.Settings>
 
         Statistics.AddCommand("entropy");
 
-        AaruConsole.Debug(MODULE_NAME, "--debug={0}",              settings.Debug);
-        AaruConsole.Debug(MODULE_NAME, "--duplicated-sectors={0}", settings.DuplicatedSectors);
-        AaruConsole.Debug(MODULE_NAME, "--input={0}",              Markup.Escape(settings.ImagePath ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--separated-tracks={0}",   settings.SeparatedTracks);
-        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",            settings.Verbose);
-        AaruConsole.Debug(MODULE_NAME, "--whole-disc={0}",         settings.WholeDisc);
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}",              settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--duplicated-sectors={0}", settings.DuplicatedSectors);
+        AaruLogging.Debug(MODULE_NAME, "--input={0}",              Markup.Escape(settings.ImagePath ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--separated-tracks={0}",   settings.SeparatedTracks);
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}",            settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--whole-disc={0}",         settings.WholeDisc);
 
         IFilter inputFilter = null;
 
@@ -71,7 +71,7 @@ sealed class EntropyCommand : Command<EntropyCommand.Settings>
 
         if(inputFilter == null)
         {
-            AaruConsole.Error(UI.Cannot_open_specified_file);
+            AaruLogging.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -86,7 +86,7 @@ sealed class EntropyCommand : Command<EntropyCommand.Settings>
 
         if(inputFormat == null)
         {
-            AaruConsole.Error(UI.Unable_to_recognize_image_format_not_checksumming);
+            AaruLogging.Error(UI.Unable_to_recognize_image_format_not_checksumming);
 
             return (int)ErrorNumber.UnrecognizedFormat;
         }
@@ -101,8 +101,8 @@ sealed class EntropyCommand : Command<EntropyCommand.Settings>
 
         if(opened != ErrorNumber.NoError)
         {
-            AaruConsole.WriteLine(UI.Unable_to_open_image_format);
-            AaruConsole.WriteLine(Localization.Core.Error_0, opened);
+            AaruLogging.WriteLine(UI.Unable_to_open_image_format);
+            AaruLogging.WriteLine(Localization.Core.Error_0, opened);
 
             return (int)opened;
         }
@@ -158,7 +158,7 @@ sealed class EntropyCommand : Command<EntropyCommand.Settings>
                         {
                             if(opticalFormat.Sessions?.Count > 1)
                             {
-                                AaruConsole
+                                AaruLogging
                                    .Error(UI
                                                       .Calculating_disc_entropy_of_multisession_images_is_not_yet_implemented);
 
@@ -175,13 +175,13 @@ sealed class EntropyCommand : Command<EntropyCommand.Settings>
 
                             foreach(EntropyResults trackEntropy in tracksEntropy)
                             {
-                                AaruConsole.WriteLine(UI.Entropy_for_track_0_is_1,
+                                AaruLogging.WriteLine(UI.Entropy_for_track_0_is_1,
                                                       trackEntropy.Track,
                                                       trackEntropy.Entropy);
 
                                 if(trackEntropy.UniqueSectors != null)
                                 {
-                                    AaruConsole.WriteLine(UI.Track_0_has_1_unique_sectors_2,
+                                    AaruLogging.WriteLine(UI.Track_0_has_1_unique_sectors_2,
                                                           trackEntropy.Track,
                                                           trackEntropy.UniqueSectors,
                                                           (double)trackEntropy.UniqueSectors / trackEntropy.Sectors);
@@ -196,11 +196,11 @@ sealed class EntropyCommand : Command<EntropyCommand.Settings>
                                                      : entropyCalculator.CalculateMediaEntropy(settings
                                                         .DuplicatedSectors);
 
-                        AaruConsole.WriteLine(UI.Entropy_for_disk_is_0, entropy.Entropy);
+                        AaruLogging.WriteLine(UI.Entropy_for_disk_is_0, entropy.Entropy);
 
                         if(entropy.UniqueSectors != null)
                         {
-                            AaruConsole.WriteLine(UI.Disk_has_0_unique_sectors_1,
+                            AaruLogging.WriteLine(UI.Disk_has_0_unique_sectors_1,
                                                   entropy.UniqueSectors,
                                                   (double)entropy.UniqueSectors / entropy.Sectors);
                         }

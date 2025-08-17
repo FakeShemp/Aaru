@@ -69,7 +69,7 @@ public sealed partial class CisCopy
 
                 break;
             default:
-                AaruConsole.Error(string.Format(Localization.Incorrect_disk_type_0, (byte)type));
+                AaruLogging.Error(string.Format(Localization.Incorrect_disk_type_0, (byte)type));
 
                 return ErrorNumber.InvalidArgument;
         }
@@ -81,7 +81,7 @@ public sealed partial class CisCopy
 
         if(cmpr != Compression.None)
         {
-            AaruConsole.Error(Localization.Compressed_images_are_not_supported);
+            AaruLogging.Error(Localization.Compressed_images_are_not_supported);
 
             return ErrorNumber.NotImplemented;
         }
@@ -184,7 +184,7 @@ public sealed partial class CisCopy
 
         decodedImage.Close();
 
-        AaruConsole.Verbose(Localization.CisCopy_image_contains_a_disk_of_type_0, _imageInfo.MediaType);
+        AaruLogging.Verbose(Localization.CisCopy_image_contains_a_disk_of_type_0, _imageInfo.MediaType);
 
         return ErrorNumber.NoError;
     }

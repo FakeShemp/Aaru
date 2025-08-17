@@ -77,50 +77,50 @@ public sealed partial class Udif
 
             if(_footer.signature != UDIF_SIGNATURE)
             {
-                AaruConsole.Error(Localization.Unable_to_find_UDIF_signature);
+                AaruLogging.Error(Localization.Unable_to_find_UDIF_signature);
 
                 return ErrorNumber.InvalidArgument;
             }
 
-            AaruConsole.Verbose(Localization.Found_obsolete_UDIF_format);
+            AaruLogging.Verbose(Localization.Found_obsolete_UDIF_format);
         }
 
-        AaruConsole.Debug(MODULE_NAME, "footer.signature = 0x{0:X8}",     _footer.signature);
-        AaruConsole.Debug(MODULE_NAME, "footer.version = {0}",            _footer.version);
-        AaruConsole.Debug(MODULE_NAME, "footer.headerSize = {0}",         _footer.headerSize);
-        AaruConsole.Debug(MODULE_NAME, "footer.flags = {0}",              _footer.flags);
-        AaruConsole.Debug(MODULE_NAME, "footer.runningDataForkOff = {0}", _footer.runningDataForkOff);
-        AaruConsole.Debug(MODULE_NAME, "footer.dataForkOff = {0}",        _footer.dataForkOff);
-        AaruConsole.Debug(MODULE_NAME, "footer.dataForkLen = {0}",        _footer.dataForkLen);
-        AaruConsole.Debug(MODULE_NAME, "footer.rsrcForkOff = {0}",        _footer.rsrcForkOff);
-        AaruConsole.Debug(MODULE_NAME, "footer.rsrcForkLen = {0}",        _footer.rsrcForkLen);
-        AaruConsole.Debug(MODULE_NAME, "footer.segmentNumber = {0}",      _footer.segmentNumber);
-        AaruConsole.Debug(MODULE_NAME, "footer.segmentCount = {0}",       _footer.segmentCount);
-        AaruConsole.Debug(MODULE_NAME, "footer.segmentId = {0}",          _footer.segmentId);
-        AaruConsole.Debug(MODULE_NAME, "footer.dataForkChkType = {0}",    _footer.dataForkChkType);
-        AaruConsole.Debug(MODULE_NAME, "footer.dataForkLen = {0}",        _footer.dataForkLen);
-        AaruConsole.Debug(MODULE_NAME, "footer.dataForkChk = 0x{0:X8}",   _footer.dataForkChk);
-        AaruConsole.Debug(MODULE_NAME, "footer.plistOff = {0}",           _footer.plistOff);
-        AaruConsole.Debug(MODULE_NAME, "footer.plistLen = {0}",           _footer.plistLen);
-        AaruConsole.Debug(MODULE_NAME, "footer.masterChkType = {0}",      _footer.masterChkType);
-        AaruConsole.Debug(MODULE_NAME, "footer.masterChkLen = {0}",       _footer.masterChkLen);
-        AaruConsole.Debug(MODULE_NAME, "footer.masterChk = 0x{0:X8}",     _footer.masterChk);
-        AaruConsole.Debug(MODULE_NAME, "footer.imageVariant = {0}",       _footer.imageVariant);
-        AaruConsole.Debug(MODULE_NAME, "footer.sectorCount = {0}",        _footer.sectorCount);
+        AaruLogging.Debug(MODULE_NAME, "footer.signature = 0x{0:X8}",     _footer.signature);
+        AaruLogging.Debug(MODULE_NAME, "footer.version = {0}",            _footer.version);
+        AaruLogging.Debug(MODULE_NAME, "footer.headerSize = {0}",         _footer.headerSize);
+        AaruLogging.Debug(MODULE_NAME, "footer.flags = {0}",              _footer.flags);
+        AaruLogging.Debug(MODULE_NAME, "footer.runningDataForkOff = {0}", _footer.runningDataForkOff);
+        AaruLogging.Debug(MODULE_NAME, "footer.dataForkOff = {0}",        _footer.dataForkOff);
+        AaruLogging.Debug(MODULE_NAME, "footer.dataForkLen = {0}",        _footer.dataForkLen);
+        AaruLogging.Debug(MODULE_NAME, "footer.rsrcForkOff = {0}",        _footer.rsrcForkOff);
+        AaruLogging.Debug(MODULE_NAME, "footer.rsrcForkLen = {0}",        _footer.rsrcForkLen);
+        AaruLogging.Debug(MODULE_NAME, "footer.segmentNumber = {0}",      _footer.segmentNumber);
+        AaruLogging.Debug(MODULE_NAME, "footer.segmentCount = {0}",       _footer.segmentCount);
+        AaruLogging.Debug(MODULE_NAME, "footer.segmentId = {0}",          _footer.segmentId);
+        AaruLogging.Debug(MODULE_NAME, "footer.dataForkChkType = {0}",    _footer.dataForkChkType);
+        AaruLogging.Debug(MODULE_NAME, "footer.dataForkLen = {0}",        _footer.dataForkLen);
+        AaruLogging.Debug(MODULE_NAME, "footer.dataForkChk = 0x{0:X8}",   _footer.dataForkChk);
+        AaruLogging.Debug(MODULE_NAME, "footer.plistOff = {0}",           _footer.plistOff);
+        AaruLogging.Debug(MODULE_NAME, "footer.plistLen = {0}",           _footer.plistLen);
+        AaruLogging.Debug(MODULE_NAME, "footer.masterChkType = {0}",      _footer.masterChkType);
+        AaruLogging.Debug(MODULE_NAME, "footer.masterChkLen = {0}",       _footer.masterChkLen);
+        AaruLogging.Debug(MODULE_NAME, "footer.masterChk = 0x{0:X8}",     _footer.masterChk);
+        AaruLogging.Debug(MODULE_NAME, "footer.imageVariant = {0}",       _footer.imageVariant);
+        AaruLogging.Debug(MODULE_NAME, "footer.sectorCount = {0}",        _footer.sectorCount);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "footer.reserved1 is empty? = {0}",
                                    ArrayHelpers.ArrayIsNullOrEmpty(_footer.reserved1));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "footer.reserved2 is empty? = {0}",
                                    ArrayHelpers.ArrayIsNullOrEmpty(_footer.reserved2));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "footer.reserved3 is empty? = {0}",
                                    ArrayHelpers.ArrayIsNullOrEmpty(_footer.reserved3));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "footer.reserved4 is empty? = {0}",
                                    ArrayHelpers.ArrayIsNullOrEmpty(_footer.reserved4));
 
@@ -132,7 +132,7 @@ public sealed partial class Udif
 
         if(_footer.plistLen == 0 && _footer.rsrcForkLen != 0)
         {
-            AaruConsole.Debug(MODULE_NAME, Localization.Reading_resource_fork);
+            AaruLogging.Debug(MODULE_NAME, Localization.Reading_resource_fork);
             byte[] rsrcB = new byte[_footer.rsrcForkLen];
             stream.Seek((long)_footer.rsrcForkOff, SeekOrigin.Begin);
             stream.EnsureRead(rsrcB, 0, rsrcB.Length);
@@ -141,7 +141,7 @@ public sealed partial class Udif
 
             if(!rsrc.ContainsKey(BLOCK_OS_TYPE))
             {
-                AaruConsole.Error(Localization.Image_resource_fork_doesnt_contain_UDIF_block_chunks);
+                AaruLogging.Error(Localization.Image_resource_fork_doesnt_contain_UDIF_block_chunks);
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -150,14 +150,14 @@ public sealed partial class Udif
 
             if(blkxRez == null)
             {
-                AaruConsole.Error(Localization.Image_resource_fork_doesnt_contain_UDIF_block_chunks);
+                AaruLogging.Error(Localization.Image_resource_fork_doesnt_contain_UDIF_block_chunks);
 
                 return ErrorNumber.InvalidArgument;
             }
 
             if(blkxRez.GetIds().Length == 0)
             {
-                AaruConsole.Error(Localization.Image_resource_fork_doesnt_contain_UDIF_block_chunks);
+                AaruLogging.Error(Localization.Image_resource_fork_doesnt_contain_UDIF_block_chunks);
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -170,24 +170,24 @@ public sealed partial class Udif
         }
         else if(_footer.plistLen != 0)
         {
-            AaruConsole.Debug(MODULE_NAME, Localization.Reading_property_list);
+            AaruLogging.Debug(MODULE_NAME, Localization.Reading_property_list);
             byte[] plistB = new byte[_footer.plistLen];
             stream.Seek((long)_footer.plistOff, SeekOrigin.Begin);
             stream.EnsureRead(plistB, 0, plistB.Length);
 
-            AaruConsole.Debug(MODULE_NAME, Localization.Parsing_property_list);
+            AaruLogging.Debug(MODULE_NAME, Localization.Parsing_property_list);
             var plist = (NSDictionary)XmlPropertyListParser.Parse(plistB);
 
             if(plist == null)
             {
-                AaruConsole.Error(Localization.Could_not_parse_property_list);
+                AaruLogging.Error(Localization.Could_not_parse_property_list);
 
                 return ErrorNumber.InOutError;
             }
 
             if(!plist.TryGetValue(RESOURCE_FORK_KEY, out NSObject rsrcObj))
             {
-                AaruConsole.Error(Localization.Could_not_retrieve_resource_fork);
+                AaruLogging.Error(Localization.Could_not_retrieve_resource_fork);
 
                 return ErrorNumber.InOutError;
             }
@@ -196,7 +196,7 @@ public sealed partial class Udif
 
             if(!rsrc.TryGetValue(BLOCK_KEY, out NSObject blkxObj))
             {
-                AaruConsole.Error(Localization.Could_not_retrieve_block_chunks_array);
+                AaruLogging.Error(Localization.Could_not_retrieve_block_chunks_array);
 
                 return ErrorNumber.InOutError;
             }
@@ -207,14 +207,14 @@ public sealed partial class Udif
             {
                 if(!part.TryGetValue("Name", out _))
                 {
-                    AaruConsole.Error(Localization.Could_not_retrieve_Name);
+                    AaruLogging.Error(Localization.Could_not_retrieve_Name);
 
                     return ErrorNumber.InOutError;
                 }
 
                 if(!part.TryGetValue("Data", out NSObject dataObj))
                 {
-                    AaruConsole.Error(Localization.Could_not_retrieve_Data);
+                    AaruLogging.Error(Localization.Could_not_retrieve_Data);
 
                     return ErrorNumber.InOutError;
                 }
@@ -233,12 +233,12 @@ public sealed partial class Udif
         {
             if(imageFilter.ResourceForkLength == 0)
             {
-                AaruConsole.Error(Localization.This_image_needs_the_resource_fork_to_work);
+                AaruLogging.Error(Localization.This_image_needs_the_resource_fork_to_work);
 
                 return ErrorNumber.InvalidArgument;
             }
 
-            AaruConsole.Debug(MODULE_NAME, Localization.Reading_resource_fork);
+            AaruLogging.Debug(MODULE_NAME, Localization.Reading_resource_fork);
             Stream rsrcStream = imageFilter.GetResourceForkStream();
 
             byte[] rsrcB = new byte[rsrcStream.Length];
@@ -249,7 +249,7 @@ public sealed partial class Udif
 
             if(!rsrc.ContainsKey(BLOCK_OS_TYPE))
             {
-                AaruConsole.Error(Localization.Image_resource_fork_doesnt_contain_UDIF_block_chunks);
+                AaruLogging.Error(Localization.Image_resource_fork_doesnt_contain_UDIF_block_chunks);
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -258,14 +258,14 @@ public sealed partial class Udif
 
             if(blkxRez == null)
             {
-                AaruConsole.Error(Localization.Image_resource_fork_doesnt_contain_UDIF_block_chunks);
+                AaruLogging.Error(Localization.Image_resource_fork_doesnt_contain_UDIF_block_chunks);
 
                 return ErrorNumber.InvalidArgument;
             }
 
             if(blkxRez.GetIds().Length == 0)
             {
-                AaruConsole.Error(Localization.Image_resource_fork_doesnt_contain_UDIF_block_chunks);
+                AaruLogging.Error(Localization.Image_resource_fork_doesnt_contain_UDIF_block_chunks);
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -315,7 +315,7 @@ public sealed partial class Udif
         else
             _imageInfo.Application = "DiskCopy";
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Image_application_0_version_1,
                                    _imageInfo.Application,
                                    _imageInfo.ApplicationVersion);
@@ -324,7 +324,7 @@ public sealed partial class Udif
 
         if(blkxList.Count == 0)
         {
-            AaruConsole.Error(Localization.Could_not_retrieve_block_chunks);
+            AaruLogging.Error(Localization.Could_not_retrieve_block_chunks);
 
             return ErrorNumber.InvalidArgument;
         }
@@ -337,25 +337,25 @@ public sealed partial class Udif
             Array.Copy(blkxBytes, 0, bHdrB, 0, Marshal.SizeOf<BlockHeader>());
             BlockHeader bHdr = Marshal.ByteArrayToStructureBigEndian<BlockHeader>(bHdrB);
 
-            AaruConsole.Debug(MODULE_NAME, "bHdr.signature = 0x{0:X8}",  bHdr.signature);
-            AaruConsole.Debug(MODULE_NAME, "bHdr.version = {0}",         bHdr.version);
-            AaruConsole.Debug(MODULE_NAME, "bHdr.sectorStart = {0}",     bHdr.sectorStart);
-            AaruConsole.Debug(MODULE_NAME, "bHdr.sectorCount = {0}",     bHdr.sectorCount);
-            AaruConsole.Debug(MODULE_NAME, "bHdr.dataOffset = {0}",      bHdr.dataOffset);
-            AaruConsole.Debug(MODULE_NAME, "bHdr.buffers = {0}",         bHdr.buffers);
-            AaruConsole.Debug(MODULE_NAME, "bHdr.descriptor = 0x{0:X8}", bHdr.descriptor);
-            AaruConsole.Debug(MODULE_NAME, "bHdr.reserved1 = {0}",       bHdr.reserved1);
-            AaruConsole.Debug(MODULE_NAME, "bHdr.reserved2 = {0}",       bHdr.reserved2);
-            AaruConsole.Debug(MODULE_NAME, "bHdr.reserved3 = {0}",       bHdr.reserved3);
-            AaruConsole.Debug(MODULE_NAME, "bHdr.reserved4 = {0}",       bHdr.reserved4);
-            AaruConsole.Debug(MODULE_NAME, "bHdr.reserved5 = {0}",       bHdr.reserved5);
-            AaruConsole.Debug(MODULE_NAME, "bHdr.reserved6 = {0}",       bHdr.reserved6);
-            AaruConsole.Debug(MODULE_NAME, "bHdr.checksumType = {0}",    bHdr.checksumType);
-            AaruConsole.Debug(MODULE_NAME, "bHdr.checksumLen = {0}",     bHdr.checksumLen);
-            AaruConsole.Debug(MODULE_NAME, "bHdr.checksum = 0x{0:X8}",   bHdr.checksum);
-            AaruConsole.Debug(MODULE_NAME, "bHdr.chunks = {0}",          bHdr.chunks);
+            AaruLogging.Debug(MODULE_NAME, "bHdr.signature = 0x{0:X8}",  bHdr.signature);
+            AaruLogging.Debug(MODULE_NAME, "bHdr.version = {0}",         bHdr.version);
+            AaruLogging.Debug(MODULE_NAME, "bHdr.sectorStart = {0}",     bHdr.sectorStart);
+            AaruLogging.Debug(MODULE_NAME, "bHdr.sectorCount = {0}",     bHdr.sectorCount);
+            AaruLogging.Debug(MODULE_NAME, "bHdr.dataOffset = {0}",      bHdr.dataOffset);
+            AaruLogging.Debug(MODULE_NAME, "bHdr.buffers = {0}",         bHdr.buffers);
+            AaruLogging.Debug(MODULE_NAME, "bHdr.descriptor = 0x{0:X8}", bHdr.descriptor);
+            AaruLogging.Debug(MODULE_NAME, "bHdr.reserved1 = {0}",       bHdr.reserved1);
+            AaruLogging.Debug(MODULE_NAME, "bHdr.reserved2 = {0}",       bHdr.reserved2);
+            AaruLogging.Debug(MODULE_NAME, "bHdr.reserved3 = {0}",       bHdr.reserved3);
+            AaruLogging.Debug(MODULE_NAME, "bHdr.reserved4 = {0}",       bHdr.reserved4);
+            AaruLogging.Debug(MODULE_NAME, "bHdr.reserved5 = {0}",       bHdr.reserved5);
+            AaruLogging.Debug(MODULE_NAME, "bHdr.reserved6 = {0}",       bHdr.reserved6);
+            AaruLogging.Debug(MODULE_NAME, "bHdr.checksumType = {0}",    bHdr.checksumType);
+            AaruLogging.Debug(MODULE_NAME, "bHdr.checksumLen = {0}",     bHdr.checksumLen);
+            AaruLogging.Debug(MODULE_NAME, "bHdr.checksum = 0x{0:X8}",   bHdr.checksum);
+            AaruLogging.Debug(MODULE_NAME, "bHdr.chunks = {0}",          bHdr.chunks);
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        "bHdr.reservedChk is empty? = {0}",
                                        ArrayHelpers.ArrayIsNullOrEmpty(bHdr.reservedChk));
 
@@ -373,12 +373,12 @@ public sealed partial class Udif
 
                 BlockChunk bChnk = Marshal.ByteArrayToStructureBigEndian<BlockChunk>(bChnkB);
 
-                AaruConsole.Debug(MODULE_NAME, "bHdr.chunk[{0}].type = 0x{1:X8}", i, bChnk.type);
-                AaruConsole.Debug(MODULE_NAME, "bHdr.chunk[{0}].comment = {1}",   i, bChnk.comment);
-                AaruConsole.Debug(MODULE_NAME, "bHdr.chunk[{0}].sector = {1}",    i, bChnk.sector);
-                AaruConsole.Debug(MODULE_NAME, "bHdr.chunk[{0}].sectors = {1}",   i, bChnk.sectors);
-                AaruConsole.Debug(MODULE_NAME, "bHdr.chunk[{0}].offset = {1}",    i, bChnk.offset);
-                AaruConsole.Debug(MODULE_NAME, "bHdr.chunk[{0}].length = {1}",    i, bChnk.length);
+                AaruLogging.Debug(MODULE_NAME, "bHdr.chunk[{0}].type = 0x{1:X8}", i, bChnk.type);
+                AaruLogging.Debug(MODULE_NAME, "bHdr.chunk[{0}].comment = {1}",   i, bChnk.comment);
+                AaruLogging.Debug(MODULE_NAME, "bHdr.chunk[{0}].sector = {1}",    i, bChnk.sector);
+                AaruLogging.Debug(MODULE_NAME, "bHdr.chunk[{0}].sectors = {1}",   i, bChnk.sectors);
+                AaruLogging.Debug(MODULE_NAME, "bHdr.chunk[{0}].offset = {1}",    i, bChnk.offset);
+                AaruLogging.Debug(MODULE_NAME, "bHdr.chunk[{0}].length = {1}",    i, bChnk.length);
 
                 if(bChnk.type == CHUNK_TYPE_END) break;
 
@@ -396,22 +396,22 @@ public sealed partial class Udif
 
                     // TODO: Handle compressed chunks
                     case CHUNK_TYPE_KENCODE:
-                        AaruConsole.Error(Localization.Chunks_compressed_with_KenCode_are_not_yet_supported);
+                        AaruLogging.Error(Localization.Chunks_compressed_with_KenCode_are_not_yet_supported);
 
                         return ErrorNumber.NotImplemented;
                     case CHUNK_TYPE_LZH:
-                        AaruConsole.Error(Localization.Chunks_compressed_with_LZH_are_not_yet_supported);
+                        AaruLogging.Error(Localization.Chunks_compressed_with_LZH_are_not_yet_supported);
 
                         return ErrorNumber.NotImplemented;
                     case CHUNK_TYPE_LZFSE when !LZFSE.IsSupported:
-                        AaruConsole.Error(Localization.Chunks_compressed_with_lzfse_are_not_yet_supported);
+                        AaruLogging.Error(Localization.Chunks_compressed_with_lzfse_are_not_yet_supported);
 
                         return ErrorNumber.NotImplemented;
                 }
 
                 if(bChnk.type is > CHUNK_TYPE_NOCOPY and < CHUNK_TYPE_COMMNT or > CHUNK_TYPE_LZMA and < CHUNK_TYPE_END)
                 {
-                    AaruConsole.Error(string.Format(Localization.Unsupported_chunk_type_0_found, bChnk.type));
+                    AaruLogging.Error(string.Format(Localization.Unsupported_chunk_type_0_found, bChnk.type));
 
                     return ErrorNumber.InvalidArgument;
                 }
@@ -557,7 +557,7 @@ public sealed partial class Udif
                 }
                 catch(ZlibException)
                 {
-                    AaruConsole.WriteLine(Localization.zlib_exception_on_chunk_starting_at_sector_0, readChunk.sector);
+                    AaruLogging.WriteLine(Localization.zlib_exception_on_chunk_starting_at_sector_0, readChunk.sector);
 
                     throw;
                 }

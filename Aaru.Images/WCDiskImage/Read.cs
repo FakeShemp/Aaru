@@ -61,7 +61,7 @@ public sealed partial class WCDiskImage
 
         FileHeader fheader = Marshal.ByteArrayToStructureLittleEndian<FileHeader>(header);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Detected_WC_DISK_IMAGE_with_0_heads_1_tracks_and_2_sectors_per_track,
                                    fheader.heads,
                                    fheader.cylinders,
@@ -98,25 +98,25 @@ public sealed partial class WCDiskImage
         /* if there are extra tracks, read them as well */
         if(fheader.extraTracks[0] == 1)
         {
-            AaruConsole.Debug(MODULE_NAME, Localization.Extra_track_1_head_0_present_reading);
+            AaruLogging.Debug(MODULE_NAME, Localization.Extra_track_1_head_0_present_reading);
             ReadTrack(stream, (int)_imageInfo.Cylinders, 0);
         }
 
         if(fheader.extraTracks[1] == 1)
         {
-            AaruConsole.Debug(MODULE_NAME, Localization.Extra_track_1_head_1_present_reading);
+            AaruLogging.Debug(MODULE_NAME, Localization.Extra_track_1_head_1_present_reading);
             ReadTrack(stream, (int)_imageInfo.Cylinders, 1);
         }
 
         if(fheader.extraTracks[2] == 1)
         {
-            AaruConsole.Debug(MODULE_NAME, Localization.Extra_track_2_head_0_present_reading);
+            AaruLogging.Debug(MODULE_NAME, Localization.Extra_track_2_head_0_present_reading);
             ReadTrack(stream, (int)_imageInfo.Cylinders + 1, 0);
         }
 
         if(fheader.extraTracks[3] == 1)
         {
-            AaruConsole.Debug(MODULE_NAME, Localization.Extra_track_2_head_1_present_reading);
+            AaruLogging.Debug(MODULE_NAME, Localization.Extra_track_2_head_1_present_reading);
             ReadTrack(stream, (int)_imageInfo.Cylinders + 1, 1);
         }
 
@@ -128,7 +128,7 @@ public sealed partial class WCDiskImage
         /* read the comment and directory data if present */
         if(fheader.extraFlags.HasFlag(ExtraFlag.Comment))
         {
-            AaruConsole.Debug(MODULE_NAME, Localization.Comment_present_reading);
+            AaruLogging.Debug(MODULE_NAME, Localization.Comment_present_reading);
             byte[] sheaderBuffer = new byte[6];
             stream.EnsureRead(sheaderBuffer, 0, 6);
 
@@ -136,7 +136,7 @@ public sealed partial class WCDiskImage
 
             if(sheader.flag != SectorFlag.Comment)
             {
-                AaruConsole.Error(string.Format(Localization.Invalid_sector_type_0_encountered,
+                AaruLogging.Error(string.Format(Localization.Invalid_sector_type_0_encountered,
                                                          sheader.flag.ToString()));
 
                 return ErrorNumber.InvalidArgument;
@@ -149,7 +149,7 @@ public sealed partial class WCDiskImage
 
         if(fheader.extraFlags.HasFlag(ExtraFlag.Directory))
         {
-            AaruConsole.Debug(MODULE_NAME, Localization.Directory_listing_present_reading);
+            AaruLogging.Debug(MODULE_NAME, Localization.Directory_listing_present_reading);
             byte[] sheaderBuffer = new byte[6];
             stream.EnsureRead(sheaderBuffer, 0, 6);
 
@@ -157,7 +157,7 @@ public sealed partial class WCDiskImage
 
             if(sheader.flag != SectorFlag.Directory)
             {
-                AaruConsole.Error(string.Format(Localization.Invalid_sector_type_0_encountered,
+                AaruLogging.Error(string.Format(Localization.Invalid_sector_type_0_encountered,
                                                          sheader.flag.ToString()));
 
                 return ErrorNumber.InvalidArgument;
@@ -187,7 +187,7 @@ public sealed partial class WCDiskImage
 
         if(_badSectors[(cylinderNumber, headNumber, sectorNumber)])
         {
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        Localization.reading_bad_sector_0_1_2_3,
                                        sectorAddress,
                                        cylinderNumber,
@@ -257,7 +257,7 @@ public sealed partial class WCDiskImage
             /* validate the sector header */
             if(sheader.cylinder != cyl || sheader.head != head || sheader.sector != sect)
             {
-                AaruConsole.Error(string.Format(Localization
+                AaruLogging.Error(string.Format(Localization
                                                             .Unexpected_sector_encountered_Found_CHS_0_1_2_but_expected_3_4_5,
                                                          sheader.cylinder,
                                                          sheader.head,
@@ -280,14 +280,14 @@ public sealed partial class WCDiskImage
                     CRC16IbmContext.Data(sectorData, 512, out byte[] crc);
                     short calculatedCRC = (short)(256 * crc[0] | crc[1]);
                     /*
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "CHS {0},{1},{2}: Regular sector, stored CRC=0x{3:x4}, calculated CRC=0x{4:x4}",
+                    AaruLogging.DebugWriteLine(MODULE_NAME, "CHS {0},{1},{2}: Regular sector, stored CRC=0x{3:x4}, calculated CRC=0x{4:x4}",
                         cyl, head, sect, sheader.crc, 256 * crc[0] + crc[1]);
                      */
                     _badSectors[(cyl, head, sect)] = sheader.crc != calculatedCRC;
 
                     if(calculatedCRC != sheader.crc)
                     {
-                        AaruConsole.Debug(MODULE_NAME,
+                        AaruLogging.Debug(MODULE_NAME,
                                                    Localization
                                                       .CHS_0_1_2_CRC_mismatch_stored_CRC_3_X4_calculated_CRC_4_X4,
                                                    cyl,
@@ -300,7 +300,7 @@ public sealed partial class WCDiskImage
                     break;
                 case SectorFlag.BadSector:
                     /*
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "CHS {0},{1},{2}: Bad sector",
+                    AaruLogging.DebugWriteLine(MODULE_NAME, "CHS {0},{1},{2}: Bad sector",
                         cyl, head, sect);
                      */
                     _badSectors[(cyl, head, sect)] = true;
@@ -308,7 +308,7 @@ public sealed partial class WCDiskImage
                     break;
                 case SectorFlag.RepeatByte:
                     /*
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "CHS {0},{1},{2}: RepeatByte sector, fill byte 0x{0:x2}",
+                    AaruLogging.DebugWriteLine(MODULE_NAME, "CHS {0},{1},{2}: RepeatByte sector, fill byte 0x{0:x2}",
                         cyl, head, sect, sheader.crc & 0xff);
                      */
                     for(int i = 0; i < 512; i++) sectorData[i] = (byte)(sheader.crc & 0xff);
@@ -318,7 +318,7 @@ public sealed partial class WCDiskImage
 
                     break;
                 default:
-                    AaruConsole.Error(string.Format(Localization.Invalid_sector_type_0_encountered,
+                    AaruLogging.Error(string.Format(Localization.Invalid_sector_type_0_encountered,
                                                              sheader.flag.ToString()));
 
                     return ErrorNumber.InvalidArgument;

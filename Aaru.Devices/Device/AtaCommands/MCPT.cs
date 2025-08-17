@@ -90,7 +90,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(ATA_MODULE_NAME, Localization.CHECK_MEDIA_CARD_TYPE_took_0_ms, duration);
+        AaruLogging.Debug(ATA_MODULE_NAME, Localization.CHECK_MEDIA_CARD_TYPE_took_0_ms, duration);
 
         return sense;
     }

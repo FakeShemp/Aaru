@@ -68,17 +68,17 @@ public sealed partial class DiscFerret
             stream.EnsureRead(blk, 0, Marshal.SizeOf<BlockHeader>());
             BlockHeader blockHeader = Marshal.ByteArrayToStructureBigEndian<BlockHeader>(blk);
 
-            AaruConsole.Debug(MODULE_NAME, "block@{0}.cylinder = {1}", thisOffset, blockHeader.cylinder);
+            AaruLogging.Debug(MODULE_NAME, "block@{0}.cylinder = {1}", thisOffset, blockHeader.cylinder);
 
-            AaruConsole.Debug(MODULE_NAME, "block@{0}.head = {1}", thisOffset, blockHeader.head);
+            AaruLogging.Debug(MODULE_NAME, "block@{0}.head = {1}", thisOffset, blockHeader.head);
 
-            AaruConsole.Debug(MODULE_NAME, "block@{0}.sector = {1}", thisOffset, blockHeader.sector);
+            AaruLogging.Debug(MODULE_NAME, "block@{0}.sector = {1}", thisOffset, blockHeader.sector);
 
-            AaruConsole.Debug(MODULE_NAME, "block@{0}.length = {1}", thisOffset, blockHeader.length);
+            AaruLogging.Debug(MODULE_NAME, "block@{0}.length = {1}", thisOffset, blockHeader.length);
 
             if(stream.Position + blockHeader.length > stream.Length)
             {
-                AaruConsole.Debug(MODULE_NAME, Localization.Invalid_track_block_found_at_0, thisOffset);
+                AaruLogging.Debug(MODULE_NAME, Localization.Invalid_track_block_found_at_0, thisOffset);
 
                 break;
             }
@@ -114,7 +114,7 @@ public sealed partial class DiscFerret
         _imageInfo.Application        = "DiscFerret";
         _imageInfo.ApplicationVersion = magic == DFI_MAGIC2 ? "2.0" : "1.0";
 
-        AaruConsole.Error(Localization.Flux_decoding_is_not_yet_implemented);
+        AaruLogging.Error(Localization.Flux_decoding_is_not_yet_implemented);
 
         return ErrorNumber.NotImplemented;
     }

@@ -903,7 +903,7 @@ partial class Dump
 
                         _resume.BadBlocks.Add(i + r);
 
-                        AaruConsole.Debug(MODULE_NAME,
+                        AaruLogging.Debug(MODULE_NAME,
                                                    Localization.Core.READ_error_0,
                                                    Sense.PrettifySense(senseBuf));
 
@@ -1104,7 +1104,7 @@ partial class Dump
 
                 for(ulong b = i; b < i + _skip; b++) _resume.BadBlocks.Add(b);
 
-                AaruConsole.Debug(MODULE_NAME, Localization.Core.READ_error_0, Sense.PrettifySense(senseBuf));
+                AaruLogging.Debug(MODULE_NAME, Localization.Core.READ_error_0, Sense.PrettifySense(senseBuf));
                 mhddLog.Write(i, cmdDuration < 500 ? 65535 : cmdDuration, _skip);
 
                 ibgLog.Write(i, 0);

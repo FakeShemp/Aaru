@@ -568,7 +568,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            AaruConsole.WriteLine(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
+            AaruLogging.WriteLine(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
 
             try
             {
@@ -581,8 +581,8 @@ public sealed class MainWindowViewModel : ViewModelBase
                                                             ButtonEnum.Ok,
                                                             Icon.Error);
 
-                    AaruConsole.Error(UI.Unable_to_open_image_format);
-                    AaruConsole.Error(UI.No_error_given);
+                    AaruLogging.Error(UI.Unable_to_open_image_format);
+                    AaruLogging.Error(UI.No_error_given);
 
                     return;
                 }
@@ -614,13 +614,13 @@ public sealed class MainWindowViewModel : ViewModelBase
 
                 if(partitions.Count == 0)
                 {
-                    AaruConsole.Debug(MODULE_NAME, UI.No_partitions_found);
+                    AaruLogging.Debug(MODULE_NAME, UI.No_partitions_found);
 
                     checkRaw = true;
                 }
                 else
                 {
-                    AaruConsole.WriteLine(UI._0_partitions_found, partitions.Count);
+                    AaruLogging.WriteLine(UI._0_partitions_found, partitions.Count);
 
                     foreach(string scheme in partitions.Select(p => p.Scheme).Distinct().OrderBy(s => s))
                     {
@@ -641,15 +641,15 @@ public sealed class MainWindowViewModel : ViewModelBase
                                 ViewModel = new PartitionViewModel(partition)
                             };
 
-                            AaruConsole.WriteLine(UI.Identifying_filesystems_on_partition);
+                            AaruLogging.WriteLine(UI.Identifying_filesystems_on_partition);
 
                             Core.Filesystems.Identify(imageFormat, out idPlugins, partition);
 
                             if(idPlugins.Count == 0)
-                                AaruConsole.WriteLine(UI.Filesystem_not_identified);
+                                AaruLogging.WriteLine(UI.Filesystem_not_identified);
                             else
                             {
-                                AaruConsole.WriteLine(string.Format(UI.Identified_by_0_plugins, idPlugins.Count));
+                                AaruLogging.WriteLine(string.Format(UI.Identified_by_0_plugins, idPlugins.Count));
 
                                 foreach(string pluginName in idPlugins)
                                 {
@@ -724,10 +724,10 @@ public sealed class MainWindowViewModel : ViewModelBase
                     Core.Filesystems.Identify(imageFormat, out idPlugins, wholePart);
 
                     if(idPlugins.Count == 0)
-                        AaruConsole.WriteLine(UI.Filesystem_not_identified);
+                        AaruLogging.WriteLine(UI.Filesystem_not_identified);
                     else
                     {
-                        AaruConsole.WriteLine(string.Format(UI.Identified_by_0_plugins, idPlugins.Count));
+                        AaruLogging.WriteLine(string.Format(UI.Identified_by_0_plugins, idPlugins.Count));
 
                         foreach(string pluginName in idPlugins)
                         {
@@ -797,9 +797,9 @@ public sealed class MainWindowViewModel : ViewModelBase
                                                         ButtonEnum.Ok,
                                                         Icon.Error);
 
-                AaruConsole.Error(UI.Unable_to_open_image_format);
-                AaruConsole.Error(Localization.Core.Error_0, ex.Message);
-                AaruConsole.Exception(ex);
+                AaruLogging.Error(UI.Unable_to_open_image_format);
+                AaruLogging.Error(Localization.Core.Error_0, ex.Message);
+                AaruLogging.Exception(ex);
             }
         }
         catch(Exception ex)
@@ -809,8 +809,8 @@ public sealed class MainWindowViewModel : ViewModelBase
                                                     ButtonEnum.Ok,
                                                     Icon.Error);
 
-            AaruConsole.Error(string.Format(UI.Error_reading_file_0, ex.Message));
-            AaruConsole.Exception(ex);
+            AaruLogging.Error(string.Format(UI.Error_reading_file_0, ex.Message));
+            AaruLogging.Exception(ex);
         }
 
         Statistics.AddCommand("image-info");
@@ -826,7 +826,7 @@ public sealed class MainWindowViewModel : ViewModelBase
 
         try
         {
-            AaruConsole.WriteLine(UI.Refreshing_devices);
+            AaruLogging.WriteLine(UI.Refreshing_devices);
             _devicesRoot.Devices.Clear();
 
             foreach(Devices.DeviceInfo device in Device.ListDevices()
@@ -834,7 +834,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                                                        .OrderBy(d => d.Vendor)
                                                        .ThenBy(d => d.Model))
             {
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            UI.Found_supported_device_model_0_by_manufacturer_1_on_bus_2_and_path_3,
                                            device.Model,
                                            device.Vendor,
@@ -890,7 +890,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
         catch(InvalidOperationException ex)
         {
-            AaruConsole.Exception(ex);
+            AaruLogging.Exception(ex);
         }
     }
 }

@@ -116,7 +116,7 @@ public sealed partial class Vhd
         catch(IOException ex)
         {
             ErrorMessage = string.Format(Localization.Could_not_create_new_image_file_exception_0, ex.Message);
-            AaruConsole.Exception(ex);
+            AaruLogging.Exception(ex);
 
             return false;
         }

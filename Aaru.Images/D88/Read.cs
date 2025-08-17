@@ -62,17 +62,17 @@ public sealed partial class D88
         stream.EnsureRead(hdrB, 0, hdrB.Length);
         Header hdr = Marshal.ByteArrayToStructureLittleEndian<Header>(hdrB);
 
-        AaruConsole.Debug(MODULE_NAME, "d88hdr.name = \"{0}\"", StringHandlers.CToString(hdr.name, shiftjis));
+        AaruLogging.Debug(MODULE_NAME, "d88hdr.name = \"{0}\"", StringHandlers.CToString(hdr.name, shiftjis));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "d88hdr.reserved is empty? = {0}",
                                    hdr.reserved.SequenceEqual(_reservedEmpty));
 
-        AaruConsole.Debug(MODULE_NAME, "d88hdr.write_protect = 0x{0:X2}", hdr.write_protect);
+        AaruLogging.Debug(MODULE_NAME, "d88hdr.write_protect = 0x{0:X2}", hdr.write_protect);
 
-        AaruConsole.Debug(MODULE_NAME, "d88hdr.disk_type = {0} ({1})", hdr.disk_type, (byte)hdr.disk_type);
+        AaruLogging.Debug(MODULE_NAME, "d88hdr.disk_type = {0} ({1})", hdr.disk_type, (byte)hdr.disk_type);
 
-        AaruConsole.Debug(MODULE_NAME, "d88hdr.disk_size = {0}", hdr.disk_size);
+        AaruLogging.Debug(MODULE_NAME, "d88hdr.disk_size = {0}", hdr.disk_size);
 
         if(hdr.disk_size != stream.Length) return ErrorNumber.InvalidArgument;
 
@@ -90,7 +90,7 @@ public sealed partial class D88
             if(t < 0 || t > stream.Length) return ErrorNumber.InvalidArgument;
         }
 
-        AaruConsole.Debug(MODULE_NAME, Localization._0_tracks, trkCounter);
+        AaruLogging.Debug(MODULE_NAME, Localization._0_tracks, trkCounter);
 
         if(trkCounter == 0) return ErrorNumber.InvalidArgument;
 
@@ -100,15 +100,15 @@ public sealed partial class D88
 
         SectorHeader sechdr = Marshal.ByteArrayToStructureLittleEndian<SectorHeader>(hdrB);
 
-        AaruConsole.Debug(MODULE_NAME, "sechdr.c = {0}",            sechdr.c);
-        AaruConsole.Debug(MODULE_NAME, "sechdr.h = {0}",            sechdr.h);
-        AaruConsole.Debug(MODULE_NAME, "sechdr.r = {0}",            sechdr.r);
-        AaruConsole.Debug(MODULE_NAME, "sechdr.n = {0}",            sechdr.n);
-        AaruConsole.Debug(MODULE_NAME, "sechdr.spt = {0}",          sechdr.spt);
-        AaruConsole.Debug(MODULE_NAME, "sechdr.density = {0}",      sechdr.density);
-        AaruConsole.Debug(MODULE_NAME, "sechdr.deleted_mark = {0}", sechdr.deleted_mark);
-        AaruConsole.Debug(MODULE_NAME, "sechdr.status = {0}",       sechdr.status);
-        AaruConsole.Debug(MODULE_NAME, "sechdr.size_of_data = {0}", sechdr.size_of_data);
+        AaruLogging.Debug(MODULE_NAME, "sechdr.c = {0}",            sechdr.c);
+        AaruLogging.Debug(MODULE_NAME, "sechdr.h = {0}",            sechdr.h);
+        AaruLogging.Debug(MODULE_NAME, "sechdr.r = {0}",            sechdr.r);
+        AaruLogging.Debug(MODULE_NAME, "sechdr.n = {0}",            sechdr.n);
+        AaruLogging.Debug(MODULE_NAME, "sechdr.spt = {0}",          sechdr.spt);
+        AaruLogging.Debug(MODULE_NAME, "sechdr.density = {0}",      sechdr.density);
+        AaruLogging.Debug(MODULE_NAME, "sechdr.deleted_mark = {0}", sechdr.deleted_mark);
+        AaruLogging.Debug(MODULE_NAME, "sechdr.status = {0}",       sechdr.status);
+        AaruLogging.Debug(MODULE_NAME, "sechdr.size_of_data = {0}", sechdr.size_of_data);
 
         short             spt      = sechdr.spt;
         IBMSectorSizeCode bps      = sechdr.n;
@@ -125,7 +125,7 @@ public sealed partial class D88
 
             if(sechdr.spt != spt || sechdr.n != bps)
             {
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            Localization.Disk_tracks_are_not_same_size,
                                            sechdr.spt,
                                            spt,
@@ -151,7 +151,7 @@ public sealed partial class D88
 
                 if(sechdr.spt == spt && sechdr.n == bps) continue;
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            Localization.Disk_tracks_are_not_same_size,
                                            sechdr.spt,
                                            spt,
@@ -171,7 +171,7 @@ public sealed partial class D88
             foreach(KeyValuePair<byte, byte[]> kvp in sectors) _sectorsData.Add(kvp.Value);
         }
 
-        AaruConsole.Debug(MODULE_NAME, Localization._0_sectors, _sectorsData.Count);
+        AaruLogging.Debug(MODULE_NAME, Localization._0_sectors, _sectorsData.Count);
 
         _imageInfo.MediaType = MediaType.Unknown;
 
@@ -240,7 +240,7 @@ public sealed partial class D88
             }
         }
 
-        AaruConsole.Debug(MODULE_NAME, Localization.MediaType_0, _imageInfo.MediaType);
+        AaruLogging.Debug(MODULE_NAME, Localization.MediaType_0, _imageInfo.MediaType);
 
         _imageInfo.ImageSize            = (ulong)hdr.disk_size;
         _imageInfo.CreationTime         = imageFilter.CreationTime;

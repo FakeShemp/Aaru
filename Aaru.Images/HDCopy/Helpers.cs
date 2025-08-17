@@ -100,7 +100,7 @@ public sealed partial class HdCopy
         // check that track is present
         if(_trackOffset[trackNum] == -1)
         {
-            AaruConsole.Error(Localization.Tried_reading_a_track_that_is_not_present_in_image);
+            AaruLogging.Error(Localization.Tried_reading_a_track_that_is_not_present_in_image);
 
             return ErrorNumber.SectorNotFound;
         }
@@ -137,7 +137,7 @@ public sealed partial class HdCopy
         // check that the number of bytes decompressed matches a whole track
         if(dIndex != _imageInfo.SectorSize * _imageInfo.SectorsPerTrack)
         {
-            AaruConsole.Error(Localization.Track_decompression_yielded_incomplete_data);
+            AaruLogging.Error(Localization.Track_decompression_yielded_incomplete_data);
 
             return ErrorNumber.InOutError;
         }

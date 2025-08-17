@@ -72,7 +72,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(ATA_MODULE_NAME, Localization.CFA_TRANSLATE_SECTOR_took_0_ms, duration);
+        AaruLogging.Debug(ATA_MODULE_NAME, Localization.CFA_TRANSLATE_SECTOR_took_0_ms, duration);
 
         return sense;
     }
@@ -112,7 +112,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(ATA_MODULE_NAME, Localization.CFA_TRANSLATE_SECTOR_took_0_ms, duration);
+        AaruLogging.Debug(ATA_MODULE_NAME, Localization.CFA_TRANSLATE_SECTOR_took_0_ms, duration);
 
         return sense;
     }
@@ -147,7 +147,7 @@ public partial class Device
 
         errorCode = statusRegisters.Error;
 
-        AaruConsole.Debug(ATA_MODULE_NAME, Localization.CFA_REQUEST_EXTENDED_ERROR_CODE_took_0_ms, duration);
+        AaruLogging.Debug(ATA_MODULE_NAME, Localization.CFA_REQUEST_EXTENDED_ERROR_CODE_took_0_ms, duration);
 
         return sense;
     }

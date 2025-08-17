@@ -126,34 +126,34 @@ public sealed partial class BlindWrite4
         stream.EnsureRead(tmpArray, 0, _header.Unknown3);
         _header.Unknown4 = tmpArray;
 
-        AaruConsole.Debug(MODULE_NAME, "header.signature = {0}", StringHandlers.CToString(_header.Signature));
+        AaruLogging.Debug(MODULE_NAME, "header.signature = {0}", StringHandlers.CToString(_header.Signature));
 
-        AaruConsole.Debug(MODULE_NAME, "header.unknown1 = {0}",         _header.Unknown1);
-        AaruConsole.Debug(MODULE_NAME, "header.timestamp = {0}",        _header.Timestamp);
-        AaruConsole.Debug(MODULE_NAME, "header.volumeIdLength = {0}",   _header.VolumeIdLength);
-        AaruConsole.Debug(MODULE_NAME, "header.volumeIdentifier = {0}", _header.VolumeIdentifier);
-        AaruConsole.Debug(MODULE_NAME, "header.sysIdLength = {0}",      _header.SysIdLength);
-        AaruConsole.Debug(MODULE_NAME, "header.systemIdentifier = {0}", _header.SystemIdentifier);
-        AaruConsole.Debug(MODULE_NAME, "header.commentsLength = {0}",   _header.CommentsLength);
-        AaruConsole.Debug(MODULE_NAME, "header.comments = {0}",         _header.Comments);
-        AaruConsole.Debug(MODULE_NAME, "header.trackDescriptors = {0}", _header.TrackDescriptors);
-        AaruConsole.Debug(MODULE_NAME, "header.dataFileLength = {0}",   _header.DataFileLength);
-        AaruConsole.Debug(MODULE_NAME, "header.dataFilter = {0}",       _header.DataFilter);
-        AaruConsole.Debug(MODULE_NAME, "header.dataFile = {0}",         _header.DataFile);
+        AaruLogging.Debug(MODULE_NAME, "header.unknown1 = {0}",         _header.Unknown1);
+        AaruLogging.Debug(MODULE_NAME, "header.timestamp = {0}",        _header.Timestamp);
+        AaruLogging.Debug(MODULE_NAME, "header.volumeIdLength = {0}",   _header.VolumeIdLength);
+        AaruLogging.Debug(MODULE_NAME, "header.volumeIdentifier = {0}", _header.VolumeIdentifier);
+        AaruLogging.Debug(MODULE_NAME, "header.sysIdLength = {0}",      _header.SysIdLength);
+        AaruLogging.Debug(MODULE_NAME, "header.systemIdentifier = {0}", _header.SystemIdentifier);
+        AaruLogging.Debug(MODULE_NAME, "header.commentsLength = {0}",   _header.CommentsLength);
+        AaruLogging.Debug(MODULE_NAME, "header.comments = {0}",         _header.Comments);
+        AaruLogging.Debug(MODULE_NAME, "header.trackDescriptors = {0}", _header.TrackDescriptors);
+        AaruLogging.Debug(MODULE_NAME, "header.dataFileLength = {0}",   _header.DataFileLength);
+        AaruLogging.Debug(MODULE_NAME, "header.dataFilter = {0}",       _header.DataFilter);
+        AaruLogging.Debug(MODULE_NAME, "header.dataFile = {0}",         _header.DataFile);
 
-        AaruConsole.Debug(MODULE_NAME, "header.subchannelFileLength = {0}", _header.SubchannelFileLength);
+        AaruLogging.Debug(MODULE_NAME, "header.subchannelFileLength = {0}", _header.SubchannelFileLength);
 
-        AaruConsole.Debug(MODULE_NAME, "header.subchannelFilter = {0}", _header.SubchannelFilter);
-        AaruConsole.Debug(MODULE_NAME, "header.subchannelFile = {0}",   _header.SubchannelFile);
-        AaruConsole.Debug(MODULE_NAME, "header.unknown2 = {0}",         _header.Unknown2);
-        AaruConsole.Debug(MODULE_NAME, "header.unknown3 = {0}",         _header.Unknown3);
-        AaruConsole.Debug(MODULE_NAME, "header.unknown4.Length = {0}",  _header.Unknown4.Length);
+        AaruLogging.Debug(MODULE_NAME, "header.subchannelFilter = {0}", _header.SubchannelFilter);
+        AaruLogging.Debug(MODULE_NAME, "header.subchannelFile = {0}",   _header.SubchannelFile);
+        AaruLogging.Debug(MODULE_NAME, "header.unknown2 = {0}",         _header.Unknown2);
+        AaruLogging.Debug(MODULE_NAME, "header.unknown3 = {0}",         _header.Unknown3);
+        AaruLogging.Debug(MODULE_NAME, "header.unknown4.Length = {0}",  _header.Unknown4.Length);
 
         _bwTracks = [];
 
         for(int i = 0; i < _header.TrackDescriptors; i++)
         {
-            AaruConsole.Debug(MODULE_NAME, "stream.Position = {0}", stream.Position);
+            AaruLogging.Debug(MODULE_NAME, "stream.Position = {0}", stream.Position);
 
             var track = new TrackDescriptor();
 
@@ -319,66 +319,66 @@ public sealed partial class BlindWrite4
             track.isrcBytes = tmpArray;
             track.isrcUpc   = StringHandlers.CToString(track.isrcBytes, Encoding.Default);
 
-            AaruConsole.Debug(MODULE_NAME, "track.filenameLen = {0}", track.filenameLen);
-            AaruConsole.Debug(MODULE_NAME, "track.filename = {0}",    track.filename);
-            AaruConsole.Debug(MODULE_NAME, "track.offset = {0}",      track.offset);
-            AaruConsole.Debug(MODULE_NAME, "track.subchannel = {0}",  track.subchannel);
+            AaruLogging.Debug(MODULE_NAME, "track.filenameLen = {0}", track.filenameLen);
+            AaruLogging.Debug(MODULE_NAME, "track.filename = {0}",    track.filename);
+            AaruLogging.Debug(MODULE_NAME, "track.offset = {0}",      track.offset);
+            AaruLogging.Debug(MODULE_NAME, "track.subchannel = {0}",  track.subchannel);
 
             for(int j = 0; j < track.unknown1.Length; j++)
-                AaruConsole.Debug(MODULE_NAME, "track.unknown1[{1}] = 0x{0:X8}", track.unknown1[j], j);
+                AaruLogging.Debug(MODULE_NAME, "track.unknown1[{1}] = 0x{0:X8}", track.unknown1[j], j);
 
-            AaruConsole.Debug(MODULE_NAME, "track.unknown2 = {0}",    track.unknown2);
-            AaruConsole.Debug(MODULE_NAME, "track.unknown3 = {0}",    track.unknown3);
-            AaruConsole.Debug(MODULE_NAME, "track.session = {0}",     track.session);
-            AaruConsole.Debug(MODULE_NAME, "track.unknown4 = {0}",    track.unknown4);
-            AaruConsole.Debug(MODULE_NAME, "track.adrCtl = {0}",      track.adrCtl);
-            AaruConsole.Debug(MODULE_NAME, "track.unknown5 = {0}",    track.unknown5);
-            AaruConsole.Debug(MODULE_NAME, "track.trackMode = {0}",   track.trackMode);
-            AaruConsole.Debug(MODULE_NAME, "track.unknown6 = {0}",    track.unknown6);
-            AaruConsole.Debug(MODULE_NAME, "track.point = {0}",       track.point);
-            AaruConsole.Debug(MODULE_NAME, "track.unknown7 = {0}",    track.unknown7);
-            AaruConsole.Debug(MODULE_NAME, "track.unknown8 = {0}",    track.unknown8);
-            AaruConsole.Debug(MODULE_NAME, "track.unknown9 = {0}",    track.pregapOffsetAdjustment);
-            AaruConsole.Debug(MODULE_NAME, "track.unknown10 = {0}",   track.unknown10);
-            AaruConsole.Debug(MODULE_NAME, "track.unknown11 = {0}",   track.unknown11);
-            AaruConsole.Debug(MODULE_NAME, "track.lastSector = {0}",  track.lastSector);
-            AaruConsole.Debug(MODULE_NAME, "track.unknown12 = {0}",   track.unknown12);
-            AaruConsole.Debug(MODULE_NAME, "track.pregap = {0}",      track.pregap);
-            AaruConsole.Debug(MODULE_NAME, "track.startSector = {0}", track.startSector);
+            AaruLogging.Debug(MODULE_NAME, "track.unknown2 = {0}",    track.unknown2);
+            AaruLogging.Debug(MODULE_NAME, "track.unknown3 = {0}",    track.unknown3);
+            AaruLogging.Debug(MODULE_NAME, "track.session = {0}",     track.session);
+            AaruLogging.Debug(MODULE_NAME, "track.unknown4 = {0}",    track.unknown4);
+            AaruLogging.Debug(MODULE_NAME, "track.adrCtl = {0}",      track.adrCtl);
+            AaruLogging.Debug(MODULE_NAME, "track.unknown5 = {0}",    track.unknown5);
+            AaruLogging.Debug(MODULE_NAME, "track.trackMode = {0}",   track.trackMode);
+            AaruLogging.Debug(MODULE_NAME, "track.unknown6 = {0}",    track.unknown6);
+            AaruLogging.Debug(MODULE_NAME, "track.point = {0}",       track.point);
+            AaruLogging.Debug(MODULE_NAME, "track.unknown7 = {0}",    track.unknown7);
+            AaruLogging.Debug(MODULE_NAME, "track.unknown8 = {0}",    track.unknown8);
+            AaruLogging.Debug(MODULE_NAME, "track.unknown9 = {0}",    track.pregapOffsetAdjustment);
+            AaruLogging.Debug(MODULE_NAME, "track.unknown10 = {0}",   track.unknown10);
+            AaruLogging.Debug(MODULE_NAME, "track.unknown11 = {0}",   track.unknown11);
+            AaruLogging.Debug(MODULE_NAME, "track.lastSector = {0}",  track.lastSector);
+            AaruLogging.Debug(MODULE_NAME, "track.unknown12 = {0}",   track.unknown12);
+            AaruLogging.Debug(MODULE_NAME, "track.pregap = {0}",      track.pregap);
+            AaruLogging.Debug(MODULE_NAME, "track.startSector = {0}", track.startSector);
 
             for(int j = 0; j < track.unknown13.Length; j++)
-                AaruConsole.Debug(MODULE_NAME, "track.unknown13[{1}] = 0x{0:X8}", track.unknown13[j], j);
+                AaruLogging.Debug(MODULE_NAME, "track.unknown13[{1}] = 0x{0:X8}", track.unknown13[j], j);
 
-            AaruConsole.Debug(MODULE_NAME, "track.titleLen = {0}",     track.titleLen);
-            AaruConsole.Debug(MODULE_NAME, "track.title = {0}",        track.title);
-            AaruConsole.Debug(MODULE_NAME, "track.performerLen = {0}", track.performerLen);
-            AaruConsole.Debug(MODULE_NAME, "track.performer = {0}",    track.performer);
-            AaruConsole.Debug(MODULE_NAME, "track.unkStrLen1 = {0}",   track.unkStrLen1);
-            AaruConsole.Debug(MODULE_NAME, "track.unkString1 = {0}",   track.unkString1);
-            AaruConsole.Debug(MODULE_NAME, "track.unkStrLen2 = {0}",   track.unkStrLen2);
-            AaruConsole.Debug(MODULE_NAME, "track.unkString2 = {0}",   track.unkString2);
-            AaruConsole.Debug(MODULE_NAME, "track.unkStrLen3 = {0}",   track.unkStrLen3);
-            AaruConsole.Debug(MODULE_NAME, "track.unkString3 = {0}",   track.unkString3);
-            AaruConsole.Debug(MODULE_NAME, "track.unkStrLen4 = {0}",   track.unkStrLen4);
-            AaruConsole.Debug(MODULE_NAME, "track.unkString4 = {0}",   track.unkString4);
-            AaruConsole.Debug(MODULE_NAME, "track.discIdLen = {0}",    track.discIdLen);
-            AaruConsole.Debug(MODULE_NAME, "track.discId = {0}",       track.discId);
-            AaruConsole.Debug(MODULE_NAME, "track.unkStrLen5 = {0}",   track.unkStrLen5);
-            AaruConsole.Debug(MODULE_NAME, "track.unkString5 = {0}",   track.unkString5);
-            AaruConsole.Debug(MODULE_NAME, "track.unkStrLen6 = {0}",   track.unkStrLen6);
-            AaruConsole.Debug(MODULE_NAME, "track.unkString6 = {0}",   track.unkString6);
-            AaruConsole.Debug(MODULE_NAME, "track.unkStrLen7 = {0}",   track.unkStrLen7);
-            AaruConsole.Debug(MODULE_NAME, "track.unkString7 = {0}",   track.unkString7);
-            AaruConsole.Debug(MODULE_NAME, "track.unkStrLen8 = {0}",   track.unkStrLen8);
-            AaruConsole.Debug(MODULE_NAME, "track.unkString8 = {0}",   track.unkString8);
-            AaruConsole.Debug(MODULE_NAME, "track.unkStrLen9 = {0}",   track.unkStrLen9);
-            AaruConsole.Debug(MODULE_NAME, "track.unkString9 = {0}",   track.unkString9);
-            AaruConsole.Debug(MODULE_NAME, "track.unkStrLen10 = {0}",  track.unkStrLen10);
-            AaruConsole.Debug(MODULE_NAME, "track.unkString10 = {0}",  track.unkString10);
-            AaruConsole.Debug(MODULE_NAME, "track.unkStrLen11 = {0}",  track.unkStrLen11);
-            AaruConsole.Debug(MODULE_NAME, "track.unkString11 = {0}",  track.unkString11);
-            AaruConsole.Debug(MODULE_NAME, "track.isrcLen = {0}",      track.isrcLen);
-            AaruConsole.Debug(MODULE_NAME, "track.isrcUpc = {0}",      track.isrcUpc);
+            AaruLogging.Debug(MODULE_NAME, "track.titleLen = {0}",     track.titleLen);
+            AaruLogging.Debug(MODULE_NAME, "track.title = {0}",        track.title);
+            AaruLogging.Debug(MODULE_NAME, "track.performerLen = {0}", track.performerLen);
+            AaruLogging.Debug(MODULE_NAME, "track.performer = {0}",    track.performer);
+            AaruLogging.Debug(MODULE_NAME, "track.unkStrLen1 = {0}",   track.unkStrLen1);
+            AaruLogging.Debug(MODULE_NAME, "track.unkString1 = {0}",   track.unkString1);
+            AaruLogging.Debug(MODULE_NAME, "track.unkStrLen2 = {0}",   track.unkStrLen2);
+            AaruLogging.Debug(MODULE_NAME, "track.unkString2 = {0}",   track.unkString2);
+            AaruLogging.Debug(MODULE_NAME, "track.unkStrLen3 = {0}",   track.unkStrLen3);
+            AaruLogging.Debug(MODULE_NAME, "track.unkString3 = {0}",   track.unkString3);
+            AaruLogging.Debug(MODULE_NAME, "track.unkStrLen4 = {0}",   track.unkStrLen4);
+            AaruLogging.Debug(MODULE_NAME, "track.unkString4 = {0}",   track.unkString4);
+            AaruLogging.Debug(MODULE_NAME, "track.discIdLen = {0}",    track.discIdLen);
+            AaruLogging.Debug(MODULE_NAME, "track.discId = {0}",       track.discId);
+            AaruLogging.Debug(MODULE_NAME, "track.unkStrLen5 = {0}",   track.unkStrLen5);
+            AaruLogging.Debug(MODULE_NAME, "track.unkString5 = {0}",   track.unkString5);
+            AaruLogging.Debug(MODULE_NAME, "track.unkStrLen6 = {0}",   track.unkStrLen6);
+            AaruLogging.Debug(MODULE_NAME, "track.unkString6 = {0}",   track.unkString6);
+            AaruLogging.Debug(MODULE_NAME, "track.unkStrLen7 = {0}",   track.unkStrLen7);
+            AaruLogging.Debug(MODULE_NAME, "track.unkString7 = {0}",   track.unkString7);
+            AaruLogging.Debug(MODULE_NAME, "track.unkStrLen8 = {0}",   track.unkStrLen8);
+            AaruLogging.Debug(MODULE_NAME, "track.unkString8 = {0}",   track.unkString8);
+            AaruLogging.Debug(MODULE_NAME, "track.unkStrLen9 = {0}",   track.unkStrLen9);
+            AaruLogging.Debug(MODULE_NAME, "track.unkString9 = {0}",   track.unkString9);
+            AaruLogging.Debug(MODULE_NAME, "track.unkStrLen10 = {0}",  track.unkStrLen10);
+            AaruLogging.Debug(MODULE_NAME, "track.unkString10 = {0}",  track.unkString10);
+            AaruLogging.Debug(MODULE_NAME, "track.unkStrLen11 = {0}",  track.unkStrLen11);
+            AaruLogging.Debug(MODULE_NAME, "track.unkString11 = {0}",  track.unkString11);
+            AaruLogging.Debug(MODULE_NAME, "track.isrcLen = {0}",      track.isrcLen);
+            AaruLogging.Debug(MODULE_NAME, "track.isrcUpc = {0}",      track.isrcUpc);
 
             _bwTracks.Add(track);
         }
@@ -440,14 +440,14 @@ public sealed partial class BlindWrite4
 
                 if(_dataFilter != null) break;
 
-                AaruConsole.Error(string.Format(Localization.Data_file_0_not_found, _header.DataFile));
+                AaruLogging.Error(string.Format(Localization.Data_file_0_not_found, _header.DataFile));
 
                 return ErrorNumber.NoSuchFile;
             }
         }
         else
         {
-            AaruConsole.Error(Localization.Unable_to_find_data_file);
+            AaruLogging.Error(Localization.Unable_to_find_data_file);
 
             return ErrorNumber.NoSuchFile;
         }
@@ -799,10 +799,10 @@ public sealed partial class BlindWrite4
 
         _imageInfo.Comments = _header.Comments;
 
-        AaruConsole.Verbose(Localization.BlindWrite_image_describes_a_disc_of_type_0, _imageInfo.MediaType);
+        AaruLogging.Verbose(Localization.BlindWrite_image_describes_a_disc_of_type_0, _imageInfo.MediaType);
 
         if(!string.IsNullOrEmpty(_imageInfo.Comments))
-            AaruConsole.Verbose(Localization.BlindWrite_comments_0, _imageInfo.Comments);
+            AaruLogging.Verbose(Localization.BlindWrite_comments_0, _imageInfo.Comments);
 
         return ErrorNumber.NoError;
     }

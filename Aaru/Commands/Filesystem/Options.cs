@@ -54,13 +54,13 @@ sealed class ListOptionsCommand : Command<ListOptionsCommand.Settings>
     {
         MainClass.PrintCopyright();
 
-        AaruConsole.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
-        AaruConsole.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
         Statistics.AddCommand("list-options");
 
         PluginRegister plugins = PluginRegister.Singleton;
 
-        AaruConsole.WriteLine(UI.Read_only_filesystems_options);
+        AaruLogging.WriteLine(UI.Read_only_filesystems_options);
         Log.Information(UI.Read_only_filesystems_options);
 
         foreach(IReadOnlyFilesystem fs in plugins.ReadOnlyFilesystems.Values)
@@ -96,7 +96,7 @@ sealed class ListOptionsCommand : Command<ListOptionsCommand.Settings>
             }
 
             AnsiConsole.Write(table);
-            AaruConsole.WriteLine();
+            AaruLogging.WriteLine();
         }
 
         return (int)ErrorNumber.NoError;

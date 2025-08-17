@@ -80,7 +80,7 @@ public sealed partial class Chd
                     buffer = compHunk;
                 else if((Compression)_hdrCompression > Compression.Zlib)
                 {
-                    AaruConsole.Error(string.Format(Localization.Unsupported_compression_0,
+                    AaruLogging.Error(string.Format(Localization.Unsupported_compression_0,
                                                              (Compression)_hdrCompression));
 
                     return ErrorNumber.InvalidArgument;
@@ -93,7 +93,7 @@ public sealed partial class Chd
 
                     if(read != _sectorsPerHunk * _imageInfo.SectorSize)
                     {
-                        AaruConsole.Error(string.Format(Localization
+                        AaruLogging.Error(string.Format(Localization
                                                                     .Unable_to_decompress_hunk_correctly_got_0_bytes_expected_1,
                                                                  read,
                                                                  _sectorsPerHunk * _imageInfo.SectorSize));
@@ -113,7 +113,7 @@ public sealed partial class Chd
                 switch((EntryFlagsV3)(entry.flags & 0x0F))
                 {
                     case EntryFlagsV3.Invalid:
-                        AaruConsole.Error(Localization.Invalid_hunk_found);
+                        AaruLogging.Error(Localization.Invalid_hunk_found);
 
                         return ErrorNumber.InvalidArgument;
                     case EntryFlagsV3.Compressed:
@@ -137,7 +137,7 @@ public sealed partial class Chd
 
                                     if(read != _bytesPerHunk)
                                     {
-                                        AaruConsole.Error(string.Format(Localization
+                                        AaruLogging.Error(string.Format(Localization
                                                                           .Unable_to_decompress_hunk_correctly_got_0_bytes_expected_1,
                                                                        read,
                                                                        _bytesPerHunk));
@@ -151,7 +151,7 @@ public sealed partial class Chd
                                 // TODO: Guess wth is MAME doing with these hunks
                                 else
                                 {
-                                    AaruConsole.Error(Localization
+                                    AaruLogging.Error(Localization
                                                                   .Compressed_CD_GD_ROM_hunks_are_not_yet_supported);
 
                                     return ErrorNumber.NotImplemented;
@@ -159,7 +159,7 @@ public sealed partial class Chd
 
                                 break;
                             case Compression.Av:
-                                AaruConsole.Error(string.Format(Localization.Unsupported_compression_0,
+                                AaruLogging.Error(string.Format(Localization.Unsupported_compression_0,
                                                                          (Compression)_hdrCompression));
 
                                 return ErrorNumber.NotImplemented;
@@ -183,15 +183,15 @@ public sealed partial class Chd
                     case EntryFlagsV3.SelfHunk:
                         return GetHunk(entry.offset, out buffer);
                     case EntryFlagsV3.ParentHunk:
-                        AaruConsole.Error(Localization.Parent_images_are_not_supported);
+                        AaruLogging.Error(Localization.Parent_images_are_not_supported);
 
                         return ErrorNumber.NotImplemented;
                     case EntryFlagsV3.SecondCompressed:
-                        AaruConsole.Error(Localization.FLAC_is_not_supported);
+                        AaruLogging.Error(Localization.FLAC_is_not_supported);
 
                         return ErrorNumber.NotImplemented;
                     default:
-                        AaruConsole.Error(string.Format(Localization.Hunk_type_0_is_not_supported,
+                        AaruLogging.Error(string.Format(Localization.Hunk_type_0_is_not_supported,
                                                                  entry.flags & 0xF));
 
                         return ErrorNumber.NotSupported;
@@ -207,14 +207,14 @@ public sealed partial class Chd
                 }
                 else
                 {
-                    AaruConsole.Error(Localization.Compressed_v5_hunks_not_yet_supported);
+                    AaruLogging.Error(Localization.Compressed_v5_hunks_not_yet_supported);
 
                     return ErrorNumber.NotSupported;
                 }
 
                 break;
             default:
-                AaruConsole.Error(string.Format(Localization.Unsupported_hunk_map_version_0, _mapVersion));
+                AaruLogging.Error(string.Format(Localization.Unsupported_hunk_map_version_0, _mapVersion));
 
                 return ErrorNumber.NotSupported;
         }

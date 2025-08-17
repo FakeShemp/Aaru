@@ -85,50 +85,50 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
 
         Statistics.AddCommand("dump-media");
 
-        AaruConsole.Debug(MODULE_NAME, "--cicm-xml={0}", Markup.Escape(settings.CicmXml ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--debug={0}", settings.Debug);
-        AaruConsole.Debug(MODULE_NAME, "--device={0}", Markup.Escape(settings.DevicePath ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--encoding={0}", Markup.Escape(settings.Encoding ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--first-pregap={0}", settings.FirstPregap);
-        AaruConsole.Debug(MODULE_NAME, "--fix-offset={0}", settings.FixOffset);
-        AaruConsole.Debug(MODULE_NAME, "--force={0}", settings.Force);
-        AaruConsole.Debug(MODULE_NAME, "--format={0}", Markup.Escape(settings.Format ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--metadata={0}", settings.Metadata);
-        AaruConsole.Debug(MODULE_NAME, "--options={0}", Markup.Escape(settings.Options ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--output={0}", Markup.Escape(settings.OutputPath ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--persistent={0}", settings.Persistent);
-        AaruConsole.Debug(MODULE_NAME, "--resume={0}", settings.Resume);
-        AaruConsole.Debug(MODULE_NAME, "--retry-passes={0}", settings.RetryPasses);
-        AaruConsole.Debug(MODULE_NAME, "--skip={0}", settings.Skip);
-        AaruConsole.Debug(MODULE_NAME, "--stop-on-error={0}", settings.StopOnError);
-        AaruConsole.Debug(MODULE_NAME, "--trim={0}", settings.Trim);
-        AaruConsole.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
-        AaruConsole.Debug(MODULE_NAME, "--subchannel={0}", Markup.Escape(settings.Subchannel ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "----private={0}", settings.Private);
-        AaruConsole.Debug(MODULE_NAME, "--fix-subchannel-position={0}", settings.FixSubchannelPosition);
-        AaruConsole.Debug(MODULE_NAME, "--retry-subchannel={0}", settings.RetrySubchannel);
-        AaruConsole.Debug(MODULE_NAME, "--fix-subchannel={0}", fixSubchannel);
-        AaruConsole.Debug(MODULE_NAME, "--fix-subchannel-crc={0}", fixSubchannelCrc);
-        AaruConsole.Debug(MODULE_NAME, "--generate-subchannels={0}", settings.GenerateSubchannels);
-        AaruConsole.Debug(MODULE_NAME, "--skip-cdiready-hole={0}", settings.SkipCdiReadyHole);
-        AaruConsole.Debug(MODULE_NAME, "--eject={0}", eject);
-        AaruConsole.Debug(MODULE_NAME, "--max-blocks={0}", maxBlocks);
-        AaruConsole.Debug(MODULE_NAME, "--use-buffered-reads={0}", settings.UseBufferedReads);
-        AaruConsole.Debug(MODULE_NAME, "--store-encrypted={0}", settings.StoreEncrypted);
-        AaruConsole.Debug(MODULE_NAME, "--title-keys={0}", settings.TitleKeys);
-        AaruConsole.Debug(MODULE_NAME, "--ignore-cdr-runouts={0}", settings.IgnoreCdrRunOuts);
-        AaruConsole.Debug(MODULE_NAME, "--create-graph={0}", settings.CreateGraph);
-        AaruConsole.Debug(MODULE_NAME, "--dimensions={0}", settings.Dimensions);
-        AaruConsole.Debug(MODULE_NAME, "--aaru-metadata={0}", Markup.Escape(settings.AaruMetadata ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--cicm-xml={0}", Markup.Escape(settings.CicmXml ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}", settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--device={0}", Markup.Escape(settings.DevicePath ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--encoding={0}", Markup.Escape(settings.Encoding ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--first-pregap={0}", settings.FirstPregap);
+        AaruLogging.Debug(MODULE_NAME, "--fix-offset={0}", settings.FixOffset);
+        AaruLogging.Debug(MODULE_NAME, "--force={0}", settings.Force);
+        AaruLogging.Debug(MODULE_NAME, "--format={0}", Markup.Escape(settings.Format ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--metadata={0}", settings.Metadata);
+        AaruLogging.Debug(MODULE_NAME, "--options={0}", Markup.Escape(settings.Options ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--output={0}", Markup.Escape(settings.OutputPath ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--persistent={0}", settings.Persistent);
+        AaruLogging.Debug(MODULE_NAME, "--resume={0}", settings.Resume);
+        AaruLogging.Debug(MODULE_NAME, "--retry-passes={0}", settings.RetryPasses);
+        AaruLogging.Debug(MODULE_NAME, "--skip={0}", settings.Skip);
+        AaruLogging.Debug(MODULE_NAME, "--stop-on-error={0}", settings.StopOnError);
+        AaruLogging.Debug(MODULE_NAME, "--trim={0}", settings.Trim);
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--subchannel={0}", Markup.Escape(settings.Subchannel ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "----private={0}", settings.Private);
+        AaruLogging.Debug(MODULE_NAME, "--fix-subchannel-position={0}", settings.FixSubchannelPosition);
+        AaruLogging.Debug(MODULE_NAME, "--retry-subchannel={0}", settings.RetrySubchannel);
+        AaruLogging.Debug(MODULE_NAME, "--fix-subchannel={0}", fixSubchannel);
+        AaruLogging.Debug(MODULE_NAME, "--fix-subchannel-crc={0}", fixSubchannelCrc);
+        AaruLogging.Debug(MODULE_NAME, "--generate-subchannels={0}", settings.GenerateSubchannels);
+        AaruLogging.Debug(MODULE_NAME, "--skip-cdiready-hole={0}", settings.SkipCdiReadyHole);
+        AaruLogging.Debug(MODULE_NAME, "--eject={0}", eject);
+        AaruLogging.Debug(MODULE_NAME, "--max-blocks={0}", maxBlocks);
+        AaruLogging.Debug(MODULE_NAME, "--use-buffered-reads={0}", settings.UseBufferedReads);
+        AaruLogging.Debug(MODULE_NAME, "--store-encrypted={0}", settings.StoreEncrypted);
+        AaruLogging.Debug(MODULE_NAME, "--title-keys={0}", settings.TitleKeys);
+        AaruLogging.Debug(MODULE_NAME, "--ignore-cdr-runouts={0}", settings.IgnoreCdrRunOuts);
+        AaruLogging.Debug(MODULE_NAME, "--create-graph={0}", settings.CreateGraph);
+        AaruLogging.Debug(MODULE_NAME, "--dimensions={0}", settings.Dimensions);
+        AaruLogging.Debug(MODULE_NAME, "--aaru-metadata={0}", Markup.Escape(settings.AaruMetadata ?? ""));
 
         // TODO: Disabled temporarily
-        //AaruConsole.DebugWriteLine(MODULE_NAME, "--raw={0}", Markup.Escape(raw ?? ""));
+        //AaruLogging.DebugWriteLine(MODULE_NAME, "--raw={0}", Markup.Escape(raw ?? ""));
 
         Dictionary<string, string> parsedOptions = Options.Parse(settings.Options);
-        AaruConsole.Debug(MODULE_NAME, UI.Parsed_options);
+        AaruLogging.Debug(MODULE_NAME, UI.Parsed_options);
 
         foreach(KeyValuePair<string, string> parsedOption in parsedOptions)
-            AaruConsole.Debug(MODULE_NAME, "{0} = {1}", parsedOption.Key, parsedOption.Value);
+            AaruLogging.Debug(MODULE_NAME, "{0} = {1}", parsedOption.Key, parsedOption.Value);
 
         Encoding encodingClass = null;
 
@@ -138,11 +138,11 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
             {
                 encodingClass = Claunia.Encoding.Encoding.GetEncoding(settings.Encoding);
 
-                if(settings.Verbose) AaruConsole.Verbose(UI.encoding_for_0, encodingClass.EncodingName);
+                if(settings.Verbose) AaruLogging.Verbose(UI.encoding_for_0, encodingClass.EncodingName);
             }
             catch(ArgumentException)
             {
-                AaruConsole.Error(UI.Specified_encoding_is_not_supported);
+                AaruLogging.Error(UI.Specified_encoding_is_not_supported);
 
                 return (int)ErrorNumber.EncodingUnknown;
             }
@@ -162,7 +162,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         else if(settings.Subchannel?.ToLowerInvariant() == UI.Subchannel_name_none)
             wantedSubchannel = DumpSubchannel.None;
         else
-            AaruConsole.WriteLine(UI.Incorrect_subchannel_type_0_requested, settings.Subchannel);
+            AaruLogging.WriteLine(UI.Incorrect_subchannel_type_0_requested, settings.Subchannel);
 
         string filename = Path.GetFileNameWithoutExtension(settings.OutputPath);
 
@@ -216,11 +216,11 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         switch(candidates.Count)
         {
             case 0:
-                AaruConsole.WriteLine(UI.No_plugin_supports_requested_extension);
+                AaruLogging.WriteLine(UI.No_plugin_supports_requested_extension);
 
                 return (int)ErrorNumber.FormatNotFound;
             case > 1:
-                AaruConsole.WriteLine(UI.More_than_one_plugin_supports_requested_extension);
+                AaruLogging.WriteLine(UI.More_than_one_plugin_supports_requested_extension);
 
                 return (int)ErrorNumber.TooManyFormats;
         }
@@ -233,14 +233,14 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
 
             if(responseLine.Any(c => c < 0x20))
             {
-                AaruConsole.Error(UI.Invalid_characters_found_in_list_of_files);
+                AaruLogging.Error(UI.Invalid_characters_found_in_list_of_files);
 
                 return (int)ErrorNumber.InvalidArgument;
             }
 
             if(isResponse)
             {
-                AaruConsole.WriteLine(UI.Please_insert_media_with_title_0_and_press_any_key_to_continue_, responseLine);
+                AaruLogging.WriteLine(UI.Please_insert_media_with_title_0_and_press_any_key_to_continue_, responseLine);
 
                 Console.ReadKey();
                 Thread.Sleep(1000);
@@ -279,7 +279,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
             {
                 case null:
                 {
-                    AaruConsole.Error(string.Format(UI.Could_not_open_device_error_0, devErrno));
+                    AaruLogging.Error(string.Format(UI.Could_not_open_device_error_0, devErrno));
 
                     if(isResponse) continue;
 
@@ -297,7 +297,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
 
             if(dev.Error)
             {
-                AaruConsole.Error(Error.Print(dev.LastError));
+                AaruLogging.Error(Error.Print(dev.LastError));
 
                 if(isResponse) continue;
 
@@ -346,7 +346,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                 }
                 catch
                 {
-                    AaruConsole.Error(UI.Incorrect_resume_file_not_continuing);
+                    AaruLogging.Error(UI.Incorrect_resume_file_not_continuing);
 
                     if(isResponse) continue;
 
@@ -361,7 +361,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                (resumeClass.BadSubchannels is null   || resumeClass.BadSubchannels.Count   == 0) &&
                (resumeClass.MissingTitleKeys is null || resumeClass.MissingTitleKeys.Count == 0))
             {
-                AaruConsole.WriteLine(UI.Media_already_dumped_correctly_not_continuing);
+                AaruLogging.WriteLine(UI.Media_already_dumped_correctly_not_continuing);
 
                 if(isResponse) continue;
 
@@ -386,7 +386,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                     }
                     catch
                     {
-                        AaruConsole.Error(UI.Incorrect_metadata_sidecar_file_not_continuing);
+                        AaruLogging.Error(UI.Incorrect_metadata_sidecar_file_not_continuing);
 
                         if(isResponse) continue;
 
@@ -395,7 +395,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                 }
                 else
                 {
-                    AaruConsole.Error(UI.Could_not_find_metadata_sidecar);
+                    AaruLogging.Error(UI.Could_not_find_metadata_sidecar);
 
                     if(isResponse) continue;
 
@@ -424,7 +424,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                     }
                     catch
                     {
-                        AaruConsole.Error(UI.Incorrect_metadata_sidecar_file_not_continuing);
+                        AaruLogging.Error(UI.Incorrect_metadata_sidecar_file_not_continuing);
 
                         if(isResponse) continue;
 
@@ -433,7 +433,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                 }
                 else
                 {
-                    AaruConsole.Error(UI.Could_not_find_metadata_sidecar);
+                    AaruLogging.Error(UI.Could_not_find_metadata_sidecar);
 
                     if(isResponse) continue;
 
@@ -479,12 +479,12 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
             if(settings.Verbose)
             {
                 dumpLog.WriteLine(UI.Output_image_format_0_1, outputFormat.Name, outputFormat.Id);
-                AaruConsole.Verbose(UI.Output_image_format_0_1, outputFormat.Name, outputFormat.Id);
+                AaruLogging.Verbose(UI.Output_image_format_0_1, outputFormat.Name, outputFormat.Id);
             }
             else
             {
                 dumpLog.WriteLine(UI.Output_image_format_0, outputFormat.Name);
-                AaruConsole.WriteLine(UI.Output_image_format_0, outputFormat.Name);
+                AaruLogging.WriteLine(UI.Output_image_format_0, outputFormat.Name);
             }
 
             var errorLog = new ErrorLog(outputPrefix + ".error.log");
@@ -535,16 +535,16 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                        .Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn())
                        .Start(ctx =>
                         {
-                            dumper.UpdateStatus += text => { AaruConsole.WriteLine(Markup.Escape(text)); };
+                            dumper.UpdateStatus += text => { AaruLogging.WriteLine(Markup.Escape(text)); };
 
                             dumper.ErrorMessage += text =>
                                 {
-                                    AaruConsole.Error($"[red]{Markup.Escape(text)}[/]");
+                                    AaruLogging.Error($"[red]{Markup.Escape(text)}[/]");
                                 };
 
                             dumper.StoppingErrorMessage += text =>
                             {
-                                AaruConsole.Error($"[red]{Markup.Escape(text)}[/]");
+                                AaruLogging.Error($"[red]{Markup.Escape(text)}[/]");
                             };
 
                             dumper.UpdateProgress += (text, current, maximum) =>

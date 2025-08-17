@@ -83,7 +83,7 @@ public sealed partial class DriDiskCopy
         _imageInfo.CreationTime         = imageFilter.CreationTime;
         _imageInfo.LastModificationTime = imageFilter.LastWriteTime;
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Image_application_0_version_1,
                                    _imageInfo.Application,
                                    _imageInfo.ApplicationVersion);
@@ -118,7 +118,7 @@ public sealed partial class DriDiskCopy
 
         _imageInfo.MetadataMediaType = MetadataMediaType.BlockMedia;
 
-        AaruConsole.Verbose(Localization.Digital_Research_DiskCopy_image_contains_a_disk_of_type_0,
+        AaruLogging.Verbose(Localization.Digital_Research_DiskCopy_image_contains_a_disk_of_type_0,
                                      _imageInfo.MediaType);
 
         return ErrorNumber.NoError;

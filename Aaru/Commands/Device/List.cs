@@ -55,8 +55,8 @@ sealed class ListDevicesCommand : Command<ListDevicesCommand.Settings>
 
         Statistics.AddCommand("list-devices");
 
-        AaruConsole.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
-        AaruConsole.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
         Log.Information(UI.List_devices_command);
 
@@ -79,7 +79,7 @@ sealed class ListDevicesCommand : Command<ListDevicesCommand.Settings>
 
         if(devices == null || devices.Length == 0)
         {
-            AaruConsole.WriteLine(UI.No_known_devices_attached);
+            AaruLogging.WriteLine(UI.No_known_devices_attached);
             Log.Information(UI.No_known_devices_attached);
         }
         else

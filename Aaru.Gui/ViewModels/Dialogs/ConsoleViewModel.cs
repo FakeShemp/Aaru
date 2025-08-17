@@ -117,7 +117,7 @@ public sealed class ConsoleViewModel : ViewModelBase
             string     platVer = DetectOS.GetVersion();
 
             var assemblyVersion =
-                Attribute.GetCustomAttribute(typeof(AaruConsole).Assembly,
+                Attribute.GetCustomAttribute(typeof(AaruLogging).Assembly,
                                              typeof(AssemblyInformationalVersionAttribute)) as
                     AssemblyInformationalVersionAttribute;
 
@@ -165,7 +165,7 @@ public sealed class ConsoleViewModel : ViewModelBase
                                                           Icon.Error)
                                    .ShowWindowDialogAsync(_view);
 
-            AaruConsole.Exception(exception);
+            AaruLogging.Exception(exception);
         }
     }
 

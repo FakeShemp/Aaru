@@ -82,26 +82,26 @@ public sealed partial class Cpcdsk
             return ErrorNumber.InvalidArgument;
 
         _extended = string.Compare(EDSK_ID, magic, StringComparison.InvariantCultureIgnoreCase) == 0;
-        AaruConsole.Debug(MODULE_NAME, Localization.Extended_equals_0, _extended);
+        AaruLogging.Debug(MODULE_NAME, Localization.Extended_equals_0, _extended);
 
-        AaruConsole.Debug(MODULE_NAME, Localization.magic_equals_0_quoted, magic);
+        AaruLogging.Debug(MODULE_NAME, Localization.magic_equals_0_quoted, magic);
 
-        AaruConsole.Debug(MODULE_NAME, "header.magic = \"{0}\"", StringHandlers.CToString(header.magic));
+        AaruLogging.Debug(MODULE_NAME, "header.magic = \"{0}\"", StringHandlers.CToString(header.magic));
 
-        AaruConsole.Debug(MODULE_NAME, "header.creator = \"{0}\"", StringHandlers.CToString(header.creator));
+        AaruLogging.Debug(MODULE_NAME, "header.creator = \"{0}\"", StringHandlers.CToString(header.creator));
 
-        AaruConsole.Debug(MODULE_NAME, "header.tracks = {0}", header.tracks);
-        AaruConsole.Debug(MODULE_NAME, "header.sides = {0}",  header.sides);
+        AaruLogging.Debug(MODULE_NAME, "header.tracks = {0}", header.tracks);
+        AaruLogging.Debug(MODULE_NAME, "header.sides = {0}",  header.sides);
 
         if(!_extended)
-            AaruConsole.Debug(MODULE_NAME, "header.tracksize = {0}", header.tracksize);
+            AaruLogging.Debug(MODULE_NAME, "header.tracksize = {0}", header.tracksize);
         else
         {
             for(int i = 0; i < header.tracks; i++)
             {
                 for(int j = 0; j < header.sides; j++)
                 {
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                Localization.Track_0_Side_1_size_equals_2,
                                                i,
                                                j,
@@ -138,42 +138,42 @@ public sealed partial class Cpcdsk
                                   StringComparison.InvariantCultureIgnoreCase) !=
                    0)
                 {
-                    AaruConsole.Error(Localization.Not_the_expected_track_info);
+                    AaruLogging.Error(Localization.Not_the_expected_track_info);
 
                     return ErrorNumber.InvalidArgument;
                 }
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "trackInfo[{1}:{2}].magic = \"{0}\"",
                                            StringHandlers.CToString(trackInfo.magic),
                                            i,
                                            j);
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "trackInfo[{1}:{2}].bps = {0}",
                                            SizeCodeToBytes(trackInfo.bps),
                                            i,
                                            j);
 
-                AaruConsole.Debug(MODULE_NAME, "trackInfo[{1}:{2}].dataRate = {0}", trackInfo.dataRate, i, j);
+                AaruLogging.Debug(MODULE_NAME, "trackInfo[{1}:{2}].dataRate = {0}", trackInfo.dataRate, i, j);
 
-                AaruConsole.Debug(MODULE_NAME, "trackInfo[{1}:{2}].filler = 0x{0:X2}", trackInfo.filler, i, j);
+                AaruLogging.Debug(MODULE_NAME, "trackInfo[{1}:{2}].filler = 0x{0:X2}", trackInfo.filler, i, j);
 
-                AaruConsole.Debug(MODULE_NAME, "trackInfo[{1}:{2}].gap3 = 0x{0:X2}", trackInfo.gap3, i, j);
+                AaruLogging.Debug(MODULE_NAME, "trackInfo[{1}:{2}].gap3 = 0x{0:X2}", trackInfo.gap3, i, j);
 
-                AaruConsole.Debug(MODULE_NAME, "trackInfo[{1}:{2}].padding = {0}", trackInfo.padding, i, j);
+                AaruLogging.Debug(MODULE_NAME, "trackInfo[{1}:{2}].padding = {0}", trackInfo.padding, i, j);
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            "trackInfo[{1}:{2}].recordingMode = {0}",
                                            trackInfo.recordingMode,
                                            i,
                                            j);
 
-                AaruConsole.Debug(MODULE_NAME, "trackInfo[{1}:{2}].sectors = {0}", trackInfo.sectors, i, j);
+                AaruLogging.Debug(MODULE_NAME, "trackInfo[{1}:{2}].sectors = {0}", trackInfo.sectors, i, j);
 
-                AaruConsole.Debug(MODULE_NAME, "trackInfo[{1}:{2}].side = {0}", trackInfo.side, i, j);
+                AaruLogging.Debug(MODULE_NAME, "trackInfo[{1}:{2}].side = {0}", trackInfo.side, i, j);
 
-                AaruConsole.Debug(MODULE_NAME, "trackInfo[{1}:{2}].track = {0}", trackInfo.track, i, j);
+                AaruLogging.Debug(MODULE_NAME, "trackInfo[{1}:{2}].track = {0}", trackInfo.track, i, j);
 
                 if(trackInfo.sectors != sectorsPerTrack)
                 {
@@ -188,49 +188,49 @@ public sealed partial class Cpcdsk
 
                 for(int k = 1; k <= trackInfo.sectors; k++)
                 {
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "trackInfo[{1}:{2}].sector[{3}].id = 0x{0:X2}",
                                                trackInfo.sectorsInfo[k - 1].id,
                                                i,
                                                j,
                                                k);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "trackInfo[{1}:{2}].sector[{3}].len = {0}",
                                                trackInfo.sectorsInfo[k - 1].len,
                                                i,
                                                j,
                                                k);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "trackInfo[{1}:{2}].sector[{3}].side = {0}",
                                                trackInfo.sectorsInfo[k - 1].side,
                                                i,
                                                j,
                                                k);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "trackInfo[{1}:{2}].sector[{3}].size = {0}",
                                                SizeCodeToBytes(trackInfo.sectorsInfo[k - 1].size),
                                                i,
                                                j,
                                                k);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "trackInfo[{1}:{2}].sector[{3}].st1 = 0x{0:X2}",
                                                trackInfo.sectorsInfo[k - 1].st1,
                                                i,
                                                j,
                                                k);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "trackInfo[{1}:{2}].sector[{3}].st2 = 0x{0:X2}",
                                                trackInfo.sectorsInfo[k - 1].st2,
                                                i,
                                                j,
                                                k);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "trackInfo[{1}:{2}].sector[{3}].track = {0}",
                                                trackInfo.sectorsInfo[k - 1].track,
                                                i,
@@ -304,9 +304,9 @@ public sealed partial class Cpcdsk
             }
         }
 
-        AaruConsole.Debug(MODULE_NAME, Localization.Read_0_sectors,             _sectors.Count);
-        AaruConsole.Debug(MODULE_NAME, Localization.Read_0_tracks,              readtracks);
-        AaruConsole.Debug(MODULE_NAME, Localization.All_tracks_are_same_size_0, allTracksSameSize);
+        AaruLogging.Debug(MODULE_NAME, Localization.Read_0_sectors,             _sectors.Count);
+        AaruLogging.Debug(MODULE_NAME, Localization.Read_0_tracks,              readtracks);
+        AaruLogging.Debug(MODULE_NAME, Localization.All_tracks_are_same_size_0, allTracksSameSize);
 
         _imageInfo.Application          = StringHandlers.CToString(header.creator);
         _imageInfo.CreationTime         = imageFilter.CreationTime;

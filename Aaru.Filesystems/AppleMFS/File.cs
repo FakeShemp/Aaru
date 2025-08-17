@@ -339,7 +339,7 @@ public sealed partial class AppleMFS
 
             if(_blockMap[nextBlock] == BMAP_FREE)
             {
-                AaruConsole.Error(Localization.File_truncated_at_block_0, nextBlock);
+                AaruLogging.Error(Localization.File_truncated_at_block_0, nextBlock);
 
                 break;
             }

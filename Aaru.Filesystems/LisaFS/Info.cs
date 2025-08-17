@@ -63,7 +63,7 @@ public sealed partial class LisaFS
 
             DecodeTag(tag, out LisaTag.PriamTag searchTag);
 
-            AaruConsole.Debug(MODULE_NAME, Localization.Sector_0_file_ID_1, i, searchTag.FileId);
+            AaruLogging.Debug(MODULE_NAME, Localization.Sector_0_file_ID_1, i, searchTag.FileId);
 
             if(beforeMddf == -1 && searchTag.FileId == FILEID_LOADER_SIGNED) beforeMddf = i - 1;
 
@@ -83,19 +83,19 @@ public sealed partial class LisaFS
                 datasize                     = BigEndianBitConverter.ToUInt16(sector, 0x7E)
             };
 
-            AaruConsole.Debug(MODULE_NAME, Localization.Current_sector_0, i);
-            AaruConsole.Debug(MODULE_NAME, "mddf.mddf_block = {0}",       infoMddf.mddf_block);
-            AaruConsole.Debug(MODULE_NAME, "Disk size = {0} sectors",     imagePlugin.Info.Sectors);
-            AaruConsole.Debug(MODULE_NAME, "mddf.vol_size = {0} sectors", infoMddf.vol_size);
-            AaruConsole.Debug(MODULE_NAME, "mddf.vol_size - 1 = {0}",     infoMddf.volsize_minus_one);
+            AaruLogging.Debug(MODULE_NAME, Localization.Current_sector_0, i);
+            AaruLogging.Debug(MODULE_NAME, "mddf.mddf_block = {0}",       infoMddf.mddf_block);
+            AaruLogging.Debug(MODULE_NAME, "Disk size = {0} sectors",     imagePlugin.Info.Sectors);
+            AaruLogging.Debug(MODULE_NAME, "mddf.vol_size = {0} sectors", infoMddf.vol_size);
+            AaruLogging.Debug(MODULE_NAME, "mddf.vol_size - 1 = {0}",     infoMddf.volsize_minus_one);
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        "mddf.vol_size - mddf.mddf_block -1 = {0}",
                                        infoMddf.volsize_minus_mddf_minus_one);
 
-            AaruConsole.Debug(MODULE_NAME, "Disk sector = {0} bytes",    imagePlugin.Info.SectorSize);
-            AaruConsole.Debug(MODULE_NAME, "mddf.blocksize = {0} bytes", infoMddf.blocksize);
-            AaruConsole.Debug(MODULE_NAME, "mddf.datasize = {0} bytes",  infoMddf.datasize);
+            AaruLogging.Debug(MODULE_NAME, "Disk sector = {0} bytes",    imagePlugin.Info.SectorSize);
+            AaruLogging.Debug(MODULE_NAME, "mddf.blocksize = {0} bytes", infoMddf.blocksize);
+            AaruLogging.Debug(MODULE_NAME, "mddf.datasize = {0} bytes",  infoMddf.datasize);
 
             if(infoMddf.mddf_block != i - beforeMddf) return false;
 
@@ -140,7 +140,7 @@ public sealed partial class LisaFS
 
             DecodeTag(tag, out LisaTag.PriamTag searchTag);
 
-            AaruConsole.Debug(MODULE_NAME, Localization.Sector_0_file_ID_1, i, searchTag.FileId);
+            AaruLogging.Debug(MODULE_NAME, Localization.Sector_0_file_ID_1, i, searchTag.FileId);
 
             if(beforeMddf == -1 && searchTag.FileId == FILEID_LOADER_SIGNED) beforeMddf = i - 1;
 
@@ -233,45 +233,45 @@ public sealed partial class LisaFS
             infoMddf.vol_sequence                 = BigEndianBitConverter.ToUInt16(sector, 0x136);
             infoMddf.vol_left_mounted             = sector[0x138];
 
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown1 = 0x{0:X2} ({0})",  infoMddf.unknown1);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown2 = 0x{0:X2} ({0})",  infoMddf.unknown2);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown3 = 0x{0:X8} ({0})",  infoMddf.unknown3);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown4 = 0x{0:X4} ({0})",  infoMddf.unknown4);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown5 = 0x{0:X8} ({0})",  infoMddf.unknown5);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown6 = 0x{0:X8} ({0})",  infoMddf.unknown6);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown7 = 0x{0:X8} ({0})",  infoMddf.unknown7);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown9 = 0x{0:X4} ({0})",  infoMddf.unknown9);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown10 = 0x{0:X8} ({0})", infoMddf.unknown10);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown11 = 0x{0:X8} ({0})", infoMddf.unknown11);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown12 = 0x{0:X8} ({0})", infoMddf.unknown12);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown13 = 0x{0:X8} ({0})", infoMddf.unknown13);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown14 = 0x{0:X8} ({0})", infoMddf.unknown14);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown15 = 0x{0:X8} ({0})", infoMddf.unknown15);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown16 = 0x{0:X8} ({0})", infoMddf.unknown16);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown17 = 0x{0:X4} ({0})", infoMddf.unknown17);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown18 = 0x{0:X8} ({0})", infoMddf.unknown18);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown19 = 0x{0:X8} ({0})", infoMddf.unknown19);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown20 = 0x{0:X8} ({0})", infoMddf.unknown20);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown21 = 0x{0:X8} ({0})", infoMddf.unknown21);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown22 = 0x{0:X8} ({0})", infoMddf.unknown22);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown23 = 0x{0:X8} ({0})", infoMddf.unknown23);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown24 = 0x{0:X8} ({0})", infoMddf.unknown24);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown25 = 0x{0:X8} ({0})", infoMddf.unknown25);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown26 = 0x{0:X8} ({0})", infoMddf.unknown26);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown27 = 0x{0:X8} ({0})", infoMddf.unknown27);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown28 = 0x{0:X8} ({0})", infoMddf.unknown28);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown29 = 0x{0:X8} ({0})", infoMddf.unknown29);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown30 = 0x{0:X8} ({0})", infoMddf.unknown30);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown31 = 0x{0:X8} ({0})", infoMddf.unknown31);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown32 = 0x{0:X8} ({0})", infoMddf.unknown32);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown33 = 0x{0:X8} ({0})", infoMddf.unknown33);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown34 = 0x{0:X8} ({0})", infoMddf.unknown34);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown35 = 0x{0:X8} ({0})", infoMddf.unknown35);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown36 = 0x{0:X8} ({0})", infoMddf.unknown36);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown37 = 0x{0:X8} ({0})", infoMddf.unknown37);
-            AaruConsole.Debug(MODULE_NAME, "mddf.unknown38 = 0x{0:X8} ({0})", infoMddf.unknown38);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown1 = 0x{0:X2} ({0})",  infoMddf.unknown1);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown2 = 0x{0:X2} ({0})",  infoMddf.unknown2);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown3 = 0x{0:X8} ({0})",  infoMddf.unknown3);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown4 = 0x{0:X4} ({0})",  infoMddf.unknown4);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown5 = 0x{0:X8} ({0})",  infoMddf.unknown5);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown6 = 0x{0:X8} ({0})",  infoMddf.unknown6);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown7 = 0x{0:X8} ({0})",  infoMddf.unknown7);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown9 = 0x{0:X4} ({0})",  infoMddf.unknown9);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown10 = 0x{0:X8} ({0})", infoMddf.unknown10);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown11 = 0x{0:X8} ({0})", infoMddf.unknown11);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown12 = 0x{0:X8} ({0})", infoMddf.unknown12);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown13 = 0x{0:X8} ({0})", infoMddf.unknown13);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown14 = 0x{0:X8} ({0})", infoMddf.unknown14);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown15 = 0x{0:X8} ({0})", infoMddf.unknown15);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown16 = 0x{0:X8} ({0})", infoMddf.unknown16);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown17 = 0x{0:X4} ({0})", infoMddf.unknown17);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown18 = 0x{0:X8} ({0})", infoMddf.unknown18);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown19 = 0x{0:X8} ({0})", infoMddf.unknown19);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown20 = 0x{0:X8} ({0})", infoMddf.unknown20);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown21 = 0x{0:X8} ({0})", infoMddf.unknown21);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown22 = 0x{0:X8} ({0})", infoMddf.unknown22);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown23 = 0x{0:X8} ({0})", infoMddf.unknown23);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown24 = 0x{0:X8} ({0})", infoMddf.unknown24);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown25 = 0x{0:X8} ({0})", infoMddf.unknown25);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown26 = 0x{0:X8} ({0})", infoMddf.unknown26);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown27 = 0x{0:X8} ({0})", infoMddf.unknown27);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown28 = 0x{0:X8} ({0})", infoMddf.unknown28);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown29 = 0x{0:X8} ({0})", infoMddf.unknown29);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown30 = 0x{0:X8} ({0})", infoMddf.unknown30);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown31 = 0x{0:X8} ({0})", infoMddf.unknown31);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown32 = 0x{0:X8} ({0})", infoMddf.unknown32);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown33 = 0x{0:X8} ({0})", infoMddf.unknown33);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown34 = 0x{0:X8} ({0})", infoMddf.unknown34);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown35 = 0x{0:X8} ({0})", infoMddf.unknown35);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown36 = 0x{0:X8} ({0})", infoMddf.unknown36);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown37 = 0x{0:X8} ({0})", infoMddf.unknown37);
+            AaruLogging.Debug(MODULE_NAME, "mddf.unknown38 = 0x{0:X8} ({0})", infoMddf.unknown38);
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        "mddf.unknown_timestamp = 0x{0:X8} ({0}, {1})",
                                        infoMddf.unknown_timestamp,
                                        DateHandlers.LisaToDateTime(infoMddf.unknown_timestamp));

@@ -80,36 +80,36 @@ public sealed partial class UDF
         {
             anchor = Marshal.ByteArrayToStructureLittleEndian<AnchorVolumeDescriptorPointer>(sector);
 
-            AaruConsole.Debug(MODULE_NAME, "anchor.tag.tagIdentifier = {0}", anchor.tag.tagIdentifier);
+            AaruLogging.Debug(MODULE_NAME, "anchor.tag.tagIdentifier = {0}", anchor.tag.tagIdentifier);
 
-            AaruConsole.Debug(MODULE_NAME, "anchor.tag.descriptorVersion = {0}", anchor.tag.descriptorVersion);
+            AaruLogging.Debug(MODULE_NAME, "anchor.tag.descriptorVersion = {0}", anchor.tag.descriptorVersion);
 
-            AaruConsole.Debug(MODULE_NAME, "anchor.tag.tagChecksum = 0x{0:X2}", anchor.tag.tagChecksum);
-            AaruConsole.Debug(MODULE_NAME, "anchor.tag.reserved = {0}",         anchor.tag.reserved);
+            AaruLogging.Debug(MODULE_NAME, "anchor.tag.tagChecksum = 0x{0:X2}", anchor.tag.tagChecksum);
+            AaruLogging.Debug(MODULE_NAME, "anchor.tag.reserved = {0}",         anchor.tag.reserved);
 
-            AaruConsole.Debug(MODULE_NAME, "anchor.tag.tagSerialNumber = {0}", anchor.tag.tagSerialNumber);
+            AaruLogging.Debug(MODULE_NAME, "anchor.tag.tagSerialNumber = {0}", anchor.tag.tagSerialNumber);
 
-            AaruConsole.Debug(MODULE_NAME, "anchor.tag.descriptorCrc = 0x{0:X4}", anchor.tag.descriptorCrc);
+            AaruLogging.Debug(MODULE_NAME, "anchor.tag.descriptorCrc = 0x{0:X4}", anchor.tag.descriptorCrc);
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        "anchor.tag.descriptorCrcLength = {0}",
                                        anchor.tag.descriptorCrcLength);
 
-            AaruConsole.Debug(MODULE_NAME, "anchor.tag.tagLocation = {0}", anchor.tag.tagLocation);
+            AaruLogging.Debug(MODULE_NAME, "anchor.tag.tagLocation = {0}", anchor.tag.tagLocation);
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        "anchor.mainVolumeDescriptorSequenceExtent.length = {0}",
                                        anchor.mainVolumeDescriptorSequenceExtent.length);
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        "anchor.mainVolumeDescriptorSequenceExtent.location = {0}",
                                        anchor.mainVolumeDescriptorSequenceExtent.location);
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        "anchor.reserveVolumeDescriptorSequenceExtent.length = {0}",
                                        anchor.reserveVolumeDescriptorSequenceExtent.length);
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        "anchor.reserveVolumeDescriptorSequenceExtent.location = {0}",
                                        anchor.reserveVolumeDescriptorSequenceExtent.location);
 

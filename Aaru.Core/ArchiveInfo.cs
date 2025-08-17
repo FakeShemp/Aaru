@@ -44,12 +44,12 @@ public static class ArchiveInfo
     /// <param name="imageFormat">Archive</param>
     public static void PrintArchiveInfo(IArchive imageFormat, IFilter filter, Encoding encoding)
     {
-        AaruConsole.WriteLine(Localization.Core.Archive_Information_With_Markup);
+        AaruLogging.WriteLine(Localization.Core.Archive_Information_With_Markup);
 
         imageFormat.GetInformation(filter, encoding, out string information);
 
-        AaruConsole.WriteLine(Markup.Escape(information));
+        AaruLogging.WriteLine(Markup.Escape(information));
 
-        AaruConsole.WriteLine();
+        AaruLogging.WriteLine();
     }
 }

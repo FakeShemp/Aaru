@@ -40,17 +40,17 @@ static class Mcpt
         while(true)
         {
             Console.Clear();
-            AaruConsole.WriteLine(Localization.Device_0, devPath);
-            AaruConsole.WriteLine(Localization.Send_a_Media_Card_Pass_Through_command_to_the_device);
-            AaruConsole.WriteLine(Localization.Send_CHECK_MEDIA_CARD_TYPE_command);
-            AaruConsole.WriteLine(Localization.Return_to_ATA_commands_menu);
-            AaruConsole.Write(Localization.Choose);
+            AaruLogging.WriteLine(Localization.Device_0, devPath);
+            AaruLogging.WriteLine(Localization.Send_a_Media_Card_Pass_Through_command_to_the_device);
+            AaruLogging.WriteLine(Localization.Send_CHECK_MEDIA_CARD_TYPE_command);
+            AaruLogging.WriteLine(Localization.Return_to_ATA_commands_menu);
+            AaruLogging.Write(Localization.Choose);
 
             string strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out int item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -59,7 +59,7 @@ static class Mcpt
             switch(item)
             {
                 case 0:
-                    AaruConsole.WriteLine(Localization.Returning_to_ATA_commands_menu);
+                    AaruLogging.WriteLine(Localization.Returning_to_ATA_commands_menu);
 
                     return;
                 case 1:
@@ -67,7 +67,7 @@ static class Mcpt
 
                     continue;
                 default:
-                    AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                    AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                     Console.ReadKey();
 
                     continue;
@@ -86,20 +86,20 @@ static class Mcpt
         while(true)
         {
             Console.Clear();
-            AaruConsole.WriteLine(Localization.Device_0, devPath);
-            AaruConsole.WriteLine(Localization.Parameters_for_CHECK_MEDIA_CARD_TYPE_command);
-            AaruConsole.WriteLine(Localization.Feature_0, feature);
-            AaruConsole.WriteLine();
-            AaruConsole.WriteLine(Localization.Choose_what_to_do);
-            AaruConsole.WriteLine(Localization._1_Change_parameters);
-            AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
-            AaruConsole.WriteLine(Localization.Return_to_Media_Card_Pass_Through_commands_menu);
+            AaruLogging.WriteLine(Localization.Device_0, devPath);
+            AaruLogging.WriteLine(Localization.Parameters_for_CHECK_MEDIA_CARD_TYPE_command);
+            AaruLogging.WriteLine(Localization.Feature_0, feature);
+            AaruLogging.WriteLine();
+            AaruLogging.WriteLine(Localization.Choose_what_to_do);
+            AaruLogging.WriteLine(Localization._1_Change_parameters);
+            AaruLogging.WriteLine(Localization._2_Send_command_with_these_parameters);
+            AaruLogging.WriteLine(Localization.Return_to_Media_Card_Pass_Through_commands_menu);
 
             strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -108,16 +108,16 @@ static class Mcpt
             switch(item)
             {
                 case 0:
-                    AaruConsole.WriteLine(Localization.Returning_to_Media_Card_Pass_Through_commands_menu);
+                    AaruLogging.WriteLine(Localization.Returning_to_Media_Card_Pass_Through_commands_menu);
 
                     return;
                 case 1:
-                    AaruConsole.Write(Localization.Feature);
+                    AaruLogging.Write(Localization.Feature);
                     strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out feature))
                     {
-                        AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                        AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         feature = 0;
                         Console.ReadKey();
                     }
@@ -137,24 +137,24 @@ static class Mcpt
                                             out double duration);
 
     menu:
-        AaruConsole.WriteLine(Localization.Device_0, devPath);
-        AaruConsole.WriteLine(Localization.Sending_CHECK_MEDIA_CARD_TYPE_to_the_device);
-        AaruConsole.WriteLine(Localization.Command_took_0_ms, duration);
-        AaruConsole.WriteLine(Localization.Sense_is_0,        sense);
-        AaruConsole.WriteLine(Localization.CHECK_MEDIA_CARD_TYPE_status_registers);
-        AaruConsole.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
-        AaruConsole.WriteLine();
-        AaruConsole.WriteLine(Localization.Choose_what_to_do);
-        AaruConsole.WriteLine(Localization._1_Send_command_again);
-        AaruConsole.WriteLine(Localization._2_Change_parameters);
-        AaruConsole.WriteLine(Localization.Return_to_Media_Card_Pass_Through_commands_menu);
-        AaruConsole.Write(Localization.Choose);
+        AaruLogging.WriteLine(Localization.Device_0, devPath);
+        AaruLogging.WriteLine(Localization.Sending_CHECK_MEDIA_CARD_TYPE_to_the_device);
+        AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
+        AaruLogging.WriteLine(Localization.Sense_is_0,        sense);
+        AaruLogging.WriteLine(Localization.CHECK_MEDIA_CARD_TYPE_status_registers);
+        AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+        AaruLogging.WriteLine();
+        AaruLogging.WriteLine(Localization.Choose_what_to_do);
+        AaruLogging.WriteLine(Localization._1_Send_command_again);
+        AaruLogging.WriteLine(Localization._2_Change_parameters);
+        AaruLogging.WriteLine(Localization.Return_to_Media_Card_Pass_Through_commands_menu);
+        AaruLogging.Write(Localization.Choose);
 
         strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
-            AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+            AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
             Console.ReadKey();
             Console.Clear();
 
@@ -164,7 +164,7 @@ static class Mcpt
         switch(item)
         {
             case 0:
-                AaruConsole.WriteLine(Localization.Returning_to_Media_Card_Pass_Through_commands_menu);
+                AaruLogging.WriteLine(Localization.Returning_to_Media_Card_Pass_Through_commands_menu);
 
                 return;
             case 1:
@@ -172,7 +172,7 @@ static class Mcpt
             case 2:
                 goto parameters;
             default:
-                AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
 

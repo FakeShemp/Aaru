@@ -59,10 +59,10 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
         Statistics.AddCommand("compare");
 
-        AaruConsole.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
-        AaruConsole.Debug(MODULE_NAME, "--input1={0}",  Markup.Escape(settings.ImagePath1 ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--input2={0}",  Markup.Escape(settings.ImagePath2 ?? ""));
-        AaruConsole.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--input1={0}",  Markup.Escape(settings.ImagePath1 ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--input2={0}",  Markup.Escape(settings.ImagePath2 ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
         IFilter inputFilter1 = null;
         IFilter inputFilter2 = null;
@@ -81,14 +81,14 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
         if(inputFilter1 == null)
         {
-            AaruConsole.Error(UI.Cannot_open_first_input_file);
+            AaruLogging.Error(UI.Cannot_open_first_input_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
 
         if(inputFilter2 == null)
         {
-            AaruConsole.Error(UI.Cannot_open_second_input_file);
+            AaruLogging.Error(UI.Cannot_open_second_input_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -110,35 +110,35 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
         if(input1Format == null)
         {
-            AaruConsole.Error(UI.First_input_file_format_not_identified);
+            AaruLogging.Error(UI.First_input_file_format_not_identified);
 
             return (int)ErrorNumber.UnrecognizedFormat;
         }
 
         if(settings.Verbose)
         {
-            AaruConsole.Verbose(UI.First_input_file_format_identified_by_0_1,
+            AaruLogging.Verbose(UI.First_input_file_format_identified_by_0_1,
                                          input1Format.Name,
                                          input1Format.Id);
         }
         else
-            AaruConsole.WriteLine(UI.First_input_file_format_identified_by_0, input1Format.Name);
+            AaruLogging.WriteLine(UI.First_input_file_format_identified_by_0, input1Format.Name);
 
         if(input2Format == null)
         {
-            AaruConsole.Error(UI.Second_input_file_format_not_identified);
+            AaruLogging.Error(UI.Second_input_file_format_not_identified);
 
             return (int)ErrorNumber.UnrecognizedFormat;
         }
 
         if(settings.Verbose)
         {
-            AaruConsole.Verbose(UI.Second_input_file_format_identified_by_0_1,
+            AaruLogging.Verbose(UI.Second_input_file_format_identified_by_0_1,
                                          input2Format.Name,
                                          input2Format.Id);
         }
         else
-            AaruConsole.WriteLine(UI.Second_input_file_format_identified_by_0, input2Format.Name);
+            AaruLogging.WriteLine(UI.Second_input_file_format_identified_by_0, input2Format.Name);
 
         ErrorNumber opened1 = ErrorNumber.NoData;
         ErrorNumber opened2 = ErrorNumber.NoData;
@@ -151,8 +151,8 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
         if(opened1 != ErrorNumber.NoError)
         {
-            AaruConsole.WriteLine(UI.Unable_to_open_first_image_format);
-            AaruConsole.WriteLine(Localization.Core.Error_0, opened1);
+            AaruLogging.WriteLine(UI.Unable_to_open_first_image_format);
+            AaruLogging.WriteLine(Localization.Core.Error_0, opened1);
 
             return (int)opened1;
         }
@@ -165,8 +165,8 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
         if(opened2 != ErrorNumber.NoError)
         {
-            AaruConsole.WriteLine(UI.Unable_to_open_second_image_format);
-            AaruConsole.WriteLine(Localization.Core.Error_0, opened2);
+            AaruLogging.WriteLine(UI.Unable_to_open_second_image_format);
+            AaruLogging.WriteLine(Localization.Core.Error_0, opened2);
 
             return (int)opened2;
         }
@@ -405,7 +405,7 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
                                     if(errno != ErrorNumber.NoError)
                                     {
-                                        AaruConsole
+                                        AaruLogging
                                            .Error(string.Format(UI.Error_0_reading_sector_1_from_first_image,
                                                                          errno,
                                                                          sector));
@@ -415,7 +415,7 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
                                     if(errno != ErrorNumber.NoError)
                                     {
-                                        AaruConsole
+                                        AaruLogging
                                            .Error(string.Format(UI.Error_0_reading_sector_1_from_second_image,
                                                                          errno,
                                                                          sector));
@@ -486,14 +486,14 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
                         });
         }
 
-        AaruConsole.WriteLine();
+        AaruLogging.WriteLine();
 
         sb.AppendLine(imagesDiffer ? UI.Images_differ : UI.Images_do_not_differ);
 
         if(settings.Verbose)
             AnsiConsole.Write(table);
         else
-            AaruConsole.WriteLine(sb.ToString());
+            AaruLogging.WriteLine(sb.ToString());
 
         return (int)ErrorNumber.NoError;
     }

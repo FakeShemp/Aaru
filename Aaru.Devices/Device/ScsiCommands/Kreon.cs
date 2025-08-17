@@ -63,7 +63,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.KREON_DEPRECATED_UNLOCK_took_0_ms, duration);
+        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.KREON_DEPRECATED_UNLOCK_took_0_ms, duration);
 
         return sense;
     }
@@ -120,7 +120,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.KREON_SET_LOCK_STATE_took_0_ms, duration);
+        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.KREON_SET_LOCK_STATE_took_0_ms, duration);
 
         return sense || Error;
     }
@@ -154,7 +154,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.KREON_GET_FEATURE_LIST_took_0_ms, duration);
+        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.KREON_GET_FEATURE_LIST_took_0_ms, duration);
 
         if(sense) return true;
 
@@ -251,7 +251,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.KREON_EXTRACT_SS_took_0_ms, duration);
+        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.KREON_EXTRACT_SS_took_0_ms, duration);
 
         return sense || Error;
     }

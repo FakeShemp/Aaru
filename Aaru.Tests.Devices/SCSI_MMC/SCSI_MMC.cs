@@ -39,23 +39,23 @@ static partial class ScsiMmc
         while(true)
         {
             Console.Clear();
-            AaruConsole.WriteLine(Localization.Device_0, devPath);
-            AaruConsole.WriteLine(Localization.Send_a_special_SCSI_MultiMedia_command_to_the_device);
+            AaruLogging.WriteLine(Localization.Device_0, devPath);
+            AaruLogging.WriteLine(Localization.Send_a_special_SCSI_MultiMedia_command_to_the_device);
 
-            AaruConsole.WriteLine(Localization
+            AaruLogging.WriteLine(Localization
                                      .Try_to_read_the_cache_data_from_a_device_with_a_MediaTek_chipset_F1h_command_06h_subcommand);
 
-            AaruConsole.WriteLine(Localization.Try_to_read_a_GD_ROM_using_a_trap_disc);
-            AaruConsole.WriteLine(Localization.Try_to_read_Lead_Out_using_a_trap_disc);
+            AaruLogging.WriteLine(Localization.Try_to_read_a_GD_ROM_using_a_trap_disc);
+            AaruLogging.WriteLine(Localization.Try_to_read_Lead_Out_using_a_trap_disc);
 
-            AaruConsole.WriteLine(Localization.Return_to_command_class_menu);
-            AaruConsole.Write(Localization.Choose);
+            AaruLogging.WriteLine(Localization.Return_to_command_class_menu);
+            AaruLogging.Write(Localization.Choose);
 
             string strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out int item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -64,7 +64,7 @@ static partial class ScsiMmc
             switch(item)
             {
                 case 0:
-                    AaruConsole.WriteLine(Localization.Returning_to_command_class_menu);
+                    AaruLogging.WriteLine(Localization.Returning_to_command_class_menu);
 
                     return;
                 case 1:
@@ -80,7 +80,7 @@ static partial class ScsiMmc
 
                     continue;
                 default:
-                    AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                    AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                     Console.ReadKey();
 
                     continue;

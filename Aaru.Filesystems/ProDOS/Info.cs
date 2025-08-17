@@ -89,27 +89,27 @@ public sealed partial class ProDOSPlugin
         }
 
         ushort prePointer = BitConverter.ToUInt16(rootDirectoryKeyBlock, 0);
-        AaruConsole.Debug(MODULE_NAME, "prePointer = {0}", prePointer);
+        AaruLogging.Debug(MODULE_NAME, "prePointer = {0}", prePointer);
 
         if(prePointer != 0) return false;
 
         byte storageType = (byte)((rootDirectoryKeyBlock[0x04] & STORAGE_TYPE_MASK) >> 4);
-        AaruConsole.Debug(MODULE_NAME, "storage_type = {0}", storageType);
+        AaruLogging.Debug(MODULE_NAME, "storage_type = {0}", storageType);
 
         if(storageType != ROOT_DIRECTORY_TYPE) return false;
 
         byte entryLength = rootDirectoryKeyBlock[0x23];
-        AaruConsole.Debug(MODULE_NAME, "entry_length = {0}", entryLength);
+        AaruLogging.Debug(MODULE_NAME, "entry_length = {0}", entryLength);
 
         if(entryLength != ENTRY_LENGTH) return false;
 
         byte entriesPerBlock = rootDirectoryKeyBlock[0x24];
-        AaruConsole.Debug(MODULE_NAME, "entries_per_block = {0}", entriesPerBlock);
+        AaruLogging.Debug(MODULE_NAME, "entries_per_block = {0}", entriesPerBlock);
 
         if(entriesPerBlock != ENTRIES_PER_BLOCK) return false;
 
         ushort bitMapPointer = BitConverter.ToUInt16(rootDirectoryKeyBlock, 0x27);
-        AaruConsole.Debug(MODULE_NAME, "bit_map_pointer = {0}", bitMapPointer);
+        AaruLogging.Debug(MODULE_NAME, "bit_map_pointer = {0}", bitMapPointer);
 
         if(bitMapPointer > partition.End) return false;
 
@@ -117,7 +117,7 @@ public sealed partial class ProDOSPlugin
 
         if(apmFromHddOnCd) totalBlocks /= 4;
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "{0} <= ({1} - {2} + 1)? {3}",
                                    totalBlocks,
                                    partition.End,
@@ -199,11 +199,11 @@ public sealed partial class ProDOSPlugin
 
             if(year < 1940) year += 100;
 
-            AaruConsole.Debug(MODULE_NAME, "temp_timestamp_left = 0x{0:X4}",  tempTimestampLeft);
-            AaruConsole.Debug(MODULE_NAME, "temp_timestamp_right = 0x{0:X4}", tempTimestampRight);
-            AaruConsole.Debug(MODULE_NAME, "temp_timestamp = 0x{0:X8}",       tempTimestamp);
+            AaruLogging.Debug(MODULE_NAME, "temp_timestamp_left = 0x{0:X4}",  tempTimestampLeft);
+            AaruLogging.Debug(MODULE_NAME, "temp_timestamp_right = 0x{0:X4}", tempTimestampRight);
+            AaruLogging.Debug(MODULE_NAME, "temp_timestamp = 0x{0:X8}",       tempTimestamp);
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        Localization.Datetime_field_year_0_month_1_day_2_hour_3_minute_4,
                                        year,
                                        month,
@@ -304,7 +304,7 @@ public sealed partial class ProDOSPlugin
         // TODO: Fix mask
         if((rootDirectoryKeyBlock.header.access & RESERVED_ATTRIBUTE_MASK) != 0)
         {
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        Localization.Reserved_attributes_are_set_0,
                                        rootDirectoryKeyBlock.header.access);
         }

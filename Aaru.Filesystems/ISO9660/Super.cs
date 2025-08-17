@@ -132,10 +132,10 @@ public sealed partial class ISO9660
 
         while(true)
         {
-            AaruConsole.Debug(MODULE_NAME, Localization.Processing_VD_loop_no_0, counter);
+            AaruLogging.Debug(MODULE_NAME, Localization.Processing_VD_loop_no_0, counter);
 
             // Seek to Volume Descriptor
-            AaruConsole.Debug(MODULE_NAME, Localization.Reading_sector_0, 16 + counter + partition.Start);
+            AaruLogging.Debug(MODULE_NAME, Localization.Reading_sector_0, 16 + counter + partition.Start);
             errno = imagePlugin.ReadSector(16 + counter + partition.Start, out byte[] vdSectorTmp);
 
             if(errno != ErrorNumber.NoError) return errno;
@@ -144,7 +144,7 @@ public sealed partial class ISO9660
             Array.Copy(vdSectorTmp, xaOff, vdSector, 0, vdSector.Length);
 
             byte vdType = vdSector[0 + hsOff]; // Volume Descriptor Type, should be 1 or 2.
-            AaruConsole.Debug(MODULE_NAME, "VDType = {0}", vdType);
+            AaruLogging.Debug(MODULE_NAME, "VDType = {0}", vdType);
 
             if(vdType == 255) // Supposedly we are in the PVD.
             {
@@ -207,7 +207,7 @@ public sealed partial class ISO9660
                                 jolietvd = svd;
                             else
                             {
-                                AaruConsole.Debug(MODULE_NAME,
+                                AaruLogging.Debug(MODULE_NAME,
                                                            Localization.Found_unknown_supplementary_volume_descriptor);
                             }
                         }
@@ -248,7 +248,7 @@ public sealed partial class ISO9660
 
         if(pvd == null && hsvd == null && fsvd == null)
         {
-            AaruConsole.Error(Localization.ERROR_Could_not_find_primary_volume_descriptor);
+            AaruLogging.Error(Localization.ERROR_Could_not_find_primary_volume_descriptor);
 
             return ErrorNumber.InvalidArgument;
         }
@@ -351,7 +351,7 @@ public sealed partial class ISO9660
 
             if(_pathTable?.Length > 1 && rootLocation != _pathTable[0].Extent)
             {
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            Localization
                                               .Path_table_and_PVD_do_not_point_to_the_same_location_for_the_root_directory);
 
@@ -378,7 +378,7 @@ public sealed partial class ISO9660
 
                 if(pvdWrongRoot)
                 {
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                Localization
                                                   .PVD_does_not_point_to_correct_root_directory_checking_path_table);
 
@@ -405,7 +405,7 @@ public sealed partial class ISO9660
 
                     if(pathTableWrongRoot)
                     {
-                        AaruConsole.Error(Localization.Cannot_find_root_directory);
+                        AaruLogging.Error(Localization.Cannot_find_root_directory);
 
                         return ErrorNumber.InvalidArgument;
                     }

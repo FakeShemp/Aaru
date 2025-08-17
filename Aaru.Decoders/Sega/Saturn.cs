@@ -59,51 +59,51 @@ public static class Saturn
 
         IPBin ipbin = Marshal.ByteArrayToStructureLittleEndian<IPBin>(ipbin_sector);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "saturn_ipbin.maker_id = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.maker_id));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "saturn_ipbin.product_no = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.product_no));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "saturn_ipbin.product_version = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.product_version));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "saturn_ipbin.release_date = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.release_date));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "saturn_ipbin.saturn_media = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.saturn_media));
 
-        AaruConsole.Debug(MODULE_NAME, "saturn_ipbin.disc_no = {0}", (char)ipbin.disc_no);
+        AaruLogging.Debug(MODULE_NAME, "saturn_ipbin.disc_no = {0}", (char)ipbin.disc_no);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "saturn_ipbin.disc_no_separator = \"{0}\"",
                                    (char)ipbin.disc_no_separator);
 
-        AaruConsole.Debug(MODULE_NAME, "saturn_ipbin.disc_total_nos = {0}", (char)ipbin.disc_total_nos);
+        AaruLogging.Debug(MODULE_NAME, "saturn_ipbin.disc_total_nos = {0}", (char)ipbin.disc_total_nos);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "saturn_ipbin.release_date = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.release_date));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "saturn_ipbin.spare_space1 = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.spare_space1));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "saturn_ipbin.region_codes = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.region_codes));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "saturn_ipbin.peripherals = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.peripherals));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "saturn_ipbin.product_name = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.product_name));
 

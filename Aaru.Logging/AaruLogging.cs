@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : AaruConsole.cs
+// Filename       : AaruLogging.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Console.
@@ -40,7 +40,7 @@ namespace Aaru.Logging;
 ///     standard, error, verbose and debug.
 /// </summary>
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
-public static class AaruConsole
+public static class AaruLogging
 {
     /// <summary>Event to receive writings to the standard output console that should be followed by a line termination.</summary>
     public static event WriteLineDelegate WriteLineEvent;

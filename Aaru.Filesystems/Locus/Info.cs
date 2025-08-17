@@ -80,7 +80,7 @@ public sealed partial class Locus
 
             Superblock locusSb = Marshal.ByteArrayToStructureLittleEndian<Superblock>(sector);
 
-            AaruConsole.Debug(MODULE_NAME, Localization.magic_at_1_equals_0, locusSb.s_magic, location);
+            AaruLogging.Debug(MODULE_NAME, Localization.magic_at_1_equals_0, locusSb.s_magic, location);
 
             if(locusSb.s_magic is LOCUS_MAGIC or LOCUS_CIGAM or LOCUS_MAGIC_OLD or LOCUS_CIGAM_OLD) return true;
         }
@@ -146,27 +146,27 @@ public sealed partial class Locus
         // ReSharper disable once InconsistentNaming
         string s_fpack = StringHandlers.CToString(locusSb.s_fpack, encoding);
 
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_magic = 0x{0:X8}", locusSb.s_magic);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_gfs = {0}",        locusSb.s_gfs);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_fsize = {0}",      locusSb.s_fsize);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_lwm = {0}",        locusSb.s_lwm);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_hwm = {0}",        locusSb.s_hwm);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_llst = {0}",       locusSb.s_llst);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_fstore = {0}",     locusSb.s_fstore);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_time = {0}",       locusSb.s_time);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_tfree = {0}",      locusSb.s_tfree);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_isize = {0}",      locusSb.s_isize);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_nfree = {0}",      locusSb.s_nfree);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_flags = {0}",      locusSb.s_flags);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_tinode = {0}",     locusSb.s_tinode);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_lasti = {0}",      locusSb.s_lasti);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_nbehind = {0}",    locusSb.s_nbehind);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_gfspack = {0}",    locusSb.s_gfspack);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_ninode = {0}",     locusSb.s_ninode);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_flock = {0}",      locusSb.s_flock);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_ilock = {0}",      locusSb.s_ilock);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_fmod = {0}",       locusSb.s_fmod);
-        AaruConsole.Debug(MODULE_NAME, "LocusSb.s_version = {0}",    locusSb.s_version);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_magic = 0x{0:X8}", locusSb.s_magic);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_gfs = {0}",        locusSb.s_gfs);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_fsize = {0}",      locusSb.s_fsize);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_lwm = {0}",        locusSb.s_lwm);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_hwm = {0}",        locusSb.s_hwm);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_llst = {0}",       locusSb.s_llst);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_fstore = {0}",     locusSb.s_fstore);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_time = {0}",       locusSb.s_time);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_tfree = {0}",      locusSb.s_tfree);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_isize = {0}",      locusSb.s_isize);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_nfree = {0}",      locusSb.s_nfree);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_flags = {0}",      locusSb.s_flags);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_tinode = {0}",     locusSb.s_tinode);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_lasti = {0}",      locusSb.s_lasti);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_nbehind = {0}",    locusSb.s_nbehind);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_gfspack = {0}",    locusSb.s_gfspack);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_ninode = {0}",     locusSb.s_ninode);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_flock = {0}",      locusSb.s_flock);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_ilock = {0}",      locusSb.s_ilock);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_fmod = {0}",       locusSb.s_fmod);
+        AaruLogging.Debug(MODULE_NAME, "LocusSb.s_version = {0}",    locusSb.s_version);
 
         sb.AppendFormat(Localization.Superblock_last_modified_on_0, DateHandlers.UnixToDateTime(locusSb.s_time))
           .AppendLine();

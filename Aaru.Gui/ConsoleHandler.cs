@@ -9,7 +9,7 @@
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Receives AaruConsole events and stores them for showing in the console
+//     Receives AaruLogging events and stores them for showing in the console
 //     window.
 //
 // --[ License ] --------------------------------------------------------------
@@ -54,13 +54,13 @@ static class ConsoleHandler
 
             if(_debug)
             {
-                AaruConsole.DebugWithModuleEvent += OnDebugWriteHandler;
-                AaruConsole.WriteExceptionEvent           += OnWriteExceptionEvent;
+                AaruLogging.DebugWithModuleEvent += OnDebugWriteHandler;
+                AaruLogging.WriteExceptionEvent           += OnWriteExceptionEvent;
             }
             else
             {
-                AaruConsole.DebugWithModuleEvent -= OnDebugWriteHandler;
-                AaruConsole.WriteExceptionEvent           -= OnWriteExceptionEvent;
+                AaruLogging.DebugWithModuleEvent -= OnDebugWriteHandler;
+                AaruLogging.WriteExceptionEvent           -= OnWriteExceptionEvent;
             }
         }
     }
@@ -77,8 +77,8 @@ static class ConsoleHandler
 
     internal static void Init()
     {
-        AaruConsole.WriteLineEvent      += OnWriteHandler;
-        AaruConsole.ErrorEvent += OnErrorWriteHandler;
+        AaruLogging.WriteLineEvent      += OnWriteHandler;
+        AaruLogging.ErrorEvent += OnErrorWriteHandler;
     }
 
     static void OnWriteHandler([CanBeNull] string format, [CanBeNull] params object[] arg)

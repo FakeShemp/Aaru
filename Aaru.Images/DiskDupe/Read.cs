@@ -55,7 +55,7 @@ public sealed partial class DiskDupe
 
         if(!TryReadHeader(stream, ref fHeader, ref trackMap, ref trackOffsets)) return ErrorNumber.InvalidArgument;
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Detected_DiskDupe_DDI_image_with_0_tracks_and_1_sectors_per_track,
                                    _diskTypes[fHeader.diskType].cyl,
                                    _diskTypes[fHeader.diskType].spt);

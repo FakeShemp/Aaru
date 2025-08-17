@@ -59,17 +59,17 @@ public sealed partial class D88
 
         Header hdr = Marshal.ByteArrayToStructureLittleEndian<Header>(hdrB);
 
-        AaruConsole.Debug(MODULE_NAME, "d88hdr.name = \"{0}\"", StringHandlers.CToString(hdr.name, shiftjis));
+        AaruLogging.Debug(MODULE_NAME, "d88hdr.name = \"{0}\"", StringHandlers.CToString(hdr.name, shiftjis));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "d88hdr.reserved is empty? = {0}",
                                    hdr.reserved.SequenceEqual(_reservedEmpty));
 
-        AaruConsole.Debug(MODULE_NAME, "d88hdr.write_protect = 0x{0:X2}", hdr.write_protect);
+        AaruLogging.Debug(MODULE_NAME, "d88hdr.write_protect = 0x{0:X2}", hdr.write_protect);
 
-        AaruConsole.Debug(MODULE_NAME, "d88hdr.disk_type = {0} ({1})", hdr.disk_type, (byte)hdr.disk_type);
+        AaruLogging.Debug(MODULE_NAME, "d88hdr.disk_type = {0} ({1})", hdr.disk_type, (byte)hdr.disk_type);
 
-        AaruConsole.Debug(MODULE_NAME, "d88hdr.disk_size = {0}", hdr.disk_size);
+        AaruLogging.Debug(MODULE_NAME, "d88hdr.disk_size = {0}", hdr.disk_size);
 
         if(hdr.disk_size != stream.Length) return false;
 
@@ -86,7 +86,7 @@ public sealed partial class D88
             if(t < 0 || t > stream.Length) return false;
         }
 
-        AaruConsole.Debug(MODULE_NAME, Localization._0_tracks, counter);
+        AaruLogging.Debug(MODULE_NAME, Localization._0_tracks, counter);
 
         return counter > 0;
     }

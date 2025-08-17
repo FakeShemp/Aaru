@@ -52,36 +52,36 @@ sealed class ConfigureCommand : Command<ConfigureCommand.Settings>
     {
         if(gdprChange)
         {
-            AaruConsole.WriteLine(UI.GDPR_Compliance);
+            AaruLogging.WriteLine(UI.GDPR_Compliance);
 
-            AaruConsole.WriteLine();
+            AaruLogging.WriteLine();
 
-            AaruConsole.WriteLine(UI.GDPR_Open_Source_Disclaimer);
+            AaruLogging.WriteLine(UI.GDPR_Open_Source_Disclaimer);
 
-            AaruConsole.WriteLine();
+            AaruLogging.WriteLine();
 
-            AaruConsole.WriteLine(UI.GDPR_Information_sharing);
+            AaruLogging.WriteLine(UI.GDPR_Information_sharing);
         }
 
-        AaruConsole.WriteLine();
+        AaruLogging.WriteLine();
 
-        AaruConsole.WriteLine(UI.Configure_enable_decryption_disclaimer);
+        AaruLogging.WriteLine(UI.Configure_enable_decryption_disclaimer);
 
         Aaru.Settings.Settings.Current.EnableDecryption =
             AnsiConsole.Confirm($"[italic]{UI.Do_you_want_to_enable_decryption_of_copy_protected_media_Q}[/]");
 
 #region Device reports
 
-        AaruConsole.WriteLine();
+        AaruLogging.WriteLine();
 
-        AaruConsole.WriteLine(UI.Configure_Device_Report_information_disclaimer);
+        AaruLogging.WriteLine(UI.Configure_Device_Report_information_disclaimer);
 
         Aaru.Settings.Settings.Current.SaveReportsGlobally = AnsiConsole.Confirm($"[italic]{UI.
             Configure_Do_you_want_to_save_device_reports_in_shared_folder_of_your_computer_Q}[/]");
 
-        AaruConsole.WriteLine();
+        AaruLogging.WriteLine();
 
-        AaruConsole.WriteLine(UI.Configure_share_report_disclaimer);
+        AaruLogging.WriteLine(UI.Configure_share_report_disclaimer);
 
         Aaru.Settings.Settings.Current.ShareReports =
             AnsiConsole.Confirm($"[italic]{UI.Do_you_want_to_share_your_device_reports_with_us_Q}[/]");
@@ -90,9 +90,9 @@ sealed class ConfigureCommand : Command<ConfigureCommand.Settings>
 
 #region Statistics
 
-        AaruConsole.WriteLine();
+        AaruLogging.WriteLine();
 
-        AaruConsole.WriteLine(UI.Statistics_disclaimer);
+        AaruLogging.WriteLine(UI.Statistics_disclaimer);
 
         if(AnsiConsole.Confirm($"[italic]{UI.Do_you_want_to_save_stats_about_your_Aaru_usage_Q}[/]"))
         {

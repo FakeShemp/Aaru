@@ -152,7 +152,7 @@ public sealed partial class Imd
 
                         break;
                     default:
-                        AaruConsole.Error(string.Format(Localization.Invalid_sector_type_0, (byte)type));
+                        AaruLogging.Error(string.Format(Localization.Invalid_sector_type_0, (byte)type));
 
                         return ErrorNumber.InvalidArgument;
                 }
@@ -202,10 +202,10 @@ public sealed partial class Imd
 
         _imageInfo.MetadataMediaType = MetadataMediaType.BlockMedia;
 
-        AaruConsole.Verbose(Localization.IMD_image_contains_a_disk_of_type_0, _imageInfo.MediaType);
+        AaruLogging.Verbose(Localization.IMD_image_contains_a_disk_of_type_0, _imageInfo.MediaType);
 
         if(!string.IsNullOrEmpty(_imageInfo.Comments))
-            AaruConsole.Verbose(Localization.IMD_comments_0, _imageInfo.Comments);
+            AaruLogging.Verbose(Localization.IMD_comments_0, _imageInfo.Comments);
 
         return ErrorNumber.NoError;
     }

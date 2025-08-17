@@ -84,7 +84,7 @@ public static partial class MediaTypeFromDevice
                            model.StartsWith("MDH", StringComparison.Ordinal):
                 if(blockSize == 2048)
                 {
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                Localization.SCSI_Media_Type_Description_MDDATA,
                                                scsiPeripheralType,
                                                blocks,
@@ -96,7 +96,7 @@ public static partial class MediaTypeFromDevice
                 switch(blocks)
                 {
                     case 57312:
-                        AaruConsole.Debug(MODULE_NAME,
+                        AaruLogging.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_MD60_MDDATA,
                                                    scsiPeripheralType,
                                                    blocks,
@@ -104,7 +104,7 @@ public static partial class MediaTypeFromDevice
 
                         return MediaType.MD60;
                     case 70464:
-                        AaruConsole.Debug(MODULE_NAME,
+                        AaruLogging.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_MD74_MDDATA,
                                                    scsiPeripheralType,
                                                    blocks,
@@ -112,7 +112,7 @@ public static partial class MediaTypeFromDevice
 
                         return MediaType.MD74;
                     case 76096:
-                        AaruConsole.Debug(MODULE_NAME,
+                        AaruLogging.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_MD80_MDDATA,
                                                    scsiPeripheralType,
                                                    blocks,
@@ -121,7 +121,7 @@ public static partial class MediaTypeFromDevice
                         return MediaType.MD80;
                 }
 
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            Localization.SCSI_Media_Type_Description_MD60_MDDATA,
                                            scsiPeripheralType,
                                            blocks,
@@ -131,7 +131,7 @@ public static partial class MediaTypeFromDevice
 
             // Host managed zoned block device
             case 0x14:
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            Localization.SCSI_Media_Type_Description_ZBC_Host_Managed,
                                            scsiPeripheralType,
                                            blocks,

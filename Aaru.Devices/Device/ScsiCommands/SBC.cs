@@ -82,7 +82,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.READ_6_took_0_ms, duration);
+        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.READ_6_took_0_ms, duration);
 
         return sense;
     }
@@ -146,7 +146,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.READ_10_took_0_ms, duration);
+        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.READ_10_took_0_ms, duration);
 
         return sense;
     }
@@ -215,7 +215,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.READ_12_took_0_ms, duration);
+        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.READ_12_took_0_ms, duration);
 
         return sense;
     }
@@ -286,7 +286,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.READ_16_took_0_ms, duration);
+        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.READ_16_took_0_ms, duration);
 
         return sense;
     }
@@ -335,7 +335,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.READ_LONG_10_took_0_ms, duration);
+        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.READ_LONG_10_took_0_ms, duration);
 
         return sense;
     }
@@ -386,7 +386,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.READ_LONG_16_took_0_ms, duration);
+        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.READ_LONG_16_took_0_ms, duration);
 
         return sense;
     }
@@ -417,7 +417,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.SEEK_6_took_0_ms, duration);
+        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.SEEK_6_took_0_ms, duration);
 
         return sense;
     }
@@ -449,7 +449,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.SEEK_10_took_0_ms, duration);
+        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.SEEK_10_took_0_ms, duration);
 
         return sense;
     }

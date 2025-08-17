@@ -55,11 +55,11 @@ public sealed partial class DeviceReport
 
         while(pressedKey.Key != ConsoleKey.Y && pressedKey.Key != ConsoleKey.N)
         {
-            AaruConsole.Write(Localization.Core
+            AaruLogging.Write(Localization.Core
                                           .Have_you_previously_tried_with_a_GD_ROM_disc_and_did_the_computer_hang_or_crash_Q);
 
             pressedKey = Console.ReadKey();
-            AaruConsole.WriteLine();
+            AaruLogging.WriteLine();
         }
 
         if(pressedKey.Key == ConsoleKey.Y)
@@ -69,16 +69,16 @@ public sealed partial class DeviceReport
             return;
         }
 
-        AaruConsole.WriteLine(Localization.Core.Ejecting_disc);
+        AaruLogging.WriteLine(Localization.Core.Ejecting_disc);
 
         _dev.AllowMediumRemoval(out _, _dev.Timeout, out _);
         _dev.EjectTray(out _, _dev.Timeout, out _);
 
-        AaruConsole.WriteLine(Localization.Core.Please_insert_trap_disc_inside);
-        AaruConsole.WriteLine(Localization.Core.Press_any_key_to_continue);
+        AaruLogging.WriteLine(Localization.Core.Please_insert_trap_disc_inside);
+        AaruLogging.WriteLine(Localization.Core.Press_any_key_to_continue);
         Console.ReadLine();
 
-        AaruConsole.WriteLine(Localization.Core.Sending_READ_FULL_TOC_to_the_device);
+        AaruLogging.WriteLine(Localization.Core.Sending_READ_FULL_TOC_to_the_device);
 
         int    retries = 0;
         bool   sense;
@@ -103,8 +103,8 @@ public sealed partial class DeviceReport
 
         if(sense)
         {
-            AaruConsole.WriteLine(Localization.Core.READ_FULL_TOC_failed);
-            AaruConsole.Debug(GDROM_MODULE_NAME, "{0}", Sense.PrettifySense(senseBuffer));
+            AaruLogging.WriteLine(Localization.Core.READ_FULL_TOC_failed);
+            AaruLogging.Debug(GDROM_MODULE_NAME, "{0}", Sense.PrettifySense(senseBuffer));
 
             report.GdRomSwapDiscCapabilities.RecognizedSwapDisc = false;
             report.GdRomSwapDiscCapabilities.TestCrashed        = false;
@@ -116,7 +116,7 @@ public sealed partial class DeviceReport
 
         if(decodedToc is null)
         {
-            AaruConsole.WriteLine(Localization.Core.Could_not_decode_TOC);
+            AaruLogging.WriteLine(Localization.Core.Could_not_decode_TOC);
 
             report.GdRomSwapDiscCapabilities.RecognizedSwapDisc = false;
             report.GdRomSwapDiscCapabilities.TestCrashed        = false;
@@ -131,7 +131,7 @@ public sealed partial class DeviceReport
 
         if(leadOutTrack.POINT != 0xA2)
         {
-            AaruConsole.WriteLine(Localization.Core.Cannot_find_lead_out);
+            AaruLogging.WriteLine(Localization.Core.Cannot_find_lead_out);
 
             report.GdRomSwapDiscCapabilities.RecognizedSwapDisc = false;
             report.GdRomSwapDiscCapabilities.TestCrashed        = false;
@@ -174,11 +174,11 @@ public sealed partial class DeviceReport
 
         int sectors = min * 60 * 75 + sec * 75 + frame - 150;
 
-        AaruConsole.WriteLine(Localization.Core.Trap_disc_shows_0_sectors, sectors);
+        AaruLogging.WriteLine(Localization.Core.Trap_disc_shows_0_sectors, sectors);
 
         if(sectors < 450000)
         {
-            AaruConsole.WriteLine(Localization.Core.Trap_disc_doesnt_have_enough_sectors);
+            AaruLogging.WriteLine(Localization.Core.Trap_disc_doesnt_have_enough_sectors);
 
             report.GdRomSwapDiscCapabilities.RecognizedSwapDisc = false;
             report.GdRomSwapDiscCapabilities.TestCrashed        = false;
@@ -188,18 +188,18 @@ public sealed partial class DeviceReport
 
         report.GdRomSwapDiscCapabilities.RecognizedSwapDisc = true;
 
-        AaruConsole.WriteLine(Localization.Core.Stopping_motor);
+        AaruLogging.WriteLine(Localization.Core.Stopping_motor);
 
         _dev.StopUnit(out _, _dev.Timeout, out _);
 
-        AaruConsole.WriteLine(Localization.Core.Please_MANUALLY_get_the_trap_disc_out_and_put_the_GD_ROM_disc_inside);
-        AaruConsole.WriteLine(Localization.Core.Press_any_key_to_continue);
+        AaruLogging.WriteLine(Localization.Core.Please_MANUALLY_get_the_trap_disc_out_and_put_the_GD_ROM_disc_inside);
+        AaruLogging.WriteLine(Localization.Core.Press_any_key_to_continue);
         Console.ReadLine();
 
-        AaruConsole.WriteLine(Localization.Core.Waiting_5_seconds);
+        AaruLogging.WriteLine(Localization.Core.Waiting_5_seconds);
         Thread.Sleep(5000);
 
-        AaruConsole.WriteLine(Localization.Core.Sending_READ_FULL_TOC_to_the_device);
+        AaruLogging.WriteLine(Localization.Core.Sending_READ_FULL_TOC_to_the_device);
 
         retries = 0;
 
@@ -217,8 +217,8 @@ public sealed partial class DeviceReport
 
         if(sense)
         {
-            AaruConsole.WriteLine(Localization.Core.READ_FULL_TOC_failed);
-            AaruConsole.Debug(GDROM_MODULE_NAME, "{0}", Sense.PrettifySense(senseBuffer));
+            AaruLogging.WriteLine(Localization.Core.READ_FULL_TOC_failed);
+            AaruLogging.Debug(GDROM_MODULE_NAME, "{0}", Sense.PrettifySense(senseBuffer));
 
             report.GdRomSwapDiscCapabilities.RecognizedSwapDisc = false;
             report.GdRomSwapDiscCapabilities.TestCrashed        = false;
@@ -230,7 +230,7 @@ public sealed partial class DeviceReport
 
         if(decodedToc is null)
         {
-            AaruConsole.WriteLine(Localization.Core.Could_not_decode_TOC);
+            AaruLogging.WriteLine(Localization.Core.Could_not_decode_TOC);
 
             report.GdRomSwapDiscCapabilities.RecognizedSwapDisc = false;
             report.GdRomSwapDiscCapabilities.TestCrashed        = false;
@@ -245,7 +245,7 @@ public sealed partial class DeviceReport
 
         if(newLeadOutTrack.POINT != 0xA2)
         {
-            AaruConsole.WriteLine(Localization.Core.Cannot_find_lead_out);
+            AaruLogging.WriteLine(Localization.Core.Cannot_find_lead_out);
 
             report.GdRomSwapDiscCapabilities.RecognizedSwapDisc = false;
             report.GdRomSwapDiscCapabilities.TestCrashed        = false;
@@ -259,7 +259,7 @@ public sealed partial class DeviceReport
            newLeadOutTrack.PSEC   != leadOutTrack.PSEC ||
            newLeadOutTrack.PFRAME != leadOutTrack.PFRAME)
         {
-            AaruConsole.WriteLine(Localization.Core
+            AaruLogging.WriteLine(Localization.Core
                                               .Lead_out_has_changed_this_drive_does_not_support_hot_swapping_discs);
 
             report.GdRomSwapDiscCapabilities.RecognizedSwapDisc = false;
@@ -270,7 +270,7 @@ public sealed partial class DeviceReport
 
         _dev.SetCdSpeed(out _, RotationalControl.PureCav, 170, 0, _dev.Timeout, out _);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_zero);
+        AaruLogging.Write(Localization.Core.Reading_LBA_zero);
 
         report.GdRomSwapDiscCapabilities.Lba0Readable = !_dev.ReadCd(out byte[] lba0Buffer,
                                                                      out byte[] lba0Sense,
@@ -293,11 +293,11 @@ public sealed partial class DeviceReport
         report.GdRomSwapDiscCapabilities.Lba0Sense        = lba0Sense;
         report.GdRomSwapDiscCapabilities.Lba0DecodedSense = Sense.PrettifySense(lba0Sense);
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba0Readable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba0Readable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_zero_as_audio_scrambled);
+        AaruLogging.Write(Localization.Core.Reading_LBA_zero_as_audio_scrambled);
 
         report.GdRomSwapDiscCapabilities.Lba0ScrambledReadable = !_dev.ReadCd(out byte[] lba0ScrambledBuffer,
                                                                               out byte[] lba0ScrambledSense,
@@ -320,11 +320,11 @@ public sealed partial class DeviceReport
         report.GdRomSwapDiscCapabilities.Lba0ScrambledSense        = lba0ScrambledSense;
         report.GdRomSwapDiscCapabilities.Lba0ScrambledDecodedSense = Sense.PrettifySense(lba0ScrambledSense);
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba0ScrambledReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba0ScrambledReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_100000_as_audio);
+        AaruLogging.Write(Localization.Core.Reading_LBA_100000_as_audio);
         uint cluster = 16;
 
         while(true)
@@ -361,11 +361,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba100000AudioReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba100000AudioReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_50000_as_audio);
+        AaruLogging.Write(Localization.Core.Reading_LBA_50000_as_audio);
         cluster = 16;
 
         while(true)
@@ -401,11 +401,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba50000AudioReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba50000AudioReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_450000_as_audio);
+        AaruLogging.Write(Localization.Core.Reading_LBA_450000_as_audio);
         cluster = 16;
 
         while(true)
@@ -442,11 +442,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba450000AudioReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba450000AudioReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_400000_as_audio);
+        AaruLogging.Write(Localization.Core.Reading_LBA_400000_as_audio);
         cluster = 16;
 
         while(true)
@@ -483,11 +483,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba400000AudioReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba400000AudioReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_45000_as_audio);
+        AaruLogging.Write(Localization.Core.Reading_LBA_45000_as_audio);
         cluster = 16;
 
         while(true)
@@ -523,11 +523,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba45000AudioReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba45000AudioReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_44990_as_audio);
+        AaruLogging.Write(Localization.Core.Reading_LBA_44990_as_audio);
         cluster = 16;
 
         while(true)
@@ -563,11 +563,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba44990AudioReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba44990AudioReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_100000_as_audio_with_PQ_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_100000_as_audio_with_PQ_subchannel);
         cluster = 16;
 
         while(true)
@@ -604,11 +604,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba100000AudioPqReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba100000AudioPqReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_50000_as_audio_with_PQ_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_50000_as_audio_with_PQ_subchannel);
         cluster = 16;
 
         while(true)
@@ -645,11 +645,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba50000AudioPqReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba50000AudioPqReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_450000_as_audio_with_PQ_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_450000_as_audio_with_PQ_subchannel);
         cluster = 16;
 
         while(true)
@@ -686,11 +686,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba450000AudioPqReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba450000AudioPqReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_400000_as_audio_with_PQ_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_400000_as_audio_with_PQ_subchannel);
         cluster = 16;
 
         while(true)
@@ -727,11 +727,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba400000AudioPqReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba400000AudioPqReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_45000_as_audio_with_PQ_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_45000_as_audio_with_PQ_subchannel);
         cluster = 16;
 
         while(true)
@@ -768,11 +768,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba45000AudioPqReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba45000AudioPqReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_44990_as_audio_with_PQ_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_44990_as_audio_with_PQ_subchannel);
         cluster = 16;
 
         while(true)
@@ -809,11 +809,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba44990AudioPqReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba44990AudioPqReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_100000_as_audio_with_RW_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_100000_as_audio_with_RW_subchannel);
         cluster = 16;
 
         while(true)
@@ -850,11 +850,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba100000AudioRwReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba100000AudioRwReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_50000_as_audio_with_RW_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_50000_as_audio_with_RW_subchannel);
         cluster = 16;
 
         while(true)
@@ -891,11 +891,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba50000AudioRwReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba50000AudioRwReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_450000_as_audio_with_RW_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_450000_as_audio_with_RW_subchannel);
         cluster = 16;
 
         while(true)
@@ -932,11 +932,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba450000AudioRwReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba450000AudioRwReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_400000_as_audio_with_RW_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_400000_as_audio_with_RW_subchannel);
         cluster = 16;
 
         while(true)
@@ -973,11 +973,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba400000AudioRwReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba400000AudioRwReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_45000_as_audio_with_RW_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_45000_as_audio_with_RW_subchannel);
         cluster = 16;
 
         while(true)
@@ -1014,11 +1014,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba45000AudioRwReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba45000AudioRwReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_44990_as_audio_with_RW_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_44990_as_audio_with_RW_subchannel);
         cluster = 16;
 
         while(true)
@@ -1055,11 +1055,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba44990AudioRwReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba44990AudioRwReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_100000);
+        AaruLogging.Write(Localization.Core.Reading_LBA_100000);
         cluster = 16;
 
         while(true)
@@ -1093,11 +1093,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba100000Readable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba100000Readable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_50000);
+        AaruLogging.Write(Localization.Core.Reading_LBA_50000);
         cluster = 16;
 
         while(true)
@@ -1131,11 +1131,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba50000Readable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba50000Readable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_450000);
+        AaruLogging.Write(Localization.Core.Reading_LBA_450000);
         cluster = 16;
 
         while(true)
@@ -1169,11 +1169,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba450000Readable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba450000Readable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_400000);
+        AaruLogging.Write(Localization.Core.Reading_LBA_400000);
         cluster = 16;
 
         while(true)
@@ -1207,11 +1207,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba400000Readable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba400000Readable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_45000);
+        AaruLogging.Write(Localization.Core.Reading_LBA_45000);
         cluster = 16;
 
         while(true)
@@ -1245,11 +1245,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba45000Readable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba45000Readable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_44990);
+        AaruLogging.Write(Localization.Core.Reading_LBA_44990);
         cluster = 16;
 
         while(true)
@@ -1283,11 +1283,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba44990Readable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba44990Readable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_100000_with_PQ_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_100000_with_PQ_subchannel);
         cluster = 16;
 
         while(true)
@@ -1321,11 +1321,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba100000PqReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba100000PqReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_50000_with_PQ_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_50000_with_PQ_subchannel);
         cluster = 16;
 
         while(true)
@@ -1359,11 +1359,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba50000PqReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba50000PqReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_450000_with_PQ_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_450000_with_PQ_subchannel);
         cluster = 16;
 
         while(true)
@@ -1397,11 +1397,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba450000PqReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba450000PqReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_400000_with_PQ_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_400000_with_PQ_subchannel);
         cluster = 16;
 
         while(true)
@@ -1435,11 +1435,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba400000PqReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba400000PqReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_45000_with_PQ_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_45000_with_PQ_subchannel);
         cluster = 16;
 
         while(true)
@@ -1473,11 +1473,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba45000PqReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba45000PqReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_44990_with_PQ_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_44990_with_PQ_subchannel);
         cluster = 16;
 
         while(true)
@@ -1511,11 +1511,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba44990PqReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba44990PqReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_100000_with_RW_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_100000_with_RW_subchannel);
         cluster = 16;
 
         while(true)
@@ -1549,11 +1549,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba100000RwReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba100000RwReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_50000_with_RW_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_50000_with_RW_subchannel);
         cluster = 16;
 
         while(true)
@@ -1587,11 +1587,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba50000RwReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba50000RwReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_450000_with_RW_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_450000_with_RW_subchannel);
         cluster = 16;
 
         while(true)
@@ -1625,11 +1625,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba450000RwReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba450000RwReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_400000_with_RW_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_400000_with_RW_subchannel);
         cluster = 16;
 
         while(true)
@@ -1663,11 +1663,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba400000RwReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba400000RwReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_45000_with_RW_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_45000_with_RW_subchannel);
         cluster = 16;
 
         while(true)
@@ -1701,11 +1701,11 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba45000RwReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba45000RwReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        AaruConsole.Write(Localization.Core.Reading_LBA_44990_with_RW_subchannel);
+        AaruLogging.Write(Localization.Core.Reading_LBA_44990_with_RW_subchannel);
         cluster = 16;
 
         while(true)
@@ -1739,7 +1739,7 @@ public sealed partial class DeviceReport
             cluster /= 2;
         }
 
-        AaruConsole.WriteLine(report.GdRomSwapDiscCapabilities.Lba44990RwReadable
+        AaruLogging.WriteLine(report.GdRomSwapDiscCapabilities.Lba44990RwReadable
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
@@ -1759,10 +1759,10 @@ public sealed partial class DeviceReport
 
         while(pressedKey.Key != ConsoleKey.Y && pressedKey.Key != ConsoleKey.N)
         {
-            AaruConsole.Write(Localization.Core.Test_read_whole_high_density_area_proceed_Q);
+            AaruLogging.Write(Localization.Core.Test_read_whole_high_density_area_proceed_Q);
 
             pressedKey = Console.ReadKey();
-            AaruConsole.WriteLine();
+            AaruLogging.WriteLine();
         }
 
         if(pressedKey.Key == ConsoleKey.N) return;
@@ -1898,20 +1898,20 @@ public sealed partial class DeviceReport
         byte[] lastSuccessfulRw = null;
         bool   trackModeChange  = false;
 
-        AaruConsole.WriteLine();
+        AaruLogging.WriteLine();
 
         for(uint lba = startingSector; lba < sectors; lba += cluster)
         {
             if(aborted)
             {
-                AaruConsole.WriteLine();
-                AaruConsole.WriteLine(Localization.Core.Aborted);
+                AaruLogging.WriteLine();
+                AaruLogging.WriteLine(Localization.Core.Aborted);
 
                 break;
             }
 
-            AaruConsole.Write("\r");
-            AaruConsole.Write(Localization.Core.Reading_LBA_0_of_1, lba, sectors);
+            AaruLogging.Write("\r");
+            AaruLogging.Write(Localization.Core.Reading_LBA_0_of_1, lba, sectors);
 
             sense = readAsAudio
                         ? _dev.ReadCd(out buffer,
@@ -1978,7 +1978,7 @@ public sealed partial class DeviceReport
             report.GdRomSwapDiscCapabilities.MaximumReadableSectorInHdArea = lba + cluster - 1;
         }
 
-        AaruConsole.WriteLine();
+        AaruLogging.WriteLine();
 
         report.GdRomSwapDiscCapabilities.MaximumReadablePqInHdArea = lastSuccessfulPq;
         report.GdRomSwapDiscCapabilities.MaximumReadableRwInHdArea = lastSuccessfulRw;

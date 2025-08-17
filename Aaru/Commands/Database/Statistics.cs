@@ -62,7 +62,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
            !ctx.Partitions.Any()   &&
            !ctx.SeenDevices.Any())
         {
-            AaruConsole.WriteLine(UI.There_are_no_statistics);
+            AaruLogging.WriteLine(UI.There_are_no_statistics);
             Log.Information(UI.There_are_no_statistics);
 
             return (int)ErrorNumber.NothingFound;
@@ -131,7 +131,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
             }
 
             AnsiConsole.Write(table);
-            AaruConsole.WriteLine();
+            AaruLogging.WriteLine();
         }
 
         if(ctx.Filters.Any())
@@ -165,7 +165,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
             }
 
             AnsiConsole.Write(table);
-            AaruConsole.WriteLine();
+            AaruLogging.WriteLine();
         }
 
         if(ctx.MediaFormats.Any())
@@ -199,7 +199,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
             }
 
             AnsiConsole.Write(table);
-            AaruConsole.WriteLine();
+            AaruLogging.WriteLine();
         }
 
         if(ctx.Partitions.Any())
@@ -233,7 +233,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
             }
 
             AnsiConsole.Write(table);
-            AaruConsole.WriteLine();
+            AaruLogging.WriteLine();
         }
 
         if(ctx.Filesystems.Any())
@@ -267,7 +267,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
             }
 
             AnsiConsole.Write(table);
-            AaruConsole.WriteLine();
+            AaruLogging.WriteLine();
         }
 
         if(ctx.SeenDevices.Any())
@@ -304,7 +304,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
             }
 
             AnsiConsole.Write(table);
-            AaruConsole.WriteLine();
+            AaruLogging.WriteLine();
             thereAreStats = true;
         }
 
@@ -342,7 +342,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
             }
 
             AnsiConsole.Write(table);
-            AaruConsole.WriteLine();
+            AaruLogging.WriteLine();
         }
 
         if(ctx.Medias.Any(ms => !ms.Real))
@@ -379,12 +379,12 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
             }
 
             AnsiConsole.Write(table);
-            AaruConsole.WriteLine();
+            AaruLogging.WriteLine();
         }
 
         if(!thereAreStats)
         {
-            AaruConsole.WriteLine(UI.There_are_no_statistics);
+            AaruLogging.WriteLine(UI.There_are_no_statistics);
             Log.Information(UI.There_are_no_statistics);
         }
 

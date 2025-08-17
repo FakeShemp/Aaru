@@ -71,7 +71,7 @@ public sealed class Human68K : IPartition
         ulong       sectsPerUnit;
         ErrorNumber errno;
 
-        AaruConsole.Debug(MODULE_NAME, "sectorSize = {0}", imagePlugin.Info.SectorSize);
+        AaruLogging.Debug(MODULE_NAME, "sectorSize = {0}", imagePlugin.Info.SectorSize);
 
         if(sectorOffset + 4 >= imagePlugin.Info.Sectors) return false;
 
@@ -100,29 +100,29 @@ public sealed class Human68K : IPartition
 
         Table table = Marshal.ByteArrayToStructureBigEndian<Table>(sector);
 
-        AaruConsole.Debug(MODULE_NAME, "table.magic = {0:X4}", table.magic);
+        AaruLogging.Debug(MODULE_NAME, "table.magic = {0:X4}", table.magic);
 
         if(table.magic != X68K_MAGIC) return false;
 
         for(int i = 0; i < table.entries.Length; i++)
             table.entries[i] = (Entry)Marshal.SwapStructureMembersEndian(table.entries[i]);
 
-        AaruConsole.Debug(MODULE_NAME, "table.size = {0:X4}",    table.size);
-        AaruConsole.Debug(MODULE_NAME, "table.size2 = {0:X4}",   table.size2);
-        AaruConsole.Debug(MODULE_NAME, "table.unknown = {0:X4}", table.unknown);
+        AaruLogging.Debug(MODULE_NAME, "table.size = {0:X4}",    table.size);
+        AaruLogging.Debug(MODULE_NAME, "table.size2 = {0:X4}",   table.size2);
+        AaruLogging.Debug(MODULE_NAME, "table.unknown = {0:X4}", table.unknown);
 
         ulong counter = 0;
 
         foreach(Entry entry in table.entries)
         {
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        "entry.name = {0}",
                                        StringHandlers.CToString(entry.name, Encoding.GetEncoding(932)));
 
-            AaruConsole.Debug(MODULE_NAME, "entry.stateStart = {0}", entry.stateStart);
-            AaruConsole.Debug(MODULE_NAME, "entry.length = {0}",     entry.length);
+            AaruLogging.Debug(MODULE_NAME, "entry.stateStart = {0}", entry.stateStart);
+            AaruLogging.Debug(MODULE_NAME, "entry.length = {0}",     entry.length);
 
-            AaruConsole.Debug(MODULE_NAME,
+            AaruLogging.Debug(MODULE_NAME,
                                        "sectsPerUnit = {0} {1}",
                                        sectsPerUnit,
                                        imagePlugin.Info.SectorSize);

@@ -58,22 +58,22 @@ public sealed partial class Parallels
         stream.EnsureRead(pHdrB, 0, Marshal.SizeOf<Header>());
         _pHdr = Marshal.ByteArrayToStructureLittleEndian<Header>(pHdrB);
 
-        AaruConsole.Debug(MODULE_NAME, "pHdr.magic = {0}",        StringHandlers.CToString(_pHdr.magic));
-        AaruConsole.Debug(MODULE_NAME, "pHdr.version = {0}",      _pHdr.version);
-        AaruConsole.Debug(MODULE_NAME, "pHdr.heads = {0}",        _pHdr.heads);
-        AaruConsole.Debug(MODULE_NAME, "pHdr.cylinders = {0}",    _pHdr.cylinders);
-        AaruConsole.Debug(MODULE_NAME, "pHdr.cluster_size = {0}", _pHdr.cluster_size);
-        AaruConsole.Debug(MODULE_NAME, "pHdr.bat_entries = {0}",  _pHdr.bat_entries);
-        AaruConsole.Debug(MODULE_NAME, "pHdr.sectors = {0}",      _pHdr.sectors);
-        AaruConsole.Debug(MODULE_NAME, "pHdr.in_use = 0x{0:X8}",  _pHdr.in_use);
-        AaruConsole.Debug(MODULE_NAME, "pHdr.data_off = {0}",     _pHdr.data_off);
-        AaruConsole.Debug(MODULE_NAME, "pHdr.flags = {0}",        _pHdr.flags);
-        AaruConsole.Debug(MODULE_NAME, "pHdr.ext_off = {0}",      _pHdr.ext_off);
+        AaruLogging.Debug(MODULE_NAME, "pHdr.magic = {0}",        StringHandlers.CToString(_pHdr.magic));
+        AaruLogging.Debug(MODULE_NAME, "pHdr.version = {0}",      _pHdr.version);
+        AaruLogging.Debug(MODULE_NAME, "pHdr.heads = {0}",        _pHdr.heads);
+        AaruLogging.Debug(MODULE_NAME, "pHdr.cylinders = {0}",    _pHdr.cylinders);
+        AaruLogging.Debug(MODULE_NAME, "pHdr.cluster_size = {0}", _pHdr.cluster_size);
+        AaruLogging.Debug(MODULE_NAME, "pHdr.bat_entries = {0}",  _pHdr.bat_entries);
+        AaruLogging.Debug(MODULE_NAME, "pHdr.sectors = {0}",      _pHdr.sectors);
+        AaruLogging.Debug(MODULE_NAME, "pHdr.in_use = 0x{0:X8}",  _pHdr.in_use);
+        AaruLogging.Debug(MODULE_NAME, "pHdr.data_off = {0}",     _pHdr.data_off);
+        AaruLogging.Debug(MODULE_NAME, "pHdr.flags = {0}",        _pHdr.flags);
+        AaruLogging.Debug(MODULE_NAME, "pHdr.ext_off = {0}",      _pHdr.ext_off);
 
         _extended = _extMagic.SequenceEqual(_pHdr.magic);
-        AaruConsole.Debug(MODULE_NAME, "pHdr.extended = {0}", _extended);
+        AaruLogging.Debug(MODULE_NAME, "pHdr.extended = {0}", _extended);
 
-        AaruConsole.Debug(MODULE_NAME, Localization.Reading_BAT);
+        AaruLogging.Debug(MODULE_NAME, Localization.Reading_BAT);
         _bat = new uint[_pHdr.bat_entries];
         byte[] batB = new byte[_pHdr.bat_entries * 4];
         stream.EnsureRead(batB, 0, batB.Length);

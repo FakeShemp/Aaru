@@ -158,15 +158,15 @@ public sealed partial class AaruFormat
         stopwatch.Stop();
         TimeSpan sequentialize = stopwatch.Elapsed;
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Took_0_ms_to_deinterleave_subchannel,
                                    deinterleave.TotalMilliseconds);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Took_0_ms_to_sequentialize_subchannel,
                                    sequentialize.TotalMilliseconds);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Took_0_ms_to_transform_subchannel,
                                    deinterleave.TotalMilliseconds + sequentialize.TotalMilliseconds);
 
@@ -293,15 +293,15 @@ public sealed partial class AaruFormat
         stopwatch.Stop();
         TimeSpan interleave = stopwatch.Elapsed;
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Took_0_ms_to_desequentialize_subchannel,
                                    desequentialize.TotalMilliseconds);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Took_0_ms_to_interleave_subchannel,
                                    interleave.TotalMilliseconds);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    Localization.Took_0_ms_to_untransform_subchannel,
                                    interleave.TotalMilliseconds + desequentialize.TotalMilliseconds);
 

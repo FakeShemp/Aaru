@@ -86,7 +86,7 @@ class MainClass
         if(args.Length == 1 && args[0].Equals("gui", StringComparison.InvariantCultureIgnoreCase))
             return Gui.Main.Start(args);
 
-        AaruConsole.WriteLineEvent += (format, objects) =>
+        AaruLogging.WriteLineEvent += (format, objects) =>
         {
             if(objects is null)
                 AnsiConsole.MarkupLine(format);
@@ -94,7 +94,7 @@ class MainClass
                 AnsiConsole.MarkupLine(format, objects);
         };
 
-        AaruConsole.WriteEvent += (format, objects) =>
+        AaruLogging.WriteEvent += (format, objects) =>
         {
             if(objects is null)
                 AnsiConsole.Markup(format);
@@ -102,7 +102,7 @@ class MainClass
                 AnsiConsole.Markup(format, objects);
         };
 
-        AaruConsole.ErrorEvent += (format, objects) =>
+        AaruLogging.ErrorEvent += (format, objects) =>
         {
             if(objects is null)
                 stderrConsole.MarkupLine(format);
@@ -112,11 +112,11 @@ class MainClass
             Log.Error(format, objects);
         };
 
-        AaruConsole.VerboseEvent += Log.Verbose;
+        AaruLogging.VerboseEvent += Log.Verbose;
 
-        AaruConsole.DebugEvent += Log.Debug;
+        AaruLogging.DebugEvent += Log.Debug;
 
-        AaruConsole.WriteExceptionEvent += ex => Log.Error(ex, "Unhandled exception");
+        AaruLogging.WriteExceptionEvent += ex => Log.Error(ex, "Unhandled exception");
 
         Settings.Settings.LoadSettings();
 
@@ -199,7 +199,7 @@ class MainClass
 
         if((await mainContext.Database.GetPendingMigrationsAsync()).Any())
         {
-            AaruConsole.WriteLine(UI.New_database_version_updating);
+            AaruLogging.WriteLine(UI.New_database_version_updating);
 
             try
             {
@@ -207,8 +207,8 @@ class MainClass
             }
             catch(Exception)
             {
-                AaruConsole.Error(UI.Exception_trying_to_remove_old_database_version);
-                AaruConsole.Error(UI.Please_manually_remove_file_at_0, Settings.Settings.MainDbPath);
+                AaruLogging.Error(UI.Exception_trying_to_remove_old_database_version);
+                AaruLogging.Error(UI.Please_manually_remove_file_at_0, Settings.Settings.MainDbPath);
 
                 return (int)ErrorNumber.CannotRemoveDatabase;
             }
@@ -406,7 +406,7 @@ class MainClass
 
         if(!PauseBeforeExiting) return ret;
 
-        AaruConsole.WriteLine(UI.Press_any_key_to_exit);
+        AaruLogging.WriteLine(UI.Press_any_key_to_exit);
         Console.ReadKey();
 
         return ret;

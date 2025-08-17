@@ -40,24 +40,24 @@ static partial class MainClass
         while(true)
         {
             Console.Clear();
-            AaruConsole.WriteLine(Localization.Device_0, devPath);
-            AaruConsole.WriteLine(Localization.Send_a_command_to_the_device);
-            AaruConsole.WriteLine(Localization.Send_a_SCSI_command);
-            AaruConsole.WriteLine(Localization.Send_an_ATA_command);
-            AaruConsole.WriteLine(Localization.Send_a_SecureDigital_MultiMediaCard_command);
-            AaruConsole.WriteLine(Localization.Send_a_NVMe_command);
+            AaruLogging.WriteLine(Localization.Device_0, devPath);
+            AaruLogging.WriteLine(Localization.Send_a_command_to_the_device);
+            AaruLogging.WriteLine(Localization.Send_a_SCSI_command);
+            AaruLogging.WriteLine(Localization.Send_an_ATA_command);
+            AaruLogging.WriteLine(Localization.Send_a_SecureDigital_MultiMediaCard_command);
+            AaruLogging.WriteLine(Localization.Send_a_NVMe_command);
 
             if(dev.ScsiType == PeripheralDeviceTypes.MultiMediaDevice)
-                AaruConsole.WriteLine(Localization.Send_a_special_sequence_of_commands_for_SCSI_Multimedia_devices);
+                AaruLogging.WriteLine(Localization.Send_a_special_sequence_of_commands_for_SCSI_Multimedia_devices);
 
-            AaruConsole.WriteLine(Localization.Return_to_device_menu);
-            AaruConsole.Write(Localization.Choose);
+            AaruLogging.WriteLine(Localization.Return_to_device_menu);
+            AaruLogging.Write(Localization.Choose);
 
             string strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out int item))
             {
-                AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
+                AaruLogging.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                 Console.ReadKey();
 
                 continue;
@@ -66,7 +66,7 @@ static partial class MainClass
             switch(item)
             {
                 case 0:
-                    AaruConsole.WriteLine(Localization.Returning_to_device_menu);
+                    AaruLogging.WriteLine(Localization.Returning_to_device_menu);
 
                     return;
                 case 1:
@@ -91,7 +91,7 @@ static partial class MainClass
                     continue;
 
                 default:
-                    AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
+                    AaruLogging.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
                     Console.ReadKey();
 
                     continue;

@@ -62,45 +62,45 @@ public sealed partial class SuperCardPro
 
         Header = Marshal.ByteArrayToStructureLittleEndian<ScpHeader>(hdr);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "header.signature = \"{0}\"",
                                    StringHandlers.CToString(Header.signature));
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "header.version = {0}.{1}",
                                    (Header.version & 0xF0) >> 4,
                                    Header.version & 0xF);
 
-        AaruConsole.Debug(MODULE_NAME, "header.type = {0}",            Header.type);
-        AaruConsole.Debug(MODULE_NAME, "header.revolutions = {0}",     Header.revolutions);
-        AaruConsole.Debug(MODULE_NAME, "header.start = {0}",           Header.start);
-        AaruConsole.Debug(MODULE_NAME, "header.end = {0}",             Header.end);
-        AaruConsole.Debug(MODULE_NAME, "header.bitCellEncoding = {0}", Header.bitCellEncoding);
-        AaruConsole.Debug(MODULE_NAME, "header.heads = {0}",           Header.heads);
-        AaruConsole.Debug(MODULE_NAME, "header.resolution = {0}",      Header.resolution);
-        AaruConsole.Debug(MODULE_NAME, "header.checksum = 0x{0:X8}",   Header.checksum);
+        AaruLogging.Debug(MODULE_NAME, "header.type = {0}",            Header.type);
+        AaruLogging.Debug(MODULE_NAME, "header.revolutions = {0}",     Header.revolutions);
+        AaruLogging.Debug(MODULE_NAME, "header.start = {0}",           Header.start);
+        AaruLogging.Debug(MODULE_NAME, "header.end = {0}",             Header.end);
+        AaruLogging.Debug(MODULE_NAME, "header.bitCellEncoding = {0}", Header.bitCellEncoding);
+        AaruLogging.Debug(MODULE_NAME, "header.heads = {0}",           Header.heads);
+        AaruLogging.Debug(MODULE_NAME, "header.resolution = {0}",      Header.resolution);
+        AaruLogging.Debug(MODULE_NAME, "header.checksum = 0x{0:X8}",   Header.checksum);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "header.flags.StartsAtIndex = {0}",
                                    Header.flags == ScpFlags.StartsAtIndex);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "header.flags.Tpi = {0}",
                                    Header.flags == ScpFlags.Tpi ? "96tpi" : "48tpi");
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "header.flags.Rpm = {0}",
                                    Header.flags == ScpFlags.Rpm ? "360rpm" : "300rpm");
 
-        AaruConsole.Debug(MODULE_NAME, "header.flags.Normalized = {0}", Header.flags == ScpFlags.Normalized);
+        AaruLogging.Debug(MODULE_NAME, "header.flags.Normalized = {0}", Header.flags == ScpFlags.Normalized);
 
-        AaruConsole.Debug(MODULE_NAME, "header.flags.Writable = {0}", Header.flags == ScpFlags.Writable);
+        AaruLogging.Debug(MODULE_NAME, "header.flags.Writable = {0}", Header.flags == ScpFlags.Writable);
 
-        AaruConsole.Debug(MODULE_NAME, "header.flags.HasFooter = {0}", Header.flags == ScpFlags.HasFooter);
+        AaruLogging.Debug(MODULE_NAME, "header.flags.HasFooter = {0}", Header.flags == ScpFlags.HasFooter);
 
-        AaruConsole.Debug(MODULE_NAME, "header.flags.NotFloppy = {0}", Header.flags == ScpFlags.NotFloppy);
+        AaruLogging.Debug(MODULE_NAME, "header.flags.NotFloppy = {0}", Header.flags == ScpFlags.NotFloppy);
 
-        AaruConsole.Debug(MODULE_NAME,
+        AaruLogging.Debug(MODULE_NAME,
                                    "header.flags.CreatedByOtherDevice = {0}",
                                    Header.flags == ScpFlags.CreatedByOtherDevice);
 
@@ -125,7 +125,7 @@ public sealed partial class SuperCardPro
 
             if(!trk.Signature.SequenceEqual(_trkSignature))
             {
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            Localization.Track_header_at_0_contains_incorrect_signature,
                                            Header.offsets[t]);
 
@@ -134,7 +134,7 @@ public sealed partial class SuperCardPro
 
             if(trk.TrackNumber != t)
             {
-                AaruConsole.Debug(MODULE_NAME,
+                AaruLogging.Debug(MODULE_NAME,
                                            Localization.Track_number_at_0_should_be_1_but_is_2,
                                            Header.offsets[t],
                                            t,
@@ -143,7 +143,7 @@ public sealed partial class SuperCardPro
                 continue;
             }
 
-            AaruConsole.Debug(MODULE_NAME, Localization.Found_track_0_at_1, t, Header.offsets[t]);
+            AaruLogging.Debug(MODULE_NAME, Localization.Found_track_0_at_1, t, Header.offsets[t]);
 
             for(byte r = 0; r < Header.revolutions; r++)
             {
@@ -336,54 +336,54 @@ public sealed partial class SuperCardPro
                 {
                     _scpStream.Seek(-Marshal.SizeOf<Footer>(), SeekOrigin.Current);
 
-                    AaruConsole.Debug(MODULE_NAME, Localization.Found_footer_at_0, _scpStream.Position);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Found_footer_at_0, _scpStream.Position);
 
                     byte[] ftr = new byte[Marshal.SizeOf<Footer>()];
                     _scpStream.EnsureRead(ftr, 0, Marshal.SizeOf<Footer>());
 
                     Footer footer = Marshal.ByteArrayToStructureLittleEndian<Footer>(ftr);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "footer.manufacturerOffset = 0x{0:X8}",
                                                footer.manufacturerOffset);
 
-                    AaruConsole.Debug(MODULE_NAME, "footer.modelOffset = 0x{0:X8}", footer.modelOffset);
+                    AaruLogging.Debug(MODULE_NAME, "footer.modelOffset = 0x{0:X8}", footer.modelOffset);
 
-                    AaruConsole.Debug(MODULE_NAME, "footer.serialOffset = 0x{0:X8}", footer.serialOffset);
+                    AaruLogging.Debug(MODULE_NAME, "footer.serialOffset = 0x{0:X8}", footer.serialOffset);
 
-                    AaruConsole.Debug(MODULE_NAME, "footer.creatorOffset = 0x{0:X8}", footer.creatorOffset);
+                    AaruLogging.Debug(MODULE_NAME, "footer.creatorOffset = 0x{0:X8}", footer.creatorOffset);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "footer.applicationOffset = 0x{0:X8}",
                                                footer.applicationOffset);
 
-                    AaruConsole.Debug(MODULE_NAME, "footer.commentsOffset = 0x{0:X8}", footer.commentsOffset);
+                    AaruLogging.Debug(MODULE_NAME, "footer.commentsOffset = 0x{0:X8}", footer.commentsOffset);
 
-                    AaruConsole.Debug(MODULE_NAME, "footer.creationTime = {0}", footer.creationTime);
+                    AaruLogging.Debug(MODULE_NAME, "footer.creationTime = {0}", footer.creationTime);
 
-                    AaruConsole.Debug(MODULE_NAME, "footer.modificationTime = {0}", footer.modificationTime);
+                    AaruLogging.Debug(MODULE_NAME, "footer.modificationTime = {0}", footer.modificationTime);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "footer.applicationVersion = {0}.{1}",
                                                (footer.applicationVersion & 0xF0) >> 4,
                                                footer.applicationVersion & 0xF);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "footer.hardwareVersion = {0}.{1}",
                                                (footer.hardwareVersion & 0xF0) >> 4,
                                                footer.hardwareVersion & 0xF);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "footer.firmwareVersion = {0}.{1}",
                                                (footer.firmwareVersion & 0xF0) >> 4,
                                                footer.firmwareVersion & 0xF);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "footer.imageVersion = {0}.{1}",
                                                (footer.imageVersion & 0xF0) >> 4,
                                                footer.imageVersion & 0xF);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "footer.signature = \"{0}\"",
                                                StringHandlers.CToString(BitConverter.GetBytes(footer.signature)));
 
@@ -394,23 +394,23 @@ public sealed partial class SuperCardPro
                     _imageInfo.Application       = ReadPStringUtf8(_scpStream, footer.applicationOffset);
                     _imageInfo.Comments          = ReadPStringUtf8(_scpStream, footer.commentsOffset);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "ImageInfo.driveManufacturer = \"{0}\"",
                                                _imageInfo.DriveManufacturer);
 
-                    AaruConsole.Debug(MODULE_NAME, "ImageInfo.driveModel = \"{0}\"", _imageInfo.DriveModel);
+                    AaruLogging.Debug(MODULE_NAME, "ImageInfo.driveModel = \"{0}\"", _imageInfo.DriveModel);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "ImageInfo.driveSerialNumber = \"{0}\"",
                                                _imageInfo.DriveSerialNumber);
 
-                    AaruConsole.Debug(MODULE_NAME, "ImageInfo.imageCreator = \"{0}\"", _imageInfo.Creator);
+                    AaruLogging.Debug(MODULE_NAME, "ImageInfo.imageCreator = \"{0}\"", _imageInfo.Creator);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "ImageInfo.imageApplication = \"{0}\"",
                                                _imageInfo.Application);
 
-                    AaruConsole.Debug(MODULE_NAME, "ImageInfo.imageComments = \"{0}\"", _imageInfo.Comments);
+                    AaruLogging.Debug(MODULE_NAME, "ImageInfo.imageComments = \"{0}\"", _imageInfo.Comments);
 
                     _imageInfo.CreationTime = footer.creationTime != 0
                                                   ? DateHandlers.UnixToDateTime(footer.creationTime)
@@ -420,11 +420,11 @@ public sealed partial class SuperCardPro
                                                           ? DateHandlers.UnixToDateTime(footer.modificationTime)
                                                           : imageFilter.LastWriteTime;
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "ImageInfo.imageCreationTime = {0}",
                                                _imageInfo.CreationTime);
 
-                    AaruConsole.Debug(MODULE_NAME,
+                    AaruLogging.Debug(MODULE_NAME,
                                                "ImageInfo.imageLastModificationTime = {0}",
                                                _imageInfo.LastModificationTime);
 

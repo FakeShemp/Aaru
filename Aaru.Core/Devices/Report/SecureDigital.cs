@@ -58,7 +58,7 @@ public sealed partial class DeviceReport
 
         if(!sense)
         {
-            AaruConsole.WriteLine(Localization.Core.CID_obtained_correctly);
+            AaruLogging.WriteLine(Localization.Core.CID_obtained_correctly);
 
             switch(_dev.Type)
             {
@@ -86,7 +86,7 @@ public sealed partial class DeviceReport
             report.CID = cid;
         }
         else
-            AaruConsole.WriteLine(Localization.Core.Could_not_read_CID);
+            AaruLogging.WriteLine(Localization.Core.Could_not_read_CID);
 
         Spectre.ProgressSingleSpinner(ctx =>
         {
@@ -96,11 +96,11 @@ public sealed partial class DeviceReport
 
         if(!sense)
         {
-            AaruConsole.WriteLine(Localization.Core.CSD_obtained_correctly);
+            AaruLogging.WriteLine(Localization.Core.CSD_obtained_correctly);
             report.CSD = csd;
         }
         else
-            AaruConsole.WriteLine(Localization.Core.Could_not_read_CSD);
+            AaruLogging.WriteLine(Localization.Core.Could_not_read_CSD);
 
         sense = true;
         byte[] ocr = null;
@@ -119,11 +119,11 @@ public sealed partial class DeviceReport
 
         if(!sense)
         {
-            AaruConsole.WriteLine(Localization.Core.OCR_obtained_correctly);
+            AaruLogging.WriteLine(Localization.Core.OCR_obtained_correctly);
             report.OCR = ocr;
         }
         else
-            AaruConsole.WriteLine(Localization.Core.Could_not_read_OCR);
+            AaruLogging.WriteLine(Localization.Core.Could_not_read_OCR);
 
         switch(_dev.Type)
         {
@@ -137,11 +137,11 @@ public sealed partial class DeviceReport
 
                 if(!sense)
                 {
-                    AaruConsole.WriteLine(Localization.Core.Extended_CSD_obtained_correctly);
+                    AaruLogging.WriteLine(Localization.Core.Extended_CSD_obtained_correctly);
                     report.ExtendedCSD = ecsd;
                 }
                 else
-                    AaruConsole.WriteLine(Localization.Core.Could_not_read_Extended_CSD);
+                    AaruLogging.WriteLine(Localization.Core.Could_not_read_Extended_CSD);
 
                 break;
             }
@@ -155,11 +155,11 @@ public sealed partial class DeviceReport
 
                 if(!sense)
                 {
-                    AaruConsole.WriteLine(Localization.Core.SCR_obtained_correctly);
+                    AaruLogging.WriteLine(Localization.Core.SCR_obtained_correctly);
                     report.SCR = scr;
                 }
                 else
-                    AaruConsole.WriteLine(Localization.Core.Could_not_read_SCR);
+                    AaruLogging.WriteLine(Localization.Core.Could_not_read_SCR);
 
                 break;
             }
