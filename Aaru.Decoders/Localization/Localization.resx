@@ -9757,4 +9757,34 @@
     <data name="MediumTypes_CDR_Mixed_80" xml:space="preserve">
         <value>80 mm CD-R with data and audio</value>
     </data>
+    <data name="SCSI_Power_condition_page" xml:space="preserve">
+        <value>SCSI Power condition page:</value>
+    </data>
+    <data name="Standby_timer_Z_is_set_to_0_ms" xml:space="preserve">
+        <value>Standby timer Z is set to {0} ms</value>
+    </data>
+    <data name="Standby_timer_Y_is_set_to_0_ms" xml:space="preserve">
+        <value>Standby timer Y is set to {0} ms</value>
+    </data>
+    <data name="Drive_will_not_enter_standby_mode" xml:space="preserve">
+        <value>Drive will not enter standby mode</value>
+    </data>
+    <data name="Idle_timer_A_is_set_to_0_ms" xml:space="preserve">
+        <value>Idle timer A is set to {0} ms</value>
+    </data>
+    <data name="Idle_timer_B_is_set_to_0_ms" xml:space="preserve">
+        <value>Idle timer B is set to {0} ms</value>
+    </data>
+    <data name="Idle_timer_C_is_set_to_0_ms" xml:space="preserve">
+        <value>Idle timer C is set to {0} ms</value>
+    </data>
+    <data name="Drive_will_not_enter_idle_mode" xml:space="preserve">
+        <value>Drive will not enter idle mode</value>
+    </data>
+    <data name="Background_take_precedence_over_low_power_conditions" xml:space="preserve">
+        <value>Performing background functions take precedence over maintaining low power conditions</value>
+    </data>
+    <data name="Low_power_take_precedence_over_background" xml:space="preserve">
+        <value>Maintaining low power conditions take precedence over performing background functions</value>
+    </data>
 </root>

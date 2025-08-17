@@ -141,49 +141,59 @@ public static partial class Modes
         ModePage_1A page = modePage.Value;
         var         sb   = new StringBuilder();
 
-        sb.AppendLine("SCSI Power condition page:");
+        sb.AppendLine($"[bold][blue]{Localization.SCSI_Power_condition_page}[/][/]");
 
-        if(page.PS) sb.AppendLine("\t" + Localization.Parameters_can_be_saved);
+        if(page.PS) sb.AppendLine($"\t[green]{Localization.Parameters_can_be_saved}[/]");
 
         if(page is { Standby: true, StandbyTimer: > 0 } or { Standby_Y: true, StandbyTimer_Y: > 0 })
         {
             if(page is { Standby: true, StandbyTimer: > 0 })
-                sb.AppendFormat("\t" + "Standby timer Z is set to {0} ms", page.StandbyTimer * 100).AppendLine();
+                sb.AppendFormat($"\t[slateblue1]{Localization.Standby_timer_Z_is_set_to_0_ms}[/]",
+                                $"[teal]{page.StandbyTimer * 100}[/]")
+                  .AppendLine();
 
             if(page is { Standby_Y: true, StandbyTimer_Y: > 0 })
-                sb.AppendFormat("\t" + "Standby timer Y is set to {0} ms", page.StandbyTimer_Y * 100).AppendLine();
+                sb.AppendFormat($"\t[slateblue1]{Localization.Standby_timer_Y_is_set_to_0_ms}[/]",
+                                $"[teal]{page.StandbyTimer_Y * 100}[/]")
+                  .AppendLine();
         }
         else
-            sb.AppendLine("\t" + "Drive will not enter standby mode");
+            sb.AppendLine($"\t[red]{Localization.Drive_will_not_enter_standby_mode}[/]");
 
         if(page is { Idle  : true, IdleTimer  : > 0 }
                 or { Idle_B: true, IdleTimer_B: > 0 }
                 or { Idle_C: true, IdleTimer_C: > 0 })
         {
             if(page is { Idle: true, IdleTimer: > 0 })
-                sb.AppendFormat("\t" + "Idle timer A is set to {0} ms", page.IdleTimer * 100).AppendLine();
+                sb.AppendFormat($"\t[slateblue1]{Localization.Idle_timer_A_is_set_to_0_ms}[/]",
+                                $"[teal]{page.IdleTimer * 100}[/]")
+                  .AppendLine();
 
             if(page is { Idle_B: true, IdleTimer_B: > 0 })
-                sb.AppendFormat("\t" + "Idle timer B is set to {0} ms", page.IdleTimer_B * 100).AppendLine();
+                sb.AppendFormat($"\t[slateblue1]{Localization.Idle_timer_B_is_set_to_0_ms}[/]",
+                                $"[teal]{page.IdleTimer_B * 100}[/]")
+                  .AppendLine();
 
             if(page is { Idle_C: true, IdleTimer_C: > 0 })
-                sb.AppendFormat("\t" + "Idle timer C is set to {0} ms", page.IdleTimer_C * 100).AppendLine();
+                sb.AppendFormat($"\t[slateblue1]{Localization.Idle_timer_C_is_set_to_0_ms}[/]",
+                                $"[teal]{page.IdleTimer_C * 100}[/]")
+                  .AppendLine();
         }
         else
-            sb.AppendLine("\t" + "Drive will not enter idle mode");
+            sb.AppendLine($"\t[red]{Localization.Drive_will_not_enter_idle_mode}[/]");
 
         switch(page.PM_BG_Precedence)
         {
             case 0:
                 break;
             case 1:
-                sb.AppendLine("\t" +
-                              "Performing background functions take precedence over maintaining low power conditions");
+                sb.AppendLine($"\t[olive]{
+                    Localization.Background_take_precedence_over_low_power_conditions}[/]");
 
                 break;
             case 2:
-                sb.AppendLine("\t" +
-                              "Maintaining low power conditions take precedence over performing background functions");
+                sb.AppendLine($"\t[green]{
+                    Localization.Low_power_take_precedence_over_background}[/]");
 
                 break;
         }

@@ -19399,5 +19399,65 @@ namespace Aaru.Decoders {
                 return ResourceManager.GetString("MediumTypes_CDR_Mixed_80", resourceCulture);
             }
         }
+        
+        internal static string SCSI_Power_condition_page {
+            get {
+                return ResourceManager.GetString("SCSI_Power_condition_page", resourceCulture);
+            }
+        }
+        
+        internal static string Standby_timer_Z_is_set_to_0_ms {
+            get {
+                return ResourceManager.GetString("Standby_timer_Z_is_set_to_0_ms", resourceCulture);
+            }
+        }
+        
+        internal static string Standby_timer_Y_is_set_to_0_ms {
+            get {
+                return ResourceManager.GetString("Standby_timer_Y_is_set_to_0_ms", resourceCulture);
+            }
+        }
+        
+        internal static string Drive_will_not_enter_standby_mode {
+            get {
+                return ResourceManager.GetString("Drive_will_not_enter_standby_mode", resourceCulture);
+            }
+        }
+        
+        internal static string Idle_timer_A_is_set_to_0_ms {
+            get {
+                return ResourceManager.GetString("Idle_timer_A_is_set_to_0_ms", resourceCulture);
+            }
+        }
+        
+        internal static string Idle_timer_B_is_set_to_0_ms {
+            get {
+                return ResourceManager.GetString("Idle_timer_B_is_set_to_0_ms", resourceCulture);
+            }
+        }
+        
+        internal static string Idle_timer_C_is_set_to_0_ms {
+            get {
+                return ResourceManager.GetString("Idle_timer_C_is_set_to_0_ms", resourceCulture);
+            }
+        }
+        
+        internal static string Drive_will_not_enter_idle_mode {
+            get {
+                return ResourceManager.GetString("Drive_will_not_enter_idle_mode", resourceCulture);
+            }
+        }
+        
+        internal static string Background_take_precedence_over_low_power_conditions {
+            get {
+                return ResourceManager.GetString("Background_take_precedence_over_low_power_conditions", resourceCulture);
+            }
+        }
+        
+        internal static string Low_power_take_precedence_over_background {
+            get {
+                return ResourceManager.GetString("Low_power_take_precedence_over_background", resourceCulture);
+            }
+        }
     }
 }
