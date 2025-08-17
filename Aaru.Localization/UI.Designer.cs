@@ -6069,5 +6069,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Database_statistics_command", resourceCulture);
             }
         }
+        
+        public static string List_devices_command {
+            get {
+                return ResourceManager.GetString("List_devices_command", resourceCulture);
+            }
+        }
     }
 }

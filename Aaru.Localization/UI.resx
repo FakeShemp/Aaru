@@ -3111,4 +3111,7 @@ Do you want to continue?</value>
     <data name="Database_statistics_command" xml:space="preserve">
         <value>Database statistics:</value>
     </data>
+    <data name="List_devices_command" xml:space="preserve">
+        <value>List devices</value>
+    </data>
 </root>

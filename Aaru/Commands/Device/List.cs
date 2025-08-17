@@ -38,6 +38,7 @@ using Aaru.Core;
 using Aaru.Devices;
 using Aaru.Localization;
 using JetBrains.Annotations;
+using Serilog;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -57,6 +58,8 @@ sealed class ListDevicesCommand : Command<ListDevicesCommand.Settings>
         AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
         AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
+        Log.Information(UI.List_devices_command);
+
         DeviceInfo[] devices = Devices.Device.ListDevices(out bool isRemote,
                                                           out string serverApplication,
                                                           out string serverVersion,
@@ -75,25 +78,38 @@ sealed class ListDevicesCommand : Command<ListDevicesCommand.Settings>
         }
 
         if(devices == null || devices.Length == 0)
+        {
             AaruConsole.WriteLine(UI.No_known_devices_attached);
+            Log.Information(UI.No_known_devices_attached);
+        }
         else
         {
             Table table = new();
-            table.AddColumn(UI.Path);
-            table.AddColumn(UI.Title_Vendor);
-            table.AddColumn(UI.Title_Model);
-            table.AddColumn(UI.Serial);
-            table.AddColumn(UI.Title_Bus);
-            table.AddColumn(UI.Supported_Question);
+            table.AddColumn($"[bold][olive]{UI.Path}[/][/]");
+            table.AddColumn($"[bold][blue]{UI.Title_Vendor}[/][/]");
+            table.AddColumn($"[bold][purple]{UI.Title_Model}[/][/]");
+            table.AddColumn($"[bold][aqua]{UI.Serial}[/][/]");
+            table.AddColumn($"[bold][rosybrown]{UI.Title_Bus}[/][/]");
+            table.AddColumn($"[bold][green]{UI.Supported_Question}[/][/]");
+            table.Border(TableBorder.Rounded);
+            table.BorderColor(Color.Yellow);
 
             foreach(DeviceInfo dev in devices.OrderBy(d => d.Path))
             {
-                table.AddRow(Markup.Escape(dev.Path   ?? ""),
-                             Markup.Escape(dev.Vendor ?? ""),
-                             Markup.Escape(dev.Model  ?? ""),
-                             Markup.Escape(dev.Serial ?? ""),
-                             Markup.Escape(dev.Bus    ?? ""),
-                             dev.Supported ? "[green]✓[/]" : "[red]✗[/]");
+                table.AddRow($"[italic][olive]{Markup.Escape(dev.Path    ?? "")}[/][/]",
+                             $"[italic][blue]{Markup.Escape(dev.Vendor   ?? "")}[/][/]",
+                             $"[italic][purple]{Markup.Escape(dev.Model  ?? "")}[/][/]",
+                             $"[italic][aqua]{Markup.Escape(dev.Serial   ?? "")}[/][/]",
+                             $"[italic][rosybrown]{Markup.Escape(dev.Bus ?? "")}[/][/]",
+                             $"[italic]{(dev.Supported ? "[green]✓[/]" : "[red]✗[/]")}[/]");
+
+                Log.Information("Path: {Path}, Vendor: {Vendor}, Model: {Model}, Serial: {Serial}, Bus: {Bus}, Supported: {Supported}",
+                                dev.Path,
+                                dev.Vendor,
+                                dev.Model,
+                                dev.Serial,
+                                dev.Bus,
+                                dev.Supported);
             }
 
             AnsiConsole.Write(table);
