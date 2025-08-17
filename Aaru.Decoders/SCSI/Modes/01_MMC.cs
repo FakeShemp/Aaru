@@ -42,7 +42,7 @@ public static partial class Modes
 {
     public static byte[] EncodeModePage_01_MMC(ModePage_01_MMC page)
     {
-        var pg = new byte[12];
+        byte[] pg = new byte[12];
 
         pg[0] = 0x01;
         pg[1] = 10;
@@ -115,35 +115,36 @@ public static partial class Modes
         ModePage_01_MMC page = modePage.Value;
         var             sb   = new StringBuilder();
 
-        sb.AppendLine(Localization.SCSI_Read_error_recovery_page_for_MultiMedia_Devices);
+        sb.AppendLine($"[bold][blue]{Localization.SCSI_Read_error_recovery_page_for_MultiMedia_Devices}[/][/]");
 
-        if(page.PS) sb.AppendLine("\t" + Localization.Parameters_can_be_saved);
+        if(page.PS) sb.AppendLine($"\t[green]{Localization.Parameters_can_be_saved}[/]");
 
         if(page.ReadRetryCount > 0)
         {
-            sb.AppendFormat("\t" + Localization.Drive_will_repeat_read_operations_0_times, page.ReadRetryCount)
+            sb.AppendFormat($"\t[slateblue1]{Localization.Drive_will_repeat_read_operations_0_times}[/]",
+                            $"[lime]{page.ReadRetryCount}[/]")
               .AppendLine();
         }
 
-        string AllUsed              = "\t" + Localization.All_available_recovery_procedures_will_be_used + "\n";
-        string CIRCRetriesUsed      = "\t" + Localization.Only_retries_and_CIRC_are_used                 + "\n";
-        string RetriesUsed          = "\t" + Localization.Only_retries_are_used                          + "\n";
-        string RecoveredNotReported = "\t" + Localization.Recovered_errors_will_not_be_reported          + "\n";
-        string RecoveredReported    = "\t" + Localization.Recovered_errors_will_be_reported              + "\n";
+        string AllUsed              = $"\t[green]{Localization.All_available_recovery_procedures_will_be_used}[/]\n";
+        string CIRCRetriesUsed      = $"\t[olive]{Localization.Only_retries_and_CIRC_are_used}[/]\n";
+        string RetriesUsed          = $"\t[olive]{Localization.Only_retries_are_used}[/]\n";
+        string RecoveredNotReported = $"\t[red]{Localization.Recovered_errors_will_not_be_reported}[/]\n";
+        string RecoveredReported    = $"\t[green]{Localization.Recovered_errors_will_be_reported}[/]\n";
 
         string RecoveredAbort =
-            "\t" + Localization.Recovered_errors_will_be_reported_and_aborted_with_CHECK_CONDITION + "\n";
+            $"\t[red]{Localization.Recovered_errors_will_be_reported_and_aborted_with_CHECK_CONDITION}[/]\n";
 
-        string UnrecECCAbort     = "\t" + Localization.Unrecovered_ECC_errors_will_return_CHECK_CONDITION;
-        string UnrecCIRCAbort    = "\t" + Localization.Unrecovered_CIRC_errors_will_return_CHECK_CONDITION;
-        string UnrecECCNotAbort  = "\t" + Localization.Unrecovered_ECC_errors_will_not_abort_the_transfer;
-        string UnrecCIRCNotAbort = "\t" + Localization.Unrecovered_CIRC_errors_will_not_abort_the_transfer;
+        string UnrecECCAbort     = $"\t[red]{Localization.Unrecovered_ECC_errors_will_return_CHECK_CONDITION}[/]";
+        string UnrecCIRCAbort    = $"\t[red]{Localization.Unrecovered_CIRC_errors_will_return_CHECK_CONDITION}[/]";
+        string UnrecECCNotAbort  = $"\t[red]{Localization.Unrecovered_ECC_errors_will_not_abort_the_transfer}[/]";
+        string UnrecCIRCNotAbort = $"\t[red]{Localization.Unrecovered_CIRC_errors_will_not_abort_the_transfer}[/]";
 
         string UnrecECCAbortData =
-            "\t" + Localization.Unrecovered_ECC_errors_will_return_CHECK_CONDITION_and_the_uncorrected_data;
+            $"\t[red]{Localization.Unrecovered_ECC_errors_will_return_CHECK_CONDITION_and_the_uncorrected_data}[/]";
 
         string UnrecCIRCAbortData =
-            "\t" + Localization.Unrecovered_CIRC_errors_will_return_CHECK_CONDITION_and_the_uncorrected_data;
+            $"\t[red]{Localization.Unrecovered_CIRC_errors_will_return_CHECK_CONDITION_and_the_uncorrected_data}[/]";
 
         switch(page.Parameter)
         {
@@ -220,21 +221,23 @@ public static partial class Modes
             case 0x35:
                 goto case 0x15;
             default:
-                sb.AppendFormat(Localization.Unknown_recovery_parameter_0, page.Parameter).AppendLine();
+                sb.AppendFormat($"[red]{Localization.Unknown_recovery_parameter_0}[/]", $"[teal]{page.Parameter}[/]")
+                  .AppendLine();
 
                 break;
         }
 
         if(page.WriteRetryCount > 0)
         {
-            sb.AppendFormat("\t" + Localization.Drive_will_repeat_write_operations_0_times, page.WriteRetryCount)
+            sb.AppendFormat($"\t[slateblue1]{Localization.Drive_will_repeat_write_operations_0_times}[/]",
+                            $"[lime]{page.WriteRetryCount}[/]")
               .AppendLine();
         }
 
         if(page.RecoveryTimeLimit > 0)
         {
-            sb.AppendFormat("\t" + Localization.Drive_will_employ_a_maximum_of_0_ms_to_recover_data,
-                            page.RecoveryTimeLimit)
+            sb.AppendFormat($"\t[slateblue1]{Localization.Drive_will_employ_a_maximum_of_0_ms_to_recover_data}[/]",
+                            $"[lime]{page.RecoveryTimeLimit}[/]")
               .AppendLine();
         }
 
