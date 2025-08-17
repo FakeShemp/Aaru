@@ -12,148 +12,136 @@ namespace Aaru.Generators;
 [Generator]
 public sealed class PluginRegisterGenerator : IIncrementalGenerator
 {
-    // your map of simple names → registration methods
-    static readonly Dictionary<string, string> PluginInterfaces = new()
+    // name → (registration method, directOnly)
+    static readonly (string Name, string Method, bool DirectOnly)[] PluginMap = new[]
     {
-        ["IArchive"]              = "RegisterArchivePlugins",
-        ["IChecksum"]             = "RegisterChecksumPlugins",
-        ["IFilesystem"]           = "RegisterFilesystemPlugins",
-        ["IFilter"]               = "RegisterFilterPlugins",
-        ["IFloppyImage"]          = "RegisterFloppyImagePlugins",
-        ["IMediaImage"]           = "RegisterMediaImagePlugins",
-        ["IPartition"]            = "RegisterPartitionPlugins",
-        ["IReadOnlyFilesystem"]   = "RegisterReadOnlyFilesystemPlugins",
-        ["IWritableFloppyImage"]  = "RegisterWritableFloppyImagePlugins",
-        ["IWritableImage"]        = "RegisterWritableImagePlugins",
-        ["IByteAddressableImage"] = "RegisterByteAddressablePlugins",
-        ["IFluxImage"]            = "RegisterFluxImagePlugins",
-        ["IWritableFluxImage"]    = "RegisterWritableFluxImagePlugins"
+        ("IArchive", "RegisterArchivePlugins", true), ("IChecksum", "RegisterChecksumPlugins", true),
+        ("IFilesystem", "RegisterFilesystemPlugins", true), ("IFilter", "RegisterFilterPlugins", true),
+        ("IFloppyImage", "RegisterFloppyImagePlugins", true),
+        ("IMediaImage", "RegisterMediaImagePlugins", true), // direct only
+        ("IPartition", "RegisterPartitionPlugins", true),
+        ("IReadOnlyFilesystem", "RegisterReadOnlyFilesystemPlugins", true),
+        ("IWritableFloppyImage", "RegisterWritableFloppyImagePlugins", true),
+        ("IWritableImage", "RegisterWritableImagePlugins", false), // inherited OK
+        ("IByteAddressableImage", "RegisterByteAddressablePlugins", false),
+        ("IFluxImage", "RegisterFluxImagePlugins", true),
+        ("IWritableFluxImage", "RegisterWritableFluxImagePlugins", false)
 
-        // …snip…
+        // …add more as needed…
     };
 
 #region IIncrementalGenerator Members
 
     public void Initialize(IncrementalGeneratorInitializationContext ctx)
     {
-        // 1) pick up every class syntax with a base‐list (so we only inspect ones that *could* have interfaces)
-        IncrementalValueProvider<ImmutableArray<ClassDeclarationSyntax>> syntaxProvider = ctx.SyntaxProvider
+        // 1) grab every ClassDeclarationSyntax that has a base list
+        IncrementalValueProvider<ImmutableArray<ClassDeclarationSyntax>> classSyntaxes = ctx.SyntaxProvider
            .CreateSyntaxProvider((node, ct) => node is ClassDeclarationSyntax cds && cds.BaseList != null,
                                  (ctx,  ct) => (ClassDeclarationSyntax)ctx.Node)
-           .Collect(); // gather them all
+           .Collect();
 
-        // 2) combine with the full Compilation so we can do symbol lookups
+        // 2) combine with the compilation for symbol lookups
         IncrementalValueProvider<(Compilation Left, ImmutableArray<ClassDeclarationSyntax> Right)>
-            compilationAndClasses = ctx.CompilationProvider.Combine(syntaxProvider);
+            compilationAndClasses = ctx.CompilationProvider.Combine(classSyntaxes);
 
-        // 3) finally generate source
+        // 3) register our source output
         ctx.RegisterSourceOutput(compilationAndClasses,
-                                 (spc, pair) =>
+                                 (spc, source) =>
                                  {
                                      (Compilation? compilation, ImmutableArray<ClassDeclarationSyntax> classDecls) =
-                                         pair;
+                                         source;
 
-                                     // locate the interface symbols by metadata name once
-                                     (string Name, string Method, INamedTypeSymbol? Symbol)[] interfaceSymbols =
-                                         PluginInterfaces
-                                            .Select(kvp => (Name: kvp.Key, Method: kvp.Value,
-                                                            Symbol: compilation
-                                                               .GetTypeByMetadataName($"Aaru.CommonTypes.Interfaces.{kvp.Key}")))
-                                            .Where(x => x.Symbol != null)
-                                            .ToArray();
+                                     if(compilation is null) return;
 
-                                     // find the one IPluginRegister type as well
-                                     INamedTypeSymbol? registerIf =
+                                     // load all plugin‐interface symbols
+                                     (string Name, string Method, bool DirectOnly, INamedTypeSymbol? Symbol)[]
+                                         ifaceDefs = PluginMap.Select(x =>
+                                                               {
+                                                                   INamedTypeSymbol? sym =
+                                                                       compilation
+                                                                          .GetTypeByMetadataName($"Aaru.CommonTypes.Interfaces.{x.Name}");
+
+                                                                   return (x.Name, x.Method, x.DirectOnly, Symbol: sym);
+                                                               })
+                                                              .Where(x => x.Symbol is not null)
+                                                              .ToArray();
+
+                                     // load IPluginRegister
+                                     INamedTypeSymbol? registerSym =
                                          compilation
                                             .GetTypeByMetadataName("Aaru.CommonTypes.Interfaces.IPluginRegister");
 
-                                     // collect info
                                      var plugins = new List<PluginInfo>();
 
-                                     foreach(ClassDeclarationSyntax? classDecl in classDecls.Distinct())
+                                     foreach(ClassDeclarationSyntax? decl in classDecls.Distinct())
                                      {
-                                         SemanticModel model = compilation.GetSemanticModel(classDecl.SyntaxTree);
+                                         SemanticModel model = compilation.GetSemanticModel(decl.SyntaxTree);
 
-                                         var symbol =
-                                             model.GetDeclaredSymbol(classDecl, spc.CancellationToken) as
-                                                 INamedTypeSymbol;
+                                         var cls = model.GetDeclaredSymbol(decl, spc.CancellationToken)
+                                                       as INamedTypeSymbol;
 
-                                         if(symbol is null) continue;
+                                         if(cls is null) continue;
 
-                                         // which interfaces does it *actually* implement (direct + indirect)?
-                                         ImmutableArray<INamedTypeSymbol> allIfaces = symbol.AllInterfaces;
-
-                                         // diagnostics to verify we’re seeing the right interfaces
-                                         foreach(INamedTypeSymbol? iface in allIfaces)
-                                         {
-                                             spc.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor("PLGN001",
-                                                                          "Found interface",
-                                                                          $"Class {symbol.Name} implements {iface.ToDisplayString()}",
-                                                                          "PluginGen",
-                                                                          DiagnosticSeverity.Info,
-                                                                          true),
-                                                                      classDecl.GetLocation()));
-                                         }
+                                         // direct vs. all (transitive) interfaces
+                                         ImmutableArray<INamedTypeSymbol> directIfaces = cls.Interfaces;
+                                         ImmutableArray<INamedTypeSymbol> allIfaces    = cls.AllInterfaces;
 
                                          var info = new PluginInfo
                                          {
-                                             Namespace = symbol.ContainingNamespace.ToDisplayString(),
-                                             ClassName = symbol.Name,
+                                             Namespace = cls.ContainingNamespace.ToDisplayString(),
+                                             ClassName = cls.Name,
                                              IsRegister =
-                                                 registerIf != null &&
-                                                 allIfaces.Contains(registerIf, SymbolEqualityComparer.Default)
+                                                 registerSym != null &&
+                                                 allIfaces.Contains(registerSym, SymbolEqualityComparer.Default)
                                          };
 
-                                         // pick up every plugin‐interface your map knows about
-                                         foreach((string Name, string Method, INamedTypeSymbol? Symbol) in
-                                                 interfaceSymbols)
+                                         // for each plugin interface, choose direct or inherited match
+                                         foreach((string Name, string Method, bool DirectOnly,
+                                                  INamedTypeSymbol? Symbol) in ifaceDefs)
                                          {
-                                             if(SymbolEqualityComparer.Default.Equals(Symbol, null)) continue;
+                                             bool matches = DirectOnly
+                                                                ? directIfaces.Contains(Symbol!,
+                                                                    SymbolEqualityComparer.Default)
+                                                                : allIfaces.Contains(Symbol!,
+                                                                    SymbolEqualityComparer.Default);
 
-                                             if(allIfaces.Contains(Symbol, SymbolEqualityComparer.Default))
-                                                 info.Interfaces.Add(Name);
+                                             if(matches) info.Interfaces.Add((Name, Method));
                                          }
 
                                          if(info.IsRegister || info.Interfaces.Count > 0) plugins.Add(info);
                                      }
 
-                                     // nothing to do
                                      if(plugins.Count == 0) return;
 
                                      // find the one class that implements IPluginRegister
-                                     PluginInfo? regCls = plugins.FirstOrDefault(p => p.IsRegister);
+                                     PluginInfo? registrar = plugins.FirstOrDefault(p => p.IsRegister);
 
-                                     if(regCls == null) return;
+                                     if(registrar is null) return;
 
                                      // build the generated file
                                      var sb = new StringBuilder();
                                      sb.AppendLine("using Microsoft.Extensions.DependencyInjection;");
                                      sb.AppendLine("using Aaru.CommonTypes.Interfaces;");
-                                     sb.AppendLine($"namespace {regCls.Namespace};");
-                                     sb.AppendLine($"public sealed partial class {regCls.ClassName} : IPluginRegister");
+                                     sb.AppendLine($"namespace {registrar.Namespace};");
+                                     sb.AppendLine($"public sealed partial class {registrar.ClassName} : IPluginRegister");
                                      sb.AppendLine("{");
 
-                                     foreach(KeyValuePair<string, string> kvp in PluginInterfaces)
+                                     // emit one registration method per plugin‐interface
+                                     foreach((string Name, string Method, bool _) in PluginMap)
                                      {
-                                         // grab all classes that implement this interface
-                                         IEnumerable<string> implementations = plugins
-                                                                              .Where(pi =>
-                                                                                   pi.Interfaces
-                                                                                      .Contains(kvp.Key))
-                                                                              .Select(pi => pi.ClassName)
-                                                                              .Distinct();
-
-                                         sb.AppendLine($"    public void {kvp.Value}(IServiceCollection services)");
+                                         sb.AppendLine($"    public void {Method}(IServiceCollection services)");
                                          sb.AppendLine("    {");
 
-                                         foreach(string? impl in implementations)
-                                             sb.AppendLine($"        services.AddTransient<{kvp.Key}, {impl}>();");
+                                         foreach(string? impl in plugins
+                                                                .Where(pi => pi.Interfaces.Any(i => i.Name == Name))
+                                                                .Select(pi => pi.ClassName)
+                                                                .Distinct())
+                                             sb.AppendLine($"        services.AddTransient<{Name}, {impl}>();");
 
                                          sb.AppendLine("    }");
                                      }
 
                                      sb.AppendLine("}");
-
                                      spc.AddSource("Register.g.cs", SourceText.From(sb.ToString(), Encoding.UTF8));
                                  });
     }
@@ -164,10 +152,10 @@ public sealed class PluginRegisterGenerator : IIncrementalGenerator
 
     class PluginInfo
     {
-        public readonly List<string> Interfaces = new();
-        public          string       ClassName  = "";
-        public          bool         IsRegister;
-        public          string       Namespace = "";
+        public          string                             ClassName  = "";
+        public readonly List<(string Name, string Method)> Interfaces = new();
+        public          bool                               IsRegister;
+        public          string                             Namespace = "";
     }
 
 #endregion

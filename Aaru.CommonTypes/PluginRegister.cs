@@ -64,13 +64,13 @@ public class PluginRegister
     }
 
     /// <summary>List of writable media image plugins</summary>
-    public SortedDictionary<string, IBaseWritableImage> WritableImages
+    public SortedDictionary<string, IWritableImage> WritableImages
     {
         get
         {
-            SortedDictionary<string, IBaseWritableImage> mediaImages = new();
+            SortedDictionary<string, IWritableImage> mediaImages = new();
 
-            foreach(IBaseWritableImage plugin in _serviceProvider.GetServices<IBaseWritableImage>())
+            foreach(IWritableImage plugin in _serviceProvider.GetServices<IWritableImage>())
                 mediaImages[plugin.Name.ToLower()] = plugin;
 
             return mediaImages;
