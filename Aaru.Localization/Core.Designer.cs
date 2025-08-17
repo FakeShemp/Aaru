@@ -6862,5 +6862,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Using_Lite-On_raw_DVD_reading", resourceCulture);
             }
         }
+        
+        public static string Filesystems_Identify_Error {
+            get {
+                return ResourceManager.GetString("Filesystems_Identify_Error", resourceCulture);
+            }
+        }
     }
 }

@@ -100,7 +100,7 @@ public sealed partial class ZZZRawImage
         catch(IOException ex)
         {
             ErrorMessage = string.Format(Localization.Could_not_create_new_image_file_exception_0, ex.Message);
-            AaruLogging.Exception(ex);
+            AaruLogging.Exception(ex, Localization.Could_not_create_new_image_file_exception_0, ex.Message);
 
             return false;
         }

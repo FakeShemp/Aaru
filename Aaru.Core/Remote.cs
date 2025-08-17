@@ -585,7 +585,7 @@ public static class Remote
         catch(Exception ex)
         {
             AaruLogging.Error(Localization.Core.Exception_0_when_updating_database, ex);
-            AaruLogging.Exception(ex);
+            AaruLogging.Exception(ex, Localization.Core.Exception_0_when_updating_database, ex.Message);
         }
         finally
         {

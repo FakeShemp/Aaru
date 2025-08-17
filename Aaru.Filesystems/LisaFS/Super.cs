@@ -342,7 +342,7 @@ public sealed partial class LisaFS
         }
         catch(Exception ex)
         {
-            AaruLogging.Exception(ex);
+            AaruLogging.Exception(ex, Localization.Unhandled_exception_mounting_Lisa_filesystem);
 
             return ErrorNumber.InOutError;
         }

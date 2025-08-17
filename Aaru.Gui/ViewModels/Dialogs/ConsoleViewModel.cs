@@ -165,7 +165,9 @@ public sealed class ConsoleViewModel : ViewModelBase
                                                           Icon.Error)
                                    .ShowWindowDialogAsync(_view);
 
-            AaruLogging.Exception(exception);
+            AaruLogging.Exception(exception, UI
+                                     .Exception_0_trying_to_save_logfile_details_has_been_sent_to_console,
+                                  exception.Message);
         }
     }
 

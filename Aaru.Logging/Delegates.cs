@@ -55,4 +55,4 @@ public delegate void DebugDelegate(string module, string format, params object[]
 ///     Writes the exception to the debug output console.
 /// </summary>
 /// <param name="ex">Exception.</param>
-public delegate void ExceptionDelegate(Exception ex);
+public delegate void ExceptionDelegate(Exception ex, string message, params object[] arg);

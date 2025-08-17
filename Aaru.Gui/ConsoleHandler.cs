@@ -67,9 +67,9 @@ static class ConsoleHandler
 
     public static ObservableCollection<LogEntry> Entries { get; } = [];
 
-    static void OnWriteExceptionEvent([NotNull] Exception ex) => Entries.Add(new LogEntry
+    static void OnWriteExceptionEvent([NotNull] Exception ex, string message, params object[] objects) => Entries.Add(new LogEntry
     {
-        Message   = ex.ToString(),
+        Message   = string.Format(message, objects),
         Module    = null,
         Timestamp = DateTime.Now,
         Type      = UI.LogEntry_Type_Exception

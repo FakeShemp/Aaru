@@ -157,7 +157,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
                 {
                     AaruLogging.Error(UI.Unable_to_open_image_format);
                     AaruLogging.Error(Localization.Core.Error_0, ex.Message);
-                    AaruLogging.Exception(ex);
+                    AaruLogging.Exception(ex, Localization.Core.Error_0, ex.Message);
 
                     return (int)ErrorNumber.CannotOpenFormat;
                 }
@@ -245,7 +245,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
             catch(Exception ex)
             {
                 AaruLogging.Error(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
-                AaruLogging.Exception(ex);
+                AaruLogging.Exception(ex, UI.Error_reading_file_0, ex.Message);
 
                 return (int)ErrorNumber.UnexpectedException;
             }

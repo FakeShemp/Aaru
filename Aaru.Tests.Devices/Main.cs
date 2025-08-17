@@ -42,7 +42,6 @@ static partial class MainClass
         AaruLogging.ErrorEvent   += Console.Error.WriteLine;
         AaruLogging.DebugEvent   += Console.Error.WriteLine;
         AaruLogging.VerboseEvent += Console.WriteLine;
-        AaruLogging.WriteExceptionEvent   += Console.Error.WriteLine;
 
         DeviceInfo[] devices = Aaru.Devices.Device.ListDevices();
 

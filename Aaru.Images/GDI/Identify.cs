@@ -109,7 +109,7 @@ public sealed partial class Gdi
         catch(Exception ex)
         {
             AaruLogging.Error(Localization.Exception_trying_to_identify_image_file_0, imageFilter.BasePath);
-            AaruLogging.Exception(ex);
+            AaruLogging.Exception(ex, Localization.Exception_trying_to_identify_image_file_0, imageFilter.BasePath);
 
             return false;
         }

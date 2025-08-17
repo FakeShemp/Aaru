@@ -103,7 +103,7 @@ public sealed partial class CdrWin
         catch(Exception ex)
         {
             AaruLogging.Error(Localization.Exception_trying_to_identify_image_file_0, _cdrwinFilter);
-            AaruLogging.Exception(ex);
+            AaruLogging.Exception(ex, Localization.Exception_trying_to_identify_image_file_0, _cdrwinFilter);
 
             return false;
         }

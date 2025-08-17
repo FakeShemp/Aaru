@@ -166,7 +166,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
             {
                 AaruLogging.Error(UI.Unable_to_open_image_format);
                 AaruLogging.Error(Localization.Core.Error_0, ex.Message);
-                AaruLogging.Exception(ex);
+                AaruLogging.Exception(ex, ex.Message);
 
                 return (int)ErrorNumber.CannotOpenFormat;
             }
@@ -368,7 +368,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
         catch(Exception ex)
         {
             AaruLogging.Error(Markup.Escape(string.Format(UI.Error_reading_file_0, ex.Message)));
-            AaruLogging.Exception(ex);
+            AaruLogging.Exception(ex, UI.Error_reading_file_0, ex.Message);
 
             return (int)ErrorNumber.UnexpectedException;
         }

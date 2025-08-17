@@ -67,10 +67,11 @@ public static class Filesystems
             catch(Exception ex)
             {
                 AaruLogging
-                   .Error("Error identifying filesystem {0}. Please open a report with the following line in a Github issue.",
+                   .Error(Localization.Core.Filesystems_Identify_Error,
                                    plugin.Name);
 
-                AaruLogging.Exception(ex);
+                AaruLogging.Exception(ex, Localization.Core.Filesystems_Identify_Error,
+                                      plugin.Name);
             }
         }
     }

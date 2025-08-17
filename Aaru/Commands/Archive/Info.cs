@@ -129,7 +129,7 @@ sealed class ArchiveInfoCommand : Command<ArchiveInfoCommand.Settings>
             {
                 AaruLogging.Error(UI.Unable_to_get_information_about_archive);
                 AaruLogging.Error(Localization.Core.Error_0, ex.Message);
-                AaruLogging.Exception(ex);
+                AaruLogging.Exception(ex, ex.Message);
 
                 return (int)ErrorNumber.CannotOpenFormat;
             }
@@ -137,7 +137,7 @@ sealed class ArchiveInfoCommand : Command<ArchiveInfoCommand.Settings>
         catch(Exception ex)
         {
             AaruLogging.Error(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
-            AaruLogging.Exception(ex);
+            AaruLogging.Exception(ex, UI.Error_reading_file_0, ex.Message);
 
             return (int)ErrorNumber.UnexpectedException;
         }

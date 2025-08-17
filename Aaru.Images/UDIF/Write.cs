@@ -82,7 +82,7 @@ public sealed partial class Udif
         catch(IOException ex)
         {
             ErrorMessage = string.Format(Localization.Could_not_create_new_image_file_exception_0, ex.Message);
-            AaruLogging.Exception(ex);
+            AaruLogging.Exception(ex, Localization.Could_not_create_new_image_file_exception_0, ex.Message);
 
             return false;
         }

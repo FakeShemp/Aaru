@@ -3692,4 +3692,7 @@
     <data name="CBM_Mount_REL_file_warning" xml:space="preserve">
         <value>This disk contains a relative file. These have not been fully tested, please open a bug report and include this disk image.</value>
     </data>
+    <data name="Unhandled_exception_mounting_Lisa_filesystem" xml:space="preserve">
+        <value>Unhandled exception mounting Lisa filesystem</value>
+    </data>
 </root>

@@ -241,7 +241,7 @@ public sealed partial class AaruFormat
         catch(IOException ex)
         {
             ErrorMessage = string.Format(Localization.Could_not_create_new_image_file_exception_0, ex.Message);
-            AaruLogging.Exception(ex);
+            AaruLogging.Exception(ex, Localization.Could_not_create_new_image_file_exception_0, ex.Message);
 
             return false;
         }
@@ -1181,7 +1181,9 @@ public sealed partial class AaruFormat
                                                        Localization.Exception_0_processing_CICM_XML_metadata_block,
                                                        ex.Message);
 
-                            AaruLogging.Exception(ex);
+                            AaruLogging.Exception(ex,
+                                                  Localization.Exception_0_processing_CICM_XML_metadata_block,
+                                                  ex.Message);
 
                             AaruMetadata = null;
                         }

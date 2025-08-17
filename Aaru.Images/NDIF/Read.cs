@@ -74,7 +74,7 @@ public sealed partial class Ndif
         catch(InvalidCastException ex)
         {
             AaruLogging.Error(Localization.Exception_trying_to_open_image_file_0, imageFilter.BasePath);
-            AaruLogging.Exception(ex);
+            AaruLogging.Exception(ex, Localization.Exception_trying_to_open_image_file_0, imageFilter.BasePath);
 
             return ErrorNumber.UnexpectedException;
         }

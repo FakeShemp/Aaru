@@ -203,7 +203,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                 catch(Exception ex)
                 {
                     AaruLogging.Error(UI.Incorrect_metadata_sidecar_file_not_continuing);
-                    AaruLogging.Exception(ex);
+                    AaruLogging.Exception(ex, UI.Incorrect_metadata_sidecar_file_not_continuing);
 
                     return (int)ErrorNumber.InvalidSidecar;
                 }
@@ -239,7 +239,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                 catch(Exception ex)
                 {
                     AaruLogging.Error(UI.Incorrect_metadata_sidecar_file_not_continuing);
-                    AaruLogging.Exception(ex);
+                    AaruLogging.Exception(ex, UI.Incorrect_metadata_sidecar_file_not_continuing);
 
                     return (int)ErrorNumber.InvalidSidecar;
                 }
@@ -289,7 +289,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                 catch(Exception ex)
                 {
                     AaruLogging.Error(UI.Incorrect_resume_file_not_continuing);
-                    AaruLogging.Exception(ex);
+                    AaruLogging.Exception(ex, UI.Incorrect_resume_file_not_continuing);
 
                     return (int)ErrorNumber.InvalidResume;
                 }
@@ -402,7 +402,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         {
             AaruLogging.Error(UI.Unable_to_open_image_format);
             AaruLogging.Error(Localization.Core.Error_0, ex.Message);
-            AaruLogging.Exception(ex);
+            AaruLogging.Exception(ex, Localization.Core.Error_0, ex.Message);
 
             return (int)ErrorNumber.CannotOpenFormat;
         }

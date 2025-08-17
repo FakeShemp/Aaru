@@ -145,7 +145,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
             {
                 AaruLogging.Error(UI.Unable_to_open_archive_format);
                 AaruLogging.Error(Localization.Core.Error_0, ex.Message);
-                AaruLogging.Exception(ex);
+                AaruLogging.Exception(ex, ex.Message);
 
                 return (int)ErrorNumber.CannotOpenFormat;
             }
@@ -368,7 +368,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
         catch(Exception ex)
         {
             AaruLogging.Error(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
-            AaruLogging.Exception(ex);
+            AaruLogging.Exception(ex, UI.Error_reading_file_0, ex.Message);
 
             return (int)ErrorNumber.UnexpectedException;
         }

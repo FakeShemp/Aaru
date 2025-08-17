@@ -970,7 +970,7 @@ public sealed partial class Cdrdao
         catch(Exception ex)
         {
             AaruLogging.Error(Localization.Exception_trying_to_identify_image_file_0, imageFilter);
-            AaruLogging.Exception(ex);
+            AaruLogging.Exception(ex, Localization.Exception_trying_to_identify_image_file_0, imageFilter.Filename);
 
             return ErrorNumber.UnexpectedException;
         }

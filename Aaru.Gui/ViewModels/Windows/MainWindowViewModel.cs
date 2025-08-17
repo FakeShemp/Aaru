@@ -799,7 +799,7 @@ public sealed class MainWindowViewModel : ViewModelBase
 
                 AaruLogging.Error(UI.Unable_to_open_image_format);
                 AaruLogging.Error(Localization.Core.Error_0, ex.Message);
-                AaruLogging.Exception(ex);
+                AaruLogging.Exception(ex, Localization.Core.Error_0, ex.Message);
             }
         }
         catch(Exception ex)
@@ -810,7 +810,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                                                     Icon.Error);
 
             AaruLogging.Error(string.Format(UI.Error_reading_file_0, ex.Message));
-            AaruLogging.Exception(ex);
+            AaruLogging.Exception(ex, UI.Error_reading_file_0, ex.Message);
         }
 
         Statistics.AddCommand("image-info");
@@ -890,7 +890,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
         catch(InvalidOperationException ex)
         {
-            AaruLogging.Exception(ex);
+            AaruLogging.Exception(ex, "Unhandled exception refreshing devices");
         }
     }
 }
