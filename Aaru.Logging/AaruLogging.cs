@@ -111,23 +111,6 @@ public static class AaruLogging
     /// <param name="arg">An array of objects to write using <paramref name="format" />.</param>
     public static void Write(string format, params object[] arg) => WriteEvent?.Invoke(format, arg);
 
-    /// <summary>Writes the specified string value, followed by the current line terminator, to the standard output console.</summary>
-    /// <param name="value">The value to write.</param>
-    public static void WriteLine(string value) => WriteLineEvent?.Invoke("{0}", value);
-
-    /// <summary>Writes the specified string value, followed by the current line terminator, to the error output console.</summary>
-    /// <param name="value">The value to write.</param>
-    public static void Error(string value) => ErrorEvent?.Invoke("{0}", value);
-
-    /// <summary>Writes the specified string value, followed by the current line terminator, to the verbose output console.</summary>
-    /// <param name="value">The value to write.</param>
-    public static void Verbose(string value) => VerboseEvent?.Invoke("{0}", value);
-
-    /// <summary>Writes the specified string value, followed by the current line terminator, to the debug output console.</summary>
-    /// <param name="module">Description of the module writing to the debug console</param>
-    /// <param name="value">The value to write.</param>
-    public static void Debug(string module, string value) => DebugEvent?.Invoke("[blue]({0}):[/] {1}", module, value);
-
     /// <summary>
     ///     Writes the exception to the debug output console.
     /// </summary>
