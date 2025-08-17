@@ -94,6 +94,8 @@ class MainClass
                 AnsiConsole.MarkupLine(format, objects);
 
             // Format the string so we can remove the markup
+            if(format is null) return;
+
             string formatted = objects is null ? format : string.Format(format, objects);
             formatted = Markup.Remove(formatted);
             Log.Information(formatted);
@@ -107,6 +109,8 @@ class MainClass
                 AnsiConsole.Markup(format, objects);
 
             // Format the string so we can remove the markup
+            if(format is null) return;
+
             string formatted = objects is null ? format : string.Format(format, objects);
             formatted = Markup.Remove(formatted);
             Log.Information(formatted);
