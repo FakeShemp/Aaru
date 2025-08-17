@@ -86,110 +86,78 @@ public static partial class Modes
         ModePage_1C_SFF page = modePage.Value;
         var             sb   = new StringBuilder();
 
-        sb.AppendLine(Localization.SCSI_Timer_Protect_page);
+        sb.AppendLine($"[bold][blue]{Localization.SCSI_Timer_Protect_page}[/][/]");
 
-        if(page.PS) sb.AppendLine("\t" + Localization.Parameters_can_be_saved);
+        if(page.PS) sb.AppendLine($"\t[green]{Localization.Parameters_can_be_saved}[/]");
 
-        if(page.DISP) sb.AppendLine("\t" + Localization.Drive_is_disabled_until_power_is_cycled);
+        if(page.DISP) sb.AppendLine($"\t[red]{Localization.Drive_is_disabled_until_power_is_cycled}[/]");
 
-        if(page.SWPP) sb.AppendLine("\t" + Localization.Drive_is_software_write_protected_until_powered_down);
+        if(page.SWPP) sb.AppendLine($"\t[red]{Localization.Drive_is_software_write_protected_until_powered_down}[/]");
 
         switch(page.InactivityTimeMultiplier)
         {
             case 0:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Drive_will_remain_in_same_status_a_vendor_specified_time_after_a_seek_read_or_write_operation);
+                sb.AppendLine($"\t[slateblue1]{Localization.Drive_will_remain_in_same_status_a_vendor_specified_time_after_a_seek_read_or_write_operation}[/]");
 
                 break;
             case 1:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Drive_will_remain_in_same_status_125_ms_after_a_seek_read_or_write_operation);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_same_status_125_ms_after_a_seek_read_or_write_operation, "lime")}[/]");
 
                 break;
             case 2:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Drive_will_remain_in_same_status_250_ms_after_a_seek_read_or_write_operation);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_same_status_250_ms_after_a_seek_read_or_write_operation, "lime")}[/]");
 
                 break;
             case 3:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Drive_will_remain_in_same_status_500_ms_after_a_seek_read_or_write_operation);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_same_status_500_ms_after_a_seek_read_or_write_operation, "lime")}[/]");
 
                 break;
             case 4:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Drive_will_remain_in_same_status_1_second_after_a_seek_read_or_write_operation);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_same_status_1_second_after_a_seek_read_or_write_operation, "lime")}[/]");
 
                 break;
             case 5:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Drive_will_remain_in_same_status_2_seconds_after_a_seek_read_or_write_operation);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_same_status_2_seconds_after_a_seek_read_or_write_operation, "lime")}[/]");
 
                 break;
             case 6:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Drive_will_remain_in_same_status_4_seconds_after_a_seek_read_or_write_operation);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_same_status_4_seconds_after_a_seek_read_or_write_operation, "lime")}[/]");
 
                 break;
             case 7:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Drive_will_remain_in_same_status_8_seconds_after_a_seek_read_or_write_operation);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_same_status_8_seconds_after_a_seek_read_or_write_operation, "lime")}[/]");
 
                 break;
             case 8:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Drive_will_remain_in_same_status_16_seconds_after_a_seek_read_or_write_operation);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_same_status_16_seconds_after_a_seek_read_or_write_operation, "lime")}[/]");
 
                 break;
             case 9:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Drive_will_remain_in_same_status_32_seconds_after_a_seek_read_or_write_operation);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_same_status_32_seconds_after_a_seek_read_or_write_operation, "lime")}[/]");
 
                 break;
             case 10:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Drive_will_remain_in_same_status_1_minute_after_a_seek_read_or_write_operation);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_same_status_1_minute_after_a_seek_read_or_write_operation, "lime")}[/]");
 
                 break;
             case 11:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Drive_will_remain_in_same_status_2_minutes_after_a_seek_read_or_write_operation);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_same_status_2_minutes_after_a_seek_read_or_write_operation, "lime")}[/]");
 
                 break;
             case 12:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Drive_will_remain_in_same_status_4_minutes_after_a_seek_read_or_write_operation);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_same_status_4_minutes_after_a_seek_read_or_write_operation, "lime")}[/]");
 
                 break;
             case 13:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Drive_will_remain_in_same_status_8_minutes_after_a_seek_read_or_write_operation);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_same_status_8_minutes_after_a_seek_read_or_write_operation, "lime")}[/]");
 
                 break;
             case 14:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Drive_will_remain_in_same_status_16_minutes_after_a_seek_read_or_write_operation);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_same_status_16_minutes_after_a_seek_read_or_write_operation, "lime")}[/]");
 
                 break;
             case 15:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Drive_will_remain_in_same_status_32_minutes_after_a_seek_read_or_write_operation);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_same_status_32_minutes_after_a_seek_read_or_write_operation, "lime")}[/]");
 
                 break;
         }
