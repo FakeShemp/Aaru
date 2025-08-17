@@ -390,7 +390,7 @@ public sealed partial class MediaScan
                 if(currentSpeed < results.MinSpeed && currentSpeed > 0) results.MinSpeed = currentSpeed;
 
                 UpdateProgress?.Invoke(string.Format($"[slateblue1]{Localization.Core.Reading_sector_0_of_1_2}[/]",
-                                                     $"[lima]{i}[/]",
+                                                     $"[lime]{i}[/]",
                                                      $"[violet]{results.Blocks}[/]",
                                                      $"[aqua]{ByteSize.FromMegabytes(currentSpeed).Per(_oneSecond).Humanize()}[/]"),
                                        (long)i,

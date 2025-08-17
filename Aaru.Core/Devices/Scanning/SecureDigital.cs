@@ -57,8 +57,8 @@ public sealed partial class MediaScan
         const ushort sdProfile     = 0x0001;
         ushort       blocksToRead  = 128;
         uint         blockSize     = 512;
-        var          byteAddressed = true;
-        var          supportsCmd23 = false;
+        bool         byteAddressed = true;
+        bool         supportsCmd23 = false;
 
         switch(_dev.Type)
         {
@@ -149,8 +149,8 @@ public sealed partial class MediaScan
 
             if(sense || _dev.Error)
             {
-                UpdateStatus?.Invoke(Localization.Core
-                                                 .Environment_does_not_support_setting_block_count_downgrading_to_OS_reading);
+                UpdateStatus?.Invoke($"[slateblue1]{Localization.Core
+                                                                .Environment_does_not_support_setting_block_count_downgrading_to_OS_reading}[/]");
 
                 supportsCmd23 = false;
             }
@@ -214,16 +214,19 @@ public sealed partial class MediaScan
         var rnd = new Random();
 
         if(supportsCmd23 || blocksToRead == 1)
-            UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_0_sectors_at_a_time, blocksToRead));
+            UpdateStatus?.Invoke(string.Format($"[slateblue1]{Localization.Core.Reading_0_sectors_at_a_time}[/]",
+                                               $"[violet]{blocksToRead}[/]"));
         else if(_useBufferedReads)
         {
-            UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_0_sectors_at_a_time_using_OS_buffered_reads,
-                                               blocksToRead));
+            UpdateStatus
+              ?.Invoke(string.Format($"[slateblue1]{Localization.Core.Reading_0_sectors_at_a_time_using_OS_buffered_reads}[/]",
+                                     $"[violet]{blocksToRead}[/]"));
         }
         else
         {
-            UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_0_sectors_using_sequential_single_commands,
-                                               blocksToRead));
+            UpdateStatus
+              ?.Invoke(string.Format($"[slateblue1]{Localization.Core.Reading_0_sectors_using_sequential_single_commands}[/]",
+                                     $"[violet]{blocksToRead}[/]"));
         }
 
         InitBlockMap?.Invoke(results.Blocks, blockSize, blocksToRead, sdProfile);
@@ -245,10 +248,10 @@ public sealed partial class MediaScan
 
             if(currentSpeed < results.MinSpeed && currentSpeed > 0) results.MinSpeed = currentSpeed;
 
-            UpdateProgress?.Invoke(string.Format(Localization.Core.Reading_sector_0_of_1_2,
-                                                 i,
-                                                 results.Blocks,
-                                                 ByteSize.FromBytes(currentSpeed).Per(_oneSecond).Humanize()),
+            UpdateProgress?.Invoke(string.Format($"[slateblue1]{Localization.Core.Reading_sector_0_of_1_2}[/]",
+                                                 $"[lime]{i}[/]",
+                                                 $"[violet]{results.Blocks}[/]",
+                                                 $"[aqua]{ByteSize.FromBytes(currentSpeed).Per(_oneSecond).Humanize()}[/]"),
                                    (long)i,
                                    (long)results.Blocks);
 
@@ -362,13 +365,14 @@ public sealed partial class MediaScan
 
         InitProgress?.Invoke();
 
-        for(var i = 0; i < seekTimes; i++)
+        for(int i = 0; i < seekTimes; i++)
         {
             if(_aborted || !_seekTest) break;
 
-            var seekPos = (uint)rnd.Next((int)results.Blocks);
+            uint seekPos = (uint)rnd.Next((int)results.Blocks);
 
-            PulseProgress?.Invoke(string.Format(Localization.Core.Seeking_to_sector_0, seekPos));
+            PulseProgress?.Invoke(string.Format($"[slateblue1]{Localization.Core.Seeking_to_sector_0}[/]",
+                                                $"[lime]{seekPos}[/]"));
 
             _dev.ReadSingleBlock(out cmdBuf, out _, seekPos, blockSize, byteAddressed, timeout, out double seekCur);
 
