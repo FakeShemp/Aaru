@@ -147,35 +147,35 @@ public static partial class Modes
         ModePage_08 page = modePage.Value;
         var         sb   = new StringBuilder();
 
-        sb.AppendLine(Localization.SCSI_Caching_mode_page);
+        sb.AppendLine($"[bold][blue]{Localization.SCSI_Caching_mode_page}[/][/]");
 
-        if(page.PS) sb.AppendLine("\t" + Localization.Parameters_can_be_saved);
+        if(page.PS) sb.AppendLine($"\t[green]{Localization.Parameters_can_be_saved}[/]");
 
-        if(page.RCD) sb.AppendLine("\t" + Localization.Read_cache_is_enabled);
+        if(page.RCD) sb.AppendLine($"\t[green]{Localization.Read_cache_is_enabled}[/]");
 
-        if(page.WCE) sb.AppendLine("\t" + Localization.Write_cache_is_enabled);
+        if(page.WCE) sb.AppendLine($"\t[green]{Localization.Write_cache_is_enabled}[/]");
 
         switch(page.DemandReadRetentionPrio)
         {
             case 0:
-                sb.AppendLine("\t" + Localization.Drive_does_not_distinguish_between_cached_read_data);
+                sb.AppendLine($"\t[yellow]{Localization.Drive_does_not_distinguish_between_cached_read_data}[/]");
 
                 break;
             case 1:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Data_put_by_READ_commands_should_be_evicted_from_cache_sooner_than_data_put_in_read_cache_by_other_means);
+                sb.AppendLine($"\t[yellow]{
+                    Localization
+                       .Data_put_by_READ_commands_should_be_evicted_from_cache_sooner_than_data_put_in_read_cache_by_other_means}[/]");
 
                 break;
             case 0xF:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Data_put_by_READ_commands_should_not_be_evicted_if_there_is_data_cached_by_other_means_that_can_be_evicted);
+                sb.AppendLine($"\t[yellow]{
+                    Localization
+                       .Data_put_by_READ_commands_should_not_be_evicted_if_there_is_data_cached_by_other_means_that_can_be_evicted}[/]");
 
                 break;
             default:
-                sb.AppendFormat("\t" + Localization.Unknown_demand_read_retention_priority_value_0,
-                                page.DemandReadRetentionPrio)
+                sb.AppendFormat($"\t[red]{Localization.Unknown_demand_read_retention_priority_value_0}[/]",
+                                $"[teal]{page.DemandReadRetentionPrio}[/]")
                   .AppendLine();
 
                 break;
@@ -184,42 +184,43 @@ public static partial class Modes
         switch(page.WriteRetentionPriority)
         {
             case 0:
-                sb.AppendLine("\t" + Localization.Drive_does_not_distinguish_between_cached_write_data);
+                sb.AppendLine($"\t[yellow]{Localization.Drive_does_not_distinguish_between_cached_write_data}[/]");
 
                 break;
             case 1:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Data_put_by_WRITE_commands_should_be_evicted_from_cache_sooner_than_data_put_in_write_cache_by_other_means);
+                sb.AppendLine($"\t[yellow]{
+                    Localization
+                       .Data_put_by_WRITE_commands_should_be_evicted_from_cache_sooner_than_data_put_in_write_cache_by_other_means}[/]");
 
                 break;
             case 0xF:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Data_put_by_WRITE_commands_should_not_be_evicted_if_there_is_data_cached_by_other_means_that_can_be_evicted);
+                sb.AppendLine($"\t[yellow]{
+                    Localization
+                       .Data_put_by_WRITE_commands_should_not_be_evicted_if_there_is_data_cached_by_other_means_that_can_be_evicted}[/]");
 
                 break;
             default:
-                sb.AppendFormat("\t" + Localization.Unknown_demand_write_retention_priority_value_0,
-                                page.DemandReadRetentionPrio)
+                sb.AppendFormat($"\t[red]{Localization.Unknown_demand_write_retention_priority_value_0}[/]",
+                                $"[teal]{page.DemandReadRetentionPrio}[/]")
                   .AppendLine();
 
                 break;
         }
 
         if(page.DRA)
-            sb.AppendLine("\t" + Localization.Read_ahead_is_disabled);
+            sb.AppendLine($"\t[red]{Localization.Read_ahead_is_disabled}[/]");
         else
         {
-            if(page.MF) sb.AppendLine("\t" + Localization.Pre_fetch_values_indicate_a_block_multiplier);
+            if(page.MF) sb.AppendLine($"\t[green]{Localization.Pre_fetch_values_indicate_a_block_multiplier}[/]");
 
             if(page.DisablePreFetch == 0)
-                sb.AppendLine("\t" + Localization.No_pre_fetch_will_be_done);
+                sb.AppendLine($"\t[red]{Localization.No_pre_fetch_will_be_done}[/]");
             else
             {
-                sb.AppendFormat("\t" + Localization.Pre_fetch_will_be_done_for_READ_commands_of_0_blocks_or_less,
-                                page.DisablePreFetch)
-                  .AppendLine();
+                sb
+                   .AppendFormat($"\t[green]{Localization.Pre_fetch_will_be_done_for_READ_commands_of_0_blocks_or_less}[/]",
+                                 $"[teal]{page.DisablePreFetch}[/]")
+                   .AppendLine();
 
                 if(page.MinimumPreFetch > 0)
                 {
@@ -229,42 +230,43 @@ public static partial class Modes
 
                 if(page.MaximumPreFetch > 0)
                 {
-                    sb.AppendFormat("\t" + Localization.A_maximum_of_0_blocks_will_be_pre_fetched, page.MaximumPreFetch)
+                    sb.AppendFormat($"\t[green]{Localization.A_maximum_of_0_blocks_will_be_pre_fetched}[/]",
+                                    $"[teal]{page.MaximumPreFetch}[/]")
                       .AppendLine();
                 }
 
                 if(page.MaximumPreFetchCeiling > 0)
                 {
-                    sb.AppendFormat("\t" +
-                                    Localization
-                                       .A_maximum_of_0_blocks_will_be_pre_fetched_even_if_it_is_commanded_to_pre_fetch_more,
-                                    page.MaximumPreFetchCeiling)
+                    sb.AppendFormat($"\t[green]{
+                        Localization
+                           .A_maximum_of_0_blocks_will_be_pre_fetched_even_if_it_is_commanded_to_pre_fetch_more}[/]",
+                                    $"[teal]{page.MaximumPreFetchCeiling}[/]")
                       .AppendLine();
                 }
 
                 if(page.IC)
                 {
-                    sb.AppendLine("\t" +
-                                  Localization
-                                     .Device_should_use_number_of_cache_segments_or_cache_segment_size_for_caching);
+                    sb.AppendLine($"\t[green]{
+                        Localization
+                           .Device_should_use_number_of_cache_segments_or_cache_segment_size_for_caching}[/]");
                 }
 
                 if(page.ABPF)
-                    sb.AppendLine("\t" + Localization.Pre_fetch_should_be_aborted_upon_receiving_a_new_command);
+                    sb.AppendLine($"\t[olive]{Localization.Pre_fetch_should_be_aborted_upon_receiving_a_new_command}[/]");
 
-                if(page.CAP) sb.AppendLine("\t" + Localization.Caching_analysis_is_permitted);
+                if(page.CAP) sb.AppendLine($"\t[green]{Localization.Caching_analysis_is_permitted}[/]");
 
                 if(page.Disc)
                 {
-                    sb.AppendLine("\t" +
-                                  Localization
-                                     .Pre_fetch_can_continue_across_discontinuities_such_as_cylinders_or_tracks);
+                    sb.AppendLine($"\t[green]{
+                        Localization
+                           .Pre_fetch_can_continue_across_discontinuities_such_as_cylinders_or_tracks}[/]");
                 }
             }
         }
 
         if(page.FSW)
-            sb.AppendLine("\t" + Localization.Drive_should_not_reorder_the_sequence_of_write_commands_to_be_faster);
+            sb.AppendLine($"\t[olive]{Localization.Drive_should_not_reorder_the_sequence_of_write_commands_to_be_faster}[/]");
 
         if(page.Size)
         {
@@ -272,14 +274,14 @@ public static partial class Modes
             {
                 if(page.LBCSS)
                 {
-                    sb.AppendFormat("\t" + Localization.Drive_cache_segments_should_be_0_blocks_long,
-                                    page.CacheSegmentSize)
+                    sb.AppendFormat($"\t[green]{Localization.Drive_cache_segments_should_be_0_blocks_long}[/]",
+                                    $"[teal]{page.CacheSegmentSize}[/]")
                       .AppendLine();
                 }
                 else
                 {
-                    sb.AppendFormat("\t" + Localization.Drive_cache_segments_should_be_0_bytes_long,
-                                    page.CacheSegmentSize)
+                    sb.AppendFormat($"\t[green]{Localization.Drive_cache_segments_should_be_0_bytes_long}[/]",
+                                    $"[teal]{page.CacheSegmentSize}[/]")
                       .AppendLine();
                 }
             }
@@ -288,21 +290,21 @@ public static partial class Modes
         {
             if(page.CacheSegments > 0)
             {
-                sb.AppendFormat("\t" + Localization.Drive_should_have_0_cache_segments, page.CacheSegments)
+                sb.AppendFormat($"\t[green]{Localization.Drive_should_have_0_cache_segments}[/]",
+                                $"[teal]{page.CacheSegments}[/]")
                   .AppendLine();
             }
         }
 
         if(page.NonCacheSegmentSize > 0)
         {
-            sb.AppendFormat("\t" +
-                            Localization
-                               .Drive_shall_allocate_0_bytes_to_buffer_even_when_all_cached_data_cannot_be_evicted,
-                            page.NonCacheSegmentSize)
+            sb.AppendFormat($"\t[green]{Localization
+               .Drive_shall_allocate_0_bytes_to_buffer_even_when_all_cached_data_cannot_be_evicted}[/]",
+                            $"[teal]{page.NonCacheSegmentSize}[/]")
               .AppendLine();
         }
 
-        if(page.NV_DIS) sb.AppendLine("\t" + Localization.Non_Volatile_cache_is_disabled);
+        if(page.NV_DIS) sb.AppendLine($"\t[red]{Localization.Non_Volatile_cache_is_disabled}[/]");
 
         return sb.ToString();
     }
