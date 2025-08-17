@@ -85,89 +85,91 @@ public static partial class Modes
         ModePage_0D page = modePage.Value;
         var         sb   = new StringBuilder();
 
-        sb.AppendLine(Localization.SCSI_CD_ROM_parameters_page);
+        sb.AppendLine($"[bold][blue]{Localization.SCSI_CD_ROM_parameters_page}[/][/]");
 
-        if(page.PS) sb.AppendLine("\t" + Localization.Parameters_can_be_saved);
+        if(page.PS) sb.AppendLine($"\t[green]{Localization.Parameters_can_be_saved}[/]");
 
         switch(page.InactivityTimerMultiplier)
         {
             case 0:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Drive_will_remain_in_track_hold_state_a_vendor_specified_time_after_a_seek_or_read);
+                sb.AppendLine($"\t[slateblue1]{Localization.Drive_will_remain_in_track_hold_state_a_vendor_specified_time_after_a_seek_or_read}[/]");
 
                 break;
             case 1:
-                sb.AppendLine("\t" + Localization.Drive_will_remain_in_track_hold_state_125_ms_after_a_seek_or_read);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_track_hold_state_125_ms_after_a_seek_or_read, "lime")}[/]");
 
                 break;
             case 2:
-                sb.AppendLine("\t" + Localization.Drive_will_remain_in_track_hold_state_250_ms_after_a_seek_or_read);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_track_hold_state_250_ms_after_a_seek_or_read, "lime")}[/]");
 
                 break;
             case 3:
-                sb.AppendLine("\t" + Localization.Drive_will_remain_in_track_hold_state_500_ms_after_a_seek_or_read);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_track_hold_state_500_ms_after_a_seek_or_read, "lime")}[/]");
 
                 break;
             case 4:
-                sb.AppendLine("\t" + Localization.Drive_will_remain_in_track_hold_state_1_second_after_a_seek_or_read);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_track_hold_state_1_second_after_a_seek_or_read, "lime")}[/]");
 
                 break;
             case 5:
-                sb.AppendLine("\t" + Localization.Drive_will_remain_in_track_hold_state_2_seconds_after_a_seek_or_read);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_track_hold_state_2_seconds_after_a_seek_or_read, "lime")}[/]");
 
                 break;
             case 6:
-                sb.AppendLine("\t" + Localization.Drive_will_remain_in_track_hold_state_4_seconds_after_a_seek_or_read);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_track_hold_state_4_seconds_after_a_seek_or_read, "lime")}[/]");
 
                 break;
             case 7:
-                sb.AppendLine("\t" + Localization.Drive_will_remain_in_track_hold_state_8_seconds_after_a_seek_or_read);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_track_hold_state_8_seconds_after_a_seek_or_read, "lime")}[/]");
 
                 break;
             case 8:
-                sb.AppendLine("\t" +
-                              Localization.Drive_will_remain_in_track_hold_state_16_seconds_after_a_seek_or_read);
+                sb.AppendLine($"\t[slateblue1]{
+                    MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_track_hold_state_16_seconds_after_a_seek_or_read, "lime")}[/]");
 
                 break;
             case 9:
-                sb.AppendLine("\t" +
-                              Localization.Drive_will_remain_in_track_hold_state_32_seconds_after_a_seek_or_read);
+                sb.AppendLine($"\t[slateblue1]{
+                    MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_track_hold_state_32_seconds_after_a_seek_or_read, "lime")}[/]");
 
                 break;
             case 10:
-                sb.AppendLine("\t" + Localization.Drive_will_remain_in_track_hold_state_1_minute_after_a_seek_or_read);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_track_hold_state_1_minute_after_a_seek_or_read, "lime")}[/]");
 
                 break;
             case 11:
-                sb.AppendLine("\t" + Localization.Drive_will_remain_in_track_hold_state_2_minutes_after_a_seek_or_read);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_track_hold_state_2_minutes_after_a_seek_or_read, "lime")}[/]");
 
                 break;
             case 12:
-                sb.AppendLine("\t" + Localization.Drive_will_remain_in_track_hold_state_4_minutes_after_a_seek_or_read);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_track_hold_state_4_minutes_after_a_seek_or_read, "lime")}[/]");
 
                 break;
             case 13:
-                sb.AppendLine("\t" + Localization.Drive_will_remain_in_track_hold_state_8_minutes_after_a_seek_or_read);
+                sb.AppendLine($"\t[slateblue1]{MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_track_hold_state_8_minutes_after_a_seek_or_read, "lime")}[/]");
 
                 break;
             case 14:
-                sb.AppendLine("\t" +
-                              Localization.Drive_will_remain_in_track_hold_state_16_minutes_after_a_seek_or_read);
+                sb.AppendLine($"\t[slateblue1]{
+                    MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_track_hold_state_16_minutes_after_a_seek_or_read, "lime")}[/]");
 
                 break;
             case 15:
-                sb.AppendLine("\t" +
-                              Localization.Drive_will_remain_in_track_hold_state_32_minutes_after_a_seek_or_read);
+                sb.AppendLine($"\t[slateblue1]{
+                    MarkupHelper.HighlightNumbers(Localization.Drive_will_remain_in_track_hold_state_32_minutes_after_a_seek_or_read, "lime")}[/]");
 
                 break;
         }
 
         if(page.SecondsPerMinute > 0)
-            sb.AppendFormat("\t" + Localization.Each_minute_has_0_seconds, page.SecondsPerMinute).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization.Each_minute_has_0_seconds}[/]",
+                            $"[lime]{page.SecondsPerMinute}[/]")
+              .AppendLine();
 
         if(page.FramesPerSecond > 0)
-            sb.AppendFormat("\t" + Localization.Each_second_has_0_frames, page.FramesPerSecond).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization.Each_second_has_0_frames}[/]",
+                            $"[lime]{page.FramesPerSecond}[/]")
+              .AppendLine();
 
         return sb.ToString();
     }
