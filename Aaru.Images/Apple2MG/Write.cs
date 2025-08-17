@@ -38,8 +38,8 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -199,7 +199,7 @@ public sealed partial class Apple2Mg
         }
 
         _writingStream.Seek(0x40 + 17 * 16 * 256, SeekOrigin.Begin);
-        var tmp = new byte[256];
+        byte[] tmp = new byte[256];
         _writingStream.EnsureRead(tmp, 0, tmp.Length);
 
         bool isDos = tmp[0x01] == 17  &&
@@ -235,8 +235,8 @@ public sealed partial class Apple2Mg
             _writingStream.WriteByte(0);
         }
 
-        var  hdr    = new byte[Marshal.SizeOf<Header>()];
-        nint hdrPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
+        byte[] hdr    = new byte[Marshal.SizeOf<Header>()];
+        nint   hdrPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
         System.Runtime.InteropServices.Marshal.StructureToPtr(_imageHeader, hdrPtr, true);
         System.Runtime.InteropServices.Marshal.Copy(hdrPtr, hdr, 0, hdr.Length);
         System.Runtime.InteropServices.Marshal.FreeHGlobal(hdrPtr);

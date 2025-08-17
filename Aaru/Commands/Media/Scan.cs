@@ -30,12 +30,13 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.ComponentModel;
 using Aaru.CommonTypes.Enums;
-using Aaru.Console;
 using Aaru.Core;
 using Aaru.Core.Devices.Scanning;
 using Aaru.Localization;
+using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
 using Humanizer.Localisation;
@@ -144,7 +145,7 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
                             _progressTask1 = null;
                         };
 
-                        System.Console.CancelKeyPress += (_, e) =>
+                        Console.CancelKeyPress += (_, e) =>
                         {
                             e.Cancel = true;
                             scanner.Abort();

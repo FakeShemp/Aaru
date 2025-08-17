@@ -36,8 +36,8 @@ using System.Runtime.InteropServices;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Partitions;
@@ -296,10 +296,10 @@ public sealed class Apricot : IPartition
                                    "label.spareRamDisk is null? = {0}",
                                    ArrayHelpers.ArrayIsNullOrEmpty(label.spareRamDisk));
 
-        for(var i = 0; i < 32; i++)
+        for(int i = 0; i < 32; i++)
             AaruConsole.DebugWriteLine(MODULE_NAME, "label.badBlocks[{1}] = {0}", label.badBlocks[i], i);
 
-        for(var i = 0; i < 8; i++)
+        for(int i = 0; i < 8; i++)
         {
             AaruConsole.DebugWriteLine(MODULE_NAME, "label.partitions[{1}].bps = {0}", label.partitions[i].bps, i);
 

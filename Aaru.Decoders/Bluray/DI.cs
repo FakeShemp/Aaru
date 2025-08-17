@@ -34,8 +34,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Decoders.Bluray;
 
@@ -133,7 +133,7 @@ public static class DI
             Reserved2  = DIResponse[3]
         };
 
-        var                        offset = 4;
+        int                        offset = 4;
         List<DiscInformationUnits> units  = [];
 
         while(true)
@@ -231,7 +231,7 @@ public static class DI
 
         decoded.Units = new DiscInformationUnits[units.Count];
 
-        for(var i = 0; i < units.Count; i++) decoded.Units[i] = units[i];
+        for(int i = 0; i < units.Count; i++) decoded.Units[i] = units[i];
 
         return decoded;
     }

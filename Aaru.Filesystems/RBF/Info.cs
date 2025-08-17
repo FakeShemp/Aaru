@@ -30,8 +30,8 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -55,9 +55,9 @@ public sealed partial class RBF
                     0, 4, 15
                 })
         {
-            var location = (ulong)i;
+            ulong location = (ulong)i;
 
-            var sbSize = (uint)(Marshal.SizeOf<IdSector>() / imagePlugin.Info.SectorSize);
+            uint sbSize = (uint)(Marshal.SizeOf<IdSector>() / imagePlugin.Info.SectorSize);
 
             if(Marshal.SizeOf<IdSector>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
@@ -104,8 +104,8 @@ public sealed partial class RBF
                     0, 4, 15
                 })
         {
-            var location = (ulong)i;
-            var sbSize   = (uint)(Marshal.SizeOf<IdSector>() / imagePlugin.Info.SectorSize);
+            ulong location = (ulong)i;
+            uint  sbSize   = (uint)(Marshal.SizeOf<IdSector>() / imagePlugin.Info.SectorSize);
 
             if(Marshal.SizeOf<IdSector>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 

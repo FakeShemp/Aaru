@@ -32,7 +32,7 @@
 
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Metadata;
-using Aaru.Console;
+using Aaru.Logging;
 using Spectre.Console;
 
 namespace Aaru.Core.Devices.Report;
@@ -44,7 +44,7 @@ public sealed partial class DeviceReport
     public MmcSd MmcSdReport()
     {
         var    report = new MmcSd();
-        var    sense  = true;
+        bool   sense  = true;
         byte[] cid    = [];
         byte[] csd    = [];
         byte[] ecsd   = [];

@@ -31,9 +31,9 @@
 // ****************************************************************************/
 
 using Aaru.CommonTypes.Structs.Devices.SCSI;
-using Aaru.Console;
 using Aaru.Decoders.SCSI;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Core;
 

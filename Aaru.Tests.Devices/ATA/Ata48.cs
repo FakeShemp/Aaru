@@ -26,10 +26,11 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using Aaru.Console;
+using System;
 using Aaru.Decoders.ATA;
 using Aaru.Devices;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Tests.Devices.ATA;
 
@@ -39,7 +40,7 @@ static class Ata48
     {
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
             AaruConsole.WriteLine(Localization.Send_a_48_bit_ATA_command_to_the_device);
             AaruConsole.WriteLine(Localization.Send_GET_NATIVE_MAX_ADDRESS_EXT_command);
@@ -52,12 +53,12 @@ static class Ata48
             AaruConsole.WriteLine(Localization.Return_to_ATA_commands_menu);
             AaruConsole.Write(Localization.Choose);
 
-            string strDev = System.Console.ReadLine();
+            string strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out int item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -98,7 +99,7 @@ static class Ata48
                     continue;
                 default:
                     AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                    System.Console.ReadKey();
+                    Console.ReadKey();
 
                     continue;
             }
@@ -108,7 +109,7 @@ static class Ata48
     static void GetNativeMaxAddressExt(string devPath, Device dev)
     {
     start:
-        System.Console.Clear();
+        Console.Clear();
 
         bool sense = dev.GetNativeMaxAddressExt(out ulong lba,
                                                 out AtaErrorRegistersLba48 errorRegisters,
@@ -128,13 +129,13 @@ static class Ata48
         AaruConsole.WriteLine(Localization.Return_to_48_bit_ATA_commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        string strDev = System.Console.ReadLine();
+        string strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out int item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -146,13 +147,13 @@ static class Ata48
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.GET_NATIVE_MAX_ADDRESS_EXT_status_registers);
                 AaruConsole.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
@@ -160,8 +161,8 @@ static class Ata48
                 goto start;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }
@@ -178,7 +179,7 @@ static class Ata48
 
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
             AaruConsole.WriteLine(Localization.Parameters_for_READ_DMA_EXT_command);
             AaruConsole.WriteLine(Localization.LBA_0,   lba);
@@ -189,12 +190,12 @@ static class Ata48
             AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
             AaruConsole.WriteLine(Localization.Return_to_48_bit_ATA_commands_menu);
 
-            strDev = System.Console.ReadLine();
+            strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -207,13 +208,13 @@ static class Ata48
                     return;
                 case 1:
                     AaruConsole.Write(Localization.What_logical_block_address);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!ulong.TryParse(strDev, out lba))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         lba = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
@@ -228,13 +229,13 @@ static class Ata48
                     }
 
                     AaruConsole.Write(Localization.How_many_sectors);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!ushort.TryParse(strDev, out count))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         count = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
                     }
 
                     break;
@@ -244,7 +245,7 @@ static class Ata48
         }
 
     start:
-        System.Console.Clear();
+        Console.Clear();
 
         bool sense = dev.ReadDma(out byte[] buffer,
                                  out AtaErrorRegistersLba48 errorRegisters,
@@ -269,13 +270,13 @@ static class Ata48
         AaruConsole.WriteLine(Localization.Return_to_48_bit_ATA_commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        strDev = System.Console.ReadLine();
+        strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -287,26 +288,26 @@ static class Ata48
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.READ_DMA_EXT_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.READ_DMA_EXT_status_registers);
                 AaruConsole.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
@@ -316,8 +317,8 @@ static class Ata48
                 goto parameters;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }
@@ -335,7 +336,7 @@ static class Ata48
 
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
             AaruConsole.WriteLine(Localization.Parameters_for_READ_LOG_EXT_command);
             AaruConsole.WriteLine(Localization.Log_address_0, address);
@@ -347,12 +348,12 @@ static class Ata48
             AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
             AaruConsole.WriteLine(Localization.Return_to_48_bit_ATA_commands_menu);
 
-            strDev = System.Console.ReadLine();
+            strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -365,37 +366,37 @@ static class Ata48
                     return;
                 case 1:
                     AaruConsole.Write(Localization.What_log_address);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out address))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         address = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
 
                     AaruConsole.Write(Localization.What_page_number);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!ushort.TryParse(strDev, out page))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         page = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
 
                     AaruConsole.Write(Localization.How_many_sectors);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!ushort.TryParse(strDev, out count))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         count = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
                     }
 
                     break;
@@ -405,7 +406,7 @@ static class Ata48
         }
 
     start:
-        System.Console.Clear();
+        Console.Clear();
 
         bool sense = dev.ReadLog(out byte[] buffer,
                                  out AtaErrorRegistersLba48 errorRegisters,
@@ -431,13 +432,13 @@ static class Ata48
         AaruConsole.WriteLine(Localization.Return_to_48_bit_ATA_commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        strDev = System.Console.ReadLine();
+        strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -449,26 +450,26 @@ static class Ata48
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.READ_LOG_EXT_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.READ_LOG_EXT_status_registers);
                 AaruConsole.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
@@ -478,8 +479,8 @@ static class Ata48
                 goto parameters;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }
@@ -497,7 +498,7 @@ static class Ata48
 
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
             AaruConsole.WriteLine(Localization.Parameters_for_READ_LOG_DMA_EXT_command);
             AaruConsole.WriteLine(Localization.Log_address_0, address);
@@ -509,12 +510,12 @@ static class Ata48
             AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
             AaruConsole.WriteLine(Localization.Return_to_48_bit_ATA_commands_menu);
 
-            strDev = System.Console.ReadLine();
+            strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -527,37 +528,37 @@ static class Ata48
                     return;
                 case 1:
                     AaruConsole.Write(Localization.What_log_address);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out address))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         address = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
 
                     AaruConsole.Write(Localization.What_page_number);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!ushort.TryParse(strDev, out page))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         page = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
 
                     AaruConsole.Write(Localization.How_many_sectors);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!ushort.TryParse(strDev, out count))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         count = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
                     }
 
                     break;
@@ -567,7 +568,7 @@ static class Ata48
         }
 
     start:
-        System.Console.Clear();
+        Console.Clear();
 
         bool sense = dev.ReadLogDma(out byte[] buffer,
                                     out AtaErrorRegistersLba48 errorRegisters,
@@ -593,13 +594,13 @@ static class Ata48
         AaruConsole.WriteLine(Localization.Return_to_48_bit_ATA_commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        strDev = System.Console.ReadLine();
+        strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -611,26 +612,26 @@ static class Ata48
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.READ_LOG_DMA_EXT_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.READ_LOG_DMA_EXT_status_registers);
                 AaruConsole.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
@@ -640,8 +641,8 @@ static class Ata48
                 goto parameters;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }
@@ -658,7 +659,7 @@ static class Ata48
 
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
             AaruConsole.WriteLine(Localization.Parameters_for_READ_MULTIPLE_EXT_command);
             AaruConsole.WriteLine(Localization.LBA_0,   lba);
@@ -669,12 +670,12 @@ static class Ata48
             AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
             AaruConsole.WriteLine(Localization.Return_to_48_bit_ATA_commands_menu);
 
-            strDev = System.Console.ReadLine();
+            strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -687,13 +688,13 @@ static class Ata48
                     return;
                 case 1:
                     AaruConsole.Write(Localization.What_logical_block_address);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!ulong.TryParse(strDev, out lba))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         lba = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
@@ -708,13 +709,13 @@ static class Ata48
                     }
 
                     AaruConsole.Write(Localization.How_many_sectors);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!ushort.TryParse(strDev, out count))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         count = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
                     }
 
                     break;
@@ -724,7 +725,7 @@ static class Ata48
         }
 
     start:
-        System.Console.Clear();
+        Console.Clear();
 
         bool sense = dev.ReadMultiple(out byte[] buffer,
                                       out AtaErrorRegistersLba48 errorRegisters,
@@ -749,13 +750,13 @@ static class Ata48
         AaruConsole.WriteLine(Localization.Return_to_48_bit_ATA_commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        strDev = System.Console.ReadLine();
+        strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -767,26 +768,26 @@ static class Ata48
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.READ_MULTIPLE_EXT_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.READ_MULTIPLE_EXT_status_registers);
                 AaruConsole.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
@@ -796,8 +797,8 @@ static class Ata48
                 goto parameters;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }
@@ -806,7 +807,7 @@ static class Ata48
     static void ReadNativeMaxAddressExt(string devPath, Device dev)
     {
     start:
-        System.Console.Clear();
+        Console.Clear();
 
         bool sense = dev.ReadNativeMaxAddress(out ulong lba,
                                               out AtaErrorRegistersLba48 errorRegisters,
@@ -826,13 +827,13 @@ static class Ata48
         AaruConsole.WriteLine(Localization.Return_to_48_bit_ATA_commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        string strDev = System.Console.ReadLine();
+        string strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out int item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -844,13 +845,13 @@ static class Ata48
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.READ_NATIVE_MAX_ADDRESS_status_registers);
                 AaruConsole.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
@@ -858,8 +859,8 @@ static class Ata48
                 goto start;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }
@@ -876,7 +877,7 @@ static class Ata48
 
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
             AaruConsole.WriteLine(Localization.Parameters_for_READ_SECTORS_EXT_command);
             AaruConsole.WriteLine(Localization.LBA_0,   lba);
@@ -887,12 +888,12 @@ static class Ata48
             AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
             AaruConsole.WriteLine(Localization.Return_to_48_bit_ATA_commands_menu);
 
-            strDev = System.Console.ReadLine();
+            strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -905,13 +906,13 @@ static class Ata48
                     return;
                 case 1:
                     AaruConsole.Write(Localization.What_logical_block_address);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!ulong.TryParse(strDev, out lba))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         lba = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
@@ -926,13 +927,13 @@ static class Ata48
                     }
 
                     AaruConsole.Write(Localization.How_many_sectors);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!ushort.TryParse(strDev, out count))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         count = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
                     }
 
                     break;
@@ -942,7 +943,7 @@ static class Ata48
         }
 
     start:
-        System.Console.Clear();
+        Console.Clear();
 
         bool sense = dev.Read(out byte[] buffer,
                               out AtaErrorRegistersLba48 errorRegisters,
@@ -967,13 +968,13 @@ static class Ata48
         AaruConsole.WriteLine(Localization.Return_to_48_bit_ATA_commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        strDev = System.Console.ReadLine();
+        strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -985,26 +986,26 @@ static class Ata48
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.READ_SECTORS_EXT_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.READ_SECTORS_EXT_status_registers);
                 AaruConsole.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
@@ -1014,8 +1015,8 @@ static class Ata48
                 goto parameters;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }

@@ -33,9 +33,9 @@
 using System.Linq;
 using System.Text;
 using Aaru.CommonTypes.Enums;
-using Aaru.Console;
 using Aaru.Core;
 using Aaru.Localization;
+using Aaru.Logging;
 using Serilog;
 using Spectre.Console;
 using Spectre.Console.Cli;

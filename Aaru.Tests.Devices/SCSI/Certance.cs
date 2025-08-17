@@ -26,10 +26,11 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using Aaru.Console;
+using System;
 using Aaru.Decoders.SCSI;
 using Aaru.Devices;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Tests.Devices.SCSI;
 
@@ -39,7 +40,7 @@ static class Certance
     {
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
             AaruConsole.WriteLine(Localization.Send_a_Certance_vendor_command_to_the_device);
             AaruConsole.WriteLine(Localization.Send_PARK_command);
@@ -47,12 +48,12 @@ static class Certance
             AaruConsole.WriteLine(Localization.Return_to_SCSI_commands_menu);
             AaruConsole.Write(Localization.Choose);
 
-            string strDev = System.Console.ReadLine();
+            string strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out int item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -73,7 +74,7 @@ static class Certance
                     continue;
                 default:
                     AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                    System.Console.ReadKey();
+                    Console.ReadKey();
 
                     continue;
             }
@@ -83,7 +84,7 @@ static class Certance
     static void Park(string devPath, Device dev)
     {
     start:
-        System.Console.Clear();
+        Console.Clear();
         bool sense = dev.CertancePark(out byte[] senseBuffer, dev.Timeout, out double duration);
 
     menu:
@@ -107,13 +108,13 @@ static class Certance
         AaruConsole.WriteLine(Localization.Return_to_Certance_vendor_commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        string strDev = System.Console.ReadLine();
+        string strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out int item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -125,15 +126,15 @@ static class Certance
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.PARK_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
@@ -141,8 +142,8 @@ static class Certance
                 goto start;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }
@@ -151,7 +152,7 @@ static class Certance
     static void Unpark(string devPath, Device dev)
     {
     start:
-        System.Console.Clear();
+        Console.Clear();
         bool sense = dev.CertanceUnpark(out byte[] senseBuffer, dev.Timeout, out double duration);
 
     menu:
@@ -175,13 +176,13 @@ static class Certance
         AaruConsole.WriteLine(Localization.Return_to_Certance_vendor_commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        string strDev = System.Console.ReadLine();
+        string strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out int item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -193,15 +194,15 @@ static class Certance
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.UNPARK_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
@@ -209,8 +210,8 @@ static class Certance
                 goto start;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }

@@ -39,8 +39,8 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
 using Aaru.CommonTypes.Structs.Devices.ATA;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Version = Aaru.CommonTypes.Interop.Version;
 
 namespace Aaru.Images;
@@ -285,8 +285,8 @@ public sealed partial class RsIde
             if(string.IsNullOrEmpty(_imageInfo.DriveSerialNumber))
                 _imageInfo.DriveSerialNumber = $"{new Random().NextDouble():16X}";
 
-            var  ataIdBytes = new byte[Marshal.SizeOf<Identify.IdentifyDevice>()];
-            nint ptr        = System.Runtime.InteropServices.Marshal.AllocHGlobal(512);
+            byte[] ataIdBytes = new byte[Marshal.SizeOf<Identify.IdentifyDevice>()];
+            nint   ptr        = System.Runtime.InteropServices.Marshal.AllocHGlobal(512);
             System.Runtime.InteropServices.Marshal.StructureToPtr(ataId, ptr, true);
 
             System.Runtime.InteropServices.Marshal.Copy(ptr, ataIdBytes, 0, Marshal.SizeOf<Identify.IdentifyDevice>());
@@ -306,8 +306,8 @@ public sealed partial class RsIde
         else
             Array.Copy(_identify, 0, header.identify, 0, 106);
 
-        var  hdr    = new byte[Marshal.SizeOf<Header>()];
-        nint hdrPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
+        byte[] hdr    = new byte[Marshal.SizeOf<Header>()];
+        nint   hdrPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
         System.Runtime.InteropServices.Marshal.StructureToPtr(header, hdrPtr, true);
         System.Runtime.InteropServices.Marshal.Copy(hdrPtr, hdr, 0, hdr.Length);
         System.Runtime.InteropServices.Marshal.FreeHGlobal(hdrPtr);

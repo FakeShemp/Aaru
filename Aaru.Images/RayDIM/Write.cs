@@ -39,8 +39,8 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -231,7 +231,7 @@ public sealed partial class RayDim
             return false;
         }
 
-        var headerSignature = $"Disk IMage VER 1.0 Copyright (C) {DateTime.Now.Year
+        string headerSignature = $"Disk IMage VER 1.0 Copyright (C) {DateTime.Now.Year
             :D4} Ray Arachelian, All Rights Reserved. Aaru ";
 
         var header = new Header
@@ -245,8 +245,8 @@ public sealed partial class RayDim
 
         header.signature[0x4A] = 0x00;
 
-        var  hdr    = new byte[Marshal.SizeOf<Header>()];
-        nint hdrPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
+        byte[] hdr    = new byte[Marshal.SizeOf<Header>()];
+        nint   hdrPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
         System.Runtime.InteropServices.Marshal.StructureToPtr(header, hdrPtr, true);
         System.Runtime.InteropServices.Marshal.Copy(hdrPtr, hdr, 0, hdr.Length);
         System.Runtime.InteropServices.Marshal.FreeHGlobal(hdrPtr);

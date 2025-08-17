@@ -26,10 +26,11 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using Aaru.Console;
+using System;
 using Aaru.Decoders.ATA;
 using Aaru.Devices;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Tests.Devices.ATA;
 
@@ -39,7 +40,7 @@ static class AtaChs
     {
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
             AaruConsole.WriteLine(Localization.Send_a_CHS_ATA_command_to_the_device);
             AaruConsole.WriteLine(Localization.Send_IDENTIFY_DEVICE_command);
@@ -55,12 +56,12 @@ static class AtaChs
             AaruConsole.WriteLine(Localization.Return_to_ATA_commands_menu);
             AaruConsole.Write(Localization.Choose);
 
-            string strDev = System.Console.ReadLine();
+            string strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out int item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -113,7 +114,7 @@ static class AtaChs
                     continue;
                 default:
                     AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                    System.Console.ReadKey();
+                    Console.ReadKey();
 
                     continue;
             }
@@ -123,7 +124,7 @@ static class AtaChs
     static void Identify(string devPath, Device dev)
     {
     start:
-        System.Console.Clear();
+        Console.Clear();
 
         bool sense = dev.AtaIdentify(out byte[] buffer, out AtaErrorRegistersChs errorRegisters, out double duration);
 
@@ -143,13 +144,13 @@ static class AtaChs
         AaruConsole.WriteLine(Localization.Return_to_CHS_ATA_commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        string strDev = System.Console.ReadLine();
+        string strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out int item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -161,39 +162,39 @@ static class AtaChs
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.IDENTIFY_DEVICE_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.IDENTIFY_DEVICE_decoded_response);
 
                 if(buffer != null) AaruConsole.WriteLine("{0}", Decoders.ATA.Identify.Prettify(buffer));
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 3:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.IDENTIFY_DEVICE_status_registers);
                 AaruConsole.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
@@ -201,8 +202,8 @@ static class AtaChs
                 goto start;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }
@@ -221,7 +222,7 @@ static class AtaChs
 
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
 
             AaruConsole.WriteLine(retries
@@ -238,12 +239,12 @@ static class AtaChs
             AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
             AaruConsole.WriteLine(Localization.Return_to_CHS_ATA_commands_menu);
 
-            strDev = System.Console.ReadLine();
+            strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -256,25 +257,25 @@ static class AtaChs
                     return;
                 case 1:
                     AaruConsole.Write(Localization.What_cylinder);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!ushort.TryParse(strDev, out cylinder))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         cylinder = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
 
                     AaruConsole.Write(Localization.What_head);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out head))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         head = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
@@ -286,25 +287,25 @@ static class AtaChs
                     }
 
                     AaruConsole.Write(Localization.What_sector);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out sector))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         sector = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
 
                     AaruConsole.Write(Localization.How_many_sectors);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out count))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         count = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
                     }
 
                     break;
@@ -314,7 +315,7 @@ static class AtaChs
         }
 
     start:
-        System.Console.Clear();
+        Console.Clear();
 
         bool sense = dev.ReadDma(out byte[] buffer,
                                  out AtaErrorRegistersChs errorRegisters,
@@ -346,13 +347,13 @@ static class AtaChs
         AaruConsole.WriteLine(Localization.Return_to_CHS_ATA_commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        strDev = System.Console.ReadLine();
+        strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -364,7 +365,7 @@ static class AtaChs
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 AaruConsole.WriteLine(retries
@@ -374,13 +375,13 @@ static class AtaChs
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 AaruConsole.WriteLine(retries
@@ -389,8 +390,8 @@ static class AtaChs
 
                 AaruConsole.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
@@ -400,8 +401,8 @@ static class AtaChs
                 goto parameters;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }
@@ -420,7 +421,7 @@ static class AtaChs
 
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
 
             AaruConsole.WriteLine(retries
@@ -437,12 +438,12 @@ static class AtaChs
             AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
             AaruConsole.WriteLine(Localization.Return_to_CHS_ATA_commands_menu);
 
-            strDev = System.Console.ReadLine();
+            strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -455,25 +456,25 @@ static class AtaChs
                     return;
                 case 1:
                     AaruConsole.Write(Localization.What_cylinder);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!ushort.TryParse(strDev, out cylinder))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         cylinder = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
 
                     AaruConsole.Write(Localization.What_head);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out head))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         head = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
@@ -485,25 +486,25 @@ static class AtaChs
                     }
 
                     AaruConsole.Write(Localization.What_sector);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out sector))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         sector = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
 
                     AaruConsole.Write(Localization.How_many_bytes_to_expect);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!uint.TryParse(strDev, out blockSize))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         blockSize = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
                     }
 
                     break;
@@ -513,7 +514,7 @@ static class AtaChs
         }
 
     start:
-        System.Console.Clear();
+        Console.Clear();
 
         bool sense = dev.ReadLong(out byte[] buffer,
                                   out AtaErrorRegistersChs errorRegisters,
@@ -545,13 +546,13 @@ static class AtaChs
         AaruConsole.WriteLine(Localization.Return_to_CHS_ATA_commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        strDev = System.Console.ReadLine();
+        strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -563,7 +564,7 @@ static class AtaChs
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 AaruConsole.WriteLine(retries
@@ -573,13 +574,13 @@ static class AtaChs
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 AaruConsole.WriteLine(retries
@@ -588,8 +589,8 @@ static class AtaChs
 
                 AaruConsole.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
@@ -599,8 +600,8 @@ static class AtaChs
                 goto parameters;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }
@@ -619,7 +620,7 @@ static class AtaChs
 
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
             AaruConsole.WriteLine(Localization.Parameters_for_READ_MULTIPLE_command);
             AaruConsole.WriteLine(Localization.Cylinder_0, cylinder);
@@ -632,12 +633,12 @@ static class AtaChs
             AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
             AaruConsole.WriteLine(Localization.Return_to_CHS_ATA_commands_menu);
 
-            strDev = System.Console.ReadLine();
+            strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -650,25 +651,25 @@ static class AtaChs
                     return;
                 case 1:
                     AaruConsole.Write(Localization.What_cylinder);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!ushort.TryParse(strDev, out cylinder))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         cylinder = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
 
                     AaruConsole.Write(Localization.What_head);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out head))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         head = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
@@ -680,25 +681,25 @@ static class AtaChs
                     }
 
                     AaruConsole.Write(Localization.What_sector);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out sector))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         sector = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
 
                     AaruConsole.Write(Localization.How_many_sectors);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out count))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         count = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
                     }
 
                     break;
@@ -708,7 +709,7 @@ static class AtaChs
         }
 
     start:
-        System.Console.Clear();
+        Console.Clear();
 
         bool sense = dev.ReadMultiple(out byte[] buffer,
                                       out AtaErrorRegistersChs errorRegisters,
@@ -735,13 +736,13 @@ static class AtaChs
         AaruConsole.WriteLine(Localization.Return_to_CHS_ATA_commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        strDev = System.Console.ReadLine();
+        strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -753,26 +754,26 @@ static class AtaChs
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.READ_MULTIPLE_response);
 
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.READ_MULTIPLE_status_registers);
                 AaruConsole.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
@@ -782,8 +783,8 @@ static class AtaChs
                 goto parameters;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }
@@ -802,7 +803,7 @@ static class AtaChs
 
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
 
             AaruConsole.WriteLine(retries
@@ -819,12 +820,12 @@ static class AtaChs
             AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
             AaruConsole.WriteLine(Localization.Return_to_CHS_ATA_commands_menu);
 
-            strDev = System.Console.ReadLine();
+            strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -837,25 +838,25 @@ static class AtaChs
                     return;
                 case 1:
                     AaruConsole.Write(Localization.What_cylinder);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!ushort.TryParse(strDev, out cylinder))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         cylinder = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
 
                     AaruConsole.Write(Localization.What_head);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out head))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         head = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
@@ -867,25 +868,25 @@ static class AtaChs
                     }
 
                     AaruConsole.Write(Localization.What_sector);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out sector))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         sector = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
 
                     AaruConsole.Write(Localization.How_many_sectors);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out count))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         count = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
                     }
 
                     break;
@@ -895,7 +896,7 @@ static class AtaChs
         }
 
     start:
-        System.Console.Clear();
+        Console.Clear();
 
         bool sense = dev.Read(out byte[] buffer,
                               out AtaErrorRegistersChs errorRegisters,
@@ -927,13 +928,13 @@ static class AtaChs
         AaruConsole.WriteLine(Localization.Return_to_CHS_ATA_commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        strDev = System.Console.ReadLine();
+        strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -945,7 +946,7 @@ static class AtaChs
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 AaruConsole.WriteLine(retries
@@ -955,13 +956,13 @@ static class AtaChs
                 if(buffer != null) PrintHex.PrintHexArray(buffer, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
             case 2:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 AaruConsole.WriteLine(retries
@@ -970,8 +971,8 @@ static class AtaChs
 
                 AaruConsole.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
@@ -981,8 +982,8 @@ static class AtaChs
                 goto parameters;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }
@@ -1000,7 +1001,7 @@ static class AtaChs
 
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
             AaruConsole.WriteLine(Localization.Parameters_for_SEEK_command);
             AaruConsole.WriteLine(Localization.Cylinder_0, cylinder);
@@ -1012,12 +1013,12 @@ static class AtaChs
             AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
             AaruConsole.WriteLine(Localization.Return_to_CHS_ATA_commands_menu);
 
-            strDev = System.Console.ReadLine();
+            strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -1030,25 +1031,25 @@ static class AtaChs
                     return;
                 case 1:
                     AaruConsole.Write(Localization.What_cylinder);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!ushort.TryParse(strDev, out cylinder))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         cylinder = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
 
                     AaruConsole.Write(Localization.What_head);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out head))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         head = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
@@ -1060,13 +1061,13 @@ static class AtaChs
                     }
 
                     AaruConsole.Write(Localization.What_sector);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out sector))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         sector = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
                     }
 
                     break;
@@ -1076,7 +1077,7 @@ static class AtaChs
         }
 
     start:
-        System.Console.Clear();
+        Console.Clear();
 
         bool sense = dev.Seek(out AtaErrorRegistersChs errorRegisters,
                               cylinder,
@@ -1098,13 +1099,13 @@ static class AtaChs
         AaruConsole.WriteLine(Localization.Return_to_CHS_ATA_commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        strDev = System.Console.ReadLine();
+        strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -1116,13 +1117,13 @@ static class AtaChs
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.SEEK_status_registers);
                 AaruConsole.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
@@ -1132,8 +1133,8 @@ static class AtaChs
                 goto parameters;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }
@@ -1153,7 +1154,7 @@ static class AtaChs
 
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
             AaruConsole.WriteLine(Localization.Parameters_for_SET_FEATURES_command);
             AaruConsole.WriteLine(Localization.Cylinder_0,     cylinder);
@@ -1167,12 +1168,12 @@ static class AtaChs
             AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
             AaruConsole.WriteLine(Localization.Return_to_CHS_ATA_commands_menu);
 
-            strDev = System.Console.ReadLine();
+            strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -1185,25 +1186,25 @@ static class AtaChs
                     return;
                 case 1:
                     AaruConsole.Write(Localization.What_cylinder);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!ushort.TryParse(strDev, out cylinder))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         cylinder = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
 
                     AaruConsole.Write(Localization.What_head);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out head))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         head = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
@@ -1215,33 +1216,33 @@ static class AtaChs
                     }
 
                     AaruConsole.Write(Localization.What_sector);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out sector))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         sector = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
                     }
 
                     AaruConsole.Write(Localization.What_sector_count);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out sectorCount))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         sectorCount = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
                     }
 
                     AaruConsole.Write(Localization.What_feature);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!byte.TryParse(strDev, out feature))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         feature = 0;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
                     }
 
                     break;
@@ -1251,7 +1252,7 @@ static class AtaChs
         }
 
     start:
-        System.Console.Clear();
+        Console.Clear();
 
         bool sense = dev.Seek(out AtaErrorRegistersChs errorRegisters,
                               cylinder,
@@ -1273,13 +1274,13 @@ static class AtaChs
         AaruConsole.WriteLine(Localization.Return_to_CHS_ATA_commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        strDev = System.Console.ReadLine();
+        strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -1291,13 +1292,13 @@ static class AtaChs
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.SET_FEATURES_status_registers);
                 AaruConsole.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
@@ -1307,8 +1308,8 @@ static class AtaChs
                 goto parameters;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }

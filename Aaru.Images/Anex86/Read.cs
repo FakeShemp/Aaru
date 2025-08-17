@@ -34,8 +34,8 @@ using System.IO;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -51,7 +51,7 @@ public sealed partial class Anex86
 
         if(stream.Length < Marshal.SizeOf<Header>()) return ErrorNumber.InvalidArgument;
 
-        var hdrB = new byte[Marshal.SizeOf<Header>()];
+        byte[] hdrB = new byte[Marshal.SizeOf<Header>()];
         stream.EnsureRead(hdrB, 0, hdrB.Length);
 
         _header = Marshal.SpanToStructureLittleEndian<Header>(hdrB);

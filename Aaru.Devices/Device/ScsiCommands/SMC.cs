@@ -30,7 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using Aaru.Console;
+using Aaru.Logging;
 
 namespace Aaru.Devices;
 
@@ -53,7 +53,7 @@ public partial class Device
                               uint       timeout, out double duration)
     {
         buffer = new byte[256];
-        var cdb = new byte[16];
+        byte[] cdb = new byte[16];
         senseBuffer = new byte[64];
 
         cdb[0]  = (byte)ScsiCommands.ReadAttribute;
@@ -84,7 +84,7 @@ public partial class Device
 
         if(sense) return true;
 
-        var attrLen = (uint)((buffer[0] << 24) + (buffer[1] << 16) + (buffer[2] << 8) + buffer[3] + 4);
+        uint attrLen = (uint)((buffer[0] << 24) + (buffer[1] << 16) + (buffer[2] << 8) + buffer[3] + 4);
         buffer      = new byte[attrLen];
         cdb[10]     = (byte)((buffer.Length & 0xFF000000) >> 24);
         cdb[11]     = (byte)((buffer.Length & 0xFF0000)   >> 16);

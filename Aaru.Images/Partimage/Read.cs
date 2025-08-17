@@ -39,8 +39,8 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Extents;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -57,7 +57,7 @@ public sealed partial class Partimage
 
         if(stream.Length < 512) return ErrorNumber.InvalidArgument;
 
-        var hdrB = new byte[Marshal.SizeOf<Header>()];
+        byte[] hdrB = new byte[Marshal.SizeOf<Header>()];
         stream.EnsureRead(hdrB, 0, Marshal.SizeOf<Header>());
         _cVolumeHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(hdrB);
 
@@ -468,7 +468,7 @@ public sealed partial class Partimage
 
         var ms = new MemoryStream();
 
-        var allEmpty = true;
+        bool allEmpty = true;
 
         for(uint i = 0; i < length; i++)
         {

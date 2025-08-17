@@ -32,8 +32,8 @@ using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Filesystems;
 
@@ -116,15 +116,15 @@ public sealed partial class FAT
         var ebpb       = new BiosParameterBlockEbpb();
         var apricotBpb = new ApricotLabel();
 
-        var useAtariBpb          = false;
-        var useMsxBpb            = false;
-        var useDos2Bpb           = false;
-        var useDos3Bpb           = false;
-        var useDos32Bpb          = false;
-        var useDos33Bpb          = false;
-        var userShortExtendedBpb = false;
-        var useExtendedBpb       = false;
-        var useApricotBpb        = false;
+        bool useAtariBpb          = false;
+        bool useMsxBpb            = false;
+        bool useDos2Bpb           = false;
+        bool useDos3Bpb           = false;
+        bool useDos32Bpb          = false;
+        bool useDos33Bpb          = false;
+        bool userShortExtendedBpb = false;
+        bool useExtendedBpb       = false;
+        bool useApricotBpb        = false;
 
         if(imagePlugin.Info.SectorSize >= 256)
         {
@@ -393,12 +393,12 @@ public sealed partial class FAT
             }
 
             byte[] rootDir      = rootMs.ToArray();
-            var    validRootDir = true;
+            bool   validRootDir = true;
 
             // Iterate all root directory
-            for(var e = 0; e < 96 * 32; e += 32)
+            for(int e = 0; e < 96 * 32; e += 32)
             {
-                for(var c = 0; c < 11; c++)
+                for(int c = 0; c < 11; c++)
                 {
                     if((rootDir[c + e] >= 0x20 || rootDir[c + e] == 0x00 || rootDir[c + e] == 0x05) &&
                        rootDir[c + e] != 0xFF                                                       &&

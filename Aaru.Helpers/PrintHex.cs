@@ -31,7 +31,7 @@
 // ****************************************************************************/
 
 using System.Text;
-using Aaru.Console;
+using Aaru.Logging;
 
 namespace Aaru.Helpers;
 
@@ -82,17 +82,17 @@ public static class PrintHex
         sb.Append(str);
         sb.Append("  ");
 
-        for(var i = 0; i < width; i++) sb.Append($" {i:X2}");
+        for(int i = 0; i < width; i++) sb.Append($" {i:X2}");
 
         if(color) sb.Append("\u001b[0m");
 
         sb.AppendLine();
 
-        var b = 0;
+        int b = 0;
 
-        var format = $"{{0:X{offsetLength}}}";
+        string format = $"{{0:X{offsetLength}}}";
 
-        for(var i = 0; i < rows; i++)
+        for(int i = 0; i < rows; i++)
         {
             if(color) sb.Append("\u001b[36m");
 
@@ -104,18 +104,18 @@ public static class PrintHex
             int lastBytes  = i == rows - 1 ? last : width;
             int lastSpaces = width - lastBytes;
 
-            for(var j = 0; j < lastBytes; j++)
+            for(int j = 0; j < lastBytes; j++)
             {
                 sb.Append($" {array[b]:X2}");
                 b++;
             }
 
-            for(var j = 0; j < lastSpaces; j++) sb.Append("   ");
+            for(int j = 0; j < lastSpaces; j++) sb.Append("   ");
 
             b -= lastBytes;
             sb.Append("   ");
 
-            for(var j = 0; j < lastBytes; j++)
+            for(int j = 0; j < lastBytes; j++)
             {
                 int v = array[b];
                 sb.Append(v is > 31 and < 127 or > 159 ? (char)v : '.');

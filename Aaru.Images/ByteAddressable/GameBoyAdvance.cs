@@ -9,8 +9,8 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Images;
@@ -59,9 +59,9 @@ public class GameBoyAdvance : IByteAddressableImage
         if(stream.Length % 32768 != 0) return false;
 
         stream.Position = 4;
-        var magicBytes = new byte[8];
+        byte[] magicBytes = new byte[8];
         stream.EnsureRead(magicBytes, 0, 8);
-        var magic = BitConverter.ToUInt64(magicBytes, 0);
+        ulong magic = BitConverter.ToUInt64(magicBytes, 0);
 
         return magic == 0x21A29A6951AEFF24;
     }
@@ -77,9 +77,9 @@ public class GameBoyAdvance : IByteAddressableImage
         if(stream.Length % 512 != 0) return ErrorNumber.InvalidArgument;
 
         stream.Position = 4;
-        var magicBytes = new byte[8];
+        byte[] magicBytes = new byte[8];
         stream.EnsureRead(magicBytes, 0, 8);
-        var magic = BitConverter.ToUInt64(magicBytes, 0);
+        ulong magic = BitConverter.ToUInt64(magicBytes, 0);
 
         if(magic != 0x21A29A6951AEFF24) return ErrorNumber.InvalidArgument;
 
@@ -353,8 +353,8 @@ public class GameBoyAdvance : IByteAddressableImage
             return ErrorNumber.ReadOnly;
         }
 
-        var foundRom     = false;
-        var foundSaveRam = false;
+        bool foundRom     = false;
+        bool foundSaveRam = false;
 
         // Sanitize
         foreach(LinearMemoryDevice map in mappings.Devices)

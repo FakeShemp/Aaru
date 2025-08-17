@@ -38,8 +38,8 @@ using System.Runtime.InteropServices;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Partitions;
@@ -76,8 +76,8 @@ public sealed class VTOC : IPartition
         uint        magic      = 0;
         ulong       pdloc      = 0;
         byte[]      pdsector   = null;
-        var         magicFound = false;
-        var         absolute   = false;
+        bool        magicFound = false;
+        bool        absolute   = false;
         ErrorNumber errno;
 
         foreach(ulong i in new ulong[]
@@ -167,7 +167,7 @@ public sealed class VTOC : IPartition
         AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.pad[7] = {0}",     pd.pad[7]);
 
         magicFound = false;
-        var useOld = false;
+        bool useOld = false;
         errno = imagePlugin.ReadSector(pdloc + sectorOffset + 1, out byte[] vtocsector);
 
         if(errno != ErrorNumber.NoError) return false;
@@ -187,7 +187,7 @@ public sealed class VTOC : IPartition
             {
                 vtoc = Marshal.ByteArrayToStructureBigEndian<Vtoc>(vtocsector);
 
-                for(var i = 0; i < vtoc.v_part.Length; i++)
+                for(int i = 0; i < vtoc.v_part.Length; i++)
                 {
                     vtoc.v_part[i].p_tag   = (pTag)Swapping.Swap((ushort)vtoc.v_part[i].p_tag);
                     vtoc.v_part[i].p_flag  = (pFlag)Swapping.Swap((ushort)vtoc.v_part[i].p_flag);
@@ -214,7 +214,7 @@ public sealed class VTOC : IPartition
                 {
                     vtocOld = Marshal.ByteArrayToStructureBigEndian<VTocOld>(vtocsector);
 
-                    for(var i = 0; i < vtocOld.v_part.Length; i++)
+                    for(int i = 0; i < vtocOld.v_part.Length; i++)
                     {
                         vtocOld.v_part[i].p_tag   = (pTag)Swapping.Swap((ushort)vtocOld.v_part[i].p_tag);
                         vtocOld.v_part[i].p_flag  = (pFlag)Swapping.Swap((ushort)vtocOld.v_part[i].p_flag);
@@ -267,7 +267,7 @@ public sealed class VTOC : IPartition
                 {
                     vtoc = Marshal.ByteArrayToStructureBigEndian<Vtoc>(vtocsector);
 
-                    for(var i = 0; i < vtoc.v_part.Length; i++)
+                    for(int i = 0; i < vtoc.v_part.Length; i++)
                     {
                         vtoc.v_part[i].p_tag   = (pTag)Swapping.Swap((ushort)vtoc.v_part[i].p_tag);
                         vtoc.v_part[i].p_flag  = (pFlag)Swapping.Swap((ushort)vtoc.v_part[i].p_flag);
@@ -302,7 +302,7 @@ public sealed class VTOC : IPartition
             AaruConsole.DebugWriteLine(MODULE_NAME, "vtocOld.v_sectorsz = {0}", vtocOld.v_sectorsz);
             AaruConsole.DebugWriteLine(MODULE_NAME, "vtocOld.v_nparts = {0}",   vtocOld.v_nparts);
 
-            for(var i = 0; i < V_NUMPAR; i++)
+            for(int i = 0; i < V_NUMPAR; i++)
             {
                 AaruConsole.DebugWriteLine(MODULE_NAME,
                                            "vtocOld.v_part[{0}].p_tag = {1} ({2})",
@@ -346,7 +346,7 @@ public sealed class VTOC : IPartition
             AaruConsole.DebugWriteLine(MODULE_NAME, "vtoc.v_pad = {0}",    vtoc.v_pad);
             AaruConsole.DebugWriteLine(MODULE_NAME, "vtoc.v_nparts = {0}", vtoc.v_nparts);
 
-            for(var i = 0; i < V_NUMPAR; i++)
+            for(int i = 0; i < V_NUMPAR; i++)
             {
                 AaruConsole.DebugWriteLine(MODULE_NAME,
                                            "vtoc.v_part[{0}].p_tag = {1} ({2})",
@@ -390,7 +390,7 @@ public sealed class VTOC : IPartition
 
         // Check for a partition describing the VTOC whose start is the same as the start we know.
         // This means partition starts are absolute, not relative, to the VTOC position
-        for(var i = 0; i < V_NUMPAR; i++)
+        for(int i = 0; i < V_NUMPAR; i++)
         {
             if(parts[i].p_tag != pTag.V_BACKUP || (ulong)parts[i].p_start != sectorOffset) continue;
 
@@ -399,7 +399,7 @@ public sealed class VTOC : IPartition
             break;
         }
 
-        for(var i = 0; i < V_NUMPAR; i++)
+        for(int i = 0; i < V_NUMPAR; i++)
         {
             if(parts[i].p_tag == pTag.V_UNUSED) continue;
 
@@ -414,7 +414,7 @@ public sealed class VTOC : IPartition
                 Scheme   = Name
             };
 
-            var info = "";
+            string info = "";
 
             // Apparently old ones are absolute :?
             if(!useOld && !absolute)

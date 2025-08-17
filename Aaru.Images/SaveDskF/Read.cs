@@ -36,8 +36,8 @@ using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -51,7 +51,7 @@ public sealed partial class SaveDskF
         Stream stream = imageFilter.GetDataForkStream();
         stream.Seek(0, SeekOrigin.Begin);
 
-        var hdr = new byte[40];
+        byte[] hdr = new byte[40];
 
         stream.EnsureRead(hdr, 0, 40);
         _header = Marshal.ByteArrayToStructureLittleEndian<Header>(hdr);
@@ -78,7 +78,7 @@ public sealed partial class SaveDskF
 
         if(_header is { dataOffset: 0, magic: SDF_MAGIC_OLD }) _header.dataOffset = 512;
 
-        var cmt = new byte[_header.dataOffset - _header.commentOffset];
+        byte[] cmt = new byte[_header.dataOffset - _header.commentOffset];
         stream.Seek(_header.commentOffset, SeekOrigin.Begin);
         stream.EnsureRead(cmt, 0, cmt.Length);
 

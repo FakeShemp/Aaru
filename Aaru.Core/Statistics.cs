@@ -41,9 +41,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Aaru.CommonTypes.Interop;
 using Aaru.CommonTypes.Metadata;
-using Aaru.Console;
 using Aaru.Database;
 using Aaru.Database.Models;
+using Aaru.Logging;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Device = Aaru.Devices.Device;
@@ -211,9 +211,9 @@ public static class Statistics
             dto.RemoteOperatingSystems = [];
 
 #if DEBUG
-            System.Console.WriteLine(Localization.Core.Uploading_statistics);
+            Console.WriteLine(Localization.Core.Uploading_statistics);
 #else
-                Aaru.Console.AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Uploading_statistics);
+                Aaru.Logging.AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Uploading_statistics);
 #endif
             using StringContent jsonContent =
                 new(JsonSerializer.Serialize(dto, typeof(StatsDto), StatsDtoContext.Default),

@@ -9,8 +9,8 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Images;
@@ -59,9 +59,9 @@ public class AtariLynx : IByteAddressableImage
         if((stream.Length - 64) % 65536 != 0) return false;
 
         stream.Position = 0;
-        var magicBytes = new byte[4];
+        byte[] magicBytes = new byte[4];
         stream.EnsureRead(magicBytes, 0, 4);
-        var magic = BitConverter.ToUInt32(magicBytes, 0);
+        uint magic = BitConverter.ToUInt32(magicBytes, 0);
 
         // "LYNX"
         return magic == 0x584E594C;
@@ -78,13 +78,13 @@ public class AtariLynx : IByteAddressableImage
         if((stream.Length - 64) % 65536 != 0) return ErrorNumber.InvalidArgument;
 
         stream.Position = 0x0;
-        var magicBytes = new byte[4];
+        byte[] magicBytes = new byte[4];
         stream.EnsureRead(magicBytes, 0, 4);
-        var magic = BitConverter.ToUInt32(magicBytes, 0);
+        uint magic = BitConverter.ToUInt32(magicBytes, 0);
 
         if(magic != 0x584E594C) return ErrorNumber.InvalidArgument;
 
-        var headerBytes = new byte[64];
+        byte[] headerBytes = new byte[64];
         stream.Position = 0;
         stream.EnsureRead(headerBytes, 0, 64);
 
@@ -405,7 +405,7 @@ public class AtariLynx : IByteAddressableImage
             return ErrorNumber.ReadOnly;
         }
 
-        var foundRom = false;
+        bool foundRom = false;
 
         // Sanitize
         foreach(LinearMemoryDevice map in mappings.Devices)

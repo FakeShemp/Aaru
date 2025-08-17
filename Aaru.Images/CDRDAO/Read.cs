@@ -40,8 +40,8 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Decoders.CD;
+using Aaru.Logging;
 using Session = Aaru.CommonTypes.Structs.Session;
 
 namespace Aaru.Images;
@@ -61,7 +61,7 @@ public sealed partial class Cdrdao
         {
             imageFilter.GetDataForkStream().Seek(0, SeekOrigin.Begin);
             _tocStream = new StreamReader(imageFilter.GetDataForkStream());
-            var inTrack = false;
+            bool inTrack = false;
 
             // Initialize all RegExs
             var regexComment         = new Regex(REGEX_COMMENT);
@@ -109,12 +109,12 @@ public sealed partial class Cdrdao
             currentTrack.Indexes = new Dictionary<int, ulong>();
             currentTrack.Pregap  = 0;
             ulong currentSector  = 0;
-            var   nextIndex      = 2;
+            int   nextIndex      = 2;
             var   commentBuilder = new StringBuilder();
 
             _tocStream = new StreamReader(_cdrdaoFilter.GetDataForkStream());
             string line;
-            var    lineNumber = 0;
+            int    lineNumber = 0;
 
             while(_tocStream.Peek() >= 0)
             {
@@ -681,7 +681,7 @@ public sealed partial class Cdrdao
                                        "\t" + Localization.Disc_contains_0_tracks,
                                        _discimage.Tracks.Count);
 
-            for(var i = 0; i < _discimage.Tracks.Count; i++)
+            for(int i = 0; i < _discimage.Tracks.Count; i++)
             {
                 AaruConsole.DebugWriteLine(MODULE_NAME,
                                            "\t" + Localization.Track_0_information,
@@ -785,7 +785,7 @@ public sealed partial class Cdrdao
             ulong byteOffset        = 0;
             ulong partitionSequence = 0;
 
-            for(var i = 0; i < _discimage.Tracks.Count; i++)
+            for(int i = 0; i < _discimage.Tracks.Count; i++)
             {
                 if(_discimage.Tracks[i].Sequence == 1 && i != 0)
                 {
@@ -1067,7 +1067,7 @@ public sealed partial class Cdrdao
         uint sectorOffset;
         uint sectorSize;
         uint sectorSkip;
-        var  mode2 = false;
+        bool mode2 = false;
 
         switch(aaruTrack.Tracktype)
         {
@@ -1144,9 +1144,9 @@ public sealed partial class Cdrdao
 
             buffer = br.ReadBytes((int)((sectorSize + sectorSkip) * length));
 
-            for(var i = 0; i < length; i++)
+            for(int i = 0; i < length; i++)
             {
-                var sector = new byte[sectorSize];
+                byte[] sector = new byte[sectorSize];
                 Array.Copy(buffer, (sectorSize + sectorSkip) * i, sector, 0, sectorSize);
                 sector = Sector.GetUserDataFromMode2(sector);
                 mode2Ms.Write(sector, 0, sector.Length);
@@ -1158,7 +1158,7 @@ public sealed partial class Cdrdao
             buffer = br.ReadBytes((int)(sectorSize * length));
         else
         {
-            for(var i = 0; i < length; i++)
+            for(int i = 0; i < length; i++)
             {
                 br.BaseStream.Seek(sectorOffset, SeekOrigin.Current);
                 byte[] sector = br.ReadBytes((int)sectorSize);
@@ -1170,7 +1170,7 @@ public sealed partial class Cdrdao
         // cdrdao audio tracks are endian swapped corresponding to Aaru
         if(aaruTrack.Tracktype != CDRDAO_TRACK_TYPE_AUDIO) return ErrorNumber.NoError;
 
-        var swapped = new byte[buffer.Length];
+        byte[] swapped = new byte[buffer.Length];
 
         for(long i = 0; i < buffer.Length; i += 2)
         {
@@ -1364,7 +1364,7 @@ public sealed partial class Cdrdao
             buffer = br.ReadBytes((int)(sectorSize * length));
         else
         {
-            for(var i = 0; i < length; i++)
+            for(int i = 0; i < length; i++)
             {
                 br.BaseStream.Seek(sectorOffset, SeekOrigin.Current);
                 byte[] sector = br.ReadBytes((int)sectorSize);
@@ -1481,7 +1481,7 @@ public sealed partial class Cdrdao
             buffer = br.ReadBytes((int)(sectorSize * length));
         else
         {
-            for(var i = 0; i < length; i++)
+            for(int i = 0; i < length; i++)
             {
                 br.BaseStream.Seek(sectorOffset, SeekOrigin.Current);
                 byte[] sector = br.ReadBytes((int)sectorSize);
@@ -1495,8 +1495,8 @@ public sealed partial class Cdrdao
         {
             case CDRDAO_TRACK_TYPE_MODE1:
             {
-                var fullSector = new byte[2352];
-                var fullBuffer = new byte[2352 * length];
+                byte[] fullSector = new byte[2352];
+                byte[] fullBuffer = new byte[2352 * length];
 
                 for(uint i = 0; i < length; i++)
                 {
@@ -1512,8 +1512,8 @@ public sealed partial class Cdrdao
             }
             case CDRDAO_TRACK_TYPE_MODE2_FORM1:
             {
-                var fullSector = new byte[2352];
-                var fullBuffer = new byte[2352 * length];
+                byte[] fullSector = new byte[2352];
+                byte[] fullBuffer = new byte[2352 * length];
 
                 for(uint i = 0; i < length; i++)
                 {
@@ -1531,8 +1531,8 @@ public sealed partial class Cdrdao
             }
             case CDRDAO_TRACK_TYPE_MODE2_FORM2:
             {
-                var fullSector = new byte[2352];
-                var fullBuffer = new byte[2352 * length];
+                byte[] fullSector = new byte[2352];
+                byte[] fullBuffer = new byte[2352 * length];
 
                 for(uint i = 0; i < length; i++)
                 {
@@ -1551,8 +1551,8 @@ public sealed partial class Cdrdao
             case CDRDAO_TRACK_TYPE_MODE2:
             case CDRDAO_TRACK_TYPE_MODE2_MIX:
             {
-                var fullSector = new byte[2352];
-                var fullBuffer = new byte[2352 * length];
+                byte[] fullSector = new byte[2352];
+                byte[] fullBuffer = new byte[2352 * length];
 
                 for(uint i = 0; i < length; i++)
                 {
@@ -1572,7 +1572,7 @@ public sealed partial class Cdrdao
             // cdrdao audio tracks are endian swapped corresponding to Aaru
             case CDRDAO_TRACK_TYPE_AUDIO:
             {
-                var swapped = new byte[buffer.Length];
+                byte[] swapped = new byte[buffer.Length];
 
                 for(long i = 0; i < buffer.Length; i += 2)
                 {

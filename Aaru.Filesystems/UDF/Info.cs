@@ -33,8 +33,8 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -65,7 +65,7 @@ public sealed partial class UDF
             [partition.End                     - 1024, 4], [partition.End - 4, 4]
         ];
 
-        var    anchorFound = false;
+        bool   anchorFound = false;
         uint   ratio       = 1;
         byte[] sector      = null;
 
@@ -144,8 +144,8 @@ public sealed partial class UDF
                 continue;
             }
 
-            var tagId    = (TagIdentifier)BitConverter.ToUInt16(sector, 0);
-            var location = BitConverter.ToUInt32(sector, 0x0C);
+            var  tagId    = (TagIdentifier)BitConverter.ToUInt16(sector, 0);
+            uint location = BitConverter.ToUInt32(sector, 0x0C);
 
             if(location == partition.Start / ratio + anchor.mainVolumeDescriptorSequenceExtent.location + count)
             {
@@ -229,8 +229,8 @@ public sealed partial class UDF
 
             if(errno != ErrorNumber.NoError) continue;
 
-            var tagId    = (TagIdentifier)BitConverter.ToUInt16(sector, 0);
-            var location = BitConverter.ToUInt32(sector, 0x0C);
+            var  tagId    = (TagIdentifier)BitConverter.ToUInt16(sector, 0);
+            uint location = BitConverter.ToUInt32(sector, 0x0C);
 
             if(location == partition.Start / ratio + anchor.mainVolumeDescriptorSequenceExtent.location + count)
             {

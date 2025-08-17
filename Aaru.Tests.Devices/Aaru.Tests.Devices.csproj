@@ -17,7 +17,7 @@
     <NrtShowRevision>true</NrtShowRevision>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Aaru.Console\Aaru.Console.csproj"/>
+    <ProjectReference Include="..\Aaru.Logging\Aaru.Logging.csproj"/>
     <ProjectReference Include="..\Aaru.Devices\Aaru.Devices.csproj"/>
     <ProjectReference Include="..\Aaru.Decoders\Aaru.Decoders.csproj"/>
     <ProjectReference Include="..\Aaru.Helpers\Aaru.Helpers.csproj"/>

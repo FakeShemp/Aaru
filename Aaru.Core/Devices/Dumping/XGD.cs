@@ -42,13 +42,13 @@ using Aaru.CommonTypes.Extents;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Interop;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
-using Aaru.Console;
 using Aaru.Core.Graphics;
 using Aaru.Core.Logging;
 using Aaru.Decoders.DVD;
 using Aaru.Decoders.SCSI;
 using Aaru.Decoders.Xbox;
 using Aaru.Devices;
+using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
 using Humanizer.Localisation;
@@ -157,7 +157,7 @@ partial class Dump
             return;
         }
 
-        var tmpBuf = new byte[ssBuf.Length - 4];
+        byte[] tmpBuf = new byte[ssBuf.Length - 4];
         Array.Copy(ssBuf, 4, tmpBuf, 0, ssBuf.Length - 4);
         mediaTags.Add(MediaTagType.Xbox_SecuritySector, tmpBuf);
 
@@ -528,7 +528,7 @@ partial class Dump
 
         if(_skip < blocksToRead) _skip = blocksToRead;
 
-        var ret = true;
+        bool ret = true;
 
         foreach(MediaTagType tag in mediaTags.Keys.Where(tag => !outputFormat.SupportedMediaTags.Contains(tag)))
         {
@@ -644,7 +644,7 @@ partial class Dump
             _dumpLog.WriteLine(Localization.Core.Resuming_from_block_0, _resume.NextBlock);
         }
 
-        var newTrim = false;
+        bool newTrim = false;
 
         _dumpLog.WriteLine(Localization.Core.Reading_game_partition);
         UpdateStatus?.Invoke(Localization.Core.Reading_game_partition);
@@ -652,7 +652,7 @@ partial class Dump
         ulong sectorSpeedStart = 0;
         InitProgress?.Invoke();
 
-        for(var e = 0; e <= 16; e++)
+        for(int e = 0; e <= 16; e++)
         {
             if(_aborted)
             {
@@ -1146,14 +1146,15 @@ partial class Dump
             List<ulong> tmpList = [];
 
             foreach(ulong ur in _resume.BadBlocks)
-                for(ulong i = ur; i < ur + blocksToRead; i++)
-                    tmpList.Add(i);
+            {
+                for(ulong i = ur; i < ur + blocksToRead; i++) tmpList.Add(i);
+            }
 
             tmpList.Sort();
 
-            var pass              = 1;
-            var forward           = true;
-            var runningPersistent = false;
+            int  pass              = 1;
+            bool forward           = true;
+            bool runningPersistent = false;
 
             _resume.BadBlocks = tmpList;
             Modes.ModePage? currentModePage = null;

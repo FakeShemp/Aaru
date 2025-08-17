@@ -35,8 +35,8 @@
 using System;
 using System.ComponentModel;
 using Aaru.CommonTypes.Enums;
-using Aaru.Console;
 using Aaru.Core;
+using Aaru.Logging;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Remote = Aaru.Devices.Remote.Remote;

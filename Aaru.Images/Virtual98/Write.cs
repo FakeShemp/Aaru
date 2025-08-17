@@ -39,8 +39,8 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -238,8 +238,8 @@ public sealed partial class Virtual98
         if(commentsBytes != null)
             Array.Copy(commentsBytes, 0, _v98Hdr.comment, 0, commentsBytes.Length >= 128 ? 128 : commentsBytes.Length);
 
-        var  hdr    = new byte[Marshal.SizeOf<Virtual98Header>()];
-        nint hdrPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Virtual98Header>());
+        byte[] hdr    = new byte[Marshal.SizeOf<Virtual98Header>()];
+        nint   hdrPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Virtual98Header>());
         System.Runtime.InteropServices.Marshal.StructureToPtr(_v98Hdr, hdrPtr, true);
         System.Runtime.InteropServices.Marshal.Copy(hdrPtr, hdr, 0, hdr.Length);
         System.Runtime.InteropServices.Marshal.FreeHGlobal(hdrPtr);

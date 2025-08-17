@@ -42,11 +42,11 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Extents;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
-using Aaru.Console;
 using Aaru.Core.Logging;
 using Aaru.Decoders.CD;
 using Aaru.Decoders.SCSI;
 using Aaru.Devices;
+using Aaru.Logging;
 using Track = Aaru.CommonTypes.Structs.Track;
 using TrackType = Aaru.CommonTypes.Enums.TrackType;
 
@@ -80,7 +80,7 @@ partial class Dump
                          ref string mcn, HashSet<int> subchannelExtents,
                          Dictionary<byte, int> smallestPregapLbaPerTrack, bool supportsLongSectors)
     {
-        var               sense  = true;     // Sense indicator
+        bool              sense  = true;     // Sense indicator
         byte[]            cmdBuf = null;     // Data buffer
         double            cmdDuration;       // Command execution time
         const uint        sectorSize = 2352; // Full sector size
@@ -98,9 +98,9 @@ partial class Dump
 
         if(_resume.BadBlocks.Count <= 0 || _aborted || _retryPasses <= 0) return;
 
-        var pass              = 1;
-        var forward           = true;
-        var runningPersistent = false;
+        int  pass              = 1;
+        bool forward           = true;
+        bool runningPersistent = false;
 
         Modes.ModePage? currentModePage = null;
         byte[]          md6;
@@ -221,7 +221,7 @@ partial class Dump
         ulong[]     tmpArray              = _resume.BadBlocks.ToArray();
         List<ulong> sectorsNotEvenPartial = [];
 
-        for(var i = 0; i < tmpArray.Length; i++)
+        for(int i = 0; i < tmpArray.Length; i++)
         {
             ulong badSector = tmpArray[i];
 
@@ -259,7 +259,7 @@ partial class Dump
             Track track = tracks.OrderBy(t => t.StartSector).LastOrDefault(t => badSector >= t.StartSector);
 
             byte sectorsToReRead   = 1;
-            var  badSectorToReRead = (uint)badSector;
+            uint badSectorToReRead = (uint)badSector;
 
             if(_fixOffset && audioExtents.Contains(badSector) && offsetBytes != 0)
             {
@@ -425,7 +425,7 @@ partial class Dump
                                 {
                                     case 0:
 
-                                        for(var c = 16; c < 2352; c++)
+                                        for(int c = 16; c < 2352; c++)
                                         {
                                             if(cmdBuf[c] == 0x00) continue;
 
@@ -469,9 +469,8 @@ partial class Dump
 
                 // MEDIUM ERROR, retry with ignore error below
                 if(decSense is { ASC: 0x11 })
-                {
-                    if(!sectorsNotEvenPartial.Contains(badSector)) sectorsNotEvenPartial.Add(badSector);
-                }
+                    if(!sectorsNotEvenPartial.Contains(badSector))
+                        sectorsNotEvenPartial.Add(badSector);
             }
 
             // Because one block has been partially used to fix the offset
@@ -508,8 +507,8 @@ partial class Dump
 
             if(supportedSubchannel != MmcSubchannel.None)
             {
-                var data = new byte[sectorSize];
-                var sub  = new byte[subSize];
+                byte[] data = new byte[sectorSize];
+                byte[] sub  = new byte[subSize];
                 Array.Copy(cmdBuf, 0,          data, 0, sectorSize);
                 Array.Copy(cmdBuf, sectorSize, sub,  0, subSize);
 
@@ -612,7 +611,7 @@ partial class Dump
 
                 InitProgress?.Invoke();
 
-                for(var i = 0; i < sectorsNotEvenPartial.Count; i++)
+                for(int i = 0; i < sectorsNotEvenPartial.Count; i++)
                 {
                     ulong badSector = sectorsNotEvenPartial[i];
 
@@ -662,8 +661,8 @@ partial class Dump
 
                     if(supportedSubchannel != MmcSubchannel.None)
                     {
-                        var data = new byte[sectorSize];
-                        var sub  = new byte[subSize];
+                        byte[] data = new byte[sectorSize];
+                        byte[] sub  = new byte[subSize];
                         Array.Copy(cmdBuf, 0,          data, 0, sectorSize);
                         Array.Copy(cmdBuf, sectorSize, sub,  0, subSize);
 
@@ -749,7 +748,7 @@ partial class Dump
                          Dictionary<byte, string> isrcs, ref string mcn, HashSet<int> subchannelExtents,
                          Dictionary<byte, int> smallestPregapLbaPerTrack)
     {
-        var               sense  = true;   // Sense indicator
+        bool              sense  = true;   // Sense indicator
         byte[]            cmdBuf = null;   // Data buffer
         double            cmdDuration;     // Command execution time
         byte[]            senseBuf = null; // Sense buffer
@@ -768,8 +767,8 @@ partial class Dump
 
         if(_aborted) return;
 
-        var pass    = 1;
-        var forward = true;
+        int  pass    = 1;
+        bool forward = true;
 
         InitProgress?.Invoke();
 
@@ -785,7 +784,7 @@ partial class Dump
 
         foreach(int bs in tmpArray)
         {
-            var badSector = (uint)bs;
+            uint badSector = (uint)bs;
 
             Track track = tracks.OrderBy(t => t.StartSector).LastOrDefault(t => badSector >= t.StartSector);
 

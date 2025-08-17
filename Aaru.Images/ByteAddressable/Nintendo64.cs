@@ -41,8 +41,8 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Images;
@@ -99,9 +99,9 @@ public class Nintendo64 : IByteAddressableImage
         if(stream.Length % 512 != 0) return false;
 
         stream.Position = 0;
-        var magicBytes = new byte[4];
+        byte[] magicBytes = new byte[4];
         stream.EnsureRead(magicBytes, 0, 4);
-        var magic = BitConverter.ToUInt32(magicBytes, 0);
+        uint magic = BitConverter.ToUInt32(magicBytes, 0);
 
         return magic switch
                {
@@ -128,9 +128,9 @@ public class Nintendo64 : IByteAddressableImage
         if(stream.Length % 512 != 0) return ErrorNumber.InvalidArgument;
 
         stream.Position = 0;
-        var magicBytes = new byte[4];
+        byte[] magicBytes = new byte[4];
         stream.EnsureRead(magicBytes, 0, 4);
-        var magic = BitConverter.ToUInt32(magicBytes, 0);
+        uint magic = BitConverter.ToUInt32(magicBytes, 0);
 
         switch(magic)
         {
@@ -179,9 +179,9 @@ public class Nintendo64 : IByteAddressableImage
 
         if(_littleEndian)
         {
-            var tmp = new byte[_data.Length];
+            byte[] tmp = new byte[_data.Length];
 
-            for(var i = 0; i < _data.Length; i += 4)
+            for(int i = 0; i < _data.Length; i += 4)
             {
                 tmp[i] = _data[i + 3];
                 tmp[i            + 1] = _data[i + 2];
@@ -194,9 +194,9 @@ public class Nintendo64 : IByteAddressableImage
 
         if(_interleaved)
         {
-            var tmp = new byte[_data.Length];
+            byte[] tmp = new byte[_data.Length];
 
-            for(var i = 0; i < _data.Length; i += 2)
+            for(int i = 0; i < _data.Length; i += 2)
             {
                 tmp[i] = _data[i + 1];
                 tmp[i            + 1] = _data[i];
@@ -674,8 +674,8 @@ public class Nintendo64 : IByteAddressableImage
             return ErrorNumber.ReadOnly;
         }
 
-        var foundRom     = false;
-        var foundSaveRam = false;
+        bool foundRom     = false;
+        bool foundSaveRam = false;
 
         // Sanitize
         foreach(LinearMemoryDevice map in mappings.Devices)
@@ -838,9 +838,9 @@ public class Nintendo64 : IByteAddressableImage
 
         if(_interleaved)
         {
-            var tmp = new byte[_data.Length];
+            byte[] tmp = new byte[_data.Length];
 
-            for(var i = 0; i < _data.Length; i += 2)
+            for(int i = 0; i < _data.Length; i += 2)
             {
                 tmp[i] = _data[i + 1];
                 tmp[i            + 1] = _data[i];

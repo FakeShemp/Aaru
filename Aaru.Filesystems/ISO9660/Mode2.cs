@@ -34,8 +34,8 @@
 using System;
 using System.IO;
 using Aaru.CommonTypes.Enums;
-using Aaru.Console;
 using Aaru.Decoders.CD;
+using Aaru.Logging;
 
 namespace Aaru.Filesystems;
 
@@ -142,7 +142,7 @@ public sealed partial class ISO9660
                 return ErrorNumber.NoError;
             }
 
-            var tmp = new byte[_blockSize];
+            byte[] tmp = new byte[_blockSize];
             Array.Copy(Sector.GetUserData(data, interleaved, fileNumber), (int)offset, tmp, 0, _blockSize);
 
             buffer = tmp;
@@ -239,7 +239,7 @@ public sealed partial class ISO9660
                 ms.Write(sectorData, 0, sectorData.Length);
             }
 
-            var tmp = new byte[_blockSize];
+            byte[] tmp = new byte[_blockSize];
             Array.Copy(Sector.GetUserData(ms.ToArray(), interleaved, fileNumber), 0, tmp, 0, _blockSize);
             buffer = tmp;
 

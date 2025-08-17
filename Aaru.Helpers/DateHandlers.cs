@@ -32,7 +32,7 @@
 
 using System;
 using System.Text;
-using Aaru.Console;
+using Aaru.Logging;
 
 namespace Aaru.Helpers;
 
@@ -91,7 +91,7 @@ public static class DateHandlers
     /// <returns>.NET DateTime</returns>
     public static DateTime HighSierraToDateTime(byte[] vdDateTime)
     {
-        var isoTime = new byte[17];
+        byte[] isoTime = new byte[17];
         Array.Copy(vdDateTime, 0, isoTime, 0, 16);
 
         return Iso9660ToDateTime(isoTime);
@@ -103,8 +103,8 @@ public static class DateHandlers
     /// <returns>.NET DateTime</returns>
     public static DateTime Iso9660ToDateTime(byte[] vdDateTime)
     {
-        var twoCharValue  = new byte[2];
-        var fourCharValue = new byte[4];
+        byte[] twoCharValue  = new byte[2];
+        byte[] fourCharValue = new byte[4];
 
         fourCharValue[0] = vdDateTime[0];
         fourCharValue[1] = vdDateTime[1];
@@ -181,7 +181,7 @@ public static class DateHandlers
                                    second,
                                    hundredths * 10);
 
-        var difference = (sbyte)vdDateTime[16];
+        sbyte difference = (sbyte)vdDateTime[16];
 
         var decodedDt = new DateTime(year, month, day, hour, minute, second, hundredths * 10, DateTimeKind.Utc);
 
@@ -277,9 +277,9 @@ public static class DateHandlers
     /// <returns>.NET DateTime</returns>
     public static DateTime CpmToDateTime(byte[] timestamp)
     {
-        var days    = BitConverter.ToUInt16(timestamp, 0);
-        int hours   = timestamp[2];
-        int minutes = timestamp[3];
+        ushort days    = BitConverter.ToUInt16(timestamp, 0);
+        int    hours   = timestamp[2];
+        int    minutes = timestamp[3];
 
         DateTime temp = _amigaEpoch.AddDays(days);
         temp = temp.AddHours(hours);
@@ -304,15 +304,15 @@ public static class DateHandlers
                                           byte   minute, byte second, byte centiseconds, byte hundredsOfMicroseconds,
                                           byte   microseconds)
     {
-        var specification = (byte)((typeAndTimeZone & 0xF000) >> 12);
+        byte specification = (byte)((typeAndTimeZone & 0xF000) >> 12);
 
         long ticks = (long)centiseconds * 100000 + (long)hundredsOfMicroseconds * 1000 + (long)microseconds * 10;
 
         if(specification == 0)
             return new DateTime(year, month, day, hour, minute, second, DateTimeKind.Utc).AddTicks(ticks);
 
-        var   preOffset = (ushort)(typeAndTimeZone & 0xFFF);
-        short offset;
+        ushort preOffset = (ushort)(typeAndTimeZone & 0xFFF);
+        short  offset;
 
         if((preOffset & 0x800) == 0x800)
             offset = (short)(preOffset | 0xF000);

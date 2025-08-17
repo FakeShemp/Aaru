@@ -38,7 +38,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -101,9 +101,9 @@ public sealed partial class SuperCardPro
 
         List<byte> scpData = FluxRepresentationsToUInt16List(dataBuffer, scpIndices, out uint[] trackLengths);
 
-        var offset = (uint)(4 + 12 * Header.revolutions);
+        uint offset = (uint)(4 + 12 * Header.revolutions);
 
-        for(var i = 0; i < Header.revolutions; i++)
+        for(int i = 0; i < Header.revolutions; i++)
         {
             _writingStream.Write(BitConverter.GetBytes(scpIndices[i]),   0, 4);
             _writingStream.Write(BitConverter.GetBytes(trackLengths[i]), 0, 4);
@@ -123,10 +123,6 @@ public sealed partial class SuperCardPro
 
     public ErrorNumber WriteFluxDataCapture(ulong resolution, byte[] data, uint head, ushort track, byte subTrack,
                                             uint  captureIndex) => ErrorNumber.NotImplemented;
-
-#endregion
-
-#region IWritableImage Members
 
     public bool Create(string path, MediaType mediaType, Dictionary<string, string> options, ulong sectors,
                        uint   sectorSize)
@@ -183,7 +179,7 @@ public sealed partial class SuperCardPro
         _writingStream.WriteByte(Header.resolution);
 
         _writingStream.Seek(0, SeekOrigin.End);
-        var date = DateTime.Now.ToString("G");
+        string date = DateTime.Now.ToString("G");
         _writingStream.Write(Encoding.ASCII.GetBytes(date), 0, date.Length);
 
         Header.checksum = CalculateChecksum(_writingStream);

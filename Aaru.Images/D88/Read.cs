@@ -37,9 +37,9 @@ using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Decoders.Floppy;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -58,7 +58,7 @@ public sealed partial class D88
 
         if(stream.Length < Marshal.SizeOf<Header>()) return ErrorNumber.InvalidArgument;
 
-        var hdrB = new byte[Marshal.SizeOf<Header>()];
+        byte[] hdrB = new byte[Marshal.SizeOf<Header>()];
         stream.EnsureRead(hdrB, 0, hdrB.Length);
         Header hdr = Marshal.ByteArrayToStructureLittleEndian<Header>(hdrB);
 
@@ -81,7 +81,7 @@ public sealed partial class D88
 
         if(!hdr.reserved.SequenceEqual(_reservedEmpty)) return ErrorNumber.InvalidArgument;
 
-        var trkCounter = 0;
+        int trkCounter = 0;
 
         foreach(int t in hdr.track_table)
         {
@@ -112,10 +112,10 @@ public sealed partial class D88
 
         short             spt      = sechdr.spt;
         IBMSectorSizeCode bps      = sechdr.n;
-        var               allEqual = true;
+        bool              allEqual = true;
         _sectorsData = [];
 
-        for(var i = 0; i < trkCounter; i++)
+        for(int i = 0; i < trkCounter; i++)
         {
             stream.Seek(hdr.track_table[i], SeekOrigin.Begin);
             stream.EnsureRead(hdrB, 0, hdrB.Length);
@@ -363,7 +363,7 @@ public sealed partial class D88
 
         var ms = new MemoryStream();
 
-        for(var i = 0; i < length; i++)
+        for(int i = 0; i < length; i++)
             ms.Write(_sectorsData[(int)sectorAddress + i], 0, _sectorsData[(int)sectorAddress + i].Length);
 
         buffer = ms.ToArray();

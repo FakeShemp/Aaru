@@ -37,9 +37,9 @@ using System.IO;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Filters;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -55,7 +55,7 @@ public sealed partial class KryoFlux
 
         if(stream.Length < Marshal.SizeOf<OobBlock>()) return ErrorNumber.InvalidArgument;
 
-        var hdr = new byte[Marshal.SizeOf<OobBlock>()];
+        byte[] hdr = new byte[Marshal.SizeOf<OobBlock>()];
         stream.EnsureRead(hdr, 0, Marshal.SizeOf<OobBlock>());
 
         OobBlock header = Marshal.ByteArrayToStructureLittleEndian<OobBlock>(hdr);
@@ -78,7 +78,7 @@ public sealed partial class KryoFlux
         tracks = new SortedDictionary<byte, IFilter>();
         byte step    = 1;
         byte heads   = 2;
-        var  topHead = false;
+        bool topHead = false;
 
         string basename = Path.Combine(imageFilter.ParentFolder, imageFilter.Filename[..^8]);
 
@@ -138,7 +138,7 @@ public sealed partial class KryoFlux
 
             while(trackStream.Position < trackStream.Length)
             {
-                var blockId = (byte)trackStream.ReadByte();
+                byte blockId = (byte)trackStream.ReadByte();
 
                 switch(blockId)
                 {
@@ -146,7 +146,7 @@ public sealed partial class KryoFlux
                     {
                         trackStream.Position--;
 
-                        var oob = new byte[Marshal.SizeOf<OobBlock>()];
+                        byte[] oob = new byte[Marshal.SizeOf<OobBlock>()];
                         trackStream.EnsureRead(oob, 0, Marshal.SizeOf<OobBlock>());
 
                         OobBlock oobBlk = Marshal.ByteArrayToStructureLittleEndian<OobBlock>(oob);
@@ -165,7 +165,7 @@ public sealed partial class KryoFlux
                             break;
                         }
 
-                        var kfinfo = new byte[oobBlk.length];
+                        byte[] kfinfo = new byte[oobBlk.length];
                         trackStream.EnsureRead(kfinfo, 0, oobBlk.length);
                         string kfinfoStr = StringHandlers.CToString(kfinfo);
 
@@ -177,7 +177,7 @@ public sealed partial class KryoFlux
 
                         DateTime blockDate = DateTime.Now;
                         DateTime blockTime = DateTime.Now;
-                        var      foundDate = false;
+                        bool     foundDate = false;
 
                         foreach(string[] kvp in lines.Select(line => line.Split('=')).Where(kvp => kvp.Length == 2))
                         {

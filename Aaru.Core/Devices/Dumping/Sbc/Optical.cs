@@ -7,10 +7,10 @@ using System.Linq;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Extents;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Core.Logging;
 using Aaru.Decoders.SCSI;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
 
@@ -53,7 +53,7 @@ partial class Dump
         bool       sense;
         byte[]     buffer;
         ulong      sectorSpeedStart = 0;
-        var        canMediumScan    = true;
+        bool       canMediumScan    = true;
         var        outputFormat     = _outputPlugin as IWritableImage;
 
         InitProgress?.Invoke();
@@ -182,8 +182,9 @@ partial class Dump
             writtenExtents.Add(0, blocks - 1);
 
             foreach(Tuple<ulong, ulong> blank in blankExtents.ToArray())
-                for(ulong b = blank.Item1; b <= blank.Item2; b++)
-                    writtenExtents.Remove(b);
+            {
+                for(ulong b = blank.Item1; b <= blank.Item2; b++) writtenExtents.Remove(b);
+            }
         }
 
         if(writtenExtents.Count == 0)

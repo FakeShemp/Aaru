@@ -33,7 +33,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using Aaru.Console;
+using Aaru.Logging;
 
 // ReSharper disable UnusedMember.Global
 
@@ -79,7 +79,7 @@ public partial class Device
                                  MmcGetConfigurationRt rt,     uint       timeout,     out double duration)
     {
         senseBuffer = new byte[64];
-        var cdb = new byte[10];
+        byte[] cdb = new byte[10];
         buffer = new byte[8];
 
         cdb[0] = (byte)ScsiCommands.GetConfiguration;
@@ -102,7 +102,7 @@ public partial class Device
 
         if(sense) return true;
 
-        var confLength = (ushort)((buffer[2] << 8) + buffer[3] + 4);
+        ushort confLength = (ushort)((buffer[2] << 8) + buffer[3] + 4);
         buffer      = new byte[confLength];
         cdb[7]      = (byte)((buffer.Length & 0xFF00) >> 8);
         cdb[8]      = (byte)(buffer.Length & 0xFF);
@@ -146,7 +146,7 @@ public partial class Device
                                   uint       timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        var cdb = new byte[12];
+        byte[] cdb = new byte[12];
         buffer = new byte[8];
 
         cdb[0]  = (byte)ScsiCommands.ReadDiscStructure;
@@ -173,7 +173,7 @@ public partial class Device
 
         if(sense) return true;
 
-        var strctLength = (ushort)((buffer[0] << 8) + buffer[1] + 2);
+        ushort strctLength = (ushort)((buffer[0] << 8) + buffer[1] + 2);
 
         // WORKAROUND: Some drives return incorrect length information. As these structures are fixed length just apply known length.
         if(mediaType == MmcDiscStructureMediaType.Bd)
@@ -313,7 +313,7 @@ public partial class Device
                                byte       trackSessionNumber, uint       timeout,     out double duration)
     {
         senseBuffer = new byte[64];
-        var cdb = new byte[10];
+        byte[] cdb = new byte[10];
 
         byte[] tmpBuffer = (format & 0x0F) == 5 ? new byte[32768] : new byte[1536];
 
@@ -336,7 +336,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        var strctLength = (uint)((tmpBuffer[0] << 8) + tmpBuffer[1] + 2);
+        uint strctLength = (uint)((tmpBuffer[0] << 8) + tmpBuffer[1] + 2);
         buffer = new byte[strctLength];
 
         if(buffer.Length <= tmpBuffer.Length)
@@ -407,8 +407,8 @@ public partial class Device
                                     uint       timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        var cdb       = new byte[10];
-        var tmpBuffer = new byte[804];
+        byte[] cdb       = new byte[10];
+        byte[] tmpBuffer = new byte[804];
 
         cdb[0] = (byte)ScsiCommands.ReadDiscInformation;
         cdb[1] = (byte)dataType;
@@ -425,7 +425,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        var strctLength = (uint)((tmpBuffer[0] << 8) + tmpBuffer[1] + 2);
+        uint strctLength = (uint)((tmpBuffer[0] << 8) + tmpBuffer[1] + 2);
 
         if(strctLength > tmpBuffer.Length) strctLength = (uint)tmpBuffer.Length;
 
@@ -466,7 +466,7 @@ public partial class Device
                        out double duration)
     {
         senseBuffer = new byte[64];
-        var cdb = new byte[12];
+        byte[] cdb = new byte[12];
 
         cdb[0] = (byte)ScsiCommands.ReadCd;
         cdb[1] = (byte)((byte)expectedSectorType << 2);
@@ -550,7 +550,7 @@ public partial class Device
                           out double duration)
     {
         senseBuffer = new byte[64];
-        var cdb = new byte[12];
+        byte[] cdb = new byte[12];
 
         cdb[0] = (byte)ScsiCommands.ReadCdMsf;
         cdb[1] = (byte)((byte)expectedSectorType << 2);
@@ -574,7 +574,7 @@ public partial class Device
 
         cdb[10] = (byte)subchannel;
 
-        var transferLength = (uint)((cdb[6] - cdb[3]) * 60 * 75 + (cdb[7] - cdb[4]) * 75 + (cdb[8] - cdb[5]));
+        uint transferLength = (uint)((cdb[6] - cdb[3]) * 60 * 75 + (cdb[7] - cdb[4]) * 75 + (cdb[8] - cdb[5]));
 
         buffer = new byte[blockSize * transferLength];
 
@@ -636,7 +636,7 @@ public partial class Device
                                           out double duration)
     {
         senseBuffer = new byte[64];
-        var    cdb    = new byte[6];
+        byte[] cdb    = new byte[6];
         byte[] buffer = [];
 
         cdb[0] = (byte)ScsiCommands.PreventAllowMediumRemoval;
@@ -714,7 +714,7 @@ public partial class Device
                               bool changeFormatLayer, bool loadEject, bool start, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        var    cdb    = new byte[6];
+        byte[] cdb    = new byte[6];
         byte[] buffer = [];
 
         cdb[0] = (byte)ScsiCommands.StartStopUnit;
@@ -772,7 +772,7 @@ public partial class Device
     public bool ReadMcn(out string mcn, out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        var cdb = new byte[10];
+        byte[] cdb = new byte[10];
         mcn = null;
 
         cdb[0] = (byte)ScsiCommands.ReadSubChannel;
@@ -818,7 +818,7 @@ public partial class Device
                          out double duration)
     {
         senseBuffer = new byte[64];
-        var cdb = new byte[10];
+        byte[] cdb = new byte[10];
         isrc = null;
 
         cdb[0] = (byte)ScsiCommands.ReadSubChannel;
@@ -866,7 +866,7 @@ public partial class Device
                            ushort     writeSpeed,  uint              timeout,           out double duration)
     {
         senseBuffer = new byte[64];
-        var    cdb    = new byte[12];
+        byte[] cdb    = new byte[12];
         byte[] buffer = [];
 
         cdb[0] = (byte)ScsiCommands.SetCdRomSpeed;
@@ -912,7 +912,7 @@ public partial class Device
                                      uint       address, uint       timeout,     out double duration)
     {
         senseBuffer = new byte[64];
-        var cdb = new byte[10];
+        byte[] cdb = new byte[10];
         buffer = new byte[48];
 
         cdb[0] = (byte)ScsiCommands.ReadTrackInformation;

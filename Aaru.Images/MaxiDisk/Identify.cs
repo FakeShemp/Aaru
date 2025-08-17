@@ -32,8 +32,8 @@
 
 using System.IO;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -48,7 +48,7 @@ public sealed partial class MaxiDisk
 
         if(stream.Length < 8) return false;
 
-        var buffer = new byte[8];
+        byte[] buffer = new byte[8];
         stream.Seek(0, SeekOrigin.Begin);
         stream.EnsureRead(buffer, 0, buffer.Length);
 

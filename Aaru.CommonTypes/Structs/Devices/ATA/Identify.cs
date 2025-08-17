@@ -43,8 +43,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.CommonTypes.Structs.Devices.ATA;
@@ -833,8 +833,8 @@ public static class Identify
         ataId.WWN          = DescrambleWWN(ataId.WWN);
         ataId.WWNExtension = DescrambleWWN(ataId.WWNExtension);
 
-        var  buf = new byte[512];
-        nint ptr = System.Runtime.InteropServices.Marshal.AllocHGlobal(512);
+        byte[] buf = new byte[512];
+        nint   ptr = System.Runtime.InteropServices.Marshal.AllocHGlobal(512);
         System.Runtime.InteropServices.Marshal.StructureToPtr(ataId, ptr, false);
         System.Runtime.InteropServices.Marshal.Copy(ptr, buf, 0, 512);
         System.Runtime.InteropServices.Marshal.FreeHGlobal(ptr);
@@ -858,7 +858,7 @@ public static class Identify
     static ulong DescrambleWWN(ulong WWN)
     {
         byte[] qwb   = BitConverter.GetBytes(WWN);
-        var    qword = new byte[8];
+        byte[] qword = new byte[8];
 
         qword[7] = qwb[1];
         qword[6] = qwb[0];
@@ -876,7 +876,7 @@ public static class Identify
     {
         byte[] outbuf = buffer[offset + length - 1] != 0x00 ? new byte[length + 1] : new byte[length];
 
-        for(var i = 0; i < length; i += 2)
+        for(int i = 0; i < length; i += 2)
         {
             outbuf[i] = buffer[offset + i                  + 1];
             outbuf[i                  + 1] = buffer[offset + i];
@@ -889,9 +889,9 @@ public static class Identify
 
     static byte[] ScrambleATAString(string str, int length)
     {
-        var buf = new byte[length];
+        byte[] buf = new byte[length];
 
-        for(var i = 0; i < length; i++) buf[i] = 0x20;
+        for(int i = 0; i < length; i++) buf[i] = 0x20;
 
         if(str is null) return buf;
 
@@ -899,13 +899,13 @@ public static class Identify
 
         if(bytes.Length % 2 != 0)
         {
-            var tmp = new byte[bytes.Length + 1];
+            byte[] tmp = new byte[bytes.Length + 1];
             tmp[^1] = 0x20;
             Array.Copy(bytes, 0, tmp, 0, bytes.Length);
             bytes = tmp;
         }
 
-        for(var i = 0; i < bytes.Length; i += 2)
+        for(int i = 0; i < bytes.Length; i += 2)
         {
             buf[i] = bytes[i + 1];
             buf[i            + 1] = bytes[i];

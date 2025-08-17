@@ -32,8 +32,8 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -47,7 +47,7 @@ public sealed partial class ReFS
     /// <inheritdoc />
     public bool Identify(IMediaImage imagePlugin, Partition partition)
     {
-        var sbSize = (uint)(Marshal.SizeOf<VolumeHeader>() / imagePlugin.Info.SectorSize);
+        uint sbSize = (uint)(Marshal.SizeOf<VolumeHeader>() / imagePlugin.Info.SectorSize);
 
         if(Marshal.SizeOf<VolumeHeader>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
@@ -73,7 +73,7 @@ public sealed partial class ReFS
         information = "";
         metadata    = new FileSystem();
 
-        var sbSize = (uint)(Marshal.SizeOf<VolumeHeader>() / imagePlugin.Info.SectorSize);
+        uint sbSize = (uint)(Marshal.SizeOf<VolumeHeader>() / imagePlugin.Info.SectorSize);
 
         if(Marshal.SizeOf<VolumeHeader>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 

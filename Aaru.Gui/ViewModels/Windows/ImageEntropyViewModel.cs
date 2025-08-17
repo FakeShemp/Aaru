@@ -37,10 +37,10 @@ using System.Globalization;
 using System.Reactive;
 using System.Threading;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Core;
 using Aaru.Gui.Models;
 using Aaru.Localization;
+using Aaru.Logging;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using ReactiveUI;
@@ -341,7 +341,7 @@ public sealed class ImageEntropyViewModel : ViewModelBase
                 }
             }
 
-            if(WholeDiscChecked != true) return;
+            if(!WholeDiscChecked) return;
 
             _entropy = entropyCalculator.CalculateMediaEntropy(DuplicatedSectorsChecked);
 
@@ -374,7 +374,7 @@ public sealed class ImageEntropyViewModel : ViewModelBase
             }
         }
 
-        if(WholeDiscChecked != true) return;
+        if(!WholeDiscChecked) return;
 
         MediaEntropyText    = string.Format(UI.Entropy_for_disk_is_0, _entropy.Entropy);
         MediaEntropyVisible = true;

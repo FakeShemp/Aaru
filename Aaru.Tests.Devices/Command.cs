@@ -26,9 +26,10 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
-using Aaru.Console;
 using Aaru.Devices;
+using Aaru.Logging;
 
 namespace Aaru.Tests.Devices;
 
@@ -38,7 +39,7 @@ static partial class MainClass
     {
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
             AaruConsole.WriteLine(Localization.Send_a_command_to_the_device);
             AaruConsole.WriteLine(Localization.Send_a_SCSI_command);
@@ -52,12 +53,12 @@ static partial class MainClass
             AaruConsole.WriteLine(Localization.Return_to_device_menu);
             AaruConsole.Write(Localization.Choose);
 
-            string strDev = System.Console.ReadLine();
+            string strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out int item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -91,7 +92,7 @@ static partial class MainClass
 
                 default:
                     AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                    System.Console.ReadKey();
+                    Console.ReadKey();
 
                     continue;
             }

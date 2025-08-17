@@ -37,14 +37,14 @@ using System.Linq;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
 public sealed partial class SuperCardPro
 {
-#region IFluxImage Members
+#region IWritableFluxImage Members
 
     /// <inheritdoc />
     public ErrorNumber Open(IFilter imageFilter)
@@ -57,7 +57,7 @@ public sealed partial class SuperCardPro
 
         if(_scpStream.Length < Marshal.SizeOf<ScpHeader>()) return ErrorNumber.InvalidArgument;
 
-        var hdr = new byte[Marshal.SizeOf<ScpHeader>()];
+        byte[] hdr = new byte[Marshal.SizeOf<ScpHeader>()];
         _scpStream.EnsureRead(hdr, 0, Marshal.SizeOf<ScpHeader>());
 
         Header = Marshal.ByteArrayToStructureLittleEndian<ScpHeader>(hdr);
@@ -147,7 +147,7 @@ public sealed partial class SuperCardPro
 
             for(byte r = 0; r < Header.revolutions; r++)
             {
-                var rev = new byte[Marshal.SizeOf<TrackEntry>()];
+                byte[] rev = new byte[Marshal.SizeOf<TrackEntry>()];
                 _scpStream.EnsureRead(rev, 0, Marshal.SizeOf<TrackEntry>());
 
                 trk.Entries[r] = Marshal.ByteArrayToStructureLittleEndian<TrackEntry>(rev);
@@ -328,9 +328,9 @@ public sealed partial class SuperCardPro
 
             while(_scpStream.Position >= position)
             {
-                var footerSig = new byte[4];
+                byte[] footerSig = new byte[4];
                 _scpStream.EnsureRead(footerSig, 0, 4);
-                var footerMagic = BitConverter.ToUInt32(footerSig, 0);
+                uint footerMagic = BitConverter.ToUInt32(footerSig, 0);
 
                 if(footerMagic == FOOTER_SIGNATURE)
                 {
@@ -338,7 +338,7 @@ public sealed partial class SuperCardPro
 
                     AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Found_footer_at_0, _scpStream.Position);
 
-                    var ftr = new byte[Marshal.SizeOf<Footer>()];
+                    byte[] ftr = new byte[Marshal.SizeOf<Footer>()];
                     _scpStream.EnsureRead(ftr, 0, Marshal.SizeOf<Footer>());
 
                     Footer footer = Marshal.ByteArrayToStructureLittleEndian<Footer>(ftr);
@@ -513,7 +513,7 @@ public sealed partial class SuperCardPro
 
         TrackHeader scpTrack = ScpTracks[(byte)HeadTrackSubToScpTrack(head, track, subTrack)];
 
-        for(var i = 0; i < Header.revolutions; i++)
+        for(int i = 0; i < Header.revolutions; i++)
             tmpBuffer.AddRange(UInt32ToFluxRepresentation(scpTrack.Entries[i].indexTime));
 
         buffer = tmpBuffer.ToArray();
@@ -540,7 +540,7 @@ public sealed partial class SuperCardPro
 
         List<byte> tmpBuffer = [];
 
-        for(var i = 0; i < Header.revolutions; i++)
+        for(int i = 0; i < Header.revolutions; i++)
         {
             br.BaseStream.Seek(scpTrack.Entries[i].dataOffset, SeekOrigin.Begin);
 
@@ -573,10 +573,6 @@ public sealed partial class SuperCardPro
 
         return indexCapture;
     }
-
-#endregion
-
-#region IMediaImage Members
 
     /// <inheritdoc />
     public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer)

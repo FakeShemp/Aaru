@@ -39,8 +39,8 @@ using Aaru.Checksums;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -52,7 +52,7 @@ public sealed partial class Vhd
     public ErrorNumber Open(IFilter imageFilter)
     {
         Stream imageStream = imageFilter.GetDataForkStream();
-        var    header      = new byte[512];
+        byte[] header      = new byte[512];
         byte[] footer;
 
         imageStream.Seek(0, SeekOrigin.Begin);
@@ -71,10 +71,10 @@ public sealed partial class Vhd
             imageStream.EnsureRead(footer, 0, 511);
         }
 
-        var headerChecksum = BigEndianBitConverter.ToUInt32(header, 0x40);
-        var footerChecksum = BigEndianBitConverter.ToUInt32(footer, 0x40);
-        var headerCookie   = BigEndianBitConverter.ToUInt64(header, 0);
-        var footerCookie   = BigEndianBitConverter.ToUInt64(footer, 0);
+        uint  headerChecksum = BigEndianBitConverter.ToUInt32(header, 0x40);
+        uint  footerChecksum = BigEndianBitConverter.ToUInt32(footer, 0x40);
+        ulong headerCookie   = BigEndianBitConverter.ToUInt64(header, 0);
+        ulong footerCookie   = BigEndianBitConverter.ToUInt64(footer, 0);
 
         header[0x40] = 0;
         header[0x41] = 0;
@@ -358,10 +358,10 @@ public sealed partial class Vhd
         if(_thisFooter.DiskType is TYPE_DYNAMIC or TYPE_DIFFERENCING)
         {
             imageStream.Seek((long)_thisFooter.Offset, SeekOrigin.Begin);
-            var dynamicBytes = new byte[1024];
+            byte[] dynamicBytes = new byte[1024];
             imageStream.EnsureRead(dynamicBytes, 0, 1024);
 
-            var dynamicChecksum = BigEndianBitConverter.ToUInt32(dynamicBytes, 0x24);
+            uint dynamicChecksum = BigEndianBitConverter.ToUInt32(dynamicBytes, 0x24);
 
             dynamicBytes[0x24] = 0;
             dynamicBytes[0x25] = 0;
@@ -389,7 +389,7 @@ public sealed partial class Vhd
                 Reserved2      = new byte[256]
             };
 
-            for(var i = 0; i < 8; i++) _thisDynamic.LocatorEntries[i] = new ParentLocatorEntry();
+            for(int i = 0; i < 8; i++) _thisDynamic.LocatorEntries[i] = new ParentLocatorEntry();
 
             _thisDynamic.Cookie          = BigEndianBitConverter.ToUInt64(dynamicBytes, 0x00);
             _thisDynamic.DataOffset      = BigEndianBitConverter.ToUInt64(dynamicBytes, 0x08);
@@ -403,7 +403,7 @@ public sealed partial class Vhd
             _thisDynamic.Reserved        = BigEndianBitConverter.ToUInt32(dynamicBytes, 0x3C);
             _thisDynamic.ParentName      = Encoding.BigEndianUnicode.GetString(dynamicBytes, 0x40, 512);
 
-            for(var i = 0; i < 8; i++)
+            for(int i = 0; i < 8; i++)
             {
                 _thisDynamic.LocatorEntries[i].PlatformCode =
                     BigEndianBitConverter.ToUInt32(dynamicBytes, 0x240 + 0x00 + 24 * i);
@@ -448,7 +448,7 @@ public sealed partial class Vhd
 
             AaruConsole.DebugWriteLine(MODULE_NAME, "dynamic.reserved = 0x{0:X8}", _thisDynamic.Reserved);
 
-            for(var i = 0; i < 8; i++)
+            for(int i = 0; i < 8; i++)
             {
                 AaruConsole.DebugWriteLine(MODULE_NAME,
                                            "dynamic.locatorEntries[{0}].platformCode = 0x{1:X8} (\"{2}\")",
@@ -492,7 +492,7 @@ public sealed partial class Vhd
             var batStopwatch = new Stopwatch();
             batStopwatch.Start();
 
-            var bat = new byte[_thisDynamic.MaxTableEntries * 4];
+            byte[] bat = new byte[_thisDynamic.MaxTableEntries * 4];
             imageStream.Seek((long)_thisDynamic.TableOffset, SeekOrigin.Begin);
             imageStream.EnsureRead(bat, 0, bat.Length);
 
@@ -535,7 +535,7 @@ public sealed partial class Vhd
             {
                 _locatorEntriesData = new byte[8][];
 
-                for(var i = 0; i < 8; i++)
+                for(int i = 0; i < 8; i++)
                 {
                     if(_thisDynamic.LocatorEntries[i].PlatformCode != 0x00000000)
                     {
@@ -580,8 +580,8 @@ public sealed partial class Vhd
                     }
                 }
 
-                var    currentLocator = 0;
-                var    locatorFound   = false;
+                int    currentLocator = 0;
+                bool   locatorFound   = false;
                 string parentPath     = null;
 
                 while(!locatorFound && currentLocator < 8)
@@ -715,10 +715,10 @@ public sealed partial class Vhd
             case TYPE_DIFFERENCING:
             {
                 // Block number for BAT searching
-                var blockNumber = (uint)Math.Floor(sectorAddress / (_thisDynamic.BlockSize / 512.0));
+                uint blockNumber = (uint)Math.Floor(sectorAddress / (_thisDynamic.BlockSize / 512.0));
 
                 // Sector number inside of block
-                var sectorInBlock = (uint)(sectorAddress % (_thisDynamic.BlockSize / 512));
+                uint sectorInBlock = (uint)(sectorAddress % (_thisDynamic.BlockSize / 512));
 
                 uint blockPosition = Swapping.Swap(_blockAllocationTable[blockNumber]);
 
@@ -729,20 +729,20 @@ public sealed partial class Vhd
                     return ErrorNumber.NoError;
                 }
 
-                var bitmap = new byte[_bitmapSize * 512];
+                byte[] bitmap = new byte[_bitmapSize * 512];
 
                 // Offset of block in file
                 long blockOffset = blockPosition * 512L;
 
-                var bitmapByte = (int)Math.Floor((double)sectorInBlock / 8);
-                var bitmapBit  = (int)(sectorInBlock % 8);
+                int bitmapByte = (int)Math.Floor((double)sectorInBlock / 8);
+                int bitmapBit  = (int)(sectorInBlock % 8);
 
                 Stream thisStream = _thisFilter.GetDataForkStream();
 
                 thisStream.Seek(blockOffset, SeekOrigin.Begin);
                 thisStream.EnsureRead(bitmap, 0, (int)_bitmapSize * 512);
 
-                var  mask  = (byte)(1 << 7 - bitmapBit);
+                byte mask  = (byte)(1 << 7 - bitmapBit);
                 bool dirty = (bitmap[bitmapByte] & mask) == mask;
 
                 /*
@@ -810,10 +810,10 @@ public sealed partial class Vhd
             case TYPE_DYNAMIC:
             {
                 // Block number for BAT searching
-                var blockNumber = (uint)Math.Floor(sectorAddress / (_thisDynamic.BlockSize / 512.0));
+                uint blockNumber = (uint)Math.Floor(sectorAddress / (_thisDynamic.BlockSize / 512.0));
 
                 // Sector number inside of block
-                var sectorInBlock = (uint)(sectorAddress % (_thisDynamic.BlockSize / 512));
+                uint sectorInBlock = (uint)(sectorAddress % (_thisDynamic.BlockSize / 512));
 
                 // How many sectors before reaching end of block
                 uint remainingInBlock = _thisDynamic.BlockSize / 512 - sectorInBlock;
@@ -844,7 +844,7 @@ public sealed partial class Vhd
                 uint sectorOffset = blockPosition + _bitmapSize + sectorInBlock;
 
                 // Data that can be read in this block
-                var prefix = new byte[sectorsToReadHere * 512];
+                byte[] prefix = new byte[sectorsToReadHere * 512];
 
                 // 0xFFFFFFFF means unallocated
                 if(blockPosition != 0xFFFFFFFF)

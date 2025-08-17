@@ -36,8 +36,8 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Claunia.Encoding;
 
 namespace Aaru.Images;
@@ -51,8 +51,8 @@ public sealed partial class DiskCopy42
                        uint   sectorSize)
     {
         header = new Header();
-        var tags   = false;
-        var macosx = false;
+        bool tags   = false;
+        bool macosx = false;
 
         if(options != null && options.TryGetValue("macosx", out string tmpOption)) bool.TryParse(tmpOption, out macosx);
 
@@ -387,7 +387,7 @@ public sealed partial class DiskCopy42
         if(writingStream.Length == 0x54 + header.DataSize) header.TagSize = 0;
 
         writingStream.Seek(0x54, SeekOrigin.Begin);
-        var data = new byte[header.DataSize];
+        byte[] data = new byte[header.DataSize];
         writingStream.EnsureRead(data, 0, (int)header.DataSize);
         header.DataChecksum = CheckSum(data);
         writingStream.Seek(0x54 + header.DataSize, SeekOrigin.Begin);

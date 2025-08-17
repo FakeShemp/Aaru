@@ -37,8 +37,8 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Compression;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Claunia.Encoding;
 using Claunia.RsrcFork;
 using Version = Resources.Version;
@@ -57,7 +57,7 @@ public sealed partial class Dart
         if(stream.Length < 84) return ErrorNumber.InvalidArgument;
 
         stream.Seek(0, SeekOrigin.Begin);
-        var headerB = new byte[Marshal.SizeOf<Header>()];
+        byte[] headerB = new byte[Marshal.SizeOf<Header>()];
 
         stream.EnsureRead(headerB, 0, Marshal.SizeOf<Header>());
         Header header = Marshal.ByteArrayToStructureBigEndian<Header>(headerB);
@@ -102,12 +102,12 @@ public sealed partial class Dart
 
         if(stream.Length > expectedMaxSize) return ErrorNumber.InvalidArgument;
 
-        var bLength =
+        short[] bLength =
             new short[header.srcType is DISK_MAC_HD or DISK_DOS_HD ? BLOCK_ARRAY_LEN_HIGH : BLOCK_ARRAY_LEN_LOW];
 
-        for(var i = 0; i < bLength.Length; i++)
+        for(int i = 0; i < bLength.Length; i++)
         {
-            var tmpShort = new byte[2];
+            byte[] tmpShort = new byte[2];
             stream.EnsureRead(tmpShort, 0, 2);
             bLength[i] = BigEndianBitConverter.ToInt16(tmpShort, 0);
         }
@@ -119,7 +119,7 @@ public sealed partial class Dart
         {
             if(l == 0) continue;
 
-            var buffer = new byte[BUFFER_SIZE];
+            byte[] buffer = new byte[BUFFER_SIZE];
 
             if(l == -1)
             {
@@ -182,8 +182,8 @@ public sealed partial class Dart
                         string release = null;
                         string pre     = null;
 
-                        var major = $"{version.MajorVersion}";
-                        var minor = $".{version.MinorVersion / 10}";
+                        string major = $"{version.MajorVersion}";
+                        string minor = $".{version.MinorVersion / 10}";
 
                         if(version.MinorVersion % 10 > 0) release = $".{version.MinorVersion % 10}";
 

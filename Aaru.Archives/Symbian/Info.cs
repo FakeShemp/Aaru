@@ -37,8 +37,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Archives;
@@ -54,7 +54,7 @@ public sealed partial class Symbian
 
         Stream stream = filter.GetDataForkStream();
 
-        var hdr = new byte[Marshal.SizeOf<SymbianHeader>()];
+        byte[] hdr = new byte[Marshal.SizeOf<SymbianHeader>()];
 
         stream.EnsureRead(hdr, 0, hdr.Length);
 
@@ -77,7 +77,7 @@ public sealed partial class Symbian
 
         if(stream.Length < Marshal.SizeOf<SymbianHeader>()) return;
 
-        var buffer = new byte[Marshal.SizeOf<SymbianHeader>()];
+        byte[] buffer = new byte[Marshal.SizeOf<SymbianHeader>()];
 
         stream.Seek(0, SeekOrigin.Begin);
         stream.EnsureRead(buffer, 0, buffer.Length);
@@ -163,7 +163,7 @@ public sealed partial class Symbian
 
         // Go to enumerate languages
         br.BaseStream.Seek(sh.lang_ptr, SeekOrigin.Begin);
-        for(var i = 0; i < sh.languages; i++) languages.Add(((LanguageCodes)br.ReadUInt16()).ToString("G"));
+        for(int i = 0; i < sh.languages; i++) languages.Add(((LanguageCodes)br.ReadUInt16()).ToString("G"));
 
         // Go to component record
         br.BaseStream.Seek(sh.comp_ptr, SeekOrigin.Begin);
@@ -185,7 +185,7 @@ public sealed partial class Symbian
         span                          = buffer;
         componentRecord.namesPointers = MemoryMarshal.Cast<byte, uint>(span)[..languages.Count].ToArray();
 
-        for(var i = 0; i < sh.languages; i++)
+        for(int i = 0; i < sh.languages; i++)
         {
             AaruConsole.DebugWriteLine(MODULE_NAME,
                                        "Found component name for language {0} at {1} with a length of {2} bytes",
@@ -201,7 +201,7 @@ public sealed partial class Symbian
         // Go to capabilities (???)
         br.BaseStream.Seek(sh.caps_ptr, SeekOrigin.Begin);
 
-        for(var i = 0; i < sh.capabilities; i++)
+        for(int i = 0; i < sh.capabilities; i++)
         {
             uint cap_Key   = br.ReadUInt32();
             uint cap_Value = br.ReadUInt32();
@@ -227,7 +227,7 @@ public sealed partial class Symbian
 
         description.AppendFormat(Localization.File_contains_0_languages, sh.languages).AppendLine();
 
-        for(var i = 0; i < languages.Count; i++)
+        for(int i = 0; i < languages.Count; i++)
         {
             if(i > 0) description.Append(", ");
             description.Append($"{languages[i]}");
@@ -236,7 +236,7 @@ public sealed partial class Symbian
         description.AppendLine();
         description.AppendLine();
 
-        for(var i = 0; i < languages.Count; i++)
+        for(int i = 0; i < languages.Count; i++)
         {
             description.AppendFormat(Localization.Component_name_for_language_with_code_0_1,
                                      languages[i],
@@ -253,7 +253,7 @@ public sealed partial class Symbian
 
         if(sh.requisites > 0)
         {
-            for(var r = 0; r < sh.requisites; r++)
+            for(int r = 0; r < sh.requisites; r++)
             {
                 br.BaseStream.Seek(offset, SeekOrigin.Begin);
 
@@ -285,7 +285,7 @@ public sealed partial class Symbian
 
                 offset = (uint)br.BaseStream.Position;
 
-                for(var i = 0; i < languages.Count; i++)
+                for(int i = 0; i < languages.Count; i++)
                 {
                     br.BaseStream.Seek(requisiteRecord.namesPointers[i], SeekOrigin.Begin);
                     buffer = br.ReadBytes((int)requisiteRecord.namesLengths[i]);
@@ -310,7 +310,7 @@ public sealed partial class Symbian
 
         uint currentFile = 0;
         offset = sh.files_ptr;
-        var conditionLevel = 0;
+        int conditionLevel = 0;
         _options = [];
 
         // Get only the options records
@@ -361,7 +361,7 @@ public sealed partial class Symbian
 
         if(_options.Count > 0)
         {
-            for(var i = 0; i < _options.Count; i++)
+            for(int i = 0; i < _options.Count; i++)
             {
                 OptionRecord option = _options[i];
 

@@ -32,8 +32,8 @@
 
 using System.IO;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -49,7 +49,7 @@ public sealed partial class Qcow2
 
         if(stream.Length < 512) return false;
 
-        var qHdrB = new byte[Marshal.SizeOf<Header>()];
+        byte[] qHdrB = new byte[Marshal.SizeOf<Header>()];
         stream.EnsureRead(qHdrB, 0, Marshal.SizeOf<Header>());
         _qHdr = Marshal.SpanToStructureBigEndian<Header>(qHdrB);
 

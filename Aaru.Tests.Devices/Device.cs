@@ -26,8 +26,9 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using Aaru.Console;
+using System;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Tests.Devices;
 
@@ -36,7 +37,7 @@ static partial class MainClass
     public static void Device(string devPath)
     {
         AaruConsole.WriteLine("Going to open {0}. Press any key to continue...", devPath);
-        System.Console.ReadKey();
+        Console.ReadKey();
 
         var dev = Aaru.Devices.Device.Create(devPath, out _);
 
@@ -74,10 +75,10 @@ static partial class MainClass
             AaruConsole.WriteLine("dev.CIS.Length = {0}", dev.Cis?.Length.ToString() ?? Localization._null);
 
             AaruConsole.WriteLine(Localization.Press_any_key_to_continue, devPath);
-            System.Console.ReadKey();
+            Console.ReadKey();
 
         menu:
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
             AaruConsole.WriteLine(Localization.Options);
             AaruConsole.WriteLine(Localization.Print_USB_descriptors);
@@ -86,12 +87,12 @@ static partial class MainClass
             AaruConsole.WriteLine(Localization.Return_to_device_selection);
             AaruConsole.Write(Localization.Choose);
 
-            string strDev = System.Console.ReadLine();
+            string strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out int item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 goto menu;
             }
@@ -103,25 +104,25 @@ static partial class MainClass
 
                     return;
                 case 1:
-                    System.Console.Clear();
+                    Console.Clear();
                     AaruConsole.WriteLine(Localization.Device_0, devPath);
                     AaruConsole.WriteLine(Localization.USB_descriptors);
 
                     if(dev.UsbDescriptors != null) PrintHex.PrintHexArray(dev.UsbDescriptors, 64);
 
                     AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                    System.Console.ReadKey();
+                    Console.ReadKey();
 
                     goto menu;
                 case 2:
-                    System.Console.Clear();
+                    Console.Clear();
                     AaruConsole.WriteLine(Localization.Device_0, devPath);
                     AaruConsole.WriteLine(Localization.PCMCIA_CIS);
 
                     if(dev.Cis != null) PrintHex.PrintHexArray(dev.Cis, 64);
 
                     AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                    System.Console.ReadKey();
+                    Console.ReadKey();
 
                     goto menu;
                 case 3:
@@ -130,7 +131,7 @@ static partial class MainClass
                     goto menu;
                 default:
                     AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                    System.Console.ReadKey();
+                    Console.ReadKey();
 
                     goto menu;
             }

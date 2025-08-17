@@ -39,8 +39,8 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Images;
@@ -93,7 +93,7 @@ public sealed partial class Vdi
             return false;
         }
 
-        var ibmEntries = (uint)(sectors * sectorSize / DEFAULT_BLOCK_SIZE);
+        uint ibmEntries = (uint)(sectors * sectorSize / DEFAULT_BLOCK_SIZE);
 
         if(sectors * sectorSize % DEFAULT_BLOCK_SIZE > 0) ibmEntries++;
 
@@ -219,7 +219,7 @@ public sealed partial class Vdi
 
         for(uint i = 0; i < length; i++)
         {
-            var tmp = new byte[_imageInfo.SectorSize];
+            byte[] tmp = new byte[_imageInfo.SectorSize];
             Array.Copy(data, i * _imageInfo.SectorSize, tmp, 0, _imageInfo.SectorSize);
 
             if(!WriteSector(tmp, sectorAddress + i)) return false;
@@ -281,8 +281,8 @@ public sealed partial class Vdi
             }
         }
 
-        var  hdr    = new byte[Marshal.SizeOf<Header>()];
-        nint hdrPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
+        byte[] hdr    = new byte[Marshal.SizeOf<Header>()];
+        nint   hdrPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
         System.Runtime.InteropServices.Marshal.StructureToPtr(_vHdr, hdrPtr, true);
         System.Runtime.InteropServices.Marshal.Copy(hdrPtr, hdr, 0, hdr.Length);
         System.Runtime.InteropServices.Marshal.FreeHGlobal(hdrPtr);

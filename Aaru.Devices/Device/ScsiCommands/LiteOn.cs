@@ -32,13 +32,13 @@
 
 using System;
 using Aaru.CommonTypes.Enums;
-using Aaru.Console;
+using Aaru.Logging;
 
 namespace Aaru.Devices;
 
 public partial class Device
 {
-    private uint _bufferOffset = 0;
+    private uint _bufferOffset;
 
     /// <summary>Reads a "raw" sector from DVD on Lite-On drives.</summary>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
@@ -115,7 +115,7 @@ public partial class Device
         Read12(out _, out _, 0, false, false, false, false, lba, 2048, 0, 16, false, timeout, out duration);
 
         senseBuffer = new byte[64];
-        var cdb = new byte[10];
+        byte[] cdb = new byte[10];
 
         buffer = new byte[transferLength];
 
@@ -268,10 +268,7 @@ public partial class Device
         {
             LiteOnReadBuffer(out byte[] buffer, out byte[] _, i * 2384, 2384, timeout, out double _, lba);
 
-            if(CheckSectorNumber(buffer, lba, 1, layerbreak, otp))
-            {
-                return (int)i;
-            }
+            if(CheckSectorNumber(buffer, lba, 1, layerbreak, otp)) return (int)i;
         }
 
         return -1;
@@ -288,14 +285,11 @@ public partial class Device
     {
         // TODO: Save ECC instead of just throwing it away
 
-        var deinterleaved = new byte[2064 * transferLength];
+        byte[] deinterleaved = new byte[2064 * transferLength];
 
-        for(var j = 0; j < transferLength; j++)
+        for(int j = 0; j < transferLength; j++)
         {
-            for(var i = 0; i < 12; i++)
-            {
-                Array.Copy(buffer, (j * 2384) + (i * 182), deinterleaved, (j * 2064) + (i * 172), 172);
-            }
+            for(int i = 0; i < 12; i++) Array.Copy(buffer, j * 2384 + i * 182, deinterleaved, j * 2064 + i * 172, 172);
         }
 
         return deinterleaved;

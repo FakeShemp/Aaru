@@ -37,12 +37,12 @@ using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
-using Aaru.Console;
 using Aaru.Decoders.SCSI;
 using Aaru.Decoders.SCSI.MMC;
 using Aaru.Gui.Models;
 using Aaru.Helpers;
 using Aaru.Localization;
+using Aaru.Logging;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using ReactiveUI;
@@ -438,7 +438,7 @@ public sealed class ScsiInfoViewModel : ViewModelBase
         {
             foreach(KeyValuePair<byte, byte[]> page in scsiEvpdPages.OrderBy(t => t.Key))
             {
-                var    evpdPageTitle = "";
+                string evpdPageTitle = "";
                 string evpdDecodedPage;
 
                 switch(page.Key)
@@ -637,7 +637,7 @@ public sealed class ScsiInfoViewModel : ViewModelBase
         {
             foreach(Features.FeatureDescriptor desc in ftr.Descriptors)
             {
-                var featureNumber = string.Format(Localization.Core.Feature_0, desc.Code);
+                string featureNumber = string.Format(Localization.Core.Feature_0, desc.Code);
                 AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Feature_0, desc.Code);
 
                 string featureDescription = desc.Code switch

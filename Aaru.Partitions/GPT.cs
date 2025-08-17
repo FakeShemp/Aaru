@@ -38,7 +38,7 @@ using System.Runtime.InteropServices;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Partitions;
@@ -76,8 +76,8 @@ public sealed class GuidPartitionTable : IPartition
 
         Header hdr;
 
-        var signature  = BitConverter.ToUInt64(hdrBytes, 0);
-        var misaligned = false;
+        ulong signature  = BitConverter.ToUInt64(hdrBytes, 0);
+        bool  misaligned = false;
 
         AaruConsole.DebugWriteLine(MODULE_NAME, "hdr.signature = 0x{0:X16}", signature);
 
@@ -95,7 +95,7 @@ public sealed class GuidPartitionTable : IPartition
                 if(signature == GPT_MAGIC)
                 {
                     AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Found_unaligned_signature, signature);
-                    var real = new byte[512];
+                    byte[] real = new byte[512];
                     Array.Copy(hdrBytes, 512, real, 0, 512);
                     hdrBytes   = real;
                     misaligned = true;
@@ -157,15 +157,15 @@ public sealed class GuidPartitionTable : IPartition
 
         if(errno != ErrorNumber.NoError) return false;
 
-        var entriesBytes = new byte[temp.Length - modulo * 512];
+        byte[] entriesBytes = new byte[temp.Length - modulo * 512];
         Array.Copy(temp, modulo * 512, entriesBytes, 0, entriesBytes.Length);
         List<Entry> entries = [];
 
-        for(var i = 0; i < hdr.entries; i++)
+        for(int i = 0; i < hdr.entries; i++)
         {
             try
             {
-                var entryBytes = new byte[hdr.entriesSize];
+                byte[] entryBytes = new byte[hdr.entriesSize];
                 Array.Copy(entriesBytes, hdr.entriesSize * i, entryBytes, 0, hdr.entriesSize);
                 entries.Add(Marshal.ByteArrayToStructureLittleEndian<Entry>(entryBytes));
             }

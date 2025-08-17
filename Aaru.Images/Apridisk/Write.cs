@@ -39,7 +39,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Images;
@@ -180,7 +180,7 @@ public sealed partial class Apridisk
         _writingStream.Seek(0, SeekOrigin.Begin);
         _writingStream.Write(_signature, 0, _signature.Length);
 
-        var hdr = new byte[Marshal.SizeOf<Record>()];
+        byte[] hdr = new byte[Marshal.SizeOf<Record>()];
 
         for(ushort c = 0; c < _imageInfo.Cylinders; c++)
         {

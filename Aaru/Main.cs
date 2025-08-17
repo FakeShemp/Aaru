@@ -45,10 +45,10 @@ using Aaru.Commands.Filesystem;
 using Aaru.Commands.Image;
 using Aaru.Commands.Media;
 using Aaru.CommonTypes.Enums;
-using Aaru.Console;
 using Aaru.Core;
 using Aaru.Database;
 using Aaru.Localization;
+using Aaru.Logging;
 using Aaru.Settings;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
@@ -70,7 +70,7 @@ class MainClass
     {
         IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
         {
-            Out = new AnsiConsoleOutput(System.Console.Error)
+            Out = new AnsiConsoleOutput(Console.Error)
         });
 
         object[] attributes = typeof(MainClass).Assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
@@ -407,7 +407,7 @@ class MainClass
         if(!PauseBeforeExiting) return ret;
 
         AaruConsole.WriteLine(UI.Press_any_key_to_exit);
-        System.Console.ReadKey();
+        Console.ReadKey();
 
         return ret;
     }

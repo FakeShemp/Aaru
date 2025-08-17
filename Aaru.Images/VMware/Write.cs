@@ -39,7 +39,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 

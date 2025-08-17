@@ -39,9 +39,9 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Decoders.CD;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 

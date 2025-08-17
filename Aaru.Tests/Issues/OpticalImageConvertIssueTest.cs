@@ -9,10 +9,10 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Metadata;
-using Aaru.Console;
 using Aaru.Core;
 using Aaru.Core.Media;
 using Aaru.Devices;
+using Aaru.Logging;
 using NUnit.Framework;
 using File = System.IO.File;
 using ImageInfo = Aaru.CommonTypes.Structs.ImageInfo;
@@ -148,8 +148,8 @@ public abstract class OpticalImageConvertIssueTest
                 else
                     sectorsToDo = (uint)(trackSectors - doneSectors);
 
-                var useNotLong = false;
-                var result     = false;
+                bool useNotLong = false;
+                bool result     = false;
 
                 if(UseLong)
                 {
@@ -200,7 +200,7 @@ public abstract class OpticalImageConvertIssueTest
         Dictionary<byte, int>    smallestPregapLbaPerTrack = new();
         var                      tracks                    = new Track[inputOptical.Tracks.Count];
 
-        for(var i = 0; i < tracks.Length; i++)
+        for(int i = 0; i < tracks.Length; i++)
         {
             tracks[i] = new Track
             {

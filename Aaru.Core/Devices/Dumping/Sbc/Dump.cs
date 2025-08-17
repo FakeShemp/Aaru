@@ -42,7 +42,6 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Extents;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
-using Aaru.Console;
 using Aaru.Core.Devices.Report;
 using Aaru.Core.Graphics;
 using Aaru.Core.Logging;
@@ -52,6 +51,7 @@ using Aaru.Decoders.DVD;
 using Aaru.Decoders.SCSI;
 using Aaru.Decoders.SCSI.MMC;
 using Aaru.Devices;
+using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
 using Humanizer.Localisation;
@@ -59,7 +59,6 @@ using DVDDecryption = Aaru.Decryption.DVD.Dump;
 using Track = Aaru.CommonTypes.Structs.Track;
 using TrackType = Aaru.CommonTypes.Enums.TrackType;
 using Version = Aaru.CommonTypes.Interop.Version;
-using Aaru.Decoders.DVD;
 
 // ReSharper disable JoinDeclarationAndInitializer
 
@@ -79,7 +78,7 @@ partial class Dump
         bool               sense;
         byte               scsiMediumType     = 0;
         byte               scsiDensityCode    = 0;
-        var                containsFloppyPage = false;
+        bool               containsFloppyPage = false;
         const ushort       sbcProfile         = 0x0001;
         double             totalDuration      = 0;
         double             currentSpeed       = 0;
@@ -388,8 +387,8 @@ partial class Dump
                                   _private,
                                   _dimensions);
 
-        var ibgLog       = new IbgLog(_outputPrefix + ".ibg", sbcProfile);
-        var imageCreated = false;
+        var  ibgLog       = new IbgLog(_outputPrefix + ".ibg", sbcProfile);
+        bool imageCreated = false;
 
         if(!opticalDisc)
         {
@@ -413,7 +412,7 @@ partial class Dump
 
         _dumpStopwatch.Restart();
         double imageWriteDuration      = 0;
-        var    writeSingleOpticalTrack = true;
+        bool   writeSingleOpticalTrack = true;
 
         if(opticalDisc)
         {
@@ -630,7 +629,7 @@ partial class Dump
         }
         else if(decMode?.Pages != null)
         {
-            var setGeometry = false;
+            bool setGeometry = false;
 
             foreach(Modes.ModePage page in decMode.Value.Pages)
             {
@@ -810,7 +809,7 @@ partial class Dump
 
         if(_resume?.BlankExtents != null) blankExtents = ExtentsConverter.FromMetadata(_resume.BlankExtents);
 
-        var newTrim = false;
+        bool newTrim = false;
 
         if(mediaTags.TryGetValue(MediaTagType.DVD_CMI, out byte[] cmi) &&
            Settings.Settings.Current.EnableDecryption                  &&

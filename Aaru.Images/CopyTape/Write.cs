@@ -38,7 +38,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
+using Aaru.Logging;
 using TapeFile = Aaru.CommonTypes.Structs.TapeFile;
 using TapePartition = Aaru.CommonTypes.Structs.TapePartition;
 

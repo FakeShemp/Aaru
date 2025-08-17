@@ -35,8 +35,8 @@ using System.Collections.Generic;
 using System.IO;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -47,10 +47,10 @@ public sealed partial class DiscFerret
     /// <inheritdoc />
     public ErrorNumber Open(IFilter imageFilter)
     {
-        var    magicB = new byte[4];
+        byte[] magicB = new byte[4];
         Stream stream = imageFilter.GetDataForkStream();
         stream.EnsureRead(magicB, 0, 4);
-        var magic = BitConverter.ToUInt32(magicB, 0);
+        uint magic = BitConverter.ToUInt32(magicB, 0);
 
         if(magic != DFI_MAGIC && magic != DFI_MAGIC2) return ErrorNumber.InvalidArgument;
 
@@ -64,7 +64,7 @@ public sealed partial class DiscFerret
         {
             long thisOffset = stream.Position;
 
-            var blk = new byte[Marshal.SizeOf<BlockHeader>()];
+            byte[] blk = new byte[Marshal.SizeOf<BlockHeader>()];
             stream.EnsureRead(blk, 0, Marshal.SizeOf<BlockHeader>());
             BlockHeader blockHeader = Marshal.ByteArrayToStructureBigEndian<BlockHeader>(blk);
 

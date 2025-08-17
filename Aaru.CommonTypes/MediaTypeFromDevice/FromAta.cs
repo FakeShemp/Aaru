@@ -33,7 +33,7 @@
 // ****************************************************************************/
 
 using System;
-using Aaru.Console;
+using Aaru.Logging;
 
 namespace Aaru.CommonTypes;
 

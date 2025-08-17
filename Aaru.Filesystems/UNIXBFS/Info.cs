@@ -31,8 +31,8 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -53,7 +53,7 @@ public sealed partial class BFS
 
         if(errno != ErrorNumber.NoError) return false;
 
-        var magic = BitConverter.ToUInt32(tmp, 0);
+        uint magic = BitConverter.ToUInt32(tmp, 0);
 
         return magic == BFS_MAGIC;
     }
@@ -71,7 +71,7 @@ public sealed partial class BFS
 
         if(errno != ErrorNumber.NoError) return;
 
-        var sbStrings = new byte[6];
+        byte[] sbStrings = new byte[6];
 
         var bfsSb = new SuperBlock
         {

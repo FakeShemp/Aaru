@@ -37,8 +37,8 @@ using Aaru.Checksums;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Spectre.Console;
 
 namespace Aaru.Partitions;
@@ -91,7 +91,7 @@ public sealed class AtariPartitions : IPartition
 
         Array.Copy(sector, 0, table.Boot, 0, 342);
 
-        for(var i = 0; i < 8; i++)
+        for(int i = 0; i < 8; i++)
         {
             table.IcdEntries[i].Type   = BigEndianBitConverter.ToUInt32(sector, 342 + i * 12 + 0);
             table.IcdEntries[i].Start  = BigEndianBitConverter.ToUInt32(sector, 342 + i * 12 + 4);
@@ -102,7 +102,7 @@ public sealed class AtariPartitions : IPartition
 
         table.Size = BigEndianBitConverter.ToUInt32(sector, 450);
 
-        for(var i = 0; i < 4; i++)
+        for(int i = 0; i < 4; i++)
         {
             table.Entries[i].Type   = BigEndianBitConverter.ToUInt32(sector, 454 + i * 12 + 0);
             table.Entries[i].Start  = BigEndianBitConverter.ToUInt32(sector, 454 + i * 12 + 4);
@@ -117,7 +117,7 @@ public sealed class AtariPartitions : IPartition
         sha1Ctx.Update(table.Boot);
         AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Boot_code_SHA1_0, sha1Ctx.End());
 
-        for(var i = 0; i < 8; i++)
+        for(int i = 0; i < 8; i++)
         {
             AaruConsole.DebugWriteLine(MODULE_NAME,
                                        Markup.Escape("table.icdEntries[{0}].flag = 0x{1:X2}"),
@@ -142,7 +142,7 @@ public sealed class AtariPartitions : IPartition
 
         AaruConsole.DebugWriteLine(MODULE_NAME, "table.size = {0}", table.Size);
 
-        for(var i = 0; i < 4; i++)
+        for(int i = 0; i < 4; i++)
         {
             AaruConsole.DebugWriteLine(MODULE_NAME,
                                        Markup.Escape("table.entries[{0}].flag = 0x{1:X2}"),
@@ -169,10 +169,10 @@ public sealed class AtariPartitions : IPartition
         AaruConsole.DebugWriteLine(MODULE_NAME, "table.badLength = {0}",     table.BadLength);
         AaruConsole.DebugWriteLine(MODULE_NAME, "table.checksum = 0x{0:X4}", table.Checksum);
 
-        var   validTable        = false;
+        bool  validTable        = false;
         ulong partitionSequence = 0;
 
-        for(var i = 0; i < 4; i++)
+        for(int i = 0; i < 4; i++)
         {
             uint type = table.Entries[i].Type & 0x00FFFFFF;
 
@@ -203,7 +203,7 @@ public sealed class AtariPartitions : IPartition
 
                         if(sectorSize is 2448 or 2352) sectorSize = 2048;
 
-                        var partType = new byte[3];
+                        byte[] partType = new byte[3];
                         partType[0] = (byte)((type & 0xFF0000) >> 16);
                         partType[1] = (byte)((type & 0x00FF00) >> 8);
                         partType[2] = (byte)(type & 0x0000FF);
@@ -249,7 +249,7 @@ public sealed class AtariPartitions : IPartition
                         Entries = new AtariEntry[4]
                     };
 
-                    for(var j = 0; j < 4; j++)
+                    for(int j = 0; j < 4; j++)
                     {
                         extendedTable.Entries[j].Type =
                             BigEndianBitConverter.ToUInt32(extendedSector, 454 + j * 12 + 0);
@@ -261,7 +261,7 @@ public sealed class AtariPartitions : IPartition
                             BigEndianBitConverter.ToUInt32(extendedSector, 454 + j * 12 + 8);
                     }
 
-                    for(var j = 0; j < 4; j++)
+                    for(int j = 0; j < 4; j++)
                     {
                         uint extendedType = extendedTable.Entries[j].Type & 0x00FFFFFF;
 
@@ -292,7 +292,7 @@ public sealed class AtariPartitions : IPartition
 
                         if(sectorSize is 2448 or 2352) sectorSize = 2048;
 
-                        var partType = new byte[3];
+                        byte[] partType = new byte[3];
                         partType[0] = (byte)((extendedType & 0xFF0000) >> 16);
                         partType[1] = (byte)((extendedType & 0x00FF00) >> 8);
                         partType[2] = (byte)(extendedType & 0x0000FF);
@@ -333,7 +333,7 @@ public sealed class AtariPartitions : IPartition
 
         if(!validTable) return partitions.Count > 0;
 
-        for(var i = 0; i < 8; i++)
+        for(int i = 0; i < 8; i++)
         {
             uint type = table.IcdEntries[i].Type & 0x00FFFFFF;
 
@@ -359,7 +359,7 @@ public sealed class AtariPartitions : IPartition
 
             if(sectorSize is 2448 or 2352) sectorSize = 2048;
 
-            var partType = new byte[3];
+            byte[] partType = new byte[3];
             partType[0] = (byte)((type & 0xFF0000) >> 16);
             partType[1] = (byte)((type & 0x00FF00) >> 8);
             partType[2] = (byte)(type & 0x0000FF);

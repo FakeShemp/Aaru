@@ -38,8 +38,8 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Compression;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Claunia.Encoding;
 using Claunia.RsrcFork;
 using Version = Resources.Version;
@@ -115,12 +115,12 @@ public sealed partial class Ndif
             // Block chunks and headers
             _chunks = new Dictionary<ulong, BlockChunk>();
 
-            for(var i = 0; i < _header.chunks; i++)
+            for(int i = 0; i < _header.chunks; i++)
             {
                 // Obsolete read-only NDIF only prepended the header and then put the image without any kind of block references.
                 // So let's falsify a block chunk
-                var bChnk  = new BlockChunk();
-                var sector = new byte[4];
+                var    bChnk  = new BlockChunk();
+                byte[] sector = new byte[4];
                 Array.Copy(bcem, 128 + 0 + i * 12, sector, 1, 3);
                 bChnk.sector = BigEndianBitConverter.ToUInt32(sector, 0);
                 bChnk.type   = bcem[128                                 + 3 + i * 12];
@@ -207,8 +207,8 @@ public sealed partial class Ndif
                 string release = null;
                 string pre     = null;
 
-                var major = $"{version.MajorVersion}";
-                var minor = $".{version.MinorVersion / 10}";
+                string major = $"{version.MajorVersion}";
+                string minor = $".{version.MinorVersion / 10}";
 
                 if(version.MinorVersion % 10 > 0) release = $".{version.MinorVersion % 10}";
 
@@ -307,7 +307,7 @@ public sealed partial class Ndif
         if(_sectorCache.TryGetValue(sectorAddress, out buffer)) return ErrorNumber.NoError;
 
         var   currentChunk     = new BlockChunk();
-        var   chunkFound       = false;
+        bool  chunkFound       = false;
         ulong chunkStartSector = 0;
 
         foreach(KeyValuePair<ulong, BlockChunk> kvp in _chunks.Where(kvp => sectorAddress >= kvp.Key))
@@ -327,7 +327,7 @@ public sealed partial class Ndif
         {
             if(!_chunkCache.TryGetValue(chunkStartSector, out byte[] data))
             {
-                var cmpBuffer = new byte[currentChunk.length];
+                byte[] cmpBuffer = new byte[currentChunk.length];
                 _imageStream.Seek(currentChunk.offset, SeekOrigin.Begin);
                 _imageStream.EnsureRead(cmpBuffer, 0, cmpBuffer.Length);
                 int realSize;
@@ -336,7 +336,7 @@ public sealed partial class Ndif
                 {
                     case CHUNK_TYPE_ADC:
                     {
-                        var tmpBuffer = new byte[_bufferSize];
+                        byte[] tmpBuffer = new byte[_bufferSize];
                         realSize = ADC.DecodeBuffer(cmpBuffer, tmpBuffer);
                         data     = new byte[realSize];
                         Array.Copy(tmpBuffer, 0, data, 0, realSize);
@@ -346,7 +346,7 @@ public sealed partial class Ndif
 
                     case CHUNK_TYPE_RLE:
                     {
-                        var tmpBuffer = new byte[_bufferSize];
+                        byte[] tmpBuffer = new byte[_bufferSize];
                         realSize = AppleRle.DecodeBuffer(cmpBuffer, tmpBuffer);
                         data     = new byte[realSize];
                         Array.Copy(tmpBuffer, 0, data, 0, realSize);

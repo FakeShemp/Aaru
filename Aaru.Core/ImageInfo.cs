@@ -41,7 +41,6 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
-using Aaru.Console;
 using Aaru.Decoders.ATA;
 using Aaru.Decoders.Bluray;
 using Aaru.Decoders.CD;
@@ -50,6 +49,7 @@ using Aaru.Decoders.PCMCIA;
 using Aaru.Decoders.SCSI;
 using Aaru.Decoders.Xbox;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
 using Spectre.Console;
@@ -427,7 +427,7 @@ public static class ImageInfo
 
                 if(dataLen + 2 != toc.Length)
                 {
-                    var tmp = new byte[toc.Length + 2];
+                    byte[] tmp = new byte[toc.Length + 2];
                     Array.Copy(toc, 0, tmp, 2, toc.Length);
                     tmp[0] = (byte)((toc.Length & 0xFF00) >> 8);
                     tmp[1] = (byte)(toc.Length & 0xFF);
@@ -450,7 +450,7 @@ public static class ImageInfo
 
                 if(dataLen + 2 != pma.Length)
                 {
-                    var tmp = new byte[pma.Length + 2];
+                    byte[] tmp = new byte[pma.Length + 2];
                     Array.Copy(pma, 0, tmp, 2, pma.Length);
                     tmp[0] = (byte)((pma.Length & 0xFF00) >> 8);
                     tmp[1] = (byte)(pma.Length & 0xFF);
@@ -475,7 +475,7 @@ public static class ImageInfo
 
                 if(dataLen + 4 != atip.Length)
                 {
-                    var tmp = new byte[atip.Length + 4];
+                    byte[] tmp = new byte[atip.Length + 4];
                     Array.Copy(atip, 0, tmp, 4, atip.Length);
                     tmp[0] = (byte)((atip.Length & 0xFF000000) >> 24);
                     tmp[1] = (byte)((atip.Length & 0xFF0000)   >> 16);
@@ -502,7 +502,7 @@ public static class ImageInfo
 
                 if(dataLen + 4 != cdtext.Length)
                 {
-                    var tmp = new byte[cdtext.Length + 4];
+                    byte[] tmp = new byte[cdtext.Length + 4];
                     Array.Copy(cdtext, 0, tmp, 4, cdtext.Length);
                     tmp[0] = (byte)((cdtext.Length & 0xFF000000) >> 24);
                     tmp[1] = (byte)((cdtext.Length & 0xFF0000)   >> 16);

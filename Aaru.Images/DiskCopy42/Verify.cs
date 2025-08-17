@@ -31,8 +31,8 @@
 // ****************************************************************************/
 
 using System.IO;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -43,9 +43,9 @@ public sealed partial class DiskCopy42
     /// <inheritdoc />
     public bool? VerifyMediaImage()
     {
-        var  data    = new byte[header.DataSize];
-        var  tags    = new byte[header.TagSize];
-        uint tagsChk = 0;
+        byte[] data    = new byte[header.DataSize];
+        byte[] tags    = new byte[header.TagSize];
+        uint   tagsChk = 0;
 
         AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Reading_data);
         Stream dataStream = dc42ImageFilter.GetDataForkStream();

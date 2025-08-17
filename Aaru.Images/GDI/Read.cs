@@ -40,8 +40,8 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Decoders.CD;
+using Aaru.Logging;
 using Session = Aaru.CommonTypes.Structs.Session;
 
 namespace Aaru.Images;
@@ -60,8 +60,8 @@ public sealed partial class Gdi
         {
             imageFilter.GetDataForkStream().Seek(0, SeekOrigin.Begin);
             _gdiStream = new StreamReader(imageFilter.GetDataForkStream());
-            var lineNumber  = 0;
-            var highDensity = false;
+            int  lineNumber  = 0;
+            bool highDensity = false;
 
             // Initialize all RegExs
             var regexTrack = new Regex(REGEX_TRACK);
@@ -166,7 +166,7 @@ public sealed partial class Gdi
 
             var sessions = new Session[2];
 
-            for(var s = 0; s < sessions.Length; s++)
+            for(int s = 0; s < sessions.Length; s++)
             {
                 if(s == 0)
                 {
@@ -220,7 +220,7 @@ public sealed partial class Gdi
                                        "\t" + Localization.Disc_contains_0_sessions,
                                        _discImage.Sessions.Count);
 
-            for(var i = 0; i < _discImage.Sessions.Count; i++)
+            for(int i = 0; i < _discImage.Sessions.Count; i++)
             {
                 AaruConsole.DebugWriteLine(MODULE_NAME, "\t" + Localization.Session_0_information, i + 1);
 
@@ -247,7 +247,7 @@ public sealed partial class Gdi
                                        "\t" + Localization.Disc_contains_0_tracks,
                                        _discImage.Tracks.Count);
 
-            for(var i = 0; i < _discImage.Tracks.Count; i++)
+            for(int i = 0; i < _discImage.Tracks.Count; i++)
             {
                 AaruConsole.DebugWriteLine(MODULE_NAME,
                                            "\t" + Localization.Track_0_information,
@@ -286,7 +286,7 @@ public sealed partial class Gdi
             Partitions = [];
             ulong byteOffset = 0;
 
-            for(var i = 0; i < _discImage.Tracks.Count; i++)
+            for(int i = 0; i < _discImage.Tracks.Count; i++)
             {
                 if(_discImage.Tracks[i].Sequence == 1 && i != 0)
                 {
@@ -517,7 +517,7 @@ public sealed partial class Gdi
             }
             default:
             {
-                var bufferPos = (int)((length - remainingSectors) * sectorSize);
+                int bufferPos = (int)((length - remainingSectors) * sectorSize);
 
                 for(ulong i = 0; i < remainingSectors; i++)
                 {
@@ -700,7 +700,7 @@ public sealed partial class Gdi
             }
             default:
             {
-                var bufferPos = (int)((length - remainingSectors) * sectorSize);
+                int bufferPos = (int)((length - remainingSectors) * sectorSize);
 
                 for(ulong i = 0; i < remainingSectors; i++)
                 {
@@ -845,7 +845,7 @@ public sealed partial class Gdi
             }
             default:
             {
-                var bufferPos = (int)((length - remainingSectors) * sectorSize);
+                int bufferPos = (int)((length - remainingSectors) * sectorSize);
 
                 for(ulong i = 0; i < remainingSectors; i++)
                 {
@@ -864,8 +864,8 @@ public sealed partial class Gdi
         {
             case TrackType.CdMode1 when aaruTrack.Bps == 2048:
             {
-                var fullSector = new byte[2352];
-                var fullBuffer = new byte[2352 * length];
+                byte[] fullSector = new byte[2352];
+                byte[] fullBuffer = new byte[2352 * length];
 
                 for(uint i = 0; i < length; i++)
                 {

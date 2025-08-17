@@ -37,7 +37,7 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
+using Aaru.Logging;
 using Directory = Aaru.CommonTypes.AaruMetadata.Directory;
 using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 

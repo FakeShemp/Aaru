@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Aaru.Archives\Aaru.Archives.csproj"/>
-    <ProjectReference Include="..\Aaru.Console\Aaru.Console.csproj"/>
+    <ProjectReference Include="..\Aaru.Logging\Aaru.Logging.csproj"/>
     <ProjectReference Include="..\Aaru.Database\Aaru.Database.csproj"/>
     <ProjectReference Include="..\Aaru.Decryption\Aaru.Decryption.csproj"/>
     <ProjectReference Include="..\Aaru.Dto\Aaru.Dto.csproj"/>

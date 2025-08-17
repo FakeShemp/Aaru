@@ -33,8 +33,8 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -75,7 +75,7 @@ public sealed partial class FFSPlugin
 
                 if(errno != ErrorNumber.NoError) continue;
 
-                var magic = BitConverter.ToUInt32(ufsSbSectors, 0x055C);
+                uint magic = BitConverter.ToUInt32(ufsSbSectors, 0x055C);
 
                 if(magic is UFS_MAGIC
                          or UFS_CIGAM
@@ -108,13 +108,13 @@ public sealed partial class FFSPlugin
         uint   sb_size_in_sectors;
         byte[] ufs_sb_sectors;
         ulong  sb_offset     = partition.Start;
-        var    fs_type_42bsd = false;
-        var    fs_type_43bsd = false;
-        var    fs_type_44bsd = false;
-        var    fs_type_ufs   = false;
-        var    fs_type_ufs2  = false;
-        var    fs_type_sun   = false;
-        var    fs_type_sun86 = false;
+        bool   fs_type_42bsd = false;
+        bool   fs_type_43bsd = false;
+        bool   fs_type_44bsd = false;
+        bool   fs_type_ufs   = false;
+        bool   fs_type_ufs2  = false;
+        bool   fs_type_sun   = false;
+        bool   fs_type_sun86 = false;
 
         if(imagePlugin.Info.SectorSize is 2336 or 2352 or 2448)
             sb_size_in_sectors = block_size / 2048;

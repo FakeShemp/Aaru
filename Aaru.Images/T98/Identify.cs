@@ -34,8 +34,8 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -52,14 +52,15 @@ public sealed partial class T98
 
         if(stream.Length % 256 != 0) return false;
 
-        var hdrB = new byte[256];
+        byte[] hdrB = new byte[256];
         stream.EnsureRead(hdrB, 0, hdrB.Length);
 
-        for(var i = 4; i < 256; i++)
-            if(hdrB[i] != 0)
-                return false;
+        for(int i = 4; i < 256; i++)
+        {
+            if(hdrB[i] != 0) return false;
+        }
 
-        var cylinders = BitConverter.ToInt32(hdrB, 0);
+        int cylinders = BitConverter.ToInt32(hdrB, 0);
 
         AaruConsole.DebugWriteLine(MODULE_NAME, Localization.cylinders_equal_0, cylinders);
 

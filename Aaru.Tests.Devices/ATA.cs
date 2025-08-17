@@ -26,8 +26,9 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using Aaru.Console;
+using System;
 using Aaru.Devices;
+using Aaru.Logging;
 using Aaru.Tests.Devices.ATA;
 
 namespace Aaru.Tests.Devices;
@@ -38,7 +39,7 @@ static partial class MainClass
     {
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
             AaruConsole.WriteLine(Localization.Send_an_ATA_command_to_the_device);
             AaruConsole.WriteLine(Localization.Send_a_CHS_ATA_command_to_the_device);
@@ -51,12 +52,12 @@ static partial class MainClass
             AaruConsole.WriteLine(Localization.Return_to_command_class_menu);
             AaruConsole.Write(Localization.Choose);
 
-            string strDev = System.Console.ReadLine();
+            string strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out int item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -97,7 +98,7 @@ static partial class MainClass
                     continue;
                 default:
                     AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                    System.Console.ReadKey();
+                    Console.ReadKey();
 
                     continue;
             }

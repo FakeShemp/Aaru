@@ -20,7 +20,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aaru.Decoders", "Aaru.Decod
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aaru.Devices", "Aaru.Devices\Aaru.Devices.csproj", "{57BB2341-AB62-48FD-91B8-46F5A2F9ED51}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aaru.Console", "Aaru.Console\Aaru.Console.csproj", "{CCAA7AFE-C094-4D82-A66D-630DE8A3F545}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aaru.Logging", "Aaru.Logging\Aaru.Logging.csproj", "{CCAA7AFE-C094-4D82-A66D-630DE8A3F545}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aaru.Settings", "Aaru.Settings\Aaru.Settings.csproj", "{5C4C7BAA-CF60-4233-84ED-39CB2312AF38}"
 EndProject

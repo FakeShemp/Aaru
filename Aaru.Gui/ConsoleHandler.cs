@@ -33,8 +33,8 @@
 
 using System;
 using System.Collections.ObjectModel;
-using Aaru.Console;
 using Aaru.Localization;
+using Aaru.Logging;
 using JetBrains.Annotations;
 
 namespace Aaru.Gui;

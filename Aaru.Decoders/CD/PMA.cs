@@ -33,8 +33,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Decoders.CD;
 
@@ -84,7 +84,7 @@ public static class PMA
             return null;
         }
 
-        for(var i = 0; i < (decoded.DataLength - 2) / 11; i++)
+        for(int i = 0; i < (decoded.DataLength - 2) / 11; i++)
         {
             decoded.PMADescriptors[i].Reserved = CDPMAResponse[0 + i * 11 + 4];
             decoded.PMADescriptors[i].ADR      = (byte)((CDPMAResponse[1 + i * 11 + 4] & 0xF0) >> 4);
@@ -319,7 +319,7 @@ public static class PMA
 
                     break;
                 case 2:
-                    var id = (uint)((descriptor.Min << 16) + (descriptor.Sec << 8) + descriptor.Frame);
+                    uint id = (uint)((descriptor.Min << 16) + (descriptor.Sec << 8) + descriptor.Frame);
                     sb.AppendFormat(Localization.Disc_ID_0_X6, id & 0x00FFFFFF).AppendLine();
 
                     break;

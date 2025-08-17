@@ -31,8 +31,8 @@
 // ****************************************************************************/
 
 using Aaru.CommonTypes.Enums;
-using Aaru.Console;
 using Aaru.Localization;
+using Aaru.Logging;
 using Aaru.Settings;
 using Spectre.Console;
 using Spectre.Console.Cli;

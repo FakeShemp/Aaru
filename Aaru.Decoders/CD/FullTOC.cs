@@ -36,8 +36,8 @@ using System.Linq;
 using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Decoders.CD;
 
@@ -87,7 +87,7 @@ public static class FullTOC
             return null;
         }
 
-        for(var i = 0; i < (decoded.DataLength - 2) / 11; i++)
+        for(int i = 0; i < (decoded.DataLength - 2) / 11; i++)
         {
             decoded.TrackDescriptors[i].SessionNumber = CDFullTOCResponse[0 + i * 11 + 4];
             decoded.TrackDescriptors[i].ADR           = (byte)((CDFullTOCResponse[1 + i * 11 + 4] & 0xF0) >> 4);
@@ -116,7 +116,7 @@ public static class FullTOC
 
         var sb = new StringBuilder();
 
-        var lastSession = 0;
+        int lastSession = 0;
 
         sb.AppendFormat(Localization.First_complete_session_number_0, response.FirstCompleteSession).AppendLine();
         sb.AppendFormat(Localization.Last_complete_session_number_0,  response.LastCompleteSession).AppendLine();
@@ -642,7 +642,7 @@ public static class FullTOC
 
                     case 6:
                     {
-                        var id = (uint)((descriptor.Min << 16) + (descriptor.Sec << 8) + descriptor.Frame);
+                        uint id = (uint)((descriptor.Min << 16) + (descriptor.Sec << 8) + descriptor.Frame);
                         sb.AppendFormat(Localization.Disc_ID_0_X6, id & 0x00FFFFFF).AppendLine();
 
                         break;

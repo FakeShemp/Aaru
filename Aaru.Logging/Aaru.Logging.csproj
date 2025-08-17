@@ -4,8 +4,6 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{CCAA7AFE-C094-4D82-A66D-630DE8A3F545}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Aaru.Console</RootNamespace>
-    <AssemblyName>Aaru.Console</AssemblyName>
     <Title>Aaru.Console</Title>
     <Description>Contains console implementation used by the Aaru Data Preservation Suite.</Description>
     <PackageProjectUrl>https://github.com/aaru-dps/</PackageProjectUrl>
@@ -17,6 +15,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Authors>Natalia Portillo &lt;claunia@claunia.com&gt;</Authors>
+    <PackageId>Aaru.Logging</PackageId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <NoWarn>CS1591;CS1574</NoWarn>

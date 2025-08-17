@@ -35,7 +35,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text;
-using Aaru.Console;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Decoders.Sega;
@@ -199,7 +199,7 @@ public static class Dreamcast
             }
         }
 
-        var iPeripherals = int.Parse(Encoding.ASCII.GetString(ipbin.peripherals), NumberStyles.HexNumber);
+        int iPeripherals = int.Parse(Encoding.ASCII.GetString(ipbin.peripherals), NumberStyles.HexNumber);
 
         if((iPeripherals & 0x00000001) == 0x00000001) IPBinInformation.AppendLine(Localization.Game_uses_Windows_CE);
 

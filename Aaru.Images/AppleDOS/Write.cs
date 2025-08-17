@@ -37,7 +37,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -195,9 +195,9 @@ public sealed partial class AppleDos
                                     ? _interleave
                                     : _deinterleave;
 
-            for(var t = 0; t < 35; t++)
+            for(int t = 0; t < 35; t++)
             {
-                for(var s = 0; s < 16; s++)
+                for(int s = 0; s < 16; s++)
                     Array.Copy(_deinterleaved, t * 16 * 256 + offsets[s] * 256, tmp, t * 16 * 256 + s * 256, 256);
             }
         }

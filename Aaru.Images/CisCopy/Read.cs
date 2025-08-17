@@ -35,8 +35,8 @@ using System.IO;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -74,7 +74,7 @@ public sealed partial class CisCopy
                 return ErrorNumber.InvalidArgument;
         }
 
-        var trackBytes = new byte[tracks];
+        byte[] trackBytes = new byte[tracks];
         stream.EnsureRead(trackBytes, 0, tracks);
 
         var cmpr = (Compression)stream.ReadByte();
@@ -94,15 +94,15 @@ public sealed partial class CisCopy
                             DiskType.MF2HD                                     => 18 * 512
                         };
 
-        var headStep = 1;
+        int headStep = 1;
 
         if(type is DiskType.MD1DD or DiskType.MD1DD8) headStep = 2;
 
         var decodedImage = new MemoryStream();
 
-        for(var i = 0; i < tracks; i += headStep)
+        for(int i = 0; i < tracks; i += headStep)
         {
-            var track = new byte[trackSize];
+            byte[] track = new byte[trackSize];
 
             if((TrackType)trackBytes[i] == TrackType.Copied)
                 stream.EnsureRead(track, 0, trackSize);

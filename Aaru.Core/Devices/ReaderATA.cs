@@ -32,8 +32,8 @@
 
 using System;
 using Aaru.CommonTypes.Enums;
-using Aaru.Console;
 using Aaru.Decoders.ATA;
+using Aaru.Logging;
 using Identify = Aaru.CommonTypes.Structs.Devices.ATA.Identify;
 
 namespace Aaru.Core.Devices;
@@ -106,7 +106,7 @@ sealed partial class Reader
         if(Blocks == 0) GetDeviceBlocks();
 
         bool                   sense;
-        var                    tries  = 0;
+        int                    tries  = 0;
         uint                   lba    = 0;
         ushort                 cyl    = 0;
         byte                   head   = 0;
@@ -264,7 +264,7 @@ sealed partial class Reader
             return false;
         }
 
-        var error = true;
+        bool error = true;
 
         while(IsLba)
         {
@@ -325,7 +325,7 @@ sealed partial class Reader
 
     bool AtaReadBlocks(out byte[] buffer, ulong block, uint count, out double duration, out bool recoveredError)
     {
-        var                    error = true;
+        bool                   error = true;
         bool                   sense;
         AtaErrorRegistersLba28 errorLba;
         AtaErrorRegistersLba48 errorLba48;
@@ -403,7 +403,7 @@ sealed partial class Reader
     bool AtaReadChs(out byte[] buffer, ushort cylinder, byte head, byte sector, out double duration,
                     out bool   recoveredError)
     {
-        var                  error = true;
+        bool                 error = true;
         bool                 sense;
         AtaErrorRegistersChs errorChs;
         byte                 status = 0, errorByte = 0;

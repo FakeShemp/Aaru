@@ -36,8 +36,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 #pragma warning disable 169
@@ -75,10 +75,10 @@ public sealed class SGI : IPartition
 
         Label dvh = Marshal.ByteArrayToStructureBigEndian<Label>(sector);
 
-        for(var i = 0; i < dvh.volume.Length; i++)
+        for(int i = 0; i < dvh.volume.Length; i++)
             dvh.volume[i] = (Volume)Marshal.SwapStructureMembersEndian(dvh.volume[i]);
 
-        for(var i = 0; i < dvh.partitions.Length; i++)
+        for(int i = 0; i < dvh.partitions.Length; i++)
             dvh.partitions[i] = (Partition)Marshal.SwapStructureMembersEndian(dvh.partitions[i]);
 
         AaruConsole.DebugWriteLine(MODULE_NAME,
@@ -135,7 +135,7 @@ public sealed class SGI : IPartition
 
         ulong counter = 0;
 
-        for(var i = 0; i < dvh.partitions.Length; i++)
+        for(int i = 0; i < dvh.partitions.Length; i++)
         {
             AaruConsole.DebugWriteLine(MODULE_NAME,
                                        "dvh.partitions[{0}].num_blocks = {1}",

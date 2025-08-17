@@ -9,8 +9,8 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Images;
@@ -59,9 +59,9 @@ public class GameBoy : IByteAddressableImage
         if(stream.Length % 32768 != 0) return false;
 
         stream.Position = 0x104;
-        var magicBytes = new byte[8];
+        byte[] magicBytes = new byte[8];
         stream.EnsureRead(magicBytes, 0, 8);
-        var magic = BitConverter.ToUInt64(magicBytes, 0);
+        ulong magic = BitConverter.ToUInt64(magicBytes, 0);
 
         return magic == 0x0B000DCC6666EDCE;
     }
@@ -77,9 +77,9 @@ public class GameBoy : IByteAddressableImage
         if(stream.Length % 512 != 0) return ErrorNumber.InvalidArgument;
 
         stream.Position = 0x104;
-        var magicBytes = new byte[8];
+        byte[] magicBytes = new byte[8];
         stream.EnsureRead(magicBytes, 0, 8);
-        var magic = BitConverter.ToUInt64(magicBytes, 0);
+        ulong magic = BitConverter.ToUInt64(magicBytes, 0);
 
         if(magic != 0x0B000DCC6666EDCE) return ErrorNumber.InvalidArgument;
 
@@ -100,7 +100,7 @@ public class GameBoy : IByteAddressableImage
 
         Header header = Marshal.ByteArrayToStructureBigEndian<Header>(_data, 0x100, Marshal.SizeOf<Header>());
 
-        var name = new byte[(header.Name[^1] & 0x80) == 0x80 ? 15 : 16];
+        byte[] name = new byte[(header.Name[^1] & 0x80) == 0x80 ? 15 : 16];
         Array.Copy(header.Name, 0, name, 0, name.Length);
 
         _imageInfo.MediaTitle = StringHandlers.CToString(name);
@@ -266,8 +266,8 @@ public class GameBoy : IByteAddressableImage
 
         Header header = Marshal.ByteArrayToStructureBigEndian<Header>(_data, 0x100, Marshal.SizeOf<Header>());
 
-        var    hasMapper          = false;
-        var    hasSaveRam         = false;
+        bool   hasMapper          = false;
+        bool   hasSaveRam         = false;
         string mapperManufacturer = null;
         string mapperName         = null;
 
@@ -486,7 +486,7 @@ public class GameBoy : IByteAddressableImage
 
         if(header.SramSize > 0) hasSaveRam = true;
 
-        var devices = 1;
+        int devices = 1;
 
         if(hasSaveRam) devices++;
 
@@ -618,9 +618,9 @@ public class GameBoy : IByteAddressableImage
             return ErrorNumber.ReadOnly;
         }
 
-        var foundRom     = false;
-        var foundSaveRam = false;
-        var foundMapper  = false;
+        bool foundRom     = false;
+        bool foundSaveRam = false;
+        bool foundMapper  = false;
 
         // Sanitize
         foreach(LinearMemoryDevice map in mappings.Devices)

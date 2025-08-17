@@ -46,12 +46,12 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Metadata;
-using Aaru.Console;
 using Aaru.Core;
 using Aaru.Core.Media;
 using Aaru.Devices;
 using Aaru.Gui.Models;
 using Aaru.Localization;
+using Aaru.Logging;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
@@ -610,7 +610,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
     [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void DoWork(object plugin)
     {
-        var warning = false;
+        bool warning = false;
 
         if(plugin is not IWritableImage outputFormat)
         {
@@ -845,7 +845,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
         {
             if(!outputFormat.SetImageInfo(metadata))
             {
-                if(ForceChecked != true)
+                if(!ForceChecked)
                 {
                     await Dispatcher.UIThread.InvokeAsync(async () => await MessageBoxManager
                                                                            .GetMessageBoxStandard(UI.Title_Error,

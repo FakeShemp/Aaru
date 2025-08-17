@@ -39,9 +39,9 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Decoders.CD;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Session = Aaru.CommonTypes.Structs.Session;
 
 namespace Aaru.Images;
@@ -61,7 +61,7 @@ public sealed partial class CloneCd
         {
             imageFilter.GetDataForkStream().Seek(0, SeekOrigin.Begin);
             _cueStream = new StreamReader(imageFilter.GetDataForkStream());
-            var lineNumber = 0;
+            int lineNumber = 0;
 
             var ccdIdRegex     = new Regex(CCD_IDENTIFIER);
             var discIdRegex    = new Regex(DISC_IDENTIFIER);
@@ -96,12 +96,12 @@ public sealed partial class CloneCd
             var trkModeRegex   = new Regex(TRACK_MODE);
             var trkIndexRegex  = new Regex(TRACK_INDEX);
 
-            var                                     inCcd             = false;
-            var                                     inDisk            = false;
-            var                                     inSession         = false;
-            var                                     inEntry           = false;
-            var                                     inTrack           = false;
-            var                                     inCdText          = false;
+            bool                                    inCcd             = false;
+            bool                                    inDisk            = false;
+            bool                                    inSession         = false;
+            bool                                    inEntry           = false;
+            bool                                    inTrack           = false;
+            bool                                    inCdText          = false;
             var                                     cdtMs             = new MemoryStream();
             int                                     minSession        = int.MaxValue;
             int                                     maxSession        = int.MinValue;
@@ -374,8 +374,8 @@ public sealed partial class CloneCd
                             trackModes[currentTrackEntry] = Convert.ToByte(trkModeMatch.Groups["value"].Value, 10);
                         else if(trkIndexMatch.Success && currentTrackEntry > 0)
                         {
-                            var indexNo  = Convert.ToByte(trkIndexMatch.Groups["index"].Value, 10);
-                            var indexLba = Convert.ToInt32(trkIndexMatch.Groups["lba"].Value, 10);
+                            byte indexNo  = Convert.ToByte(trkIndexMatch.Groups["index"].Value, 10);
+                            int  indexLba = Convert.ToInt32(trkIndexMatch.Groups["lba"].Value, 10);
 
                             if(!trackIndexes.TryGetValue(currentTrackEntry, out _))
                                 trackIndexes[currentTrackEntry] = new Dictionary<byte, int>();
@@ -436,9 +436,9 @@ public sealed partial class CloneCd
 
             _subFilter = PluginRegister.Singleton.GetFilter(subFile);
 
-            var curSessionNo        = 0;
-            var currentTrack        = new Track();
-            var firstTrackInSession = true;
+            int  curSessionNo        = 0;
+            var  currentTrack        = new Track();
+            bool firstTrackInSession = true;
             Tracks = [];
             ulong leadOutStart = 0;
 
@@ -578,7 +578,7 @@ public sealed partial class CloneCd
                         break;
                     case 6:
                     {
-                        var id = (uint)((descriptor.Min << 16) + (descriptor.Sec << 8) + descriptor.Frame);
+                        uint id = (uint)((descriptor.Min << 16) + (descriptor.Sec << 8) + descriptor.Frame);
                         AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Disc_ID_0_X6, id & 0x00FFFFFF);
                         _imageInfo.MediaSerialNumber = $"{id                                  & 0x00FFFFFF:X6}";
 
@@ -649,10 +649,10 @@ public sealed partial class CloneCd
 
                 if(tmpTrack.Type == TrackType.Data)
                 {
-                    for(var s = 225; s < 750; s++)
+                    for(int s = 225; s < 750; s++)
                     {
-                        var syncTest = new byte[12];
-                        var sectTest = new byte[2352];
+                        byte[] syncTest = new byte[12];
+                        byte[] sectTest = new byte[2352];
 
                         long pos = (long)tmpTrack.FileOffset + s * 2352;
 
@@ -697,9 +697,9 @@ public sealed partial class CloneCd
 
                         if(sectTest[15] != 2) continue;
 
-                        var subHdr1 = new byte[4];
-                        var subHdr2 = new byte[4];
-                        var empHdr  = new byte[4];
+                        byte[] subHdr1 = new byte[4];
+                        byte[] subHdr2 = new byte[4];
+                        byte[] empHdr  = new byte[4];
 
                         Array.Copy(sectTest, 16, subHdr1, 0, 4);
                         Array.Copy(sectTest, 20, subHdr2, 0, 4);
@@ -845,13 +845,13 @@ public sealed partial class CloneCd
 
             Sessions.Add(currentSession);
 
-            var data       = false;
-            var mode2      = false;
-            var firstAudio = false;
-            var firstData  = false;
-            var audio      = false;
+            bool data       = false;
+            bool mode2      = false;
+            bool firstAudio = false;
+            bool firstData  = false;
+            bool audio      = false;
 
-            for(var i = 0; i < Tracks.Count; i++)
+            for(int i = 0; i < Tracks.Count; i++)
             {
                 // First track is audio
                 firstAudio |= i == 0 && Tracks[i].Type == TrackType.Audio;
@@ -991,7 +991,7 @@ public sealed partial class CloneCd
         uint sectorOffset;
         uint sectorSize;
         uint sectorSkip;
-        var  mode2 = false;
+        bool mode2 = false;
 
         switch(aaruTrack.Type)
         {
@@ -1036,9 +1036,9 @@ public sealed partial class CloneCd
 
             _dataStream.EnsureRead(buffer, 0, buffer.Length);
 
-            for(var i = 0; i < length; i++)
+            for(int i = 0; i < length; i++)
             {
-                var sector = new byte[sectorSize];
+                byte[] sector = new byte[sectorSize];
                 Array.Copy(buffer, sectorSize * i, sector, 0, sectorSize);
                 sector = Sector.GetUserDataFromMode2(sector);
                 mode2Ms.Write(sector, 0, sector.Length);
@@ -1050,9 +1050,9 @@ public sealed partial class CloneCd
             _dataStream.EnsureRead(buffer, 0, buffer.Length);
         else
         {
-            for(var i = 0; i < length; i++)
+            for(int i = 0; i < length; i++)
             {
-                var sector = new byte[sectorSize];
+                byte[] sector = new byte[sectorSize];
                 _dataStream.Seek(sectorOffset, SeekOrigin.Current);
                 _dataStream.EnsureRead(sector, 0, sector.Length);
                 _dataStream.Seek(sectorSkip, SeekOrigin.Current);
@@ -1317,9 +1317,9 @@ public sealed partial class CloneCd
             _dataStream.EnsureRead(buffer, 0, buffer.Length);
         else
         {
-            for(var i = 0; i < length; i++)
+            for(int i = 0; i < length; i++)
             {
-                var sector = new byte[sectorSize];
+                byte[] sector = new byte[sectorSize];
                 _dataStream.Seek(sectorOffset, SeekOrigin.Current);
                 _dataStream.EnsureRead(sector, 0, sector.Length);
                 _dataStream.Seek(sectorSkip, SeekOrigin.Current);

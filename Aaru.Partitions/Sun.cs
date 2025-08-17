@@ -38,8 +38,8 @@ using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Partitions;
@@ -159,7 +159,7 @@ public sealed class SunDisklabel : IPartition
 
         if(useDkl)
         {
-            var sectorsPerCylinder = (ulong)(dkl.dkl_nsect * dkl.dkl_nhead);
+            ulong sectorsPerCylinder = (ulong)(dkl.dkl_nsect * dkl.dkl_nhead);
 
             AaruConsole.DebugWriteLine(MODULE_NAME,
                                        "dkl.dkl_asciilabel = \"{0}\"",
@@ -178,7 +178,7 @@ public sealed class SunDisklabel : IPartition
             AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_bhead = {0}",  dkl.dkl_bhead);
             AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_ppart = {0}",  dkl.dkl_ppart);
 
-            for(var i = 0; i < NDKMAP; i++)
+            for(int i = 0; i < NDKMAP; i++)
             {
                 AaruConsole.DebugWriteLine(MODULE_NAME,
                                            "dkl.dkl_map[{0}].dkl_cylno = {1}",
@@ -192,7 +192,7 @@ public sealed class SunDisklabel : IPartition
             AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_cksum = 0x{0:X4}", dkl.dkl_cksum);
             AaruConsole.DebugWriteLine(MODULE_NAME, "sectorsPerCylinder = {0}", sectorsPerCylinder);
 
-            for(var i = 0; i < NDKMAP; i++)
+            for(int i = 0; i < NDKMAP; i++)
             {
                 if(dkl.dkl_map[i].dkl_cylno <= 0 || dkl.dkl_map[i].dkl_nblk <= 0) continue;
 
@@ -214,7 +214,7 @@ public sealed class SunDisklabel : IPartition
         }
         else if(useDkl8)
         {
-            var sectorsPerCylinder = (ulong)(dkl8.dkl_nsect * dkl8.dkl_nhead);
+            ulong sectorsPerCylinder = (ulong)(dkl8.dkl_nsect * dkl8.dkl_nhead);
 
             AaruConsole.DebugWriteLine(MODULE_NAME,
                                        "dkl8.dkl_asciilabel = \"{0}\"",
@@ -243,7 +243,7 @@ public sealed class SunDisklabel : IPartition
             AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_obs3 = {0}",               dkl8.dkl_obs3);
             AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_obs4 = {0}",               dkl8.dkl_obs4);
 
-            for(var i = 0; i < NDKMAP; i++)
+            for(int i = 0; i < NDKMAP; i++)
             {
                 AaruConsole.DebugWriteLine(MODULE_NAME,
                                            "dkl8.dkl_map[{0}].dkl_cylno = {1}",
@@ -279,7 +279,7 @@ public sealed class SunDisklabel : IPartition
 
             if(dkl8.dkl_vtoc.v_nparts > NDKMAP) return false;
 
-            for(var i = 0; i < dkl8.dkl_vtoc.v_nparts; i++)
+            for(int i = 0; i < dkl8.dkl_vtoc.v_nparts; i++)
             {
                 if(dkl8.dkl_map[i].dkl_nblk      <= 0               ||
                    dkl8.dkl_vtoc.v_part[i].p_tag == SunTag.SunEmpty ||
@@ -342,7 +342,7 @@ public sealed class SunDisklabel : IPartition
 
             AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_read_reinstruct = {0}", dkl16.dkl_read_reinstruct);
 
-            for(var i = 0; i < NDKMAP16; i++)
+            for(int i = 0; i < NDKMAP16; i++)
             {
                 AaruConsole.DebugWriteLine(MODULE_NAME,
                                            "dkl16.dkl_vtoc.v_part[{0}].p_start = {1}",
@@ -377,7 +377,7 @@ public sealed class SunDisklabel : IPartition
 
             if(dkl16.dkl_vtoc.v_nparts > NDKMAP16) return false;
 
-            for(var i = 0; i < dkl16.dkl_vtoc.v_nparts; i++)
+            for(int i = 0; i < dkl16.dkl_vtoc.v_nparts; i++)
             {
                 if(dkl16.dkl_vtoc.v_part[i].p_size <= 0               ||
                    dkl16.dkl_vtoc.v_part[i].p_tag  == SunTag.SunEmpty ||
@@ -423,7 +423,7 @@ public sealed class SunDisklabel : IPartition
         AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Swapping_dk_label);
         label = (dk_label)Marshal.SwapStructureMembersEndian(label);
 
-        for(var i = 0; i < label.dkl_map.Length; i++)
+        for(int i = 0; i < label.dkl_map.Length; i++)
             label.dkl_map[i] = (dk_map)Marshal.SwapStructureMembersEndian(label.dkl_map[i]);
 
         return label;
@@ -434,22 +434,22 @@ public sealed class SunDisklabel : IPartition
         AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Swapping_dk_label8);
         label = (dk_label8)Marshal.SwapStructureMembersEndian(label);
 
-        for(var i = 0; i < label.dkl_map.Length; i++)
+        for(int i = 0; i < label.dkl_map.Length; i++)
             label.dkl_map[i] = (dk_map)Marshal.SwapStructureMembersEndian(label.dkl_map[i]);
 
-        for(var i = 0; i < label.dkl_vtoc.v_bootinfo.Length; i++)
+        for(int i = 0; i < label.dkl_vtoc.v_bootinfo.Length; i++)
             label.dkl_vtoc.v_bootinfo[i] = Swapping.Swap(label.dkl_vtoc.v_bootinfo[i]);
 
-        for(var i = 0; i < label.dkl_vtoc.v_part.Length; i++)
+        for(int i = 0; i < label.dkl_vtoc.v_part.Length; i++)
         {
             label.dkl_vtoc.v_part[i].p_flag = (SunFlags)Swapping.Swap((ushort)label.dkl_vtoc.v_part[i].p_flag);
             label.dkl_vtoc.v_part[i].p_tag  = (SunTag)Swapping.Swap((ushort)label.dkl_vtoc.v_part[i].p_tag);
         }
 
-        for(var i = 0; i < label.dkl_vtoc.v_timestamp.Length; i++)
+        for(int i = 0; i < label.dkl_vtoc.v_timestamp.Length; i++)
             label.dkl_vtoc.v_timestamp[i] = Swapping.Swap(label.dkl_vtoc.v_timestamp[i]);
 
-        for(var i = 0; i < label.dkl_vtoc.v_reserved.Length; i++)
+        for(int i = 0; i < label.dkl_vtoc.v_reserved.Length; i++)
             label.dkl_vtoc.v_reserved[i] = Swapping.Swap(label.dkl_vtoc.v_reserved[i]);
 
         return label;
@@ -460,10 +460,10 @@ public sealed class SunDisklabel : IPartition
         AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Swapping_dk_label16);
         label = (dk_label16)Marshal.SwapStructureMembersEndian(label);
 
-        for(var i = 0; i < label.dkl_vtoc.v_bootinfo.Length; i++)
+        for(int i = 0; i < label.dkl_vtoc.v_bootinfo.Length; i++)
             label.dkl_vtoc.v_bootinfo[i] = Swapping.Swap(label.dkl_vtoc.v_bootinfo[i]);
 
-        for(var i = 0; i < label.dkl_vtoc.v_part.Length; i++)
+        for(int i = 0; i < label.dkl_vtoc.v_part.Length; i++)
         {
             label.dkl_vtoc.v_part[i].p_flag  = (SunFlags)Swapping.Swap((ushort)label.dkl_vtoc.v_part[i].p_flag);
             label.dkl_vtoc.v_part[i].p_tag   = (SunTag)Swapping.Swap((ushort)label.dkl_vtoc.v_part[i].p_tag);
@@ -471,10 +471,10 @@ public sealed class SunDisklabel : IPartition
             label.dkl_vtoc.v_part[i].p_start = Swapping.Swap(label.dkl_vtoc.v_part[i].p_start);
         }
 
-        for(var i = 0; i < label.dkl_vtoc.v_timestamp.Length; i++)
+        for(int i = 0; i < label.dkl_vtoc.v_timestamp.Length; i++)
             label.dkl_vtoc.v_timestamp[i] = Swapping.Swap(label.dkl_vtoc.v_timestamp[i]);
 
-        for(var i = 0; i < label.dkl_vtoc.v_reserved.Length; i++)
+        for(int i = 0; i < label.dkl_vtoc.v_reserved.Length; i++)
             label.dkl_vtoc.v_reserved[i] = Swapping.Swap(label.dkl_vtoc.v_reserved[i]);
 
         return label;

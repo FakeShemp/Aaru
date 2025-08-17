@@ -42,11 +42,11 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Extents;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Core.Graphics;
 using Aaru.Core.Logging;
 using Aaru.Decoders.SCSI;
 using Aaru.Devices;
+using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
 using Humanizer.Localisation;
@@ -87,7 +87,7 @@ public partial class Dump
             return;
         }
 
-        var blocks = (uint)((readBuffer[0] << 24) + (readBuffer[1] << 16) + (readBuffer[2] << 8) + readBuffer[3]);
+        uint blocks = (uint)((readBuffer[0] << 24) + (readBuffer[1] << 16) + (readBuffer[2] << 8) + readBuffer[3]);
 
         blocks++;
 
@@ -198,7 +198,7 @@ public partial class Dump
             _mediaGraph?.PaintSectorsBad(_resume.BadBlocks);
         }
 
-        var newTrim = false;
+        bool newTrim = false;
 
         _speedStopwatch.Restart();
         ulong sectorSpeedStart = 0;
@@ -402,9 +402,9 @@ public partial class Dump
 
         if(_resume.BadBlocks.Count > 0 && !_aborted && _retryPasses > 0)
         {
-            var pass              = 1;
-            var forward           = true;
-            var runningPersistent = false;
+            int  pass              = 1;
+            bool forward           = true;
+            bool runningPersistent = false;
 
             Modes.ModePage? currentModePage = null;
             byte[]          md6;

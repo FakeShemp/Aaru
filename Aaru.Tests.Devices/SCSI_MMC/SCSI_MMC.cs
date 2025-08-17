@@ -26,8 +26,9 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using Aaru.Console;
+using System;
 using Aaru.Devices;
+using Aaru.Logging;
 
 namespace Aaru.Tests.Devices;
 
@@ -37,7 +38,7 @@ static partial class ScsiMmc
     {
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
             AaruConsole.WriteLine(Localization.Send_a_special_SCSI_MultiMedia_command_to_the_device);
 
@@ -50,12 +51,12 @@ static partial class ScsiMmc
             AaruConsole.WriteLine(Localization.Return_to_command_class_menu);
             AaruConsole.Write(Localization.Choose);
 
-            string strDev = System.Console.ReadLine();
+            string strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out int item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -80,7 +81,7 @@ static partial class ScsiMmc
                     continue;
                 default:
                     AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                    System.Console.ReadKey();
+                    Console.ReadKey();
 
                     continue;
             }

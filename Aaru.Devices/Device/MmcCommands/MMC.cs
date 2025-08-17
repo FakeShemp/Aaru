@@ -31,7 +31,7 @@
 // ****************************************************************************/
 
 using System;
-using Aaru.Console;
+using Aaru.Logging;
 
 // ReSharper disable UnusedMember.Global
 
@@ -206,7 +206,7 @@ public partial class Device
     public bool Read(out byte[] buffer,        out uint[] response, uint lba, uint blockSize, ushort transferLength,
                      bool       byteAddressed, uint       timeout,  out double duration)
     {
-        var sense = true;
+        bool sense = true;
         buffer   = null;
         response = null;
         duration = -1;
@@ -342,9 +342,9 @@ public partial class Device
                                         ushort transferLength, bool byteAddressed, uint timeout, out double duration)
     {
         buffer = new byte[transferLength * blockSize];
-        var blockBuffer = new byte[blockSize];
+        byte[] blockBuffer = new byte[blockSize];
         duration = 0;
-        var sense = true;
+        bool sense = true;
         response = null;
 
         for(uint i = 0; i < transferLength; i++)

@@ -32,7 +32,7 @@
 
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
+using Aaru.Logging;
 
 namespace Aaru.Core;
 

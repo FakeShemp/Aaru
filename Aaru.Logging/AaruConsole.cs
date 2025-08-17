@@ -33,7 +33,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Aaru.Console;
+namespace Aaru.Logging;
 
 /// <summary>
 ///     Writes the text representation of the specified array of objects, followed by the current line terminator, to

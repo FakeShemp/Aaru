@@ -35,8 +35,8 @@ using System.IO;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -50,7 +50,7 @@ public sealed partial class CopyQm
         Stream stream = imageFilter.GetDataForkStream();
         stream.Seek(0, SeekOrigin.Begin);
 
-        var hdr = new byte[133];
+        byte[] hdr = new byte[133];
 
         stream.EnsureRead(hdr, 0, 133);
         _header = Marshal.ByteArrayToStructureLittleEndian<Header>(hdr);
@@ -85,7 +85,7 @@ public sealed partial class CopyQm
         AaruConsole.DebugWriteLine(MODULE_NAME, "header.skew = {0}",             _header.skew);
         AaruConsole.DebugWriteLine(MODULE_NAME, "header.drive = {0}",            _header.drive);
 
-        var cmt = new byte[_header.commentLength];
+        byte[] cmt = new byte[_header.commentLength];
         stream.EnsureRead(cmt, 0, _header.commentLength);
         _imageInfo.Comments = StringHandlers.CToString(cmt);
         _decodedImage       = new MemoryStream();
@@ -94,21 +94,21 @@ public sealed partial class CopyQm
 
         while(stream.Position + 2 < stream.Length)
         {
-            var runLengthBytes = new byte[2];
+            byte[] runLengthBytes = new byte[2];
 
             if(stream.EnsureRead(runLengthBytes, 0, 2) != 2) break;
 
-            var runLength = BitConverter.ToInt16(runLengthBytes, 0);
+            short runLength = BitConverter.ToInt16(runLengthBytes, 0);
 
             switch(runLength)
             {
                 case < 0:
                 {
-                    var repeatedByte  = (byte)stream.ReadByte();
-                    var repeatedArray = new byte[runLength * -1];
+                    byte   repeatedByte  = (byte)stream.ReadByte();
+                    byte[] repeatedArray = new byte[runLength * -1];
                     ArrayHelpers.ArrayFill(repeatedArray, repeatedByte);
 
-                    for(var i = 0; i < runLength * -1; i++)
+                    for(int i = 0; i < runLength * -1; i++)
                     {
                         _decodedImage.WriteByte(repeatedByte);
 
@@ -120,7 +120,7 @@ public sealed partial class CopyQm
                 }
                 case > 0:
                 {
-                    var nonRepeated = new byte[runLength];
+                    byte[] nonRepeated = new byte[runLength];
                     stream.EnsureRead(nonRepeated, 0, runLength);
                     _decodedImage.Write(nonRepeated, 0, runLength);
 
@@ -139,14 +139,14 @@ public sealed partial class CopyQm
 
         if(fillingLen > 0)
         {
-            var filling = new byte[fillingLen];
+            byte[] filling = new byte[fillingLen];
             ArrayHelpers.ArrayFill(filling, (byte)0xF6);
             _decodedImage.Write(filling, 0, filling.Length);
         }
 
-        var sum = 0;
+        int sum = 0;
 
-        for(var i = 0; i < hdr.Length - 1; i++) sum += hdr[i];
+        for(int i = 0; i < hdr.Length - 1; i++) sum += hdr[i];
 
         _headerChecksumOk = (-1 * sum & 0xFF) == _header.headerChecksum;
 

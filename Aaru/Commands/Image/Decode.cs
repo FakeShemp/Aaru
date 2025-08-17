@@ -35,12 +35,12 @@ using System.Globalization;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Core;
 using Aaru.Decoders.ATA;
 using Aaru.Decoders.CD;
 using Aaru.Decoders.SCSI;
 using Aaru.Localization;
+using Aaru.Logging;
 using Spectre.Console;
 using Spectre.Console.Cli;
 

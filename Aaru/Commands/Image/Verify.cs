@@ -38,10 +38,10 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Core;
 using Aaru.Core.Graphics;
 using Aaru.Localization;
+using Aaru.Logging;
 using Humanizer;
 using Humanizer.Localisation;
 using Spectre.Console;
@@ -400,16 +400,18 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
             if(failingLbas.Count == (int)inputFormat.Info.Sectors)
                 AaruConsole.VerboseWriteLine($"\t[red]{UI.all_sectors}[/]");
             else
-                foreach(ulong t in failingLbas)
-                    AaruConsole.VerboseWriteLine("\t{0}", t);
+            {
+                foreach(ulong t in failingLbas) AaruConsole.VerboseWriteLine("\t{0}", t);
+            }
 
             AaruConsole.WriteLine($"[yellow3_1]{UI.LBAs_without_checksum}[/]");
 
             if(unknownLbas.Count == (int)inputFormat.Info.Sectors)
                 AaruConsole.VerboseWriteLine($"\t[yellow3_1]{UI.all_sectors}[/]");
             else
-                foreach(ulong t in unknownLbas)
-                    AaruConsole.VerboseWriteLine("\t{0}", t);
+            {
+                foreach(ulong t in unknownLbas) AaruConsole.VerboseWriteLine("\t{0}", t);
+            }
         }
 
         // TODO: Convert to table

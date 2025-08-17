@@ -1,10 +1,11 @@
+using System;
 using System.Linq;
 using System.Threading;
-using Aaru.Console;
 using Aaru.Decoders.CD;
 using Aaru.Decoders.SCSI;
 using Aaru.Devices;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Tests.Devices;
 
@@ -12,12 +13,12 @@ static partial class ScsiMmc
 {
     static void ReadLeadOutUsingTrapDisc(string devPath, Device dev)
     {
-        var    tocIsNotBcd = false;
+        bool   tocIsNotBcd = false;
         bool   sense;
         byte[] senseBuffer;
 
     start:
-        System.Console.Clear();
+        Console.Clear();
 
         AaruConsole.WriteLine(Localization.Ejecting_disc);
 
@@ -26,11 +27,11 @@ static partial class ScsiMmc
 
         AaruConsole.WriteLine(Localization.Please_insert_a_data_only_disc_inside);
         AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-        System.Console.ReadLine();
+        Console.ReadLine();
 
         AaruConsole.WriteLine(Localization.Sending_READ_FULL_TOC_to_the_device);
 
-        var retries = 0;
+        int retries = 0;
 
         do
         {
@@ -55,7 +56,7 @@ static partial class ScsiMmc
             AaruConsole.WriteLine(Localization.READ_FULL_TOC_failed);
             AaruConsole.WriteLine("{0}", Sense.PrettifySense(senseBuffer));
             AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-            System.Console.ReadLine();
+            Console.ReadLine();
 
             return;
         }
@@ -66,7 +67,7 @@ static partial class ScsiMmc
         {
             AaruConsole.WriteLine(Localization.Could_not_decode_TOC);
             AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-            System.Console.ReadLine();
+            Console.ReadLine();
 
             return;
         }
@@ -79,7 +80,7 @@ static partial class ScsiMmc
         {
             AaruConsole.WriteLine(Localization.Cannot_find_lead_out);
             AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-            System.Console.ReadLine();
+            Console.ReadLine();
 
             return;
         }
@@ -99,7 +100,7 @@ static partial class ScsiMmc
 
         AaruConsole.WriteLine(Localization.Please_insert_trap_disc_inside);
         AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-        System.Console.ReadLine();
+        Console.ReadLine();
 
         AaruConsole.WriteLine(Localization.Sending_READ_FULL_TOC_to_the_device);
 
@@ -128,7 +129,7 @@ static partial class ScsiMmc
             AaruConsole.WriteLine(Localization.READ_FULL_TOC_failed);
             AaruConsole.WriteLine("{0}", Sense.PrettifySense(senseBuffer));
             AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-            System.Console.ReadLine();
+            Console.ReadLine();
 
             return;
         }
@@ -139,7 +140,7 @@ static partial class ScsiMmc
         {
             AaruConsole.WriteLine(Localization.Could_not_decode_TOC);
             AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-            System.Console.ReadLine();
+            Console.ReadLine();
 
             return;
         }
@@ -152,7 +153,7 @@ static partial class ScsiMmc
         {
             AaruConsole.WriteLine(Localization.Cannot_find_lead_out);
             AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-            System.Console.ReadLine();
+            Console.ReadLine();
 
             return;
         }
@@ -193,7 +194,7 @@ static partial class ScsiMmc
         {
             AaruConsole.WriteLine(Localization.Trap_disc_doesnt_have_enough_sectors);
             AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-            System.Console.ReadLine();
+            Console.ReadLine();
 
             return;
         }
@@ -204,7 +205,7 @@ static partial class ScsiMmc
 
         AaruConsole.WriteLine(Localization.Please_MANUALLY_get_the_trap_disc_out_and_put_the_data_disc_back_inside);
         AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-        System.Console.ReadLine();
+        Console.ReadLine();
 
         AaruConsole.WriteLine(Localization.Waiting_5_seconds);
         Thread.Sleep(5000);
@@ -232,7 +233,7 @@ static partial class ScsiMmc
             AaruConsole.WriteLine(Localization.READ_FULL_TOC_failed);
             AaruConsole.WriteLine("{0}", Sense.PrettifySense(senseBuffer));
             AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-            System.Console.ReadLine();
+            Console.ReadLine();
 
             return;
         }
@@ -243,7 +244,7 @@ static partial class ScsiMmc
         {
             AaruConsole.WriteLine(Localization.Could_not_decode_TOC);
             AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-            System.Console.ReadLine();
+            Console.ReadLine();
 
             return;
         }
@@ -256,7 +257,7 @@ static partial class ScsiMmc
         {
             AaruConsole.WriteLine(Localization.Cannot_find_lead_out);
             AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-            System.Console.ReadLine();
+            Console.ReadLine();
 
             return;
         }
@@ -269,7 +270,7 @@ static partial class ScsiMmc
         {
             AaruConsole.WriteLine(Localization.Lead_out_has_changed_this_drive_does_not_support_hot_swapping_discs);
             AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-            System.Console.ReadLine();
+            Console.ReadLine();
 
             return;
         }
@@ -399,7 +400,7 @@ static partial class ScsiMmc
         AaruConsole.WriteLine(pqResult ? Localization.FAIL : Localization.Success);
 
     menu:
-        System.Console.Clear();
+        Console.Clear();
         AaruConsole.WriteLine(Localization.Device_0, devPath);
 
         AaruConsole.WriteLine(dataResult && scrambledResult
@@ -480,13 +481,13 @@ static partial class ScsiMmc
         AaruConsole.WriteLine(Localization.Return_to_special_SCSI_MultiMedia_Commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        string strDev = System.Console.ReadLine();
+        string strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out int item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -498,135 +499,135 @@ static partial class ScsiMmc
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0,       devPath);
                 AaruConsole.WriteLine(Localization.LBA_0_response, sectors + 5);
 
                 if(buffer != null) PrintHex.PrintHexArray(dataBuffer, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 goto menu;
             case 2:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0,    devPath);
                 AaruConsole.WriteLine(Localization.LBA_0_sense, sectors + 5);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(dataSense, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 goto menu;
             case 3:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0,            devPath);
                 AaruConsole.WriteLine(Localization.LBA_0_decoded_sense, sectors + 5);
                 AaruConsole.Write("{0}", Sense.PrettifySense(dataSense));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 goto menu;
             case 4:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0,                 devPath);
                 AaruConsole.WriteLine(Localization.LBA_0_scrambled_response, sectors + 5);
 
                 if(buffer != null) PrintHex.PrintHexArray(scrambledBuffer, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 goto menu;
             case 5:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0,              devPath);
                 AaruConsole.WriteLine(Localization.LBA_0_scrambled_sense, sectors + 5);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(scrambledSense, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 goto menu;
             case 6:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0,                      devPath);
                 AaruConsole.WriteLine(Localization.LBA_0_scrambled_decoded_sense, sectors + 5);
                 AaruConsole.Write("{0}", Sense.PrettifySense(scrambledSense));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 goto menu;
             case 7:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0,          devPath);
                 AaruConsole.WriteLine(Localization.LBA_PQ_0_response, sectors + 5);
 
                 if(buffer != null) PrintHex.PrintHexArray(pqBuffer, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 goto menu;
             case 8:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0,       devPath);
                 AaruConsole.WriteLine(Localization.LBA_PQ_0_sense, sectors + 5);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(pqSense, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 goto menu;
             case 9:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0,             devPath);
                 AaruConsole.WriteLine(Localization.LBA_PQ_decoded_sense, sectors + 5);
                 AaruConsole.Write("{0}", Sense.PrettifySense(pqSense));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 goto menu;
             case 10:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0,          devPath);
                 AaruConsole.WriteLine(Localization.LBA_RW_0_response, sectors + 5);
 
                 if(buffer != null) PrintHex.PrintHexArray(rwBuffer, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 goto menu;
             case 11:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0,       devPath);
                 AaruConsole.WriteLine(Localization.LBA_RW_0_sense, sectors + 5);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(rwSense, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 goto menu;
             case 12:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0,               devPath);
                 AaruConsole.WriteLine(Localization.LBA_RW_0_decoded_sense, sectors + 5);
                 AaruConsole.Write("{0}", Sense.PrettifySense(rwSense));
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 goto menu;
             case 13:
                 goto start;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }

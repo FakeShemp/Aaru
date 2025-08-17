@@ -32,9 +32,9 @@
 
 using System;
 using Aaru.CommonTypes.Metadata;
-using Aaru.Console;
 using Aaru.Decoders.ATA;
 using Aaru.Devices;
+using Aaru.Logging;
 using Spectre.Console;
 using Identify = Aaru.CommonTypes.Structs.Devices.ATA.Identify;
 
@@ -46,7 +46,7 @@ public sealed partial class DeviceReport
     /// <returns>Media report</returns>
     public TestedMedia ReportAtaMedia()
     {
-        var                    sense      = true;
+        bool                   sense      = true;
         AtaErrorRegistersChs   errorChs   = new();
         AtaErrorRegistersLba28 errorLba   = new();
         AtaErrorRegistersLba48 errorLba48 = new();
@@ -181,7 +181,7 @@ public sealed partial class DeviceReport
                     mediaTest.Manufacturer = ataId.MediaManufacturer;
             }
 
-            var checkCorrectRead = BitConverter.ToUInt64(buffer, 0);
+            ulong checkCorrectRead = BitConverter.ToUInt64(buffer, 0);
 
             Spectre.ProgressSingleSpinner(ctx =>
             {
@@ -535,7 +535,7 @@ public sealed partial class DeviceReport
     /// <summary>Creates a report of an ATA device</summary>
     public TestedMedia ReportAta(Identify.IdentifyDevice ataId)
     {
-        var                    sense        = true;
+        bool                   sense        = true;
         byte[]                 readBuf      = [];
         AtaErrorRegistersChs   errorChs     = new();
         AtaErrorRegistersLba28 errorLba     = new();
@@ -998,7 +998,7 @@ public sealed partial class DeviceReport
     /// <returns>IDENTIFY ATA DEVICE response without the private fields</returns>
     public static byte[] ClearIdentify(byte[] buffer)
     {
-        var empty = new byte[512];
+        byte[] empty = new byte[512];
 
         Array.Copy(empty, 0, buffer, 20,  20);
         Array.Copy(empty, 0, buffer, 216, 8);

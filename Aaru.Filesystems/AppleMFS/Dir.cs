@@ -31,8 +31,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Filesystems;
 
@@ -111,7 +111,7 @@ public sealed partial class AppleMFS
         _idToEntry    = new Dictionary<uint, FileEntry>();
         _filenameToId = new Dictionary<string, uint>();
 
-        var offset = 0;
+        int offset = 0;
 
         while(offset + 51 < _directoryBlocks.Length)
         {

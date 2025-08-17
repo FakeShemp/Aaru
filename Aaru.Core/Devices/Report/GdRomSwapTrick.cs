@@ -36,10 +36,10 @@ using System;
 using System.Linq;
 using System.Threading;
 using Aaru.CommonTypes.Metadata;
-using Aaru.Console;
 using Aaru.Decoders.CD;
 using Aaru.Decoders.SCSI;
 using Aaru.Devices;
+using Aaru.Logging;
 
 namespace Aaru.Core.Devices.Report;
 
@@ -58,7 +58,7 @@ public sealed partial class DeviceReport
             AaruConsole.Write(Localization.Core
                                           .Have_you_previously_tried_with_a_GD_ROM_disc_and_did_the_computer_hang_or_crash_Q);
 
-            pressedKey = System.Console.ReadKey();
+            pressedKey = Console.ReadKey();
             AaruConsole.WriteLine();
         }
 
@@ -76,11 +76,11 @@ public sealed partial class DeviceReport
 
         AaruConsole.WriteLine(Localization.Core.Please_insert_trap_disc_inside);
         AaruConsole.WriteLine(Localization.Core.Press_any_key_to_continue);
-        System.Console.ReadLine();
+        Console.ReadLine();
 
         AaruConsole.WriteLine(Localization.Core.Sending_READ_FULL_TOC_to_the_device);
 
-        var    retries = 0;
+        int    retries = 0;
         bool   sense;
         byte[] buffer;
         byte[] senseBuffer;
@@ -139,8 +139,8 @@ public sealed partial class DeviceReport
             return;
         }
 
-        int min         = 0, sec, frame;
-        var tocIsNotBcd = false;
+        int  min         = 0, sec, frame;
+        bool tocIsNotBcd = false;
 
         report.GdRomSwapDiscCapabilities.SwapDiscLeadOutPMIN  = leadOutTrack.PMIN;
         report.GdRomSwapDiscCapabilities.SwapDiscLeadOutPSEC  = leadOutTrack.PSEC;
@@ -194,7 +194,7 @@ public sealed partial class DeviceReport
 
         AaruConsole.WriteLine(Localization.Core.Please_MANUALLY_get_the_trap_disc_out_and_put_the_GD_ROM_disc_inside);
         AaruConsole.WriteLine(Localization.Core.Press_any_key_to_continue);
-        System.Console.ReadLine();
+        Console.ReadLine();
 
         AaruConsole.WriteLine(Localization.Core.Waiting_5_seconds);
         Thread.Sleep(5000);
@@ -1743,16 +1743,16 @@ public sealed partial class DeviceReport
                                   ? Localization.Core.Success
                                   : Localization.Core.FAIL);
 
-        if(report.GdRomSwapDiscCapabilities.Lba45000Readable       == false &&
-           report.GdRomSwapDiscCapabilities.Lba50000Readable       == false &&
-           report.GdRomSwapDiscCapabilities.Lba100000Readable      == false &&
-           report.GdRomSwapDiscCapabilities.Lba400000Readable      == false &&
-           report.GdRomSwapDiscCapabilities.Lba450000Readable      == false &&
-           report.GdRomSwapDiscCapabilities.Lba45000AudioReadable  == false &&
-           report.GdRomSwapDiscCapabilities.Lba50000AudioReadable  == false &&
-           report.GdRomSwapDiscCapabilities.Lba100000AudioReadable == false &&
-           report.GdRomSwapDiscCapabilities.Lba400000AudioReadable == false &&
-           report.GdRomSwapDiscCapabilities.Lba450000AudioReadable == false)
+        if(!report.GdRomSwapDiscCapabilities.Lba45000Readable       &&
+           !report.GdRomSwapDiscCapabilities.Lba50000Readable       &&
+           !report.GdRomSwapDiscCapabilities.Lba100000Readable      &&
+           !report.GdRomSwapDiscCapabilities.Lba400000Readable      &&
+           !report.GdRomSwapDiscCapabilities.Lba450000Readable      &&
+           !report.GdRomSwapDiscCapabilities.Lba45000AudioReadable  &&
+           !report.GdRomSwapDiscCapabilities.Lba50000AudioReadable  &&
+           !report.GdRomSwapDiscCapabilities.Lba100000AudioReadable &&
+           !report.GdRomSwapDiscCapabilities.Lba400000AudioReadable &&
+           !report.GdRomSwapDiscCapabilities.Lba450000AudioReadable)
             return;
 
         pressedKey = new ConsoleKeyInfo();
@@ -1761,19 +1761,19 @@ public sealed partial class DeviceReport
         {
             AaruConsole.Write(Localization.Core.Test_read_whole_high_density_area_proceed_Q);
 
-            pressedKey = System.Console.ReadKey();
+            pressedKey = Console.ReadKey();
             AaruConsole.WriteLine();
         }
 
         if(pressedKey.Key == ConsoleKey.N) return;
 
         uint          startingSector = 45000;
-        var           readAsAudio    = false;
-        var           aborted        = false;
+        bool          readAsAudio    = false;
+        bool          aborted        = false;
         MmcSubchannel subchannel     = MmcSubchannel.None;
         uint          blockSize      = 2352;
 
-        if(report.GdRomSwapDiscCapabilities.Lba45000Readable == false)
+        if(!report.GdRomSwapDiscCapabilities.Lba45000Readable)
         {
             startingSector = 45000;
             readAsAudio    = false;
@@ -1783,7 +1783,7 @@ public sealed partial class DeviceReport
                 subchannel                                                          = MmcSubchannel.Raw;
             else if(report.GdRomSwapDiscCapabilities.Lba45000PqReadable) subchannel = MmcSubchannel.Q16;
         }
-        else if(report.GdRomSwapDiscCapabilities.Lba50000Readable == false)
+        else if(!report.GdRomSwapDiscCapabilities.Lba50000Readable)
         {
             startingSector = 50000;
             readAsAudio    = false;
@@ -1793,7 +1793,7 @@ public sealed partial class DeviceReport
                 subchannel                                                          = MmcSubchannel.Raw;
             else if(report.GdRomSwapDiscCapabilities.Lba50000PqReadable) subchannel = MmcSubchannel.Q16;
         }
-        else if(report.GdRomSwapDiscCapabilities.Lba100000Readable == false)
+        else if(!report.GdRomSwapDiscCapabilities.Lba100000Readable)
         {
             startingSector = 100000;
             readAsAudio    = false;
@@ -1803,7 +1803,7 @@ public sealed partial class DeviceReport
                 subchannel                                                           = MmcSubchannel.Raw;
             else if(report.GdRomSwapDiscCapabilities.Lba100000PqReadable) subchannel = MmcSubchannel.Q16;
         }
-        else if(report.GdRomSwapDiscCapabilities.Lba400000Readable == false)
+        else if(!report.GdRomSwapDiscCapabilities.Lba400000Readable)
         {
             startingSector = 400000;
             readAsAudio    = false;
@@ -1813,7 +1813,7 @@ public sealed partial class DeviceReport
                 subchannel                                                           = MmcSubchannel.Raw;
             else if(report.GdRomSwapDiscCapabilities.Lba400000PqReadable) subchannel = MmcSubchannel.Q16;
         }
-        else if(report.GdRomSwapDiscCapabilities.Lba450000Readable == false)
+        else if(!report.GdRomSwapDiscCapabilities.Lba450000Readable)
         {
             startingSector = 450000;
             readAsAudio    = false;
@@ -1823,7 +1823,7 @@ public sealed partial class DeviceReport
                 subchannel                                                           = MmcSubchannel.Raw;
             else if(report.GdRomSwapDiscCapabilities.Lba450000PqReadable) subchannel = MmcSubchannel.Q16;
         }
-        else if(report.GdRomSwapDiscCapabilities.Lba45000AudioReadable == false)
+        else if(!report.GdRomSwapDiscCapabilities.Lba45000AudioReadable)
         {
             startingSector = 45000;
             readAsAudio    = true;
@@ -1833,7 +1833,7 @@ public sealed partial class DeviceReport
                 subchannel                                                               = MmcSubchannel.Raw;
             else if(report.GdRomSwapDiscCapabilities.Lba45000AudioPqReadable) subchannel = MmcSubchannel.Q16;
         }
-        else if(report.GdRomSwapDiscCapabilities.Lba50000AudioReadable == false)
+        else if(!report.GdRomSwapDiscCapabilities.Lba50000AudioReadable)
         {
             startingSector = 50000;
             readAsAudio    = true;
@@ -1843,7 +1843,7 @@ public sealed partial class DeviceReport
                 subchannel                                                               = MmcSubchannel.Raw;
             else if(report.GdRomSwapDiscCapabilities.Lba50000AudioPqReadable) subchannel = MmcSubchannel.Q16;
         }
-        else if(report.GdRomSwapDiscCapabilities.Lba100000AudioReadable == false)
+        else if(!report.GdRomSwapDiscCapabilities.Lba100000AudioReadable)
         {
             startingSector = 100000;
             readAsAudio    = true;
@@ -1853,7 +1853,7 @@ public sealed partial class DeviceReport
                 subchannel                                                                = MmcSubchannel.Raw;
             else if(report.GdRomSwapDiscCapabilities.Lba100000AudioPqReadable) subchannel = MmcSubchannel.Q16;
         }
-        else if(report.GdRomSwapDiscCapabilities.Lba400000AudioReadable == false)
+        else if(!report.GdRomSwapDiscCapabilities.Lba400000AudioReadable)
         {
             startingSector = 400000;
             readAsAudio    = true;
@@ -1863,7 +1863,7 @@ public sealed partial class DeviceReport
                 subchannel                                                                = MmcSubchannel.Raw;
             else if(report.GdRomSwapDiscCapabilities.Lba400000AudioPqReadable) subchannel = MmcSubchannel.Q16;
         }
-        else if(report.GdRomSwapDiscCapabilities.Lba450000AudioReadable == false)
+        else if(!report.GdRomSwapDiscCapabilities.Lba450000AudioReadable)
         {
             startingSector = 450000;
             readAsAudio    = true;
@@ -1874,7 +1874,7 @@ public sealed partial class DeviceReport
             else if(report.GdRomSwapDiscCapabilities.Lba450000AudioPqReadable) subchannel = MmcSubchannel.Q16;
         }
 
-        System.Console.CancelKeyPress += (_, e) =>
+        Console.CancelKeyPress += (_, e) =>
         {
             e.Cancel = true;
             aborted  = true;
@@ -1896,7 +1896,7 @@ public sealed partial class DeviceReport
 
         byte[] lastSuccessfulPq = null;
         byte[] lastSuccessfulRw = null;
-        var    trackModeChange  = false;
+        bool   trackModeChange  = false;
 
         AaruConsole.WriteLine();
 

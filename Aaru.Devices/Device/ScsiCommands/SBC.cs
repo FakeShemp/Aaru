@@ -31,7 +31,7 @@
 // ****************************************************************************/
 
 using System;
-using Aaru.Console;
+using Aaru.Logging;
 
 namespace Aaru.Devices;
 
@@ -62,7 +62,7 @@ public partial class Device
                       uint       timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        var cdb = new byte[6];
+        byte[] cdb = new byte[6];
 
         cdb[0] = (byte)ScsiCommands.Read6;
         cdb[1] = (byte)((lba & 0x1F0000) >> 16);
@@ -113,7 +113,7 @@ public partial class Device
                        out double duration)
     {
         senseBuffer = new byte[64];
-        var cdb = new byte[10];
+        byte[] cdb = new byte[10];
 
         cdb[0] = (byte)ScsiCommands.Read10;
         cdb[1] = (byte)((rdprotect & 0x07) << 5);
@@ -178,7 +178,7 @@ public partial class Device
                        uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        var cdb = new byte[12];
+        byte[] cdb = new byte[12];
 
         cdb[0] = (byte)ScsiCommands.Read12;
         cdb[1] = (byte)((rdprotect & 0x07) << 5);
@@ -246,7 +246,7 @@ public partial class Device
                        out double duration)
     {
         senseBuffer = new byte[64];
-        var    cdb      = new byte[16];
+        byte[] cdb      = new byte[16];
         byte[] lbaBytes = BitConverter.GetBytes(lba);
 
         cdb[0] = (byte)ScsiCommands.Read16;
@@ -308,7 +308,7 @@ public partial class Device
                            ushort     transferBytes, uint       timeout,     out double duration)
     {
         senseBuffer = new byte[64];
-        var cdb = new byte[10];
+        byte[] cdb = new byte[10];
 
         cdb[0] = (byte)ScsiCommands.ReadLong;
 
@@ -356,7 +356,7 @@ public partial class Device
                            uint       timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        var    cdb      = new byte[16];
+        byte[] cdb      = new byte[16];
         byte[] lbaBytes = BitConverter.GetBytes(lba);
 
         cdb[0]  = (byte)ScsiCommands.ServiceActionIn;
@@ -399,7 +399,7 @@ public partial class Device
     public bool Seek6(out byte[] senseBuffer, uint lba, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        var    cdb    = new byte[6];
+        byte[] cdb    = new byte[6];
         byte[] buffer = [];
 
         cdb[0] = (byte)ScsiCommands.Seek6;
@@ -430,7 +430,7 @@ public partial class Device
     public bool Seek10(out byte[] senseBuffer, uint lba, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        var    cdb    = new byte[10];
+        byte[] cdb    = new byte[10];
         byte[] buffer = [];
 
         cdb[0] = (byte)ScsiCommands.Seek10;

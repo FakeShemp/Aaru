@@ -39,7 +39,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Aaru.Console;
+using Aaru.Logging;
 
 namespace Aaru.CommonTypes.Structs.Devices.SCSI;
 
@@ -477,7 +477,7 @@ public struct Inquiry
 
             decoded.VersionDescriptors = new ushort[descriptorsNo];
 
-            for(var i = 0; i < descriptorsNo; i++)
+            for(int i = 0; i < descriptorsNo; i++)
                 decoded.VersionDescriptors[i] = BitConverter.ToUInt16(SCSIInquiryResponse, 58 + i * 2);
         }
 
@@ -528,8 +528,8 @@ public struct Inquiry
 
         Inquiry decoded = inq.Value;
 
-        var  buffer = new byte[512];
-        byte length = 0;
+        byte[] buffer = new byte[512];
+        byte   length = 0;
 
         buffer[0] =  (byte)(decoded.PeripheralQualifier << 5);
         buffer[0] += decoded.PeripheralDeviceType;
@@ -729,7 +729,7 @@ public struct Inquiry
         {
             length = (byte)(58 + decoded.VersionDescriptors.Length * 2);
 
-            for(var i = 0; i < decoded.VersionDescriptors.Length; i++)
+            for(int i = 0; i < decoded.VersionDescriptors.Length; i++)
                 Array.Copy(BitConverter.GetBytes(decoded.VersionDescriptors[i]), 0, buffer, 56 + i * 2, 2);
         }
 
@@ -758,7 +758,7 @@ public struct Inquiry
         }
 
         buffer[4] = length;
-        var dest = new byte[length];
+        byte[] dest = new byte[length];
         Array.Copy(buffer, 0, dest, 0, length);
 
         return dest;

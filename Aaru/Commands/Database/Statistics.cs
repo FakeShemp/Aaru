@@ -32,10 +32,10 @@
 
 using System.Linq;
 using Aaru.CommonTypes.Enums;
-using Aaru.Console;
 using Aaru.Database;
 using Aaru.Database.Models;
 using Aaru.Localization;
+using Aaru.Logging;
 using Serilog;
 using Spectre.Console;
 using Spectre.Console.Cli;

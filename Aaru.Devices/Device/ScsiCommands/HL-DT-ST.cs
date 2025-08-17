@@ -32,9 +32,9 @@
 
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
-using Aaru.Console;
 using Aaru.Decoders.DVD;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Devices;
 
@@ -60,7 +60,7 @@ public partial class Device
         Read12(out _, out _, 0, false, false, false, false, lba, 2048, 0, 16, false, timeout, out duration);
 
         senseBuffer = new byte[64];
-        var cdb = new byte[12];
+        byte[] cdb = new byte[12];
         buffer = new byte[2064 * transferLength];
 
         uint cacheDataOffset = 0x80000000 + lba % 96 * 2064;
@@ -110,12 +110,12 @@ public partial class Device
     static bool CheckSectorNumber(IReadOnlyList<byte> buffer, uint firstLba, uint transferLength, uint layerbreak,
                                   bool                otp)
     {
-        for(var i = 0; i < transferLength; i++)
+        for(int i = 0; i < transferLength; i++)
         {
             byte   layer        = (byte)(buffer[0 + 2064 * i] & 0x1);
             byte[] sectorBuffer = [0x0, buffer[1 + 2064 * i], buffer[2 + 2064 * i], buffer[3 + 2064 * i]];
 
-            var sectorNumber = BigEndianBitConverter.ToUInt32(sectorBuffer, 0);
+            uint sectorNumber = BigEndianBitConverter.ToUInt32(sectorBuffer, 0);
 
 
             if(otp)
@@ -149,7 +149,7 @@ public partial class Device
     {
         if(layer != 1) return IsCorrectSlPsn(sectorNumber, lba);
 
-        return sectorNumber == (lba - layerbreak) + 0x30000;
+        return sectorNumber == lba - layerbreak + 0x30000;
     }
 
     /// <summary>

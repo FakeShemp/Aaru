@@ -9,8 +9,8 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Images;
@@ -61,7 +61,7 @@ public class SuperNintendo : IByteAddressableImage
             return false;
 
         Header header;
-        var    headerBytes = new byte[48];
+        byte[] headerBytes = new byte[48];
 
         switch(stream.Length)
         {
@@ -109,8 +109,8 @@ public class SuperNintendo : IByteAddressableImage
         // Not sure but seems to be a multiple of at least this
         if(stream.Length % 32768 != 0) return ErrorNumber.InvalidArgument;
 
-        var found       = false;
-        var headerBytes = new byte[48];
+        bool   found       = false;
+        byte[] headerBytes = new byte[48];
 
         switch(stream.Length)
         {
@@ -373,7 +373,7 @@ public class SuperNintendo : IByteAddressableImage
         bool hasFlash    = _header is { OldMakerCode: 0x33, ExpansionFlashSize: > 0 };
         bool hasBattery  = chipset is 2 or 5 or 6 or 9 or 0xA;
 
-        var devices = 1;
+        int devices = 1;
 
         if(hasRam) devices++;
 
@@ -396,8 +396,8 @@ public class SuperNintendo : IByteAddressableImage
             }
         };
 
-        var pos  = 1;
-        var addr = (ulong)_data.Length;
+        int   pos  = 1;
+        ulong addr = (ulong)_data.Length;
 
         if(hasRam)
         {
@@ -537,10 +537,10 @@ public class SuperNintendo : IByteAddressableImage
             return ErrorNumber.ReadOnly;
         }
 
-        var foundRom      = false;
-        var foundRam      = false;
-        var foundExtraRam = false;
-        var foundFlash    = false;
+        bool foundRom      = false;
+        bool foundRam      = false;
+        bool foundExtraRam = false;
+        bool foundFlash    = false;
 
         // Sanitize
         foreach(LinearMemoryDevice map in mappings.Devices)

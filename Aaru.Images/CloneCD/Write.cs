@@ -39,9 +39,9 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Decoders.CD;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Track = Aaru.CommonTypes.Structs.Track;
 using TrackType = Aaru.CommonTypes.Enums.TrackType;
 
@@ -310,7 +310,7 @@ public sealed partial class CloneCd
         // Easy, just decode the real toc
         if(_fullToc != null)
         {
-            var tmp = new byte[_fullToc.Length + 2];
+            byte[] tmp = new byte[_fullToc.Length + 2];
             Array.Copy(BigEndianBitConverter.GetBytes((ushort)_fullToc.Length), 0, tmp, 0, 2);
             Array.Copy(_fullToc,                                                0, tmp, 2, _fullToc.Length);
             nullableToc = FullTOC.Decode(tmp);
@@ -329,7 +329,7 @@ public sealed partial class CloneCd
 
         if(!string.IsNullOrEmpty(_catalog)) _descriptorStream.WriteLine("CATALOG={0}", _catalog);
 
-        for(var i = 1; i <= toc.LastCompleteSession; i++)
+        for(int i = 1; i <= toc.LastCompleteSession; i++)
         {
             _descriptorStream.WriteLine("[Session {0}]", i);
 
@@ -365,7 +365,7 @@ public sealed partial class CloneCd
             _descriptorStream.WriteLine("PreGapSubC=0");
         }
 
-        for(var i = 0; i < toc.TrackDescriptors.Length; i++)
+        for(int i = 0; i < toc.TrackDescriptors.Length; i++)
         {
             long alba = MsfToLba((toc.TrackDescriptors[i].Min, toc.TrackDescriptors[i].Sec,
                                   toc.TrackDescriptors[i].Frame));

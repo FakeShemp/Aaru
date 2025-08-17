@@ -39,7 +39,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -189,7 +189,7 @@ public sealed partial class T98
             return false;
         }
 
-        var cylinders = (int)(_imageInfo.Sectors / 33 / 8);
+        int cylinders = (int)(_imageInfo.Sectors / 33 / 8);
         _writingStream.Seek(0, SeekOrigin.Begin);
         _writingStream.Write(BitConverter.GetBytes(cylinders), 0, 4);
 

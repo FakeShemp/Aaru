@@ -31,12 +31,12 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Extents;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
-using Aaru.Console;
 using Aaru.Decoders.DVD;
 using Aaru.Decoders.SCSI;
 using Aaru.Decryption;
 using Aaru.Decryption.DVD;
 using Aaru.Devices;
+using Aaru.Logging;
 using DVDDecryption = Aaru.Decryption.DVD.Dump;
 
 // ReSharper disable JoinDeclarationAndInitializer
@@ -56,9 +56,9 @@ partial class Dump
     void RetrySbcData(Reader       scsiReader, DumpHardware currentTry, ExtentsULong extents, ref double totalDuration,
                       ExtentsULong blankExtents, byte[] discKey)
     {
-        var             pass              = 1;
-        var             forward           = true;
-        var             runningPersistent = false;
+        int             pass              = 1;
+        bool            forward           = true;
+        bool            runningPersistent = false;
         bool            sense;
         byte[]          buffer;
         bool            recoveredError;
@@ -66,7 +66,7 @@ partial class Dump
         byte[]          md6;
         byte[]          md10;
         bool            blankCheck;
-        var             newBlank     = false;
+        bool            newBlank     = false;
         var             outputFormat = _outputPlugin as IWritableImage;
 
         if(_persistent)
@@ -344,7 +344,8 @@ partial class Dump
 
                         if(errno != ErrorNumber.NoError)
                         {
-                            ErrorMessage?.Invoke(string.Format(Localization.Core.Error_retrieving_title_key_for_sector_0,
+                            ErrorMessage?.Invoke(string.Format(Localization.Core
+                                                                           .Error_retrieving_title_key_for_sector_0,
                                                                badSector));
                         }
                         else
@@ -404,8 +405,8 @@ partial class Dump
 
     void RetryTitleKeys(DVDDecryption dvdDecrypt, byte[] discKey, ref double totalDuration)
     {
-        var    pass    = 1;
-        var    forward = true;
+        int    pass    = 1;
+        bool   forward = true;
         bool   sense;
         byte[] buffer;
 

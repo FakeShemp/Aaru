@@ -26,9 +26,10 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Linq;
-using Aaru.Console;
 using Aaru.Devices;
+using Aaru.Logging;
 
 namespace Aaru.Tests.Devices;
 
@@ -36,12 +37,12 @@ static partial class MainClass
 {
     public static void Main()
     {
-        AaruConsole.WriteLineEvent        += System.Console.WriteLine;
-        AaruConsole.WriteEvent            += System.Console.Write;
-        AaruConsole.ErrorWriteLineEvent   += System.Console.Error.WriteLine;
-        AaruConsole.DebugWriteLineEvent   += System.Console.Error.WriteLine;
-        AaruConsole.VerboseWriteLineEvent += System.Console.WriteLine;
-        AaruConsole.WriteExceptionEvent   += System.Console.Error.WriteLine;
+        AaruConsole.WriteLineEvent        += Console.WriteLine;
+        AaruConsole.WriteEvent            += Console.Write;
+        AaruConsole.ErrorWriteLineEvent   += Console.Error.WriteLine;
+        AaruConsole.DebugWriteLineEvent   += Console.Error.WriteLine;
+        AaruConsole.VerboseWriteLineEvent += Console.WriteLine;
+        AaruConsole.WriteExceptionEvent   += Console.Error.WriteLine;
 
         DeviceInfo[] devices = Aaru.Devices.Device.ListDevices();
 
@@ -56,7 +57,7 @@ static partial class MainClass
 
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
 
             AaruConsole.WriteLine(Localization.Aaru_device_handling_tests);
 
@@ -78,7 +79,7 @@ static partial class MainClass
                                   "----------",
                                   "--------");
 
-            for(var i = 0; i < devices.Length; i++)
+            for(int i = 0; i < devices.Length; i++)
             {
                 AaruConsole.WriteLine("{6,-8}|{0,-22}|{1,-16}|{2,-24}|{3,-24}|{4,-10}|{5,-10}",
                                       devices[i].Path,
@@ -91,12 +92,12 @@ static partial class MainClass
             }
 
             AaruConsole.Write(Localization.Please_choose_which_drive_to_test_zero_to_exit);
-            string strDev = System.Console.ReadLine();
+            string strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out int item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -111,7 +112,7 @@ static partial class MainClass
             if(item > devices.Length)
             {
                 AaruConsole.WriteLine(Localization.No_such_device_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }

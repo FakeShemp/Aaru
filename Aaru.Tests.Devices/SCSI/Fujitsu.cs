@@ -27,10 +27,10 @@
 // ****************************************************************************/
 
 using System;
-using Aaru.Console;
 using Aaru.Decoders.SCSI;
 using Aaru.Devices;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Tests.Devices.SCSI;
 
@@ -40,19 +40,19 @@ static class Fujitsu
     {
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
             AaruConsole.WriteLine(Localization.Send_a_Fujitsu_vendor_command_to_the_device);
             AaruConsole.WriteLine(Localization.Send_DISPLAY_command);
             AaruConsole.WriteLine(Localization.Return_to_SCSI_commands_menu);
             AaruConsole.Write(Localization.Choose);
 
-            string strDev = System.Console.ReadLine();
+            string strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out int item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -69,7 +69,7 @@ static class Fujitsu
                     continue;
                 default:
                     AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                    System.Console.ReadKey();
+                    Console.ReadKey();
 
                     continue;
             }
@@ -78,10 +78,10 @@ static class Fujitsu
 
     static void Display(string devPath, Device dev)
     {
-        var                 flash      = false;
+        bool                flash      = false;
         FujitsuDisplayModes mode       = FujitsuDisplayModes.Ready;
-        var                 firstHalf  = "AARUTEST";
-        var                 secondHalf = "TESTAARU";
+        string              firstHalf  = "AARUTEST";
+        string              secondHalf = "TESTAARU";
         string              strDev;
         int                 item;
 
@@ -89,7 +89,7 @@ static class Fujitsu
 
         while(true)
         {
-            System.Console.Clear();
+            Console.Clear();
             AaruConsole.WriteLine(Localization.Device_0, devPath);
             AaruConsole.WriteLine(Localization.Parameters_for_DISPLAY_command);
             AaruConsole.WriteLine(Localization.Descriptor_0, flash);
@@ -99,12 +99,12 @@ static class Fujitsu
             AaruConsole.WriteLine(Localization._2_Send_command_with_these_parameters);
             AaruConsole.WriteLine(Localization.Return_to_Fujitsu_vendor_commands_menu);
 
-            strDev = System.Console.ReadLine();
+            strDev = Console.ReadLine();
 
             if(!int.TryParse(strDev, out item))
             {
                 AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-                System.Console.ReadKey();
+                Console.ReadKey();
 
                 continue;
             }
@@ -117,13 +117,13 @@ static class Fujitsu
                     return;
                 case 1:
                     AaruConsole.Write("Flash?: ");
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!bool.TryParse(strDev, out flash))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
                         flash = false;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
@@ -138,21 +138,21 @@ static class Fujitsu
                                           FujitsuDisplayModes.Ready);
 
                     AaruConsole.Write(Localization.Choose_Q);
-                    strDev = System.Console.ReadLine();
+                    strDev = Console.ReadLine();
 
                     if(!Enum.TryParse(strDev, true, out mode))
                     {
                         AaruConsole.WriteLine(Localization.Not_a_correct_display_mode_Press_any_key_to_continue);
                         mode = FujitsuDisplayModes.Ready;
-                        System.Console.ReadKey();
+                        Console.ReadKey();
 
                         continue;
                     }
 
                     AaruConsole.Write(Localization.First_display_half_will_be_cut_to_7_bit_ASCII_8_chars);
-                    firstHalf = System.Console.ReadLine();
+                    firstHalf = Console.ReadLine();
                     AaruConsole.Write(Localization.Second_display_half_will_be_cut_to_7_bit_ASCII_8_chars);
-                    secondHalf = System.Console.ReadLine();
+                    secondHalf = Console.ReadLine();
 
                     break;
                 case 2:
@@ -161,7 +161,7 @@ static class Fujitsu
         }
 
     start:
-        System.Console.Clear();
+        Console.Clear();
 
         bool sense = dev.FujitsuDisplay(out byte[] senseBuffer,
                                         flash,
@@ -193,13 +193,13 @@ static class Fujitsu
         AaruConsole.WriteLine(Localization.Return_to_Fujitsu_vendor_commands_menu);
         AaruConsole.Write(Localization.Choose);
 
-        strDev = System.Console.ReadLine();
+        strDev = Console.ReadLine();
 
         if(!int.TryParse(strDev, out item))
         {
             AaruConsole.WriteLine(Localization.Not_a_number_Press_any_key_to_continue);
-            System.Console.ReadKey();
-            System.Console.Clear();
+            Console.ReadKey();
+            Console.Clear();
 
             goto menu;
         }
@@ -211,15 +211,15 @@ static class Fujitsu
 
                 return;
             case 1:
-                System.Console.Clear();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
                 AaruConsole.WriteLine(Localization.DISPLAY_sense);
 
                 if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
 
                 AaruConsole.WriteLine(Localization.Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
                 AaruConsole.WriteLine(Localization.Device_0, devPath);
 
                 goto menu;
@@ -229,8 +229,8 @@ static class Fujitsu
                 goto parameters;
             default:
                 AaruConsole.WriteLine(Localization.Incorrect_option_Press_any_key_to_continue);
-                System.Console.ReadKey();
-                System.Console.Clear();
+                Console.ReadKey();
+                Console.Clear();
 
                 goto menu;
         }

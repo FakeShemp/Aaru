@@ -26,9 +26,10 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Diagnostics.CodeAnalysis;
-using Aaru.Console;
 using Aaru.Devices;
+using Aaru.Logging;
 
 namespace Aaru.Tests.Devices;
 
@@ -38,6 +39,6 @@ static partial class MainClass
     public static void NVMe(string devPath, Device dev)
     {
         AaruConsole.WriteLine(Localization.NVMe_commands_not_yet_implemented_Press_any_key_to_continue);
-        System.Console.ReadKey();
+        Console.ReadKey();
     }
 }

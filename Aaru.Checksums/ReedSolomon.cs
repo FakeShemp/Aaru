@@ -59,7 +59,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Aaru.Console;
+using Aaru.Logging;
 
 namespace Aaru.Checksums;
 
@@ -194,7 +194,7 @@ public class ReedSolomon
     {
         int i;
 
-        var mask = 1;
+        int mask = 1;
         _alphaTo[_mm] = 0;
 
         for(i = 0; i < _mm; i++)
@@ -299,8 +299,9 @@ public class ReedSolomon
         for(i = _kk - 1; i >= 0; i--)
         {
             if(_mm != 8)
-                if(data[i] > _nn)
-                    return -1; /* Illegal symbol */
+            {
+                if(data[i] > _nn) return -1; /* Illegal symbol */
+            }
 
             int feedback = _indexOf[data[i] ^ bb[_nn - _kk - 1]];
 
@@ -354,25 +355,26 @@ public class ReedSolomon
             throw new UnauthorizedAccessException(Localization.Trying_to_calculate_RS_without_initializing);
 
         erasPos = new int[_nn - _kk];
-        int i, j;
-        int q, tmp;
-        var recd   = new int[_nn];
-        var lambda = new int[_nn - _kk + 1]; /* Err+Eras Locator poly */
-        var s      = new int[_nn - _kk + 1]; /* syndrome poly */
-        var b      = new int[_nn - _kk + 1];
-        var t      = new int[_nn - _kk + 1];
-        var omega  = new int[_nn - _kk + 1];
-        var root   = new int[_nn       - _kk];
-        var reg    = new int[_nn - _kk + 1];
-        var loc    = new int[_nn       - _kk];
-        int count;
+        int   i, j;
+        int   q, tmp;
+        int[] recd   = new int[_nn];
+        int[] lambda = new int[_nn - _kk + 1]; /* Err+Eras Locator poly */
+        int[] s      = new int[_nn - _kk + 1]; /* syndrome poly */
+        int[] b      = new int[_nn - _kk + 1];
+        int[] t      = new int[_nn - _kk + 1];
+        int[] omega  = new int[_nn - _kk + 1];
+        int[] root   = new int[_nn       - _kk];
+        int[] reg    = new int[_nn - _kk + 1];
+        int[] loc    = new int[_nn       - _kk];
+        int   count;
 
         /* data[] is in polynomial form, copy and convert to index form */
         for(i = _nn - 1; i >= 0; i--)
         {
             if(_mm != 8)
-                if(data[i] > _nn)
-                    return -1; /* Illegal symbol */
+            {
+                if(data[i] > _nn) return -1; /* Illegal symbol */
+            }
 
             recd[i] = _indexOf[data[i]];
         }
@@ -380,15 +382,16 @@ public class ReedSolomon
         /* first form the syndromes; i.e., evaluate recd(x) at roots of g(x)
          * namely @**(B0+i), i = 0, ... ,(NN-KK-1)
          */
-        var synError = 0;
+        int synError = 0;
 
         for(i = 1; i <= _nn - _kk; i++)
         {
             tmp = 0;
 
             for(j = 0; j < _nn; j++)
-                if(recd[j] != _a0) /* recd[j] in index form */
-                    tmp ^= _alphaTo[Modnn(recd[j] + (B0 + i - 1) * j)];
+            {
+                if(recd[j] != _a0) /* recd[j] in index form */ tmp ^= _alphaTo[Modnn(recd[j] + (B0 + i - 1) * j)];
+            }
 
             synError |= tmp; /* set flag if non-zero syndrome =>
                               * error */
@@ -476,11 +479,12 @@ public class ReedSolomon
         {
             /* r is the step number */
             /* Compute discrepancy at the r-th step in poly-form */
-            var discrR = 0;
+            int discrR = 0;
 
             for(i = 0; i < r; i++)
-                if(lambda[i] != 0 && s[r - i] != _a0)
-                    discrR ^= _alphaTo[Modnn(_indexOf[lambda[i]] + s[r - i])];
+            {
+                if(lambda[i] != 0 && s[r - i] != _a0) discrR ^= _alphaTo[Modnn(_indexOf[lambda[i]] + s[r - i])];
+            }
 
             discrR = _indexOf[discrR]; /* Index form */
 
@@ -526,7 +530,7 @@ public class ReedSolomon
         }
 
         /* Convert lambda to index form and compute deg(lambda(x)) */
-        var degLambda = 0;
+        int degLambda = 0;
 
         for(i = 0; i < _nn - _kk + 1; i++)
         {
@@ -578,7 +582,7 @@ public class ReedSolomon
          * Compute err+eras evaluator poly omega(x) = s(x)*lambda(x) (modulo
          * x**(NN-KK)). in index form. Also find deg(omega).
          */
-        var degOmega = 0;
+        int degOmega = 0;
 
         for(i = 0; i < _nn - _kk; i++)
         {
@@ -586,8 +590,9 @@ public class ReedSolomon
             j   = degLambda < i ? degLambda : i;
 
             for(; j >= 0; j--)
-                if(s[i + 1 - j] != _a0 && lambda[j] != _a0)
-                    tmp ^= _alphaTo[Modnn(s[i + 1 - j] + lambda[j])];
+            {
+                if(s[i + 1 - j] != _a0 && lambda[j] != _a0) tmp ^= _alphaTo[Modnn(s[i + 1 - j] + lambda[j])];
+            }
 
             if(tmp != 0) degOmega = i;
 
@@ -602,19 +607,21 @@ public class ReedSolomon
          */
         for(j = count - 1; j >= 0; j--)
         {
-            var num1 = 0;
+            int num1 = 0;
 
             for(i = degOmega; i >= 0; i--)
-                if(omega[i] != _a0)
-                    num1 ^= _alphaTo[Modnn(omega[i] + i * root[j])];
+            {
+                if(omega[i] != _a0) num1 ^= _alphaTo[Modnn(omega[i] + i * root[j])];
+            }
 
             int num2 = _alphaTo[Modnn(root[j] * (B0 - 1) + _nn)];
-            var den  = 0;
+            int den  = 0;
 
             /* lambda[i+1] for i even is the formal derivative lambda_pr of lambda[i] */
             for(i = Min(degLambda, _nn - _kk - 1) & ~1; i >= 0; i -= 2)
-                if(lambda[i + 1] != _a0)
-                    den ^= _alphaTo[Modnn(lambda[i + 1] + i * root[j])];
+            {
+                if(lambda[i + 1] != _a0) den ^= _alphaTo[Modnn(lambda[i + 1] + i * root[j])];
+            }
 
             if(den == 0)
             {

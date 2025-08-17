@@ -39,7 +39,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
+using Aaru.Logging;
 using Track = Aaru.CommonTypes.Structs.Track;
 using TrackType = Aaru.CommonTypes.Enums.TrackType;
 
@@ -188,7 +188,7 @@ public sealed partial class Cdrdao
         // cdrdao audio tracks are endian swapped corresponding to Aaru
         if(track.Type == TrackType.Audio)
         {
-            var swapped = new byte[data.Length];
+            byte[] swapped = new byte[data.Length];
 
             for(long i = 0; i < swapped.Length; i += 2)
             {
@@ -261,7 +261,7 @@ public sealed partial class Cdrdao
         // cdrdao audio tracks are endian swapped corresponding to Aaru
         if(track.Type == TrackType.Audio)
         {
-            var swapped = new byte[data.Length];
+            byte[] swapped = new byte[data.Length];
 
             for(long i = 0; i < swapped.Length; i += 2)
             {
@@ -345,7 +345,7 @@ public sealed partial class Cdrdao
         // cdrdao audio tracks are endian swapped corresponding to Aaru
         if(track.Type == TrackType.Audio)
         {
-            var swapped = new byte[data.Length];
+            byte[] swapped = new byte[data.Length];
 
             for(long i = 0; i < swapped.Length; i += 2)
             {
@@ -356,7 +356,7 @@ public sealed partial class Cdrdao
             data = swapped;
         }
 
-        var subchannelSize = (uint)(track.SubchannelType != TrackSubchannelType.None ? 96 : 0);
+        uint subchannelSize = (uint)(track.SubchannelType != TrackSubchannelType.None ? 96 : 0);
 
         trackStream.Seek((long)(track.FileOffset +
                                 (sectorAddress - track.StartSector) *
@@ -414,7 +414,7 @@ public sealed partial class Cdrdao
         // cdrdao audio tracks are endian swapped corresponding to Aaru
         if(track.Type == TrackType.Audio)
         {
-            var swapped = new byte[data.Length];
+            byte[] swapped = new byte[data.Length];
 
             for(long i = 0; i < swapped.Length; i += 2)
             {
@@ -425,7 +425,7 @@ public sealed partial class Cdrdao
             data = swapped;
         }
 
-        var subchannelSize = (uint)(track.SubchannelType != TrackSubchannelType.None ? 96 : 0);
+        uint subchannelSize = (uint)(track.SubchannelType != TrackSubchannelType.None ? 96 : 0);
 
         for(uint i = 0; i < length; i++)
         {
@@ -458,8 +458,9 @@ public sealed partial class Cdrdao
         }
 
         if(_writingTracks != null && _writingStreams != null)
-            foreach(FileStream oldTrack in _writingStreams.Select(t => t.Value).Distinct())
-                oldTrack.Close();
+        {
+            foreach(FileStream oldTrack in _writingStreams.Select(t => t.Value).Distinct()) oldTrack.Close();
+        }
 
         ulong currentOffset = 0;
         _writingTracks = [];

@@ -37,8 +37,8 @@ using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -54,7 +54,7 @@ public sealed partial class Vhdx
 
         if(stream.Length < 512) return ErrorNumber.InvalidArgument;
 
-        var vhdxIdB = new byte[Marshal.SizeOf<Identifier>()];
+        byte[] vhdxIdB = new byte[Marshal.SizeOf<Identifier>()];
         stream.EnsureRead(vhdxIdB, 0, Marshal.SizeOf<Identifier>());
         _id = Marshal.ByteArrayToStructureLittleEndian<Identifier>(vhdxIdB);
 
@@ -63,7 +63,7 @@ public sealed partial class Vhdx
         _imageInfo.Application = Encoding.Unicode.GetString(_id.creator);
 
         stream.Seek(64 * 1024, SeekOrigin.Begin);
-        var vHdrB = new byte[Marshal.SizeOf<Header>()];
+        byte[] vHdrB = new byte[Marshal.SizeOf<Header>()];
         stream.EnsureRead(vHdrB, 0, Marshal.SizeOf<Header>());
         _vHdr = Marshal.ByteArrayToStructureLittleEndian<Header>(vHdrB);
 
@@ -83,7 +83,7 @@ public sealed partial class Vhdx
         }
 
         stream.Seek(192 * 1024, SeekOrigin.Begin);
-        var vRegTableB = new byte[Marshal.SizeOf<RegionTableHeader>()];
+        byte[] vRegTableB = new byte[Marshal.SizeOf<RegionTableHeader>()];
         stream.EnsureRead(vRegTableB, 0, Marshal.SizeOf<RegionTableHeader>());
         _vRegHdr = Marshal.ByteArrayToStructureLittleEndian<RegionTableHeader>(vRegTableB);
 
@@ -104,9 +104,9 @@ public sealed partial class Vhdx
 
         _vRegs = new RegionTableEntry[_vRegHdr.entries];
 
-        for(var i = 0; i < _vRegs.Length; i++)
+        for(int i = 0; i < _vRegs.Length; i++)
         {
-            var vRegB = new byte[System.Runtime.InteropServices.Marshal.SizeOf(_vRegs[i])];
+            byte[] vRegB = new byte[System.Runtime.InteropServices.Marshal.SizeOf(_vRegs[i])];
             stream.EnsureRead(vRegB, 0, System.Runtime.InteropServices.Marshal.SizeOf(_vRegs[i]));
             _vRegs[i] = Marshal.ByteArrayToStructureLittleEndian<RegionTableEntry>(vRegB);
 
@@ -141,15 +141,15 @@ public sealed partial class Vhdx
         uint fileParamsOff = 0, vdSizeOff = 0, p83Off = 0, logOff = 0, physOff = 0, parentOff = 0;
 
         stream.Seek(_metadataOffset, SeekOrigin.Begin);
-        var metTableB = new byte[Marshal.SizeOf<MetadataTableHeader>()];
+        byte[] metTableB = new byte[Marshal.SizeOf<MetadataTableHeader>()];
         stream.EnsureRead(metTableB, 0, Marshal.SizeOf<MetadataTableHeader>());
         _vMetHdr = Marshal.ByteArrayToStructureLittleEndian<MetadataTableHeader>(metTableB);
 
         _vMets = new MetadataTableEntry[_vMetHdr.entries];
 
-        for(var i = 0; i < _vMets.Length; i++)
+        for(int i = 0; i < _vMets.Length; i++)
         {
-            var vMetB = new byte[System.Runtime.InteropServices.Marshal.SizeOf(_vMets[i])];
+            byte[] vMetB = new byte[System.Runtime.InteropServices.Marshal.SizeOf(_vMets[i])];
             stream.EnsureRead(vMetB, 0, System.Runtime.InteropServices.Marshal.SizeOf(_vMets[i]));
             _vMets[i] = Marshal.ByteArrayToStructureLittleEndian<MetadataTableEntry>(vMetB);
 
@@ -249,7 +249,7 @@ public sealed partial class Vhdx
         if(parentOff != 0 && (_vFileParms.flags & FILE_FLAGS_HAS_PARENT) == FILE_FLAGS_HAS_PARENT)
         {
             stream.Seek(parentOff + _metadataOffset, SeekOrigin.Begin);
-            var vParHdrB = new byte[Marshal.SizeOf<ParentLocatorHeader>()];
+            byte[] vParHdrB = new byte[Marshal.SizeOf<ParentLocatorHeader>()];
             stream.EnsureRead(vParHdrB, 0, Marshal.SizeOf<ParentLocatorHeader>());
             _vParHdr = Marshal.ByteArrayToStructureLittleEndian<ParentLocatorHeader>(vParHdrB);
 
@@ -264,9 +264,9 @@ public sealed partial class Vhdx
 
             _vPars = new ParentLocatorEntry[_vParHdr.keyValueCount];
 
-            for(var i = 0; i < _vPars.Length; i++)
+            for(int i = 0; i < _vPars.Length; i++)
             {
-                var vParB = new byte[System.Runtime.InteropServices.Marshal.SizeOf(_vPars[i])];
+                byte[] vParB = new byte[System.Runtime.InteropServices.Marshal.SizeOf(_vPars[i])];
                 stream.EnsureRead(vParB, 0, System.Runtime.InteropServices.Marshal.SizeOf(_vPars[i]));
                 _vPars[i] = Marshal.ByteArrayToStructureLittleEndian<ParentLocatorEntry>(vParB);
             }
@@ -282,12 +282,12 @@ public sealed partial class Vhdx
            _vParHdr.locatorType                        == _parentTypeVhdxGuid)
         {
             _parentImage = new Vhdx();
-            var parentWorks = false;
+            bool parentWorks = false;
 
             foreach(ParentLocatorEntry parentEntry in _vPars)
             {
                 stream.Seek(parentEntry.keyOffset + _metadataOffset, SeekOrigin.Begin);
-                var tmpKey = new byte[parentEntry.keyLength];
+                byte[] tmpKey = new byte[parentEntry.keyLength];
                 stream.EnsureRead(tmpKey, 0, tmpKey.Length);
                 string entryType = Encoding.Unicode.GetString(tmpKey);
 
@@ -296,7 +296,7 @@ public sealed partial class Vhdx
                 if(string.Compare(entryType, RELATIVE_PATH_KEY, StringComparison.OrdinalIgnoreCase) == 0)
                 {
                     stream.Seek(parentEntry.valueOffset + _metadataOffset, SeekOrigin.Begin);
-                    var tmpVal = new byte[parentEntry.valueLength];
+                    byte[] tmpVal = new byte[parentEntry.valueLength];
                     stream.EnsureRead(tmpVal, 0, tmpVal.Length);
                     string entryValue = Encoding.Unicode.GetString(tmpVal);
 
@@ -339,7 +339,7 @@ public sealed partial class Vhdx
                         string.Compare(entryType, ABSOLUTE_WIN32_PATH_KEY, StringComparison.OrdinalIgnoreCase) == 0)
                 {
                     stream.Seek(parentEntry.valueOffset + _metadataOffset, SeekOrigin.Begin);
-                    var tmpVal = new byte[parentEntry.valueLength];
+                    byte[] tmpVal = new byte[parentEntry.valueLength];
                     stream.EnsureRead(tmpVal, 0, tmpVal.Length);
                     string entryValue = Encoding.Unicode.GetString(tmpVal);
 
@@ -395,7 +395,7 @@ public sealed partial class Vhdx
 
         long readChunks = 0;
         _blockAllocationTable = new ulong[_dataBlocks];
-        var batB = new byte[batEntries * 8];
+        byte[] batB = new byte[batEntries * 8];
         stream.Seek(_batOffset, SeekOrigin.Begin);
         stream.EnsureRead(batB, 0, batB.Length);
 
@@ -434,7 +434,7 @@ public sealed partial class Vhdx
                         break;
                     case SECTOR_BITMAP_PRESENT:
                         stream.Seek((long)((pt & BAT_FILE_OFFSET_MASK) * 1048576), SeekOrigin.Begin);
-                        var bmp = new byte[1048576];
+                        byte[] bmp = new byte[1048576];
                         stream.EnsureRead(bmp, 0, bmp.Length);
                         sectorBmpMs.Write(bmp, 0, bmp.Length);
 

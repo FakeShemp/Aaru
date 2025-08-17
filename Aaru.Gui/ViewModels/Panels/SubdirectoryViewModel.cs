@@ -41,10 +41,10 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Interop;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Core;
 using Aaru.Gui.Models;
 using Aaru.Localization;
+using Aaru.Logging;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using JetBrains.Annotations;
@@ -203,7 +203,7 @@ public sealed class SubdirectoryViewModel
                     else
                         chars = new char[filename.Length];
 
-                    for(var ci = 0; ci < chars.Length; ci++)
+                    for(int ci = 0; ci < chars.Length; ci++)
                     {
                         chars[ci] = filename[ci] switch
                                     {
@@ -328,7 +328,7 @@ public sealed class SubdirectoryViewModel
 
             try
             {
-                var outBuf = new byte[file.Stat.Length];
+                byte[] outBuf = new byte[file.Stat.Length];
 
                 ErrorNumber error = _model.Plugin.OpenFile(_model.Path + "/" + file.Name, out IFileNode fileNode);
 

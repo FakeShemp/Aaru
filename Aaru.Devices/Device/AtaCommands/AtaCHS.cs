@@ -31,8 +31,8 @@
 // ****************************************************************************/
 
 using System.Diagnostics.CodeAnalysis;
-using Aaru.Console;
 using Aaru.Decoders.ATA;
+using Aaru.Logging;
 
 // ReSharper disable UnusedMember.Global
 

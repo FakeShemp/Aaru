@@ -40,8 +40,8 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Claunia.PropertyList;
 
 namespace Aaru.Images;
@@ -227,7 +227,7 @@ public sealed partial class Udif
 
         for(uint i = 0; i < length; i++)
         {
-            var tmp = new byte[_imageInfo.SectorSize];
+            byte[] tmp = new byte[_imageInfo.SectorSize];
             Array.Copy(data, i * _imageInfo.SectorSize, tmp, 0, _imageInfo.SectorSize);
 
             if(!WriteSector(tmp, sectorAddress + i)) return false;

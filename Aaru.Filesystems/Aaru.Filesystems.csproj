@@ -42,7 +42,7 @@
     <ProjectReference Include="..\Aaru.Helpers\Aaru.Helpers.csproj"/>
     <ProjectReference Include="..\Aaru.Partitions\Aaru.Partitions.csproj"/>
     <ProjectReference Include="..\Aaru.Images\Aaru.Images.csproj"/>
-    <ProjectReference Include="..\Aaru.Console\Aaru.Console.csproj"/>
+    <ProjectReference Include="..\Aaru.Logging\Aaru.Logging.csproj"/>
     <ProjectReference Include="..\Aaru.Decoders\Aaru.Decoders.csproj"/>
   </ItemGroup>
   <ItemGroup>

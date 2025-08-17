@@ -37,8 +37,8 @@ using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Partitions;
@@ -104,7 +104,7 @@ public sealed class Human68K : IPartition
 
         if(table.magic != X68K_MAGIC) return false;
 
-        for(var i = 0; i < table.entries.Length; i++)
+        for(int i = 0; i < table.entries.Length; i++)
             table.entries[i] = (Entry)Marshal.SwapStructureMembersEndian(table.entries[i]);
 
         AaruConsole.DebugWriteLine(MODULE_NAME, "table.size = {0:X4}",    table.size);

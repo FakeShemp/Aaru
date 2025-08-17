@@ -36,8 +36,8 @@ using System.IO;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using SharpCompress.Compressors;
 using SharpCompress.Compressors.Deflate;
 
@@ -72,7 +72,7 @@ public sealed partial class Chd
                 ulong offset = _hunkTable[hunkNo] & 0x00000FFFFFFFFFFF;
                 ulong length = _hunkTable[hunkNo] >> 44;
 
-                var compHunk = new byte[length];
+                byte[] compHunk = new byte[length];
                 _imageStream.Seek((long)offset, SeekOrigin.Begin);
                 _imageStream.EnsureRead(compHunk, 0, compHunk.Length);
 
@@ -106,7 +106,7 @@ public sealed partial class Chd
 
                 break;
             case 3:
-                var entryBytes = new byte[16];
+                byte[] entryBytes = new byte[16];
                 Array.Copy(_hunkMap, (int)(hunkNo * 16), entryBytes, 0, 16);
                 MapEntryV3 entry = Marshal.ByteArrayToStructureBigEndian<MapEntryV3>(entryBytes);
 
@@ -125,7 +125,7 @@ public sealed partial class Chd
                             case Compression.ZlibPlus:
                                 if(_isHdd)
                                 {
-                                    var zHunk = new byte[(entry.lengthLsb << 16) + entry.lengthLsb];
+                                    byte[] zHunk = new byte[(entry.lengthLsb << 16) + entry.lengthLsb];
                                     _imageStream.Seek((long)entry.offset, SeekOrigin.Begin);
                                     _imageStream.EnsureRead(zHunk, 0, zHunk.Length);
 
@@ -177,7 +177,7 @@ public sealed partial class Chd
                         buffer = new byte[_bytesPerHunk];
                         byte[] mini = BigEndianBitConverter.GetBytes(entry.offset);
 
-                        for(var i = 0; i < _bytesPerHunk; i++) buffer[i] = mini[i % 8];
+                        for(int i = 0; i < _bytesPerHunk; i++) buffer[i] = mini[i % 8];
 
                         break;
                     case EntryFlagsV3.SelfHunk:

@@ -33,8 +33,8 @@
 using System.IO;
 using System.Text.RegularExpressions;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -49,7 +49,7 @@ public sealed partial class RayDim
 
         if(stream.Length < Marshal.SizeOf<Header>()) return false;
 
-        var buffer = new byte[Marshal.SizeOf<Header>()];
+        byte[] buffer = new byte[Marshal.SizeOf<Header>()];
         stream.Seek(0, SeekOrigin.Begin);
         stream.EnsureRead(buffer, 0, buffer.Length);
 

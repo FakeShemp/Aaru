@@ -39,9 +39,9 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Decoders.CD;
 using Aaru.Helpers;
+using Aaru.Logging;
 using TrackType = Aaru.CommonTypes.Enums.TrackType;
 
 namespace Aaru.Images;
@@ -369,7 +369,7 @@ public sealed partial class Alcohol120
             return false;
         }
 
-        var subchannelSize = (uint)(track.SubchannelType != TrackSubchannelType.None ? 96 : 0);
+        uint subchannelSize = (uint)(track.SubchannelType != TrackSubchannelType.None ? 96 : 0);
 
         _imageStream.Seek((long)(track.FileOffset +
                                  (sectorAddress - track.StartSector) *
@@ -415,7 +415,7 @@ public sealed partial class Alcohol120
             return false;
         }
 
-        var subchannelSize = (uint)(track.SubchannelType != TrackSubchannelType.None ? 96 : 0);
+        uint subchannelSize = (uint)(track.SubchannelType != TrackSubchannelType.None ? 96 : 0);
 
         for(uint i = 0; i < length; i++)
         {
@@ -441,7 +441,7 @@ public sealed partial class Alcohol120
         {
             CommonTypes.Structs.Track[] tmpTracks = tracks.OrderBy(t => t.Sequence).ToArray();
 
-            for(var i = 1; i < tmpTracks.Length; i++)
+            for(int i = 1; i < tmpTracks.Length; i++)
             {
                 CommonTypes.Structs.Track firstTrackInSession =
                     tracks.FirstOrDefault(t => t.Session == tmpTracks[i].Session);
@@ -548,9 +548,9 @@ public sealed partial class Alcohol120
         FullTOC.CDFullTOC? decodedToc = FullTOC.Decode(tmpToc);
 
         long currentExtraOffset = currentTrackOffset;
-        var  extraCount         = 0;
+        int  extraCount         = 0;
 
-        for(var i = 1; i <= sessions; i++)
+        for(int i = 1; i <= sessions; i++)
         {
             if(decodedToc.HasValue)
             {
@@ -619,7 +619,7 @@ public sealed partial class Alcohol120
         }
         else
         {
-            for(var i = 1; i <= sessions; i++)
+            for(int i = 1; i <= sessions; i++)
             {
                 CommonTypes.Structs.Track firstTrack = _writingTracks.First(t => t.Session == i);
                 CommonTypes.Structs.Track lastTrack  = _writingTracks.Last(t => t.Session  == i);
@@ -915,8 +915,8 @@ public sealed partial class Alcohol120
 
         // Write header
         _descriptorStream.Seek(0, SeekOrigin.Begin);
-        var  block    = new byte[Marshal.SizeOf<Header>()];
-        nint blockPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
+        byte[] block    = new byte[Marshal.SizeOf<Header>()];
+        nint   blockPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
         System.Runtime.InteropServices.Marshal.StructureToPtr(header, blockPtr, true);
         System.Runtime.InteropServices.Marshal.Copy(blockPtr, block, 0, block.Length);
         System.Runtime.InteropServices.Marshal.FreeHGlobal(blockPtr);

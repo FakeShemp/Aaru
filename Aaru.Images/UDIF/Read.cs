@@ -38,8 +38,8 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Compression;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Claunia.PropertyList;
 using Claunia.RsrcFork;
 using Ionic.Zlib;
@@ -62,7 +62,7 @@ public sealed partial class Udif
         if(stream.Length < 512) return ErrorNumber.InvalidArgument;
 
         stream.Seek(-Marshal.SizeOf<Footer>(), SeekOrigin.End);
-        var footerB = new byte[Marshal.SizeOf<Footer>()];
+        byte[] footerB = new byte[Marshal.SizeOf<Footer>()];
 
         stream.EnsureRead(footerB, 0, Marshal.SizeOf<Footer>());
         _footer = Marshal.ByteArrayToStructureBigEndian<Footer>(footerB);
@@ -133,7 +133,7 @@ public sealed partial class Udif
         if(_footer.plistLen == 0 && _footer.rsrcForkLen != 0)
         {
             AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Reading_resource_fork);
-            var rsrcB = new byte[_footer.rsrcForkLen];
+            byte[] rsrcB = new byte[_footer.rsrcForkLen];
             stream.Seek((long)_footer.rsrcForkOff, SeekOrigin.Begin);
             stream.EnsureRead(rsrcB, 0, rsrcB.Length);
 
@@ -171,7 +171,7 @@ public sealed partial class Udif
         else if(_footer.plistLen != 0)
         {
             AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Reading_property_list);
-            var plistB = new byte[_footer.plistLen];
+            byte[] plistB = new byte[_footer.plistLen];
             stream.Seek((long)_footer.plistOff, SeekOrigin.Begin);
             stream.EnsureRead(plistB, 0, plistB.Length);
 
@@ -241,7 +241,7 @@ public sealed partial class Udif
             AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Reading_resource_fork);
             Stream rsrcStream = imageFilter.GetResourceForkStream();
 
-            var rsrcB = new byte[rsrcStream.Length];
+            byte[] rsrcB = new byte[rsrcStream.Length];
             rsrcStream.Position = 0;
             rsrcStream.EnsureRead(rsrcB, 0, rsrcB.Length);
 
@@ -284,8 +284,8 @@ public sealed partial class Udif
             string release = null;
             string pre     = null;
 
-            var major = $"{version.MajorVersion}";
-            var minor = $".{version.MinorVersion / 10}";
+            string major = $"{version.MajorVersion}";
+            string minor = $".{version.MinorVersion / 10}";
 
             if(version.MinorVersion % 10 > 0) release = $".{version.MinorVersion % 10}";
 
@@ -333,7 +333,7 @@ public sealed partial class Udif
 
         foreach(byte[] blkxBytes in blkxList)
         {
-            var bHdrB = new byte[Marshal.SizeOf<BlockHeader>()];
+            byte[] bHdrB = new byte[Marshal.SizeOf<BlockHeader>()];
             Array.Copy(blkxBytes, 0, bHdrB, 0, Marshal.SizeOf<BlockHeader>());
             BlockHeader bHdr = Marshal.ByteArrayToStructureBigEndian<BlockHeader>(bHdrB);
 
@@ -361,9 +361,9 @@ public sealed partial class Udif
 
             if(bHdr.buffers > _buffersize) _buffersize = bHdr.buffers * SECTOR_SIZE;
 
-            for(var i = 0; i < bHdr.chunks; i++)
+            for(int i = 0; i < bHdr.chunks; i++)
             {
-                var bChnkB = new byte[Marshal.SizeOf<BlockChunk>()];
+                byte[] bChnkB = new byte[Marshal.SizeOf<BlockChunk>()];
 
                 Array.Copy(blkxBytes,
                            Marshal.SizeOf<BlockHeader>() + Marshal.SizeOf<BlockChunk>() * i,
@@ -451,7 +451,7 @@ public sealed partial class Udif
         if(_sectorCache.TryGetValue(sectorAddress, out buffer)) return ErrorNumber.NoError;
 
         var   readChunk        = new BlockChunk();
-        var   chunkFound       = false;
+        bool  chunkFound       = false;
         ulong chunkStartSector = 0;
 
         foreach(KeyValuePair<ulong, BlockChunk> kvp in _chunks.Where(kvp => sectorAddress >= kvp.Key))
@@ -471,7 +471,7 @@ public sealed partial class Udif
         {
             if(!_chunkCache.TryGetValue(chunkStartSector, out byte[] data))
             {
-                var cmpBuffer = new byte[readChunk.length];
+                byte[] cmpBuffer = new byte[readChunk.length];
                 _imageStream.Seek((long)(readChunk.offset + _footer.dataForkOff), SeekOrigin.Begin);
                 _imageStream.EnsureRead(cmpBuffer, 0, cmpBuffer.Length);
                 var    cmpMs     = new MemoryStream(cmpBuffer);
@@ -502,7 +502,7 @@ public sealed partial class Udif
                 {
 #endif
                     byte[] tmpBuffer;
-                    var    realSize = 0;
+                    int    realSize = 0;
 
                     switch(readChunk.type)
                     {

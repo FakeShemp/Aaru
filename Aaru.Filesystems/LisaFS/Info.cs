@@ -31,9 +31,9 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Decoders;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Claunia.Encoding;
 using Encoding = System.Text.Encoding;
 using Partition = Aaru.CommonTypes.Partition;
@@ -55,7 +55,7 @@ public sealed partial class LisaFS
         int beforeMddf = -1;
 
         // LisaOS searches sectors until tag tells MDDF resides there, so we'll search 100 sectors
-        for(var i = 0; i < 100; i++)
+        for(int i = 0; i < 100; i++)
         {
             ErrorNumber errno = imagePlugin.ReadSectorTag((ulong)i, SectorTagType.AppleSectorTag, out byte[] tag);
 
@@ -132,7 +132,7 @@ public sealed partial class LisaFS
         int beforeMddf = -1;
 
         // LisaOS searches sectors until tag tells MDDF resides there, so we'll search 100 sectors
-        for(var i = 0; i < 100; i++)
+        for(int i = 0; i < 100; i++)
         {
             ErrorNumber errno = imagePlugin.ReadSectorTag((ulong)i, SectorTagType.AppleSectorTag, out byte[] tag);
 
@@ -150,8 +150,8 @@ public sealed partial class LisaFS
 
             if(errno != ErrorNumber.NoError) continue;
 
-            var infoMddf = new MDDF();
-            var pString  = new byte[33];
+            var    infoMddf = new MDDF();
+            byte[] pString  = new byte[33];
 
             infoMddf.fsversion = BigEndianBitConverter.ToUInt16(sector, 0x00);
             infoMddf.volid     = BigEndianBitConverter.ToUInt64(sector, 0x02);
@@ -166,7 +166,7 @@ public sealed partial class LisaFS
             infoMddf.unknown2       = sector[0x4F];
             infoMddf.machine_id     = BigEndianBitConverter.ToUInt32(sector, 0x50);
             infoMddf.master_copy_id = BigEndianBitConverter.ToUInt32(sector, 0x54);
-            var lisaTime = BigEndianBitConverter.ToUInt32(sector, 0x58);
+            uint lisaTime = BigEndianBitConverter.ToUInt32(sector, 0x58);
             infoMddf.dtvc                         = DateHandlers.LisaToDateTime(lisaTime);
             lisaTime                              = BigEndianBitConverter.ToUInt32(sector, 0x5C);
             infoMddf.dtcc                         = DateHandlers.LisaToDateTime(lisaTime);

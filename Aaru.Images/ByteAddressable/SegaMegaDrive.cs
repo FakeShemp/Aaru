@@ -41,8 +41,8 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Images;
@@ -100,7 +100,7 @@ public class SegaMegaDrive : IByteAddressableImage
 
         if(stream.Length % 512 != 0) return false;
 
-        var buffer = new byte[4];
+        byte[] buffer = new byte[4];
 
         stream.Position = 256;
         stream.EnsureRead(buffer, 0, 4);
@@ -141,7 +141,7 @@ public class SegaMegaDrive : IByteAddressableImage
 
         if(stream.Length % 512 != 0) return ErrorNumber.InvalidArgument;
 
-        var buffer = new byte[4];
+        byte[] buffer = new byte[4];
 
         stream.Position = 256;
         stream.EnsureRead(buffer, 0, 4);
@@ -189,15 +189,15 @@ public class SegaMegaDrive : IByteAddressableImage
         // Interleaves every 16KiB
         if(_smd)
         {
-            var tmp     = new byte[_data.Length];
-            var bankIn  = new byte[16384];
-            var bankOut = new byte[16384];
+            byte[] tmp     = new byte[_data.Length];
+            byte[] bankIn  = new byte[16384];
+            byte[] bankOut = new byte[16384];
 
-            for(var b = 0; b < _data.Length / 16384; b++)
+            for(int b = 0; b < _data.Length / 16384; b++)
             {
                 Array.Copy(_data, b * 16384, bankIn, 0, 16384);
 
-                for(var i = 0; i < 8192; i++)
+                for(int i = 0; i < 8192; i++)
                 {
                     bankOut[i * 2 + 1] = bankIn[i];
                     bankOut[i * 2]     = bankIn[i + 8192];
@@ -210,10 +210,10 @@ public class SegaMegaDrive : IByteAddressableImage
         }
         else if(_interleaved)
         {
-            var tmp  = new byte[_data.Length];
-            int half = _data.Length / 2;
+            byte[] tmp  = new byte[_data.Length];
+            int    half = _data.Length / 2;
 
-            for(var i = 0; i < half; i++)
+            for(int i = 0; i < half; i++)
             {
                 tmp[i * 2]     = _data[i];
                 tmp[i * 2 + 1] = _data[i + half];
@@ -402,10 +402,10 @@ public class SegaMegaDrive : IByteAddressableImage
 
         if(_interleaved)
         {
-            var tmp  = new byte[_data.Length];
-            int half = _data.Length / 2;
+            byte[] tmp  = new byte[_data.Length];
+            int    half = _data.Length / 2;
 
-            for(var i = 0; i < half; i++)
+            for(int i = 0; i < half; i++)
             {
                 tmp[i]        = _data[i * 2];
                 tmp[i + half] = _data[i * 2 + 1];
@@ -430,15 +430,15 @@ public class SegaMegaDrive : IByteAddressableImage
 
             _dataStream.Write(smdHeader, 0, smdHeader.Length);
 
-            var tmp     = new byte[_data.Length];
-            var bankIn  = new byte[16384];
-            var bankOut = new byte[16384];
+            byte[] tmp     = new byte[_data.Length];
+            byte[] bankIn  = new byte[16384];
+            byte[] bankOut = new byte[16384];
 
-            for(var b = 0; b < _data.Length / 16384; b++)
+            for(int b = 0; b < _data.Length / 16384; b++)
             {
                 Array.Copy(_data, b * 16384, bankIn, 0, 16384);
 
-                for(var i = 0; i < 8192; i++)
+                for(int i = 0; i < 8192; i++)
                 {
                     bankOut[i] = bankIn[i * 2 + 1];
                     bankOut[i                 + 8192] = bankIn[i * 2];
@@ -730,8 +730,8 @@ public class SegaMegaDrive : IByteAddressableImage
             return ErrorNumber.ReadOnly;
         }
 
-        var foundRom     = false;
-        var foundSaveRam = false;
+        bool foundRom     = false;
+        bool foundSaveRam = false;
 
         // Sanitize
         foreach(LinearMemoryDevice map in mappings.Devices)

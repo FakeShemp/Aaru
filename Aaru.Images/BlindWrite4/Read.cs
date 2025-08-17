@@ -40,9 +40,9 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Decoders.CD;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Session = Aaru.CommonTypes.Structs.Session;
 
 namespace Aaru.Images;
@@ -59,10 +59,10 @@ public sealed partial class BlindWrite4
 
         if(stream.Length < 19) return ErrorNumber.InvalidArgument;
 
-        var tmpArray  = new byte[19];
-        var tmpUShort = new byte[2];
-        var tmpUInt   = new byte[4];
-        var tmpULong  = new byte[8];
+        byte[] tmpArray  = new byte[19];
+        byte[] tmpUShort = new byte[2];
+        byte[] tmpUInt   = new byte[4];
+        byte[] tmpULong  = new byte[8];
 
         stream.EnsureRead(tmpArray, 0, 19);
 
@@ -151,7 +151,7 @@ public sealed partial class BlindWrite4
 
         _bwTracks = [];
 
-        for(var i = 0; i < _header.TrackDescriptors; i++)
+        for(int i = 0; i < _header.TrackDescriptors; i++)
         {
             AaruConsole.DebugWriteLine(MODULE_NAME, "stream.Position = {0}", stream.Position);
 
@@ -208,7 +208,7 @@ public sealed partial class BlindWrite4
 
             track.unknown13 = new uint[2];
 
-            for(var j = 0; j < track.unknown13.Length; j++)
+            for(int j = 0; j < track.unknown13.Length; j++)
             {
                 stream.EnsureRead(tmpUInt, 0, 4);
                 track.unknown13[j] = BitConverter.ToUInt32(tmpUInt, 0);
@@ -324,7 +324,7 @@ public sealed partial class BlindWrite4
             AaruConsole.DebugWriteLine(MODULE_NAME, "track.offset = {0}",      track.offset);
             AaruConsole.DebugWriteLine(MODULE_NAME, "track.subchannel = {0}",  track.subchannel);
 
-            for(var j = 0; j < track.unknown1.Length; j++)
+            for(int j = 0; j < track.unknown1.Length; j++)
                 AaruConsole.DebugWriteLine(MODULE_NAME, "track.unknown1[{1}] = 0x{0:X8}", track.unknown1[j], j);
 
             AaruConsole.DebugWriteLine(MODULE_NAME, "track.unknown2 = {0}",    track.unknown2);
@@ -346,7 +346,7 @@ public sealed partial class BlindWrite4
             AaruConsole.DebugWriteLine(MODULE_NAME, "track.pregap = {0}",      track.pregap);
             AaruConsole.DebugWriteLine(MODULE_NAME, "track.startSector = {0}", track.startSector);
 
-            for(var j = 0; j < track.unknown13.Length; j++)
+            for(int j = 0; j < track.unknown13.Length; j++)
                 AaruConsole.DebugWriteLine(MODULE_NAME, "track.unknown13[{1}] = 0x{0:X8}", track.unknown13[j], j);
 
             AaruConsole.DebugWriteLine(MODULE_NAME, "track.titleLen = {0}",     track.titleLen);
@@ -744,8 +744,9 @@ public sealed partial class BlindWrite4
 
         // As long as subchannel is written for any track, it is present for all tracks
         if(Tracks.Any(t => t.SubchannelType == TrackSubchannelType.Packed))
-            foreach(Track track in Tracks)
-                track.SubchannelType = TrackSubchannelType.Packed;
+        {
+            foreach(Track track in Tracks) track.SubchannelType = TrackSubchannelType.Packed;
+        }
 
         _imageInfo.MediaType = MediaType.CD;
 
@@ -758,11 +759,11 @@ public sealed partial class BlindWrite4
         _imageInfo.LastModificationTime = _dataFilter.LastWriteTime;
         _imageInfo.MetadataMediaType    = MetadataMediaType.OpticalDisc;
 
-        var data       = false;
-        var mode2      = false;
-        var firstAudio = false;
-        var firstData  = false;
-        var audio      = false;
+        bool data       = false;
+        bool mode2      = false;
+        bool firstAudio = false;
+        bool firstData  = false;
+        bool audio      = false;
 
         foreach(Track bwTrack in Tracks)
         {
@@ -888,7 +889,7 @@ public sealed partial class BlindWrite4
         uint sectorOffset;
         uint sectorSize;
         uint sectorSkip;
-        var  mode2 = false;
+        bool mode2 = false;
 
         switch(aaruTrack.Type)
         {
@@ -944,9 +945,9 @@ public sealed partial class BlindWrite4
 
             buffer = br.ReadBytes((int)(sectorSize * length));
 
-            for(var i = 0; i < length; i++)
+            for(int i = 0; i < length; i++)
             {
-                var sector = new byte[sectorSize];
+                byte[] sector = new byte[sectorSize];
                 Array.Copy(buffer, sectorSize * i, sector, 0, sectorSize);
                 sector = Sector.GetUserDataFromMode2(sector);
                 mode2Ms.Write(sector, 0, sector.Length);
@@ -958,7 +959,7 @@ public sealed partial class BlindWrite4
             buffer = br.ReadBytes((int)(sectorSize * length));
         else
         {
-            for(var i = 0; i < length; i++)
+            for(int i = 0; i < length; i++)
             {
                 br.BaseStream.Seek(sectorOffset, SeekOrigin.Current);
                 byte[] sector = br.ReadBytes((int)sectorSize);
@@ -1153,7 +1154,7 @@ public sealed partial class BlindWrite4
             buffer = br.ReadBytes((int)(sectorSize * length));
         else
         {
-            for(var i = 0; i < length; i++)
+            for(int i = 0; i < length; i++)
             {
                 br.BaseStream.Seek(sectorOffset, SeekOrigin.Current);
                 byte[] sector = br.ReadBytes((int)sectorSize);

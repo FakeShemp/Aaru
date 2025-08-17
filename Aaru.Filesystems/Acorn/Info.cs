@@ -31,8 +31,8 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -84,7 +84,7 @@ public sealed partial class AcornADFS
 
                 if(errno != ErrorNumber.NoError) return false;
 
-                var tmp = new byte[256];
+                byte[] tmp = new byte[256];
                 Array.Copy(sector, 256, tmp, 0, 256);
                 oldChk1 = AcornMapChecksum(tmp, 255);
                 oldMap1 = Marshal.ByteArrayToStructureLittleEndian<OldMapSector1>(tmp);
@@ -109,7 +109,7 @@ public sealed partial class AcornADFS
 
                 if(sector.Length > OLD_DIRECTORY_SIZE)
                 {
-                    var tmp = new byte[OLD_DIRECTORY_SIZE];
+                    byte[] tmp = new byte[OLD_DIRECTORY_SIZE];
                     Array.Copy(sector, 0, tmp, 0, OLD_DIRECTORY_SIZE - 53);
                     Array.Copy(sector, sector.Length                 - 54, tmp, OLD_DIRECTORY_SIZE - 54, 53);
                     sector = tmp;
@@ -144,7 +144,7 @@ public sealed partial class AcornADFS
 
                 if(sector.Length > OLD_DIRECTORY_SIZE)
                 {
-                    var tmp = new byte[OLD_DIRECTORY_SIZE];
+                    byte[] tmp = new byte[OLD_DIRECTORY_SIZE];
                     Array.Copy(sector, 0, tmp, 0, OLD_DIRECTORY_SIZE - 53);
                     Array.Copy(sector, sector.Length                 - 54, tmp, OLD_DIRECTORY_SIZE - 54, 53);
                     sector = tmp;
@@ -191,11 +191,11 @@ public sealed partial class AcornADFS
 
         if(errno != ErrorNumber.NoError) return false;
 
-        var bootChk = 0;
+        int bootChk = 0;
 
         if(bootSector.Length < 512) return false;
 
-        for(var i = 0; i < 0x1FF; i++) bootChk = (bootChk & 0xFF) + (bootChk >> 8) + bootSector[i];
+        for(int i = 0; i < 0x1FF; i++) bootChk = (bootChk & 0xFF) + (bootChk >> 8) + bootSector[i];
 
         AaruConsole.DebugWriteLine(MODULE_NAME, "bootChk = {0}",         bootChk);
         AaruConsole.DebugWriteLine(MODULE_NAME, "bBlock.checksum = {0}", bootSector[0x1FF]);
@@ -279,7 +279,7 @@ public sealed partial class AcornADFS
 
                 if(errno != ErrorNumber.NoError) return;
 
-                var tmp = new byte[256];
+                byte[] tmp = new byte[256];
                 Array.Copy(sector, 256, tmp, 0, 256);
                 oldChk1 = AcornMapChecksum(tmp, 255);
                 oldMap1 = Marshal.ByteArrayToStructureLittleEndian<OldMapSector1>(tmp);
@@ -291,9 +291,9 @@ public sealed partial class AcornADFS
                oldMap1.checksum != 0)
             {
                 bytes = (ulong)((oldMap0.size[2] << 16) + (oldMap0.size[1] << 8) + oldMap0.size[0]) * 256;
-                var namebytes = new byte[10];
+                byte[] namebytes = new byte[10];
 
-                for(var i = 0; i < 5; i++)
+                for(int i = 0; i < 5; i++)
                 {
                     namebytes[i * 2]     = oldMap0.name[i];
                     namebytes[i * 2 + 1] = oldMap1.name[i];
@@ -320,7 +320,7 @@ public sealed partial class AcornADFS
 
                     if(sector.Length > OLD_DIRECTORY_SIZE)
                     {
-                        var tmp = new byte[OLD_DIRECTORY_SIZE];
+                        byte[] tmp = new byte[OLD_DIRECTORY_SIZE];
                         Array.Copy(sector, 0, tmp, 0, OLD_DIRECTORY_SIZE - 53);
                         Array.Copy(sector, sector.Length                 - 54, tmp, OLD_DIRECTORY_SIZE - 54, 53);
                         sector = tmp;
@@ -344,7 +344,7 @@ public sealed partial class AcornADFS
 
                         if(sector.Length > OLD_DIRECTORY_SIZE)
                         {
-                            var tmp = new byte[OLD_DIRECTORY_SIZE];
+                            byte[] tmp = new byte[OLD_DIRECTORY_SIZE];
                             Array.Copy(sector, 0, tmp, 0, OLD_DIRECTORY_SIZE - 53);
 
                             Array.Copy(sector, sector.Length - 54, tmp, OLD_DIRECTORY_SIZE - 54, 53);
@@ -364,7 +364,7 @@ public sealed partial class AcornADFS
 
                             if(sector.Length > NEW_DIRECTORY_SIZE)
                             {
-                                var tmp = new byte[NEW_DIRECTORY_SIZE];
+                                byte[] tmp = new byte[NEW_DIRECTORY_SIZE];
                                 Array.Copy(sector, 0, tmp, 0, NEW_DIRECTORY_SIZE - 41);
 
                                 Array.Copy(sector, sector.Length - 42, tmp, NEW_DIRECTORY_SIZE - 42, 41);
@@ -423,9 +423,9 @@ public sealed partial class AcornADFS
 
         if(errno != ErrorNumber.NoError) return;
 
-        var bootChk = 0;
+        int bootChk = 0;
 
-        for(var i = 0; i < 0x1FF; i++) bootChk = (bootChk & 0xFF) + (bootChk >> 8) + bootSector[i];
+        for(int i = 0; i < 0x1FF; i++) bootChk = (bootChk & 0xFF) + (bootChk >> 8) + bootSector[i];
 
         AaruConsole.DebugWriteLine(MODULE_NAME, "bootChk = {0}",         bootChk);
         AaruConsole.DebugWriteLine(MODULE_NAME, "bBlock.checksum = {0}", bootSector[0x1FF]);

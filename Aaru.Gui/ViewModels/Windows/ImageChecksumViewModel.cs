@@ -38,10 +38,10 @@ using System.Threading;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Core;
 using Aaru.Gui.Models;
 using Aaru.Localization;
+using Aaru.Logging;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using ReactiveUI;
@@ -395,8 +395,8 @@ public sealed class ImageChecksumViewModel : ViewModelBase
     [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void DoWork()
     {
-        var opticalMediaImage = _inputFormat as IOpticalMediaImage;
-        var formatHasTracks   = false;
+        var  opticalMediaImage = _inputFormat as IOpticalMediaImage;
+        bool formatHasTracks   = false;
 
         if(opticalMediaImage != null)
         {
@@ -603,7 +603,7 @@ public sealed class ImageChecksumViewModel : ViewModelBase
 
                     await Dispatcher.UIThread.InvokeAsync(() =>
                     {
-                        if(ChecksumTracksChecked != true) return;
+                        if(!ChecksumTracksChecked) return;
 
                         if(trackChecksum == null) return;
 

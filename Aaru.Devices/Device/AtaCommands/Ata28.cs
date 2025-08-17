@@ -30,8 +30,8 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using Aaru.Console;
 using Aaru.Decoders.ATA;
+using Aaru.Logging;
 
 // ReSharper disable UnusedMember.Global
 

@@ -32,8 +32,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Core;
 

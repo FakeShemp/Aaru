@@ -38,8 +38,8 @@ using System.Runtime.InteropServices;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Partitions;
@@ -78,8 +78,8 @@ public sealed class BSD : IPartition
 
         if((MAX_LABEL_SIZE + _labelOffsets.Last()) % imagePlugin.Info.SectorSize > 0) run++;
 
-        var dl    = new DiskLabel();
-        var found = false;
+        var  dl    = new DiskLabel();
+        bool found = false;
 
         foreach(ulong location in _labelLocations)
         {
@@ -91,7 +91,7 @@ public sealed class BSD : IPartition
 
             foreach(uint offset in _labelOffsets)
             {
-                var sector = new byte[MAX_LABEL_SIZE];
+                byte[] sector = new byte[MAX_LABEL_SIZE];
 
                 if(offset + MAX_LABEL_SIZE > tmp.Length) break;
 
@@ -159,9 +159,9 @@ public sealed class BSD : IPartition
         AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_sbsize = {0}",         dl.d_sbsize);
 
         ulong counter         = 0;
-        var   addSectorOffset = false;
+        bool  addSectorOffset = false;
 
-        for(var i = 0; i < dl.d_npartitions && i < 22; i++)
+        for(int i = 0; i < dl.d_npartitions && i < 22; i++)
         {
             AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_partitions[i].p_offset = {0}", dl.d_partitions[i].p_offset);
 
@@ -245,11 +245,11 @@ public sealed class BSD : IPartition
     {
         dl = (DiskLabel)Marshal.SwapStructureMembersEndian(dl);
 
-        for(var i = 0; i < dl.d_drivedata.Length; i++) dl.d_drivedata[i] = Swapping.Swap(dl.d_drivedata[i]);
+        for(int i = 0; i < dl.d_drivedata.Length; i++) dl.d_drivedata[i] = Swapping.Swap(dl.d_drivedata[i]);
 
-        for(var i = 0; i < dl.d_spare.Length; i++) dl.d_spare[i] = Swapping.Swap(dl.d_spare[i]);
+        for(int i = 0; i < dl.d_spare.Length; i++) dl.d_spare[i] = Swapping.Swap(dl.d_spare[i]);
 
-        for(var i = 0; i < dl.d_partitions.Length; i++)
+        for(int i = 0; i < dl.d_partitions.Length; i++)
             dl.d_partitions[i] = (BSDPartition)Marshal.SwapStructureMembersEndian(dl.d_partitions[i]);
 
         return dl;

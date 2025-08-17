@@ -32,8 +32,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Decoders.CD;
 
@@ -80,7 +80,7 @@ public static class Session
             return null;
         }
 
-        for(var i = 0; i < (decoded.DataLength - 2) / 8; i++)
+        for(int i = 0; i < (decoded.DataLength - 2) / 8; i++)
         {
             decoded.TrackDescriptors[i].Reserved1   = CDSessionInfoResponse[0 + i * 8 + 4];
             decoded.TrackDescriptors[i].ADR         = (byte)((CDSessionInfoResponse[1 + i * 8 + 4] & 0xF0) >> 4);

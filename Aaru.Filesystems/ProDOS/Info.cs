@@ -35,7 +35,7 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
+using Aaru.Logging;
 using Claunia.Encoding;
 using Encoding = System.Text.Encoding;
 using Partition = Aaru.CommonTypes.Partition;
@@ -56,7 +56,7 @@ public sealed partial class ProDOSPlugin
     {
         if(partition.Length < 3) return false;
 
-        var multiplier = (uint)(imagePlugin.Info.SectorSize == 256 ? 2 : 1);
+        uint multiplier = (uint)(imagePlugin.Info.SectorSize == 256 ? 2 : 1);
 
         // Blocks 0 and 1 are boot code
         ErrorNumber errno =
@@ -64,7 +64,7 @@ public sealed partial class ProDOSPlugin
 
         if(errno != ErrorNumber.NoError) return false;
 
-        var apmFromHddOnCd = false;
+        bool apmFromHddOnCd = false;
 
         if(imagePlugin.Info.SectorSize is 2352 or 2448 or 2048)
         {
@@ -88,12 +88,12 @@ public sealed partial class ProDOSPlugin
             }
         }
 
-        var prePointer = BitConverter.ToUInt16(rootDirectoryKeyBlock, 0);
+        ushort prePointer = BitConverter.ToUInt16(rootDirectoryKeyBlock, 0);
         AaruConsole.DebugWriteLine(MODULE_NAME, "prePointer = {0}", prePointer);
 
         if(prePointer != 0) return false;
 
-        var storageType = (byte)((rootDirectoryKeyBlock[0x04] & STORAGE_TYPE_MASK) >> 4);
+        byte storageType = (byte)((rootDirectoryKeyBlock[0x04] & STORAGE_TYPE_MASK) >> 4);
         AaruConsole.DebugWriteLine(MODULE_NAME, "storage_type = {0}", storageType);
 
         if(storageType != ROOT_DIRECTORY_TYPE) return false;
@@ -108,12 +108,12 @@ public sealed partial class ProDOSPlugin
 
         if(entriesPerBlock != ENTRIES_PER_BLOCK) return false;
 
-        var bitMapPointer = BitConverter.ToUInt16(rootDirectoryKeyBlock, 0x27);
+        ushort bitMapPointer = BitConverter.ToUInt16(rootDirectoryKeyBlock, 0x27);
         AaruConsole.DebugWriteLine(MODULE_NAME, "bit_map_pointer = {0}", bitMapPointer);
 
         if(bitMapPointer > partition.End) return false;
 
-        var totalBlocks = BitConverter.ToUInt16(rootDirectoryKeyBlock, 0x29);
+        ushort totalBlocks = BitConverter.ToUInt16(rootDirectoryKeyBlock, 0x29);
 
         if(apmFromHddOnCd) totalBlocks /= 4;
 
@@ -134,8 +134,8 @@ public sealed partial class ProDOSPlugin
         encoding    ??= new Apple2c();
         information =   "";
         metadata    =   new FileSystem();
-        var sbInformation = new StringBuilder();
-        var multiplier    = (uint)(imagePlugin.Info.SectorSize == 256 ? 2 : 1);
+        var  sbInformation = new StringBuilder();
+        uint multiplier    = (uint)(imagePlugin.Info.SectorSize == 256 ? 2 : 1);
 
         // Blocks 0 and 1 are boot code
         ErrorNumber errno = imagePlugin.ReadSectors(2 * multiplier + partition.Start,
@@ -144,7 +144,7 @@ public sealed partial class ProDOSPlugin
 
         if(errno != ErrorNumber.NoError) return;
 
-        var apmFromHddOnCd = false;
+        bool apmFromHddOnCd = false;
 
         if(imagePlugin.Info.SectorSize is 2352 or 2448 or 2048)
         {
@@ -177,24 +177,24 @@ public sealed partial class ProDOSPlugin
         rootDirectoryKeyBlock.header.storage_type = (byte)((rootDirectoryKeyBlockBytes[0x04] & STORAGE_TYPE_MASK) >> 4);
 
         rootDirectoryKeyBlock.header.name_length = (byte)(rootDirectoryKeyBlockBytes[0x04] & NAME_LENGTH_MASK);
-        var temporal = new byte[rootDirectoryKeyBlock.header.name_length];
+        byte[] temporal = new byte[rootDirectoryKeyBlock.header.name_length];
         Array.Copy(rootDirectoryKeyBlockBytes, 0x05, temporal, 0, rootDirectoryKeyBlock.header.name_length);
         rootDirectoryKeyBlock.header.volume_name = encoding.GetString(temporal);
         rootDirectoryKeyBlock.header.reserved    = BitConverter.ToUInt64(rootDirectoryKeyBlockBytes, 0x14);
 
-        var tempTimestampLeft  = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x1C);
-        var tempTimestampRight = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x1E);
+        ushort tempTimestampLeft  = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x1C);
+        ushort tempTimestampRight = BitConverter.ToUInt16(rootDirectoryKeyBlockBytes, 0x1E);
 
         bool dateCorrect;
 
         try
         {
-            var tempTimestamp = (uint)((tempTimestampLeft << 16) + tempTimestampRight);
-            var year          = (int)((tempTimestamp & YEAR_MASK)  >> 25);
-            var month         = (int)((tempTimestamp & MONTH_MASK) >> 21);
-            var day           = (int)((tempTimestamp & DAY_MASK)   >> 16);
-            var hour          = (int)((tempTimestamp & HOUR_MASK)  >> 8);
-            var minute        = (int)(tempTimestamp & MINUTE_MASK);
+            uint tempTimestamp = (uint)((tempTimestampLeft << 16) + tempTimestampRight);
+            int  year          = (int)((tempTimestamp & YEAR_MASK)  >> 25);
+            int  month         = (int)((tempTimestamp & MONTH_MASK) >> 21);
+            int  day           = (int)((tempTimestamp & DAY_MASK)   >> 16);
+            int  hour          = (int)((tempTimestamp & HOUR_MASK)  >> 8);
+            int  minute        = (int)(tempTimestamp & MINUTE_MASK);
             year += 1900;
 
             if(year < 1940) year += 100;

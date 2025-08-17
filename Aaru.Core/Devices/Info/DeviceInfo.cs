@@ -35,13 +35,13 @@ using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
-using Aaru.Console;
 using Aaru.Decoders.ATA;
 using Aaru.Decoders.DVD;
 using Aaru.Decoders.SCSI;
 using Aaru.Decryption;
 using Aaru.Devices;
 using Aaru.Helpers;
+using Aaru.Logging;
 using DVDDecryption = Aaru.Decryption.DVD.Dump;
 using Inquiry = Aaru.CommonTypes.Structs.Devices.SCSI.Inquiry;
 
@@ -330,8 +330,8 @@ public partial class DeviceInfo
 
                         if(dev.Manufacturer == "PLEXTOR")
                         {
-                            var    plxtSense = true;
-                            var    plxtDvd   = false;
+                            bool   plxtSense = true;
+                            bool   plxtDvd   = false;
                             byte[] plxtBuf   = null;
 
                             switch(dev.Model)

@@ -42,7 +42,6 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Interop;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
-using Aaru.Console;
 using Aaru.Core;
 using Aaru.Core.Media.Info;
 using Aaru.Database;
@@ -54,6 +53,7 @@ using Aaru.Gui.Views.Dialogs;
 using Aaru.Gui.Views.Panels;
 using Aaru.Gui.Views.Windows;
 using Aaru.Localization;
+using Aaru.Logging;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -64,6 +64,7 @@ using JetBrains.Annotations;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using ReactiveUI;
+using Console = Aaru.Gui.Views.Dialogs.Console;
 using DeviceInfo = Aaru.Core.Devices.Info.DeviceInfo;
 using ImageInfo = Aaru.Gui.Views.Panels.ImageInfo;
 using Partition = Aaru.Gui.Views.Panels.Partition;
@@ -85,7 +86,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     readonly Bitmap           _sdIcon;
     readonly Bitmap           _usbIcon;
     readonly MainWindow       _view;
-    Views.Dialogs.Console     _console;
+    Console                   _console;
     object                    _contentPanel;
     bool                      _devicesSupported;
     object                    _treeViewSelectedItem;
@@ -521,7 +522,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     {
         if(_console is null)
         {
-            _console             = new Views.Dialogs.Console();
+            _console             = new Console();
             _console.DataContext = new ConsoleViewModel(_console);
         }
 
@@ -607,7 +608,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                 List<CommonTypes.Partition> partitions = Core.Partitions.GetAll(imageFormat);
                 Core.Partitions.AddSchemesToStats(partitions);
 
-                var            checkRaw = false;
+                bool           checkRaw = false;
                 List<string>   idPlugins;
                 PluginRegister plugins = PluginRegister.Singleton;
 

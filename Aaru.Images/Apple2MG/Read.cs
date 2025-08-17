@@ -36,9 +36,9 @@ using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Filters;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -54,10 +54,10 @@ public sealed partial class Apple2Mg
 
         _imageHeader = new Header();
 
-        var header = new byte[64];
+        byte[] header = new byte[64];
         stream.EnsureRead(header, 0, 64);
-        var magic   = new byte[4];
-        var creator = new byte[4];
+        byte[] magic   = new byte[4];
+        byte[] creator = new byte[4];
 
         Array.Copy(header, 0, magic,   0, 4);
         Array.Copy(header, 4, creator, 0, 4);
@@ -147,9 +147,9 @@ public sealed partial class Apple2Mg
                                   ? _interleave
                                   : _deinterleave;
 
-                for(var t = 0; t < 35; t++)
+                for(int t = 0; t < 35; t++)
                 {
-                    for(var s = 0; s < 16; s++)
+                    for(int s = 0; s < 16; s++)
                         Array.Copy(tmp, t * 16 * 256 + s * 256, _decodedImage, t * 16 * 256 + offsets[s] * 256, 256);
                 }
 
@@ -164,9 +164,9 @@ public sealed partial class Apple2Mg
                 _decodedImage = new byte[_imageHeader.DataSize];
                 offsets       = _interleave;
 
-                for(var t = 0; t < 200; t++)
+                for(int t = 0; t < 200; t++)
                 {
-                    for(var s = 0; s < 16; s++)
+                    for(int s = 0; s < 16; s++)
                         Array.Copy(tmp, t * 16 * 256 + s * 256, _decodedImage, t * 16 * 256 + offsets[s] * 256, 256);
                 }
 
@@ -205,7 +205,7 @@ public sealed partial class Apple2Mg
         {
             stream.Seek(_imageHeader.CommentOffset, SeekOrigin.Begin);
 
-            var comments = new byte[_imageHeader.CommentSize];
+            byte[] comments = new byte[_imageHeader.CommentSize];
             stream.EnsureRead(comments, 0, (int)_imageHeader.CommentSize);
             _imageInfo.Comments = Encoding.ASCII.GetString(comments);
         }

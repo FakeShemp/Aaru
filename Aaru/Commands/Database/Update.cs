@@ -36,10 +36,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Aaru.CommonTypes.Enums;
-using Aaru.Console;
 using Aaru.Core;
 using Aaru.Database;
 using Aaru.Localization;
+using Aaru.Logging;
 using Microsoft.EntityFrameworkCore;
 using Spectre.Console.Cli;
 

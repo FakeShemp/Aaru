@@ -43,11 +43,11 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Extents;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Core.Logging;
 using Aaru.Decoders.CD;
 using Aaru.Decoders.SCSI;
 using Aaru.Devices;
+using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
 using Track = Aaru.CommonTypes.Structs.Track;
@@ -103,7 +103,7 @@ partial class Dump
     {
         ulong      sectorSpeedStart = 0; // Used to calculate correct speed
         uint       blocksToRead;         // How many sectors to read at once
-        var        sense       = true;   // Sense indicator
+        bool       sense       = true;   // Sense indicator
         byte[]     cmdBuf      = null;   // Data buffer
         byte[]     senseBuf    = null;   // Sense buffer
         double     cmdDuration = 0;      // Command execution time
@@ -122,10 +122,10 @@ partial class Dump
 
         InitProgress?.Invoke();
 
-        int currentReadSpeed      = _speed;
-        var crossingLeadOut       = false;
-        var failedCrossingLeadOut = false;
-        var skippingLead          = false;
+        int  currentReadSpeed      = _speed;
+        bool crossingLeadOut       = false;
+        bool failedCrossingLeadOut = false;
+        bool skippingLead          = false;
 
         for(ulong i = _resume.NextBlock; (long)i <= lastSector; i += blocksToRead)
         {
@@ -146,7 +146,7 @@ partial class Dump
 
             if((long)i > lastSector) break;
 
-            var firstSectorToRead = (uint)i;
+            uint firstSectorToRead = (uint)i;
 
             Track track = tracks.OrderBy(t => t.StartSector).LastOrDefault(t => i >= t.StartSector);
 
@@ -317,10 +317,10 @@ partial class Dump
                         // Try to workaround firmware
                         if(decSense?.ASC == 0x64)
                         {
-                            var goBackTrackTypeChange = false;
+                            bool goBackTrackTypeChange = false;
 
                             // Go one for one as the drive does not tell us which one failed
-                            for(var bi = 0; bi < blocksToRead; bi++)
+                            for(int bi = 0; bi < blocksToRead; bi++)
                             {
                                 _speedStopwatch.Start();
 
@@ -591,7 +591,7 @@ partial class Dump
 
                     if(_supportsPlextorD8)
                     {
-                        var adjustment = 0;
+                        int adjustment = 0;
 
                         if(offsetBytes < 0) adjustment = -sectorsForOffset;
 
@@ -611,7 +611,7 @@ partial class Dump
 
                         if(!sense)
                         {
-                            var sectorsForFix = (uint)(1 + sectorsForOffset);
+                            uint sectorsForFix = (uint)(1 + sectorsForOffset);
 
                             FixOffsetData(offsetBytes,
                                           sectorSize,
@@ -637,7 +637,7 @@ partial class Dump
                             {
                                 case 0:
 
-                                    for(var c = 16; c < 2352; c++)
+                                    for(int c = 16; c < 2352; c++)
                                     {
                                         if(cmdBuf[c] == 0x00) continue;
 
@@ -775,8 +775,8 @@ partial class Dump
 
                         if(supportedSubchannel != MmcSubchannel.None)
                         {
-                            var data = new byte[sectorSize];
-                            var sub  = new byte[subSize];
+                            byte[] data = new byte[sectorSize];
+                            byte[] sub  = new byte[subSize];
 
                             Array.Copy(cmdBuf, 0, data, 0, sectorSize);
 
@@ -786,10 +786,10 @@ partial class Dump
                                 outputFormat.WriteSectorsLong(data, i + r, 1);
                             else
                             {
-                                var cooked = new MemoryStream();
-                                var sector = new byte[sectorSize];
+                                var    cooked = new MemoryStream();
+                                byte[] sector = new byte[sectorSize];
 
-                                for(var b = 0; b < blocksToRead; b++)
+                                for(int b = 0; b < blocksToRead; b++)
                                 {
                                     Array.Copy(cmdBuf, (int)(0 + b * blockSize), sector, 0, sectorSize);
                                     byte[] cookedSector = Sector.GetUserData(sector);
@@ -847,10 +847,10 @@ partial class Dump
                                 outputFormat.WriteSectorsLong(cmdBuf, i + r, 1);
                             else
                             {
-                                var cooked = new MemoryStream();
-                                var sector = new byte[sectorSize];
+                                var    cooked = new MemoryStream();
+                                byte[] sector = new byte[sectorSize];
 
-                                for(var b = 0; b < blocksToRead; b++)
+                                for(int b = 0; b < blocksToRead; b++)
                                 {
                                     Array.Copy(cmdBuf, (int)(b * sectorSize), sector, 0, sectorSize);
                                     byte[] cookedSector = Sector.GetUserData(sector);
@@ -936,7 +936,7 @@ partial class Dump
             {
                 if(crossingLeadOut && failedCrossingLeadOut)
                 {
-                    var tmp = new byte[cmdBuf.Length + blockSize];
+                    byte[] tmp = new byte[cmdBuf.Length + blockSize];
                     Array.Copy(cmdBuf, 0, tmp, 0, cmdBuf.Length);
                 }
 
@@ -961,10 +961,10 @@ partial class Dump
 
                 if(supportedSubchannel != MmcSubchannel.None)
                 {
-                    var data = new byte[sectorSize * blocksToRead];
-                    var sub  = new byte[subSize    * blocksToRead];
+                    byte[] data = new byte[sectorSize * blocksToRead];
+                    byte[] sub  = new byte[subSize    * blocksToRead];
 
-                    for(var b = 0; b < blocksToRead; b++)
+                    for(int b = 0; b < blocksToRead; b++)
                     {
                         Array.Copy(cmdBuf, (int)(0 + b * blockSize), data, sectorSize * b, sectorSize);
 
@@ -975,10 +975,10 @@ partial class Dump
                         outputFormat.WriteSectorsLong(data, i, blocksToRead);
                     else
                     {
-                        var cooked = new MemoryStream();
-                        var sector = new byte[sectorSize];
+                        var    cooked = new MemoryStream();
+                        byte[] sector = new byte[sectorSize];
 
-                        for(var b = 0; b < blocksToRead; b++)
+                        for(int b = 0; b < blocksToRead; b++)
                         {
                             Array.Copy(cmdBuf, (int)(0 + b * blockSize), sector, 0, sectorSize);
                             byte[] cookedSector = Sector.GetUserData(sector);
@@ -1035,10 +1035,10 @@ partial class Dump
                         outputFormat.WriteSectorsLong(cmdBuf, i, blocksToRead);
                     else
                     {
-                        var cooked = new MemoryStream();
-                        var sector = new byte[sectorSize];
+                        var    cooked = new MemoryStream();
+                        byte[] sector = new byte[sectorSize];
 
-                        for(var b = 0; b < blocksToRead; b++)
+                        for(int b = 0; b < blocksToRead; b++)
                         {
                             Array.Copy(cmdBuf, (int)(b * sectorSize), sector, 0, sectorSize);
                             byte[] cookedSector = Sector.GetUserData(sector);

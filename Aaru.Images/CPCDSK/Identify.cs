@@ -34,8 +34,8 @@ using System;
 using System.IO;
 using System.Text;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -51,14 +51,15 @@ public sealed partial class Cpcdsk
 
         if(stream.Length < 512) return false;
 
-        var headerB = new byte[256];
+        byte[] headerB = new byte[256];
         stream.EnsureRead(headerB, 0, 256);
 
         int pos;
 
         for(pos = 0; pos < 254; pos++)
-            if(headerB[pos] == 0x0D && headerB[pos + 1] == 0x0A)
-                break;
+        {
+            if(headerB[pos] == 0x0D && headerB[pos + 1] == 0x0A) break;
+        }
 
         if(pos >= 254) return false;
 

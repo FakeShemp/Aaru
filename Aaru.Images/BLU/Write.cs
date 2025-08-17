@@ -40,9 +40,9 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Decoders;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Version = Aaru.CommonTypes.Interop.Version;
 
 namespace Aaru.Images;
@@ -387,7 +387,7 @@ public sealed partial class Blu
 
         byte[] markerTag = Encoding.UTF8.GetBytes("Aaru " + Version.GetVersion());
         byte[] driveName;
-        var    driveType      = new byte[3];
+        byte[] driveType      = new byte[3];
         byte[] driveBlocks    = BigEndianBitConverter.GetBytes((uint)_imageInfo.Sectors);
         int    longSectorSize = _imageInfo.MediaType == MediaType.PriamDataTower ? 536 : 532;
         byte[] blockSize      = BigEndianBitConverter.GetBytes((ushort)longSectorSize);

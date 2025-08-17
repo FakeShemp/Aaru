@@ -37,7 +37,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -128,11 +128,11 @@ public sealed partial class CisCopy
                           DiskType.MF2DD or DiskType.MD2HD or DiskType.MF2HD                     => 160
                       };
 
-        var headStep = 1;
+        int headStep = 1;
 
         if(diskType is DiskType.MD1DD or DiskType.MD1DD8) headStep = 2;
 
-        for(var i = 0; i < tracks; i += headStep)
+        for(int i = 0; i < tracks; i += headStep)
         {
             _writingStream.WriteByte((byte)TrackType.Copied);
 

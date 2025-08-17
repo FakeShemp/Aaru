@@ -30,7 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using Aaru.Console;
+using Aaru.Logging;
 
 namespace Aaru.Devices;
 

@@ -37,7 +37,6 @@ using System.Threading;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
-using Aaru.Console;
 using Aaru.Core.Media.Detection;
 using Aaru.Decoders.CD;
 using Aaru.Decoders.DVD;
@@ -46,6 +45,7 @@ using Aaru.Decoders.SCSI.MMC;
 using Aaru.Decoders.SCSI.SSC;
 using Aaru.Decoders.Xbox;
 using Aaru.Devices;
+using Aaru.Logging;
 using DeviceInfo = Aaru.Core.Devices.Info.DeviceInfo;
 using DMI = Aaru.Decoders.Xbox.DMI;
 using DVDDecryption = Aaru.Decryption.DVD.Dump;
@@ -66,13 +66,13 @@ public sealed class ScsiInfo
 
         MediaType     = MediaType.Unknown;
         MediaInserted = false;
-        var    resets = 0;
+        int    resets = 0;
         bool   sense;
         byte[] cmdBuf;
         byte[] senseBuf;
-        var    containsFloppyPage    = false;
-        var    sessions              = 1;
-        var    firstTrackLastSession = 1;
+        bool   containsFloppyPage    = false;
+        int    sessions              = 1;
+        int    firstTrackLastSession = 1;
 
         if(dev.IsRemovable)
         {
@@ -97,7 +97,7 @@ public sealed class ScsiInfo
                     {
                         case 0x3A:
                         {
-                            var leftRetries = 5;
+                            int leftRetries = 5;
 
                             while(leftRetries > 0)
                             {
@@ -121,7 +121,7 @@ public sealed class ScsiInfo
                         }
                         case 0x04 when decSense?.ASCQ == 0x01:
                         {
-                            var leftRetries = 10;
+                            int leftRetries = 10;
 
                             while(leftRetries > 0)
                             {
@@ -217,7 +217,7 @@ public sealed class ScsiInfo
 
                     if(ReadCapacity16 != null)
                     {
-                        var temp = new byte[8];
+                        byte[] temp = new byte[8];
 
                         Array.Copy(cmdBuf, 0, temp, 0, 8);
                         Array.Reverse(temp);

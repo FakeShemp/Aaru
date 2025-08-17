@@ -37,9 +37,9 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Decoders.Sega;
 using Aaru.Helpers;
+using Aaru.Logging;
 using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 using Partition = Aaru.CommonTypes.Partition;
 

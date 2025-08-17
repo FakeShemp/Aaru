@@ -11,10 +11,10 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Database;
 using Aaru.Database.Models;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -75,9 +75,9 @@ public class Nes : IByteAddressableImage
         if(stream.Length < 16) return false;
 
         stream.Position = 0;
-        var magicBytes = new byte[4];
+        byte[] magicBytes = new byte[4];
         stream.EnsureRead(magicBytes, 0, 8);
-        var magic = BitConverter.ToUInt32(magicBytes, 0);
+        uint magic = BitConverter.ToUInt32(magicBytes, 0);
 
         return magic == 0x1A53454E;
     }
@@ -93,9 +93,9 @@ public class Nes : IByteAddressableImage
         if(stream.Length < 16) return ErrorNumber.InvalidArgument;
 
         stream.Position = 0;
-        var header = new byte[16];
+        byte[] header = new byte[16];
         stream.EnsureRead(header, 0, 8);
-        var magic = BitConverter.ToUInt32(header, 0);
+        uint magic = BitConverter.ToUInt32(header, 0);
 
         if(magic != 0x1A53454E) return ErrorNumber.InvalidArgument;
 
@@ -314,7 +314,7 @@ public class Nes : IByteAddressableImage
             return false;
         }
 
-        var header = new byte[16];
+        byte[] header = new byte[16];
 
         if(_nesHeaderInfo is null)
         {
@@ -464,7 +464,7 @@ public class Nes : IByteAddressableImage
 
         List<LinearMemoryDevice> devices =
         [
-            new LinearMemoryDevice
+            new()
             {
                 Type = LinearMemoryType.ROM,
                 PhysicalAddress = new LinearMemoryAddressing
@@ -682,16 +682,16 @@ public class Nes : IByteAddressableImage
             return ErrorNumber.ReadOnly;
         }
 
-        var foundRom       = false;
-        var foundChrRom    = false;
-        var foundInstRom   = false;
-        var foundProm      = false;
-        var foundRam       = false;
-        var foundChrRam    = false;
-        var foundNvram     = false;
-        var foundChrNvram  = false;
-        var foundMapper    = false;
-        var foundSubMapper = false;
+        bool foundRom       = false;
+        bool foundChrRom    = false;
+        bool foundInstRom   = false;
+        bool foundProm      = false;
+        bool foundRam       = false;
+        bool foundChrRam    = false;
+        bool foundNvram     = false;
+        bool foundChrNvram  = false;
+        bool foundMapper    = false;
+        bool foundSubMapper = false;
 
         // Sanitize
         foreach(LinearMemoryDevice map in mappings.Devices)

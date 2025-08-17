@@ -33,7 +33,7 @@
 using System;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Interop;
-using Aaru.Console;
+using Aaru.Logging;
 
 namespace Aaru.Devices;
 

@@ -36,8 +36,8 @@ using System.IO;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -80,7 +80,7 @@ public sealed partial class HdCopy
                                                       false));
 
         // build table of track offsets
-        for(var i = 0; i < _imageInfo.Cylinders * 2; i++)
+        for(int i = 0; i < _imageInfo.Cylinders * 2; i++)
         {
             if(fheader.trackMap[i] == 0)
                 _trackOffset[i] = -1;
@@ -89,9 +89,9 @@ public sealed partial class HdCopy
                 // track is present, read the block header
                 if(currentOffset + 3 >= stream.Length) return ErrorNumber.InvalidArgument;
 
-                var blkHeader = new byte[2];
+                byte[] blkHeader = new byte[2];
                 stream.EnsureRead(blkHeader, 0, 2);
-                var blkLength = BitConverter.ToInt16(blkHeader, 0);
+                short blkLength = BitConverter.ToInt16(blkHeader, 0);
 
                 // assume block sizes are positive
                 if(blkLength < 0) return ErrorNumber.InvalidArgument;
@@ -125,8 +125,8 @@ public sealed partial class HdCopy
     public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer)
     {
         buffer = null;
-        var trackNum     = (int)(sectorAddress / _imageInfo.SectorsPerTrack);
-        var sectorOffset = (int)(sectorAddress % _imageInfo.SectorsPerTrack);
+        int trackNum     = (int)(sectorAddress / _imageInfo.SectorsPerTrack);
+        int sectorOffset = (int)(sectorAddress % _imageInfo.SectorsPerTrack);
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 

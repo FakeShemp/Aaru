@@ -42,7 +42,6 @@ using Aaru.CommonTypes.Interop;
 using Aaru.CommonTypes.Metadata;
 using Aaru.CommonTypes.Structs.Devices.ATA;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
-using Aaru.Console;
 using Aaru.Core;
 using Aaru.Database;
 using Aaru.Database.Models;
@@ -50,6 +49,7 @@ using Aaru.Decoders.SCSI;
 using Aaru.Decoders.SCSI.MMC;
 using Aaru.Helpers;
 using Aaru.Localization;
+using Aaru.Logging;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Profile = Aaru.Decoders.SCSI.MMC.Profile;
@@ -229,7 +229,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                 {
                     AaruConsole.WriteLine(UI.Please_remove_any_media);
 
-                    System.Console.ReadKey(true);
+                    Console.ReadKey(true);
 
                     Core.Spectre.ProgressSingleSpinner(ctx =>
                     {
@@ -243,7 +243,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                     while(AnsiConsole.Confirm($"[italic]{UI.Do_you_have_media_you_can_insert}[/]"))
                     {
                         AaruConsole.WriteLine(UI.Please_insert_it_in_the_drive);
-                        System.Console.ReadKey(true);
+                        Console.ReadKey(true);
 
                         mediumTypeName =
                             AnsiConsole.Ask<string>(Localization.Core.Please_write_description_of_media_type);
@@ -342,7 +342,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                     AaruConsole.WriteLine(UI.Please_remove_any_media);
 
-                    System.Console.ReadKey(true);
+                    Console.ReadKey(true);
                 }
 
                 report.SCSI = reporter.ReportScsiInquiry();
@@ -712,7 +712,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                                 AaruConsole.WriteLine(UI.Please_insert_it_in_the_drive);
 
-                                System.Console.ReadKey(true);
+                                Console.ReadKey(true);
 
                                 bool mediaIsRecognized = true;
 
@@ -918,7 +918,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                         {
                             AaruConsole.WriteLine(UI.Please_insert_it_in_the_drive);
 
-                            System.Console.ReadKey(true);
+                            Console.ReadKey(true);
 
                             mediumTypeName =
                                 AnsiConsole.Ask<string>(Localization.Core.Please_write_description_of_media_type);
@@ -1045,7 +1045,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                             AaruConsole.WriteLine(UI.Please_insert_it_in_the_drive);
 
-                            System.Console.ReadKey(true);
+                            Console.ReadKey(true);
 
                             bool mediaIsRecognized = true;
 
@@ -1251,7 +1251,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                             {
                                 AaruConsole.WriteLine(UI.Please_insert_it_in_the_drive);
 
-                                System.Console.ReadKey(true);
+                                Console.ReadKey(true);
 
                                 mediumTypeName =
                                     AnsiConsole.Ask<string>(Localization.Core.Please_write_description_of_media_type);

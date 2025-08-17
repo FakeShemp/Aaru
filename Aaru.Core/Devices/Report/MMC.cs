@@ -34,12 +34,12 @@ using System;
 using System.Linq;
 using System.Text;
 using Aaru.CommonTypes.Metadata;
-using Aaru.Console;
 using Aaru.Decoders.CD;
 using Aaru.Decoders.SCSI;
 using Aaru.Decoders.SCSI.MMC;
 using Aaru.Devices;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Spectre.Console;
 
 namespace Aaru.Core.Devices.Report;
@@ -52,8 +52,8 @@ public sealed partial class DeviceReport
 
         while(offset + 4 < response.Length)
         {
-            var code = (ushort)((response[offset + 0] << 8) + response[offset + 1]);
-            var data = new byte[response[offset + 3] + 4];
+            ushort code = (ushort)((response[offset + 0] << 8) + response[offset + 1]);
+            byte[] data = new byte[response[offset + 3] + 4];
 
             if(code != 0x0108)
             {
@@ -75,7 +75,7 @@ public sealed partial class DeviceReport
     /// <returns>MMC features report</returns>
     public MmcFeatures ReportMmcFeatures()
     {
-        var    sense  = true;
+        bool   sense  = true;
         byte[] buffer = [];
 
         Spectre.ProgressSingleSpinner(ctx =>
@@ -477,7 +477,7 @@ public sealed partial class DeviceReport
 
                     if(ftr010C.HasValue)
                     {
-                        var temp = new byte[4];
+                        byte[] temp = new byte[4];
                         temp[0] = (byte)((ftr010C.Value.Century & 0xFF00) >> 8);
                         temp[1] = (byte)(ftr010C.Value.Century & 0xFF);
                         temp[2] = (byte)((ftr010C.Value.Year & 0xFF00) >> 8);
@@ -579,7 +579,7 @@ public sealed partial class DeviceReport
     public TestedMedia ReportMmcMedia(string mediaType, bool tryPlextor, bool tryPioneer, bool tryNec, bool tryHldtst,
                                       bool   tryMediaTekF106, bool tryLiteOn)
     {
-        var    sense       = true;
+        bool   sense       = true;
         byte[] buffer      = [];
         byte[] senseBuffer = [];
         var    mediaTest   = new TestedMedia();
@@ -610,7 +610,7 @@ public sealed partial class DeviceReport
         if(!sense && !_dev.Error)
         {
             mediaTest.SupportsReadCapacity16 = true;
-            var temp = new byte[8];
+            byte[] temp = new byte[8];
             Array.Copy(buffer, 0, temp, 0, 8);
             Array.Reverse(temp);
             mediaTest.Blocks    = BitConverter.ToUInt64(temp, 0) + 1;
@@ -2779,8 +2779,8 @@ public sealed partial class DeviceReport
 
         if(tryMediaTekF106)
         {
-            var triedLba0    = false;
-            var triedLeadOut = false;
+            bool triedLba0    = false;
+            bool triedLeadOut = false;
 
             Spectre.ProgressSingleSpinner(ctx =>
             {
@@ -3099,16 +3099,16 @@ public sealed partial class DeviceReport
                                                secondSessionFirstTrack.PFRAME);
 
                     // Skip Lead-Out pre-gap
-                    var firstSessionLeadOutLba = (uint)(firstSessionLeadOutTrack.PMIN * 60 * 75 +
-                                                        firstSessionLeadOutTrack.PSEC * 75      +
-                                                        firstSessionLeadOutTrack.PFRAME         +
-                                                        150);
+                    uint firstSessionLeadOutLba = (uint)(firstSessionLeadOutTrack.PMIN * 60 * 75 +
+                                                         firstSessionLeadOutTrack.PSEC * 75      +
+                                                         firstSessionLeadOutTrack.PFRAME         +
+                                                         150);
 
                     // Skip second session track pre-gap
-                    var secondSessionLeadInLba = (uint)(secondSessionFirstTrack.PMIN * 60 * 75 +
-                                                        secondSessionFirstTrack.PSEC * 75      +
-                                                        secondSessionFirstTrack.PFRAME -
-                                                        300);
+                    uint secondSessionLeadInLba = (uint)(secondSessionFirstTrack.PMIN * 60 * 75 +
+                                                         secondSessionFirstTrack.PSEC * 75      +
+                                                         secondSessionFirstTrack.PFRAME -
+                                                         300);
 
                     Spectre.ProgressSingleSpinner(ctx =>
                     {

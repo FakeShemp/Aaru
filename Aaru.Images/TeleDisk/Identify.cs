@@ -33,8 +33,8 @@
 using System;
 using System.IO;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -46,7 +46,7 @@ public sealed partial class TeleDisk
     public bool Identify(IFilter imageFilter)
     {
         _header = new Header();
-        var    headerBytes = new byte[12];
+        byte[] headerBytes = new byte[12];
         Stream stream      = imageFilter.GetDataForkStream();
         stream.Seek(0, SeekOrigin.Begin);
 
@@ -66,7 +66,7 @@ public sealed partial class TeleDisk
         _header.Sides         = headerBytes[9];
         _header.Crc           = BitConverter.ToUInt16(headerBytes, 10);
 
-        var headerBytesForCrc = new byte[10];
+        byte[] headerBytesForCrc = new byte[10];
         Array.Copy(headerBytes, headerBytesForCrc, 10);
         ushort calculatedHeaderCrc = TeleDiskCrc(0x0000, headerBytesForCrc);
 

@@ -36,8 +36,8 @@ using System.Text.RegularExpressions;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Claunia.Encoding;
 using Claunia.RsrcFork;
 using Version = Resources.Version;
@@ -53,8 +53,8 @@ public sealed partial class DiskCopy42
     {
         Stream stream = imageFilter.GetDataForkStream();
         stream.Seek(0, SeekOrigin.Begin);
-        var buffer  = new byte[0x58];
-        var pString = new byte[64];
+        byte[] buffer  = new byte[0x58];
+        byte[] pString = new byte[64];
         stream.EnsureRead(buffer, 0, 0x58);
         IsWriting = false;
 
@@ -186,8 +186,8 @@ public sealed partial class DiskCopy42
 
         if(imageInfo.MediaType == MediaType.AppleFileWare)
         {
-            var data = new byte[header.DataSize];
-            var tags = new byte[header.TagSize];
+            byte[] data = new byte[header.DataSize];
+            byte[] tags = new byte[header.TagSize];
 
             twiggyCache     = new byte[header.DataSize];
             twiggyCacheTags = new byte[header.TagSize];
@@ -201,8 +201,8 @@ public sealed partial class DiskCopy42
             tagStream.Seek(tagOffset, SeekOrigin.Begin);
             tagStream.EnsureRead(tags, 0, (int)header.TagSize);
 
-            var mfsMagic     = BigEndianBitConverter.ToUInt16(data, data.Length / 2 + 0x400);
-            var mfsAllBlocks = BigEndianBitConverter.ToUInt16(data, data.Length / 2 + 0x412);
+            ushort mfsMagic     = BigEndianBitConverter.ToUInt16(data, data.Length / 2 + 0x400);
+            ushort mfsAllBlocks = BigEndianBitConverter.ToUInt16(data, data.Length / 2 + 0x412);
 
             // Detect a Macintosh Twiggy
             if(mfsMagic == 0xD2D7 && mfsAllBlocks == 422)
@@ -221,10 +221,10 @@ public sealed partial class DiskCopy42
                 Array.Copy(data, 0, twiggyCache,     0, header.DataSize / 2);
                 Array.Copy(tags, 0, twiggyCacheTags, 0, header.TagSize  / 2);
 
-                var copiedSectors = 0;
-                var sectorsToCopy = 0;
+                int copiedSectors = 0;
+                int sectorsToCopy = 0;
 
-                for(var i = 0; i < 46; i++)
+                for(int i = 0; i < 46; i++)
                 {
                     sectorsToCopy = i switch
                                     {
@@ -274,8 +274,8 @@ public sealed partial class DiskCopy42
                         string release = null;
                         string pre     = null;
 
-                        var major = $"{version.MajorVersion}";
-                        var minor = $".{version.MinorVersion / 10}";
+                        string major = $"{version.MajorVersion}";
+                        string minor = $".{version.MinorVersion / 10}";
 
                         if(version.MinorVersion % 10 > 0) release = $".{version.MinorVersion % 10}";
 

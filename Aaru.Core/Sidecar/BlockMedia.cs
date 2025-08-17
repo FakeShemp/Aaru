@@ -40,11 +40,11 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs.Devices.ATA;
-using Aaru.Console;
 using Aaru.Decoders.PCMCIA;
 using Aaru.Filters;
 using Aaru.Helpers;
 using Aaru.Images;
+using Aaru.Logging;
 using Directory = System.IO.Directory;
 using File = System.IO.File;
 using MediaType = Aaru.CommonTypes.Metadata.MediaType;
@@ -1026,7 +1026,7 @@ public sealed partial class Sidecar
 
                             if(scpImage.ScpTracks.TryGetValue(t, out SuperCardPro.TrackHeader scpTrack))
                             {
-                                var trackContents =
+                                byte[] trackContents =
                                     new byte[scpTrack.Entries.Last().dataOffset +
                                              scpTrack.Entries.Last().trackLength -
                                              scpImage.Header.offsets[t] +
@@ -1070,7 +1070,7 @@ public sealed partial class Sidecar
 
         string basename = Path.Combine(Path.GetDirectoryName(imagePath), Path.GetFileNameWithoutExtension(imagePath));
 
-        var kfDir = false;
+        bool kfDir = false;
 
         if(_aborted) return;
 
@@ -1143,7 +1143,7 @@ public sealed partial class Sidecar
                             }
 
                             Stream kfStream      = kvp.Value.GetDataForkStream();
-                            var    trackContents = new byte[kfStream.Length];
+                            byte[] trackContents = new byte[kfStream.Length];
                             kfStream.Position = 0;
                             kfStream.EnsureRead(trackContents, 0, trackContents.Length);
                             kfBlockTrackType.Size      = (ulong)trackContents.Length;
@@ -1235,7 +1235,7 @@ public sealed partial class Sidecar
                        dfiImage.TrackLengths.TryGetValue(t, out long length))
                     {
                         dfiBlockTrackType.Image.Offset = (ulong)offset;
-                        var trackContents = new byte[length];
+                        byte[] trackContents = new byte[length];
                         dfiStream.Position = offset;
                         dfiStream.EnsureRead(trackContents, 0, trackContents.Length);
                         dfiBlockTrackType.Size      = (ulong)trackContents.Length;

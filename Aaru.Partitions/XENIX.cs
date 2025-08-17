@@ -35,7 +35,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Partitions;
@@ -84,7 +84,7 @@ public sealed class XENIX : IPartition
 
         if(xnxtbl.p_magic != PAMAGIC) return false;
 
-        for(var i = 0; i < MAXPARTS; i++)
+        for(int i = 0; i < MAXPARTS; i++)
         {
             AaruConsole.DebugWriteLine(MODULE_NAME, "xnxtbl.p[{0}].p_off = {1}",  i, xnxtbl.p[i].p_off);
             AaruConsole.DebugWriteLine(MODULE_NAME, "xnxtbl.p[{0}].p_size = {1}", i, xnxtbl.p[i].p_size);

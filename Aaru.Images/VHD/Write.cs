@@ -40,8 +40,8 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interop;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using PlatformID = Aaru.CommonTypes.Interop.PlatformID;
 using Version = System.Version;
 
@@ -236,7 +236,7 @@ public sealed partial class Vhd
         }
 
         // Block number for BAT searching
-        var blockNumber = (uint)Math.Floor(sectorAddress / (_thisDynamic.BlockSize / 512.0));
+        uint blockNumber = (uint)Math.Floor(sectorAddress / (_thisDynamic.BlockSize / 512.0));
 
         // If there's a cached block and it's the one we're looking for, flush cached data (clears cache)
         if(_blockInCache && _cachedBlockNumber != blockNumber) Flush();
@@ -269,10 +269,10 @@ public sealed partial class Vhd
         }
 
         // Sector number inside of block
-        var  sectorInBlock = (uint)(sectorAddress % (_thisDynamic.BlockSize / 512));
-        var  bitmapByte    = (int)Math.Floor((double)sectorInBlock          / 8);
-        var  bitmapBit     = (int)(sectorInBlock % 8);
-        var  mask          = (byte)(1 << 7 - bitmapBit);
+        uint sectorInBlock = (uint)(sectorAddress % (_thisDynamic.BlockSize / 512));
+        int  bitmapByte    = (int)Math.Floor((double)sectorInBlock          / 8);
+        int  bitmapBit     = (int)(sectorInBlock % 8);
+        byte mask          = (byte)(1 << 7 - bitmapBit);
         bool dirty         = (_cachedBlock[bitmapByte] & mask) == mask;
 
         // If there's no data in sector...
@@ -310,10 +310,10 @@ public sealed partial class Vhd
         {
             if(ArrayHelpers.ArrayIsNullOrEmpty(data))
             {
-                for(var i = 0; i < length; i++)
+                for(int i = 0; i < length; i++)
                 {
                     // Block number for BAT searching
-                    var blockNumber = (uint)Math.Floor(sectorAddress / (_thisDynamic.BlockSize / 512.0));
+                    uint blockNumber = (uint)Math.Floor(sectorAddress / (_thisDynamic.BlockSize / 512.0));
 
                     // Block not allocated, bail out
                     if(_blockAllocationTable[blockNumber] == 0xFFFFFFFF) continue;
@@ -330,10 +330,10 @@ public sealed partial class Vhd
                     }
 
                     // Sector number inside of block
-                    var  sectorInBlock = (uint)(sectorAddress % (_thisDynamic.BlockSize / 512));
-                    var  bitmapByte    = (int)Math.Floor((double)sectorInBlock          / 8);
-                    var  bitmapBit     = (int)(sectorInBlock % 8);
-                    var  mask          = (byte)(1 << 7 - bitmapBit);
+                    uint sectorInBlock = (uint)(sectorAddress % (_thisDynamic.BlockSize / 512));
+                    int  bitmapByte    = (int)Math.Floor((double)sectorInBlock          / 8);
+                    int  bitmapBit     = (int)(sectorInBlock % 8);
+                    byte mask          = (byte)(1 << 7 - bitmapBit);
                     bool dirty         = (_cachedBlock[bitmapByte] & mask) == mask;
 
                     if(!dirty) continue;
@@ -351,9 +351,10 @@ public sealed partial class Vhd
                 return true;
             }
 
-            for(var i = 0; i < length; i++)
-                if(!WriteSector(data[(i * 512)..(i * 512 + 512)], sectorAddress + (ulong)i))
-                    return false;
+            for(int i = 0; i < length; i++)
+            {
+                if(!WriteSector(data[(i * 512)..(i * 512 + 512)], sectorAddress + (ulong)i)) return false;
+            }
 
             return true;
         }
@@ -539,7 +540,7 @@ public sealed partial class Vhd
     {
         _thisFooter.Offset = _thisFooter.DiskType == TYPE_FIXED ? ulong.MaxValue : 512;
 
-        var footerBytes = new byte[512];
+        byte[] footerBytes = new byte[512];
         Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.Cookie),             0, footerBytes, 0x00, 8);
         Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.Features),           0, footerBytes, 0x08, 4);
         Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.Version),            0, footerBytes, 0x0C, 4);
@@ -583,7 +584,7 @@ public sealed partial class Vhd
 
         _writingStream.Write(bat, 0, bat.Length);
 
-        var dynamicBytes = new byte[1024];
+        byte[] dynamicBytes = new byte[1024];
         Array.Copy(BigEndianBitConverter.GetBytes(_thisDynamic.Cookie),          0, dynamicBytes, 0x00, 8);
         Array.Copy(BigEndianBitConverter.GetBytes(_thisDynamic.DataOffset),      0, dynamicBytes, 0x08, 8);
         Array.Copy(BigEndianBitConverter.GetBytes(_thisDynamic.TableOffset),     0, dynamicBytes, 0x10, 8);

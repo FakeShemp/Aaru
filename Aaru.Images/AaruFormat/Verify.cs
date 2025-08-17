@@ -34,8 +34,8 @@ using System;
 using System.Collections.Generic;
 using Aaru.Checksums;
 using Aaru.CommonTypes.Enums;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -256,12 +256,12 @@ public sealed partial class AaruFormat
 
         if(errno != ErrorNumber.NoError) return null;
 
-        var bps    = (int)(buffer.Length / length);
-        var sector = new byte[bps];
+        int    bps    = (int)(buffer.Length / length);
+        byte[] sector = new byte[bps];
         failingLbas = [];
         unknownLbas = [];
 
-        for(var i = 0; i < length; i++)
+        for(int i = 0; i < length; i++)
         {
             Array.Copy(buffer, i * bps, sector, 0, bps);
             bool? sectorStatus = CdChecksums.CheckCdSector(sector);
@@ -306,10 +306,10 @@ public sealed partial class AaruFormat
 
         if(errno != ErrorNumber.NoError) return null;
 
-        var bps    = (int)(buffer.Length / length);
-        var sector = new byte[bps];
+        int    bps    = (int)(buffer.Length / length);
+        byte[] sector = new byte[bps];
 
-        for(var i = 0; i < length; i++)
+        for(int i = 0; i < length; i++)
         {
             Array.Copy(buffer, i * bps, sector, 0, bps);
             bool? sectorStatus = CdChecksums.CheckCdSector(sector);

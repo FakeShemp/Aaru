@@ -40,9 +40,9 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Core;
 using Aaru.Localization;
+using Aaru.Logging;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Directory = System.IO.Directory;
@@ -211,7 +211,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
                                         AaruConsole.WriteLine(Markup.Escape(text));
                                     };
 
-                                System.Console.CancelKeyPress += (_, e) =>
+                                Console.CancelKeyPress += (_, e) =>
                                 {
                                     e.Cancel = true;
                                     sidecarClass.Abort();
@@ -307,7 +307,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
 
                             sidecarClass.UpdateStatusEvent += text => { AaruConsole.WriteLine(Markup.Escape(text)); };
 
-                            System.Console.CancelKeyPress += (_, e) =>
+                            Console.CancelKeyPress += (_, e) =>
                             {
                                 e.Cancel = true;
                                 sidecarClass.Abort();

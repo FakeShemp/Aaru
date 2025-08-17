@@ -35,8 +35,8 @@ using System.Text.RegularExpressions;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -51,7 +51,7 @@ public sealed partial class DriDiskCopy
 
         if((stream.Length - Marshal.SizeOf<Footer>()) % 512 != 0) return ErrorNumber.InvalidArgument;
 
-        var buffer = new byte[Marshal.SizeOf<Footer>()];
+        byte[] buffer = new byte[Marshal.SizeOf<Footer>()];
         stream.Seek(-buffer.Length, SeekOrigin.End);
         stream.EnsureRead(buffer, 0, buffer.Length);
 

@@ -39,11 +39,11 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Extents;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Core.Graphics;
 using Aaru.Core.Logging;
 using Aaru.Decoders.SCSI;
 using Aaru.Devices;
+using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
 using Humanizer.Localisation;
@@ -97,11 +97,11 @@ public partial class Dump
             return;
         }
 
-        var fatStart      = (ushort)((readBuffer[0x0F] << 8)                          + readBuffer[0x0E]);
-        var sectorsPerFat = (ushort)((readBuffer[0x17] << 8)                          + readBuffer[0x16]);
-        var rootStart     = (ushort)(sectorsPerFat                                * 2 + fatStart);
-        var rootSize      = (ushort)(((readBuffer[0x12] << 8) + readBuffer[0x11]) * 32 / 512);
-        var umdStart      = (ushort)(rootStart + rootSize);
+        ushort fatStart      = (ushort)((readBuffer[0x0F] << 8)                          + readBuffer[0x0E]);
+        ushort sectorsPerFat = (ushort)((readBuffer[0x17] << 8)                          + readBuffer[0x16]);
+        ushort rootStart     = (ushort)(sectorsPerFat                                * 2 + fatStart);
+        ushort rootSize      = (ushort)(((readBuffer[0x12] << 8) + readBuffer[0x11]) * 32 / 512);
+        ushort umdStart      = (ushort)(rootStart + rootSize);
 
         UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_root_directory_in_sector_0, rootStart));
         _dumpLog.WriteLine(Localization.Core.Reading_root_directory_in_sector_0, rootStart);
@@ -129,7 +129,7 @@ public partial class Dump
             return;
         }
 
-        var    umdSizeInBytes  = BitConverter.ToUInt32(readBuffer, 0x3C);
+        uint   umdSizeInBytes  = BitConverter.ToUInt32(readBuffer, 0x3C);
         ulong  blocks          = umdSizeInBytes / blockSize;
         string mediaPartNumber = Encoding.ASCII.GetString(readBuffer, 0, 11).Trim();
 
@@ -242,7 +242,7 @@ public partial class Dump
             _mediaGraph?.PaintSectorsBad(_resume.BadBlocks);
         }
 
-        var newTrim = false;
+        bool newTrim = false;
 
         _speedStopwatch.Reset();
         ulong sectorSpeedStart = 0;
@@ -443,9 +443,9 @@ public partial class Dump
 
         if(_resume.BadBlocks.Count > 0 && !_aborted && _retryPasses > 0)
         {
-            var pass              = 1;
-            var forward           = true;
-            var runningPersistent = false;
+            int  pass              = 1;
+            bool forward           = true;
+            bool runningPersistent = false;
 
             Modes.ModePage? currentModePage = null;
             byte[]          md6;

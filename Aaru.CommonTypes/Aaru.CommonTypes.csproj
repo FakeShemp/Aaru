@@ -45,7 +45,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Aaru.Console\Aaru.Console.csproj"/>
+    <ProjectReference Include="..\Aaru.Logging\Aaru.Logging.csproj"/>
     <ProjectReference Include="..\Aaru.Helpers\Aaru.Helpers.csproj"/>
     <ProjectReference Include="..\Aaru.Localization\Aaru.Localization.csproj"/>
   </ItemGroup>

@@ -33,10 +33,10 @@
 using System.ComponentModel;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
-using Aaru.Console;
 using Aaru.Core;
 using Aaru.Devices;
 using Aaru.Localization;
+using Aaru.Logging;
 using JetBrains.Annotations;
 using Serilog;
 using Spectre.Console;

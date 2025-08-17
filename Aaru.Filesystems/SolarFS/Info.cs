@@ -31,8 +31,8 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -53,7 +53,7 @@ public sealed partial class SolarFS
 
         if(errno != ErrorNumber.NoError) return false;
 
-        var fsTypeB = new byte[8];
+        byte[] fsTypeB = new byte[8];
 
         byte signature = bpb[0x25];
         Array.Copy(bpb, 0x35, fsTypeB, 0, 8);
@@ -87,7 +87,7 @@ public sealed partial class SolarFS
             signature = bpbSector[0x25]
         };
 
-        var bpbStrings = new byte[8];
+        byte[] bpbStrings = new byte[8];
         Array.Copy(bpbSector, 0x03, bpbStrings, 0, 8);
         bpb.OEMName = StringHandlers.CToString(bpbStrings);
         bpbStrings  = new byte[8];

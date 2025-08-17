@@ -39,8 +39,8 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Images;
@@ -113,10 +113,10 @@ public sealed partial class Qcow
         _l1Table = new ulong[_l1Size];
 
         _l1Mask = 0;
-        var c = 0;
+        int c = 0;
         _l1Shift = _qHdr.l2_bits + _qHdr.cluster_bits;
 
-        for(var i = 0; i < 64; i++)
+        for(int i = 0; i < 64; i++)
         {
             _l1Mask <<= 1;
 
@@ -128,15 +128,15 @@ public sealed partial class Qcow
 
         _l2Mask = 0;
 
-        for(var i = 0; i < _qHdr.l2_bits; i++) _l2Mask = (_l2Mask << 1) + 1;
+        for(int i = 0; i < _qHdr.l2_bits; i++) _l2Mask = (_l2Mask << 1) + 1;
 
         _l2Mask <<= _qHdr.cluster_bits;
 
         _sectorMask = 0;
 
-        for(var i = 0; i < _qHdr.cluster_bits; i++) _sectorMask = (_sectorMask << 1) + 1;
+        for(int i = 0; i < _qHdr.cluster_bits; i++) _sectorMask = (_sectorMask << 1) + 1;
 
-        var empty = new byte[_qHdr.l1_table_offset + _l1Size * 8];
+        byte[] empty = new byte[_qHdr.l1_table_offset + _l1Size * 8];
         _writingStream.Write(empty, 0, empty.Length);
 
         IsWriting    = true;
@@ -197,7 +197,7 @@ public sealed partial class Qcow
         {
             _writingStream.Seek(0, SeekOrigin.End);
             _l1Table[l1Off] = (ulong)((_writingStream.Length + _clusterSize - 1) / _clusterSize * _clusterSize);
-            var l2TableB = new byte[_l2Size                                      * 8];
+            byte[] l2TableB = new byte[_l2Size                                   * 8];
             _writingStream.Position = (long)_l1Table[l1Off];
             _writingStream.Write(l2TableB, 0, l2TableB.Length);
         }
@@ -208,14 +208,14 @@ public sealed partial class Qcow
 
         _writingStream.Seek((long)(_l1Table[l1Off] + l2Off * 8), SeekOrigin.Begin);
 
-        var entry = new byte[8];
+        byte[] entry = new byte[8];
         _writingStream.EnsureRead(entry, 0, 8);
-        var offset = BigEndianBitConverter.ToUInt64(entry, 0);
+        ulong offset = BigEndianBitConverter.ToUInt64(entry, 0);
 
         if(offset == 0)
         {
             offset = (ulong)_writingStream.Length;
-            var cluster = new byte[_clusterSize];
+            byte[] cluster = new byte[_clusterSize];
             entry = BigEndianBitConverter.GetBytes(offset);
             _writingStream.Seek((long)(_l1Table[l1Off] + l2Off * 8), SeekOrigin.Begin);
             _writingStream.Write(entry, 0, 8);
@@ -261,7 +261,7 @@ public sealed partial class Qcow
 
         for(uint i = 0; i < length; i++)
         {
-            var tmp = new byte[_imageInfo.SectorSize];
+            byte[] tmp = new byte[_imageInfo.SectorSize];
             Array.Copy(data, i * _imageInfo.SectorSize, tmp, 0, _imageInfo.SectorSize);
 
             if(!WriteSector(tmp, sectorAddress + i)) return false;

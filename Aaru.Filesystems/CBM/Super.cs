@@ -33,8 +33,8 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Claunia.Encoding;
 using Encoding = System.Text.Encoding;
 using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
@@ -143,7 +143,7 @@ public sealed partial class CBM
 
         ulong nextLba                  = rootLba;
         var   rootMs                   = new MemoryStream();
-        var   relativeFileWarningShown = false;
+        bool  relativeFileWarningShown = false;
 
         do
         {
@@ -180,7 +180,7 @@ public sealed partial class CBM
 
         // As this filesystem comes in (by nowadays standards) very small sizes, we can cache all files
         _cache = new Dictionary<string, CachedFile>();
-        var   offset = 0;
+        int   offset = 0;
         ulong fileId = 0;
 
         if(_debug)
@@ -240,9 +240,10 @@ public sealed partial class CBM
             _statfs.Files++;
             _statfs.FreeFiles--;
 
-            for(var i = 0; i < dirEntry.name.Length; i++)
-                if(dirEntry.name[i] == 0xA0)
-                    dirEntry.name[i] = 0;
+            for(int i = 0; i < dirEntry.name.Length; i++)
+            {
+                if(dirEntry.name[i] == 0xA0) dirEntry.name[i] = 0;
+            }
 
             string name = StringHandlers.CToString(dirEntry.name, encoding);
 

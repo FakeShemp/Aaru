@@ -41,8 +41,8 @@ using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Partitions;
@@ -79,7 +79,7 @@ public sealed class NeXTDisklabel : IPartition
     /// <inheritdoc />
     public bool GetInformation(IMediaImage imagePlugin, out List<Partition> partitions, ulong sectorOffset)
     {
-        var    magicFound = false;
+        bool   magicFound = false;
         byte[] labelSector;
 
         uint sectorSize = imagePlugin.Info.SectorSize is 2352 or 2448 ? 2048 : imagePlugin.Info.SectorSize;
@@ -98,7 +98,7 @@ public sealed class NeXTDisklabel : IPartition
 
             if(errno != ErrorNumber.NoError) continue;
 
-            var magic = BigEndianBitConverter.ToUInt32(labelSector, 0x00);
+            uint magic = BigEndianBitConverter.ToUInt32(labelSector, 0x00);
 
             if(magic != NEXT_MAGIC1 && magic != NEXT_MAGIC2 && magic != NEXT_MAGIC3) continue;
 
@@ -118,8 +118,8 @@ public sealed class NeXTDisklabel : IPartition
 
         if(errno != ErrorNumber.NoError) return false;
 
-        Label label    = Marshal.ByteArrayToStructureBigEndian<Label>(labelSector);
-        var   disktabB = new byte[498];
+        Label  label    = Marshal.ByteArrayToStructureBigEndian<Label>(labelSector);
+        byte[] disktabB = new byte[498];
         Array.Copy(labelSector, 44, disktabB, 0, 498);
         label.dl_dt              = Marshal.ByteArrayToStructureBigEndian<DiskTab>(disktabB);
         label.dl_dt.d_partitions = new Entry[8];
@@ -168,9 +168,9 @@ public sealed class NeXTDisklabel : IPartition
         AaruConsole.DebugWriteLine(MODULE_NAME, "label.dl_dt.d_rootpartition = {0}", label.dl_dt.d_rootpartition);
         AaruConsole.DebugWriteLine(MODULE_NAME, "label.dl_dt.d_rwpartition = {0}",   label.dl_dt.d_rwpartition);
 
-        for(var i = 0; i < 8; i++)
+        for(int i = 0; i < 8; i++)
         {
-            var partB = new byte[44];
+            byte[] partB = new byte[44];
             Array.Copy(labelSector, 44 + 146 + 44 * i, partB, 0, 44);
             label.dl_dt.d_partitions[i] = Marshal.ByteArrayToStructureBigEndian<Entry>(partB);
 

@@ -36,8 +36,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Aaru.Console;
 using Aaru.Localization;
+using Aaru.Logging;
 
 namespace Aaru.Decoders.Floppy;
 
@@ -158,24 +158,24 @@ public static class Apple2
     {
         if(data is not { Length: 410 }) return null;
 
-        var  buffer = new byte[data.Length];
-        byte carry  = 0;
+        byte[] buffer = new byte[data.Length];
+        byte   carry  = 0;
 
-        for(var i = 0; i < data.Length; i++)
+        for(int i = 0; i < data.Length; i++)
         {
             carry     ^= ReadTable5and3[data[i]];
             buffer[i] =  carry;
         }
 
-        var output = new byte[256];
+        byte[] output = new byte[256];
 
-        for(var i = 0; i < 51; i++)
+        for(int i = 0; i < 51; i++)
         {
             byte b1 = buffer[51 * 3 - i];
             byte b2 = buffer[51 * 2 - i];
             byte b3 = buffer[51     - i];
-            var  b4 = (byte)(((b1 & 2) << 1 | b2 & 2 | (b3 & 2) >> 1)          & 0xFF);
-            var  b5 = (byte)(((b1 & 1) << 2 | (b2          & 1) << 1 | b3 & 1) & 0xFF);
+            byte b4 = (byte)(((b1 & 2) << 1 | b2 & 2 | (b3 & 2) >> 1)          & 0xFF);
+            byte b5 = (byte)(((b1 & 1) << 2 | (b2          & 1) << 1 | b3 & 1) & 0xFF);
             output[250 - 5 * i] = (byte)((buffer[i + 51 * 3 + 1] << 3 | b1 >> 2 & 0x7) & 0xFF);
             output[251 - 5 * i] = (byte)((buffer[i + 51 * 4 + 1] << 3 | b2 >> 2 & 0x7) & 0xFF);
             output[252 - 5 * i] = (byte)((buffer[i + 51 * 5 + 1] << 3 | b3 >> 2 & 0x7) & 0xFF);
@@ -194,16 +194,16 @@ public static class Apple2
     {
         if(data is not { Length: 342 }) return null;
 
-        var  buffer = new byte[data.Length];
-        byte carry  = 0;
+        byte[] buffer = new byte[data.Length];
+        byte   carry  = 0;
 
-        for(var i = 0; i < data.Length; i++)
+        for(int i = 0; i < data.Length; i++)
         {
             carry     ^= ReadTable6and2[data[i]];
             buffer[i] =  carry;
         }
 
-        var output = new byte[256];
+        byte[] output = new byte[256];
 
         for(uint i = 0; i < 256; i++)
         {
@@ -314,9 +314,9 @@ public static class Apple2
                                                sector.addressField.epilogue[2]);
 
                     position += 14;
-                    var syncCount = 0;
-                    var onSync    = false;
-                    var gaps      = new MemoryStream();
+                    int  syncCount = 0;
+                    bool onSync    = false;
+                    var  gaps      = new MemoryStream();
 
                     while(data[position] == 0xFF)
                     {
@@ -454,12 +454,12 @@ public static class Apple2
     public static RawTrack MarshalTrack(byte[] data, out int endOffset, int offset = 0)
     {
         int             position    = offset;
-        var             firstSector = true;
-        var             onSync      = false;
+        bool            firstSector = true;
+        bool            onSync      = false;
         var             gaps        = new MemoryStream();
-        var             count       = 0;
+        int             count       = 0;
         List<RawSector> sectors     = [];
-        var             trackNumber = new byte[2];
+        byte[]          trackNumber = new byte[2];
         endOffset = offset;
 
         while(position < data.Length && data[position] == 0xFF)

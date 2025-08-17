@@ -36,8 +36,8 @@ using System.Linq;
 using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Archives;
 
@@ -56,7 +56,7 @@ public sealed partial class Symbian
 
         if(_stream.Length < Marshal.SizeOf<SymbianHeader>()) return ErrorNumber.InvalidArgument;
 
-        var buffer = new byte[Marshal.SizeOf<SymbianHeader>()];
+        byte[] buffer = new byte[Marshal.SizeOf<SymbianHeader>()];
 
         _stream.Seek(0, SeekOrigin.Begin);
         _stream.EnsureRead(buffer, 0, buffer.Length);
@@ -123,7 +123,7 @@ public sealed partial class Symbian
 
         // Go to enumerate languages
         br.BaseStream.Seek(sh.lang_ptr, SeekOrigin.Begin);
-        for(var i = 0; i < sh.languages; i++) languages.Add(((LanguageCodes)br.ReadUInt16()).ToString("G"));
+        for(int i = 0; i < sh.languages; i++) languages.Add(((LanguageCodes)br.ReadUInt16()).ToString("G"));
 
         _files      = [];
         _conditions = [];
@@ -131,7 +131,7 @@ public sealed partial class Symbian
 
         uint currentFile    = 0;
         uint offset         = sh.files_ptr;
-        var  conditionLevel = 0;
+        int  conditionLevel = 0;
 
         // Get only the options records
         do

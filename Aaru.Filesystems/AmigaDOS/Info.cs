@@ -33,8 +33,8 @@ using Aaru.Checksums;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -124,7 +124,7 @@ public sealed partial class AmigaDOSPlugin
             AaruConsole.DebugWriteLine(MODULE_NAME, "rblk.hashTableSize = {0}", rblk.hashTableSize);
 
             uint blockSize       = (rblk.hashTableSize + 56) * 4;
-            var  sectorsPerBlock = (uint)(blockSize / sector.Length);
+            uint sectorsPerBlock = (uint)(blockSize / sector.Length);
 
             AaruConsole.DebugWriteLine(MODULE_NAME, "blockSize = {0}",       blockSize);
             AaruConsole.DebugWriteLine(MODULE_NAME, "sectorsPerBlock = {0}", sectorsPerBlock);
@@ -192,7 +192,7 @@ public sealed partial class AmigaDOSPlugin
         var    rootBlk         = new RootBlock();
         byte[] rootBlockSector = null;
 
-        var  rootFound = false;
+        bool rootFound = false;
         uint blockSize = 0;
 
         // So to handle even number of sectors
@@ -214,7 +214,7 @@ public sealed partial class AmigaDOSPlugin
             AaruConsole.DebugWriteLine(MODULE_NAME, "rootBlk.hashTableSize = {0}", rootBlk.hashTableSize);
 
             blockSize = (rootBlk.hashTableSize + 56) * 4;
-            var sectorsPerBlock = (uint)(blockSize / rootBlockSector.Length);
+            uint sectorsPerBlock = (uint)(blockSize / rootBlockSector.Length);
 
             AaruConsole.DebugWriteLine(MODULE_NAME, "blockSize = {0}",       blockSize);
             AaruConsole.DebugWriteLine(MODULE_NAME, "sectorsPerBlock = {0}", sectorsPerBlock);

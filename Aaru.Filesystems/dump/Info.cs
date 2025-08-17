@@ -35,8 +35,8 @@ using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -57,7 +57,7 @@ public sealed partial class Dump
         // It should be start of a tape or floppy or file
         if(partition.Start != 0) return false;
 
-        var sbSize = (uint)(Marshal.SizeOf<s_spcl>() / imagePlugin.Info.SectorSize);
+        uint sbSize = (uint)(Marshal.SizeOf<s_spcl>() / imagePlugin.Info.SectorSize);
 
         if(Marshal.SizeOf<s_spcl>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
@@ -96,7 +96,7 @@ public sealed partial class Dump
 
         if(partition.Start != 0) return;
 
-        var sbSize = (uint)(Marshal.SizeOf<s_spcl>() / imagePlugin.Info.SectorSize);
+        uint sbSize = (uint)(Marshal.SizeOf<s_spcl>() / imagePlugin.Info.SectorSize);
 
         if(Marshal.SizeOf<s_spcl>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
@@ -110,8 +110,8 @@ public sealed partial class Dump
         spcl_aix aixHdr = Marshal.ByteArrayToStructureLittleEndian<spcl_aix>(sector);
         s_spcl   newHdr = Marshal.ByteArrayToStructureLittleEndian<s_spcl>(sector);
 
-        var useOld = false;
-        var useAix = false;
+        bool useOld = false;
+        bool useAix = false;
 
         if(newHdr.c_magic == OFS_MAGIC  ||
            newHdr.c_magic == NFS_MAGIC  ||

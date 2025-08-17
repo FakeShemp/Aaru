@@ -37,8 +37,8 @@ using System.Runtime.InteropServices;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Partitions;
@@ -360,7 +360,7 @@ public sealed class MBR : IPartition
 
         if(errno != ErrorNumber.NoError) return false;
 
-        var signature = BitConverter.ToUInt64(hdrBytes, 0);
+        ulong signature = BitConverter.ToUInt64(hdrBytes, 0);
 
         AaruConsole.DebugWriteLine(MODULE_NAME, "gpt.signature = 0x{0:X16}", signature);
 
@@ -389,18 +389,18 @@ public sealed class MBR : IPartition
 
         foreach(PartitionEntry entry in entries)
         {
-            var   startSector   = (byte)(entry.start_sector & 0x3F);
-            var   startCylinder = (ushort)((entry.start_sector & 0xC0) << 2 | entry.start_cylinder);
-            var   endSector     = (byte)(entry.end_sector & 0x3F);
-            var   endCylinder   = (ushort)((entry.end_sector & 0xC0) << 2 | entry.end_cylinder);
-            ulong lbaStart      = entry.lba_start;
-            ulong lbaSectors    = entry.lba_sectors;
+            byte   startSector   = (byte)(entry.start_sector & 0x3F);
+            ushort startCylinder = (ushort)((entry.start_sector & 0xC0) << 2 | entry.start_cylinder);
+            byte   endSector     = (byte)(entry.end_sector & 0x3F);
+            ushort endCylinder   = (ushort)((entry.end_sector & 0xC0) << 2 | entry.end_cylinder);
+            ulong  lbaStart      = entry.lba_start;
+            ulong  lbaSectors    = entry.lba_sectors;
 
             // Let's start the fun...
 
-            var valid    = true;
-            var extended = false;
-            var minix    = false;
+            bool valid    = true;
+            bool extended = false;
+            bool minix    = false;
 
             if(entry.status != 0x00 && entry.status != 0x80) return false; // Maybe a FAT filesystem
 
@@ -511,7 +511,7 @@ public sealed class MBR : IPartition
 
             if(!extended) continue;
 
-            var   processingExtended = true;
+            bool  processingExtended = true;
             ulong chainStart         = lbaStart;
 
             while(processingExtended)
@@ -530,14 +530,14 @@ public sealed class MBR : IPartition
 
                 foreach(PartitionEntry ebrEntry in ebr.entries)
                 {
-                    var extValid = true;
+                    bool extValid = true;
                     startSector   = (byte)(ebrEntry.start_sector & 0x3F);
                     startCylinder = (ushort)((ebrEntry.start_sector & 0xC0) << 2 | ebrEntry.start_cylinder);
                     endSector     = (byte)(ebrEntry.end_sector & 0x3F);
                     endCylinder   = (ushort)((ebrEntry.end_sector & 0xC0) << 2 | ebrEntry.end_cylinder);
                     ulong extStart   = ebrEntry.lba_start;
                     ulong extSectors = ebrEntry.lba_sectors;
-                    var   extMinix   = false;
+                    bool  extMinix   = false;
 
                     AaruConsole.DebugWriteLine(MODULE_NAME, "ebr_entry.status {0}",         ebrEntry.status);
                     AaruConsole.DebugWriteLine(MODULE_NAME, "ebr_entry.type {0}",           ebrEntry.type);
@@ -668,17 +668,17 @@ public sealed class MBR : IPartition
 
         if(mnx.magic != MBR_MAGIC) return false;
 
-        var anyMnx = false;
+        bool anyMnx = false;
 
         foreach(PartitionEntry mnxEntry in mnx.entries)
         {
-            var   mnxValid      = true;
-            var   startSector   = (byte)(mnxEntry.start_sector & 0x3F);
-            var   startCylinder = (ushort)((mnxEntry.start_sector & 0xC0) << 2 | mnxEntry.start_cylinder);
-            var   endSector     = (byte)(mnxEntry.end_sector & 0x3F);
-            var   endCylinder   = (ushort)((mnxEntry.end_sector & 0xC0) << 2 | mnxEntry.end_cylinder);
-            ulong mnxStart      = mnxEntry.lba_start;
-            ulong mnxSectors    = mnxEntry.lba_sectors;
+            bool   mnxValid      = true;
+            byte   startSector   = (byte)(mnxEntry.start_sector & 0x3F);
+            ushort startCylinder = (ushort)((mnxEntry.start_sector & 0xC0) << 2 | mnxEntry.start_cylinder);
+            byte   endSector     = (byte)(mnxEntry.end_sector & 0x3F);
+            ushort endCylinder   = (ushort)((mnxEntry.end_sector & 0xC0) << 2 | mnxEntry.end_cylinder);
+            ulong  mnxStart      = mnxEntry.lba_start;
+            ulong  mnxSectors    = mnxEntry.lba_sectors;
 
             AaruConsole.DebugWriteLine(MODULE_NAME, "mnx_entry.status {0}",         mnxEntry.status);
             AaruConsole.DebugWriteLine(MODULE_NAME, "mnx_entry.type {0}",           mnxEntry.type);

@@ -30,7 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using Aaru.Console;
+using Aaru.Logging;
 
 // ReSharper disable UnusedMember.Global
 
@@ -71,7 +71,7 @@ public partial class Device
                            ushort     blockBytes, bool pba, bool sectorCount, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        var cdb = new byte[10];
+        byte[] cdb = new byte[10];
 
         cdb[0] = (byte)ScsiCommands.ReadLong;
 

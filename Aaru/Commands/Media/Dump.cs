@@ -48,11 +48,11 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Interop;
 using Aaru.CommonTypes.Metadata;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
-using Aaru.Console;
 using Aaru.Core;
 using Aaru.Core.Devices.Dumping;
 using Aaru.Core.Logging;
 using Aaru.Localization;
+using Aaru.Logging;
 using Schemas;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -242,7 +242,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
             {
                 AaruConsole.WriteLine(UI.Please_insert_media_with_title_0_and_press_any_key_to_continue_, responseLine);
 
-                System.Console.ReadKey();
+                Console.ReadKey();
                 Thread.Sleep(1000);
             }
 
@@ -590,7 +590,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                                 _progressTask2.MaxValue    =   maximum;
                             };
 
-                            System.Console.CancelKeyPress += (_, e) =>
+                            Console.CancelKeyPress += (_, e) =>
                             {
                                 e.Cancel = true;
                                 dumper.Abort();

@@ -30,7 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using Aaru.Console;
+using Aaru.Logging;
 
 // ReSharper disable UnusedMember.Global
 
@@ -48,7 +48,7 @@ public partial class Device
                                                out double duration)
     {
         buffer = new byte[3];
-        var cdb = new byte[6];
+        byte[] cdb = new byte[6];
         senseBuffer = new byte[64];
 
         cdb[0] = (byte)ScsiCommands.ArchiveRequestBlockAddress;
@@ -92,7 +92,7 @@ public partial class Device
                                      out double duration)
     {
         byte[] buffer = [];
-        var    cdb    = new byte[6];
+        byte[] cdb    = new byte[6];
         senseBuffer = new byte[64];
 
         cdb[0] = (byte)ScsiCommands.ArchiveSeekBlock;

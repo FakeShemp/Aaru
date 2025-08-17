@@ -38,8 +38,8 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Extents;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -55,7 +55,7 @@ public sealed partial class PartClone
 
         if(stream.Length < 512) return ErrorNumber.InvalidArgument;
 
-        var pHdrB = new byte[Marshal.SizeOf<Header>()];
+        byte[] pHdrB = new byte[Marshal.SizeOf<Header>()];
         stream.EnsureRead(pHdrB, 0, Marshal.SizeOf<Header>());
         _pHdr = Marshal.ByteArrayToStructureLittleEndian<Header>(pHdrB);
 
@@ -74,7 +74,7 @@ public sealed partial class PartClone
         AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Reading_bytemap_0_bytes, _byteMap.Length);
         stream.EnsureRead(_byteMap, 0, _byteMap.Length);
 
-        var bitmagic = new byte[8];
+        byte[] bitmagic = new byte[8];
         stream.EnsureRead(bitmagic, 0, 8);
 
         AaruConsole.DebugWriteLine(MODULE_NAME, "pHdr.bitmagic = {0}", StringHandlers.CToString(bitmagic));
@@ -183,7 +183,7 @@ public sealed partial class PartClone
 
         var ms = new MemoryStream();
 
-        var allEmpty = true;
+        bool allEmpty = true;
 
         for(uint i = 0; i < length; i++)
         {

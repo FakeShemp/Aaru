@@ -38,8 +38,8 @@ using System.Runtime.InteropServices;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Images;
@@ -56,7 +56,7 @@ public sealed partial class Vdi
 
         if(stream.Length < 512) return ErrorNumber.InvalidArgument;
 
-        var vHdrB = new byte[Marshal.SizeOf<Header>()];
+        byte[] vHdrB = new byte[Marshal.SizeOf<Header>()];
         stream.EnsureRead(vHdrB, 0, Marshal.SizeOf<Header>());
         _vHdr = Marshal.ByteArrayToStructureLittleEndian<Header>(vHdrB);
 
@@ -101,7 +101,7 @@ public sealed partial class Vdi
         blockMapStopwatch.Start();
         AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Reading_Image_Block_Map);
         stream.Seek(_vHdr.offsetBlocks, SeekOrigin.Begin);
-        var ibmB = new byte[_vHdr.blocks * 4];
+        byte[] ibmB = new byte[_vHdr.blocks * 4];
         stream.EnsureRead(ibmB, 0, ibmB.Length);
         _ibm = MemoryMarshal.Cast<byte, uint>(ibmB).ToArray();
         blockMapStopwatch.Stop();
@@ -198,7 +198,7 @@ public sealed partial class Vdi
 
         ulong imageOff = _vHdr.offsetData + (ulong)ibmOff * _vHdr.blockSize;
 
-        var cluster = new byte[_vHdr.blockSize];
+        byte[] cluster = new byte[_vHdr.blockSize];
         _imageStream.Seek((long)imageOff, SeekOrigin.Begin);
         _imageStream.EnsureRead(cluster, 0, (int)_vHdr.blockSize);
         buffer = new byte[_vHdr.sectorSize];

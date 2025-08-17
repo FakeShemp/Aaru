@@ -38,7 +38,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
+using Aaru.Logging;
 
 namespace Aaru.Core;
 
@@ -109,7 +109,7 @@ public sealed class Entropy
                                             currentTrack.Sequence,
                                             inputTracks.Max(t => t.Sequence));
 
-                var          entTable              = new ulong[256];
+                ulong[]      entTable              = new ulong[256];
                 ulong        trackSize             = 0;
                 List<string> uniqueSectorsPerTrack = [];
 
@@ -195,7 +195,7 @@ public sealed class Entropy
 
         if(_inputFormat is not IMediaImage mediaImage) return entropy;
 
-        var          entTable      = new ulong[256];
+        ulong[]      entTable      = new ulong[256];
         ulong        diskSize      = 0;
         List<string> uniqueSectors = [];
 
@@ -254,8 +254,8 @@ public sealed class Entropy
 
         if(_inputFormat is not IByteAddressableImage byteAddressableImage) return entropy;
 
-        var entTable = new ulong[256];
-        var data     = new byte[byteAddressableImage.Info.Sectors];
+        ulong[] entTable = new ulong[256];
+        byte[]  data     = new byte[byteAddressableImage.Info.Sectors];
 
         entropy.Sectors = _inputFormat.Info.Sectors;
         AaruConsole.WriteLine(Localization.Core._0_bytes, entropy.Sectors);
@@ -273,7 +273,7 @@ public sealed class Entropy
 
         if(bytesRead != data.Length)
         {
-            var tmp = new byte[bytesRead];
+            byte[] tmp = new byte[bytesRead];
             Array.Copy(data, 0, tmp, 0, bytesRead);
             data = tmp;
         }

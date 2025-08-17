@@ -32,7 +32,7 @@
 
 using System.Text;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
+using Aaru.Logging;
 using Spectre.Console;
 
 namespace Aaru.Core;

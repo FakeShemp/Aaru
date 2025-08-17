@@ -9,8 +9,8 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Images;
@@ -61,9 +61,9 @@ public class MasterSystem : IByteAddressableImage
         if(stream.Length % 8192 != 0) return false;
 
         stream.Position = 0x7ff0;
-        var magicBytes = new byte[8];
+        byte[] magicBytes = new byte[8];
         stream.EnsureRead(magicBytes, 0, 8);
-        var magic = BitConverter.ToUInt64(magicBytes, 0);
+        ulong magic = BitConverter.ToUInt64(magicBytes, 0);
 
         if(magic == 0x4147455320524D54) return true;
 
@@ -95,9 +95,9 @@ public class MasterSystem : IByteAddressableImage
         int headerPosition;
 
         stream.Position = 0x7ff0;
-        var magicBytes = new byte[8];
+        byte[] magicBytes = new byte[8];
         stream.EnsureRead(magicBytes, 0, 8);
-        var magic = BitConverter.ToUInt64(magicBytes, 0);
+        ulong magic = BitConverter.ToUInt64(magicBytes, 0);
 
         if(magic != 0x0B000DCC6666EDCE)
             headerPosition = 0x7ff0;
@@ -456,7 +456,7 @@ public class MasterSystem : IByteAddressableImage
             return ErrorNumber.ReadOnly;
         }
 
-        var foundRom = false;
+        bool foundRom = false;
 
         // Sanitize
         foreach(LinearMemoryDevice map in mappings.Devices)

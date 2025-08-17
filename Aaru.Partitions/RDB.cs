@@ -41,8 +41,8 @@ using Aaru.Checksums;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Console;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Partitions;
 
@@ -194,7 +194,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
     {
         partitions = [];
         ulong       rdbBlock = 0;
-        var         foundRdb = false;
+        bool        foundRdb = false;
         ErrorNumber errno;
 
         while(rdbBlock < 16)
@@ -212,7 +212,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
                 continue;
             }
 
-            var magic = BigEndianBitConverter.ToUInt32(tmpSector, 0);
+            uint magic = BigEndianBitConverter.ToUInt32(tmpSector, 0);
 
             AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Possible_magic_at_block_0_is_1_X8, rdbBlock, magic);
 
@@ -279,7 +279,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
         rdb.HighCylinder    = BigEndianBitConverter.ToUInt32(sector, 0x98);
         rdb.Reserved15      = BigEndianBitConverter.ToUInt32(sector, 0x9C);
 
-        var tmpString = new byte[8];
+        byte[] tmpString = new byte[8];
         Array.Copy(sector, 0xA0, tmpString, 0, 8);
         rdb.DiskVendor = StringHandlers.SpacePaddedToString(tmpString);
         tmpString      = new byte[16];
@@ -380,7 +380,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
 
             if(errno != ErrorNumber.NoError) break;
 
-            var magic = BigEndianBitConverter.ToUInt32(sector, 0);
+            uint magic = BigEndianBitConverter.ToUInt32(sector, 0);
 
             if(magic != BAD_BLOCK_LIST_MAGIC) break;
 
@@ -441,7 +441,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
 
             if(errno != ErrorNumber.NoError) break;
 
-            var magic = BigEndianBitConverter.ToUInt32(sector, 0);
+            uint magic = BigEndianBitConverter.ToUInt32(sector, 0);
 
             if(magic != PARTITION_BLOCK_MAGIC) break;
 
@@ -499,7 +499,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
                 }
             };
 
-            var driveName = new byte[32];
+            byte[] driveName = new byte[32];
             Array.Copy(sector, 0x24, driveName, 0, 32);
             partEntry.DriveName = StringHandlers.PascalToString(driveName, Encoding.GetEncoding("iso-8859-1"));
 
@@ -624,7 +624,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
 
             if(errno != ErrorNumber.NoError) break;
 
-            var magic = BigEndianBitConverter.ToUInt32(sector, 0);
+            uint magic = BigEndianBitConverter.ToUInt32(sector, 0);
 
             if(magic != FILESYSTEM_HEADER_MAGIC) break;
 
@@ -690,8 +690,8 @@ public sealed class AmigaRigidDiskBlock : IPartition
             AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.dnode.global_vec = 0x{0:X8}", fshd.Dnode.GlobalVec);
 
             nextBlock = fshd.Dnode.SeglistPtr;
-            var thereAreLoadSegments = false;
-            var sha1Ctx              = new Sha1Context();
+            bool thereAreLoadSegments = false;
+            var  sha1Ctx              = new Sha1Context();
 
             while(nextBlock != 0xFFFFFFFF)
             {
@@ -703,7 +703,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
 
                 if(errno != ErrorNumber.NoError) break;
 
-                var magicSeg = BigEndianBitConverter.ToUInt32(sector, 0);
+                uint magicSeg = BigEndianBitConverter.ToUInt32(sector, 0);
 
                 if(magicSeg != LOAD_SEG_MAGIC) break;
 
@@ -941,7 +941,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
 
     static string AmigaDosTypeToString(uint amigaDosType, bool quoted = true)
     {
-        var textPart = new byte[3];
+        byte[] textPart = new byte[3];
 
         textPart[0] = (byte)((amigaDosType & 0xFF000000) >> 24);
         textPart[1] = (byte)((amigaDosType & 0x00FF0000) >> 16);
