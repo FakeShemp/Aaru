@@ -3099,4 +3099,7 @@ Do you want to continue?</value>
     <data name="Archive_List_Command_Description" xml:space="preserve">
         <value>List the contents of an archive file.</value>
     </data>
+    <data name="Title_Archive_Format" xml:space="preserve">
+        <value>Archive format</value>
+    </data>
 </root>

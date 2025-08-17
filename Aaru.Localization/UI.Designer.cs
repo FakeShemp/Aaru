@@ -6045,5 +6045,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Archive_List_Command_Description", resourceCulture);
             }
         }
+        
+        public static string Title_Archive_Format {
+            get {
+                return ResourceManager.GetString("Title_Archive_Format", resourceCulture);
+            }
+        }
     }
 }
