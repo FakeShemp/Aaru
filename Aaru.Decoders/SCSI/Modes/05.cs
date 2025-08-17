@@ -154,111 +154,135 @@ public static partial class Modes
         ModePage_05 page = modePage.Value;
         var         sb   = new StringBuilder();
 
-        sb.AppendLine(Localization.SCSI_Flexible_disk_page);
+        sb.AppendLine($"[bold][blue]{Localization.SCSI_Flexible_disk_page}[/][/]");
 
-        if(page.PS) sb.AppendLine("\t" + Localization.Parameters_can_be_saved);
+        if(page.PS) sb.AppendLine($"\t[green]{Localization.Parameters_can_be_saved}[/]");
 
-        sb.AppendFormat("\t" + Localization.Transfer_rate_0_kbits, page.TransferRate).AppendLine();
-        sb.AppendFormat("\t" + Localization._0_heads,              page.Heads).AppendLine();
-        sb.AppendFormat("\t" + Localization._0_cylinders,          page.Cylinders).AppendLine();
-        sb.AppendFormat("\t" + Localization._0_sectors_per_track,  page.SectorsPerTrack).AppendLine();
-        sb.AppendFormat("\t" + Localization._0_bytes_per_sector,   page.BytesPerSector).AppendLine();
+        sb.AppendFormat($"\t[slateblue1]{Localization.Transfer_rate_0_kbits}[/]", $"[lime]{page.TransferRate}[/]")
+          .AppendLine();
+
+        sb.AppendFormat($"\t[slateblue1]{Localization._0_heads}[/]",     $"[lime]{page.Heads}[/]").AppendLine();
+        sb.AppendFormat($"\t[slateblue1]{Localization._0_cylinders}[/]", $"[lime]{page.Cylinders}[/]").AppendLine();
+
+        sb.AppendFormat($"\t[slateblue1]{Localization._0_sectors_per_track}[/]", $"[lime]{page.SectorsPerTrack}[/]")
+          .AppendLine();
+
+        sb.AppendFormat($"\t[slateblue1]{Localization._0_bytes_per_sector}[/]", $"[lime]{page.BytesPerSector}[/]")
+          .AppendLine();
 
         if(page.WritePrecompCylinder < page.Cylinders)
         {
-            sb.AppendFormat("\t" + Localization.Write_pre_compensation_starts_at_cylinder_0, page.WritePrecompCylinder)
+            sb.AppendFormat($"\t[slateblue1]{Localization.Write_pre_compensation_starts_at_cylinder_0}[/]",
+                            $"[lime]{page.WritePrecompCylinder}[/]")
               .AppendLine();
         }
 
         if(page.WriteReduceCylinder < page.Cylinders)
         {
-            sb.AppendFormat("\t" + Localization.Write_current_reduction_starts_at_cylinder_0, page.WriteReduceCylinder)
+            sb.AppendFormat($"\t[slateblue1]{Localization.Write_current_reduction_starts_at_cylinder_0}[/]",
+                            $"[lime]{page.WriteReduceCylinder}[/]")
               .AppendLine();
         }
 
         if(page.DriveStepRate > 0)
-            sb.AppendFormat("\t" + Localization.Drive_steps_in_0_μs, (uint)page.DriveStepRate * 100).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization.Drive_steps_in_0_μs}[/]",
+                            $"[lime]{(uint)page.DriveStepRate * 100}[/]")
+              .AppendLine();
 
         if(page.DriveStepPulse > 0)
-            sb.AppendFormat("\t" + Localization.Each_step_pulse_is_0_ms, page.DriveStepPulse).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization.Each_step_pulse_is_0_ms}[/]",
+                            $"[lime]{page.DriveStepPulse}[/]")
+              .AppendLine();
 
         if(page.HeadSettleDelay > 0)
-            sb.AppendFormat("\t" + Localization.Heads_settles_in_0_μs, (uint)page.HeadSettleDelay * 100).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization.Heads_settles_in_0_μs}[/]",
+                            $"[lime]{(uint)page.HeadSettleDelay * 100}[/]")
+              .AppendLine();
 
         if(!page.TRDY)
         {
-            sb.AppendFormat("\t" +
-                            Localization
-                               .Target_shall_wait_0_seconds_before_attempting_to_access_the_medium_after_motor_on_is_asserted,
-                            (double)page.MotorOnDelay * 10)
+            sb.AppendFormat($"\t[slateblue1]{
+                Localization
+                   .Target_shall_wait_0_seconds_before_attempting_to_access_the_medium_after_motor_on_is_asserted}[/]",
+                            $"[lime]{(double)page.MotorOnDelay * 10}[/]")
               .AppendLine();
         }
         else
         {
-            sb.AppendFormat("\t" +
-                            Localization
-                               .Target_shall_wait_0_seconds_after_drive_is_ready_before_aborting_medium_access_attempts,
-                            (double)page.MotorOnDelay * 10)
+            sb.AppendFormat($"\t[slateblue1]{
+                Localization
+                   .Target_shall_wait_0_seconds_after_drive_is_ready_before_aborting_medium_access_attempts}[/]",
+                            $"[lime]{(double)page.MotorOnDelay * 10}[/]")
               .AppendLine();
         }
 
         if(page.MotorOffDelay != 0xFF)
         {
-            sb.AppendFormat("\t" +
-                            Localization
-                               .Target_shall_wait_0_seconds_before_releasing_the_motor_on_signal_after_becoming_idle,
-                            (double)page.MotorOffDelay * 10)
+            sb.AppendFormat($"\t[slateblue1]{
+                Localization
+                   .Target_shall_wait_0_seconds_before_releasing_the_motor_on_signal_after_becoming_idle}[/]",
+                            $"[lime]{(double)page.MotorOffDelay * 10}[/]")
               .AppendLine();
         }
         else
-            sb.AppendLine("\t" + Localization.Target_shall_never_release_the_motor_on_signal);
+            sb.AppendLine($"\t[slateblue1]{Localization.Target_shall_never_release_the_motor_on_signal}[/]");
 
-        if(page.TRDY) sb.AppendLine("\t" + Localization.There_is_a_drive_ready_signal);
+        if(page.TRDY) sb.AppendLine($"\t[slateblue1]{Localization.There_is_a_drive_ready_signal}[/]");
 
-        if(page.SSN) sb.AppendLine("\t" + Localization.Sectors_start_at_1);
+        if(page.SSN) sb.AppendLine($"\t[slateblue1]{Localization.Sectors_start_at_1}[/]");
 
-        if(page.MO) sb.AppendLine("\t" + Localization.The_motor_on_signal_shall_remain_released);
+        if(page.MO) sb.AppendLine($"\t[slateblue1]{Localization.The_motor_on_signal_shall_remain_released}[/]");
 
-        sb.AppendFormat("\t" + Localization.Drive_needs_to_do_0_step_pulses_per_cylinder, page.SPC + 1).AppendLine();
+        sb.AppendFormat($"\t[slateblue1]{Localization.Drive_needs_to_do_0_step_pulses_per_cylinder}[/]",
+                        $"[lime]{page.SPC + 1}[/]")
+          .AppendLine();
 
         if(page.WriteCompensation > 0)
-            sb.AppendFormat("\t" + Localization.Write_pre_compensation_is_0, page.WriteCompensation).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization.Write_pre_compensation_is_0}[/]",
+                            $"[lime]{page.WriteCompensation}[/]")
+              .AppendLine();
 
         if(page.HeadLoadDelay > 0)
-            sb.AppendFormat("\t" + Localization.Head_takes_0_ms_to_load, page.HeadLoadDelay).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization.Head_takes_0_ms_to_load}[/]",
+                            $"[lime]{page.HeadLoadDelay}[/]")
+              .AppendLine();
 
         if(page.HeadUnloadDelay > 0)
-            sb.AppendFormat("\t" + Localization.Head_takes_0_ms_to_unload, page.HeadUnloadDelay).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization.Head_takes_0_ms_to_unload}[/]",
+                            $"[lime]{page.HeadUnloadDelay}[/]")
+              .AppendLine();
 
         if(page.MediumRotationRate > 0)
-            sb.AppendFormat("\t" + Localization.Medium_rotates_at_0_rpm, page.MediumRotationRate).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization.Medium_rotates_at_0_rpm}[/]",
+                            $"[lime]{page.MediumRotationRate}[/]")
+              .AppendLine();
 
         switch(page.Pin34 & 0x07)
         {
             case 0:
-                sb.AppendLine("\t" + Localization.Pin_34_is_unconnected);
+                sb.AppendLine($"\t[slateblue1]{Localization.Pin_34_is_unconnected}[/]");
 
                 break;
             case 1:
-                sb.Append("\t" +
-                          ((page.Pin34 & 0x08) == 0x08
-                               ? Localization.Pin_34_indicates_drive_is_ready_when_active_high
-                               : Localization.Pin_34_indicates_drive_is_ready_when_active_low));
+                sb.Append($"\t[slateblue1]{
+                    ((page.Pin34 & 0x08) == 0x08
+                         ? Localization.Pin_34_indicates_drive_is_ready_when_active_high
+                         : Localization.Pin_34_indicates_drive_is_ready_when_active_low)}[/]");
 
                 break;
             case 2:
-                sb.Append("\t" +
-                          ((page.Pin34 & 0x08) == 0x08
-                               ? Localization.Pin_34_indicates_disk_has_changed_when_active_high
-                               : Localization.Pin_34_indicates_disk_has_changed_when_active_low));
+                sb.Append($"\t[slateblue1]{
+                    ((page.Pin34 & 0x08) == 0x08
+                         ? Localization.Pin_34_indicates_disk_has_changed_when_active_high
+                         : Localization.Pin_34_indicates_disk_has_changed_when_active_low)}[/]");
 
                 break;
             default:
-                sb.AppendFormat("\t" +
-                                ((page.Pin34 & 0x08) == 0x08
-                                     ? Localization.Pin_34_indicates_unknown_function_0_when_active_high
-                                     : Localization.Pin_34_indicates_unknown_function_0_when_active_low),
-                                page.Pin34 & 0x07);
+                sb.AppendFormat($"\t[slateblue1]{
+                    ((page.Pin34 & 0x08) == 0x08
+                         ? Localization.Pin_34_indicates_unknown_function_0_when_active_high
+                         : Localization.Pin_34_indicates_unknown_function_0_when_active_low)}[/]",
+                                $"[lime]{page.Pin34 & 0x07}[/]");
 
                 break;
         }
@@ -266,36 +290,36 @@ public static partial class Modes
         switch(page.Pin4 & 0x07)
         {
             case 0:
-                sb.AppendLine("\t" + Localization.Pin_4_is_unconnected);
+                sb.AppendLine($"\t[slateblue1]{Localization.Pin_4_is_unconnected}[/]");
 
                 break;
             case 1:
-                sb.Append("\t" +
-                          ((page.Pin4 & 0x08) == 0x08
-                               ? Localization.Pin_4_indicates_drive_is_in_use_when_active_high
-                               : Localization.Pin_4_indicates_drive_is_in_use_when_active_low));
+                sb.Append($"\t[slateblue1]{
+                    ((page.Pin4 & 0x08) == 0x08
+                         ? Localization.Pin_4_indicates_drive_is_in_use_when_active_high
+                         : Localization.Pin_4_indicates_drive_is_in_use_when_active_low)}[/]");
 
                 break;
             case 2:
-                sb.Append("\t" +
-                          ((page.Pin4 & 0x08) == 0x08
-                               ? Localization.Pin_4_indicates_eject_when_active_high
-                               : Localization.Pin_4_indicates_eject_when_active_low));
+                sb.Append($"\t[slateblue1]{
+                    ((page.Pin4 & 0x08) == 0x08
+                         ? Localization.Pin_4_indicates_eject_when_active_high
+                         : Localization.Pin_4_indicates_eject_when_active_low)}[/]");
 
                 break;
             case 3:
-                sb.Append("\t" +
-                          ((page.Pin4 & 0x08) == 0x08
-                               ? Localization.Pin_4_indicates_head_load_when_active_high
-                               : Localization.Pin_4_indicates_head_load_when_active_low));
+                sb.Append($"\t[slateblue1]{
+                    ((page.Pin4 & 0x08) == 0x08
+                         ? Localization.Pin_4_indicates_head_load_when_active_high
+                         : Localization.Pin_4_indicates_head_load_when_active_low)}[/]");
 
                 break;
             default:
-                sb.AppendFormat("\t" +
-                                ((page.Pin4 & 0x08) == 0x08
-                                     ? Localization.Pin_4_indicates_unknown_function_0_when_active_high
-                                     : Localization.Pin_4_indicates_unknown_function_0_when_active_low),
-                                page.Pin4 & 0x07);
+                sb.AppendFormat($"\t[slateblue1]{
+                    ((page.Pin4 & 0x08) == 0x08
+                         ? Localization.Pin_4_indicates_unknown_function_0_when_active_high
+                         : Localization.Pin_4_indicates_unknown_function_0_when_active_low)}[/]",
+                                $"[lime]{page.Pin4 & 0x07}[/]");
 
                 break;
         }
@@ -303,15 +327,15 @@ public static partial class Modes
         switch(page.Pin2 & 0x07)
         {
             case 0:
-                sb.AppendLine("\t" + Localization.Pin_2_is_unconnected);
+                sb.AppendLine($"\t[slateblue1]{Localization.Pin_2_is_unconnected}[/]");
 
                 break;
             default:
-                sb.AppendFormat("\t" +
-                                ((page.Pin2 & 0x08) == 0x08
-                                     ? Localization.Pin_2_indicates_unknown_function_0_when_active_high
-                                     : Localization.Pin_2_indicates_unknown_function_0_when_active_low),
-                                page.Pin2 & 0x07);
+                sb.AppendFormat($"\t[slateblue1]{
+                    ((page.Pin2 & 0x08) == 0x08
+                         ? Localization.Pin_2_indicates_unknown_function_0_when_active_high
+                         : Localization.Pin_2_indicates_unknown_function_0_when_active_low)}[/]",
+                                $"[lime]{page.Pin2 & 0x07}[/]");
 
                 break;
         }
@@ -319,22 +343,22 @@ public static partial class Modes
         switch(page.Pin1 & 0x07)
         {
             case 0:
-                sb.AppendLine("\t" + Localization.Pin_1_is_unconnected);
+                sb.AppendLine($"\t[slateblue1]{Localization.Pin_1_is_unconnected}[/]");
 
                 break;
             case 1:
-                sb.Append("\t" +
-                          ((page.Pin1 & 0x08) == 0x08
-                               ? Localization.Pin_1_indicates_disk_change_reset_when_active_high
-                               : Localization.Pin_1_indicates_disk_change_reset_when_active_low));
+                sb.Append($"\t[slateblue1]{
+                    ((page.Pin1 & 0x08) == 0x08
+                         ? Localization.Pin_1_indicates_disk_change_reset_when_active_high
+                         : Localization.Pin_1_indicates_disk_change_reset_when_active_low)}[/]");
 
                 break;
             default:
-                sb.AppendFormat("\t" +
-                                ((page.Pin1 & 0x08) == 0x08
-                                     ? Localization.Pin_1_indicates_unknown_function_0_when_active_high
-                                     : Localization.Pin_1_indicates_unknown_function_0_when_active_low),
-                                page.Pin1 & 0x07);
+                sb.AppendFormat($"\t[slateblue1]{
+                    ((page.Pin1 & 0x08) == 0x08
+                         ? Localization.Pin_1_indicates_unknown_function_0_when_active_high
+                         : Localization.Pin_1_indicates_unknown_function_0_when_active_low)}[/]",
+                                $"[lime]{page.Pin1 & 0x07}[/]");
 
                 break;
         }
