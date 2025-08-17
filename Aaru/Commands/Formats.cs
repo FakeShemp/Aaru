@@ -37,6 +37,7 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.Console;
 using Aaru.Core;
 using Aaru.Localization;
+using Serilog;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -60,19 +61,34 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
 
         Table table = new()
         {
-            Title = new TableTitle(string.Format(UI.Supported_filters_0, PluginRegister.Singleton.Filters.Count))
+            Title = new TableTitle(string.Format($"[blue]{UI.Supported_filters_0}[/]",
+                                                 $"[green]{PluginRegister.Singleton.Filters.Count}[/]"))
         };
 
-        if(settings.Verbose) table.AddColumn(UI.Title_GUID);
+        table.Border(TableBorder.Rounded);
+        table.BorderColor(Color.Yellow);
 
-        table.AddColumn(UI.Title_Filter);
+        Log.Information(UI.Supported_filters_0, PluginRegister.Singleton.Filters.Count);
+
+        if(settings.Verbose)
+            table.AddColumn(new TableColumn(new Markup($"[bold][red]{UI.Title_GUID}[/][/]").Centered()));
+
+        table.AddColumn(new TableColumn(new Markup($"[bold][slateblue1]{UI.Title_Filter}[/][/]").Centered()));
 
         foreach(IFilter filter in PluginRegister.Singleton.Filters.Values)
         {
             if(settings.Verbose)
-                table.AddRow(filter.Id.ToString(), Markup.Escape(filter.Name));
+            {
+                table.AddRow($"[italic][red]{filter.Id.ToString()}[/][/]",
+                             $"[italic][slateblue1]{Markup.Escape(filter.Name)}[/][/]");
+
+                Log.Information("({Id}) {Name}", filter.Id, filter.Name);
+            }
             else
-                table.AddRow(Markup.Escape(filter.Name));
+            {
+                table.AddRow($"[italic][slateblue1]{Markup.Escape(filter.Name)}[/][/]");
+                Log.Information("{Name}", filter.Name);
+            }
         }
 
         AnsiConsole.Write(table);
@@ -81,22 +97,38 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
 
         table = new Table
         {
-            Title = new TableTitle(string.Format(UI.Read_only_media_image_formats_0,
-                                                 plugins.MediaImages.Count(t => !plugins.WritableImages
-                                                                              .ContainsKey(t.Key))))
+            Title = new TableTitle(string.Format($"[blue]{UI.Read_only_media_image_formats_0}[/]",
+                                                 $"[green]{plugins.MediaImages.Count(t => !plugins.WritableImages
+                                                    .ContainsKey(t.Key))}[/]"))
         };
 
-        if(settings.Verbose) table.AddColumn(UI.Title_GUID);
+        table.Border(TableBorder.Rounded);
+        table.BorderColor(Color.Yellow);
 
-        table.AddColumn(UI.Title_Media_image_format);
+        Log.Information(UI.Read_only_media_image_formats_0,
+                        plugins.MediaImages.Count(t => !plugins.WritableImages.ContainsKey(t.Key)));
+
+        if(settings.Verbose)
+            table.AddColumn(new TableColumn(new Markup($"[bold][red]{UI.Title_GUID}[/][/]").Centered()));
+
+        table.AddColumn(new TableColumn(new Markup($"[bold][slateblue1]{UI.Title_Media_image_format}[/][/]")
+                                           .Centered()));
 
         foreach(IMediaImage imagePlugin in
                 plugins.MediaImages.Values.Where(t => !plugins.WritableImages.ContainsKey(t.Name)))
         {
             if(settings.Verbose)
-                table.AddRow(imagePlugin.Id.ToString(), Markup.Escape(imagePlugin.Name));
+            {
+                table.AddRow($"[italic][red]{imagePlugin.Id.ToString()}[/][/]",
+                             $"[italic][slateblue1]{Markup.Escape(imagePlugin.Name)}[/][/]");
+
+                Log.Information("({Id}) {Name}", imagePlugin.Id, imagePlugin.Name);
+            }
             else
-                table.AddRow(Markup.Escape(imagePlugin.Name));
+            {
+                table.AddRow($"[italic][slateblue1]{Markup.Escape(imagePlugin.Name)}[/][/]");
+                Log.Information("{Name}", imagePlugin.Name);
+            }
         }
 
         AnsiConsole.Write(table);
@@ -105,26 +137,42 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
 
         table = new Table
         {
-            Title = new TableTitle(string.Format(UI.Read_write_media_image_formats_0, plugins.WritableImages.Count))
+            Title = new TableTitle(string.Format($"[blue]{UI.Supported_filters_0}[/]",
+                                                 $"[green]{plugins.WritableImages.Count}[/]"))
         };
 
-        if(settings.Verbose) table.AddColumn(UI.Title_GUID);
+        table.Border(TableBorder.Rounded);
+        table.BorderColor(Color.Yellow);
 
-        table.AddColumn(UI.Title_Media_image_format);
+        Log.Information(UI.Read_write_media_image_formats_0, plugins.WritableImages.Count);
 
-        foreach(IBaseWritableImage plugin in plugins.WritableImages.Values)
+        if(settings.Verbose)
+            table.AddColumn(new TableColumn(new Markup($"[bold][red]{UI.Title_GUID}[/][/]").Centered()));
+
+        table.AddColumn(new TableColumn(new Markup($"[bold][slateblue1]{UI.Title_Media_image_format}[/][/]")
+                                           .Centered()));
+
+        foreach(IWritableImage plugin in plugins.WritableImages.Values)
         {
             if(plugin is null) continue;
 
             if(settings.Verbose)
-                table.AddRow(plugin.Id.ToString(), Markup.Escape(plugin.Name));
+            {
+                table.AddRow($"[italic][red]{plugin.Id.ToString()}[/][/]",
+                             $"[italic][slateblue1]{Markup.Escape(plugin.Name)}[/][/]");
+
+                Log.Information("({Id}) {Name}", plugin.Id, plugin.Name);
+            }
             else
-                table.AddRow(Markup.Escape(plugin.Name));
+            {
+                table.AddRow($"[italic][slateblue1]{Markup.Escape(plugin.Name)}[/][/]");
+                Log.Information("{Name}", plugin.Name);
+            }
         }
 
         AnsiConsole.Write(table);
 
-        AaruConsole.WriteLine();
+        AnsiConsole.WriteLine();
 
         var idOnlyFilesystems = plugins.Filesystems.Where(t => !plugins.ReadOnlyFilesystems.ContainsKey(t.Key))
                                        .Select(t => t.Value)
@@ -133,20 +181,34 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
 
         table = new Table
         {
-            Title = new TableTitle(string.Format(UI.Supported_filesystems_for_identification_and_information_only_0,
-                                                 idOnlyFilesystems.Count))
+            Title = new TableTitle(string.Format($"[blue]{UI.Supported_filters_0}[/]",
+                                                 $"[green]{idOnlyFilesystems.Count}[/]"))
         };
 
-        if(settings.Verbose) table.AddColumn(UI.Title_GUID);
+        table.Border(TableBorder.Rounded);
+        table.BorderColor(Color.Yellow);
 
-        table.AddColumn(UI.Title_Filesystem);
+        Log.Information(UI.Supported_filesystems_for_identification_and_information_only_0, idOnlyFilesystems.Count);
+
+        if(settings.Verbose)
+            table.AddColumn(new TableColumn(new Markup($"[bold][red]{UI.Title_GUID}[/][/]").Centered()));
+
+        table.AddColumn(new TableColumn(new Markup($"[bold][slateblue1]{UI.Title_Filesystem}[/][/]").Centered()));
 
         foreach(IFilesystem fs in idOnlyFilesystems)
         {
             if(settings.Verbose)
-                table.AddRow(fs.Id.ToString(), Markup.Escape(fs.Name));
+            {
+                table.AddRow($"[italic][red]{fs.Id.ToString()}[/][/]",
+                             $"[italic][slateblue1]{Markup.Escape(fs.Name)}[/][/]");
+
+                Log.Information("({Id}) {Name}", fs.Id, fs.Name);
+            }
             else
-                table.AddRow(Markup.Escape(fs.Name));
+            {
+                table.AddRow($"[italic][slateblue1]{Markup.Escape(fs.Name)}[/][/]");
+                Log.Information("{Name}", fs.Name);
+            }
         }
 
         AnsiConsole.Write(table);
@@ -155,22 +217,36 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
 
         table = new Table
         {
-            Title = new TableTitle(string.Format(UI.Supported_filesystems_that_can_read_their_contents_0,
-                                                 plugins.ReadOnlyFilesystems.Count))
+            Title = new TableTitle(string.Format($"[blue]{UI.Supported_filesystems_that_can_read_their_contents_0}[/]",
+                                                 $"[green]{plugins.ReadOnlyFilesystems.Count}[/]"))
         };
 
-        if(settings.Verbose) table.AddColumn(UI.Title_GUID);
+        table.Border(TableBorder.Rounded);
+        table.BorderColor(Color.Yellow);
 
-        table.AddColumn(UI.Title_Filesystem);
+        Log.Information(UI.Supported_filesystems_that_can_read_their_contents_0, plugins.ReadOnlyFilesystems.Count);
+
+        if(settings.Verbose)
+            table.AddColumn(new TableColumn(new Markup($"[bold][red]{UI.Title_GUID}[/][/]").Centered()));
+
+        table.AddColumn(new TableColumn(new Markup($"[bold][slateblue1]{UI.Title_Filesystem}[/][/]").Centered()));
 
         foreach(IReadOnlyFilesystem fs in plugins.ReadOnlyFilesystems.Values)
         {
             if(fs is null) continue;
 
             if(settings.Verbose)
-                table.AddRow(fs.Id.ToString(), Markup.Escape(fs.Name));
+            {
+                table.AddRow($"[italic][red]{fs.Id.ToString()}[/][/]",
+                             $"[italic][slateblue1]{Markup.Escape(fs.Name)}[/][/]");
+
+                Log.Information("({Id}) {Name}", fs.Id, fs.Name);
+            }
             else
-                table.AddRow(Markup.Escape(fs.Name));
+            {
+                table.AddRow($"[italic][slateblue1]{Markup.Escape(fs.Name)}[/][/]");
+                Log.Information("{Name}", fs.Name);
+            }
         }
 
         AnsiConsole.Write(table);
@@ -179,21 +255,36 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
 
         table = new Table
         {
-            Title = new TableTitle(string.Format(UI.Supported_partitioning_schemes_0, plugins.Partitions.Count))
+            Title = new TableTitle(string.Format($"[blue]{UI.Supported_partitioning_schemes_0}[/]",
+                                                 $"[green]{PluginRegister.Singleton.Partitions.Count}[/]"))
         };
 
-        if(settings.Verbose) table.AddColumn(UI.Title_GUID);
+        table.Border(TableBorder.Rounded);
+        table.BorderColor(Color.Yellow);
 
-        table.AddColumn(UI.Title_Scheme);
+        Log.Information(UI.Supported_partitioning_schemes_0, plugins.Partitions.Count);
+
+        if(settings.Verbose)
+            table.AddColumn(new TableColumn(new Markup($"[bold][red]{UI.Title_GUID}[/][/]").Centered()));
+
+        table.AddColumn(new TableColumn(new Markup($"[bold][slateblue1]{UI.Title_Scheme}[/][/]").Centered()));
 
         foreach(IPartition plugin in plugins.Partitions.Values)
         {
             if(plugin is null) continue;
 
             if(settings.Verbose)
-                table.AddRow(plugin.Id.ToString(), Markup.Escape(plugin.Name));
+            {
+                table.AddRow($"[italic][red]{plugin.Id.ToString()}[/][/]",
+                             $"[italic][slateblue1]{Markup.Escape(plugin.Name)}[/][/]");
+
+                Log.Information("({Id}) {Name}", plugin.Id, plugin.Name);
+            }
             else
-                table.AddRow(Markup.Escape(plugin.Name));
+            {
+                table.AddRow($"[italic][slateblue1]{Markup.Escape(plugin.Name)}[/][/]");
+                Log.Information("{Name}", plugin.Name);
+            }
         }
 
         AnsiConsole.Write(table);
@@ -202,21 +293,36 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
 
         table = new Table
         {
-            Title = new TableTitle(string.Format(UI.Supported_archive_formats_0, plugins.Archives.Count))
+            Title = new TableTitle(string.Format($"[blue]{UI.Supported_archive_formats_0}[/]",
+                                                 $"[green]{PluginRegister.Singleton.Archives.Count}[/]"))
         };
 
-        if(settings.Verbose) table.AddColumn(UI.Title_GUID);
+        table.Border(TableBorder.Rounded);
+        table.BorderColor(Color.Yellow);
 
-        table.AddColumn("Archive format");
+        Log.Information(UI.Supported_archive_formats_0, PluginRegister.Singleton.Archives.Count);
+
+        if(settings.Verbose)
+            table.AddColumn(new TableColumn(new Markup($"[bold][red]{UI.Title_GUID}[/][/]").Centered()));
+
+        table.AddColumn(new TableColumn(new Markup($"[bold][slateblue1]{UI.Title_Archive_Format}[/][/]").Centered()));
 
         foreach(IArchive archive in plugins.Archives.Values)
         {
             if(archive is null) continue;
 
             if(settings.Verbose)
-                table.AddRow(archive.Id.ToString(), Markup.Escape(archive.Name));
+            {
+                table.AddRow($"[italic][red]{archive.Id.ToString()}[/][/]",
+                             $"[italic][slateblue1]{Markup.Escape(archive.Name)}[/][/]");
+
+                Log.Information("({Id}) {Name}", archive.Id, archive.Name);
+            }
             else
-                table.AddRow(Markup.Escape(archive.Name));
+            {
+                table.AddRow($"[italic][slateblue1]{Markup.Escape(archive.Name)}[/][/]");
+                Log.Information("{Name}", archive.Name);
+            }
         }
 
         AnsiConsole.Write(table);
