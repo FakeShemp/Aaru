@@ -156,13 +156,13 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
                               $"[teal]{results.ProcessingTime.Seconds().Humanize(minUnit: TimeUnit.Second)}[/]");
 
         AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Average_speed_0}[/]",
-                              $"[aqua]{ByteSize.FromBytes(results.AvgSpeed).Per(1.Seconds()).Humanize()}[/]");
+                              $"[aqua]{ByteSize.FromMegabytes(results.AvgSpeed).Per(1.Seconds()).Humanize()}[/]");
 
         AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Fastest_speed_burst_0}[/]",
-                              $"[aqua]{ByteSize.FromBytes(results.MaxSpeed).Per(1.Seconds()).Humanize()}[/]");
+                              $"[aqua]{ByteSize.FromMegabytes(results.MaxSpeed).Per(1.Seconds()).Humanize()}[/]");
 
         AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Slowest_speed_burst_0}[/]",
-                              $"[aqua]{ByteSize.FromBytes(results.MinSpeed).Per(1.Seconds()).Humanize()}[/]");
+                              $"[aqua]{ByteSize.FromMegabytes(results.MinSpeed).Per(1.Seconds()).Humanize()}[/]");
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine($"[bold]{Localization.Core.Summary}:[/]");
