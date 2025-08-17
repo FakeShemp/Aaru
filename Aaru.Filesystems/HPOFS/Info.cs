@@ -94,95 +94,95 @@ public sealed partial class HPOFS
         MediaInformationBlock  mib = Marshal.ByteArrayToStructureBigEndian<MediaInformationBlock>(medInfoSector);
         VolumeInformationBlock vib = Marshal.ByteArrayToStructureBigEndian<VolumeInformationBlock>(volInfoSector);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.oem_name = \"{0}\"", StringHandlers.CToString(bpb.oem_name));
+        AaruConsole.Debug(MODULE_NAME, "bpb.oem_name = \"{0}\"", StringHandlers.CToString(bpb.oem_name));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.bps = {0}",            bpb.bps);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.spc = {0}",            bpb.spc);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.rsectors = {0}",       bpb.rsectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.fats_no = {0}",        bpb.fats_no);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.root_ent = {0}",       bpb.root_ent);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.sectors = {0}",        bpb.sectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.media = 0x{0:X2}",     bpb.media);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.spfat = {0}",          bpb.spfat);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.sptrk = {0}",          bpb.sptrk);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.heads = {0}",          bpb.heads);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.hsectors = {0}",       bpb.hsectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.big_sectors = {0}",    bpb.big_sectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.drive_no = 0x{0:X2}",  bpb.drive_no);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.nt_flags = {0}",       bpb.nt_flags);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.signature = 0x{0:X2}", bpb.signature);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.serial_no = 0x{0:X8}", bpb.serial_no);
+        AaruConsole.Debug(MODULE_NAME, "bpb.bps = {0}",            bpb.bps);
+        AaruConsole.Debug(MODULE_NAME, "bpb.spc = {0}",            bpb.spc);
+        AaruConsole.Debug(MODULE_NAME, "bpb.rsectors = {0}",       bpb.rsectors);
+        AaruConsole.Debug(MODULE_NAME, "bpb.fats_no = {0}",        bpb.fats_no);
+        AaruConsole.Debug(MODULE_NAME, "bpb.root_ent = {0}",       bpb.root_ent);
+        AaruConsole.Debug(MODULE_NAME, "bpb.sectors = {0}",        bpb.sectors);
+        AaruConsole.Debug(MODULE_NAME, "bpb.media = 0x{0:X2}",     bpb.media);
+        AaruConsole.Debug(MODULE_NAME, "bpb.spfat = {0}",          bpb.spfat);
+        AaruConsole.Debug(MODULE_NAME, "bpb.sptrk = {0}",          bpb.sptrk);
+        AaruConsole.Debug(MODULE_NAME, "bpb.heads = {0}",          bpb.heads);
+        AaruConsole.Debug(MODULE_NAME, "bpb.hsectors = {0}",       bpb.hsectors);
+        AaruConsole.Debug(MODULE_NAME, "bpb.big_sectors = {0}",    bpb.big_sectors);
+        AaruConsole.Debug(MODULE_NAME, "bpb.drive_no = 0x{0:X2}",  bpb.drive_no);
+        AaruConsole.Debug(MODULE_NAME, "bpb.nt_flags = {0}",       bpb.nt_flags);
+        AaruConsole.Debug(MODULE_NAME, "bpb.signature = 0x{0:X2}", bpb.signature);
+        AaruConsole.Debug(MODULE_NAME, "bpb.serial_no = 0x{0:X8}", bpb.serial_no);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "bpb.volume_label = \"{0}\"",
                                    StringHandlers.SpacePaddedToString(bpb.volume_label));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.fs_type = \"{0}\"", StringHandlers.CToString(bpb.fs_type));
+        AaruConsole.Debug(MODULE_NAME, "bpb.fs_type = \"{0}\"", StringHandlers.CToString(bpb.fs_type));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "bpb.boot_code is empty? = {0}",
                                    ArrayHelpers.ArrayIsNullOrEmpty(bpb.boot_code));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.unknown = {0}",     bpb.unknown);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.unknown2 = {0}",    bpb.unknown2);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb.signature2 = {0}",  bpb.signature2);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "mib.blockId = \"{0}\"", StringHandlers.CToString(mib.blockId));
+        AaruConsole.Debug(MODULE_NAME, "bpb.unknown = {0}",     bpb.unknown);
+        AaruConsole.Debug(MODULE_NAME, "bpb.unknown2 = {0}",    bpb.unknown2);
+        AaruConsole.Debug(MODULE_NAME, "bpb.signature2 = {0}",  bpb.signature2);
+        AaruConsole.Debug(MODULE_NAME, "mib.blockId = \"{0}\"", StringHandlers.CToString(mib.blockId));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "mib.volumeLabel = \"{0}\"",
                                    StringHandlers.SpacePaddedToString(mib.volumeLabel));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "mib.comment = \"{0}\"",
                                    StringHandlers.SpacePaddedToString(mib.comment));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "mib.serial = 0x{0:X8}", mib.serial);
+        AaruConsole.Debug(MODULE_NAME, "mib.serial = 0x{0:X8}", mib.serial);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "mib.creationTimestamp = {0}",
                                    DateHandlers.DosToDateTime(mib.creationDate, mib.creationTime));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "mib.codepageType = {0}", mib.codepageType);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "mib.codepage = {0}",     mib.codepage);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "mib.rps = {0}",          mib.rps);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "mib.bps = {0}",          mib.bps);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "mib.bpc = {0}",          mib.bpc);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "mib.unknown2 = {0}",     mib.unknown2);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "mib.sectors = {0}",      mib.sectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "mib.unknown3 = {0}",     mib.unknown3);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "mib.unknown4 = {0}",     mib.unknown4);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "mib.major = {0}",        mib.major);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "mib.minor = {0}",        mib.minor);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "mib.unknown5 = {0}",     mib.unknown5);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "mib.unknown6 = {0}",     mib.unknown6);
+        AaruConsole.Debug(MODULE_NAME, "mib.codepageType = {0}", mib.codepageType);
+        AaruConsole.Debug(MODULE_NAME, "mib.codepage = {0}",     mib.codepage);
+        AaruConsole.Debug(MODULE_NAME, "mib.rps = {0}",          mib.rps);
+        AaruConsole.Debug(MODULE_NAME, "mib.bps = {0}",          mib.bps);
+        AaruConsole.Debug(MODULE_NAME, "mib.bpc = {0}",          mib.bpc);
+        AaruConsole.Debug(MODULE_NAME, "mib.unknown2 = {0}",     mib.unknown2);
+        AaruConsole.Debug(MODULE_NAME, "mib.sectors = {0}",      mib.sectors);
+        AaruConsole.Debug(MODULE_NAME, "mib.unknown3 = {0}",     mib.unknown3);
+        AaruConsole.Debug(MODULE_NAME, "mib.unknown4 = {0}",     mib.unknown4);
+        AaruConsole.Debug(MODULE_NAME, "mib.major = {0}",        mib.major);
+        AaruConsole.Debug(MODULE_NAME, "mib.minor = {0}",        mib.minor);
+        AaruConsole.Debug(MODULE_NAME, "mib.unknown5 = {0}",     mib.unknown5);
+        AaruConsole.Debug(MODULE_NAME, "mib.unknown6 = {0}",     mib.unknown6);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "mib.filler is empty? = {0}",
                                    ArrayHelpers.ArrayIsNullOrEmpty(mib.filler));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "vib.blockId = \"{0}\"", StringHandlers.CToString(vib.blockId));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "vib.unknown = {0}",     vib.unknown);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "vib.unknown2 = {0}",    vib.unknown2);
+        AaruConsole.Debug(MODULE_NAME, "vib.blockId = \"{0}\"", StringHandlers.CToString(vib.blockId));
+        AaruConsole.Debug(MODULE_NAME, "vib.unknown = {0}",     vib.unknown);
+        AaruConsole.Debug(MODULE_NAME, "vib.unknown2 = {0}",    vib.unknown2);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "vib.unknown3 is empty? = {0}",
                                    ArrayHelpers.ArrayIsNullOrEmpty(vib.unknown3));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "vib.unknown4 = \"{0}\"",
                                    StringHandlers.SpacePaddedToString(vib.unknown4));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "vib.owner = \"{0}\"", StringHandlers.SpacePaddedToString(vib.owner));
+        AaruConsole.Debug(MODULE_NAME, "vib.owner = \"{0}\"", StringHandlers.SpacePaddedToString(vib.owner));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "vib.unknown5 = \"{0}\"",
                                    StringHandlers.SpacePaddedToString(vib.unknown5));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "vib.unknown6 = {0}",    vib.unknown6);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "vib.percentFull = {0}", vib.percentFull);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "vib.unknown7 = {0}",    vib.unknown7);
+        AaruConsole.Debug(MODULE_NAME, "vib.unknown6 = {0}",    vib.unknown6);
+        AaruConsole.Debug(MODULE_NAME, "vib.percentFull = {0}", vib.percentFull);
+        AaruConsole.Debug(MODULE_NAME, "vib.unknown7 = {0}",    vib.unknown7);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "vib.filler is empty? = {0}",
                                    ArrayHelpers.ArrayIsNullOrEmpty(vib.filler));
 

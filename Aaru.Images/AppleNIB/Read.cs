@@ -57,9 +57,9 @@ public sealed partial class AppleNib
         byte[] buffer = new byte[stream.Length];
         stream.EnsureRead(buffer, 0, buffer.Length);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Decoding_whole_image);
+        AaruConsole.Debug(MODULE_NAME, Localization.Decoding_whole_image);
         List<Apple2.RawTrack> tracks = Apple2.MarshalDisk(buffer);
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Got_0_tracks, tracks.Count);
+        AaruConsole.Debug(MODULE_NAME, Localization.Got_0_tracks, tracks.Count);
 
         Dictionary<ulong, Apple2.RawSector> rawSectors = new();
 
@@ -95,7 +95,7 @@ public sealed partial class AppleNib
             {
                 if(isDos) skewing = _dosSkewing;
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            skewing.SequenceEqual(_dosSkewing)
                                                ? Localization.Using_DOS_skewing
                                                : Localization.Using_ProDOS_skewing);
@@ -112,7 +112,7 @@ public sealed partial class AppleNib
                                               sector.addressField.sector[1] & 0x55) &
                                              0xFF);
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME,
+                    AaruConsole.Debug(MODULE_NAME,
                                                Localization.Hardware_sector_0_of_track_1_goes_to_logical_sector_2,
                                                sectorNo,
                                                i,
@@ -129,9 +129,9 @@ public sealed partial class AppleNib
             }
         }
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Got_0_sectors, _imageInfo.Sectors);
+        AaruConsole.Debug(MODULE_NAME, Localization.Got_0_sectors, _imageInfo.Sectors);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Cooking_sectors);
+        AaruConsole.Debug(MODULE_NAME, Localization.Cooking_sectors);
 
         _longSectors   = new Dictionary<ulong, byte[]>();
         _cookedSectors = new Dictionary<ulong, byte[]>();

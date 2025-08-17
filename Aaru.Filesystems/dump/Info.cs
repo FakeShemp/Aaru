@@ -71,9 +71,9 @@ public sealed partial class Dump
         spcl_aix aixHdr = Marshal.ByteArrayToStructureLittleEndian<spcl_aix>(sector);
         s_spcl   newHdr = Marshal.ByteArrayToStructureLittleEndian<s_spcl>(sector);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "old magic = 0x{0:X8}", oldHdr.c_magic);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "aix magic = 0x{0:X8}", aixHdr.c_magic);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "new magic = 0x{0:X8}", newHdr.c_magic);
+        AaruConsole.Debug(MODULE_NAME, "old magic = 0x{0:X8}", oldHdr.c_magic);
+        AaruConsole.Debug(MODULE_NAME, "aix magic = 0x{0:X8}", aixHdr.c_magic);
+        AaruConsole.Debug(MODULE_NAME, "new magic = 0x{0:X8}", newHdr.c_magic);
 
         return oldHdr.c_magic == OFS_MAGIC              ||
                aixHdr.c_magic is XIX_MAGIC or XIX_CIGAM ||

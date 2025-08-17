@@ -54,8 +54,8 @@ sealed class ListOptionsCommand : Command<ListOptionsCommand.Settings>
     {
         MainClass.PrintCopyright();
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
         Statistics.AddCommand("list-options");
 
         PluginRegister plugins = PluginRegister.Singleton;

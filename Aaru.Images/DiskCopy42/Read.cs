@@ -74,15 +74,15 @@ public sealed partial class DiskCopy42
         header.Valid        = buffer[0x52];
         header.Reserved     = buffer[0x53];
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.diskName = \"{0}\"",      header.DiskName);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.dataSize = {0} bytes",    header.DataSize);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.tagSize = {0} bytes",     header.TagSize);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.dataChecksum = 0x{0:X8}", header.DataChecksum);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.tagChecksum = 0x{0:X8}",  header.TagChecksum);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.format = 0x{0:X2}",       header.Format);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.fmtByte = 0x{0:X2}",      header.FmtByte);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.valid = {0}",             header.Valid);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.reserved = {0}",          header.Reserved);
+        AaruConsole.Debug(MODULE_NAME, "header.diskName = \"{0}\"",      header.DiskName);
+        AaruConsole.Debug(MODULE_NAME, "header.dataSize = {0} bytes",    header.DataSize);
+        AaruConsole.Debug(MODULE_NAME, "header.tagSize = {0} bytes",     header.TagSize);
+        AaruConsole.Debug(MODULE_NAME, "header.dataChecksum = 0x{0:X8}", header.DataChecksum);
+        AaruConsole.Debug(MODULE_NAME, "header.tagChecksum = 0x{0:X8}",  header.TagChecksum);
+        AaruConsole.Debug(MODULE_NAME, "header.format = 0x{0:X2}",       header.Format);
+        AaruConsole.Debug(MODULE_NAME, "header.fmtByte = 0x{0:X2}",      header.FmtByte);
+        AaruConsole.Debug(MODULE_NAME, "header.valid = {0}",             header.Valid);
+        AaruConsole.Debug(MODULE_NAME, "header.reserved = {0}",          header.Reserved);
 
         if(header.Valid != 1 || header.Reserved != 0) return ErrorNumber.InvalidArgument;
 
@@ -107,7 +107,7 @@ public sealed partial class DiskCopy42
            header.Format != kSigmaFormatTwiggy &&
            header.Format != kNotStandardFormat)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Unknown_header_format_equals_0_value, header.Format);
+            AaruConsole.Debug(MODULE_NAME, Localization.Unknown_header_format_equals_0_value, header.Format);
 
             return ErrorNumber.NotSupported;
         }
@@ -121,7 +121,7 @@ public sealed partial class DiskCopy42
            header.FmtByte != kFmtNotStandard           &&
            header.FmtByte != kMacOSXFmtByte)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Localization.Unknown_tmp_header_fmtByte_equals_0_value,
                                        header.FmtByte);
 
@@ -130,7 +130,7 @@ public sealed partial class DiskCopy42
 
         if(header.FmtByte == kInvalidFmtByte)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Image_says_its_unformatted);
+            AaruConsole.Debug(MODULE_NAME, Localization.Image_says_its_unformatted);
 
             return ErrorNumber.InvalidArgument;
         }
@@ -146,11 +146,11 @@ public sealed partial class DiskCopy42
         if(header.TagSize != 0)
         {
             bptag = (uint)(header.TagSize / imageInfo.Sectors);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "bptag = {0} bytes", bptag);
+            AaruConsole.Debug(MODULE_NAME, "bptag = {0} bytes", bptag);
 
             if(bptag != 12 && bptag != 20 && bptag != 24)
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Unknown_tag_size);
+                AaruConsole.Debug(MODULE_NAME, Localization.Unknown_tag_size);
 
                 return ErrorNumber.NotSupported;
             }
@@ -207,7 +207,7 @@ public sealed partial class DiskCopy42
             // Detect a Macintosh Twiggy
             if(mfsMagic == 0xD2D7 && mfsAllBlocks == 422)
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Macintosh_Twiggy_detected_reversing_disk_sides);
+                AaruConsole.Debug(MODULE_NAME, Localization.Macintosh_Twiggy_detected_reversing_disk_sides);
                 Array.Copy(data, header.DataSize / 2, twiggyCache,     0, header.DataSize / 2);
                 Array.Copy(tags, header.TagSize  / 2, twiggyCacheTags, 0, header.TagSize  / 2);
                 Array.Copy(data, 0,                   twiggyCache,     header.DataSize    / 2, header.DataSize / 2);
@@ -215,7 +215,7 @@ public sealed partial class DiskCopy42
             }
             else
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            Localization.Lisa_Twiggy_detected_reversing_second_half_of_disk);
 
                 Array.Copy(data, 0, twiggyCache,     0, header.DataSize / 2);
@@ -320,13 +320,13 @@ public sealed partial class DiskCopy42
         }
         catch(InvalidCastException) {}
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    Localization.Image_application_0_version_1,
                                    imageInfo.Application,
                                    imageInfo.ApplicationVersion);
 
         imageInfo.MetadataMediaType = MetadataMediaType.BlockMedia;
-        AaruConsole.VerboseWriteLine(Localization.DiskCopy_4_2_image_contains_a_disk_of_type_0, imageInfo.MediaType);
+        AaruConsole.Verbose(Localization.DiskCopy_4_2_image_contains_a_disk_of_type_0, imageInfo.MediaType);
 
         switch(imageInfo.MediaType)
         {

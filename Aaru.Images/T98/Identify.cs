@@ -62,7 +62,7 @@ public sealed partial class T98
 
         int cylinders = BitConverter.ToInt32(hdrB, 0);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.cylinders_equal_0, cylinders);
+        AaruConsole.Debug(MODULE_NAME, Localization.cylinders_equal_0, cylinders);
 
         // This format is expanding, so length can be smaller
         // Just grow it, I won't risk false positives...

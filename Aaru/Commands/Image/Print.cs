@@ -55,13 +55,13 @@ sealed class PrintHexCommand : Command<PrintHexCommand.Settings>
 
         Statistics.AddCommand("print-hex");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",        settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",        Markup.Escape(settings.ImagePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--length={0}",       settings.Length);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--long-sectors={0}", settings.LongSectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--start={0}",        settings.Start);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",      settings.Verbose);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--width={0}",        settings.Width);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",        settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--input={0}",        Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--length={0}",       settings.Length);
+        AaruConsole.Debug(MODULE_NAME, "--long-sectors={0}", settings.LongSectors);
+        AaruConsole.Debug(MODULE_NAME, "--start={0}",        settings.Start);
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",      settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--width={0}",        settings.Width);
 
         IFilter inputFilter = null;
 
@@ -73,7 +73,7 @@ sealed class PrintHexCommand : Command<PrintHexCommand.Settings>
 
         if(inputFilter == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Cannot_open_specified_file);
+            AaruConsole.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -90,7 +90,7 @@ sealed class PrintHexCommand : Command<PrintHexCommand.Settings>
 
         if(inputFormat == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Unable_to_recognize_image_format_not_printing);
+            AaruConsole.Error(UI.Unable_to_recognize_image_format_not_printing);
 
             return (int)ErrorNumber.UnrecognizedFormat;
         }
@@ -144,7 +144,7 @@ sealed class PrintHexCommand : Command<PrintHexCommand.Settings>
             if(errno == ErrorNumber.NoError)
                 AaruConsole.WriteLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(data, settings.Width, true)));
             else
-                AaruConsole.ErrorWriteLine(string.Format(UI.Error_0_reading_data_from_1, errno, settings.Start));
+                AaruConsole.Error(string.Format(UI.Error_0_reading_data_from_1, errno, settings.Start));
         }
         else
         {
@@ -152,7 +152,7 @@ sealed class PrintHexCommand : Command<PrintHexCommand.Settings>
             {
                 if(inputFormat is not IMediaImage blockImage)
                 {
-                    AaruConsole.ErrorWriteLine(UI.Cannot_open_image_file_aborting);
+                    AaruConsole.Error(UI.Cannot_open_image_file_aborting);
 
                     break;
                 }
@@ -196,7 +196,7 @@ sealed class PrintHexCommand : Command<PrintHexCommand.Settings>
                                                             true)));
                 }
                 else
-                    AaruConsole.ErrorWriteLine(string.Format(UI.Error_0_reading_sector_1, errno, settings.Start + i));
+                    AaruConsole.Error(string.Format(UI.Error_0_reading_sector_1, errno, settings.Start + i));
             }
         }
 

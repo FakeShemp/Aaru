@@ -66,7 +66,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.SMART_DISABLE_OPERATIONS_took_0_ms, duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.SMART_DISABLE_OPERATIONS_took_0_ms, duration);
 
         return sense;
     }
@@ -102,7 +102,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.SMART_ENABLE_ATTRIBUTE_AUTOSAVE_took_0_ms, duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.SMART_ENABLE_ATTRIBUTE_AUTOSAVE_took_0_ms, duration);
 
         return sense;
     }
@@ -137,7 +137,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.SMART_DISABLE_ATTRIBUTE_AUTOSAVE_took_0_ms, duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.SMART_DISABLE_ATTRIBUTE_AUTOSAVE_took_0_ms, duration);
 
         return sense;
     }
@@ -171,7 +171,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.SMART_ENABLE_OPERATIONS_took_0_ms, duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.SMART_ENABLE_OPERATIONS_took_0_ms, duration);
 
         return sense;
     }
@@ -208,7 +208,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.SMART_EXECUTE_OFF_LINE_IMMEDIATE_took_0_ms, duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.SMART_EXECUTE_OFF_LINE_IMMEDIATE_took_0_ms, duration);
 
         return sense;
     }
@@ -244,7 +244,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.SMART_READ_DATA_took_0_ms, duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.SMART_READ_DATA_took_0_ms, duration);
 
         return sense;
     }
@@ -282,7 +282,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.SMART_READ_LOG_took_0_ms, duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.SMART_READ_LOG_took_0_ms, duration);
 
         return sense;
     }
@@ -316,7 +316,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.SMART_RETURN_STATUS_took_0_ms, duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.SMART_RETURN_STATUS_took_0_ms, duration);
 
         return sense;
     }

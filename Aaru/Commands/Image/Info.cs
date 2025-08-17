@@ -53,9 +53,9 @@ sealed class ImageInfoCommand : Command<ImageInfoCommand.Settings>
 
         Statistics.AddCommand("image-info");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",   Markup.Escape(settings.ImagePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--input={0}",   Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
         IFilter inputFilter = null;
 
@@ -67,7 +67,7 @@ sealed class ImageInfoCommand : Command<ImageInfoCommand.Settings>
 
         if(inputFilter == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Cannot_open_specified_file);
+            AaruConsole.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -118,17 +118,17 @@ sealed class ImageInfoCommand : Command<ImageInfoCommand.Settings>
             }
             catch(Exception ex)
             {
-                AaruConsole.ErrorWriteLine(UI.Unable_to_open_image_format);
-                AaruConsole.ErrorWriteLine(Localization.Core.Error_0, ex.Message);
-                AaruConsole.WriteException(ex);
+                AaruConsole.Error(UI.Unable_to_open_image_format);
+                AaruConsole.Error(Localization.Core.Error_0, ex.Message);
+                AaruConsole.Exception(ex);
 
                 return (int)ErrorNumber.CannotOpenFormat;
             }
         }
         catch(Exception ex)
         {
-            AaruConsole.ErrorWriteLine(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
-            AaruConsole.WriteException(ex);
+            AaruConsole.Error(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
+            AaruConsole.Exception(ex);
 
             return (int)ErrorNumber.UnexpectedException;
         }

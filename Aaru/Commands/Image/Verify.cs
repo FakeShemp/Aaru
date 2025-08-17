@@ -59,13 +59,13 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
 
         Statistics.AddCommand("verify");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",          settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",          Markup.Escape(settings.ImagePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",        settings.Verbose);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verify-disc={0}",    settings.VerifyDisc);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verify-sectors={0}", settings.VerifySectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--create-graph={0}",   settings.CreateGraph);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--dimensions={0}",     settings.Dimensions);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",          settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--input={0}",          Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",        settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--verify-disc={0}",    settings.VerifyDisc);
+        AaruConsole.Debug(MODULE_NAME, "--verify-sectors={0}", settings.VerifySectors);
+        AaruConsole.Debug(MODULE_NAME, "--create-graph={0}",   settings.CreateGraph);
+        AaruConsole.Debug(MODULE_NAME, "--dimensions={0}",     settings.Dimensions);
 
         IFilter inputFilter = null;
 
@@ -77,7 +77,7 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
 
         if(inputFilter == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Cannot_open_specified_file);
+            AaruConsole.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -92,7 +92,7 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
 
         if(inputFormat == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Unable_to_recognize_image_format_not_verifying);
+            AaruConsole.Error(UI.Unable_to_recognize_image_format_not_verifying);
 
             return (int)ErrorNumber.FormatNotFound;
         }
@@ -125,7 +125,7 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
 
         if(verifiableImage is null && verifiableSectorsImage is null)
         {
-            AaruConsole.ErrorWriteLine(UI.The_specified_image_does_not_support_any_kind_of_verification);
+            AaruConsole.Error(UI.The_specified_image_does_not_support_any_kind_of_verification);
 
             return (int)ErrorNumber.NotVerifiable;
         }
@@ -163,7 +163,7 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
 
             correctImage = discCheckStatus;
 
-            AaruConsole.VerboseWriteLine(UI.Checking_disc_image_checksums_took_0,
+            AaruConsole.Verbose(UI.Checking_disc_image_checksums_took_0,
                                          chkWatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
         }
 
@@ -390,27 +390,27 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
 
         if(unknownLbas.Count == 0 && failingLbas.Count == 0) AaruConsole.WriteLine(UI.All_sector_checksums_are_correct);
 
-        AaruConsole.VerboseWriteLine(UI.Checking_sector_checksums_took_0,
+        AaruConsole.Verbose(UI.Checking_sector_checksums_took_0,
                                      stopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
 
         if(settings.Verbose)
         {
-            AaruConsole.VerboseWriteLine($"[red]{UI.LBAs_with_error}[/]");
+            AaruConsole.Verbose($"[red]{UI.LBAs_with_error}[/]");
 
             if(failingLbas.Count == (int)inputFormat.Info.Sectors)
-                AaruConsole.VerboseWriteLine($"\t[red]{UI.all_sectors}[/]");
+                AaruConsole.Verbose($"\t[red]{UI.all_sectors}[/]");
             else
             {
-                foreach(ulong t in failingLbas) AaruConsole.VerboseWriteLine("\t{0}", t);
+                foreach(ulong t in failingLbas) AaruConsole.Verbose("\t{0}", t);
             }
 
             AaruConsole.WriteLine($"[yellow3_1]{UI.LBAs_without_checksum}[/]");
 
             if(unknownLbas.Count == (int)inputFormat.Info.Sectors)
-                AaruConsole.VerboseWriteLine($"\t[yellow3_1]{UI.all_sectors}[/]");
+                AaruConsole.Verbose($"\t[yellow3_1]{UI.all_sectors}[/]");
             else
             {
-                foreach(ulong t in unknownLbas) AaruConsole.VerboseWriteLine("\t{0}", t);
+                foreach(ulong t in unknownLbas) AaruConsole.Verbose("\t{0}", t);
             }
         }
 

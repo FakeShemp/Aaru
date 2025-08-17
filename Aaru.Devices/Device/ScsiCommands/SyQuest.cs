@@ -130,7 +130,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.SYQUEST_READ_6_took_0_ms, duration);
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.SYQUEST_READ_6_took_0_ms, duration);
 
         return sense;
     }
@@ -218,7 +218,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.SYQUEST_READ_10_took_0_ms, duration);
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.SYQUEST_READ_10_took_0_ms, duration);
 
         return sense;
     }

@@ -178,31 +178,31 @@ public sealed partial class NintendoPlugin
             fields.FourthPartitions = [];
         }
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "discType = {0}",         fields.DiscType);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "gameCode = {0}",         fields.GameCode);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "regionCode = {0}",       fields.RegionCode);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "publisherCode = {0}",    fields.PublisherCode);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "discID = {0}",           fields.DiscId);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "discNumber = {0}",       fields.DiscNumber);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "discVersion = {0}",      fields.DiscVersion);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "streaming = {0}",        fields.Streaming);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "streamBufferSize = {0}", fields.StreamBufferSize);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "title = \"{0}\"",        fields.Title);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "debugOff = 0x{0:X8}",    fields.DebugOff);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "debugAddr = 0x{0:X8}",   fields.DebugAddr);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dolOff = 0x{0:X8}",      fields.DolOff);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "fstOff = 0x{0:X8}",      fields.FstOff);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "fstSize = {0}",          fields.FstSize);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "fstMax = {0}",           fields.FstMax);
+        AaruConsole.Debug(MODULE_NAME, "discType = {0}",         fields.DiscType);
+        AaruConsole.Debug(MODULE_NAME, "gameCode = {0}",         fields.GameCode);
+        AaruConsole.Debug(MODULE_NAME, "regionCode = {0}",       fields.RegionCode);
+        AaruConsole.Debug(MODULE_NAME, "publisherCode = {0}",    fields.PublisherCode);
+        AaruConsole.Debug(MODULE_NAME, "discID = {0}",           fields.DiscId);
+        AaruConsole.Debug(MODULE_NAME, "discNumber = {0}",       fields.DiscNumber);
+        AaruConsole.Debug(MODULE_NAME, "discVersion = {0}",      fields.DiscVersion);
+        AaruConsole.Debug(MODULE_NAME, "streaming = {0}",        fields.Streaming);
+        AaruConsole.Debug(MODULE_NAME, "streamBufferSize = {0}", fields.StreamBufferSize);
+        AaruConsole.Debug(MODULE_NAME, "title = \"{0}\"",        fields.Title);
+        AaruConsole.Debug(MODULE_NAME, "debugOff = 0x{0:X8}",    fields.DebugOff);
+        AaruConsole.Debug(MODULE_NAME, "debugAddr = 0x{0:X8}",   fields.DebugAddr);
+        AaruConsole.Debug(MODULE_NAME, "dolOff = 0x{0:X8}",      fields.DolOff);
+        AaruConsole.Debug(MODULE_NAME, "fstOff = 0x{0:X8}",      fields.FstOff);
+        AaruConsole.Debug(MODULE_NAME, "fstSize = {0}",          fields.FstSize);
+        AaruConsole.Debug(MODULE_NAME, "fstMax = {0}",           fields.FstMax);
 
         for(int i = 0; i < fields.FirstPartitions.Length; i++)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "firstPartitions[{1}].offset = {0}",
                                        fields.FirstPartitions[i].Offset,
                                        i);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "firstPartitions[{1}].type = {0}",
                                        fields.FirstPartitions[i].Type,
                                        i);
@@ -210,12 +210,12 @@ public sealed partial class NintendoPlugin
 
         for(int i = 0; i < fields.SecondPartitions.Length; i++)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "secondPartitions[{1}].offset = {0}",
                                        fields.SecondPartitions[i].Offset,
                                        i);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "secondPartitions[{1}].type = {0}",
                                        fields.SecondPartitions[i].Type,
                                        i);
@@ -223,12 +223,12 @@ public sealed partial class NintendoPlugin
 
         for(int i = 0; i < fields.ThirdPartitions.Length; i++)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "thirdPartitions[{1}].offset = {0}",
                                        fields.ThirdPartitions[i].Offset,
                                        i);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "thirdPartitions[{1}].type = {0}",
                                        fields.ThirdPartitions[i].Type,
                                        i);
@@ -236,27 +236,27 @@ public sealed partial class NintendoPlugin
 
         for(int i = 0; i < fields.FourthPartitions.Length; i++)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "fourthPartitions[{1}].offset = {0}",
                                        fields.FourthPartitions[i].Offset,
                                        i);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "fourthPartitions[{1}].type = {0}",
                                        fields.FourthPartitions[i].Type,
                                        i);
         }
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "region = {0}",       fields.Region);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "japanAge = {0}",     fields.JapanAge);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "usaAge = {0}",       fields.UsaAge);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "germanAge = {0}",    fields.GermanAge);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pegiAge = {0}",      fields.PegiAge);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "finlandAge = {0}",   fields.FinlandAge);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "portugalAge = {0}",  fields.PortugalAge);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "ukAge = {0}",        fields.UkAge);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "australiaAge = {0}", fields.AustraliaAge);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "koreaAge = {0}",     fields.KoreaAge);
+        AaruConsole.Debug(MODULE_NAME, "region = {0}",       fields.Region);
+        AaruConsole.Debug(MODULE_NAME, "japanAge = {0}",     fields.JapanAge);
+        AaruConsole.Debug(MODULE_NAME, "usaAge = {0}",       fields.UsaAge);
+        AaruConsole.Debug(MODULE_NAME, "germanAge = {0}",    fields.GermanAge);
+        AaruConsole.Debug(MODULE_NAME, "pegiAge = {0}",      fields.PegiAge);
+        AaruConsole.Debug(MODULE_NAME, "finlandAge = {0}",   fields.FinlandAge);
+        AaruConsole.Debug(MODULE_NAME, "portugalAge = {0}",  fields.PortugalAge);
+        AaruConsole.Debug(MODULE_NAME, "ukAge = {0}",        fields.UkAge);
+        AaruConsole.Debug(MODULE_NAME, "australiaAge = {0}", fields.AustraliaAge);
+        AaruConsole.Debug(MODULE_NAME, "koreaAge = {0}",     fields.KoreaAge);
 
         sbInformation.AppendLine(Localization.Nintendo_optical_filesystem);
 

@@ -73,10 +73,10 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 
         Statistics.AddCommand("media-info");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "debug={0}",         settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "device={0}",        Markup.Escape(settings.DevicePath   ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "output-prefix={0}", Markup.Escape(settings.OutputPrefix ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "verbose={0}",       settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "debug={0}",         settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "device={0}",        Markup.Escape(settings.DevicePath   ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "output-prefix={0}", Markup.Escape(settings.OutputPrefix ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "verbose={0}",       settings.Verbose);
 
         string devicePath = settings.DevicePath;
 
@@ -95,7 +95,7 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
         switch(dev)
         {
             case null:
-                AaruConsole.ErrorWriteLine(string.Format(UI.Could_not_open_device_error_0, devErrno));
+                AaruConsole.Error(string.Format(UI.Could_not_open_device_error_0, devErrno));
 
                 return (int)devErrno;
             case Devices.Remote.Device remoteDev:
@@ -110,7 +110,7 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 
         if(dev.Error)
         {
-            AaruConsole.ErrorWriteLine(Error.Print(dev.LastError));
+            AaruConsole.Error(Error.Print(dev.LastError));
 
             return (int)ErrorNumber.CannotOpenDevice;
         }
@@ -144,7 +144,7 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
         return (int)ErrorNumber.NoError;
     }
 
-    static void DoAtaMediaInfo() => AaruConsole.ErrorWriteLine(UI.Please_use_device_info_command_for_ATA_devices);
+    static void DoAtaMediaInfo() => AaruConsole.Error(UI.Please_use_device_info_command_for_ATA_devices);
 
     // ReSharper disable UnusedParameter.Local
     static void DoNvmeMediaInfo(string outputPrefix, Devices.Device dev) =>
@@ -152,7 +152,7 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 
     // ReSharper restore UnusedParameter.Local
 
-    static void DoSdMediaInfo() => AaruConsole.ErrorWriteLine(UI.Please_use_device_info_command_for_MMC_SD_devices);
+    static void DoSdMediaInfo() => AaruConsole.Error(UI.Please_use_device_info_command_for_MMC_SD_devices);
 
     static void DoScsiMediaInfo(bool debug, string outputPrefix, Devices.Device dev)
     {

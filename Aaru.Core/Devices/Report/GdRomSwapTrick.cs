@@ -104,7 +104,7 @@ public sealed partial class DeviceReport
         if(sense)
         {
             AaruConsole.WriteLine(Localization.Core.READ_FULL_TOC_failed);
-            AaruConsole.DebugWriteLine(GDROM_MODULE_NAME, "{0}", Sense.PrettifySense(senseBuffer));
+            AaruConsole.Debug(GDROM_MODULE_NAME, "{0}", Sense.PrettifySense(senseBuffer));
 
             report.GdRomSwapDiscCapabilities.RecognizedSwapDisc = false;
             report.GdRomSwapDiscCapabilities.TestCrashed        = false;
@@ -218,7 +218,7 @@ public sealed partial class DeviceReport
         if(sense)
         {
             AaruConsole.WriteLine(Localization.Core.READ_FULL_TOC_failed);
-            AaruConsole.DebugWriteLine(GDROM_MODULE_NAME, "{0}", Sense.PrettifySense(senseBuffer));
+            AaruConsole.Debug(GDROM_MODULE_NAME, "{0}", Sense.PrettifySense(senseBuffer));
 
             report.GdRomSwapDiscCapabilities.RecognizedSwapDisc = false;
             report.GdRomSwapDiscCapabilities.TestCrashed        = false;

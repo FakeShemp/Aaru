@@ -62,12 +62,12 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
 
         Statistics.AddCommand("create-sidecar");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--block-size={0}", settings.BlockSize);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",      settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--encoding={0}",   Markup.Escape(settings.Encoding  ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",      Markup.Escape(settings.ImagePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--tape={0}",       settings.Tape);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",    settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--block-size={0}", settings.BlockSize);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",      settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--encoding={0}",   Markup.Escape(settings.Encoding  ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--input={0}",      Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--tape={0}",       settings.Tape);
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",    settings.Verbose);
 
         Encoding encodingClass = null;
 
@@ -77,11 +77,11 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
             {
                 encodingClass = Claunia.Encoding.Encoding.GetEncoding(settings.Encoding);
 
-                if(settings.Verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
+                if(settings.Verbose) AaruConsole.Verbose(UI.encoding_for_0, encodingClass.EncodingName);
             }
             catch(ArgumentException)
             {
-                AaruConsole.ErrorWriteLine(UI.Specified_encoding_is_not_supported);
+                AaruConsole.Error(UI.Specified_encoding_is_not_supported);
 
                 return (int)ErrorNumber.EncodingUnknown;
             }
@@ -91,7 +91,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
         {
             if(settings.Tape)
             {
-                AaruConsole.ErrorWriteLine(UI.You_cannot_use_tape_option_when_input_is_a_file);
+                AaruConsole.Error(UI.You_cannot_use_tape_option_when_input_is_a_file);
 
                 return (int)ErrorNumber.NotDirectory;
             }
@@ -106,7 +106,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
 
             if(inputFilter == null)
             {
-                AaruConsole.ErrorWriteLine(UI.Cannot_open_specified_file);
+                AaruConsole.Error(UI.Cannot_open_specified_file);
 
                 return (int)ErrorNumber.CannotOpenFile;
             }
@@ -129,7 +129,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
                 }
 
                 if(settings.Verbose)
-                    AaruConsole.VerboseWriteLine(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
+                    AaruConsole.Verbose(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
                 else
                     AaruConsole.WriteLine(UI.Image_format_identified_by_0, imageFormat.Name);
 
@@ -151,13 +151,13 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
                         return (int)opened;
                     }
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME, UI.Correctly_opened_image_file);
+                    AaruConsole.Debug(MODULE_NAME, UI.Correctly_opened_image_file);
                 }
                 catch(Exception ex)
                 {
-                    AaruConsole.ErrorWriteLine(UI.Unable_to_open_image_format);
-                    AaruConsole.ErrorWriteLine(Localization.Core.Error_0, ex.Message);
-                    AaruConsole.WriteException(ex);
+                    AaruConsole.Error(UI.Unable_to_open_image_format);
+                    AaruConsole.Error(Localization.Core.Error_0, ex.Message);
+                    AaruConsole.Exception(ex);
 
                     return (int)ErrorNumber.CannotOpenFormat;
                 }
@@ -244,8 +244,8 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
             }
             catch(Exception ex)
             {
-                AaruConsole.ErrorWriteLine(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
-                AaruConsole.WriteException(ex);
+                AaruConsole.Error(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
+                AaruConsole.Exception(ex);
 
                 return (int)ErrorNumber.UnexpectedException;
             }
@@ -254,7 +254,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
         {
             if(!settings.Tape)
             {
-                AaruConsole.ErrorWriteLine(Localization.Core.Cannot_create_a_sidecar_from_a_directory);
+                AaruConsole.Error(Localization.Core.Cannot_create_a_sidecar_from_a_directory);
 
                 return (int)ErrorNumber.IsDirectory;
             }
@@ -341,7 +341,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
             });
         }
         else
-            AaruConsole.ErrorWriteLine(UI.The_specified_input_file_cannot_be_found);
+            AaruConsole.Error(UI.The_specified_input_file_cannot_be_found);
 
         return (int)ErrorNumber.NoError;
     }

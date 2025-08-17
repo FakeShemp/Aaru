@@ -87,7 +87,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.HL_DT_ST_READ_DVD_RAW_took_0_ms, duration);
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.HL_DT_ST_READ_DVD_RAW_took_0_ms, duration);
 
         if(!CheckSectorNumber(buffer, lba, transferLength, layerbreak, otp)) return true;
 

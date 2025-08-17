@@ -453,7 +453,7 @@ public sealed partial class MediaScan
 
                     if(readcd)
                     {
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization.Core.READ_CD_error_0,
                                                    Sense.PrettifySense(senseBuf));
 

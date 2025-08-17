@@ -111,7 +111,7 @@ public static class DateHandlers
         fourCharValue[2] = vdDateTime[2];
         fourCharValue[3] = vdDateTime[3];
 
-        AaruConsole.DebugWriteLine(ISO9660_MODULE_NAME,
+        AaruConsole.Debug(ISO9660_MODULE_NAME,
                                    "year = \"{0}\"",
                                    StringHandlers.CToString(fourCharValue, Encoding.ASCII));
 
@@ -120,7 +120,7 @@ public static class DateHandlers
         twoCharValue[0] = vdDateTime[4];
         twoCharValue[1] = vdDateTime[5];
 
-        AaruConsole.DebugWriteLine(ISO9660_MODULE_NAME,
+        AaruConsole.Debug(ISO9660_MODULE_NAME,
                                    "month = \"{0}\"",
                                    StringHandlers.CToString(twoCharValue, Encoding.ASCII));
 
@@ -129,7 +129,7 @@ public static class DateHandlers
         twoCharValue[0] = vdDateTime[6];
         twoCharValue[1] = vdDateTime[7];
 
-        AaruConsole.DebugWriteLine(ISO9660_MODULE_NAME,
+        AaruConsole.Debug(ISO9660_MODULE_NAME,
                                    "day = \"{0}\"",
                                    StringHandlers.CToString(twoCharValue, Encoding.ASCII));
 
@@ -138,7 +138,7 @@ public static class DateHandlers
         twoCharValue[0] = vdDateTime[8];
         twoCharValue[1] = vdDateTime[9];
 
-        AaruConsole.DebugWriteLine(ISO9660_MODULE_NAME,
+        AaruConsole.Debug(ISO9660_MODULE_NAME,
                                    "hour = \"{0}\"",
                                    StringHandlers.CToString(twoCharValue, Encoding.ASCII));
 
@@ -147,7 +147,7 @@ public static class DateHandlers
         twoCharValue[0] = vdDateTime[10];
         twoCharValue[1] = vdDateTime[11];
 
-        AaruConsole.DebugWriteLine(ISO9660_MODULE_NAME,
+        AaruConsole.Debug(ISO9660_MODULE_NAME,
                                    "minute = \"{0}\"",
                                    StringHandlers.CToString(twoCharValue, Encoding.ASCII));
 
@@ -156,7 +156,7 @@ public static class DateHandlers
         twoCharValue[0] = vdDateTime[12];
         twoCharValue[1] = vdDateTime[13];
 
-        AaruConsole.DebugWriteLine(ISO9660_MODULE_NAME,
+        AaruConsole.Debug(ISO9660_MODULE_NAME,
                                    "second = \"{0}\"",
                                    StringHandlers.CToString(twoCharValue, Encoding.ASCII));
 
@@ -165,13 +165,13 @@ public static class DateHandlers
         twoCharValue[0] = vdDateTime[14];
         twoCharValue[1] = vdDateTime[15];
 
-        AaruConsole.DebugWriteLine(ISO9660_MODULE_NAME,
+        AaruConsole.Debug(ISO9660_MODULE_NAME,
                                    "hundredths = \"{0}\"",
                                    StringHandlers.CToString(twoCharValue, Encoding.ASCII));
 
         if(!int.TryParse(StringHandlers.CToString(twoCharValue, Encoding.ASCII), out int hundredths)) hundredths = 0;
 
-        AaruConsole.DebugWriteLine(ISO9660_MODULE_NAME,
+        AaruConsole.Debug(ISO9660_MODULE_NAME,
                                    "decodedDT = new DateTime({0}, {1}, {2}, {3}, {4}, {5}, {6}, DateTimeKind.Unspecified);",
                                    year,
                                    month,
@@ -221,7 +221,7 @@ public static class DateHandlers
         int day   = (dateRecord & 0x01F0) >> 4;
         int month = dateRecord & 0x000F;
 
-        AaruConsole.DebugWriteLine(PASCAL_MODULE_NAME,
+        AaruConsole.Debug(PASCAL_MODULE_NAME,
                                    "dateRecord = 0x{0:X4}, year = {1}, month = {2}, day = {3}",
                                    dateRecord,
                                    year,
@@ -244,14 +244,14 @@ public static class DateHandlers
         int minute = (time & 0x7E0)  >> 5;
         int second = (time & 0x1F) * 2;
 
-        AaruConsole.DebugWriteLine(DOS_MODULE_NAME,
+        AaruConsole.Debug(DOS_MODULE_NAME,
                                    "date = 0x{0:X4}, year = {1}, month = {2}, day = {3}",
                                    date,
                                    year,
                                    month,
                                    day);
 
-        AaruConsole.DebugWriteLine(DOS_MODULE_NAME,
+        AaruConsole.Debug(DOS_MODULE_NAME,
                                    "time = 0x{0:X4}, hour = {1}, minute = {2}, second = {3}",
                                    time,
                                    hour,

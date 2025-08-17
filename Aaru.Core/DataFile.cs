@@ -137,7 +137,7 @@ public sealed class DataFile
                 File.Delete(filename);
             else
             {
-                AaruConsole.ErrorWriteLine(Localization.Core.Not_overwriting_file_0, filename);
+                AaruConsole.Error(Localization.Core.Not_overwriting_file_0, filename);
 
                 return;
             }
@@ -145,14 +145,14 @@ public sealed class DataFile
 
         try
         {
-            AaruConsole.DebugWriteLine(who, string.Format(Localization.Core.Writing_0_to_1, whatWriting, filename));
+            AaruConsole.Debug(who, string.Format(Localization.Core.Writing_0_to_1, whatWriting, filename));
             var outputFs = new FileStream(filename, FileMode.CreateNew);
             outputFs.Write(data, 0, data.Length);
             outputFs.Close();
         }
         catch
         {
-            AaruConsole.ErrorWriteLine(Localization.Core.Unable_to_write_file_0, filename);
+            AaruConsole.Error(Localization.Core.Unable_to_write_file_0, filename);
         }
     }
 }

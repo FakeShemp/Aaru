@@ -54,12 +54,12 @@ sealed class EntropyCommand : Command<EntropyCommand.Settings>
 
         Statistics.AddCommand("entropy");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",              settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--duplicated-sectors={0}", settings.DuplicatedSectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",              Markup.Escape(settings.ImagePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--separated-tracks={0}",   settings.SeparatedTracks);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",            settings.Verbose);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--whole-disc={0}",         settings.WholeDisc);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",              settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--duplicated-sectors={0}", settings.DuplicatedSectors);
+        AaruConsole.Debug(MODULE_NAME, "--input={0}",              Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--separated-tracks={0}",   settings.SeparatedTracks);
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",            settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--whole-disc={0}",         settings.WholeDisc);
 
         IFilter inputFilter = null;
 
@@ -71,7 +71,7 @@ sealed class EntropyCommand : Command<EntropyCommand.Settings>
 
         if(inputFilter == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Cannot_open_specified_file);
+            AaruConsole.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -86,7 +86,7 @@ sealed class EntropyCommand : Command<EntropyCommand.Settings>
 
         if(inputFormat == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Unable_to_recognize_image_format_not_checksumming);
+            AaruConsole.Error(UI.Unable_to_recognize_image_format_not_checksumming);
 
             return (int)ErrorNumber.UnrecognizedFormat;
         }
@@ -159,7 +159,7 @@ sealed class EntropyCommand : Command<EntropyCommand.Settings>
                             if(opticalFormat.Sessions?.Count > 1)
                             {
                                 AaruConsole
-                                   .ErrorWriteLine(UI
+                                   .Error(UI
                                                       .Calculating_disc_entropy_of_multisession_images_is_not_yet_implemented);
 
                                 wholeDisc = false;

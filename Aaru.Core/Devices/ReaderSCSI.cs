@@ -920,7 +920,7 @@ sealed partial class Reader
 
         blankCheck = Sense.Decode(senseBuf)?.SenseKey == SenseKeys.BlankCheck;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.Core.READ_error_0, Sense.PrettifySense(senseBuf));
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.Core.READ_error_0, Sense.PrettifySense(senseBuf));
 
         return sense;
     }

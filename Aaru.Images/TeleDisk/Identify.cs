@@ -70,18 +70,18 @@ public sealed partial class TeleDisk
         Array.Copy(headerBytes, headerBytesForCrc, 10);
         ushort calculatedHeaderCrc = TeleDiskCrc(0x0000, headerBytesForCrc);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.signature = 0x{0:X4}",     _header.Signature);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.sequence = 0x{0:X2}",      _header.Sequence);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.diskSet = 0x{0:X2}",       _header.DiskSet);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.version = 0x{0:X2}",       _header.Version);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.dataRate = 0x{0:X2}",      _header.DataRate);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.driveType = 0x{0:X2}",     _header.DriveType);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.stepping = 0x{0:X2}",      _header.Stepping);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.dosAllocation = 0x{0:X2}", _header.DosAllocation);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.sides = 0x{0:X2}",         _header.Sides);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.crc = 0x{0:X4}",           _header.Crc);
+        AaruConsole.Debug(MODULE_NAME, "header.signature = 0x{0:X4}",     _header.Signature);
+        AaruConsole.Debug(MODULE_NAME, "header.sequence = 0x{0:X2}",      _header.Sequence);
+        AaruConsole.Debug(MODULE_NAME, "header.diskSet = 0x{0:X2}",       _header.DiskSet);
+        AaruConsole.Debug(MODULE_NAME, "header.version = 0x{0:X2}",       _header.Version);
+        AaruConsole.Debug(MODULE_NAME, "header.dataRate = 0x{0:X2}",      _header.DataRate);
+        AaruConsole.Debug(MODULE_NAME, "header.driveType = 0x{0:X2}",     _header.DriveType);
+        AaruConsole.Debug(MODULE_NAME, "header.stepping = 0x{0:X2}",      _header.Stepping);
+        AaruConsole.Debug(MODULE_NAME, "header.dosAllocation = 0x{0:X2}", _header.DosAllocation);
+        AaruConsole.Debug(MODULE_NAME, "header.sides = 0x{0:X2}",         _header.Sides);
+        AaruConsole.Debug(MODULE_NAME, "header.crc = 0x{0:X4}",           _header.Crc);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.calculated_header_crc_equals_0_X4, calculatedHeaderCrc);
+        AaruConsole.Debug(MODULE_NAME, Localization.calculated_header_crc_equals_0_X4, calculatedHeaderCrc);
 
         // We need more checks as the magic is too simply.
         // This may deny legal images

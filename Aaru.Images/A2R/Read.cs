@@ -62,14 +62,14 @@ public sealed partial class A2R
 
         _header = Marshal.ByteArrayToStructureLittleEndian<A2RHeader>(hdr);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "header.signature = \"{0}\"",
                                    StringHandlers.CToString(_header.signature));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.version = {0}",        _header.version);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.highBitTest = {0:X2}", _header.highBitTest);
+        AaruConsole.Debug(MODULE_NAME, "header.version = {0}",        _header.version);
+        AaruConsole.Debug(MODULE_NAME, "header.highBitTest = {0:X2}", _header.highBitTest);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "header.lineTest = {0:X2} {1:X2} {2:X2}",
                                    _header.lineTest[0],
                                    _header.lineTest[1],
@@ -91,25 +91,25 @@ public sealed partial class A2R
                 _a2RStream.EnsureRead(infoChnk, 0, Marshal.SizeOf<InfoChunkV2>());
                 _infoChunkV2 = Marshal.ByteArrayToStructureLittleEndian<InfoChunkV2>(infoChnk);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "infoChunk.header.chunkId = \"{0}\"",
                                            StringHandlers.CToString(_infoChunkV2.header.chunkId));
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "infoChunk.header.chunkSize = {0}",
                                            _infoChunkV2.header.chunkSize);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "infoChunk.version = {0}", _infoChunkV2.version);
+                AaruConsole.Debug(MODULE_NAME, "infoChunk.version = {0}", _infoChunkV2.version);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "infoChunk.creator = \"{0}\"",
                                            StringHandlers.CToString(_infoChunkV2.creator).TrimEnd());
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "infoChunk.diskType = {0}", _infoChunkV2.diskType);
+                AaruConsole.Debug(MODULE_NAME, "infoChunk.diskType = {0}", _infoChunkV2.diskType);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "infoChunk.writeProtected = {0}", _infoChunkV2.writeProtected);
+                AaruConsole.Debug(MODULE_NAME, "infoChunk.writeProtected = {0}", _infoChunkV2.writeProtected);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "infoChunk.synchronized = {0}", _infoChunkV2.synchronized);
+                AaruConsole.Debug(MODULE_NAME, "infoChunk.synchronized = {0}", _infoChunkV2.synchronized);
 
                 _imageInfo.Creator = Encoding.ASCII.GetString(_infoChunkV2.creator).TrimEnd();
 
@@ -140,27 +140,27 @@ public sealed partial class A2R
                 _a2RStream.EnsureRead(infoChk, 0, Marshal.SizeOf<InfoChunkV3>());
                 _infoChunkV3 = Marshal.ByteArrayToStructureLittleEndian<InfoChunkV3>(infoChk);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "infoChunk.header.chunkId = \"{0}\"",
                                            StringHandlers.CToString(_infoChunkV3.header.chunkId));
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "infoChunk.header.chunkSize = {0}",
                                            _infoChunkV3.header.chunkSize);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "infoChunk.version = {0}", _infoChunkV3.version);
+                AaruConsole.Debug(MODULE_NAME, "infoChunk.version = {0}", _infoChunkV3.version);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "infoChunk.creator = \"{0}\"",
                                            StringHandlers.CToString(_infoChunkV3.creator).TrimEnd());
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "infoChunk.driveType = {0}", _infoChunkV3.driveType);
+                AaruConsole.Debug(MODULE_NAME, "infoChunk.driveType = {0}", _infoChunkV3.driveType);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "infoChunk.writeProtected = {0}", _infoChunkV3.writeProtected);
+                AaruConsole.Debug(MODULE_NAME, "infoChunk.writeProtected = {0}", _infoChunkV3.writeProtected);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "infoChunk.synchronized = {0}", _infoChunkV3.synchronized);
+                AaruConsole.Debug(MODULE_NAME, "infoChunk.synchronized = {0}", _infoChunkV3.synchronized);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "infoChunk.hardSectorCount = {0}",
                                            _infoChunkV3.hardSectorCount);
 

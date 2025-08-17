@@ -85,7 +85,7 @@ public sealed partial class VMware
 
             if(_vmEHdr.descriptorOffset == 0 || _vmEHdr.descriptorSize == 0)
             {
-                AaruConsole.ErrorWriteLine(Localization.Please_open_VMDK_descriptor);
+                AaruConsole.Error(Localization.Please_open_VMDK_descriptor);
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -111,7 +111,7 @@ public sealed partial class VMware
 
             if(!_ddfMagicBytes.SequenceEqual(ddfMagic))
             {
-                AaruConsole.ErrorWriteLine(Localization.Not_a_descriptor);
+                AaruConsole.Error(Localization.Not_a_descriptor);
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -165,7 +165,7 @@ public sealed partial class VMware
                         Type     = "SPARSE"
                     };
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME,
+                    AaruConsole.Debug(MODULE_NAME,
                                                "{0} {1} {2} \"{3}\" {4}",
                                                newExtent.Access,
                                                newExtent.Sectors,
@@ -217,22 +217,22 @@ public sealed partial class VMware
                 if(matchVersion.Success)
                 {
                     uint.TryParse(matchVersion.Groups["version"].Value, out _version);
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "version = {0}", _version);
+                    AaruConsole.Debug(MODULE_NAME, "version = {0}", _version);
                 }
                 else if(matchCid.Success)
                 {
                     _cid = Convert.ToUInt32(matchCid.Groups["cid"].Value, 16);
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "cid = {0:x8}", _cid);
+                    AaruConsole.Debug(MODULE_NAME, "cid = {0:x8}", _cid);
                 }
                 else if(matchParentCid.Success)
                 {
                     _parentCid = Convert.ToUInt32(matchParentCid.Groups["cid"].Value, 16);
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "parentCID = {0:x8}", _parentCid);
+                    AaruConsole.Debug(MODULE_NAME, "parentCID = {0:x8}", _parentCid);
                 }
                 else if(matchType.Success)
                 {
                     _imageType = matchType.Groups["type"].Value;
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "createType = \"{0}\"", _imageType);
+                    AaruConsole.Debug(MODULE_NAME, "createType = \"{0}\"", _imageType);
                 }
                 else if(matchExtent.Success)
                 {
@@ -254,7 +254,7 @@ public sealed partial class VMware
                     uint.TryParse(matchExtent.Groups["sectors"].Value, out newExtent.Sectors);
                     newExtent.Type = matchExtent.Groups["type"].Value;
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME,
+                    AaruConsole.Debug(MODULE_NAME,
                                                "{0} {1} {2} \"{3}\" {4}",
                                                newExtent.Access,
                                                newExtent.Sectors,
@@ -268,7 +268,7 @@ public sealed partial class VMware
                 else if(matchParent.Success)
                 {
                     _parentName = matchParent.Groups["filename"].Value;
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "parentFileNameHint = \"{0}\"", _parentName);
+                    AaruConsole.Debug(MODULE_NAME, "parentFileNameHint = \"{0}\"", _parentName);
                     _hasParent = true;
                 }
                 else if(matchCylinders.Success)
@@ -291,7 +291,7 @@ public sealed partial class VMware
 
         if(_extents.Count == 0)
         {
-            AaruConsole.ErrorWriteLine(Localization.Did_not_find_any_extent);
+            AaruConsole.Error(Localization.Did_not_find_any_extent);
 
             return ErrorNumber.InvalidArgument;
         }
@@ -316,11 +316,11 @@ public sealed partial class VMware
             case VMFS_TYPE_RDMP:      //"vmfsRDMP";
             case VMFS_TYPE_RDMP_OLD:  //"vmfsPassthroughRawDeviceMap";
             case VMFS_TYPE_RAW:       //"vmfsRaw";
-                AaruConsole.ErrorWriteLine(Localization.Raw_device_image_files_are_not_supported);
+                AaruConsole.Error(Localization.Raw_device_image_files_are_not_supported);
 
                 return ErrorNumber.NotSupported;
             default:
-                AaruConsole.ErrorWriteLine(string.Format(Localization.Dunno_how_to_handle_0_extents, _imageType));
+                AaruConsole.Error(string.Format(Localization.Dunno_how_to_handle_0_extents, _imageType));
 
                 return ErrorNumber.InvalidArgument;
         }
@@ -331,14 +331,14 @@ public sealed partial class VMware
         {
             if(extent.Filter == null)
             {
-                AaruConsole.ErrorWriteLine(string.Format(Localization.Extent_file_0_not_found, extent.Filename));
+                AaruConsole.Error(string.Format(Localization.Extent_file_0_not_found, extent.Filename));
 
                 return ErrorNumber.NoSuchFile;
             }
 
             if(extent.Access == "NOACCESS")
             {
-                AaruConsole.ErrorWriteLine(Localization.Cannot_access_NOACCESS_extents);
+                AaruConsole.Error(Localization.Cannot_access_NOACCESS_extents);
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -350,7 +350,7 @@ public sealed partial class VMware
 
             if(extentStream.Length < SECTOR_SIZE)
             {
-                AaruConsole.ErrorWriteLine(string.Format(Localization.Extent_0_is_too_small, extent.Filename));
+                AaruConsole.Error(string.Format(Localization.Extent_0_is_too_small, extent.Filename));
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -361,14 +361,14 @@ public sealed partial class VMware
 
             if(extentHdr.magic != VMWARE_EXTENT_MAGIC)
             {
-                AaruConsole.ErrorWriteLine(string.Format(Localization._0_is_not_an_VMware_extent, extent.Filter));
+                AaruConsole.Error(string.Format(Localization._0_is_not_an_VMware_extent, extent.Filter));
 
                 return ErrorNumber.InvalidArgument;
             }
 
             if(extentHdr.capacity < extent.Sectors)
             {
-                AaruConsole.ErrorWriteLine(string.Format(Localization
+                AaruConsole.Error(string.Format(Localization
                                                             .Extent_contains_incorrect_number_of_sectors_0_1_were_expected,
                                                          extentHdr.capacity,
                                                          extent.Sectors));
@@ -379,7 +379,7 @@ public sealed partial class VMware
             // TODO: Support compressed extents
             if(extentHdr.compression != COMPRESSION_NONE)
             {
-                AaruConsole.ErrorWriteLine(Localization.Compressed_extents_are_not_yet_supported);
+                AaruConsole.Error(Localization.Compressed_extents_are_not_yet_supported);
 
                 return ErrorNumber.NotImplemented;
             }
@@ -396,7 +396,7 @@ public sealed partial class VMware
 
         if(oneNoFlat && !vmEHdrSet && !cowD)
         {
-            AaruConsole.ErrorWriteLine(Localization
+            AaruConsole.Error(Localization
                                           .There_are_sparse_extents_but_there_is_no_header_to_find_the_grain_tables_cannot_proceed);
 
             return ErrorNumber.InvalidArgument;
@@ -413,34 +413,34 @@ public sealed partial class VMware
         {
             case true when !cowD:
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmEHdr.magic = 0x{0:X8}",       _vmEHdr.magic);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmEHdr.version = {0}",          _vmEHdr.version);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmEHdr.flags = 0x{0:X8}",       _vmEHdr.flags);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmEHdr.capacity = {0}",         _vmEHdr.capacity);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmEHdr.grainSize = {0}",        _vmEHdr.grainSize);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmEHdr.descriptorOffset = {0}", _vmEHdr.descriptorOffset);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmEHdr.descriptorSize = {0}",   _vmEHdr.descriptorSize);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmEHdr.GTEsPerGT = {0}",        _vmEHdr.GTEsPerGT);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmEHdr.rgdOffset = {0}",        _vmEHdr.rgdOffset);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmEHdr.gdOffset = {0}",         _vmEHdr.gdOffset);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmEHdr.overhead = {0}",         _vmEHdr.overhead);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmEHdr.uncleanShutdown = {0}",  _vmEHdr.uncleanShutdown);
+                AaruConsole.Debug(MODULE_NAME, "vmEHdr.magic = 0x{0:X8}",       _vmEHdr.magic);
+                AaruConsole.Debug(MODULE_NAME, "vmEHdr.version = {0}",          _vmEHdr.version);
+                AaruConsole.Debug(MODULE_NAME, "vmEHdr.flags = 0x{0:X8}",       _vmEHdr.flags);
+                AaruConsole.Debug(MODULE_NAME, "vmEHdr.capacity = {0}",         _vmEHdr.capacity);
+                AaruConsole.Debug(MODULE_NAME, "vmEHdr.grainSize = {0}",        _vmEHdr.grainSize);
+                AaruConsole.Debug(MODULE_NAME, "vmEHdr.descriptorOffset = {0}", _vmEHdr.descriptorOffset);
+                AaruConsole.Debug(MODULE_NAME, "vmEHdr.descriptorSize = {0}",   _vmEHdr.descriptorSize);
+                AaruConsole.Debug(MODULE_NAME, "vmEHdr.GTEsPerGT = {0}",        _vmEHdr.GTEsPerGT);
+                AaruConsole.Debug(MODULE_NAME, "vmEHdr.rgdOffset = {0}",        _vmEHdr.rgdOffset);
+                AaruConsole.Debug(MODULE_NAME, "vmEHdr.gdOffset = {0}",         _vmEHdr.gdOffset);
+                AaruConsole.Debug(MODULE_NAME, "vmEHdr.overhead = {0}",         _vmEHdr.overhead);
+                AaruConsole.Debug(MODULE_NAME, "vmEHdr.uncleanShutdown = {0}",  _vmEHdr.uncleanShutdown);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "vmEHdr.singleEndLineChar = 0x{0:X2}",
                                            _vmEHdr.singleEndLineChar);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmEHdr.nonEndLineChar = 0x{0:X2}", _vmEHdr.nonEndLineChar);
+                AaruConsole.Debug(MODULE_NAME, "vmEHdr.nonEndLineChar = 0x{0:X2}", _vmEHdr.nonEndLineChar);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "vmEHdr.doubleEndLineChar1 = 0x{0:X2}",
                                            _vmEHdr.doubleEndLineChar1);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "vmEHdr.doubleEndLineChar2 = 0x{0:X2}",
                                            _vmEHdr.doubleEndLineChar2);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmEHdr.compression = 0x{0:X4}", _vmEHdr.compression);
+                AaruConsole.Debug(MODULE_NAME, "vmEHdr.compression = 0x{0:X4}", _vmEHdr.compression);
 
                 _grainSize = _vmEHdr.grainSize;
                 grains     = (uint)(_imageInfo.Sectors / _vmEHdr.grainSize) + 1;
@@ -455,27 +455,27 @@ public sealed partial class VMware
                 break;
             }
             case true when cowD:
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmCHdr.magic = 0x{0:X8}",   _vmCHdr.magic);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmCHdr.version = {0}",      _vmCHdr.version);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmCHdr.flags = 0x{0:X8}",   _vmCHdr.flags);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmCHdr.sectors = {0}",      _vmCHdr.sectors);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmCHdr.grainSize = {0}",    _vmCHdr.grainSize);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmCHdr.gdOffset = {0}",     _vmCHdr.gdOffset);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmCHdr.numGDEntries = {0}", _vmCHdr.numGDEntries);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmCHdr.freeSector = {0}",   _vmCHdr.freeSector);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmCHdr.cylinders = {0}",    _vmCHdr.cylinders);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmCHdr.heads = {0}",        _vmCHdr.heads);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmCHdr.spt = {0}",          _vmCHdr.spt);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmCHdr.generation = {0}",   _vmCHdr.generation);
+                AaruConsole.Debug(MODULE_NAME, "vmCHdr.magic = 0x{0:X8}",   _vmCHdr.magic);
+                AaruConsole.Debug(MODULE_NAME, "vmCHdr.version = {0}",      _vmCHdr.version);
+                AaruConsole.Debug(MODULE_NAME, "vmCHdr.flags = 0x{0:X8}",   _vmCHdr.flags);
+                AaruConsole.Debug(MODULE_NAME, "vmCHdr.sectors = {0}",      _vmCHdr.sectors);
+                AaruConsole.Debug(MODULE_NAME, "vmCHdr.grainSize = {0}",    _vmCHdr.grainSize);
+                AaruConsole.Debug(MODULE_NAME, "vmCHdr.gdOffset = {0}",     _vmCHdr.gdOffset);
+                AaruConsole.Debug(MODULE_NAME, "vmCHdr.numGDEntries = {0}", _vmCHdr.numGDEntries);
+                AaruConsole.Debug(MODULE_NAME, "vmCHdr.freeSector = {0}",   _vmCHdr.freeSector);
+                AaruConsole.Debug(MODULE_NAME, "vmCHdr.cylinders = {0}",    _vmCHdr.cylinders);
+                AaruConsole.Debug(MODULE_NAME, "vmCHdr.heads = {0}",        _vmCHdr.heads);
+                AaruConsole.Debug(MODULE_NAME, "vmCHdr.spt = {0}",          _vmCHdr.spt);
+                AaruConsole.Debug(MODULE_NAME, "vmCHdr.generation = {0}",   _vmCHdr.generation);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmCHdr.name = {0}", StringHandlers.CToString(_vmCHdr.name));
+                AaruConsole.Debug(MODULE_NAME, "vmCHdr.name = {0}", StringHandlers.CToString(_vmCHdr.name));
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "vmCHdr.description = {0}",
                                            StringHandlers.CToString(_vmCHdr.description));
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmCHdr.savedGeneration = {0}", _vmCHdr.savedGeneration);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vmCHdr.uncleanShutdown = {0}", _vmCHdr.uncleanShutdown);
+                AaruConsole.Debug(MODULE_NAME, "vmCHdr.savedGeneration = {0}", _vmCHdr.savedGeneration);
+                AaruConsole.Debug(MODULE_NAME, "vmCHdr.uncleanShutdown = {0}", _vmCHdr.uncleanShutdown);
 
                 _grainSize            = _vmCHdr.grainSize;
                 grains                = (uint)(_imageInfo.Sectors / _vmCHdr.grainSize) + 1;
@@ -493,12 +493,12 @@ public sealed partial class VMware
         {
             if(grains == 0 || gdEntries == 0)
             {
-                AaruConsole.ErrorWriteLine(Localization.Some_error_occurred_setting_GD_sizes);
+                AaruConsole.Error(Localization.Some_error_occurred_setting_GD_sizes);
 
                 return ErrorNumber.InOutError;
             }
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Localization._0_sectors_in_1_grains_in_2_tables,
                                        _imageInfo.Sectors,
                                        grains,
@@ -508,12 +508,12 @@ public sealed partial class VMware
 
             gdStream.Seek(gdOffset * SECTOR_SIZE, SeekOrigin.Begin);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Reading_grain_directory);
+            AaruConsole.Debug(MODULE_NAME, Localization.Reading_grain_directory);
             byte[] gdBytes = new byte[gdEntries * 4];
             gdStream.EnsureRead(gdBytes, 0, gdBytes.Length);
             Span<uint> gd = MemoryMarshal.Cast<byte, uint>(gdBytes);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Reading_grain_tables);
+            AaruConsole.Debug(MODULE_NAME, Localization.Reading_grain_tables);
             uint currentGrain = 0;
             _gTable = new uint[grains];
 
@@ -549,7 +549,7 @@ public sealed partial class VMware
 
             if(parentFilter == null)
             {
-                AaruConsole.ErrorWriteLine(string.Format(Localization.Cannot_find_parent_0, _parentName));
+                AaruConsole.Error(string.Format(Localization.Cannot_find_parent_0, _parentName));
 
                 return ErrorNumber.NoSuchFile;
             }
@@ -559,7 +559,7 @@ public sealed partial class VMware
 
             if(parentError != ErrorNumber.NoError)
             {
-                AaruConsole.ErrorWriteLine(string.Format(Localization.Error_0_opening_parent_1,
+                AaruConsole.Error(string.Format(Localization.Error_0_opening_parent_1,
                                                          parentError,
                                                          _parentName));
 

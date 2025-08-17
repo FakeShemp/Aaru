@@ -83,21 +83,21 @@ public sealed class PC98 : IPartition
 
         foreach(Partition entry in table.entries)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.dp_mid = {0}",      entry.dp_mid);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.dp_sid = {0}",      entry.dp_sid);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.dp_dum1 = {0}",     entry.dp_dum1);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.dp_dum2 = {0}",     entry.dp_dum2);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.dp_ipl_sct = {0}",  entry.dp_ipl_sct);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.dp_ipl_head = {0}", entry.dp_ipl_head);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.dp_ipl_cyl = {0}",  entry.dp_ipl_cyl);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.dp_ssect = {0}",    entry.dp_ssect);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.dp_shd = {0}",      entry.dp_shd);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.dp_scyl = {0}",     entry.dp_scyl);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.dp_esect = {0}",    entry.dp_esect);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.dp_ehd = {0}",      entry.dp_ehd);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.dp_ecyl = {0}",     entry.dp_ecyl);
+            AaruConsole.Debug(MODULE_NAME, "entry.dp_mid = {0}",      entry.dp_mid);
+            AaruConsole.Debug(MODULE_NAME, "entry.dp_sid = {0}",      entry.dp_sid);
+            AaruConsole.Debug(MODULE_NAME, "entry.dp_dum1 = {0}",     entry.dp_dum1);
+            AaruConsole.Debug(MODULE_NAME, "entry.dp_dum2 = {0}",     entry.dp_dum2);
+            AaruConsole.Debug(MODULE_NAME, "entry.dp_ipl_sct = {0}",  entry.dp_ipl_sct);
+            AaruConsole.Debug(MODULE_NAME, "entry.dp_ipl_head = {0}", entry.dp_ipl_head);
+            AaruConsole.Debug(MODULE_NAME, "entry.dp_ipl_cyl = {0}",  entry.dp_ipl_cyl);
+            AaruConsole.Debug(MODULE_NAME, "entry.dp_ssect = {0}",    entry.dp_ssect);
+            AaruConsole.Debug(MODULE_NAME, "entry.dp_shd = {0}",      entry.dp_shd);
+            AaruConsole.Debug(MODULE_NAME, "entry.dp_scyl = {0}",     entry.dp_scyl);
+            AaruConsole.Debug(MODULE_NAME, "entry.dp_esect = {0}",    entry.dp_esect);
+            AaruConsole.Debug(MODULE_NAME, "entry.dp_ehd = {0}",      entry.dp_ehd);
+            AaruConsole.Debug(MODULE_NAME, "entry.dp_ecyl = {0}",     entry.dp_ecyl);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "entry.dp_name = \"{0}\"",
                                        StringHandlers.CToString(entry.dp_name, Encoding.GetEncoding(932)));
 
@@ -136,13 +136,13 @@ public sealed class PC98 : IPartition
 
             part.Size = part.Length * imagePlugin.Info.SectorSize;
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "part.Start = {0}",    part.Start);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "part.Type = {0}",     part.Type);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "part.Name = {0}",     part.Name);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "part.Sequence = {0}", part.Sequence);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "part.Offset = {0}",   part.Offset);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "part.Length = {0}",   part.Length);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "part.Size = {0}",     part.Size);
+            AaruConsole.Debug(MODULE_NAME, "part.Start = {0}",    part.Start);
+            AaruConsole.Debug(MODULE_NAME, "part.Type = {0}",     part.Type);
+            AaruConsole.Debug(MODULE_NAME, "part.Name = {0}",     part.Name);
+            AaruConsole.Debug(MODULE_NAME, "part.Sequence = {0}", part.Sequence);
+            AaruConsole.Debug(MODULE_NAME, "part.Offset = {0}",   part.Offset);
+            AaruConsole.Debug(MODULE_NAME, "part.Length = {0}",   part.Length);
+            AaruConsole.Debug(MODULE_NAME, "part.Size = {0}",     part.Size);
 
             if((entry.dp_mid & 0x20) != 0x20 && (entry.dp_mid & 0x44) != 0x44 ||
                part.Start >= imagePlugin.Info.Sectors                         ||

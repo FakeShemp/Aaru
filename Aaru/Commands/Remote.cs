@@ -53,9 +53,9 @@ sealed class RemoteCommand : Command<RemoteCommand.Settings>
 
         Statistics.AddCommand("remote");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "debug={0}",   settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "host={0}",    Markup.Escape(settings.Host ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "verbose={0}", settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "debug={0}",   settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "host={0}",    Markup.Escape(settings.Host ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "verbose={0}", settings.Verbose);
 
         try
         {
@@ -89,7 +89,7 @@ sealed class RemoteCommand : Command<RemoteCommand.Settings>
         }
         catch(Exception)
         {
-            AaruConsole.ErrorWriteLine("Error connecting to host.");
+            AaruConsole.Error("Error connecting to host.");
 
             return (int)ErrorNumber.CannotOpenDevice;
         }

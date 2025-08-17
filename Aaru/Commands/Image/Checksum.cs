@@ -60,23 +60,23 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
         Statistics.AddCommand("checksum");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--adler32={0}",          settings.Adler32);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--crc16={0}",            settings.Crc16);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--crc32={0}",            settings.Crc32);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--crc64={0}",            settings.Crc64);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",            settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--fletcher16={0}",       settings.Fletcher16);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--fletcher32={0}",       settings.Fletcher32);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",            Markup.Escape(settings.ImagePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--md5={0}",              settings.Md5);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--separated-tracks={0}", settings.SeparatedTracks);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--sha1={0}",             settings.Sha1);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--sha256={0}",           settings.Sha256);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--sha384={0}",           settings.Sha384);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--sha512={0}",           settings.Sha512);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--spamsum={0}",          settings.SpamSum);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",          settings.Verbose);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--whole-disc={0}",       settings.WholeDisc);
+        AaruConsole.Debug(MODULE_NAME, "--adler32={0}",          settings.Adler32);
+        AaruConsole.Debug(MODULE_NAME, "--crc16={0}",            settings.Crc16);
+        AaruConsole.Debug(MODULE_NAME, "--crc32={0}",            settings.Crc32);
+        AaruConsole.Debug(MODULE_NAME, "--crc64={0}",            settings.Crc64);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",            settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--fletcher16={0}",       settings.Fletcher16);
+        AaruConsole.Debug(MODULE_NAME, "--fletcher32={0}",       settings.Fletcher32);
+        AaruConsole.Debug(MODULE_NAME, "--input={0}",            Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--md5={0}",              settings.Md5);
+        AaruConsole.Debug(MODULE_NAME, "--separated-tracks={0}", settings.SeparatedTracks);
+        AaruConsole.Debug(MODULE_NAME, "--sha1={0}",             settings.Sha1);
+        AaruConsole.Debug(MODULE_NAME, "--sha256={0}",           settings.Sha256);
+        AaruConsole.Debug(MODULE_NAME, "--sha384={0}",           settings.Sha384);
+        AaruConsole.Debug(MODULE_NAME, "--sha512={0}",           settings.Sha512);
+        AaruConsole.Debug(MODULE_NAME, "--spamsum={0}",          settings.SpamSum);
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",          settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--whole-disc={0}",       settings.WholeDisc);
 
         IFilter inputFilter = null;
 
@@ -88,7 +88,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
         if(inputFilter == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Cannot_open_specified_file);
+            AaruConsole.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -103,7 +103,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
         if(inputFormat == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Unable_to_recognize_image_format_not_checksumming);
+            AaruConsole.Error(UI.Unable_to_recognize_image_format_not_checksumming);
 
             return (int)ErrorNumber.UnrecognizedFormat;
         }
@@ -198,7 +198,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                             }
                                         */
 
-                                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                                        AaruConsole.Debug(MODULE_NAME,
                                                                    UI.Track_0_starts_at_sector_1_and_ends_at_sector_2,
                                                                    currentTrack.Sequence,
                                                                    currentTrack.StartSector,
@@ -232,7 +232,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                                 if(errno != ErrorNumber.NoError)
                                                 {
                                                     AaruConsole
-                                                       .ErrorWriteLine(string
+                                                       .Error(string
                                                                           .Format(UI
                                                                                   .Error_0_while_reading_1_sectors_from_sector_2,
                                                                                errno,
@@ -260,7 +260,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                                 if(errno != ErrorNumber.NoError)
                                                 {
                                                     AaruConsole
-                                                       .ErrorWriteLine(string
+                                                       .Error(string
                                                                           .Format(UI
                                                                                   .Error_0_while_reading_1_sectors_from_sector_2,
                                                                                errno,
@@ -325,7 +325,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                 catch(Exception ex)
                 {
                     if(settings.Debug)
-                        AaruConsole.DebugWriteLine(Localization.Core.Could_not_get_tracks_because_0, ex.Message);
+                        AaruConsole.Debug(Localization.Core.Could_not_get_tracks_because_0, ex.Message);
                     else
                         AaruConsole.WriteLine("Unable to get separate tracks, not checksumming them");
                 }
@@ -368,7 +368,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                             if(errno != ErrorNumber.NoError)
                                             {
                                                 AaruConsole
-                                                   .ErrorWriteLine(string.Format(UI.Error_0_while_reading_block_1,
+                                                   .Error(string.Format(UI.Error_0_while_reading_block_1,
                                                                        errno,
                                                                        i));
 
@@ -382,7 +382,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         preFileTask.StopTask();
                                     }
 
-                                    AaruConsole.DebugWriteLine(MODULE_NAME,
+                                    AaruConsole.Debug(MODULE_NAME,
                                                                UI.File_0_starts_at_block_1_and_ends_at_block_2,
                                                                currentFile.File,
                                                                currentFile.FirstBlock,
@@ -409,7 +409,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                             if(errno != ErrorNumber.NoError)
                                             {
                                                 AaruConsole
-                                                   .ErrorWriteLine(string
+                                                   .Error(string
                                                                       .Format(UI
                                                                                  .Error_0_while_reading_1_sectors_from_sector_2,
                                                                               errno,
@@ -435,7 +435,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                             if(errno != ErrorNumber.NoError)
                                             {
                                                 AaruConsole
-                                                   .ErrorWriteLine(string
+                                                   .Error(string
                                                                       .Format(UI
                                                                                  .Error_0_while_reading_1_sectors_from_sector_2,
                                                                               errno,
@@ -493,7 +493,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                     if(errno != ErrorNumber.NoError)
                                     {
-                                        AaruConsole.ErrorWriteLine(string.Format(UI.Error_0_while_reading_block_1,
+                                        AaruConsole.Error(string.Format(UI.Error_0_while_reading_block_1,
                                                                        errno,
                                                                        i));
 
@@ -548,7 +548,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         if(errno != ErrorNumber.NoError)
                                         {
                                             AaruConsole
-                                               .ErrorWriteLine(string.Format(UI.Error_0_while_reading_1_bytes_from_2,
+                                               .Error(string.Format(UI.Error_0_while_reading_1_bytes_from_2,
                                                                              errno,
                                                                              BYTES_TO_READ,
                                                                              doneBytes));
@@ -575,7 +575,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         if(errno != ErrorNumber.NoError)
                                         {
                                             AaruConsole
-                                               .ErrorWriteLine(string.Format(UI.Error_0_while_reading_1_bytes_from_2,
+                                               .Error(string.Format(UI.Error_0_while_reading_1_bytes_from_2,
                                                                              errno,
                                                                              length - doneBytes,
                                                                              doneBytes));
@@ -633,7 +633,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         if(errno != ErrorNumber.NoError)
                                         {
                                             AaruConsole
-                                               .ErrorWriteLine(string
+                                               .Error(string
                                                                   .Format(UI
                                                                              .Error_0_while_reading_1_sectors_from_sector_2,
                                                                           errno,
@@ -659,7 +659,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         if(errno != ErrorNumber.NoError)
                                         {
                                             AaruConsole
-                                               .ErrorWriteLine(string
+                                               .Error(string
                                                                   .Format(UI
                                                                              .Error_0_while_reading_1_sectors_from_sector_2,
                                                                           errno,

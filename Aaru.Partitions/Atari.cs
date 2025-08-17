@@ -115,59 +115,59 @@ public sealed class AtariPartitions : IPartition
 
         var sha1Ctx = new Sha1Context();
         sha1Ctx.Update(table.Boot);
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Boot_code_SHA1_0, sha1Ctx.End());
+        AaruConsole.Debug(MODULE_NAME, Localization.Boot_code_SHA1_0, sha1Ctx.End());
 
         for(int i = 0; i < 8; i++)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Markup.Escape("table.icdEntries[{0}].flag = 0x{1:X2}"),
                                        i,
                                        (table.IcdEntries[i].Type & 0xFF000000) >> 24);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Markup.Escape("table.icdEntries[{0}].type = 0x{1:X6}"),
                                        i,
                                        table.IcdEntries[i].Type & 0x00FFFFFF);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Markup.Escape("table.icdEntries[{0}].start = {1}"),
                                        i,
                                        table.IcdEntries[i].Start);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Markup.Escape("table.icdEntries[{0}].length = {1}"),
                                        i,
                                        table.IcdEntries[i].Length);
         }
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "table.size = {0}", table.Size);
+        AaruConsole.Debug(MODULE_NAME, "table.size = {0}", table.Size);
 
         for(int i = 0; i < 4; i++)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Markup.Escape("table.entries[{0}].flag = 0x{1:X2}"),
                                        i,
                                        (table.Entries[i].Type & 0xFF000000) >> 24);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Markup.Escape("table.entries[{0}].type = 0x{1:X6}"),
                                        i,
                                        table.Entries[i].Type & 0x00FFFFFF);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Markup.Escape("table.entries[{0}].start = {1}"),
                                        i,
                                        table.Entries[i].Start);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Markup.Escape("table.entries[{0}].length = {1}"),
                                        i,
                                        table.Entries[i].Length);
         }
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "table.badStart = {0}",      table.BadStart);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "table.badLength = {0}",     table.BadLength);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "table.checksum = 0x{0:X4}", table.Checksum);
+        AaruConsole.Debug(MODULE_NAME, "table.badStart = {0}",      table.BadStart);
+        AaruConsole.Debug(MODULE_NAME, "table.badLength = {0}",     table.BadLength);
+        AaruConsole.Debug(MODULE_NAME, "table.checksum = 0x{0:X4}", table.Checksum);
 
         bool  validTable        = false;
         ulong partitionSequence = 0;
@@ -195,7 +195,7 @@ public sealed class AtariPartitions : IPartition
                     {
                         if(table.Entries[i].Start + table.Entries[i].Length > imagePlugin.Info.Sectors)
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.WARNING_End_of_partition_goes_beyond_device_size);
                         }
 
@@ -284,7 +284,7 @@ public sealed class AtariPartitions : IPartition
 
                         if(extendedTable.Entries[j].Start + extendedTable.Entries[j].Length > imagePlugin.Info.Sectors)
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.WARNING_End_of_partition_goes_beyond_device_size);
                         }
 
@@ -353,7 +353,7 @@ public sealed class AtariPartitions : IPartition
             if(table.IcdEntries[i].Start > imagePlugin.Info.Sectors) continue;
 
             if(table.IcdEntries[i].Start + table.IcdEntries[i].Length > imagePlugin.Info.Sectors)
-                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.WARNING_End_of_partition_goes_beyond_device_size);
+                AaruConsole.Debug(MODULE_NAME, Localization.WARNING_End_of_partition_goes_beyond_device_size);
 
             ulong sectorSize = imagePlugin.Info.SectorSize;
 

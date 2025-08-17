@@ -56,13 +56,13 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
 
         Statistics.AddCommand("decode");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",       settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--disk-tags={0}",   settings.DiskTags);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",       Markup.Escape(settings.ImagePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--length={0}",      Markup.Escape(settings.Length    ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--sector-tags={0}", settings.SectorTags);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--start={0}",       settings.StartSector);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",     settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",       settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--disk-tags={0}",   settings.DiskTags);
+        AaruConsole.Debug(MODULE_NAME, "--input={0}",       Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--length={0}",      Markup.Escape(settings.Length    ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--sector-tags={0}", settings.SectorTags);
+        AaruConsole.Debug(MODULE_NAME, "--start={0}",       settings.StartSector);
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",     settings.Verbose);
 
         IFilter inputFilter = null;
 
@@ -74,7 +74,7 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
 
         if(inputFilter == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Cannot_open_specified_file);
+            AaruConsole.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -91,7 +91,7 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
 
         if(baseImage == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Unable_to_recognize_image_format_not_decoding);
+            AaruConsole.Error(UI.Unable_to_recognize_image_format_not_decoding);
 
             return (int)ErrorNumber.UnrecognizedFormat;
         }

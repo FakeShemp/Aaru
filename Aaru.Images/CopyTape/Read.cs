@@ -99,7 +99,7 @@ public sealed partial class CopyTape
 
             if(!partialBlockMt.Success)
             {
-                AaruConsole.ErrorWriteLine(Localization.Found_unhandled_header_cannot_open);
+                AaruConsole.Error(Localization.Found_unhandled_header_cannot_open);
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -118,7 +118,7 @@ public sealed partial class CopyTape
 
             if(!blockMt.Success)
             {
-                AaruConsole.ErrorWriteLine(Localization.Cannot_decode_block_header_cannot_open);
+                AaruConsole.Error(Localization.Cannot_decode_block_header_cannot_open);
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -127,21 +127,21 @@ public sealed partial class CopyTape
 
             if(string.IsNullOrWhiteSpace(blkSize))
             {
-                AaruConsole.ErrorWriteLine(Localization.Cannot_decode_block_header_cannot_open);
+                AaruConsole.Error(Localization.Cannot_decode_block_header_cannot_open);
 
                 return ErrorNumber.InvalidArgument;
             }
 
             if(!uint.TryParse(blkSize, out uint blockSize))
             {
-                AaruConsole.ErrorWriteLine(Localization.Cannot_decode_block_header_cannot_open);
+                AaruConsole.Error(Localization.Cannot_decode_block_header_cannot_open);
 
                 return ErrorNumber.InvalidArgument;
             }
 
             if(blockSize == 0 || blockSize + 17 > imageFilter.DataForkLength)
             {
-                AaruConsole.ErrorWriteLine(Localization.Cannot_decode_block_header_cannot_open);
+                AaruConsole.Error(Localization.Cannot_decode_block_header_cannot_open);
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -152,7 +152,7 @@ public sealed partial class CopyTape
 
             if(newLine != 0x0A)
             {
-                AaruConsole.ErrorWriteLine(Localization.Cannot_decode_block_header_cannot_open);
+                AaruConsole.Error(Localization.Cannot_decode_block_header_cannot_open);
 
                 return ErrorNumber.InvalidArgument;
             }

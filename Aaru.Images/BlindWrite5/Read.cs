@@ -71,56 +71,56 @@ public sealed partial class BlindWrite5
         stream.EnsureRead(hdr, 0, 260);
         _header = Marshal.ByteArrayToStructureLittleEndian<Header>(hdr);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.signature = {0}", StringHandlers.CToString(_header.signature));
+        AaruConsole.Debug(MODULE_NAME, "header.signature = {0}", StringHandlers.CToString(_header.signature));
 
         for(int i = 0; i < _header.unknown1.Length; i++)
-            AaruConsole.DebugWriteLine(MODULE_NAME, "header.unknown1[{1}] = 0x{0:X8}", _header.unknown1[i], i);
+            AaruConsole.Debug(MODULE_NAME, "header.unknown1[{1}] = 0x{0:X8}", _header.unknown1[i], i);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.profile = {0}",  _header.profile);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.sessions = {0}", _header.sessions);
+        AaruConsole.Debug(MODULE_NAME, "header.profile = {0}",  _header.profile);
+        AaruConsole.Debug(MODULE_NAME, "header.sessions = {0}", _header.sessions);
 
         for(int i = 0; i < _header.unknown2.Length; i++)
-            AaruConsole.DebugWriteLine(MODULE_NAME, "header.unknown2[{1}] = 0x{0:X8}", _header.unknown2[i], i);
+            AaruConsole.Debug(MODULE_NAME, "header.unknown2[{1}] = 0x{0:X8}", _header.unknown2[i], i);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.mcnIsValid = {0}",    _header.mcnIsValid);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.mcn = {0}",           StringHandlers.CToString(_header.mcn));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.unknown3 = 0x{0:X4}", _header.unknown3);
+        AaruConsole.Debug(MODULE_NAME, "header.mcnIsValid = {0}",    _header.mcnIsValid);
+        AaruConsole.Debug(MODULE_NAME, "header.mcn = {0}",           StringHandlers.CToString(_header.mcn));
+        AaruConsole.Debug(MODULE_NAME, "header.unknown3 = 0x{0:X4}", _header.unknown3);
 
         for(int i = 0; i < _header.unknown4.Length; i++)
-            AaruConsole.DebugWriteLine(MODULE_NAME, "header.unknown4[{1}] = 0x{0:X8}", _header.unknown4[i], i);
+            AaruConsole.Debug(MODULE_NAME, "header.unknown4[{1}] = 0x{0:X8}", _header.unknown4[i], i);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.pmaLen = {0}",    _header.pmaLen);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.atipLen = {0}",   _header.atipLen);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.cdtLen = {0}",    _header.cdtLen);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.cdInfoLen = {0}", _header.cdInfoLen);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.bcaLen = {0}",    _header.bcaLen);
+        AaruConsole.Debug(MODULE_NAME, "header.pmaLen = {0}",    _header.pmaLen);
+        AaruConsole.Debug(MODULE_NAME, "header.atipLen = {0}",   _header.atipLen);
+        AaruConsole.Debug(MODULE_NAME, "header.cdtLen = {0}",    _header.cdtLen);
+        AaruConsole.Debug(MODULE_NAME, "header.cdInfoLen = {0}", _header.cdInfoLen);
+        AaruConsole.Debug(MODULE_NAME, "header.bcaLen = {0}",    _header.bcaLen);
 
         for(int i = 0; i < _header.unknown5.Length; i++)
-            AaruConsole.DebugWriteLine(MODULE_NAME, "header.unknown5[{1}] = 0x{0:X8}", _header.unknown5[i], i);
+            AaruConsole.Debug(MODULE_NAME, "header.unknown5[{1}] = 0x{0:X8}", _header.unknown5[i], i);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.dvdStrLen = {0}",  _header.dvdStrLen);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.dvdInfoLen = {0}", _header.dvdInfoLen);
+        AaruConsole.Debug(MODULE_NAME, "header.dvdStrLen = {0}",  _header.dvdStrLen);
+        AaruConsole.Debug(MODULE_NAME, "header.dvdInfoLen = {0}", _header.dvdInfoLen);
 
         for(int i = 0; i < _header.unknown6.Length; i++)
-            AaruConsole.DebugWriteLine(MODULE_NAME, "header.unknown6[{1}] = 0x{0:X2}", _header.unknown6[i], i);
+            AaruConsole.Debug(MODULE_NAME, "header.unknown6[{1}] = 0x{0:X2}", _header.unknown6[i], i);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "header.manufacturer = {0}",
                                    StringHandlers.CToString(_header.manufacturer));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.product = {0}", StringHandlers.CToString(_header.product));
+        AaruConsole.Debug(MODULE_NAME, "header.product = {0}", StringHandlers.CToString(_header.product));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.revision = {0}", StringHandlers.CToString(_header.revision));
+        AaruConsole.Debug(MODULE_NAME, "header.revision = {0}", StringHandlers.CToString(_header.revision));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.vendor = {0}", StringHandlers.CToString(_header.vendor));
+        AaruConsole.Debug(MODULE_NAME, "header.vendor = {0}", StringHandlers.CToString(_header.vendor));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.volumeId = {0}", StringHandlers.CToString(_header.volumeId));
+        AaruConsole.Debug(MODULE_NAME, "header.volumeId = {0}", StringHandlers.CToString(_header.volumeId));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.mode2ALen = {0}",   _header.mode2ALen);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.unkBlkLen = {0}",   _header.unkBlkLen);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.dataLen = {0}",     _header.dataLen);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.sessionsLen = {0}", _header.sessionsLen);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.dpmLen = {0}",      _header.dpmLen);
+        AaruConsole.Debug(MODULE_NAME, "header.mode2ALen = {0}",   _header.mode2ALen);
+        AaruConsole.Debug(MODULE_NAME, "header.unkBlkLen = {0}",   _header.unkBlkLen);
+        AaruConsole.Debug(MODULE_NAME, "header.dataLen = {0}",     _header.dataLen);
+        AaruConsole.Debug(MODULE_NAME, "header.sessionsLen = {0}", _header.sessionsLen);
+        AaruConsole.Debug(MODULE_NAME, "header.dpmLen = {0}",      _header.dpmLen);
 
         _mode2A = new byte[_header.mode2ALen];
 
@@ -132,7 +132,7 @@ public sealed partial class BlindWrite5
 
             if(decoded2A is not null)
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            Localization.mode_page_2A_0,
                                            Modes.PrettifyModePage_2A(decoded2A));
             }
@@ -158,7 +158,7 @@ public sealed partial class BlindWrite5
             PMA.CDPMA? decodedPma = PMA.Decode(_pma);
 
             if(decodedPma.HasValue)
-                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.PMA_0, PMA.Prettify(decodedPma));
+                AaruConsole.Debug(MODULE_NAME, Localization.PMA_0, PMA.Prettify(decodedPma));
             else
                 _pma = null;
         }
@@ -204,7 +204,7 @@ public sealed partial class BlindWrite5
             PFI.PhysicalFormatInformation? decodedPfi = PFI.Decode(_pfi, MediaType.DVDROM);
 
             if(decodedPfi.HasValue)
-                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.PFI_0, PFI.Prettify(decodedPfi));
+                AaruConsole.Debug(MODULE_NAME, Localization.PFI_0, PFI.Prettify(decodedPfi));
             else
             {
                 _pfi = null;
@@ -230,7 +230,7 @@ public sealed partial class BlindWrite5
         {
             stream.EnsureRead(_discInformation, 0, _discInformation.Length);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Localization.Disc_information_0,
                                        PrintHex.ByteArrayToHexArrayString(_discInformation, 40));
         }
@@ -247,7 +247,7 @@ public sealed partial class BlindWrite5
         byte[] dataPathBytes = new byte[dataPathLen];
         stream.EnsureRead(dataPathBytes, 0, dataPathBytes.Length);
         _dataPath = Encoding.Unicode.GetString(dataPathBytes);
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Data_path_0, _dataPath);
+        AaruConsole.Debug(MODULE_NAME, Localization.Data_path_0, _dataPath);
 
         _dataFiles = [];
 
@@ -287,22 +287,22 @@ public sealed partial class BlindWrite5
             dataFile.Filename = Encoding.Unicode.GetString(dataFile.FilenameBytes);
             _dataFiles.Add(dataFile);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dataFile.type = 0x{0:X8}", dataFile.Type);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dataFile.length = {0}",    dataFile.Length);
+            AaruConsole.Debug(MODULE_NAME, "dataFile.type = 0x{0:X8}", dataFile.Type);
+            AaruConsole.Debug(MODULE_NAME, "dataFile.length = {0}",    dataFile.Length);
 
             for(int i = 0; i < dataFile.Unknown1.Length; i++)
-                AaruConsole.DebugWriteLine(MODULE_NAME, "dataFile.unknown1[{1}] = {0}", dataFile.Unknown1[i], i);
+                AaruConsole.Debug(MODULE_NAME, "dataFile.unknown1[{1}] = {0}", dataFile.Unknown1[i], i);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dataFile.offset = {0}", dataFile.Offset);
+            AaruConsole.Debug(MODULE_NAME, "dataFile.offset = {0}", dataFile.Offset);
 
             for(int i = 0; i < dataFile.Unknown2.Length; i++)
-                AaruConsole.DebugWriteLine(MODULE_NAME, "dataFile.unknown2[{1}] = {0}", dataFile.Unknown2[i], i);
+                AaruConsole.Debug(MODULE_NAME, "dataFile.unknown2[{1}] = {0}", dataFile.Unknown2[i], i);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dataFile.startLba = {0}",    dataFile.StartLba);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dataFile.sectors = {0}",     dataFile.Sectors);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dataFile.filenameLen = {0}", dataFile.FilenameLen);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dataFile.filename = {0}",    dataFile.Filename);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dataFile.unknown3 = {0}",    dataFile.Unknown3);
+            AaruConsole.Debug(MODULE_NAME, "dataFile.startLba = {0}",    dataFile.StartLba);
+            AaruConsole.Debug(MODULE_NAME, "dataFile.sectors = {0}",     dataFile.Sectors);
+            AaruConsole.Debug(MODULE_NAME, "dataFile.filenameLen = {0}", dataFile.FilenameLen);
+            AaruConsole.Debug(MODULE_NAME, "dataFile.filename = {0}",    dataFile.Filename);
+            AaruConsole.Debug(MODULE_NAME, "dataFile.unknown3 = {0}",    dataFile.Unknown3);
         }
 
         _bwSessions = [];
@@ -321,15 +321,15 @@ public sealed partial class BlindWrite5
             session.LastTrack  = BitConverter.ToUInt16(tmpArray, 14);
             session.Tracks     = new TrackDescriptor[session.Entries];
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "session[{0}].filename = {1}", ses, session.Sequence);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "session[{0}].entries = {1}",  ses, session.Entries);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "session[{0}].unknown = {1}",  ses, session.Unknown);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "session[{0}].start = {1}",    ses, session.Start);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "session[{0}].end = {1}",      ses, session.End);
+            AaruConsole.Debug(MODULE_NAME, "session[{0}].filename = {1}", ses, session.Sequence);
+            AaruConsole.Debug(MODULE_NAME, "session[{0}].entries = {1}",  ses, session.Entries);
+            AaruConsole.Debug(MODULE_NAME, "session[{0}].unknown = {1}",  ses, session.Unknown);
+            AaruConsole.Debug(MODULE_NAME, "session[{0}].start = {1}",    ses, session.Start);
+            AaruConsole.Debug(MODULE_NAME, "session[{0}].end = {1}",      ses, session.End);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "session[{0}].firstTrack = {1}", ses, session.FirstTrack);
+            AaruConsole.Debug(MODULE_NAME, "session[{0}].firstTrack = {1}", ses, session.FirstTrack);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "session[{0}].lastTrack = {1}", ses, session.LastTrack);
+            AaruConsole.Debug(MODULE_NAME, "session[{0}].lastTrack = {1}", ses, session.LastTrack);
 
             for(int tSeq = 0; tSeq < session.Entries; tSeq++)
             {
@@ -344,7 +344,7 @@ public sealed partial class BlindWrite5
                     stream.Seek(-8, SeekOrigin.Current);
                 }
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].type = {2}",
                                            ses,
                                            tSeq,
@@ -352,7 +352,7 @@ public sealed partial class BlindWrite5
 
                 for(int i = 0; i < session.Tracks[tSeq].unknown1.Length; i++)
                 {
-                    AaruConsole.DebugWriteLine(MODULE_NAME,
+                    AaruConsole.Debug(MODULE_NAME,
                                                "session[{0}].track[{1}].unknown1[{2}] = 0x{3:X2}",
                                                ses,
                                                tSeq,
@@ -360,97 +360,97 @@ public sealed partial class BlindWrite5
                                                session.Tracks[tSeq].unknown1[i]);
                 }
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].unknown2 = 0x{2:X8}",
                                            ses,
                                            tSeq,
                                            session.Tracks[tSeq].unknown2);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].subchannel = {2}",
                                            ses,
                                            tSeq,
                                            session.Tracks[tSeq].subchannel);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].unknown3 = 0x{2:X2}",
                                            ses,
                                            tSeq,
                                            session.Tracks[tSeq].unknown3);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].ctl = {2}",
                                            ses,
                                            tSeq,
                                            session.Tracks[tSeq].ctl);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].adr = {2}",
                                            ses,
                                            tSeq,
                                            session.Tracks[tSeq].adr);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].point = {2}",
                                            ses,
                                            tSeq,
                                            session.Tracks[tSeq].point);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].unknown4 = 0x{2:X2}",
                                            ses,
                                            tSeq,
                                            session.Tracks[tSeq].tno);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].min = {2}",
                                            ses,
                                            tSeq,
                                            session.Tracks[tSeq].min);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].sec = {2}",
                                            ses,
                                            tSeq,
                                            session.Tracks[tSeq].sec);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].frame = {2}",
                                            ses,
                                            tSeq,
                                            session.Tracks[tSeq].frame);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].zero = {2}",
                                            ses,
                                            tSeq,
                                            session.Tracks[tSeq].zero);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].pmin = {2}",
                                            ses,
                                            tSeq,
                                            session.Tracks[tSeq].pmin);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].psec = {2}",
                                            ses,
                                            tSeq,
                                            session.Tracks[tSeq].psec);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].pframe = {2}",
                                            ses,
                                            tSeq,
                                            session.Tracks[tSeq].pframe);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].unknown5 = 0x{2:X2}",
                                            ses,
                                            tSeq,
                                            session.Tracks[tSeq].unknown5);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].pregap = {2}",
                                            ses,
                                            tSeq,
@@ -458,7 +458,7 @@ public sealed partial class BlindWrite5
 
                 for(int i = 0; i < session.Tracks[tSeq].unknown6.Length; i++)
                 {
-                    AaruConsole.DebugWriteLine(MODULE_NAME,
+                    AaruConsole.Debug(MODULE_NAME,
                                                "session[{0}].track[{1}].unknown6[{2}] = 0x{3:X8}",
                                                ses,
                                                tSeq,
@@ -466,13 +466,13 @@ public sealed partial class BlindWrite5
                                                session.Tracks[tSeq].unknown6[i]);
                 }
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].startLba = {2}",
                                            ses,
                                            tSeq,
                                            session.Tracks[tSeq].startLba);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].sectors = {2}",
                                            ses,
                                            tSeq,
@@ -480,7 +480,7 @@ public sealed partial class BlindWrite5
 
                 for(int i = 0; i < session.Tracks[tSeq].unknown7.Length; i++)
                 {
-                    AaruConsole.DebugWriteLine(MODULE_NAME,
+                    AaruConsole.Debug(MODULE_NAME,
                                                "session[{0}].track[{1}].unknown7[{2}] = 0x{3:X8}",
                                                ses,
                                                tSeq,
@@ -488,13 +488,13 @@ public sealed partial class BlindWrite5
                                                session.Tracks[tSeq].unknown7[i]);
                 }
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].session = {2}",
                                            ses,
                                            tSeq,
                                            session.Tracks[tSeq].session);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "session[{0}].track[{1}].unknown8 = 0x{2:X4}",
                                            ses,
                                            tSeq,
@@ -505,7 +505,7 @@ public sealed partial class BlindWrite5
                 {
                     for(int i = 0; i < session.Tracks[tSeq].unknown9.Length; i++)
                     {
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    "session[{0}].track[{1}].unknown9[{2}] = 0x{3:X8}",
                                                    ses,
                                                    tSeq,
@@ -529,10 +529,10 @@ public sealed partial class BlindWrite5
         stream.EnsureRead(footer, 0, footer.Length);
 
         if(_bw5Footer.SequenceEqual(footer))
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Correctly_arrived_end_of_image);
+            AaruConsole.Debug(MODULE_NAME, Localization.Correctly_arrived_end_of_image);
         else
         {
-            AaruConsole.ErrorWriteLine(Localization
+            AaruConsole.Error(Localization
                                           .BlindWrite5_image_ends_after_expected_position_Probably_new_version_with_different_data_Errors_may_occur);
         }
 
@@ -658,7 +658,7 @@ public sealed partial class BlindWrite5
                                 }
                                 else
                                 {
-                                    AaruConsole.ErrorWriteLine(Localization.Cannot_find_data_file_0, dataFile.Filename);
+                                    AaruConsole.Error(Localization.Cannot_find_data_file_0, dataFile.Filename);
 
                                     continue;
                                 }
@@ -683,7 +683,7 @@ public sealed partial class BlindWrite5
 
                         break;
                     default:
-                        AaruConsole.ErrorWriteLine(Localization.BlindWrite5_found_unknown_subchannel_size_0,
+                        AaruConsole.Error(Localization.BlindWrite5_found_unknown_subchannel_size_0,
                                                    sectorSize - 2352);
 
                         return ErrorNumber.NotSupported;
@@ -715,7 +715,7 @@ public sealed partial class BlindWrite5
         _trackFlags        = new Dictionary<uint, byte>();
         _imageInfo.Sectors = 0;
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Building_maps);
+        AaruConsole.Debug(MODULE_NAME, Localization.Building_maps);
 
         foreach(SessionDescriptor ses in _bwSessions)
         {
@@ -1024,7 +1024,7 @@ public sealed partial class BlindWrite5
                     }
                     else
                     {
-                        AaruConsole.ErrorWriteLine(Localization.Could_not_find_image_for_track_0, trk.point);
+                        AaruConsole.Error(Localization.Could_not_find_image_for_track_0, trk.point);
 
                         return ErrorNumber.NoSuchFile;
                     }
@@ -1046,7 +1046,7 @@ public sealed partial class BlindWrite5
                     }
                     catch(Exception)
                     {
-                        AaruConsole.ErrorWriteLine(Localization.Could_not_find_image_for_track_0, trk.point);
+                        AaruConsole.Error(Localization.Could_not_find_image_for_track_0, trk.point);
 
                         return ErrorNumber.NoSuchFile;
                     }
@@ -1114,7 +1114,7 @@ public sealed partial class BlindWrite5
 
                 if(track.Filter is null)
                 {
-                    AaruConsole.ErrorWriteLine(Localization.Could_not_find_image_for_track_0, trk.point);
+                    AaruConsole.Error(Localization.Could_not_find_image_for_track_0, trk.point);
 
                     return ErrorNumber.NoSuchFile;
                 }
@@ -1162,47 +1162,47 @@ public sealed partial class BlindWrite5
             track.Session = trackSession.Sequence;
         }
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.printing_track_map);
+        AaruConsole.Debug(MODULE_NAME, Localization.printing_track_map);
 
         foreach(Track track in Tracks)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Partition_sequence_0, track.Sequence);
+            AaruConsole.Debug(MODULE_NAME, Localization.Partition_sequence_0, track.Sequence);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "\t" + Localization.Track_description_0, track.Description);
+            AaruConsole.Debug(MODULE_NAME, "\t" + Localization.Track_description_0, track.Description);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "\t" + Localization.Track_type_0, track.Type);
+            AaruConsole.Debug(MODULE_NAME, "\t" + Localization.Track_type_0, track.Type);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "\t" + Localization.Track_starting_sector_0, track.StartSector);
+            AaruConsole.Debug(MODULE_NAME, "\t" + Localization.Track_starting_sector_0, track.StartSector);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "\t" + Localization.Track_ending_sector_0, track.EndSector);
+            AaruConsole.Debug(MODULE_NAME, "\t" + Localization.Track_ending_sector_0, track.EndSector);
         }
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.printing_partition_map);
+        AaruConsole.Debug(MODULE_NAME, Localization.printing_partition_map);
 
         foreach(Partition partition in Partitions)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Partition_sequence_0,    partition.Sequence);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "\t" + Localization.Partition_name_0, partition.Name);
+            AaruConsole.Debug(MODULE_NAME, Localization.Partition_sequence_0,    partition.Sequence);
+            AaruConsole.Debug(MODULE_NAME, "\t" + Localization.Partition_name_0, partition.Name);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "\t" + Localization.Partition_description_0, partition.Description);
+            AaruConsole.Debug(MODULE_NAME, "\t" + Localization.Partition_description_0, partition.Description);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "\t" + Localization.Partition_type_0, partition.Type);
+            AaruConsole.Debug(MODULE_NAME, "\t" + Localization.Partition_type_0, partition.Type);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "\t" + Localization.Partition_starting_sector_0, partition.Start);
+            AaruConsole.Debug(MODULE_NAME, "\t" + Localization.Partition_starting_sector_0, partition.Start);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "\t" + Localization.Partition_sectors_0, partition.Length);
+            AaruConsole.Debug(MODULE_NAME, "\t" + Localization.Partition_sectors_0, partition.Length);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "\t" + Localization.Partition_starting_offset_0, partition.Offset);
+            AaruConsole.Debug(MODULE_NAME, "\t" + Localization.Partition_starting_offset_0, partition.Offset);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "\t" + Localization.Partition_size_in_bytes_0, partition.Size);
+            AaruConsole.Debug(MODULE_NAME, "\t" + Localization.Partition_size_in_bytes_0, partition.Size);
         }
 
         if(!isDvd)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Rebuilding_TOC);
+            AaruConsole.Debug(MODULE_NAME, Localization.Rebuilding_TOC);
 
             _fullToc = fullTocStream.ToArray();
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.TOC_len_0, _fullToc.Length);
+            AaruConsole.Debug(MODULE_NAME, Localization.TOC_len_0, _fullToc.Length);
 
             _fullToc[0] = firstSession;
             _fullToc[1] = lastSession;
@@ -1357,7 +1357,7 @@ public sealed partial class BlindWrite5
                                    };
         }
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "ImageInfo.mediaType = {0}", _imageInfo.MediaType);
+        AaruConsole.Debug(MODULE_NAME, "ImageInfo.mediaType = {0}", _imageInfo.MediaType);
 
         if(_mode2A != null) _imageInfo.ReadableMediaTags.Add(MediaTagType.SCSI_MODEPAGE_2A);
 
@@ -1399,7 +1399,7 @@ public sealed partial class BlindWrite5
             // Wxripper unlock
             _imageInfo.MediaType = MediaType.XGD3;
 
-        AaruConsole.VerboseWriteLine(Localization.BlindWrite_image_describes_a_disc_of_type_0, _imageInfo.MediaType);
+        AaruConsole.Verbose(Localization.BlindWrite_image_describes_a_disc_of_type_0, _imageInfo.MediaType);
 
         if(_header.profile is ProfileNumber.CDR or ProfileNumber.CDRW or ProfileNumber.CDROM)
             return ErrorNumber.NoError;

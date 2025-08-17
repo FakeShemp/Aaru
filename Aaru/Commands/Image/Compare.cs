@@ -59,10 +59,10 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
         Statistics.AddCommand("compare");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input1={0}",  Markup.Escape(settings.ImagePath1 ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input2={0}",  Markup.Escape(settings.ImagePath2 ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--input1={0}",  Markup.Escape(settings.ImagePath1 ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--input2={0}",  Markup.Escape(settings.ImagePath2 ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
         IFilter inputFilter1 = null;
         IFilter inputFilter2 = null;
@@ -81,14 +81,14 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
         if(inputFilter1 == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Cannot_open_first_input_file);
+            AaruConsole.Error(UI.Cannot_open_first_input_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
 
         if(inputFilter2 == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Cannot_open_second_input_file);
+            AaruConsole.Error(UI.Cannot_open_second_input_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -110,14 +110,14 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
         if(input1Format == null)
         {
-            AaruConsole.ErrorWriteLine(UI.First_input_file_format_not_identified);
+            AaruConsole.Error(UI.First_input_file_format_not_identified);
 
             return (int)ErrorNumber.UnrecognizedFormat;
         }
 
         if(settings.Verbose)
         {
-            AaruConsole.VerboseWriteLine(UI.First_input_file_format_identified_by_0_1,
+            AaruConsole.Verbose(UI.First_input_file_format_identified_by_0_1,
                                          input1Format.Name,
                                          input1Format.Id);
         }
@@ -126,14 +126,14 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
         if(input2Format == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Second_input_file_format_not_identified);
+            AaruConsole.Error(UI.Second_input_file_format_not_identified);
 
             return (int)ErrorNumber.UnrecognizedFormat;
         }
 
         if(settings.Verbose)
         {
-            AaruConsole.VerboseWriteLine(UI.Second_input_file_format_identified_by_0_1,
+            AaruConsole.Verbose(UI.Second_input_file_format_identified_by_0_1,
                                          input2Format.Name,
                                          input2Format.Id);
         }
@@ -406,7 +406,7 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
                                     if(errno != ErrorNumber.NoError)
                                     {
                                         AaruConsole
-                                           .ErrorWriteLine(string.Format(UI.Error_0_reading_sector_1_from_first_image,
+                                           .Error(string.Format(UI.Error_0_reading_sector_1_from_first_image,
                                                                          errno,
                                                                          sector));
                                     }
@@ -416,7 +416,7 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
                                     if(errno != ErrorNumber.NoError)
                                     {
                                         AaruConsole
-                                           .ErrorWriteLine(string.Format(UI.Error_0_reading_sector_1_from_second_image,
+                                           .Error(string.Format(UI.Error_0_reading_sector_1_from_second_image,
                                                                          errno,
                                                                          sector));
                                     }

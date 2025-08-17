@@ -1687,7 +1687,7 @@ sealed partial class Dump
             {
                 if(tag.Value is null)
                 {
-                    AaruConsole.ErrorWriteLine(Localization.Core.Error_Tag_type_0_is_null_skipping, tag.Key);
+                    AaruConsole.Error(Localization.Core.Error_Tag_type_0_is_null_skipping, tag.Key);
 
                     continue;
                 }

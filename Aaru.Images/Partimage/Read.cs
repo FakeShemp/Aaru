@@ -61,22 +61,22 @@ public sealed partial class Partimage
         stream.EnsureRead(hdrB, 0, Marshal.SizeOf<Header>());
         _cVolumeHeader = Marshal.ByteArrayToStructureLittleEndian<Header>(hdrB);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CVolumeHeader.magic = {0}",
                                    StringHandlers.CToString(_cVolumeHeader.magic));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CVolumeHeader.version = {0}",
                                    StringHandlers.CToString(_cVolumeHeader.version));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CVolumeHeader.volumeNumber = {0}", _cVolumeHeader.volumeNumber);
+        AaruConsole.Debug(MODULE_NAME, "CVolumeHeader.volumeNumber = {0}", _cVolumeHeader.volumeNumber);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CVolumeHeader.identificator = {0:X16}", _cVolumeHeader.identificator);
+        AaruConsole.Debug(MODULE_NAME, "CVolumeHeader.identificator = {0:X16}", _cVolumeHeader.identificator);
 
         // TODO: Support multifile volumes
         if(_cVolumeHeader.volumeNumber > 0)
         {
-            AaruConsole.ErrorWriteLine(Localization.Support_for_multiple_volumes_not_supported);
+            AaruConsole.Error(Localization.Support_for_multiple_volumes_not_supported);
 
             return ErrorNumber.NotImplemented;
         }
@@ -85,78 +85,78 @@ public sealed partial class Partimage
         stream.EnsureRead(hdrB, 0, Marshal.SizeOf<MainHeader>());
         _cMainHeader = Marshal.ByteArrayToStructureLittleEndian<MainHeader>(hdrB);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.szFileSystem = {0}",
                                    StringHandlers.CToString(_cMainHeader.szFileSystem));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.szPartDescription = {0}",
                                    StringHandlers.CToString(_cMainHeader.szPartDescription));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.szOriginalDevice = {0}",
                                    StringHandlers.CToString(_cMainHeader.szOriginalDevice));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.szFirstImageFilepath = {0}",
                                    StringHandlers.CToString(_cMainHeader.szFirstImageFilepath));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.szUnameSysname = {0}",
                                    StringHandlers.CToString(_cMainHeader.szUnameSysname));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.szUnameNodename = {0}",
                                    StringHandlers.CToString(_cMainHeader.szUnameNodename));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.szUnameRelease = {0}",
                                    StringHandlers.CToString(_cMainHeader.szUnameRelease));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.szUnameVersion = {0}",
                                    StringHandlers.CToString(_cMainHeader.szUnameVersion));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.szUnameMachine = {0}",
                                    StringHandlers.CToString(_cMainHeader.szUnameMachine));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.dwCompression = {0} ({1})",
                                    _cMainHeader.dwCompression,
                                    (uint)_cMainHeader.dwCompression);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CMainHeader.dwMainFlags = {0}", _cMainHeader.dwMainFlags);
+        AaruConsole.Debug(MODULE_NAME, "CMainHeader.dwMainFlags = {0}", _cMainHeader.dwMainFlags);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CMainHeader.dateCreate.tm_sec = {0}", _cMainHeader.dateCreate.Second);
+        AaruConsole.Debug(MODULE_NAME, "CMainHeader.dateCreate.tm_sec = {0}", _cMainHeader.dateCreate.Second);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CMainHeader.dateCreate.tm_min = {0}", _cMainHeader.dateCreate.Minute);
+        AaruConsole.Debug(MODULE_NAME, "CMainHeader.dateCreate.tm_min = {0}", _cMainHeader.dateCreate.Minute);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CMainHeader.dateCreate.tm_hour = {0}", _cMainHeader.dateCreate.Hour);
+        AaruConsole.Debug(MODULE_NAME, "CMainHeader.dateCreate.tm_hour = {0}", _cMainHeader.dateCreate.Hour);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.dateCreate.tm_mday = {0}",
                                    _cMainHeader.dateCreate.DayOfMonth);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CMainHeader.dateCreate.tm_mon = {0}", _cMainHeader.dateCreate.Month);
+        AaruConsole.Debug(MODULE_NAME, "CMainHeader.dateCreate.tm_mon = {0}", _cMainHeader.dateCreate.Month);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CMainHeader.dateCreate.tm_year = {0}", _cMainHeader.dateCreate.Year);
+        AaruConsole.Debug(MODULE_NAME, "CMainHeader.dateCreate.tm_year = {0}", _cMainHeader.dateCreate.Year);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.dateCreate.tm_wday = {0}",
                                    _cMainHeader.dateCreate.DayOfWeek);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.dateCreate.tm_yday = {0}",
                                    _cMainHeader.dateCreate.DayOfYear);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CMainHeader.dateCreate.tm_isdst = {0}", _cMainHeader.dateCreate.IsDst);
+        AaruConsole.Debug(MODULE_NAME, "CMainHeader.dateCreate.tm_isdst = {0}", _cMainHeader.dateCreate.IsDst);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.dateCreate.tm_gmtoffsec = {0}",
                                    _cMainHeader.dateCreate.GmtOff);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.dateCreate.tm_zone = {0}",
                                    _cMainHeader.dateCreate.Timezone);
 
@@ -167,80 +167,80 @@ public sealed partial class Partimage
                                       (int)_cMainHeader.dateCreate.Minute,
                                       (int)_cMainHeader.dateCreate.Second);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CMainHeader.dateCreate = {0}", dateCreate);
+        AaruConsole.Debug(MODULE_NAME, "CMainHeader.dateCreate = {0}", dateCreate);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CMainHeader.qwPartSize = {0}", _cMainHeader.qwPartSize);
+        AaruConsole.Debug(MODULE_NAME, "CMainHeader.qwPartSize = {0}", _cMainHeader.qwPartSize);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.szHostname = {0}",
                                    StringHandlers.CToString(_cMainHeader.szHostname));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.szVersion = {0}",
                                    StringHandlers.CToString(_cMainHeader.szVersion));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CMainHeader.dwMbrCount = {0}", _cMainHeader.dwMbrCount);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CMainHeader.dwMbrSize = {0}",  _cMainHeader.dwMbrSize);
+        AaruConsole.Debug(MODULE_NAME, "CMainHeader.dwMbrCount = {0}", _cMainHeader.dwMbrCount);
+        AaruConsole.Debug(MODULE_NAME, "CMainHeader.dwMbrSize = {0}",  _cMainHeader.dwMbrSize);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.dwEncryptAlgo = {0} ({1})",
                                    _cMainHeader.dwEncryptAlgo,
                                    (uint)_cMainHeader.dwEncryptAlgo);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "ArrayIsNullOrEmpty(CMainHeader.cHashTestKey) = {0}",
                                    ArrayHelpers.ArrayIsNullOrEmpty(_cMainHeader.cHashTestKey));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.dwReservedFuture000 = {0}",
                                    _cMainHeader.dwReservedFuture000);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.dwReservedFuture001 = {0}",
                                    _cMainHeader.dwReservedFuture001);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.dwReservedFuture002 = {0}",
                                    _cMainHeader.dwReservedFuture002);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.dwReservedFuture003 = {0}",
                                    _cMainHeader.dwReservedFuture003);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.dwReservedFuture004 = {0}",
                                    _cMainHeader.dwReservedFuture004);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.dwReservedFuture005 = {0}",
                                    _cMainHeader.dwReservedFuture005);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.dwReservedFuture006 = {0}",
                                    _cMainHeader.dwReservedFuture006);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.dwReservedFuture007 = {0}",
                                    _cMainHeader.dwReservedFuture007);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.dwReservedFuture008 = {0}",
                                    _cMainHeader.dwReservedFuture008);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CMainHeader.dwReservedFuture009 = {0}",
                                    _cMainHeader.dwReservedFuture009);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "ArrayIsNullOrEmpty(CMainHeader.cReserved) = {0}",
                                    ArrayHelpers.ArrayIsNullOrEmpty(_cMainHeader.cReserved));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CMainHeader.crc = 0x{0:X8}", _cMainHeader.crc);
+        AaruConsole.Debug(MODULE_NAME, "CMainHeader.crc = 0x{0:X8}", _cMainHeader.crc);
 
         // partimage 0.6.1 does not support them either
         if(_cMainHeader.dwEncryptAlgo != PEncryption.None)
         {
-            AaruConsole.ErrorWriteLine(Localization.Encrypted_images_are_not_yet_supported);
+            AaruConsole.Error(Localization.Encrypted_images_are_not_yet_supported);
 
             return ErrorNumber.NotImplemented;
         }
@@ -256,7 +256,7 @@ public sealed partial class Partimage
 
             if(!magic.Equals(MAGIC_BEGIN_MBRBACKUP))
             {
-                AaruConsole.ErrorWriteLine(Localization.Cannot_find_MBRs);
+                AaruConsole.Error(Localization.Cannot_find_MBRs);
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -273,7 +273,7 @@ public sealed partial class Partimage
 
         if(!magic.Equals(MAGIC_BEGIN_LOCALHEADER))
         {
-            AaruConsole.ErrorWriteLine(Localization.Cannot_find_local_header);
+            AaruConsole.Error(Localization.Cannot_find_local_header);
 
             return ErrorNumber.InvalidArgument;
         }
@@ -282,24 +282,24 @@ public sealed partial class Partimage
         stream.EnsureRead(hdrB, 0, Marshal.SizeOf<CLocalHeader>());
         CLocalHeader localHeader = Marshal.ByteArrayToStructureLittleEndian<CLocalHeader>(hdrB);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CLocalHeader.qwBlockSize = {0}",  localHeader.qwBlockSize);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CLocalHeader.qwUsedBlocks = {0}", localHeader.qwUsedBlocks);
+        AaruConsole.Debug(MODULE_NAME, "CLocalHeader.qwBlockSize = {0}",  localHeader.qwBlockSize);
+        AaruConsole.Debug(MODULE_NAME, "CLocalHeader.qwUsedBlocks = {0}", localHeader.qwUsedBlocks);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CLocalHeader.qwBlocksCount = {0}", localHeader.qwBlocksCount);
+        AaruConsole.Debug(MODULE_NAME, "CLocalHeader.qwBlocksCount = {0}", localHeader.qwBlocksCount);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CLocalHeader.qwBitmapSize = {0}", localHeader.qwBitmapSize);
+        AaruConsole.Debug(MODULE_NAME, "CLocalHeader.qwBitmapSize = {0}", localHeader.qwBitmapSize);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CLocalHeader.qwBadBlocksCount = {0}", localHeader.qwBadBlocksCount);
+        AaruConsole.Debug(MODULE_NAME, "CLocalHeader.qwBadBlocksCount = {0}", localHeader.qwBadBlocksCount);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "CLocalHeader.szLabel = {0}",
                                    StringHandlers.CToString(localHeader.szLabel));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "ArrayIsNullOrEmpty(CLocalHeader.cReserved) = {0}",
                                    ArrayHelpers.ArrayIsNullOrEmpty(localHeader.cReserved));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "CLocalHeader.crc = 0x{0:X8}", localHeader.crc);
+        AaruConsole.Debug(MODULE_NAME, "CLocalHeader.crc = 0x{0:X8}", localHeader.crc);
 
         hdrB = new byte[MAGIC_BEGIN_BITMAP.Length];
         stream.EnsureRead(hdrB, 0, MAGIC_BEGIN_BITMAP.Length);
@@ -307,7 +307,7 @@ public sealed partial class Partimage
 
         if(!magic.Equals(MAGIC_BEGIN_BITMAP))
         {
-            AaruConsole.ErrorWriteLine(Localization.Cannot_find_bitmap);
+            AaruConsole.Error(Localization.Cannot_find_bitmap);
 
             return ErrorNumber.InvalidArgument;
         }
@@ -321,7 +321,7 @@ public sealed partial class Partimage
 
         if(!magic.Equals(MAGIC_BEGIN_INFO))
         {
-            AaruConsole.ErrorWriteLine(Localization.Cannot_find_info_block);
+            AaruConsole.Error(Localization.Cannot_find_info_block);
 
             return ErrorNumber.InvalidArgument;
         }
@@ -335,14 +335,14 @@ public sealed partial class Partimage
 
         if(!magic.Equals(MAGIC_BEGIN_DATABLOCKS))
         {
-            AaruConsole.ErrorWriteLine(Localization.Cannot_find_data_blocks);
+            AaruConsole.Error(Localization.Cannot_find_data_blocks);
 
             return ErrorNumber.InvalidArgument;
         }
 
         _dataOff = stream.Position;
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dataOff = {0}", _dataOff);
+        AaruConsole.Debug(MODULE_NAME, "dataOff = {0}", _dataOff);
 
         // Seek to tail
         stream.Seek(-(Marshal.SizeOf<CMainTail>() + MAGIC_BEGIN_TAIL.Length), SeekOrigin.End);
@@ -353,13 +353,13 @@ public sealed partial class Partimage
 
         if(!magic.Equals(MAGIC_BEGIN_TAIL))
         {
-            AaruConsole.ErrorWriteLine(Localization
+            AaruConsole.Error(Localization
                                           .Cannot_find_tail_Multiple_volumes_are_not_supported_or_image_is_corrupt);
 
             return ErrorNumber.InvalidArgument;
         }
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Filling_extents);
+        AaruConsole.Debug(MODULE_NAME, Localization.Filling_extents);
         var extentsFillStopwatch = new Stopwatch();
         extentsFillStopwatch.Start();
         _extents    = new ExtentsULong();
@@ -394,7 +394,7 @@ public sealed partial class Partimage
 
         extentsFillStopwatch.Stop();
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    Localization.Took_0_seconds_to_fill_extents,
                                    extentsFillStopwatch.Elapsed.TotalSeconds);
 

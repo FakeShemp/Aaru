@@ -275,7 +275,7 @@ public struct Inquiry
 
         if(SCSIInquiryResponse.Length < 36 && SCSIInquiryResponse.Length != 5)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Localization.INQUIRY_response_is_0_bytes_less_than_minimum_of_36_bytes,
                                        SCSIInquiryResponse.Length);
 
@@ -285,7 +285,7 @@ public struct Inquiry
         if(SCSIInquiryResponse.Length < SCSIInquiryResponse[4] + 4 &&
            SCSIInquiryResponse.Length != SCSIInquiryResponse[4])
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Localization
                                           .INQUIRY_response_length_0_bytes_is_different_than_specified_in_length_field,
                                        SCSIInquiryResponse.Length,

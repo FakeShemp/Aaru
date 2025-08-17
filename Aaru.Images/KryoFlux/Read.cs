@@ -96,7 +96,7 @@ public sealed partial class KryoFlux
                 switch(cylinder)
                 {
                     case 0 when head == 0:
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization
                                                       .Cannot_find_cyl_0_hd_0_supposing_only_top_head_was_dumped);
 
@@ -105,7 +105,7 @@ public sealed partial class KryoFlux
 
                         continue;
                     case 0:
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization
                                                       .Cannot_find_cyl_0_hd_1_supposing_only_bottom_head_was_dumped);
 
@@ -113,7 +113,7 @@ public sealed partial class KryoFlux
 
                         continue;
                     case 1:
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization.Cannot_find_cyl_1_supposing_double_stepping);
 
                         step = 2;
@@ -121,7 +121,7 @@ public sealed partial class KryoFlux
                         continue;
                 }
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Arrived_end_of_disk_at_cylinder_0, cylinder);
+                AaruConsole.Debug(MODULE_NAME, Localization.Arrived_end_of_disk_at_cylinder_0, cylinder);
 
                 break;
             }
@@ -183,7 +183,7 @@ public sealed partial class KryoFlux
                         {
                             kvp[0] = kvp[0].Trim();
                             kvp[1] = kvp[1].Trim();
-                            AaruConsole.DebugWriteLine(MODULE_NAME, "\"{0}\" = \"{1}\"", kvp[0], kvp[1]);
+                            AaruConsole.Debug(MODULE_NAME, "\"{0}\" = \"{1}\"", kvp[0], kvp[1]);
 
                             switch(kvp[0])
                             {
@@ -224,7 +224,7 @@ public sealed partial class KryoFlux
                                                               blockTime.Minute,
                                                               blockTime.Second);
 
-                            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Found_timestamp_0, blockTimestamp);
+                            AaruConsole.Debug(MODULE_NAME, Localization.Found_timestamp_0, blockTimestamp);
 
                             if(blockTimestamp < Info.CreationTime) _imageInfo.CreationTime = blockTimestamp;
 
@@ -262,7 +262,7 @@ public sealed partial class KryoFlux
         _imageInfo.Heads     = heads;
         _imageInfo.Cylinders = (uint)(tracks.Count / heads);
 
-        AaruConsole.ErrorWriteLine(Localization.Flux_decoding_is_not_yet_implemented);
+        AaruConsole.Error(Localization.Flux_decoding_is_not_yet_implemented);
 
         return ErrorNumber.NotImplemented;
     }

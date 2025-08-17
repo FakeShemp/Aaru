@@ -90,7 +90,7 @@ public sealed class SubdirectoryViewModel
             if(errno != ErrorNumber.NoError)
             {
                 AaruConsole
-                   .ErrorWriteLine(string.Format(UI.Error_0_trying_to_get_information_about_filesystem_entry_named_1,
+                   .Error(string.Format(UI.Error_0_trying_to_get_information_about_filesystem_entry_named_1,
                                                  errno,
                                                  dirent));
 

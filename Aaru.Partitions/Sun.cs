@@ -113,9 +113,9 @@ public sealed class SunDisklabel : IPartition
         dk_label8  dkl8  = Marshal.ByteArrayToStructureLittleEndian<dk_label8>(sunSector);
         dk_label16 dkl16 = Marshal.ByteArrayToStructureLittleEndian<dk_label16>(sunSector);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_magic = 0x{0:X4}",           dkl.dkl_magic);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_vtoc.v_sanity = 0x{0:X8}",  dkl8.dkl_vtoc.v_sanity);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_vtoc.v_sanity = 0x{0:X8}", dkl16.dkl_vtoc.v_sanity);
+        AaruConsole.Debug(MODULE_NAME, "dkl.dkl_magic = 0x{0:X4}",           dkl.dkl_magic);
+        AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_vtoc.v_sanity = 0x{0:X8}",  dkl8.dkl_vtoc.v_sanity);
+        AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_vtoc.v_sanity = 0x{0:X8}", dkl16.dkl_vtoc.v_sanity);
 
         if(dkl.dkl_magic is DKL_MAGIC or DKL_CIGAM)
         {
@@ -161,36 +161,36 @@ public sealed class SunDisklabel : IPartition
         {
             ulong sectorsPerCylinder = (ulong)(dkl.dkl_nsect * dkl.dkl_nhead);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "dkl.dkl_asciilabel = \"{0}\"",
                                        StringHandlers.CToString(dkl.dkl_asciilabel));
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_rpm = {0}",    dkl.dkl_rpm);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_pcyl = {0}",   dkl.dkl_pcyl);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_apc = {0}",    dkl.dkl_apc);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_gap1 = {0}",   dkl.dkl_gap1);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_gap2 = {0}",   dkl.dkl_gap2);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_intrlv = {0}", dkl.dkl_intrlv);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_ncyl = {0}",   dkl.dkl_ncyl);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_acyl = {0}",   dkl.dkl_acyl);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_nhead = {0}",  dkl.dkl_nhead);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_nsect = {0}",  dkl.dkl_nsect);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_bhead = {0}",  dkl.dkl_bhead);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_ppart = {0}",  dkl.dkl_ppart);
+            AaruConsole.Debug(MODULE_NAME, "dkl.dkl_rpm = {0}",    dkl.dkl_rpm);
+            AaruConsole.Debug(MODULE_NAME, "dkl.dkl_pcyl = {0}",   dkl.dkl_pcyl);
+            AaruConsole.Debug(MODULE_NAME, "dkl.dkl_apc = {0}",    dkl.dkl_apc);
+            AaruConsole.Debug(MODULE_NAME, "dkl.dkl_gap1 = {0}",   dkl.dkl_gap1);
+            AaruConsole.Debug(MODULE_NAME, "dkl.dkl_gap2 = {0}",   dkl.dkl_gap2);
+            AaruConsole.Debug(MODULE_NAME, "dkl.dkl_intrlv = {0}", dkl.dkl_intrlv);
+            AaruConsole.Debug(MODULE_NAME, "dkl.dkl_ncyl = {0}",   dkl.dkl_ncyl);
+            AaruConsole.Debug(MODULE_NAME, "dkl.dkl_acyl = {0}",   dkl.dkl_acyl);
+            AaruConsole.Debug(MODULE_NAME, "dkl.dkl_nhead = {0}",  dkl.dkl_nhead);
+            AaruConsole.Debug(MODULE_NAME, "dkl.dkl_nsect = {0}",  dkl.dkl_nsect);
+            AaruConsole.Debug(MODULE_NAME, "dkl.dkl_bhead = {0}",  dkl.dkl_bhead);
+            AaruConsole.Debug(MODULE_NAME, "dkl.dkl_ppart = {0}",  dkl.dkl_ppart);
 
             for(int i = 0; i < NDKMAP; i++)
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "dkl.dkl_map[{0}].dkl_cylno = {1}",
                                            i,
                                            dkl.dkl_map[i].dkl_cylno);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_map[{0}].dkl_nblk = {1}", i, dkl.dkl_map[i].dkl_nblk);
+                AaruConsole.Debug(MODULE_NAME, "dkl.dkl_map[{0}].dkl_nblk = {1}", i, dkl.dkl_map[i].dkl_nblk);
             }
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_magic = 0x{0:X4}", dkl.dkl_magic);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl.dkl_cksum = 0x{0:X4}", dkl.dkl_cksum);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "sectorsPerCylinder = {0}", sectorsPerCylinder);
+            AaruConsole.Debug(MODULE_NAME, "dkl.dkl_magic = 0x{0:X4}", dkl.dkl_magic);
+            AaruConsole.Debug(MODULE_NAME, "dkl.dkl_cksum = 0x{0:X4}", dkl.dkl_cksum);
+            AaruConsole.Debug(MODULE_NAME, "sectorsPerCylinder = {0}", sectorsPerCylinder);
 
             for(int i = 0; i < NDKMAP; i++)
             {
@@ -216,66 +216,66 @@ public sealed class SunDisklabel : IPartition
         {
             ulong sectorsPerCylinder = (ulong)(dkl8.dkl_nsect * dkl8.dkl_nhead);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "dkl8.dkl_asciilabel = \"{0}\"",
                                        StringHandlers.CToString(dkl8.dkl_asciilabel));
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_vtoc.v_version = {0}", dkl8.dkl_vtoc.v_version);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_vtoc.v_version = {0}", dkl8.dkl_vtoc.v_version);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "dkl8.dkl_vtoc.v_volume = \"{0}\"",
                                        StringHandlers.CToString(dkl8.dkl_vtoc.v_volume));
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_vtoc.v_nparts = {0}",      dkl8.dkl_vtoc.v_nparts);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_vtoc.v_sanity = 0x{0:X8}", dkl8.dkl_vtoc.v_sanity);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_write_reinstruct = {0}",   dkl8.dkl_write_reinstruct);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_read_reinstruct = {0}",    dkl8.dkl_read_reinstruct);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_rpm = {0}",                dkl8.dkl_rpm);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_pcyl = {0}",               dkl8.dkl_pcyl);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_apc = {0}",                dkl8.dkl_apc);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_obs1 = {0}",               dkl8.dkl_obs1);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_obs2 = {0}",               dkl8.dkl_obs2);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_intrlv = {0}",             dkl8.dkl_intrlv);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_ncyl = {0}",               dkl8.dkl_ncyl);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_acyl = {0}",               dkl8.dkl_acyl);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_nhead = {0}",              dkl8.dkl_nhead);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_nsect = {0}",              dkl8.dkl_nsect);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_obs3 = {0}",               dkl8.dkl_obs3);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_obs4 = {0}",               dkl8.dkl_obs4);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_vtoc.v_nparts = {0}",      dkl8.dkl_vtoc.v_nparts);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_vtoc.v_sanity = 0x{0:X8}", dkl8.dkl_vtoc.v_sanity);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_write_reinstruct = {0}",   dkl8.dkl_write_reinstruct);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_read_reinstruct = {0}",    dkl8.dkl_read_reinstruct);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_rpm = {0}",                dkl8.dkl_rpm);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_pcyl = {0}",               dkl8.dkl_pcyl);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_apc = {0}",                dkl8.dkl_apc);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_obs1 = {0}",               dkl8.dkl_obs1);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_obs2 = {0}",               dkl8.dkl_obs2);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_intrlv = {0}",             dkl8.dkl_intrlv);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_ncyl = {0}",               dkl8.dkl_ncyl);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_acyl = {0}",               dkl8.dkl_acyl);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_nhead = {0}",              dkl8.dkl_nhead);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_nsect = {0}",              dkl8.dkl_nsect);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_obs3 = {0}",               dkl8.dkl_obs3);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_obs4 = {0}",               dkl8.dkl_obs4);
 
             for(int i = 0; i < NDKMAP; i++)
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "dkl8.dkl_map[{0}].dkl_cylno = {1}",
                                            i,
                                            dkl8.dkl_map[i].dkl_cylno);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "dkl8.dkl_map[{0}].dkl_nblk = {1}",
                                            i,
                                            dkl8.dkl_map[i].dkl_nblk);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "dkl8.dkl_vtoc.v_part[{0}].p_tag = {1} ({2})",
                                            i,
                                            dkl8.dkl_vtoc.v_part[i].p_tag,
                                            (ushort)dkl8.dkl_vtoc.v_part[i].p_tag);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "dkl8.dkl_vtoc.v_part[{0}].p_flag = {1} ({2})",
                                            i,
                                            dkl8.dkl_vtoc.v_part[i].p_flag,
                                            (ushort)dkl8.dkl_vtoc.v_part[i].p_flag);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "dkl8.dkl_vtoc.v_timestamp[{0}] = {1}",
                                            i,
                                            DateHandlers.UnixToDateTime(dkl8.dkl_vtoc.v_timestamp[i]));
             }
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_magic = 0x{0:X4}", dkl8.dkl_magic);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl8.dkl_cksum = 0x{0:X4}", dkl8.dkl_cksum);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "sectorsPerCylinder = {0}",  sectorsPerCylinder);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_magic = 0x{0:X4}", dkl8.dkl_magic);
+            AaruConsole.Debug(MODULE_NAME, "dkl8.dkl_cksum = 0x{0:X4}", dkl8.dkl_cksum);
+            AaruConsole.Debug(MODULE_NAME, "sectorsPerCylinder = {0}",  sectorsPerCylinder);
 
             if(dkl8.dkl_vtoc.v_nparts > NDKMAP) return false;
 
@@ -313,67 +313,67 @@ public sealed class SunDisklabel : IPartition
         }
         else
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_vtoc.v_sanity = 0x{0:X8}", dkl16.dkl_vtoc.v_sanity);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_vtoc.v_version = {0}",     dkl16.dkl_vtoc.v_version);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_vtoc.v_sanity = 0x{0:X8}", dkl16.dkl_vtoc.v_sanity);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_vtoc.v_version = {0}",     dkl16.dkl_vtoc.v_version);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "dkl16.dkl_vtoc.v_volume = \"{0}\"",
                                        StringHandlers.CToString(dkl16.dkl_vtoc.v_volume));
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_vtoc.v_sectorsz = {0}", dkl16.dkl_vtoc.v_sectorsz);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_vtoc.v_nparts = {0}",   dkl16.dkl_vtoc.v_nparts);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_vtoc.v_sectorsz = {0}", dkl16.dkl_vtoc.v_sectorsz);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_vtoc.v_nparts = {0}",   dkl16.dkl_vtoc.v_nparts);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "dkl16.dkl_vtoc.v_asciilabel = \"{0}\"",
                                        StringHandlers.CToString(dkl16.dkl_vtoc.v_asciilabel));
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_pcyl = {0}",   dkl16.dkl_pcyl);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_ncyl = {0}",   dkl16.dkl_ncyl);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_acyl = {0}",   dkl16.dkl_acyl);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_bcyl = {0}",   dkl16.dkl_bcyl);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_nhead = {0}",  dkl16.dkl_nhead);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_nsect = {0}",  dkl16.dkl_nsect);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_intrlv = {0}", dkl16.dkl_intrlv);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_skew = {0}",   dkl16.dkl_skew);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_apc = {0}",    dkl16.dkl_apc);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_rpm = {0}",    dkl16.dkl_rpm);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_pcyl = {0}",   dkl16.dkl_pcyl);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_ncyl = {0}",   dkl16.dkl_ncyl);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_acyl = {0}",   dkl16.dkl_acyl);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_bcyl = {0}",   dkl16.dkl_bcyl);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_nhead = {0}",  dkl16.dkl_nhead);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_nsect = {0}",  dkl16.dkl_nsect);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_intrlv = {0}", dkl16.dkl_intrlv);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_skew = {0}",   dkl16.dkl_skew);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_apc = {0}",    dkl16.dkl_apc);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_rpm = {0}",    dkl16.dkl_rpm);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_write_reinstruct = {0}", dkl16.dkl_write_reinstruct);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_write_reinstruct = {0}", dkl16.dkl_write_reinstruct);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_read_reinstruct = {0}", dkl16.dkl_read_reinstruct);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_read_reinstruct = {0}", dkl16.dkl_read_reinstruct);
 
             for(int i = 0; i < NDKMAP16; i++)
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "dkl16.dkl_vtoc.v_part[{0}].p_start = {1}",
                                            i,
                                            dkl16.dkl_vtoc.v_part[i].p_start);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "dkl16.dkl_vtoc.v_part[{0}].p_size = {1}",
                                            i,
                                            dkl16.dkl_vtoc.v_part[i].p_size);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "dkl16.dkl_vtoc.v_part[{0}].p_tag = {1} ({2})",
                                            i,
                                            dkl16.dkl_vtoc.v_part[i].p_tag,
                                            (ushort)dkl16.dkl_vtoc.v_part[i].p_tag);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "dkl16.dkl_vtoc.v_part[{0}].p_flag = {1} ({2})",
                                            i,
                                            dkl16.dkl_vtoc.v_part[i].p_flag,
                                            (ushort)dkl16.dkl_vtoc.v_part[i].p_flag);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "dkl16.dkl_vtoc.v_timestamp[{0}] = {1}",
                                            i,
                                            DateHandlers.UnixToDateTime(dkl16.dkl_vtoc.v_timestamp[i]));
             }
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_magic = 0x{0:X4}", dkl16.dkl_magic);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dkl16.dkl_cksum = 0x{0:X4}", dkl16.dkl_cksum);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_magic = 0x{0:X4}", dkl16.dkl_magic);
+            AaruConsole.Debug(MODULE_NAME, "dkl16.dkl_cksum = 0x{0:X4}", dkl16.dkl_cksum);
 
             if(dkl16.dkl_vtoc.v_nparts > NDKMAP16) return false;
 
@@ -420,7 +420,7 @@ public sealed class SunDisklabel : IPartition
 
     static dk_label SwapDiskLabel(dk_label label)
     {
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Swapping_dk_label);
+        AaruConsole.Debug(MODULE_NAME, Localization.Swapping_dk_label);
         label = (dk_label)Marshal.SwapStructureMembersEndian(label);
 
         for(int i = 0; i < label.dkl_map.Length; i++)
@@ -431,7 +431,7 @@ public sealed class SunDisklabel : IPartition
 
     static dk_label8 SwapDiskLabel(dk_label8 label)
     {
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Swapping_dk_label8);
+        AaruConsole.Debug(MODULE_NAME, Localization.Swapping_dk_label8);
         label = (dk_label8)Marshal.SwapStructureMembersEndian(label);
 
         for(int i = 0; i < label.dkl_map.Length; i++)
@@ -457,7 +457,7 @@ public sealed class SunDisklabel : IPartition
 
     static dk_label16 SwapDiskLabel(dk_label16 label)
     {
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Swapping_dk_label16);
+        AaruConsole.Debug(MODULE_NAME, Localization.Swapping_dk_label16);
         label = (dk_label16)Marshal.SwapStructureMembersEndian(label);
 
         for(int i = 0; i < label.dkl_vtoc.v_bootinfo.Length; i++)

@@ -98,7 +98,7 @@ public sealed class BSD : IPartition
                 Array.Copy(tmp, offset, sector, 0, MAX_LABEL_SIZE);
                 dl = Marshal.ByteArrayToStructureLittleEndian<DiskLabel>(sector);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            Localization
                                               .BSD_GetInformation_dl_magic_on_sector_0_at_offset_1_equals_2_X8_expected_3_X8,
                                            location + sectorOffset,
@@ -122,52 +122,52 @@ public sealed class BSD : IPartition
 
         if(dl is { d_magic: DISK_CIGAM, d_magic2: DISK_CIGAM }) dl = SwapDiskLabel(dl);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_type = {0}",           dl.d_type);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_subtype = {0}",        dl.d_subtype);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_typename = {0}",       StringHandlers.CToString(dl.d_typename));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_packname = {0}",       StringHandlers.CToString(dl.d_packname));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_secsize = {0}",        dl.d_secsize);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_nsectors = {0}",       dl.d_nsectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_ntracks = {0}",        dl.d_ntracks);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_ncylinders = {0}",     dl.d_ncylinders);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_secpercyl = {0}",      dl.d_secpercyl);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_secperunit = {0}",     dl.d_secperunit);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_sparespertrack = {0}", dl.d_sparespertrack);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_sparespercyl = {0}",   dl.d_sparespercyl);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_acylinders = {0}",     dl.d_acylinders);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_rpm = {0}",            dl.d_rpm);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_interleave = {0}",     dl.d_interleave);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_trackskew = {0}",      dl.d_trackskew);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_cylskeew = {0}",       dl.d_cylskeew);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_headswitch = {0}",     dl.d_headswitch);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_trkseek = {0}",        dl.d_trkseek);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_flags = {0}",          dl.d_flags);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_drivedata[0] = {0}",   dl.d_drivedata[0]);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_drivedata[1] = {0}",   dl.d_drivedata[1]);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_drivedata[2] = {0}",   dl.d_drivedata[2]);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_drivedata[3] = {0}",   dl.d_drivedata[3]);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_drivedata[4] = {0}",   dl.d_drivedata[4]);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_spare[0] = {0}",       dl.d_spare[0]);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_spare[1] = {0}",       dl.d_spare[1]);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_spare[2] = {0}",       dl.d_spare[2]);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_spare[3] = {0}",       dl.d_spare[3]);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_spare[4] = {0}",       dl.d_spare[4]);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_magic2 = 0x{0:X8}",    dl.d_magic2);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_checksum = 0x{0:X8}",  dl.d_checksum);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_npartitions = {0}",    dl.d_npartitions);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_bbsize = {0}",         dl.d_bbsize);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_sbsize = {0}",         dl.d_sbsize);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_type = {0}",           dl.d_type);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_subtype = {0}",        dl.d_subtype);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_typename = {0}",       StringHandlers.CToString(dl.d_typename));
+        AaruConsole.Debug(MODULE_NAME, "dl.d_packname = {0}",       StringHandlers.CToString(dl.d_packname));
+        AaruConsole.Debug(MODULE_NAME, "dl.d_secsize = {0}",        dl.d_secsize);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_nsectors = {0}",       dl.d_nsectors);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_ntracks = {0}",        dl.d_ntracks);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_ncylinders = {0}",     dl.d_ncylinders);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_secpercyl = {0}",      dl.d_secpercyl);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_secperunit = {0}",     dl.d_secperunit);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_sparespertrack = {0}", dl.d_sparespertrack);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_sparespercyl = {0}",   dl.d_sparespercyl);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_acylinders = {0}",     dl.d_acylinders);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_rpm = {0}",            dl.d_rpm);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_interleave = {0}",     dl.d_interleave);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_trackskew = {0}",      dl.d_trackskew);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_cylskeew = {0}",       dl.d_cylskeew);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_headswitch = {0}",     dl.d_headswitch);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_trkseek = {0}",        dl.d_trkseek);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_flags = {0}",          dl.d_flags);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_drivedata[0] = {0}",   dl.d_drivedata[0]);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_drivedata[1] = {0}",   dl.d_drivedata[1]);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_drivedata[2] = {0}",   dl.d_drivedata[2]);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_drivedata[3] = {0}",   dl.d_drivedata[3]);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_drivedata[4] = {0}",   dl.d_drivedata[4]);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_spare[0] = {0}",       dl.d_spare[0]);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_spare[1] = {0}",       dl.d_spare[1]);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_spare[2] = {0}",       dl.d_spare[2]);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_spare[3] = {0}",       dl.d_spare[3]);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_spare[4] = {0}",       dl.d_spare[4]);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_magic2 = 0x{0:X8}",    dl.d_magic2);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_checksum = 0x{0:X8}",  dl.d_checksum);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_npartitions = {0}",    dl.d_npartitions);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_bbsize = {0}",         dl.d_bbsize);
+        AaruConsole.Debug(MODULE_NAME, "dl.d_sbsize = {0}",         dl.d_sbsize);
 
         ulong counter         = 0;
         bool  addSectorOffset = false;
 
         for(int i = 0; i < dl.d_npartitions && i < 22; i++)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_partitions[i].p_offset = {0}", dl.d_partitions[i].p_offset);
+            AaruConsole.Debug(MODULE_NAME, "dl.d_partitions[i].p_offset = {0}", dl.d_partitions[i].p_offset);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dl.d_partitions[i].p_size = {0}", dl.d_partitions[i].p_size);
+            AaruConsole.Debug(MODULE_NAME, "dl.d_partitions[i].p_size = {0}", dl.d_partitions[i].p_size);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "dl.d_partitions[i].p_fstype = {0} ({1})",
                                        dl.d_partitions[i].p_fstype,
                                        FSTypeToString(dl.d_partitions[i].p_fstype));
@@ -194,8 +194,8 @@ public sealed class BSD : IPartition
                 part.Offset += sectorOffset * imagePlugin.Info.SectorSize;
             }
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "part.start = {0}", part.Start);
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.BSD_GetInformation_Adding_it);
+            AaruConsole.Debug(MODULE_NAME, "part.start = {0}", part.Start);
+            AaruConsole.Debug(MODULE_NAME, Localization.BSD_GetInformation_Adding_it);
             partitions.Add(part);
             counter++;
         }

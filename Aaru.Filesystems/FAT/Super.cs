@@ -92,7 +92,7 @@ public sealed partial class FAT
                 return ErrorNumber.InvalidArgument;
         }
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Reading_BPB);
+        AaruConsole.Debug(MODULE_NAME, Localization.Reading_BPB);
 
         uint sectorsPerBpb = imagePlugin.Info.SectorSize < 512 ? 512 / imagePlugin.Info.SectorSize : 1;
 
@@ -686,7 +686,7 @@ public sealed partial class FAT
 
             if(name == "" && extension == "")
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Found_empty_filename_in_root_directory);
+                AaruConsole.Debug(MODULE_NAME, Localization.Found_empty_filename_in_root_directory);
 
                 if(!_debug || entry is { size: > 0, start_cluster: 0 }) continue; // Skip invalid name
 
@@ -768,7 +768,7 @@ public sealed partial class FAT
 
         if(_fat12)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Reading_FAT12);
+            AaruConsole.Debug(MODULE_NAME, Localization.Reading_FAT12);
 
             errno = imagePlugin.ReadSectors(_fatFirstSector, _sectorsPerFat, out byte[] fatBytes);
 
@@ -817,20 +817,20 @@ public sealed partial class FAT
         }
         else if(_fat16)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Reading_FAT16);
+            AaruConsole.Debug(MODULE_NAME, Localization.Reading_FAT16);
 
             errno = imagePlugin.ReadSectors(_fatFirstSector, _sectorsPerFat, out byte[] fatBytes);
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Casting_FAT);
+            AaruConsole.Debug(MODULE_NAME, Localization.Casting_FAT);
             firstFatEntries = MemoryMarshal.Cast<byte, ushort>(fatBytes).ToArray();
 
             errno = imagePlugin.ReadSectors(_fatFirstSector + _sectorsPerFat, _sectorsPerFat, out fatBytes);
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Casting_FAT);
+            AaruConsole.Debug(MODULE_NAME, Localization.Casting_FAT);
             secondFatEntries = MemoryMarshal.Cast<byte, ushort>(fatBytes).ToArray();
 
             if(firstFatEntries.Any(entry => entry < FAT16_RESERVED && entry > _statfs.Blocks + 2))

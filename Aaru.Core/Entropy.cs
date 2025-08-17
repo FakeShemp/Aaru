@@ -84,7 +84,7 @@ public sealed class Entropy
 
         if(_inputFormat is not IOpticalMediaImage opticalMediaImage)
         {
-            AaruConsole.ErrorWriteLine(Localization.Core.The_selected_image_does_not_support_tracks);
+            AaruConsole.Error(Localization.Core.The_selected_image_does_not_support_tracks);
 
             return entropyResults.ToArray();
         }
@@ -115,7 +115,7 @@ public sealed class Entropy
 
                 trackEntropy.Sectors = currentTrack.EndSector - currentTrack.StartSector + 1;
 
-                AaruConsole.VerboseWriteLine(Localization.Core.Track_0_has_1_sectors,
+                AaruConsole.Verbose(Localization.Core.Track_0_has_1_sectors,
                                              currentTrack.Sequence,
                                              trackEntropy.Sectors);
 
@@ -133,7 +133,7 @@ public sealed class Entropy
 
                     if(errno != ErrorNumber.NoError)
                     {
-                        AaruConsole.ErrorWriteLine(string.Format(Localization.Core
+                        AaruConsole.Error(string.Format(Localization.Core
                                                                              .Error_0_while_reading_sector_1_continuing,
                                                                  errno,
                                                                  i));
@@ -170,12 +170,12 @@ public sealed class Entropy
         {
             if(_debug)
             {
-                AaruConsole.DebugWriteLine(Localization.Core.Could_not_get_tracks_because_0, ex.Message);
-                AaruConsole.WriteException(ex);
+                AaruConsole.Debug(Localization.Core.Could_not_get_tracks_because_0, ex.Message);
+                AaruConsole.Exception(ex);
             }
             else
             {
-                AaruConsole.ErrorWriteLine(Localization.Core
+                AaruConsole.Error(Localization.Core
                                                        .Unable_to_get_separate_tracks_not_calculating_their_entropy);
             }
         }
@@ -213,7 +213,7 @@ public sealed class Entropy
 
             if(errno != ErrorNumber.NoError)
             {
-                AaruConsole.ErrorWriteLine(string.Format(Localization.Core.Error_0_while_reading_sector_1_continuing,
+                AaruConsole.Error(string.Format(Localization.Core.Error_0_while_reading_sector_1_continuing,
                                                          errno,
                                                          i));
 
@@ -265,7 +265,7 @@ public sealed class Entropy
 
         if(errno != ErrorNumber.NoError)
         {
-            AaruConsole.ErrorWriteLine(string.Format(Localization.Core.Error_0_while_reading_data__not_continuing,
+            AaruConsole.Error(string.Format(Localization.Core.Error_0_while_reading_data__not_continuing,
                                                      errno));
 
             return entropy;

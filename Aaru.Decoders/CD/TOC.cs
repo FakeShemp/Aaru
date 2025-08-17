@@ -74,7 +74,7 @@ public static class TOC
 
         if(decoded.DataLength + 2 != CDTOCResponse.Length)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Localization
                                           .Expected_CD_TOC_size_0_bytes_is_not_received_size_1_bytes_not_decoding,
                                        decoded.DataLength + 2,

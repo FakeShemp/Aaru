@@ -66,9 +66,9 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
         Statistics.AddCommand("device-report");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--device={0}",  Markup.Escape(settings.Path ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--device={0}",  Markup.Escape(settings.Path ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
         string devicePath = settings.Path;
 
@@ -80,7 +80,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
         switch(dev)
         {
             case null:
-                AaruConsole.ErrorWriteLine(string.Format(UI.Could_not_open_device_error_0, devErrno));
+                AaruConsole.Error(string.Format(UI.Could_not_open_device_error_0, devErrno));
 
                 return (int)devErrno;
             case Devices.Remote.Device remoteDev:
@@ -95,7 +95,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
         if(dev.Error)
         {
-            AaruConsole.ErrorWriteLine(Error.Print(dev.LastError));
+            AaruConsole.Error(Error.Print(dev.LastError));
 
             return (int)ErrorNumber.CannotOpenDevice;
         }
@@ -106,9 +106,9 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
         if(!isAdmin)
         {
-            AaruConsole.ErrorWriteLine(UI.Device_report_must_be_run_as_admin);
+            AaruConsole.Error(UI.Device_report_must_be_run_as_admin);
 
-            AaruConsole.ErrorWriteLine(UI.Not_continuing);
+            AaruConsole.Error(UI.Not_continuing);
 
             return (int)ErrorNumber.NotPermitted;
         }
@@ -149,7 +149,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
         if(settings.TrapDisc && dev.ScsiType != PeripheralDeviceTypes.MultiMediaDevice)
         {
-            AaruConsole.ErrorWriteLine(UI.Device_does_not_report_with_trap_discs);
+            AaruConsole.Error(UI.Device_does_not_report_with_trap_discs);
 
             return (int)ErrorNumber.InvalidArgument;
         }
@@ -306,7 +306,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                         break;
                     default:
                     {
-                        AaruConsole.ErrorWriteLine(UI.Unsupported_device_type_for_report);
+                        AaruConsole.Error(UI.Unsupported_device_type_for_report);
 
                         throw new IOException();
                     }
@@ -378,7 +378,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                         {
                             if(iomegaRev)
                             {
-                                AaruConsole.ErrorWriteLine(UI.Device_does_not_report_with_trap_discs);
+                                AaruConsole.Error(UI.Device_does_not_report_with_trap_discs);
 
                                 return (int)ErrorNumber.InvalidArgument;
                             }
@@ -388,7 +388,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                             if(!AnsiConsole.Confirm($"[italic]{UI.Do_you_have_audio_trap_disc}[/]"))
                             {
-                                AaruConsole.ErrorWriteLine(UI.Please_burn_audio_trap_disc);
+                                AaruConsole.Error(UI.Please_burn_audio_trap_disc);
 
                                 return (int)ErrorNumber.NoError;
                             }
@@ -762,7 +762,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                              break;
                                                                          }
                                                                          default:
-                                                                             AaruConsole.DebugWriteLine(MODULE_NAME,
+                                                                             AaruConsole.Debug(MODULE_NAME,
                                                                                  Localization.Core
                                                                                     .Device_not_ready_Sense,
                                                                                  decSense.Value.SenseKey,
@@ -776,7 +776,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                  }
                                                                  else
                                                                  {
-                                                                     AaruConsole.DebugWriteLine(MODULE_NAME,
+                                                                     AaruConsole.Debug(MODULE_NAME,
                                                                          Localization.Core
                                                                             .Got_sense_status_but_no_sense_buffer);
 
@@ -938,7 +938,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                  dev.Timeout,
                                                                  out _);
 
-                                                             AaruConsole.DebugWriteLine(MODULE_NAME,
+                                                             AaruConsole.Debug(MODULE_NAME,
                                                                  "sense = {0}",
                                                                  sense);
 
@@ -978,7 +978,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                          break;
                                                                      }
                                                                      default:
-                                                                         AaruConsole.DebugWriteLine(MODULE_NAME,
+                                                                         AaruConsole.Debug(MODULE_NAME,
                                                                              Localization.Core.Device_not_ready_Sense,
                                                                              decSense.Value.SenseKey,
                                                                              decSense.Value.ASC,
@@ -991,7 +991,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                              }
                                                              else
                                                              {
-                                                                 AaruConsole.DebugWriteLine(MODULE_NAME,
+                                                                 AaruConsole.Debug(MODULE_NAME,
                                                                      Localization.Core
                                                                         .Got_sense_status_but_no_sense_buffer);
 
@@ -1091,7 +1091,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                          break;
                                                                      }
                                                                      default:
-                                                                         AaruConsole.DebugWriteLine(MODULE_NAME,
+                                                                         AaruConsole.Debug(MODULE_NAME,
                                                                              Localization.Core.Device_not_ready_Sense,
                                                                              decSense.Value.SenseKey,
                                                                              decSense.Value.ASC,
@@ -1104,7 +1104,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                              }
                                                              else
                                                              {
-                                                                 AaruConsole.DebugWriteLine(MODULE_NAME,
+                                                                 AaruConsole.Debug(MODULE_NAME,
                                                                      Localization.Core
                                                                         .Got_sense_status_but_no_sense_buffer);
 

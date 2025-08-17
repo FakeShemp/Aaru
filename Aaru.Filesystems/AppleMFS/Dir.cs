@@ -155,25 +155,25 @@ public sealed partial class AppleMFS
 
                 _filenameToId.Add(lowerFilename, entry.flFlNum);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "entry.flFlags = {0}",  entry.flFlags);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "entry.flTyp = {0}",    entry.flTyp);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "entry.flFlNum = {0}",  entry.flFlNum);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "entry.flStBlk = {0}",  entry.flStBlk);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "entry.flLgLen = {0}",  entry.flLgLen);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "entry.flPyLen = {0}",  entry.flPyLen);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "entry.flRStBlk = {0}", entry.flRStBlk);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "entry.flRLgLen = {0}", entry.flRLgLen);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "entry.flRPyLen = {0}", entry.flRPyLen);
+                AaruConsole.Debug(MODULE_NAME, "entry.flFlags = {0}",  entry.flFlags);
+                AaruConsole.Debug(MODULE_NAME, "entry.flTyp = {0}",    entry.flTyp);
+                AaruConsole.Debug(MODULE_NAME, "entry.flFlNum = {0}",  entry.flFlNum);
+                AaruConsole.Debug(MODULE_NAME, "entry.flStBlk = {0}",  entry.flStBlk);
+                AaruConsole.Debug(MODULE_NAME, "entry.flLgLen = {0}",  entry.flLgLen);
+                AaruConsole.Debug(MODULE_NAME, "entry.flPyLen = {0}",  entry.flPyLen);
+                AaruConsole.Debug(MODULE_NAME, "entry.flRStBlk = {0}", entry.flRStBlk);
+                AaruConsole.Debug(MODULE_NAME, "entry.flRLgLen = {0}", entry.flRLgLen);
+                AaruConsole.Debug(MODULE_NAME, "entry.flRPyLen = {0}", entry.flRPyLen);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "entry.flCrDat = {0}",
                                            DateHandlers.MacToDateTime(entry.flCrDat));
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "entry.flMdDat = {0}",
                                            DateHandlers.MacToDateTime(entry.flMdDat));
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "entry.flNam0 = {0}",
                                            StringHandlers.PascalToString(entry.flNam, _encoding));
             }

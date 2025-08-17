@@ -165,7 +165,7 @@ public sealed class ConsoleViewModel : ViewModelBase
                                                           Icon.Error)
                                    .ShowWindowDialogAsync(_view);
 
-            AaruConsole.WriteException(exception);
+            AaruConsole.Exception(exception);
         }
     }
 

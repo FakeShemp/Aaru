@@ -39,9 +39,9 @@ static partial class MainClass
     {
         AaruConsole.WriteLineEvent        += Console.WriteLine;
         AaruConsole.WriteEvent            += Console.Write;
-        AaruConsole.ErrorWriteLineEvent   += Console.Error.WriteLine;
-        AaruConsole.DebugWriteLineEvent   += Console.Error.WriteLine;
-        AaruConsole.VerboseWriteLineEvent += Console.WriteLine;
+        AaruConsole.ErrorEvent   += Console.Error.WriteLine;
+        AaruConsole.DebugEvent   += Console.Error.WriteLine;
+        AaruConsole.VerboseEvent += Console.WriteLine;
         AaruConsole.WriteExceptionEvent   += Console.Error.WriteLine;
 
         DeviceInfo[] devices = Aaru.Devices.Device.ListDevices();

@@ -59,7 +59,7 @@ public static class ArchiveFormat
 
                 try
                 {
-                    AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Trying_plugin_0, plugin.Name);
+                    AaruConsole.Debug(MODULE_NAME, Localization.Core.Trying_plugin_0, plugin.Name);
 
                     if(!plugin.Identify(archiveFilter)) continue;
 

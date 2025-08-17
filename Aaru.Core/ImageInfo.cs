@@ -672,13 +672,13 @@ public static class ImageInfo
                             case TupleCodes.CISTPL_SPCL:
                             case TupleCodes.CISTPL_SWIL:
                             case TupleCodes.CISTPL_VERS_2:
-                                AaruConsole.DebugWriteLine(MODULE_NAME,
+                                AaruConsole.Debug(MODULE_NAME,
                                                            Localization.Core.Invoke_Found_undecoded_tuple_ID_0,
                                                            tuple.Code);
 
                                 break;
                             default:
-                                AaruConsole.DebugWriteLine(MODULE_NAME,
+                                AaruConsole.Debug(MODULE_NAME,
                                                            Localization.Core.Found_unknown_tuple_ID_0,
                                                            (byte)tuple.Code);
 
@@ -687,7 +687,7 @@ public static class ImageInfo
                     }
                 }
                 else
-                    AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Could_not_get_tuples);
+                    AaruConsole.Debug(MODULE_NAME, Localization.Core.Could_not_get_tuples);
             }
         }
 

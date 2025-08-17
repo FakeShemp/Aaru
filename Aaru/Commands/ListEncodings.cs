@@ -53,8 +53,8 @@ sealed class ListEncodingsCommand : Command<ListEncodingsCommand.Settings>
 
         Statistics.AddCommand("list-encodings");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
         Log.Information(UI.List_encodings_command);
 

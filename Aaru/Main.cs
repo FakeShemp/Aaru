@@ -102,7 +102,7 @@ class MainClass
                 AnsiConsole.Markup(format, objects);
         };
 
-        AaruConsole.ErrorWriteLineEvent += (format, objects) =>
+        AaruConsole.ErrorEvent += (format, objects) =>
         {
             if(objects is null)
                 stderrConsole.MarkupLine(format);
@@ -112,9 +112,9 @@ class MainClass
             Log.Error(format, objects);
         };
 
-        AaruConsole.VerboseWriteLineEvent += Log.Verbose;
+        AaruConsole.VerboseEvent += Log.Verbose;
 
-        AaruConsole.DebugWriteLineEvent += Log.Debug;
+        AaruConsole.DebugEvent += Log.Debug;
 
         AaruConsole.WriteExceptionEvent += ex => Log.Error(ex, "Unhandled exception");
 
@@ -207,8 +207,8 @@ class MainClass
             }
             catch(Exception)
             {
-                AaruConsole.ErrorWriteLine(UI.Exception_trying_to_remove_old_database_version);
-                AaruConsole.ErrorWriteLine(UI.Please_manually_remove_file_at_0, Settings.Settings.MainDbPath);
+                AaruConsole.Error(UI.Exception_trying_to_remove_old_database_version);
+                AaruConsole.Error(UI.Please_manually_remove_file_at_0, Settings.Settings.MainDbPath);
 
                 return (int)ErrorNumber.CannotRemoveDatabase;
             }

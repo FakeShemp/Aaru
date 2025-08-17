@@ -61,13 +61,13 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
 
         Statistics.AddCommand("extract-files");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",    settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--encoding={0}", Markup.Escape(settings.Encoding  ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",    Markup.Escape(settings.ImagePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--options={0}",  Markup.Escape(settings.Options   ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--output={0}",   Markup.Escape(settings.OutputDir ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",  settings.Verbose);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--xattrs={0}",   settings.Xattrs);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",    settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--encoding={0}", Markup.Escape(settings.Encoding  ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--input={0}",    Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--options={0}",  Markup.Escape(settings.Options   ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--output={0}",   Markup.Escape(settings.OutputDir ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",  settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--xattrs={0}",   settings.Xattrs);
 
         IFilter inputFilter = null;
 
@@ -78,16 +78,16 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
         });
 
         Dictionary<string, string> parsedOptions = Options.Parse(settings.Options);
-        AaruConsole.DebugWriteLine(MODULE_NAME, UI.Parsed_options);
+        AaruConsole.Debug(MODULE_NAME, UI.Parsed_options);
 
         foreach(KeyValuePair<string, string> parsedOption in parsedOptions)
-            AaruConsole.DebugWriteLine(MODULE_NAME, "{0} = {1}", parsedOption.Key, parsedOption.Value);
+            AaruConsole.Debug(MODULE_NAME, "{0} = {1}", parsedOption.Key, parsedOption.Value);
 
         parsedOptions.Add("debug", settings.Debug.ToString());
 
         if(inputFilter == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Cannot_open_specified_file);
+            AaruConsole.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -100,11 +100,11 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
             {
                 encodingClass = Claunia.Encoding.Encoding.GetEncoding(settings.Encoding);
 
-                if(settings.Verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
+                if(settings.Verbose) AaruConsole.Verbose(UI.encoding_for_0, encodingClass.EncodingName);
             }
             catch(ArgumentException)
             {
-                AaruConsole.ErrorWriteLine(UI.Specified_encoding_is_not_supported);
+                AaruConsole.Error(UI.Specified_encoding_is_not_supported);
 
                 return (int)ErrorNumber.EncodingUnknown;
             }
@@ -139,7 +139,7 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
             }
 
             if(settings.Verbose)
-                AaruConsole.VerboseWriteLine(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
+                AaruConsole.Verbose(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
             else
                 AaruConsole.WriteLine(UI.Image_format_identified_by_0, imageFormat.Name);
 
@@ -152,7 +152,7 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
 
             if(Directory.Exists(settings.OutputDir) || File.Exists(settings.OutputDir))
             {
-                AaruConsole.ErrorWriteLine(UI.Destination_exists_aborting);
+                AaruConsole.Error(UI.Destination_exists_aborting);
 
                 return (int)ErrorNumber.FileExists;
             }
@@ -177,15 +177,15 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
                     return (int)opened;
                 }
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, UI.Correctly_opened_image_file);
+                AaruConsole.Debug(MODULE_NAME, UI.Correctly_opened_image_file);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            UI.Image_without_headers_is_0_bytes,
                                            imageFormat.Info.ImageSize);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, UI.Image_has_0_sectors, imageFormat.Info.Sectors);
+                AaruConsole.Debug(MODULE_NAME, UI.Image_has_0_sectors, imageFormat.Info.Sectors);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            UI.Image_identifies_media_type_as_0,
                                            imageFormat.Info.MediaType);
 
@@ -195,9 +195,9 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
             }
             catch(Exception ex)
             {
-                AaruConsole.ErrorWriteLine(UI.Unable_to_open_image_format);
-                AaruConsole.ErrorWriteLine(Localization.Core.Error_0, ex.Message);
-                AaruConsole.WriteException(ex);
+                AaruConsole.Error(UI.Unable_to_open_image_format);
+                AaruConsole.Error(Localization.Core.Error_0, ex.Message);
+                AaruConsole.Exception(ex);
 
                 return (int)ErrorNumber.CannotOpenFormat;
             }
@@ -214,7 +214,7 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
 
             if(partitions.Count == 0)
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME, UI.No_partitions_found);
+                AaruConsole.Debug(MODULE_NAME, UI.No_partitions_found);
 
                 partitions.Add(new Partition
                 {
@@ -285,7 +285,7 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
                                 Statistics.AddFilesystem(fs.Metadata.Type);
                             }
                             else
-                                AaruConsole.ErrorWriteLine(UI.Unable_to_mount_volume_error_0, error.ToString());
+                                AaruConsole.Error(UI.Unable_to_mount_volume_error_0, error.ToString());
                         }
                     }
                     else
@@ -318,15 +318,15 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
                             Statistics.AddFilesystem(fs.Metadata.Type);
                         }
                         else
-                            AaruConsole.ErrorWriteLine(UI.Unable_to_mount_volume_error_0, error.ToString());
+                            AaruConsole.Error(UI.Unable_to_mount_volume_error_0, error.ToString());
                     }
                 }
             }
         }
         catch(Exception ex)
         {
-            AaruConsole.ErrorWriteLine(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
-            AaruConsole.WriteException(ex);
+            AaruConsole.Error(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
+            AaruConsole.Exception(ex);
 
             return (int)ErrorNumber.UnexpectedException;
         }
@@ -343,7 +343,7 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
 
         if(error != ErrorNumber.NoError)
         {
-            AaruConsole.ErrorWriteLine(UI.Error_0_reading_directory_1, error.ToString(), path);
+            AaruConsole.Error(UI.Error_0_reading_directory_1, error.ToString(), path);
 
             return;
         }
@@ -527,7 +527,7 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
                                                       outputPath);
                             }
                             else
-                                AaruConsole.ErrorWriteLine(UI.Cannot_write_xattr_0_for_1_output_exists, xattr, entry);
+                                AaruConsole.Error(UI.Cannot_write_xattr_0_for_1_output_exists, xattr, entry);
                         }
                     }
                 }
@@ -600,7 +600,7 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
                                                 outputFile.Write(outBuf, 0, (int)bytesRead);
                                             else
                                             {
-                                                AaruConsole.ErrorWriteLine(UI.Error_0_reading_file_1, error, entry);
+                                                AaruConsole.Error(UI.Error_0_reading_file_1, error, entry);
 
                                                 break;
                                             }
@@ -612,7 +612,7 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
                                         fs.CloseFile(fileNode);
                                     }
                                     else
-                                        AaruConsole.ErrorWriteLine(UI.Error_0_reading_file_1, error, entry);
+                                        AaruConsole.Error(UI.Error_0_reading_file_1, error, entry);
                                 });
 
                     outputFile.Close();
@@ -652,10 +652,10 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
                                           Markup.Escape(outputPath));
                 }
                 else
-                    AaruConsole.ErrorWriteLine(UI.Cannot_write_file_0_output_exists, Markup.Escape(entry));
+                    AaruConsole.Error(UI.Cannot_write_file_0_output_exists, Markup.Escape(entry));
             }
             else
-                AaruConsole.ErrorWriteLine(UI.Error_reading_file_0, Markup.Escape(entry));
+                AaruConsole.Error(UI.Error_reading_file_0, Markup.Escape(entry));
         }
 
         fs.CloseDir(node);

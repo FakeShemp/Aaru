@@ -55,7 +55,7 @@ public sealed partial class Symbian
         for(int i = 0; i < conditionLevel; i++) tabulationChars[i] = '\t';
         string tabulation                                          = new(tabulationChars);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "Seeking to {0} for parsing of file {1} of {2}",
                                    offset,
                                    currentFile,
@@ -64,7 +64,7 @@ public sealed partial class Symbian
         br.BaseStream.Seek(offset, SeekOrigin.Begin);
         var recordType = (FileRecordType)br.ReadUInt32();
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "Found record with type {0}", recordType);
+        AaruConsole.Debug(MODULE_NAME, "Found record with type {0}", recordType);
 
         br.BaseStream.Seek(-sizeof(FileRecordType), SeekOrigin.Current);
 
@@ -118,7 +118,7 @@ public sealed partial class Symbian
                     decodedFileRecord.mime = _encoding.GetString(buffer);
                 }
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "Found file for \"{0}\" with length {1} at {2}",
                                            decodedFileRecord.destinationName,
                                            decodedFileRecord.length,

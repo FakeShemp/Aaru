@@ -581,8 +581,8 @@ public sealed class MainWindowViewModel : ViewModelBase
                                                             ButtonEnum.Ok,
                                                             Icon.Error);
 
-                    AaruConsole.ErrorWriteLine(UI.Unable_to_open_image_format);
-                    AaruConsole.ErrorWriteLine(UI.No_error_given);
+                    AaruConsole.Error(UI.Unable_to_open_image_format);
+                    AaruConsole.Error(UI.No_error_given);
 
                     return;
                 }
@@ -614,7 +614,7 @@ public sealed class MainWindowViewModel : ViewModelBase
 
                 if(partitions.Count == 0)
                 {
-                    AaruConsole.DebugWriteLine(MODULE_NAME, UI.No_partitions_found);
+                    AaruConsole.Debug(MODULE_NAME, UI.No_partitions_found);
 
                     checkRaw = true;
                 }
@@ -797,9 +797,9 @@ public sealed class MainWindowViewModel : ViewModelBase
                                                         ButtonEnum.Ok,
                                                         Icon.Error);
 
-                AaruConsole.ErrorWriteLine(UI.Unable_to_open_image_format);
-                AaruConsole.ErrorWriteLine(Localization.Core.Error_0, ex.Message);
-                AaruConsole.WriteException(ex);
+                AaruConsole.Error(UI.Unable_to_open_image_format);
+                AaruConsole.Error(Localization.Core.Error_0, ex.Message);
+                AaruConsole.Exception(ex);
             }
         }
         catch(Exception ex)
@@ -809,8 +809,8 @@ public sealed class MainWindowViewModel : ViewModelBase
                                                     ButtonEnum.Ok,
                                                     Icon.Error);
 
-            AaruConsole.ErrorWriteLine(string.Format(UI.Error_reading_file_0, ex.Message));
-            AaruConsole.WriteException(ex);
+            AaruConsole.Error(string.Format(UI.Error_reading_file_0, ex.Message));
+            AaruConsole.Exception(ex);
         }
 
         Statistics.AddCommand("image-info");
@@ -834,7 +834,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                                                        .OrderBy(d => d.Vendor)
                                                        .ThenBy(d => d.Model))
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            UI.Found_supported_device_model_0_by_manufacturer_1_on_bus_2_and_path_3,
                                            device.Model,
                                            device.Vendor,
@@ -890,7 +890,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
         catch(InvalidOperationException ex)
         {
-            AaruConsole.WriteException(ex);
+            AaruConsole.Exception(ex);
         }
     }
 }

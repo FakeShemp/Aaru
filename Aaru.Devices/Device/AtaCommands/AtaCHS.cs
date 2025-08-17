@@ -94,7 +94,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, "IDENTIFY DEVICE took {0} ms.", duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, "IDENTIFY DEVICE took {0} ms.", duration);
 
         return sense;
     }
@@ -151,7 +151,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.READ_DMA_took_0_ms, duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.READ_DMA_took_0_ms, duration);
 
         return sense;
     }
@@ -196,7 +196,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.READ_MULTIPLE_took_0_ms, duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.READ_MULTIPLE_took_0_ms, duration);
 
         return sense;
     }
@@ -253,7 +253,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.READ_SECTORS_took_0_ms, duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.READ_SECTORS_took_0_ms, duration);
 
         return sense;
     }
@@ -310,7 +310,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.READ_LONG_took_0_ms, duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.READ_LONG_took_0_ms, duration);
 
         return sense;
     }
@@ -349,7 +349,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.SEEK_took_0_ms, duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.SEEK_took_0_ms, duration);
 
         return sense;
     }
@@ -402,7 +402,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.SET_FEATURES_took_0_ms, duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.SET_FEATURES_took_0_ms, duration);
 
         return sense;
     }
@@ -433,7 +433,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.DOOR_LOCK_took_0_ms, duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.DOOR_LOCK_took_0_ms, duration);
 
         return sense;
     }
@@ -464,7 +464,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.DOOR_UNLOCK_took_0_ms, duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.DOOR_UNLOCK_took_0_ms, duration);
 
         return sense;
     }
@@ -495,7 +495,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.MEDIA_EJECT_took_0_ms, duration);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.MEDIA_EJECT_took_0_ms, duration);
 
         return sense;
     }

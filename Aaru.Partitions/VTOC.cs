@@ -91,7 +91,7 @@ public sealed class VTOC : IPartition
 
             magic = BitConverter.ToUInt32(pdsector, 4);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Localization.sanity_at_0_is_1_X8_should_be_2_X8_or_3_X8,
                                        i + sectorOffset,
                                        magic,
@@ -122,49 +122,49 @@ public sealed class VTOC : IPartition
             pdold = Marshal.ByteArrayToStructureBigEndian<PDInfoOld>(pdsector);
         }
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.driveid = {0}", pd.driveid);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.driveid = {0}", pd.driveid);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.sanity = 0x{0:X8} (should be 0x{1:X8})", pd.sanity, PD_MAGIC);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.sanity = 0x{0:X8} (should be 0x{1:X8})", pd.sanity, PD_MAGIC);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.version = {0}",    pd.version);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.serial = \"{0}\"", StringHandlers.CToString(pd.serial));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.cyls = {0}",       pd.cyls);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.tracks = {0}",     pd.tracks);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.sectors = {0}",    pd.sectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.bytes = {0}",      pd.bytes);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.logicalst = {0}",  pd.logicalst);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.errlogst = {0}",   pd.errlogst);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.errlogsz = {0}",   pd.errlogsz);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.mfgst = {0}",      pd.mfgst);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.mfgsz = {0}",      pd.mfgsz);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.defectst = {0}",   pd.defectst);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.defectsz = {0}",   pd.defectsz);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.relno = {0}",      pd.relno);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.relst = {0}",      pd.relst);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.relsz = {0}",      pd.relsz);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.relnext = {0}",    pd.relnext);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.allcstrt = {0}",   pdold.allcstrt);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.allcend = {0}",    pdold.allcend);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.vtoc_ptr = {0}",   pd.vtoc_ptr);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.vtoc_len = {0}",   pd.vtoc_len);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.vtoc_pad = {0}",   pd.vtoc_pad);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.alt_ptr = {0}",    pd.alt_ptr);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.alt_len = {0}",    pd.alt_len);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.pcyls = {0}",      pd.pcyls);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.ptracks = {0}",    pd.ptracks);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.psectors = {0}",   pd.psectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.pbytes = {0}",     pd.pbytes);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.secovhd = {0}",    pd.secovhd);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.interleave = {0}", pd.interleave);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.skew = {0}",       pd.skew);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.pad[0] = {0}",     pd.pad[0]);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.pad[1] = {0}",     pd.pad[1]);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.pad[2] = {0}",     pd.pad[2]);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.pad[3] = {0}",     pd.pad[3]);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.pad[4] = {0}",     pd.pad[4]);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.pad[5] = {0}",     pd.pad[5]);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.pad[6] = {0}",     pd.pad[6]);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "pdinfo.pad[7] = {0}",     pd.pad[7]);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.version = {0}",    pd.version);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.serial = \"{0}\"", StringHandlers.CToString(pd.serial));
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.cyls = {0}",       pd.cyls);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.tracks = {0}",     pd.tracks);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.sectors = {0}",    pd.sectors);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.bytes = {0}",      pd.bytes);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.logicalst = {0}",  pd.logicalst);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.errlogst = {0}",   pd.errlogst);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.errlogsz = {0}",   pd.errlogsz);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.mfgst = {0}",      pd.mfgst);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.mfgsz = {0}",      pd.mfgsz);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.defectst = {0}",   pd.defectst);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.defectsz = {0}",   pd.defectsz);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.relno = {0}",      pd.relno);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.relst = {0}",      pd.relst);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.relsz = {0}",      pd.relsz);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.relnext = {0}",    pd.relnext);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.allcstrt = {0}",   pdold.allcstrt);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.allcend = {0}",    pdold.allcend);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.vtoc_ptr = {0}",   pd.vtoc_ptr);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.vtoc_len = {0}",   pd.vtoc_len);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.vtoc_pad = {0}",   pd.vtoc_pad);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.alt_ptr = {0}",    pd.alt_ptr);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.alt_len = {0}",    pd.alt_len);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.pcyls = {0}",      pd.pcyls);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.ptracks = {0}",    pd.ptracks);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.psectors = {0}",   pd.psectors);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.pbytes = {0}",     pd.pbytes);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.secovhd = {0}",    pd.secovhd);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.interleave = {0}", pd.interleave);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.skew = {0}",       pd.skew);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.pad[0] = {0}",     pd.pad[0]);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.pad[1] = {0}",     pd.pad[1]);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.pad[2] = {0}",     pd.pad[2]);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.pad[3] = {0}",     pd.pad[3]);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.pad[4] = {0}",     pd.pad[4]);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.pad[5] = {0}",     pd.pad[5]);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.pad[6] = {0}",     pd.pad[6]);
+        AaruConsole.Debug(MODULE_NAME, "pdinfo.pad[7] = {0}",     pd.pad[7]);
 
         magicFound = false;
         bool useOld = false;
@@ -179,7 +179,7 @@ public sealed class VTOC : IPartition
         if(magic is VTOC_SANE or VTOC_ENAS)
         {
             magicFound = true;
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.New_VTOC_found_at_0, pdloc + sectorOffset + 1);
+            AaruConsole.Debug(MODULE_NAME, Localization.New_VTOC_found_at_0, pdloc + sectorOffset + 1);
 
             if(magic == VTOC_SANE)
                 vtoc = Marshal.ByteArrayToStructureLittleEndian<Vtoc>(vtocsector);
@@ -206,7 +206,7 @@ public sealed class VTOC : IPartition
             {
                 magicFound = true;
                 useOld     = true;
-                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Old_VTOC_found_at_0, pdloc + sectorOffset + 1);
+                AaruConsole.Debug(MODULE_NAME, Localization.Old_VTOC_found_at_0, pdloc + sectorOffset + 1);
 
                 if(magic == VTOC_SANE)
                     vtocOld = Marshal.ByteArrayToStructureLittleEndian<VTocOld>(vtocsector);
@@ -228,14 +228,14 @@ public sealed class VTOC : IPartition
 
         if(!magicFound)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Searching_for_VTOC_on_relative_byte_0, pd.vtoc_ptr);
+            AaruConsole.Debug(MODULE_NAME, Localization.Searching_for_VTOC_on_relative_byte_0, pd.vtoc_ptr);
             ulong relSecPtr = pd.vtoc_ptr               / imagePlugin.Info.SectorSize;
             uint  relSecOff = pd.vtoc_ptr               % imagePlugin.Info.SectorSize;
             uint  secCount  = (relSecOff + pd.vtoc_len) / imagePlugin.Info.SectorSize;
 
             if((relSecOff + pd.vtoc_len) % imagePlugin.Info.SectorSize > 0) secCount++;
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Localization.Going_to_read_0_sectors_from_sector_1_getting_VTOC_from_byte_2,
                                        secCount,
                                        relSecPtr + sectorOffset,
@@ -243,7 +243,7 @@ public sealed class VTOC : IPartition
 
             if(relSecPtr + sectorOffset + secCount >= imagePlugin.Info.Sectors)
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Going_to_read_past_device_size_aborting);
+                AaruConsole.Debug(MODULE_NAME, Localization.Going_to_read_past_device_size_aborting);
 
                 return false;
             }
@@ -259,7 +259,7 @@ public sealed class VTOC : IPartition
             if(magic is VTOC_SANE or VTOC_ENAS)
             {
                 magicFound = true;
-                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.New_VTOC_found);
+                AaruConsole.Debug(MODULE_NAME, Localization.New_VTOC_found);
 
                 if(magic == VTOC_SANE)
                     vtoc = Marshal.ByteArrayToStructureLittleEndian<Vtoc>(vtocsector);
@@ -281,52 +281,52 @@ public sealed class VTOC : IPartition
 
         if(!magicFound)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Cannot_find_VTOC);
+            AaruConsole.Debug(MODULE_NAME, Localization.Cannot_find_VTOC);
 
             return false;
         }
 
         if(useOld)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "vtocOld.v_sanity = 0x{0:X8} (should be 0x{1:X8})",
                                        vtocOld.v_sanity,
                                        VTOC_SANE);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "vtocOld.v_version = {0}", vtocOld.v_version);
+            AaruConsole.Debug(MODULE_NAME, "vtocOld.v_version = {0}", vtocOld.v_version);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "vtocOld.v_volume = \"{0}\"",
                                        StringHandlers.CToString(vtocOld.v_volume));
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "vtocOld.v_sectorsz = {0}", vtocOld.v_sectorsz);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "vtocOld.v_nparts = {0}",   vtocOld.v_nparts);
+            AaruConsole.Debug(MODULE_NAME, "vtocOld.v_sectorsz = {0}", vtocOld.v_sectorsz);
+            AaruConsole.Debug(MODULE_NAME, "vtocOld.v_nparts = {0}",   vtocOld.v_nparts);
 
             for(int i = 0; i < V_NUMPAR; i++)
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "vtocOld.v_part[{0}].p_tag = {1} ({2})",
                                            i,
                                            vtocOld.v_part[i].p_tag,
                                            (ushort)vtocOld.v_part[i].p_tag);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "vtocOld.v_part[{0}].p_flag = {1} ({2})",
                                            i,
                                            vtocOld.v_part[i].p_flag,
                                            (ushort)vtocOld.v_part[i].p_flag);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "vtocOld.v_part[{0}].p_start = {1}",
                                            i,
                                            vtocOld.v_part[i].p_start);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "vtocOld.v_part[{0}].p_size = {1}",
                                            i,
                                            vtocOld.v_part[i].p_size);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "vtocOld.timestamp[{0}] = {1}",
                                            i,
                                            DateHandlers.UnixToDateTime(vtocOld.timestamp[i]));
@@ -334,37 +334,37 @@ public sealed class VTOC : IPartition
         }
         else
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "vtoc.v_sanity = 0x{0:X8} (should be 0x{1:X8})",
                                        vtoc.v_sanity,
                                        VTOC_SANE);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "vtoc.v_version = {0}", vtoc.v_version);
+            AaruConsole.Debug(MODULE_NAME, "vtoc.v_version = {0}", vtoc.v_version);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "vtoc.v_volume = \"{0}\"", StringHandlers.CToString(vtoc.v_volume));
+            AaruConsole.Debug(MODULE_NAME, "vtoc.v_volume = \"{0}\"", StringHandlers.CToString(vtoc.v_volume));
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "vtoc.v_pad = {0}",    vtoc.v_pad);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "vtoc.v_nparts = {0}", vtoc.v_nparts);
+            AaruConsole.Debug(MODULE_NAME, "vtoc.v_pad = {0}",    vtoc.v_pad);
+            AaruConsole.Debug(MODULE_NAME, "vtoc.v_nparts = {0}", vtoc.v_nparts);
 
             for(int i = 0; i < V_NUMPAR; i++)
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "vtoc.v_part[{0}].p_tag = {1} ({2})",
                                            i,
                                            vtoc.v_part[i].p_tag,
                                            (ushort)vtoc.v_part[i].p_tag);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "vtoc.v_part[{0}].p_flag = {1} ({2})",
                                            i,
                                            vtoc.v_part[i].p_flag,
                                            (ushort)vtoc.v_part[i].p_flag);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vtoc.v_part[{0}].p_start = {1}", i, vtoc.v_part[i].p_start);
+                AaruConsole.Debug(MODULE_NAME, "vtoc.v_part[{0}].p_start = {1}", i, vtoc.v_part[i].p_start);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "vtoc.v_part[{0}].p_size = {1}", i, vtoc.v_part[i].p_size);
+                AaruConsole.Debug(MODULE_NAME, "vtoc.v_part[{0}].p_size = {1}", i, vtoc.v_part[i].p_size);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "vtoc.timestamp[{0}] = {1}",
                                            i,
                                            DateHandlers.UnixToDateTime(vtoc.timestamp[i]));

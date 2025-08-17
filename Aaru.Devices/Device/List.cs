@@ -116,7 +116,7 @@ public partial class Device
 
             if(aaruUri.Scheme != "aaru" && aaruUri.Scheme != "dic")
             {
-                AaruConsole.ErrorWriteLine(Localization.Invalid_remote_URI);
+                AaruConsole.Error(Localization.Invalid_remote_URI);
 
                 return [];
             }
@@ -134,7 +134,7 @@ public partial class Device
         }
         catch(Exception)
         {
-            AaruConsole.ErrorWriteLine(Localization.Error_connecting_to_host);
+            AaruConsole.Error(Localization.Error_connecting_to_host);
 
             return [];
         }

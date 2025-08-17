@@ -505,7 +505,7 @@ public sealed partial class Sidecar
 
                             if(errno != ErrorNumber.NoError)
                             {
-                                AaruConsole.ErrorWriteLine(string.Format(Localization.Core.Error_0_reading_sector_1,
+                                AaruConsole.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
                                                                          errno,
                                                                          tapePartition.FirstBlock + doneSectors));
 
@@ -525,7 +525,7 @@ public sealed partial class Sidecar
 
                             if(errno != ErrorNumber.NoError)
                             {
-                                AaruConsole.ErrorWriteLine(string.Format(Localization.Core.Error_0_reading_sector_1,
+                                AaruConsole.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
                                                                          errno,
                                                                          tapePartition.FirstBlock + doneSectors));
 
@@ -605,7 +605,7 @@ public sealed partial class Sidecar
 
                                 if(errno != ErrorNumber.NoError)
                                 {
-                                    AaruConsole.ErrorWriteLine(string.Format(Localization.Core.Error_0_reading_sector_1,
+                                    AaruConsole.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
                                                                              errno,
                                                                              tapeFile.FirstBlock + doneSectors));
 
@@ -628,7 +628,7 @@ public sealed partial class Sidecar
 
                                 if(errno != ErrorNumber.NoError)
                                 {
-                                    AaruConsole.ErrorWriteLine(string.Format(Localization.Core.Error_0_reading_sector_1,
+                                    AaruConsole.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
                                                                              errno,
                                                                              tapeFile.FirstBlock + doneSectors));
 
@@ -1046,7 +1046,7 @@ public sealed partial class Sidecar
                     }
                     else
                     {
-                        AaruConsole.ErrorWriteLine(Localization.Core
+                        AaruConsole.Error(Localization.Core
                                                                .SCP_image_do_not_same_number_tracks_0_disk_image_1_ignoring,
                                                    scpImage.Header.end + 1,
                                                    image.Info.Cylinders);
@@ -1054,7 +1054,7 @@ public sealed partial class Sidecar
                 }
                 else
                 {
-                    AaruConsole.ErrorWriteLine(Localization.Core
+                    AaruConsole.Error(Localization.Core
                                                            .SCP_image_do_not_same_number_heads_0_disk_image_1_ignoring,
                                                2,
                                                image.Info.Heads);
@@ -1157,7 +1157,7 @@ public sealed partial class Sidecar
                     }
                     else
                     {
-                        AaruConsole.ErrorWriteLine(Localization.Core
+                        AaruConsole.Error(Localization.Core
                                                                .KryoFlux_image_do_not_same_number_tracks_0_disk_image_1_ignoring,
                                                    kfImage.Info.Cylinders,
                                                    image.Info.Cylinders);
@@ -1165,7 +1165,7 @@ public sealed partial class Sidecar
                 }
                 else
                 {
-                    AaruConsole.ErrorWriteLine(Localization.Core
+                    AaruConsole.Error(Localization.Core
                                                            .KryoFlux_image_do_not_same_number_heads_0_disk_image_1_ignoring,
                                                kfImage.Info.Heads,
                                                image.Info.Heads);
@@ -1249,7 +1249,7 @@ public sealed partial class Sidecar
             }
             else
             {
-                AaruConsole.ErrorWriteLine(Localization.Core
+                AaruConsole.Error(Localization.Core
                                                        .DiscFerret_image_do_not_same_number_tracks_0_disk_image_1_ignoring,
                                            dfiImage.Info.Cylinders,
                                            image.Info.Cylinders);
@@ -1257,7 +1257,7 @@ public sealed partial class Sidecar
         }
         else
         {
-            AaruConsole.ErrorWriteLine(Localization.Core
+            AaruConsole.Error(Localization.Core
                                                    .DiscFerret_image_do_not_same_number_heads_0_disk_image_1_ignoring,
                                        dfiImage.Info.Heads,
                                        image.Info.Heads);

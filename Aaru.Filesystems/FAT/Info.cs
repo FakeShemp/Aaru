@@ -86,10 +86,10 @@ public sealed partial class FAT
 
         ulong expectedClusters = humanBpb.bpc > 0 ? partition.Size / humanBpb.bpc : 0;
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "Human bpc = {0}",               humanBpb.bpc);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "Human clusters = {0}",          humanBpb.clusters);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "Human big_clusters = {0}",      humanBpb.big_clusters);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "Human expected clusters = {0}", expectedClusters);
+        AaruConsole.Debug(MODULE_NAME, "Human bpc = {0}",               humanBpb.bpc);
+        AaruConsole.Debug(MODULE_NAME, "Human clusters = {0}",          humanBpb.clusters);
+        AaruConsole.Debug(MODULE_NAME, "Human big_clusters = {0}",      humanBpb.big_clusters);
+        AaruConsole.Debug(MODULE_NAME, "Human expected clusters = {0}", expectedClusters);
 
         // Check clusters for Human68k are correct
         bool humanClustersCorrect = humanBpb.clusters           == 0
@@ -117,9 +117,9 @@ public sealed partial class FAT
         // Check correct branch for Human68k
         bool humanBranchCorrect = bpbSector[0] == 0x60 && bpbSector[1] >= 0x20 && bpbSector[1] < 0xFE;
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "humanClustersCorrect = {0}", humanClustersCorrect);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "humanOemCorrect = {0}",      humanOemCorrect);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "humanBranchCorrect = {0}",   humanBranchCorrect);
+        AaruConsole.Debug(MODULE_NAME, "humanClustersCorrect = {0}", humanClustersCorrect);
+        AaruConsole.Debug(MODULE_NAME, "humanOemCorrect = {0}",      humanOemCorrect);
+        AaruConsole.Debug(MODULE_NAME, "humanBranchCorrect = {0}",   humanBranchCorrect);
 
         // If all Human68k checks are correct, it is a Human68k FAT16
         if(humanClustersCorrect && humanOemCorrect && humanBranchCorrect && expectedClusters > 0) return true;
@@ -167,25 +167,25 @@ public sealed partial class FAT
 
         string oemString = Encoding.ASCII.GetString(dosOem);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "atari_oem_correct = {0}",     atariOemCorrect);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dos_oem_correct = {0}",       dosOemCorrect);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bps = {0}",                   bps);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bits in bps = {0}",           bitsInBps);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "spc = {0}",                   spc);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "correct_spc = {0}",           correctSpc);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "reserved_secs = {0}",         reservedSecs);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "fats_no = {0}",               numberOfFats);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "root_entries = {0}",          rootEntries);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "sectors = {0}",               sectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "media_descriptor = 0x{0:X2}", mediaDescriptor);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "fat_sectors = {0}",           fatSectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "msx_id = \"{0}\"",            msxString);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "big_sectors = {0}",           bigSectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "bpb_signature = 0x{0:X2}",    bpbSignature);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "fat32_signature = 0x{0:X2}",  fat32Signature);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "fat32_id = \"{0}\"",          fat32String);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "huge_sectors = {0}",          hugeSectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "fat_id = 0x{0:X2}",           fatId);
+        AaruConsole.Debug(MODULE_NAME, "atari_oem_correct = {0}",     atariOemCorrect);
+        AaruConsole.Debug(MODULE_NAME, "dos_oem_correct = {0}",       dosOemCorrect);
+        AaruConsole.Debug(MODULE_NAME, "bps = {0}",                   bps);
+        AaruConsole.Debug(MODULE_NAME, "bits in bps = {0}",           bitsInBps);
+        AaruConsole.Debug(MODULE_NAME, "spc = {0}",                   spc);
+        AaruConsole.Debug(MODULE_NAME, "correct_spc = {0}",           correctSpc);
+        AaruConsole.Debug(MODULE_NAME, "reserved_secs = {0}",         reservedSecs);
+        AaruConsole.Debug(MODULE_NAME, "fats_no = {0}",               numberOfFats);
+        AaruConsole.Debug(MODULE_NAME, "root_entries = {0}",          rootEntries);
+        AaruConsole.Debug(MODULE_NAME, "sectors = {0}",               sectors);
+        AaruConsole.Debug(MODULE_NAME, "media_descriptor = 0x{0:X2}", mediaDescriptor);
+        AaruConsole.Debug(MODULE_NAME, "fat_sectors = {0}",           fatSectors);
+        AaruConsole.Debug(MODULE_NAME, "msx_id = \"{0}\"",            msxString);
+        AaruConsole.Debug(MODULE_NAME, "big_sectors = {0}",           bigSectors);
+        AaruConsole.Debug(MODULE_NAME, "bpb_signature = 0x{0:X2}",    bpbSignature);
+        AaruConsole.Debug(MODULE_NAME, "fat32_signature = 0x{0:X2}",  fat32Signature);
+        AaruConsole.Debug(MODULE_NAME, "fat32_id = \"{0}\"",          fat32String);
+        AaruConsole.Debug(MODULE_NAME, "huge_sectors = {0}",          hugeSectors);
+        AaruConsole.Debug(MODULE_NAME, "fat_id = 0x{0:X2}",           fatId);
 
         ushort apricotBps             = BitConverter.ToUInt16(bpbSector, 0x50);
         byte   apricotSpc             = bpbSector[0x52];
@@ -201,15 +201,15 @@ public sealed partial class FAT
         int  bitsInApricotBps  = CountBits.Count(apricotBps);
         byte apricotPartitions = bpbSector[0x0C];
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "apricot_bps = {0}",                   apricotBps);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "apricot_spc = {0}",                   apricotSpc);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "apricot_correct_spc = {0}",           apricotCorrectSpc);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "apricot_reserved_secs = {0}",         apricotReservedSecs);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "apricot_fats_no = {0}",               apricotFatsNo);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "apricot_root_entries = {0}",          apricotRootEntries);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "apricot_sectors = {0}",               apricotSectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "apricot_media_descriptor = 0x{0:X2}", apricotMediaDescriptor);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "apricot_fat_sectors = {0}",           apricotFatSectors);
+        AaruConsole.Debug(MODULE_NAME, "apricot_bps = {0}",                   apricotBps);
+        AaruConsole.Debug(MODULE_NAME, "apricot_spc = {0}",                   apricotSpc);
+        AaruConsole.Debug(MODULE_NAME, "apricot_correct_spc = {0}",           apricotCorrectSpc);
+        AaruConsole.Debug(MODULE_NAME, "apricot_reserved_secs = {0}",         apricotReservedSecs);
+        AaruConsole.Debug(MODULE_NAME, "apricot_fats_no = {0}",               apricotFatsNo);
+        AaruConsole.Debug(MODULE_NAME, "apricot_root_entries = {0}",          apricotRootEntries);
+        AaruConsole.Debug(MODULE_NAME, "apricot_sectors = {0}",               apricotSectors);
+        AaruConsole.Debug(MODULE_NAME, "apricot_media_descriptor = 0x{0:X2}", apricotMediaDescriptor);
+        AaruConsole.Debug(MODULE_NAME, "apricot_fat_sectors = {0}",           apricotFatSectors);
 
         // This is to support FAT partitions on hybrid ISO/USB images
         if(imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc)
@@ -376,7 +376,7 @@ public sealed partial class FAT
         byte   fat3        = fatSector[2];
         ushort fatCluster2 = (ushort)((fat2 << 8) + fat3 & 0xFFF);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "1st fat cluster 1 = {0:X3}", fatCluster2);
+        AaruConsole.Debug(MODULE_NAME, "1st fat cluster 1 = {0:X3}", fatCluster2);
 
         if(fatCluster2 < 0xFF0) return false;
 
@@ -426,7 +426,7 @@ public sealed partial class FAT
 
         if(fat2SectorNo > partition.End || fat2SectorNo == 0) return false;
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Second_fat_starts_at_0, fat2SectorNo);
+        AaruConsole.Debug(MODULE_NAME, Localization.Second_fat_starts_at_0, fat2SectorNo);
 
         errno = imagePlugin.ReadSector(fat2SectorNo, out byte[] fat2Sector);
 

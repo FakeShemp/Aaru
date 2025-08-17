@@ -57,18 +57,18 @@ public sealed partial class RayDim
 
         string signature = StringHandlers.CToString(header.signature);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.signature = {0}", signature);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.diskType = {0}",  header.diskType);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.heads = {0}",     header.heads);
+        AaruConsole.Debug(MODULE_NAME, "header.signature = {0}", signature);
+        AaruConsole.Debug(MODULE_NAME, "header.diskType = {0}",  header.diskType);
+        AaruConsole.Debug(MODULE_NAME, "header.heads = {0}",     header.heads);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.cylinders = {0}", header.cylinders);
+        AaruConsole.Debug(MODULE_NAME, "header.cylinders = {0}", header.cylinders);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.sectorsPerTrack = {0}", header.sectorsPerTrack);
+        AaruConsole.Debug(MODULE_NAME, "header.sectorsPerTrack = {0}", header.sectorsPerTrack);
 
         var   sx = new Regex(REGEX_SIGNATURE);
         Match sm = sx.Match(signature);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.signature matches? = {0}", sm.Success);
+        AaruConsole.Debug(MODULE_NAME, "header.signature matches? = {0}", sm.Success);
 
         return sm.Success;
     }

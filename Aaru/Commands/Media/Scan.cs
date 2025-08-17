@@ -56,12 +56,12 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
 
         Statistics.AddCommand("media-scan");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",              settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--device={0}",             Markup.Escape(settings.DevicePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--ibg-log={0}",            Markup.Escape(settings.IbgLog     ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--mhdd-log={0}",           Markup.Escape(settings.MhddLog    ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",            settings.Verbose);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--use-buffered-reads={0}", settings.UseBufferedReads);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",              settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--device={0}",             Markup.Escape(settings.DevicePath ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--ibg-log={0}",            Markup.Escape(settings.IbgLog     ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--mhdd-log={0}",           Markup.Escape(settings.MhddLog    ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",            settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--use-buffered-reads={0}", settings.UseBufferedReads);
 
         string devicePath = settings.DevicePath;
 
@@ -80,7 +80,7 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
         switch(dev)
         {
             case null:
-                AaruConsole.ErrorWriteLine(string.Format(UI.Could_not_open_device_error_0, devErrno));
+                AaruConsole.Error(string.Format(UI.Could_not_open_device_error_0, devErrno));
 
                 return (int)devErrno;
             case Devices.Remote.Device remoteDev:
@@ -95,7 +95,7 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
 
         if(dev.Error)
         {
-            AaruConsole.ErrorWriteLine(Error.Print(dev.LastError));
+            AaruConsole.Error(Error.Print(dev.LastError));
 
             return (int)ErrorNumber.CannotOpenDevice;
         }
@@ -115,7 +115,7 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
 
                         scanner.StoppingErrorMessage += text =>
                             {
-                                AaruConsole.ErrorWriteLine($"[red]{Markup.Escape(text)}[/]");
+                                AaruConsole.Error($"[red]{Markup.Escape(text)}[/]");
                             };
 
                         scanner.UpdateProgress += (text, current, maximum) =>

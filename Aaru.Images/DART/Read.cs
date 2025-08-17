@@ -147,7 +147,7 @@ public sealed partial class Dart
                     temp = new byte[l];
                     stream.EnsureRead(temp, 0, temp.Length);
 
-                    AaruConsole.ErrorWriteLine(Localization.LZH_Compressed_images_not_yet_supported);
+                    AaruConsole.Error(Localization.LZH_Compressed_images_not_yet_supported);
 
                     return ErrorNumber.NotImplemented;
                 }
@@ -249,7 +249,7 @@ public sealed partial class Dart
         }
         catch(InvalidCastException) {}
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    Localization.Image_application_0_version_1,
                                    _imageInfo.Application,
                                    _imageInfo.ApplicationVersion);

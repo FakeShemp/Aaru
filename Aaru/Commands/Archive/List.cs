@@ -53,11 +53,11 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
     {
         MainClass.PrintCopyright();
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",       settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--encoding={0}",    Markup.Escape(settings.Encoding ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--long-format={0}", settings.LongFormat);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",       Markup.Escape(settings.Path ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",     settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",       settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--encoding={0}",    Markup.Escape(settings.Encoding ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--long-format={0}", settings.LongFormat);
+        AaruConsole.Debug(MODULE_NAME, "--input={0}",       Markup.Escape(settings.Path ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",     settings.Verbose);
         Statistics.AddCommand("archive-list");
 
         IFilter inputFilter = null;
@@ -70,7 +70,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
 
         if(inputFilter == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Cannot_open_specified_file);
+            AaruConsole.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -83,11 +83,11 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
             {
                 encodingClass = Claunia.Encoding.Encoding.GetEncoding(settings.Encoding);
 
-                if(settings.Verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
+                if(settings.Verbose) AaruConsole.Verbose(UI.encoding_for_0, encodingClass.EncodingName);
             }
             catch(ArgumentException)
             {
-                AaruConsole.ErrorWriteLine(UI.Specified_encoding_is_not_supported);
+                AaruConsole.Error(UI.Specified_encoding_is_not_supported);
 
                 return (int)ErrorNumber.EncodingUnknown;
             }
@@ -113,7 +113,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
             }
 
             if(settings.Verbose)
-                AaruConsole.VerboseWriteLine(UI.Archive_format_identified_by_0_1, archive.Name, archive.Id);
+                AaruConsole.Verbose(UI.Archive_format_identified_by_0_1, archive.Name, archive.Id);
             else
                 AaruConsole.WriteLine(UI.Archive_format_identified_by_0, archive.Name);
 
@@ -129,13 +129,13 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
 
                 if(opened != ErrorNumber.NoError)
                 {
-                    AaruConsole.ErrorWriteLine(UI.Unable_to_open_archive_format);
-                    AaruConsole.ErrorWriteLine(Localization.Core.Error_0, opened);
+                    AaruConsole.Error(UI.Unable_to_open_archive_format);
+                    AaruConsole.Error(Localization.Core.Error_0, opened);
 
                     return (int)opened;
                 }
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, UI.Correctly_opened_archive_file);
+                AaruConsole.Debug(MODULE_NAME, UI.Correctly_opened_archive_file);
 
                 // TODO: Implement
                 //Statistics.AddArchiveFormat(archive.Name);
@@ -143,9 +143,9 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
             }
             catch(Exception ex)
             {
-                AaruConsole.ErrorWriteLine(UI.Unable_to_open_archive_format);
-                AaruConsole.ErrorWriteLine(Localization.Core.Error_0, ex.Message);
-                AaruConsole.WriteException(ex);
+                AaruConsole.Error(UI.Unable_to_open_archive_format);
+                AaruConsole.Error(Localization.Core.Error_0, ex.Message);
+                AaruConsole.Exception(ex);
 
                 return (int)ErrorNumber.CannotOpenFormat;
             }
@@ -159,7 +159,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
                     // Ignore that file
                     if(errno != ErrorNumber.NoError)
                     {
-                        AaruConsole.ErrorWriteLine(UI.Error_0_getting_filename_for_archive_entry_1, errno, i);
+                        AaruConsole.Error(UI.Error_0_getting_filename_for_archive_entry_1, errno, i);
 
                         continue;
                     }
@@ -237,7 +237,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
 
                                 if(errno != ErrorNumber.NoError)
                                 {
-                                    AaruConsole.ErrorWriteLine(UI.Error_0_getting_filename_for_archive_entry_1,
+                                    AaruConsole.Error(UI.Error_0_getting_filename_for_archive_entry_1,
                                                                errno,
                                                                i);
 
@@ -248,7 +248,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
 
                                 if(errno != ErrorNumber.NoError)
                                 {
-                                    AaruConsole.ErrorWriteLine(UI.Error_0_retrieving_stat_for_archive_entry_1,
+                                    AaruConsole.Error(UI.Error_0_retrieving_stat_for_archive_entry_1,
                                                                errno,
                                                                i);
 
@@ -294,7 +294,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
 
                                 if(errno != ErrorNumber.NoError)
                                 {
-                                    AaruConsole.DebugWriteLine(MODULE_NAME,
+                                    AaruConsole.Debug(MODULE_NAME,
                                                                UI.Error_0_getting_compressed_size_for_archive_entry_1,
                                                                errno,
                                                                i);
@@ -306,7 +306,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
 
                                 if(errno != ErrorNumber.NoError)
                                 {
-                                    AaruConsole.DebugWriteLine(MODULE_NAME,
+                                    AaruConsole.Debug(MODULE_NAME,
                                                                UI.Error_0_getting_uncompressed_size_for_archive_entry_1,
                                                                errno,
                                                                i);
@@ -367,8 +367,8 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
         }
         catch(Exception ex)
         {
-            AaruConsole.ErrorWriteLine(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
-            AaruConsole.WriteException(ex);
+            AaruConsole.Error(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
+            AaruConsole.Exception(ex);
 
             return (int)ErrorNumber.UnexpectedException;
         }

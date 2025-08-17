@@ -71,7 +71,7 @@ public sealed partial class ODS
         Array.Copy(hbSector, 0x1F0, magicB, 0, 12);
         string magic = Encoding.ASCII.GetString(magicB);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.magic_0, magic);
+        AaruConsole.Debug(MODULE_NAME, Localization.magic_0, magic);
 
         if(magic is "DECFILE11A  " or "DECFILE11B  ") return true;
 
@@ -87,7 +87,7 @@ public sealed partial class ODS
         Array.Copy(hbSector, 0x3F0, magicB, 0, 12);
         magic = Encoding.ASCII.GetString(magicB);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.unaligned_magic_0, magic);
+        AaruConsole.Debug(MODULE_NAME, Localization.unaligned_magic_0, magic);
 
         return magic is "DECFILE11A  " or "DECFILE11B  ";
     }

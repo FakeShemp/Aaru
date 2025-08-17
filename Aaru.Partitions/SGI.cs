@@ -81,73 +81,73 @@ public sealed class SGI : IPartition
         for(int i = 0; i < dvh.partitions.Length; i++)
             dvh.partitions[i] = (Partition)Marshal.SwapStructureMembersEndian(dvh.partitions[i]);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    Localization.dvh_magic_equals_0_X8_should_be_1_X8,
                                    dvh.magic,
                                    SGI_MAGIC);
 
         if(dvh.magic != SGI_MAGIC) return false;
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.root_part_num = {0}", dvh.root_part_num);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.swap_part_num = {0}", dvh.swap_part_num);
+        AaruConsole.Debug(MODULE_NAME, "dvh.root_part_num = {0}", dvh.root_part_num);
+        AaruConsole.Debug(MODULE_NAME, "dvh.swap_part_num = {0}", dvh.swap_part_num);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.boot_file = \"{0}\"", StringHandlers.CToString(dvh.boot_file));
+        AaruConsole.Debug(MODULE_NAME, "dvh.boot_file = \"{0}\"", StringHandlers.CToString(dvh.boot_file));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_skew = {0}", dvh.device_params.dp_skew);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_gap1 = {0}", dvh.device_params.dp_gap1);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_gap2 = {0}", dvh.device_params.dp_gap2);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_skew = {0}", dvh.device_params.dp_skew);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_gap1 = {0}", dvh.device_params.dp_gap1);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_gap2 = {0}", dvh.device_params.dp_gap2);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "dvh.device_params.dp_spares_cyl = {0}",
                                    dvh.device_params.dp_spares_cyl);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_cyls = {0}",  dvh.device_params.dp_cyls);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_shd0 = {0}",  dvh.device_params.dp_shd0);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_trks0 = {0}", dvh.device_params.dp_trks0);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_cyls = {0}",  dvh.device_params.dp_cyls);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_shd0 = {0}",  dvh.device_params.dp_shd0);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_trks0 = {0}", dvh.device_params.dp_trks0);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_ctq_depth = {0}", dvh.device_params.dp_ctq_depth);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_ctq_depth = {0}", dvh.device_params.dp_ctq_depth);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_cylshi = {0}", dvh.device_params.dp_cylshi);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_cylshi = {0}", dvh.device_params.dp_cylshi);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_secs = {0}", dvh.device_params.dp_secs);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_secs = {0}", dvh.device_params.dp_secs);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_secbytes = {0}", dvh.device_params.dp_secbytes);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_secbytes = {0}", dvh.device_params.dp_secbytes);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "dvh.device_params.dp_interleave = {0}",
                                    dvh.device_params.dp_interleave);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_flags = {0}", dvh.device_params.dp_flags);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_flags = {0}", dvh.device_params.dp_flags);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_datarate = {0}", dvh.device_params.dp_datarate);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_datarate = {0}", dvh.device_params.dp_datarate);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_nretries = {0}", dvh.device_params.dp_nretries);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_nretries = {0}", dvh.device_params.dp_nretries);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_mspw = {0}",  dvh.device_params.dp_mspw);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_xgap1 = {0}", dvh.device_params.dp_xgap1);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_xsync = {0}", dvh.device_params.dp_xsync);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_xrdly = {0}", dvh.device_params.dp_xrdly);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_xgap2 = {0}", dvh.device_params.dp_xgap2);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_mspw = {0}",  dvh.device_params.dp_mspw);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_xgap1 = {0}", dvh.device_params.dp_xgap1);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_xsync = {0}", dvh.device_params.dp_xsync);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_xrdly = {0}", dvh.device_params.dp_xrdly);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_xgap2 = {0}", dvh.device_params.dp_xgap2);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_xrgate = {0}", dvh.device_params.dp_xrgate);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_xrgate = {0}", dvh.device_params.dp_xrgate);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.device_params.dp_xwcont = {0}", dvh.device_params.dp_xwcont);
+        AaruConsole.Debug(MODULE_NAME, "dvh.device_params.dp_xwcont = {0}", dvh.device_params.dp_xwcont);
 
         ulong counter = 0;
 
         for(int i = 0; i < dvh.partitions.Length; i++)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "dvh.partitions[{0}].num_blocks = {1}",
                                        i,
                                        dvh.partitions[i].num_blocks);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "dvh.partitions[{0}].first_block = {1}",
                                        i,
                                        dvh.partitions[i].first_block);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "dvh.partitions[{0}].type = {1}", i, dvh.partitions[i].type);
+            AaruConsole.Debug(MODULE_NAME, "dvh.partitions[{0}].type = {1}", i, dvh.partitions[i].type);
 
             var part = new CommonTypes.Partition
             {

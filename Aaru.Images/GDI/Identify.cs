@@ -108,8 +108,8 @@ public sealed partial class Gdi
         }
         catch(Exception ex)
         {
-            AaruConsole.ErrorWriteLine(Localization.Exception_trying_to_identify_image_file_0, imageFilter.BasePath);
-            AaruConsole.WriteException(ex);
+            AaruConsole.Error(Localization.Exception_trying_to_identify_image_file_0, imageFilter.BasePath);
+            AaruConsole.Exception(ex);
 
             return false;
         }

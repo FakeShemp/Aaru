@@ -52,7 +52,7 @@ public sealed partial class DiscJuggler
         _imageStream.EnsureRead(dscLenB, 0, 4);
         int dscLen = BitConverter.ToInt32(dscLenB, 0);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dscLen = {0}", dscLen);
+        AaruConsole.Debug(MODULE_NAME, "dscLen = {0}", dscLen);
 
         if(dscLen >= _imageStream.Length) return false;
 

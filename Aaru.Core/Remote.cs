@@ -179,7 +179,7 @@ public static class Remote
 
             if(!response.IsSuccessStatusCode)
             {
-                AaruConsole.ErrorWriteLine(Localization.Core.Error_0_when_trying_to_get_updated_entities,
+                AaruConsole.Error(Localization.Core.Error_0_when_trying_to_get_updated_entities,
                                            response.StatusCode);
 
                 return;
@@ -584,8 +584,8 @@ public static class Remote
         }
         catch(Exception ex)
         {
-            AaruConsole.ErrorWriteLine(Localization.Core.Exception_0_when_updating_database, ex);
-            AaruConsole.WriteException(ex);
+            AaruConsole.Error(Localization.Core.Exception_0_when_updating_database, ex);
+            AaruConsole.Exception(ex);
         }
         finally
         {

@@ -55,8 +55,8 @@ sealed class ListDevicesCommand : Command<ListDevicesCommand.Settings>
 
         Statistics.AddCommand("list-devices");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
         Log.Information(UI.List_devices_command);
 

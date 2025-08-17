@@ -63,7 +63,7 @@ public sealed partial class UNICOS
 
         Superblock unicosSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.magic_equals_0_expected_1, unicosSb.s_magic, UNICOS_MAGIC);
+        AaruConsole.Debug(MODULE_NAME, Localization.magic_equals_0_expected_1, unicosSb.s_magic, UNICOS_MAGIC);
 
         return unicosSb.s_magic == UNICOS_MAGIC;
     }

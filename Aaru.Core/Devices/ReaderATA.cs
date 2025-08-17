@@ -395,7 +395,7 @@ sealed partial class Reader
 
         if((status & 0x04) == 0x04) recoveredError = true;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.Core.ATA_ERROR_0_STATUS_1, errorByte, status);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.Core.ATA_ERROR_0_STATUS_1, errorByte, status);
 
         return true;
     }
@@ -454,7 +454,7 @@ sealed partial class Reader
 
         if((status & 0x04) == 0x04) recoveredError = true;
 
-        AaruConsole.DebugWriteLine(ATA_MODULE_NAME, Localization.Core.ATA_ERROR_0_STATUS_1, errorByte, status);
+        AaruConsole.Debug(ATA_MODULE_NAME, Localization.Core.ATA_ERROR_0_STATUS_1, errorByte, status);
 
         return true;
     }

@@ -437,7 +437,7 @@ public sealed partial class LisaFS
         {
             if(_fileSizeCache.TryGetValue(fileId, out int realSize))
                 if(realSize > temp.Length)
-                    AaruConsole.ErrorWriteLine(Localization.File_0_gets_truncated, fileId);
+                    AaruConsole.Error(Localization.File_0_gets_truncated, fileId);
 
             buf = temp;
 

@@ -88,8 +88,8 @@ public static class Statistics
         }
         catch(SqliteException ex)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
-            AaruConsole.WriteException(ex);
+            AaruConsole.Debug(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
+            AaruConsole.Exception(ex);
         }
     }
 
@@ -104,8 +104,8 @@ public static class Statistics
         }
         catch(SqliteException ex)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
-            AaruConsole.WriteException(ex);
+            AaruConsole.Debug(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
+            AaruConsole.Exception(ex);
         }
 
         if(Settings.Settings.Current.Stats is { ShareStats: true }) await SubmitStatsAsync();
@@ -431,8 +431,8 @@ public static class Statistics
         }
         catch(SqliteException ex)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
-            AaruConsole.WriteException(ex);
+            AaruConsole.Debug(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
+            AaruConsole.Exception(ex);
         }
     }
 
@@ -459,8 +459,8 @@ public static class Statistics
         }
         catch(SqliteException ex)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
-            AaruConsole.WriteException(ex);
+            AaruConsole.Debug(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
+            AaruConsole.Exception(ex);
         }
     }
 
@@ -487,8 +487,8 @@ public static class Statistics
         }
         catch(SqliteException ex)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
-            AaruConsole.WriteException(ex);
+            AaruConsole.Debug(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
+            AaruConsole.Exception(ex);
         }
     }
 
@@ -515,8 +515,8 @@ public static class Statistics
         }
         catch(SqliteException ex)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
-            AaruConsole.WriteException(ex);
+            AaruConsole.Debug(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
+            AaruConsole.Exception(ex);
         }
     }
 
@@ -543,8 +543,8 @@ public static class Statistics
         }
         catch(SqliteException ex)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
-            AaruConsole.WriteException(ex);
+            AaruConsole.Debug(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
+            AaruConsole.Exception(ex);
         }
     }
 
@@ -586,8 +586,8 @@ public static class Statistics
         }
         catch(SqliteException ex)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
-            AaruConsole.WriteException(ex);
+            AaruConsole.Debug(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
+            AaruConsole.Exception(ex);
         }
     }
 
@@ -614,8 +614,8 @@ public static class Statistics
         }
         catch(SqliteException ex)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
-            AaruConsole.WriteException(ex);
+            AaruConsole.Debug(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
+            AaruConsole.Exception(ex);
         }
     }
 
@@ -656,8 +656,8 @@ public static class Statistics
         }
         catch(SqliteException ex)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
-            AaruConsole.WriteException(ex);
+            AaruConsole.Debug(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
+            AaruConsole.Exception(ex);
         }
     }
 }

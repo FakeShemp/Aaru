@@ -57,12 +57,12 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
 
         Statistics.AddCommand("fs-info");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",       settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--encoding={0}",    Markup.Escape(settings.Encoding ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--filesystems={0}", settings.Filesystems);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}",       Markup.Escape(settings.ImagePath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--partitions={0}",  settings.Partitions);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",     settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",       settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--encoding={0}",    Markup.Escape(settings.Encoding ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--filesystems={0}", settings.Filesystems);
+        AaruConsole.Debug(MODULE_NAME, "--input={0}",       Markup.Escape(settings.ImagePath ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--partitions={0}",  settings.Partitions);
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",     settings.Verbose);
 
         IFilter inputFilter = null;
 
@@ -74,7 +74,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
 
         if(inputFilter == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Cannot_open_specified_file);
+            AaruConsole.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
@@ -87,11 +87,11 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
             {
                 encodingClass = Claunia.Encoding.Encoding.GetEncoding(settings.Encoding);
 
-                if(settings.Verbose) AaruConsole.VerboseWriteLine(UI.encoding_for_0, encodingClass.EncodingName);
+                if(settings.Verbose) AaruConsole.Verbose(UI.encoding_for_0, encodingClass.EncodingName);
             }
             catch(ArgumentException)
             {
-                AaruConsole.ErrorWriteLine(UI.Specified_encoding_is_not_supported);
+                AaruConsole.Error(UI.Specified_encoding_is_not_supported);
 
                 return (int)ErrorNumber.EncodingUnknown;
             }
@@ -128,7 +128,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
             }
 
             if(settings.Verbose)
-                AaruConsole.VerboseWriteLine(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
+                AaruConsole.Verbose(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
             else
                 AaruConsole.WriteLine(UI.Image_format_identified_by_0, imageFormat.Name);
 
@@ -164,9 +164,9 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
             }
             catch(Exception ex)
             {
-                AaruConsole.ErrorWriteLine(UI.Unable_to_open_image_format);
-                AaruConsole.ErrorWriteLine(Localization.Core.Error_0, ex.Message);
-                AaruConsole.WriteException(ex);
+                AaruConsole.Error(UI.Unable_to_open_image_format);
+                AaruConsole.Error(Localization.Core.Error_0, ex.Message);
+                AaruConsole.Exception(ex);
 
                 return (int)ErrorNumber.CannotOpenFormat;
             }
@@ -189,7 +189,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
 
                 if(partitionsList.Count == 0)
                 {
-                    AaruConsole.DebugWriteLine(MODULE_NAME, UI.No_partitions_found);
+                    AaruConsole.Debug(MODULE_NAME, UI.No_partitions_found);
 
                     if(!settings.Filesystems)
                     {
@@ -367,8 +367,8 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
         }
         catch(Exception ex)
         {
-            AaruConsole.ErrorWriteLine(Markup.Escape(string.Format(UI.Error_reading_file_0, ex.Message)));
-            AaruConsole.WriteException(ex);
+            AaruConsole.Error(Markup.Escape(string.Format(UI.Error_reading_file_0, ex.Message)));
+            AaruConsole.Exception(ex);
 
             return (int)ErrorNumber.UnexpectedException;
         }

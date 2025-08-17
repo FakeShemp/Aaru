@@ -76,7 +76,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME,
+        AaruConsole.Debug(SCSI_MODULE_NAME,
                                    Localization
                                       .Plextor_READ_CD_DA_LBA_1_Block_Size_2_Transfer_Length_3_Subchannel_4_Sense_5_Last_Error_6_took_0_ms,
                                    duration,
@@ -124,7 +124,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.Plextor_READ_DVD_RAW_took_0_ms, duration);
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.Plextor_READ_DVD_RAW_took_0_ms, duration);
 
         return sense;
     }
@@ -154,7 +154,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.PLEXTOR_READ_EEPROM_took_0_ms, duration);
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.PLEXTOR_READ_EEPROM_took_0_ms, duration);
 
         return sense;
     }
@@ -184,7 +184,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.PLEXTOR_READ_EEPROM_took_0_ms, duration);
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.PLEXTOR_READ_EEPROM_took_0_ms, duration);
 
         return sense;
     }
@@ -220,7 +220,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.PLEXTOR_READ_EEPROM_took_0_ms, duration);
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.PLEXTOR_READ_EEPROM_took_0_ms, duration);
 
         return sense;
     }
@@ -257,7 +257,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.PLEXTOR_POWEREC_GET_SPEEDS_took_0_ms, duration);
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.PLEXTOR_POWEREC_GET_SPEEDS_took_0_ms, duration);
 
         if(sense || Error) return sense;
 
@@ -299,7 +299,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.PLEXTOR_POWEREC_GET_SPEEDS_took_0_ms, duration);
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.PLEXTOR_POWEREC_GET_SPEEDS_took_0_ms, duration);
 
         if(sense || Error) return sense;
 
@@ -337,7 +337,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.PLEXTOR_GET_SILENT_MODE_took_0_ms, duration);
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.PLEXTOR_GET_SILENT_MODE_took_0_ms, duration);
 
         return sense;
     }
@@ -369,7 +369,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.PLEXTOR_GET_GIGAREC_took_0_ms, duration);
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.PLEXTOR_GET_GIGAREC_took_0_ms, duration);
 
         return sense;
     }
@@ -408,7 +408,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.PLEXTOR_GET_VARIREC_took_0_ms, duration);
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.PLEXTOR_GET_VARIREC_took_0_ms, duration);
 
         return sense;
     }
@@ -439,7 +439,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.PLEXTOR_GET_SECUREC_took_0_ms, duration);
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.PLEXTOR_GET_SECUREC_took_0_ms, duration);
 
         return sense;
     }
@@ -471,7 +471,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.PLEXTOR_GET_SPEEDREAD_took_0_ms, duration);
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.PLEXTOR_GET_SPEEDREAD_took_0_ms, duration);
 
         return sense;
     }
@@ -503,7 +503,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME,
+        AaruConsole.Debug(SCSI_MODULE_NAME,
                                    Localization.PLEXTOR_GET_SINGLE_SESSION_HIDE_CD_R_took_0_ms,
                                    duration);
 
@@ -544,7 +544,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.PLEXTOR_GET_BOOK_BITSETTING_took_0_ms, duration);
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.PLEXTOR_GET_BOOK_BITSETTING_took_0_ms, duration);
 
         return sense;
     }
@@ -576,7 +576,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.PLEXTOR_GET_TEST_WRITE_DVD_took_0_ms, duration);
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.PLEXTOR_GET_TEST_WRITE_DVD_took_0_ms, duration);
 
         return sense;
     }

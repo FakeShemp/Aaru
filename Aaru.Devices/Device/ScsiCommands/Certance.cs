@@ -77,7 +77,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruConsole.DebugWriteLine(SCSI_MODULE_NAME, Localization.CERTANCE_PARK_UNPARK_took_0_ms, duration);
+        AaruConsole.Debug(SCSI_MODULE_NAME, Localization.CERTANCE_PARK_UNPARK_took_0_ms, duration);
 
         return sense;
     }

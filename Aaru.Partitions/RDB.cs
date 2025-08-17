@@ -214,11 +214,11 @@ public sealed class AmigaRigidDiskBlock : IPartition
 
             uint magic = BigEndianBitConverter.ToUInt32(tmpSector, 0);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Possible_magic_at_block_0_is_1_X8, rdbBlock, magic);
+            AaruConsole.Debug(MODULE_NAME, Localization.Possible_magic_at_block_0_is_1_X8, rdbBlock, magic);
 
             if(magic == RIGID_DISK_BLOCK_MAGIC)
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Found_RDB_magic_at_block_0, rdbBlock);
+                AaruConsole.Debug(MODULE_NAME, Localization.Found_RDB_magic_at_block_0, rdbBlock);
 
                 foundRdb = true;
 
@@ -310,61 +310,61 @@ public sealed class AmigaRigidDiskBlock : IPartition
         rdb.Reserved24 = BigEndianBitConverter.ToUInt32(sector, 0xF8);
         rdb.Reserved25 = BigEndianBitConverter.ToUInt32(sector, 0xFC);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.magic = 0x{0:X8}",             rdb.Magic);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.size = {0} longs, {1} bytes",  rdb.Size, rdb.Size * 4);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.checksum = 0x{0:X8}",          rdb.Checksum);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.targetID = {0}",               rdb.TargetId);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.block_size = {0}",             rdb.BlockSize);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.badblock_ptr = {0}",           rdb.BadblockPtr);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.partition_ptr = {0}",          rdb.PartitionPtr);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.fsheader_ptr = {0}",           rdb.FsheaderPtr);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.driveinitcode = {0}",          rdb.Driveinitcode);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved1 = 0x{0:X8}",         rdb.Reserved1);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved2 = 0x{0:X8}",         rdb.Reserved2);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved3 = 0x{0:X8}",         rdb.Reserved3);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved4 = 0x{0:X8}",         rdb.Reserved4);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved5 = 0x{0:X8}",         rdb.Reserved5);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved6 = 0x{0:X8}",         rdb.Reserved6);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.cylinders = {0}",              rdb.Cylinders);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.spt = {0}",                    rdb.Spt);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.heads = {0}",                  rdb.Heads);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.interleave = {0}",             rdb.Interleave);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.parking = {0}",                rdb.Parking);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved7 = 0x{0:X8}",         rdb.Reserved7);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved8 = 0x{0:X8}",         rdb.Reserved8);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved9 = 0x{0:X8}",         rdb.Reserved9);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.writeprecomp = {0}",           rdb.Writeprecomp);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reducedwrite = {0}",           rdb.Reducedwrite);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.steprate = {0}",               rdb.Steprate);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved10 = 0x{0:X8}",        rdb.Reserved10);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved11 = 0x{0:X8}",        rdb.Reserved11);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved12 = 0x{0:X8}",        rdb.Reserved12);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved13 = 0x{0:X8}",        rdb.Reserved13);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved14 = 0x{0:X8}",        rdb.Reserved14);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.RDBBlockLow = {0}",            rdb.RdbBlockLow);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.RDBBlockHigh = {0}",           rdb.RdbBlockHigh);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.LowCylinder = {0}",            rdb.LowCylinder);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.HighCylinder = {0}",           rdb.HighCylinder);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.CylBlocks = {0}",              rdb.CylBlocks);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.AutoParkSeconds = {0}",        rdb.AutoParkSeconds);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.HighCylinder = {0}",           rdb.HighCylinder);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved15 = 0x{0:X8}",        rdb.Reserved15);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.diskVendor = \"{0}\"",         rdb.DiskVendor);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.diskProduct = \"{0}\"",        rdb.DiskProduct);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.diskRevision = \"{0}\"",       rdb.DiskRevision);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.controllerVendor = \"{0}\"",   rdb.ControllerVendor);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.controllerProduct = \"{0}\"",  rdb.ControllerProduct);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.controllerRevision = \"{0}\"", rdb.ControllerRevision);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved16 = 0x{0:X8}",        rdb.Reserved16);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved17 = 0x{0:X8}",        rdb.Reserved17);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved18 = 0x{0:X8}",        rdb.Reserved18);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved19 = 0x{0:X8}",        rdb.Reserved19);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved20 = 0x{0:X8}",        rdb.Reserved20);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved21 = 0x{0:X8}",        rdb.Reserved21);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved22 = 0x{0:X8}",        rdb.Reserved22);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved23 = 0x{0:X8}",        rdb.Reserved23);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved24 = 0x{0:X8}",        rdb.Reserved24);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "RDB.reserved25 = 0x{0:X8}",        rdb.Reserved25);
+        AaruConsole.Debug(MODULE_NAME, "RDB.magic = 0x{0:X8}",             rdb.Magic);
+        AaruConsole.Debug(MODULE_NAME, "RDB.size = {0} longs, {1} bytes",  rdb.Size, rdb.Size * 4);
+        AaruConsole.Debug(MODULE_NAME, "RDB.checksum = 0x{0:X8}",          rdb.Checksum);
+        AaruConsole.Debug(MODULE_NAME, "RDB.targetID = {0}",               rdb.TargetId);
+        AaruConsole.Debug(MODULE_NAME, "RDB.block_size = {0}",             rdb.BlockSize);
+        AaruConsole.Debug(MODULE_NAME, "RDB.badblock_ptr = {0}",           rdb.BadblockPtr);
+        AaruConsole.Debug(MODULE_NAME, "RDB.partition_ptr = {0}",          rdb.PartitionPtr);
+        AaruConsole.Debug(MODULE_NAME, "RDB.fsheader_ptr = {0}",           rdb.FsheaderPtr);
+        AaruConsole.Debug(MODULE_NAME, "RDB.driveinitcode = {0}",          rdb.Driveinitcode);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved1 = 0x{0:X8}",         rdb.Reserved1);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved2 = 0x{0:X8}",         rdb.Reserved2);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved3 = 0x{0:X8}",         rdb.Reserved3);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved4 = 0x{0:X8}",         rdb.Reserved4);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved5 = 0x{0:X8}",         rdb.Reserved5);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved6 = 0x{0:X8}",         rdb.Reserved6);
+        AaruConsole.Debug(MODULE_NAME, "RDB.cylinders = {0}",              rdb.Cylinders);
+        AaruConsole.Debug(MODULE_NAME, "RDB.spt = {0}",                    rdb.Spt);
+        AaruConsole.Debug(MODULE_NAME, "RDB.heads = {0}",                  rdb.Heads);
+        AaruConsole.Debug(MODULE_NAME, "RDB.interleave = {0}",             rdb.Interleave);
+        AaruConsole.Debug(MODULE_NAME, "RDB.parking = {0}",                rdb.Parking);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved7 = 0x{0:X8}",         rdb.Reserved7);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved8 = 0x{0:X8}",         rdb.Reserved8);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved9 = 0x{0:X8}",         rdb.Reserved9);
+        AaruConsole.Debug(MODULE_NAME, "RDB.writeprecomp = {0}",           rdb.Writeprecomp);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reducedwrite = {0}",           rdb.Reducedwrite);
+        AaruConsole.Debug(MODULE_NAME, "RDB.steprate = {0}",               rdb.Steprate);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved10 = 0x{0:X8}",        rdb.Reserved10);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved11 = 0x{0:X8}",        rdb.Reserved11);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved12 = 0x{0:X8}",        rdb.Reserved12);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved13 = 0x{0:X8}",        rdb.Reserved13);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved14 = 0x{0:X8}",        rdb.Reserved14);
+        AaruConsole.Debug(MODULE_NAME, "RDB.RDBBlockLow = {0}",            rdb.RdbBlockLow);
+        AaruConsole.Debug(MODULE_NAME, "RDB.RDBBlockHigh = {0}",           rdb.RdbBlockHigh);
+        AaruConsole.Debug(MODULE_NAME, "RDB.LowCylinder = {0}",            rdb.LowCylinder);
+        AaruConsole.Debug(MODULE_NAME, "RDB.HighCylinder = {0}",           rdb.HighCylinder);
+        AaruConsole.Debug(MODULE_NAME, "RDB.CylBlocks = {0}",              rdb.CylBlocks);
+        AaruConsole.Debug(MODULE_NAME, "RDB.AutoParkSeconds = {0}",        rdb.AutoParkSeconds);
+        AaruConsole.Debug(MODULE_NAME, "RDB.HighCylinder = {0}",           rdb.HighCylinder);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved15 = 0x{0:X8}",        rdb.Reserved15);
+        AaruConsole.Debug(MODULE_NAME, "RDB.diskVendor = \"{0}\"",         rdb.DiskVendor);
+        AaruConsole.Debug(MODULE_NAME, "RDB.diskProduct = \"{0}\"",        rdb.DiskProduct);
+        AaruConsole.Debug(MODULE_NAME, "RDB.diskRevision = \"{0}\"",       rdb.DiskRevision);
+        AaruConsole.Debug(MODULE_NAME, "RDB.controllerVendor = \"{0}\"",   rdb.ControllerVendor);
+        AaruConsole.Debug(MODULE_NAME, "RDB.controllerProduct = \"{0}\"",  rdb.ControllerProduct);
+        AaruConsole.Debug(MODULE_NAME, "RDB.controllerRevision = \"{0}\"", rdb.ControllerRevision);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved16 = 0x{0:X8}",        rdb.Reserved16);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved17 = 0x{0:X8}",        rdb.Reserved17);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved18 = 0x{0:X8}",        rdb.Reserved18);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved19 = 0x{0:X8}",        rdb.Reserved19);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved20 = 0x{0:X8}",        rdb.Reserved20);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved21 = 0x{0:X8}",        rdb.Reserved21);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved22 = 0x{0:X8}",        rdb.Reserved22);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved23 = 0x{0:X8}",        rdb.Reserved23);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved24 = 0x{0:X8}",        rdb.Reserved24);
+        AaruConsole.Debug(MODULE_NAME, "RDB.reserved25 = 0x{0:X8}",        rdb.Reserved25);
 
         // Reading BadBlock list
         List<BadBlockList> badBlockChain = [];
@@ -372,7 +372,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
 
         while(nextBlock != 0xFFFFFFFF)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Localization.Going_to_block_0_in_search_of_a_BadBlock_block,
                                        nextBlock);
 
@@ -384,7 +384,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
 
             if(magic != BAD_BLOCK_LIST_MAGIC) break;
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Found_BadBlock_block);
+            AaruConsole.Debug(MODULE_NAME, Localization.Found_BadBlock_block);
 
             var chainEntry = new BadBlockList
             {
@@ -399,17 +399,17 @@ public sealed class AmigaRigidDiskBlock : IPartition
             ulong entries = (chainEntry.Size - 6) / 2;
             chainEntry.BlockPairs = new BadBlockEntry[entries];
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "chainEntry.magic = 0x{0:X8}", chainEntry.Magic);
+            AaruConsole.Debug(MODULE_NAME, "chainEntry.magic = 0x{0:X8}", chainEntry.Magic);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "chainEntry.size = {0} longs, {1} bytes",
                                        chainEntry.Size,
                                        chainEntry.Size * 4);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "chainEntry.checksum = 0x{0:X8}", chainEntry.Checksum);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "chainEntry.targetID = {0}",      chainEntry.TargetId);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "chainEntry.next_ptr = {0}",      chainEntry.NextPtr);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "chainEntry.reserved = 0x{0:X8}", chainEntry.Reserved);
+            AaruConsole.Debug(MODULE_NAME, "chainEntry.checksum = 0x{0:X8}", chainEntry.Checksum);
+            AaruConsole.Debug(MODULE_NAME, "chainEntry.targetID = {0}",      chainEntry.TargetId);
+            AaruConsole.Debug(MODULE_NAME, "chainEntry.next_ptr = {0}",      chainEntry.NextPtr);
+            AaruConsole.Debug(MODULE_NAME, "chainEntry.reserved = 0x{0:X8}", chainEntry.Reserved);
 
             for(ulong i = 0; i < entries; i++)
             {
@@ -417,7 +417,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
 
                 chainEntry.BlockPairs[i].GoodBlock = BigEndianBitConverter.ToUInt32(sector, (int)(0x18 + i * 8 + 4));
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            Localization.Bad_block_at_0_replaced_with_good_block_at_1,
                                            chainEntry.BlockPairs[i].BadBlock,
                                            chainEntry.BlockPairs[i].GoodBlock);
@@ -433,7 +433,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
 
         while(nextBlock != 0xFFFFFFFF)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Localization.Going_to_block_0_in_search_of_a_PartitionEntry_block,
                                        nextBlock + sectorOffset);
 
@@ -445,7 +445,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
 
             if(magic != PARTITION_BLOCK_MAGIC) break;
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Found_PartitionEntry_block);
+            AaruConsole.Debug(MODULE_NAME, Localization.Found_PartitionEntry_block);
 
             var partEntry = new PartitionEntry
             {
@@ -503,105 +503,105 @@ public sealed class AmigaRigidDiskBlock : IPartition
             Array.Copy(sector, 0x24, driveName, 0, 32);
             partEntry.DriveName = StringHandlers.PascalToString(driveName, Encoding.GetEncoding("iso-8859-1"));
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.magic = 0x{0:X8}", partEntry.Magic);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.magic = 0x{0:X8}", partEntry.Magic);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "partEntry.size = {0} longs, {1} bytes",
                                        partEntry.Size,
                                        partEntry.Size * 4);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.checksum = 0x{0:X8}",   partEntry.Checksum);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.targetID = {0}",        partEntry.TargetId);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.next_ptr = {0}",        partEntry.NextPtr);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.flags = 0x{0:X8}",      partEntry.Flags);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.reserved1 = 0x{0:X8}",  partEntry.Reserved1);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.reserved2 = 0x{0:X8}",  partEntry.Reserved2);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.devFlags = 0x{0:X8}",   partEntry.DevFlags);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.driveNameLen = {0}",    partEntry.DriveNameLen);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.driveName = \"{0}\"",   partEntry.DriveName);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.reserved3 = 0x{0:X8}",  partEntry.Reserved3);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.reserved4 = 0x{0:X8}",  partEntry.Reserved4);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.reserved5 = 0x{0:X8}",  partEntry.Reserved5);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.reserved6 = 0x{0:X8}",  partEntry.Reserved6);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.reserved7 = 0x{0:X8}",  partEntry.Reserved7);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.reserved8 = 0x{0:X8}",  partEntry.Reserved8);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.reserved9 = 0x{0:X8}",  partEntry.Reserved9);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.reserved10 = 0x{0:X8}", partEntry.Reserved10);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.reserved11 = 0x{0:X8}", partEntry.Reserved11);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.reserved12 = 0x{0:X8}", partEntry.Reserved12);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.reserved13 = 0x{0:X8}", partEntry.Reserved13);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.reserved14 = 0x{0:X8}", partEntry.Reserved14);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.reserved15 = 0x{0:X8}", partEntry.Reserved15);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.reserved16 = 0x{0:X8}", partEntry.Reserved16);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.reserved17 = 0x{0:X8}", partEntry.Reserved17);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.checksum = 0x{0:X8}",   partEntry.Checksum);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.targetID = {0}",        partEntry.TargetId);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.next_ptr = {0}",        partEntry.NextPtr);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.flags = 0x{0:X8}",      partEntry.Flags);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.reserved1 = 0x{0:X8}",  partEntry.Reserved1);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.reserved2 = 0x{0:X8}",  partEntry.Reserved2);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.devFlags = 0x{0:X8}",   partEntry.DevFlags);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.driveNameLen = {0}",    partEntry.DriveNameLen);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.driveName = \"{0}\"",   partEntry.DriveName);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.reserved3 = 0x{0:X8}",  partEntry.Reserved3);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.reserved4 = 0x{0:X8}",  partEntry.Reserved4);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.reserved5 = 0x{0:X8}",  partEntry.Reserved5);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.reserved6 = 0x{0:X8}",  partEntry.Reserved6);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.reserved7 = 0x{0:X8}",  partEntry.Reserved7);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.reserved8 = 0x{0:X8}",  partEntry.Reserved8);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.reserved9 = 0x{0:X8}",  partEntry.Reserved9);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.reserved10 = 0x{0:X8}", partEntry.Reserved10);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.reserved11 = 0x{0:X8}", partEntry.Reserved11);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.reserved12 = 0x{0:X8}", partEntry.Reserved12);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.reserved13 = 0x{0:X8}", partEntry.Reserved13);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.reserved14 = 0x{0:X8}", partEntry.Reserved14);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.reserved15 = 0x{0:X8}", partEntry.Reserved15);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.reserved16 = 0x{0:X8}", partEntry.Reserved16);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.reserved17 = 0x{0:X8}", partEntry.Reserved17);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "partEntry.dosEnvVec.size = {0} longs, {1} bytes",
                                        partEntry.DosEnvVec.Size,
                                        partEntry.DosEnvVec.Size * 4);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "partEntry.dosEnvVec.block_size = {0} longs, {1} bytes",
                                        partEntry.DosEnvVec.BlockSize,
                                        partEntry.DosEnvVec.BlockSize * 4);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "partEntry.dosEnvVec.sec_org = 0x{0:X8}",
                                        partEntry.DosEnvVec.SecOrg);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.dosEnvVec.surfaces = {0}", partEntry.DosEnvVec.Surfaces);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.dosEnvVec.surfaces = {0}", partEntry.DosEnvVec.Surfaces);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.dosEnvVec.spb = {0}", partEntry.DosEnvVec.Spb);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.dosEnvVec.spb = {0}", partEntry.DosEnvVec.Spb);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.dosEnvVec.bpt = {0}", partEntry.DosEnvVec.Bpt);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.dosEnvVec.bpt = {0}", partEntry.DosEnvVec.Bpt);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "partEntry.dosEnvVec.reservedblocks = {0}",
                                        partEntry.DosEnvVec.Reservedblocks);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.dosEnvVec.prealloc = {0}", partEntry.DosEnvVec.Prealloc);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.dosEnvVec.prealloc = {0}", partEntry.DosEnvVec.Prealloc);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "partEntry.dosEnvVec.interleave = {0}",
                                        partEntry.DosEnvVec.Interleave);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "partEntry.dosEnvVec.lowCylinder = {0}",
                                        partEntry.DosEnvVec.LowCylinder);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "partEntry.dosEnvVec.highCylinder = {0}",
                                        partEntry.DosEnvVec.HighCylinder);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "partEntry.dosEnvVec.numBuffer = {0}",
                                        partEntry.DosEnvVec.NumBuffer);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "partEntry.dosEnvVec.bufMemType = {0}",
                                        partEntry.DosEnvVec.BufMemType);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "partEntry.dosEnvVec.maxTransfer = {0}",
                                        partEntry.DosEnvVec.MaxTransfer);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.dosEnvVec.Mask = 0x{0:X8}", partEntry.DosEnvVec.Mask);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.dosEnvVec.Mask = 0x{0:X8}", partEntry.DosEnvVec.Mask);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "partEntry.dosEnvVec.bootPriority = {0}",
                                        partEntry.DosEnvVec.BootPriority);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "partEntry.dosEnvVec.dosType = {0}",
                                        AmigaDosTypeToString(partEntry.DosEnvVec.DosType));
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "partEntry.dosEnvVec.baud = {0}", partEntry.DosEnvVec.Baud);
+            AaruConsole.Debug(MODULE_NAME, "partEntry.dosEnvVec.baud = {0}", partEntry.DosEnvVec.Baud);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "partEntry.dosEnvVec.control = 0x{0:X8}",
                                        partEntry.DosEnvVec.Control);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "partEntry.dosEnvVec.bootBlocks = {0}",
                                        partEntry.DosEnvVec.BootBlocks);
 
@@ -616,7 +616,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
 
         while(nextBlock != 0xFFFFFFFF)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Localization.Going_to_block_0_in_search_of_a_FileSystemHeader_block,
                                        nextBlock);
 
@@ -628,7 +628,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
 
             if(magic != FILESYSTEM_HEADER_MAGIC) break;
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Found_FileSystemHeader_block);
+            AaruConsole.Debug(MODULE_NAME, Localization.Found_FileSystemHeader_block);
 
             var fshd = new FileSystemHeader
             {
@@ -657,37 +657,37 @@ public sealed class AmigaRigidDiskBlock : IPartition
                 }
             };
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.magic = 0x{0:X8}", fshd.Magic);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.magic = 0x{0:X8}", fshd.Magic);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.size = {0} longs, {1} bytes", fshd.Size, fshd.Size * 4);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.size = {0} longs, {1} bytes", fshd.Size, fshd.Size * 4);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.checksum = 0x{0:X8}",  fshd.Checksum);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.targetID = {0}",       fshd.TargetId);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.next_ptr = {0}",       fshd.NextPtr);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.flags = 0x{0:X8}",     fshd.Flags);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.reserved1 = 0x{0:X8}", fshd.Reserved1);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.reserved2 = 0x{0:X8}", fshd.Reserved2);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.checksum = 0x{0:X8}",  fshd.Checksum);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.targetID = {0}",       fshd.TargetId);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.next_ptr = {0}",       fshd.NextPtr);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.flags = 0x{0:X8}",     fshd.Flags);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.reserved1 = 0x{0:X8}", fshd.Reserved1);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.reserved2 = 0x{0:X8}", fshd.Reserved2);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.dosType = {0}", AmigaDosTypeToString(fshd.DosType));
+            AaruConsole.Debug(MODULE_NAME, "FSHD.dosType = {0}", AmigaDosTypeToString(fshd.DosType));
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        "FSHD.version = {0:D2}.{1:D2} (0x{2:X8})",
                                        (fshd.Version & 0xFFFF0000) >> 16,
                                        fshd.Version & 0xFFFF,
                                        fshd.Version);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.patchFlags = 0x{0:X8}", fshd.PatchFlags);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.patchFlags = 0x{0:X8}", fshd.PatchFlags);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.dnode.type = {0}",        fshd.Dnode.Type);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.dnode.task = {0}",        fshd.Dnode.Task);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.dnode.locked = {0}",      fshd.Dnode.Locked);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.dnode.handler = {0}",     fshd.Dnode.Handler);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.dnode.stackSize = {0}",   fshd.Dnode.StackSize);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.dnode.priority = {0}",    fshd.Dnode.Priority);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.dnode.startup = {0}",     fshd.Dnode.Startup);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.dnode.seglist_ptr = {0}", fshd.Dnode.SeglistPtr);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.dnode.type = {0}",        fshd.Dnode.Type);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.dnode.task = {0}",        fshd.Dnode.Task);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.dnode.locked = {0}",      fshd.Dnode.Locked);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.dnode.handler = {0}",     fshd.Dnode.Handler);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.dnode.stackSize = {0}",   fshd.Dnode.StackSize);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.dnode.priority = {0}",    fshd.Dnode.Priority);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.dnode.startup = {0}",     fshd.Dnode.Startup);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.dnode.seglist_ptr = {0}", fshd.Dnode.SeglistPtr);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "FSHD.dnode.global_vec = 0x{0:X8}", fshd.Dnode.GlobalVec);
+            AaruConsole.Debug(MODULE_NAME, "FSHD.dnode.global_vec = 0x{0:X8}", fshd.Dnode.GlobalVec);
 
             nextBlock = fshd.Dnode.SeglistPtr;
             bool thereAreLoadSegments = false;
@@ -695,7 +695,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
 
             while(nextBlock != 0xFFFFFFFF)
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            Localization.Going_to_block_0_in_search_of_a_LoadSegment_block,
                                            nextBlock);
 
@@ -707,7 +707,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
 
                 if(magicSeg != LOAD_SEG_MAGIC) break;
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Found_LoadSegment_block);
+                AaruConsole.Debug(MODULE_NAME, Localization.Found_LoadSegment_block);
 
                 thereAreLoadSegments = true;
 
@@ -723,16 +723,16 @@ public sealed class AmigaRigidDiskBlock : IPartition
                 loadSeg.LoadData = new byte[(loadSeg.Size - 5) * 4];
                 Array.Copy(sector, 0x14, loadSeg.LoadData, 0, (loadSeg.Size - 5) * 4);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "loadSeg.magic = 0x{0:X8}", loadSeg.Magic);
+                AaruConsole.Debug(MODULE_NAME, "loadSeg.magic = 0x{0:X8}", loadSeg.Magic);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            "loadSeg.size = {0} longs, {1} bytes",
                                            loadSeg.Size,
                                            loadSeg.Size * 4);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "loadSeg.checksum = 0x{0:X8}", loadSeg.Checksum);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "loadSeg.targetID = {0}",      loadSeg.TargetId);
-                AaruConsole.DebugWriteLine(MODULE_NAME, "loadSeg.next_ptr = {0}",      loadSeg.NextPtr);
+                AaruConsole.Debug(MODULE_NAME, "loadSeg.checksum = 0x{0:X8}", loadSeg.Checksum);
+                AaruConsole.Debug(MODULE_NAME, "loadSeg.targetID = {0}",      loadSeg.TargetId);
+                AaruConsole.Debug(MODULE_NAME, "loadSeg.next_ptr = {0}",      loadSeg.NextPtr);
 
                 segmentEntries.Add(loadSeg);
                 nextBlock = loadSeg.NextPtr;
@@ -743,7 +743,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
             if(thereAreLoadSegments)
             {
                 string loadSegSha1 = sha1Ctx.End();
-                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.LoadSegment_data_SHA1_0, loadSegSha1);
+                AaruConsole.Debug(MODULE_NAME, Localization.LoadSegment_data_SHA1_0, loadSegSha1);
             }
 
             fshdEntries.Add(fshd);

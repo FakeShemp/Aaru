@@ -54,8 +54,8 @@ sealed class UpdateCommand : AsyncCommand<UpdateCommand.Settings>
     {
         MainClass.PrintCopyright();
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
         if(settings.ClearAll)
         {
@@ -69,7 +69,7 @@ sealed class UpdateCommand : AsyncCommand<UpdateCommand.Settings>
             }
             catch(Exception) when(!Debugger.IsAttached)
             {
-                AaruConsole.ErrorWriteLine(UI.Could_not_remove_local_database);
+                AaruConsole.Error(UI.Could_not_remove_local_database);
 
                 return (int)ErrorNumber.CannotRemoveDatabase;
             }
@@ -83,7 +83,7 @@ sealed class UpdateCommand : AsyncCommand<UpdateCommand.Settings>
             }
             catch(Exception) when(!Debugger.IsAttached)
             {
-                AaruConsole.ErrorWriteLine(UI.Could_not_remove_main_database);
+                AaruConsole.Error(UI.Could_not_remove_main_database);
 
                 return (int)ErrorNumber.CannotRemoveDatabase;
             }

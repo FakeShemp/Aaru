@@ -214,9 +214,9 @@ public sealed class SplashWindowViewModel(SplashWindow view) : ViewModelBase
                 }
                 catch(Exception)
                 {
-                    AaruConsole.ErrorWriteLine(UI.Exception_trying_to_remove_old_database_version);
+                    AaruConsole.Error(UI.Exception_trying_to_remove_old_database_version);
 
-                    AaruConsole.ErrorWriteLine(UI.Please_manually_remove_file_at_0, Settings.Settings.MainDbPath);
+                    AaruConsole.Error(UI.Please_manually_remove_file_at_0, Settings.Settings.MainDbPath);
 
                     return;
                 }

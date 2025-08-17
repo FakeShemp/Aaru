@@ -72,10 +72,10 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
 
         Statistics.AddCommand("device-info");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",         settings.Debug);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--device={0}",        Markup.Escape(settings.Path         ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--output-prefix={0}", Markup.Escape(settings.OutputPrefix ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}",       settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",         settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--device={0}",        Markup.Escape(settings.Path         ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--output-prefix={0}", Markup.Escape(settings.OutputPrefix ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}",       settings.Verbose);
 
         string devicePath = settings.Path;
 
@@ -87,7 +87,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
         switch(dev)
         {
             case null:
-                AaruConsole.ErrorWriteLine(string.Format(UI.Could_not_open_device_error_0, devErrno));
+                AaruConsole.Error(string.Format(UI.Could_not_open_device_error_0, devErrno));
 
                 return (int)devErrno;
             case Devices.Remote.Device remoteDev:
@@ -102,7 +102,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
 
         if(dev.Error)
         {
-            AaruConsole.ErrorWriteLine(Error.Print(dev.LastError));
+            AaruConsole.Error(Error.Print(dev.LastError));
 
             return (int)ErrorNumber.CannotOpenDevice;
         }
@@ -219,13 +219,13 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                         case TupleCodes.CISTPL_SPCL:
                         case TupleCodes.CISTPL_SWIL:
                         case TupleCodes.CISTPL_VERS_2:
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.Core.Invoke_Found_undecoded_tuple_ID_0,
                                                        tuple.Code);
 
                             break;
                         default:
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.Core.Found_unknown_tuple_ID_0,
                                                        (byte)tuple.Code);
 
@@ -234,7 +234,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                 }
             }
             else
-                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Could_not_get_tuples);
+                AaruConsole.Debug(MODULE_NAME, Localization.Core.Could_not_get_tuples);
         }
 
         var devInfo = new DeviceInfo(dev);
@@ -613,7 +613,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                         {
                             if(page.Key == 0x00) continue;
 
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.Core.Found_undecoded_SCSI_VPD_page_0,
                                                        page.Key);
 
@@ -664,11 +664,11 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
 
                 Features.SeparatedFeatures ftr = Features.Separate(devInfo.MmcConfiguration);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            Localization.Core.GET_CONFIGURATION_length_is_0,
                                            ftr.DataLength);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            Localization.Core.GET_CONFIGURATION_current_profile_is_0,
                                            ftr.CurrentProfile);
 
@@ -678,7 +678,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
 
                     foreach(Features.FeatureDescriptor desc in ftr.Descriptors)
                     {
-                        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Feature_0, desc.Code);
+                        AaruConsole.Debug(MODULE_NAME, Localization.Core.Feature_0, desc.Code);
 
                         switch(desc.Code)
                         {
@@ -923,7 +923,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                 }
                 else
                 {
-                    AaruConsole.DebugWriteLine(MODULE_NAME,
+                    AaruConsole.Debug(MODULE_NAME,
                                                Localization.Core.GET_CONFIGURATION_returned_no_feature_descriptors);
                 }
             }

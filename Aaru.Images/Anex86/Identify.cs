@@ -54,14 +54,14 @@ public sealed partial class Anex86
 
         _header = Marshal.SpanToStructureLittleEndian<Header>(hdrB);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "fdihdr.unknown = {0}",   _header.unknown);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "fdihdr.hddtype = {0}",   _header.hddtype);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "fdihdr.hdrSize = {0}",   _header.hdrSize);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "fdihdr.dskSize = {0}",   _header.dskSize);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "fdihdr.bps = {0}",       _header.bps);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "fdihdr.spt = {0}",       _header.spt);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "fdihdr.heads = {0}",     _header.heads);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "fdihdr.cylinders = {0}", _header.cylinders);
+        AaruConsole.Debug(MODULE_NAME, "fdihdr.unknown = {0}",   _header.unknown);
+        AaruConsole.Debug(MODULE_NAME, "fdihdr.hddtype = {0}",   _header.hddtype);
+        AaruConsole.Debug(MODULE_NAME, "fdihdr.hdrSize = {0}",   _header.hdrSize);
+        AaruConsole.Debug(MODULE_NAME, "fdihdr.dskSize = {0}",   _header.dskSize);
+        AaruConsole.Debug(MODULE_NAME, "fdihdr.bps = {0}",       _header.bps);
+        AaruConsole.Debug(MODULE_NAME, "fdihdr.spt = {0}",       _header.spt);
+        AaruConsole.Debug(MODULE_NAME, "fdihdr.heads = {0}",     _header.heads);
+        AaruConsole.Debug(MODULE_NAME, "fdihdr.cylinders = {0}", _header.cylinders);
 
         return stream.Length   == _header.hdrSize + _header.dskSize &&
                _header.dskSize == _header.bps * _header.spt * _header.heads * _header.cylinders;

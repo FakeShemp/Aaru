@@ -72,7 +72,7 @@ public sealed partial class RBF
             IdSector    rbfSb     = Marshal.ByteArrayToStructureBigEndian<IdSector>(sector);
             NewIdSector rbf9000Sb = Marshal.ByteArrayToStructureBigEndian<NewIdSector>(sector);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Localization.magic_at_0_equals_1_or_2_expected_3_or_4,
                                        location,
                                        rbfSb.dd_sync,
@@ -118,7 +118,7 @@ public sealed partial class RBF
             rbfSb     = Marshal.ByteArrayToStructureBigEndian<IdSector>(sector);
             rbf9000Sb = Marshal.ByteArrayToStructureBigEndian<NewIdSector>(sector);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Localization.magic_at_0_equals_1_or_2_expected_3_or_4,
                                        location,
                                        rbfSb.dd_sync,

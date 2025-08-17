@@ -59,59 +59,59 @@ public static class Dreamcast
 
         IPBin ipbin = Marshal.ByteArrayToStructureLittleEndian<IPBin>(ipbin_sector);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "dreamcast_ipbin.maker_id = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.maker_id));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dreamcast_ipbin.spare_space1 = \"{0}\"", (char)ipbin.spare_space1);
+        AaruConsole.Debug(MODULE_NAME, "dreamcast_ipbin.spare_space1 = \"{0}\"", (char)ipbin.spare_space1);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "dreamcast_ipbin.dreamcast_media = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.dreamcast_media));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dreamcast_ipbin.disc_no = {0}", (char)ipbin.disc_no);
+        AaruConsole.Debug(MODULE_NAME, "dreamcast_ipbin.disc_no = {0}", (char)ipbin.disc_no);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "dreamcast_ipbin.disc_no_separator = \"{0}\"",
                                    (char)ipbin.disc_no_separator);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dreamcast_ipbin.disc_total_nos = \"{0}\"", (char)ipbin.disc_total_nos);
+        AaruConsole.Debug(MODULE_NAME, "dreamcast_ipbin.disc_total_nos = \"{0}\"", (char)ipbin.disc_total_nos);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "dreamcast_ipbin.spare_space2 = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.spare_space2));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "dreamcast_ipbin.region_codes = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.region_codes));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "dreamcast_ipbin.peripherals = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.peripherals));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "dreamcast_ipbin.product_no = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.product_no));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "dreamcast_ipbin.product_version = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.product_version));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "dreamcast_ipbin.release_date = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.release_date));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "dreamcast_ipbin.spare_space3 = \"{0}\"", (char)ipbin.spare_space3);
+        AaruConsole.Debug(MODULE_NAME, "dreamcast_ipbin.spare_space3 = \"{0}\"", (char)ipbin.spare_space3);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "dreamcast_ipbin.boot_filename = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.boot_filename));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "dreamcast_ipbin.producer = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.producer));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "dreamcast_ipbin.product_name = \"{0}\"",
                                    Encoding.ASCII.GetString(ipbin.product_name));
 

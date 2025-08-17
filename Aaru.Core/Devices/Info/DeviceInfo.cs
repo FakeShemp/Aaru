@@ -88,27 +88,27 @@ public partial class DeviceInfo
 
                 if(sense)
                 {
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "STATUS = 0x{0:X2}", errorRegisters.Status);
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "ERROR = 0x{0:X2}",  errorRegisters.Error);
+                    AaruConsole.Debug(MODULE_NAME, "STATUS = 0x{0:X2}", errorRegisters.Status);
+                    AaruConsole.Debug(MODULE_NAME, "ERROR = 0x{0:X2}",  errorRegisters.Error);
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "NSECTOR = 0x{0:X2}", errorRegisters.SectorCount);
+                    AaruConsole.Debug(MODULE_NAME, "NSECTOR = 0x{0:X2}", errorRegisters.SectorCount);
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "SECTOR = 0x{0:X2}", errorRegisters.Sector);
+                    AaruConsole.Debug(MODULE_NAME, "SECTOR = 0x{0:X2}", errorRegisters.Sector);
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "CYLHIGH = 0x{0:X2}", errorRegisters.CylinderHigh);
+                    AaruConsole.Debug(MODULE_NAME, "CYLHIGH = 0x{0:X2}", errorRegisters.CylinderHigh);
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "CYLLOW = 0x{0:X2}", errorRegisters.CylinderLow);
+                    AaruConsole.Debug(MODULE_NAME, "CYLLOW = 0x{0:X2}", errorRegisters.CylinderLow);
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "DEVICE = 0x{0:X2}", errorRegisters.DeviceHead);
+                    AaruConsole.Debug(MODULE_NAME, "DEVICE = 0x{0:X2}", errorRegisters.DeviceHead);
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Error_code_equals_0, dev.LastError);
+                    AaruConsole.Debug(MODULE_NAME, Localization.Core.Error_code_equals_0, dev.LastError);
 
                     break;
                 }
 
                 if(dev.Error)
                 {
-                    AaruConsole.ErrorWriteLine(Localization.Core.Error_0_querying_ATA_IDENTIFY, dev.LastError);
+                    AaruConsole.Error(Localization.Core.Error_0_querying_ATA_IDENTIFY, dev.LastError);
 
                     break;
                 }
@@ -128,20 +128,20 @@ public partial class DeviceInfo
 
                 if(sense)
                 {
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "STATUS = 0x{0:X2}", errorRegisters.Status);
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "ERROR = 0x{0:X2}",  errorRegisters.Error);
+                    AaruConsole.Debug(MODULE_NAME, "STATUS = 0x{0:X2}", errorRegisters.Status);
+                    AaruConsole.Debug(MODULE_NAME, "ERROR = 0x{0:X2}",  errorRegisters.Error);
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "NSECTOR = 0x{0:X2}", errorRegisters.SectorCount);
+                    AaruConsole.Debug(MODULE_NAME, "NSECTOR = 0x{0:X2}", errorRegisters.SectorCount);
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "SECTOR = 0x{0:X2}", errorRegisters.Sector);
+                    AaruConsole.Debug(MODULE_NAME, "SECTOR = 0x{0:X2}", errorRegisters.Sector);
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "CYLHIGH = 0x{0:X2}", errorRegisters.CylinderHigh);
+                    AaruConsole.Debug(MODULE_NAME, "CYLHIGH = 0x{0:X2}", errorRegisters.CylinderHigh);
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "CYLLOW = 0x{0:X2}", errorRegisters.CylinderLow);
+                    AaruConsole.Debug(MODULE_NAME, "CYLLOW = 0x{0:X2}", errorRegisters.CylinderLow);
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "DEVICE = 0x{0:X2}", errorRegisters.DeviceHead);
+                    AaruConsole.Debug(MODULE_NAME, "DEVICE = 0x{0:X2}", errorRegisters.DeviceHead);
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Core.Error_code_equals_0, dev.LastError);
+                    AaruConsole.Debug(MODULE_NAME, Localization.Core.Error_code_equals_0, dev.LastError);
 
                     break;
                 }
@@ -149,7 +149,7 @@ public partial class DeviceInfo
                 if(!dev.Error)
                     AtapiIdentify = ataBuf;
                 else
-                    AaruConsole.ErrorWriteLine(Localization.Core.Error_0_querying_ATA_PACKET_IDENTIFY, dev.LastError);
+                    AaruConsole.Error(Localization.Core.Error_0_querying_ATA_PACKET_IDENTIFY, dev.LastError);
 
                 // ATAPI devices are also SCSI devices
                 goto case DeviceType.SCSI;
@@ -161,7 +161,7 @@ public partial class DeviceInfo
 
                 if(sense)
                 {
-                    AaruConsole.ErrorWriteLine(Localization.Core.SCSI_error_0, Sense.PrettifySense(senseBuf));
+                    AaruConsole.Error(Localization.Core.SCSI_error_0, Sense.PrettifySense(senseBuf));
 
                     break;
                 }
@@ -546,14 +546,14 @@ public partial class DeviceInfo
                         sense = dev.ReadBlockLimits(out byte[] seqBuf, out senseBuf, dev.Timeout, out _);
 
                         if(sense)
-                            AaruConsole.ErrorWriteLine("READ BLOCK LIMITS:\n{0}", Sense.PrettifySense(senseBuf));
+                            AaruConsole.Error("READ BLOCK LIMITS:\n{0}", Sense.PrettifySense(senseBuf));
                         else
                             BlockLimits = seqBuf;
 
                         sense = dev.ReportDensitySupport(out seqBuf, out senseBuf, dev.Timeout, out _);
 
                         if(sense)
-                            AaruConsole.ErrorWriteLine("REPORT DENSITY SUPPORT:\n{0}", Sense.PrettifySense(senseBuf));
+                            AaruConsole.Error("REPORT DENSITY SUPPORT:\n{0}", Sense.PrettifySense(senseBuf));
                         else
                         {
                             DensitySupport       = seqBuf;
@@ -564,7 +564,7 @@ public partial class DeviceInfo
 
                         if(sense)
                         {
-                            AaruConsole.ErrorWriteLine("REPORT DENSITY SUPPORT (MEDIUM):\n{0}",
+                            AaruConsole.Error("REPORT DENSITY SUPPORT (MEDIUM):\n{0}",
                                                        Sense.PrettifySense(senseBuf));
                         }
                         else
@@ -621,7 +621,7 @@ public partial class DeviceInfo
 
                 break;
             default:
-                AaruConsole.ErrorWriteLine(Localization.Core.Unknown_device_type_0_cannot_get_information, dev.Type);
+                AaruConsole.Error(Localization.Core.Unknown_device_type_0_cannot_get_information, dev.Type);
 
                 break;
         }

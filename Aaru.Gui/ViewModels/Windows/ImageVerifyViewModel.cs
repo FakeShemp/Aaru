@@ -439,7 +439,7 @@ public sealed class ImageVerifyViewModel : ViewModelBase
                                       };
                 });
 
-                AaruConsole.VerboseWriteLine(UI.Checking_disc_image_checksums_took_0,
+                AaruConsole.Verbose(UI.Checking_disc_image_checksums_took_0,
                                              chkStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
             }
         }
@@ -611,7 +611,7 @@ public sealed class ImageVerifyViewModel : ViewModelBase
                 chkStopwatch.Stop();
             }
 
-            AaruConsole.VerboseWriteLine(UI.Checking_sector_checksums_took_0,
+            AaruConsole.Verbose(UI.Checking_sector_checksums_took_0,
                                          chkStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
 
             await Dispatcher.UIThread.InvokeAsync(() =>

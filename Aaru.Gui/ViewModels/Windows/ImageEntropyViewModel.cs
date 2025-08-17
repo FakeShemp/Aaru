@@ -316,7 +316,7 @@ public sealed class ImageEntropyViewModel : ViewModelBase
 
         if(WholeDiscChecked && _inputFormat is IOpticalMediaImage { Sessions.Count: > 1 })
         {
-            AaruConsole.ErrorWriteLine(UI.Calculating_disc_entropy_of_multisession_images_is_not_yet_implemented);
+            AaruConsole.Error(UI.Calculating_disc_entropy_of_multisession_images_is_not_yet_implemented);
             WholeDiscChecked = false;
         }
 

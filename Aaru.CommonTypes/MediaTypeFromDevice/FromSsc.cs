@@ -53,70 +53,70 @@ public static partial class MediaTypeFromDevice
                 switch(densityCode)
                 {
                     case 0x04:
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_QIC11,
                                                    mediumType,
                                                    densityCode);
 
                         return MediaType.QIC11;
                     case 0x05:
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_QIC24,
                                                    mediumType,
                                                    densityCode);
 
                         return MediaType.QIC24;
                     case 0x09:
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_IBM3490,
                                                    mediumType,
                                                    densityCode);
 
                         return MediaType.IBM3490;
                     case 0x0F:
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_QIC120,
                                                    mediumType,
                                                    densityCode);
 
                         return MediaType.QIC120;
                     case 0x10:
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_QIC150,
                                                    mediumType,
                                                    densityCode);
 
                         return MediaType.QIC150;
                     case 0x13:
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_DDS,
                                                    mediumType,
                                                    densityCode);
 
                         return MediaType.DDS1;
                     case 0x24:
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_DDS2,
                                                    mediumType,
                                                    densityCode);
 
                         return MediaType.DDS2;
                     case 0x25:
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_DDS3,
                                                    mediumType,
                                                    densityCode);
 
                         return MediaType.DDS3;
                     case 0x26:
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_DDS4,
                                                    mediumType,
                                                    densityCode);
 
                         return MediaType.DDS4;
                     case 0x28:
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_IBM3490E,
                                                    mediumType,
                                                    densityCode);
@@ -125,7 +125,7 @@ public static partial class MediaTypeFromDevice
                     case 0x40:
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_LTO_ult,
                                                        mediumType,
                                                        densityCode);
@@ -135,7 +135,7 @@ public static partial class MediaTypeFromDevice
 
                         if(model.StartsWith("sdz", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_SAIT,
                                                        mediumType,
                                                        densityCode);
@@ -149,7 +149,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_LTO2_ult,
                                                        mediumType,
                                                        densityCode);
@@ -164,7 +164,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_LTO2_ult,
                                                        mediumType,
                                                        densityCode);
@@ -174,7 +174,7 @@ public static partial class MediaTypeFromDevice
 
                         if(vendor.Equals("stk", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_T9840A,
                                                        mediumType,
                                                        densityCode);
@@ -189,7 +189,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(vendor.Equals("stk", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_T9940A,
                                                        mediumType,
                                                        densityCode);
@@ -204,7 +204,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_LTO3,
                                                        mediumType,
                                                        densityCode);
@@ -214,7 +214,7 @@ public static partial class MediaTypeFromDevice
 
                         if(vendor.Equals("stk", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_T9940B,
                                                        mediumType,
                                                        densityCode);
@@ -229,7 +229,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(vendor.Equals("stk", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_T9940C,
                                                        mediumType,
                                                        densityCode);
@@ -244,7 +244,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_LTO4,
                                                        mediumType,
                                                        densityCode);
@@ -254,7 +254,7 @@ public static partial class MediaTypeFromDevice
 
                         if(vendor.Equals("stk", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_T9840D,
                                                        mediumType,
                                                        densityCode);
@@ -269,7 +269,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(vendor.Equals("stk", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_T10000A,
                                                        mediumType,
                                                        densityCode);
@@ -284,7 +284,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(vendor.Equals("stk", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_T10000B,
                                                        mediumType,
                                                        densityCode);
@@ -299,7 +299,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(vendor.Equals("stk", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_T10000C,
                                                        mediumType,
                                                        densityCode);
@@ -314,7 +314,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(vendor.Equals("stk", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_T10000D,
                                                        mediumType,
                                                        densityCode);
@@ -329,7 +329,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_LTO5,
                                                        mediumType,
                                                        densityCode);
@@ -343,7 +343,7 @@ public static partial class MediaTypeFromDevice
                     // Used by some HP drives for all generations
                     case 0x8C:
                     {
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_DDS,
                                                    mediumType,
                                                    densityCode);
@@ -361,7 +361,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_WORM_LTO3,
                                                        mediumType,
                                                        densityCode);
@@ -376,7 +376,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_WORM_LTO4,
                                                        mediumType,
                                                        densityCode);
@@ -391,7 +391,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_WORM_LTO5,
                                                        mediumType,
                                                        densityCode);
@@ -413,7 +413,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_LTO_ult,
                                                        mediumType,
                                                        densityCode);
@@ -426,7 +426,7 @@ public static partial class MediaTypeFromDevice
 
                     case 0x40:
                     {
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_LTO,
                                                    mediumType,
                                                    densityCode);
@@ -445,7 +445,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_LTO2_ult,
                                                        mediumType,
                                                        densityCode);
@@ -458,7 +458,7 @@ public static partial class MediaTypeFromDevice
 
                     case 0x42:
                     {
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_LTO2,
                                                    mediumType,
                                                    densityCode);
@@ -478,7 +478,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("dat", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_DDS3_dat,
                                                        mediumType,
                                                        densityCode);
@@ -501,7 +501,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("dat", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_DDS4_alt,
                                                        mediumType,
                                                        densityCode);
@@ -524,7 +524,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("dat", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_DAT72_dat,
                                                        mediumType,
                                                        densityCode);
@@ -547,7 +547,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_LTO3,
                                                        mediumType,
                                                        densityCode);
@@ -570,7 +570,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_WORM_LTO3,
                                                        mediumType,
                                                        densityCode);
@@ -593,7 +593,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_LTO4,
                                                        mediumType,
                                                        densityCode);
@@ -616,7 +616,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_WORM_LTO4,
                                                        mediumType,
                                                        densityCode);
@@ -639,7 +639,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("dat", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_DDS2_dat,
                                                        mediumType,
                                                        densityCode);
@@ -662,7 +662,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_LTO5,
                                                        mediumType,
                                                        densityCode);
@@ -685,7 +685,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_WORM_LTO5,
                                                        mediumType,
                                                        densityCode);
@@ -708,7 +708,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_LTO6_ult,
                                                        mediumType,
                                                        densityCode);
@@ -731,7 +731,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_WORM_LTO6_ult,
                                                        mediumType,
                                                        densityCode);
@@ -754,7 +754,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_LTO7_ult,
                                                        mediumType,
                                                        densityCode);
@@ -777,7 +777,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("ult", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_WORM_LTO7_ult,
                                                        mediumType,
                                                        densityCode);
@@ -799,7 +799,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_15m,
                                                        mediumType,
                                                        densityCode);
@@ -809,7 +809,7 @@ public static partial class MediaTypeFromDevice
 
                         if(vendor.Equals("ibm", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_IBM3592,
                                                        mediumType,
                                                        densityCode);
@@ -819,7 +819,7 @@ public static partial class MediaTypeFromDevice
 
                         if(model.StartsWith("vxa", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_VXA,
                                                        mediumType,
                                                        densityCode);
@@ -838,7 +838,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_15m,
                                                        mediumType,
                                                        densityCode);
@@ -854,7 +854,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(vendor.Equals("ibm", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_IBM3592,
                                                        mediumType,
                                                        densityCode);
@@ -869,7 +869,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("vxa", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_VXA,
                                                        mediumType,
                                                        densityCode);
@@ -891,7 +891,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_28m,
                                                        mediumType,
                                                        densityCode);
@@ -901,7 +901,7 @@ public static partial class MediaTypeFromDevice
 
                         if(vendor.Equals("ibm", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_IBM3592,
                                                        mediumType,
                                                        densityCode);
@@ -916,7 +916,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("dlt", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_CompactTape,
                                                        mediumType,
                                                        densityCode);
@@ -935,7 +935,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_28m,
                                                        mediumType,
                                                        densityCode);
@@ -950,7 +950,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("dlt", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_CompactTapeII,
                                                        mediumType,
                                                        densityCode);
@@ -966,7 +966,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(vendor.Equals("ibm", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_IBM3592,
                                                        mediumType,
                                                        densityCode);
@@ -981,7 +981,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("vxa", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_VXA2,
                                                        mediumType,
                                                        densityCode);
@@ -996,7 +996,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("vxa", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_VXA3,
                                                        mediumType,
                                                        densityCode);
@@ -1018,7 +1018,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_54m,
                                                        mediumType,
                                                        densityCode);
@@ -1028,7 +1028,7 @@ public static partial class MediaTypeFromDevice
 
                         if(model.StartsWith("dlt", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_DLTtapeIII,
                                                        mediumType,
                                                        densityCode);
@@ -1047,7 +1047,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_54m,
                                                        mediumType,
                                                        densityCode);
@@ -1066,7 +1066,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("dlt", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_DLTtapeIII,
                                                        mediumType,
                                                        densityCode);
@@ -1088,7 +1088,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_80m,
                                                        mediumType,
                                                        densityCode);
@@ -1098,7 +1098,7 @@ public static partial class MediaTypeFromDevice
 
                         if(model.StartsWith("dlt", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_DLTtapeIIIxt,
                                                        mediumType,
                                                        densityCode);
@@ -1117,7 +1117,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_80m,
                                                        mediumType,
                                                        densityCode);
@@ -1134,7 +1134,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("dlt", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_DLTtapeIIIxt,
                                                        mediumType,
                                                        densityCode);
@@ -1156,7 +1156,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_106m,
                                                        mediumType,
                                                        densityCode);
@@ -1168,7 +1168,7 @@ public static partial class MediaTypeFromDevice
                            model.StartsWith("sdlt",     StringComparison.OrdinalIgnoreCase) ||
                            model.StartsWith("superdlt", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_DLTtapeIV,
                                                        mediumType,
                                                        densityCode);
@@ -1178,7 +1178,7 @@ public static partial class MediaTypeFromDevice
 
                         if(model.StartsWith("stt", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Travan5_stt,
                                                        mediumType,
                                                        densityCode);
@@ -1197,7 +1197,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_106m,
                                                        mediumType,
                                                        densityCode);
@@ -1225,7 +1225,7 @@ public static partial class MediaTypeFromDevice
                            model.StartsWith("sdlt",     StringComparison.OrdinalIgnoreCase) ||
                            model.StartsWith("superdlt", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_DLTtapeIV,
                                                        mediumType,
                                                        densityCode);
@@ -1240,7 +1240,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("stt", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Travan5_stt,
                                                        mediumType,
                                                        densityCode);
@@ -1263,7 +1263,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_160m,
                                                        mediumType,
                                                        densityCode);
@@ -1275,7 +1275,7 @@ public static partial class MediaTypeFromDevice
                            model.StartsWith("sdlt",     StringComparison.OrdinalIgnoreCase) ||
                            model.StartsWith("superdlt", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_SDLT,
                                                        mediumType,
                                                        densityCode);
@@ -1290,7 +1290,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_160m,
                                                        mediumType,
                                                        densityCode);
@@ -1309,7 +1309,7 @@ public static partial class MediaTypeFromDevice
                            model.StartsWith("sdlt",     StringComparison.OrdinalIgnoreCase) ||
                            model.StartsWith("superdlt", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_SDLT,
                                                        mediumType,
                                                        densityCode);
@@ -1334,7 +1334,7 @@ public static partial class MediaTypeFromDevice
                            model.StartsWith("sdlt",     StringComparison.OrdinalIgnoreCase) ||
                            model.StartsWith("superdlt", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_SDLT2,
                                                        mediumType,
                                                        densityCode);
@@ -1361,7 +1361,7 @@ public static partial class MediaTypeFromDevice
                            model.StartsWith("sdlt",     StringComparison.OrdinalIgnoreCase) ||
                            model.StartsWith("superdlt", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_VStape,
                                                        mediumType,
                                                        densityCode);
@@ -1379,7 +1379,7 @@ public static partial class MediaTypeFromDevice
             {
                 if(model.StartsWith("stt", StringComparison.OrdinalIgnoreCase))
                 {
-                    AaruConsole.DebugWriteLine(MODULE_NAME,
+                    AaruConsole.Debug(MODULE_NAME,
                                                Localization.SCSI_Media_Type_Description_Travan7,
                                                mediumType,
                                                densityCode);
@@ -1395,7 +1395,7 @@ public static partial class MediaTypeFromDevice
                 {
                     case 0x45:
                         // HP Colorado tapes have a different capacity but return same density code at least in Seagate drives
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_Travan4,
                                                    mediumType,
                                                    densityCode);
@@ -1410,7 +1410,7 @@ public static partial class MediaTypeFromDevice
                 switch(densityCode)
                 {
                     case 0x47:
-                        AaruConsole.DebugWriteLine(MODULE_NAME,
+                        AaruConsole.Debug(MODULE_NAME,
                                                    Localization.SCSI_Media_Type_Description_Travan5,
                                                    mediumType,
                                                    densityCode);
@@ -1432,7 +1432,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_22m,
                                                        mediumType,
                                                        densityCode);
@@ -1459,7 +1459,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_40m,
                                                        mediumType,
                                                        densityCode);
@@ -1486,7 +1486,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_76m,
                                                        mediumType,
                                                        densityCode);
@@ -1513,7 +1513,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_112m,
                                                        mediumType,
                                                        densityCode);
@@ -1537,7 +1537,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_22m_AME,
                                                        mediumType,
                                                        densityCode);
@@ -1561,7 +1561,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_170m,
                                                        mediumType,
                                                        densityCode);
@@ -1585,7 +1585,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_125m,
                                                        mediumType,
                                                        densityCode);
@@ -1609,7 +1609,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_45m,
                                                        mediumType,
                                                        densityCode);
@@ -1633,7 +1633,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_225m,
                                                        mediumType,
                                                        densityCode);
@@ -1657,7 +1657,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_150m,
                                                        mediumType,
                                                        densityCode);
@@ -1681,7 +1681,7 @@ public static partial class MediaTypeFromDevice
                     {
                         if(model.StartsWith("exb", StringComparison.OrdinalIgnoreCase))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.SCSI_Media_Type_Description_Exatape_75m,
                                                        mediumType,
                                                        densityCode);

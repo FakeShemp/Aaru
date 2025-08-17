@@ -72,7 +72,7 @@ public sealed partial class XFS
 
                 Superblock xfsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sbpiece);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            Localization.magic_at_0_X3_equals_1_expected_2,
                                            location,
                                            xfsSb.magicnum,
@@ -102,7 +102,7 @@ public sealed partial class XFS
 
                 Superblock xfsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            Localization.magic_at_0_equals_1_expected_2,
                                            location,
                                            xfsSb.magicnum,
@@ -149,7 +149,7 @@ public sealed partial class XFS
 
                 xfsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sbpiece);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            Localization.magic_at_0_X3_equals_1_expected_2,
                                            location,
                                            xfsSb.magicnum,
@@ -176,7 +176,7 @@ public sealed partial class XFS
 
                 xfsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME,
+                AaruConsole.Debug(MODULE_NAME,
                                            Localization.magic_at_0_equals_1_expected_2,
                                            location,
                                            xfsSb.magicnum,

@@ -53,21 +53,21 @@ public sealed partial class AppleDOS
 
         if(_device.Info.Sectors != 455 && _device.Info.Sectors != 560)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Incorrect_device_size);
+            AaruConsole.Debug(MODULE_NAME, Localization.Incorrect_device_size);
 
             return ErrorNumber.InOutError;
         }
 
         if(_start > 0)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Partitions_are_not_supported);
+            AaruConsole.Debug(MODULE_NAME, Localization.Partitions_are_not_supported);
 
             return ErrorNumber.InOutError;
         }
 
         if(_device.Info.SectorSize != 256)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Incorrect_sector_size);
+            AaruConsole.Debug(MODULE_NAME, Localization.Incorrect_sector_size);
 
             return ErrorNumber.InOutError;
         }
@@ -89,7 +89,7 @@ public sealed partial class AppleDOS
 
         if(error != ErrorNumber.NoError)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Unable_to_read_catalog);
+            AaruConsole.Debug(MODULE_NAME, Localization.Unable_to_read_catalog);
 
             return error;
         }
@@ -100,7 +100,7 @@ public sealed partial class AppleDOS
 
         if(error != ErrorNumber.NoError)
         {
-            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Unable_cache_all_files);
+            AaruConsole.Debug(MODULE_NAME, Localization.Unable_cache_all_files);
 
             return error;
         }

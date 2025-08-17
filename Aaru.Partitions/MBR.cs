@@ -351,8 +351,8 @@ public sealed class MBR : IPartition
         DiskManagerMasterBootRecord mbrOntrack =
             Marshal.ByteArrayToStructureLittleEndian<DiskManagerMasterBootRecord>(sector);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "xmlmedia = {0}",     imagePlugin.Info.MetadataMediaType);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "mbr.magic = {0:X4}", mbr.magic);
+        AaruConsole.Debug(MODULE_NAME, "xmlmedia = {0}",     imagePlugin.Info.MetadataMediaType);
+        AaruConsole.Debug(MODULE_NAME, "mbr.magic = {0:X4}", mbr.magic);
 
         if(mbr.magic != MBR_MAGIC) return false; // Not MBR
 
@@ -362,7 +362,7 @@ public sealed class MBR : IPartition
 
         ulong signature = BitConverter.ToUInt64(hdrBytes, 0);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "gpt.signature = 0x{0:X16}", signature);
+        AaruConsole.Debug(MODULE_NAME, "gpt.signature = 0x{0:X16}", signature);
 
         if(signature == GPT_MAGIC) return false;
 
@@ -373,7 +373,7 @@ public sealed class MBR : IPartition
             if(errno != ErrorNumber.NoError) return false;
 
             signature = BitConverter.ToUInt64(hdrBytes, 512);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "gpt.signature @ 0x200 = 0x{0:X16}", signature);
+            AaruConsole.Debug(MODULE_NAME, "gpt.signature @ 0x200 = 0x{0:X16}", signature);
 
             if(signature == GPT_MAGIC) return false;
         }
@@ -454,21 +454,21 @@ public sealed class MBR : IPartition
             // Some buggy implementations do some rounding errors getting a few sectors beyond device size
             if(lbaStart + lbaSectors > imagePlugin.Info.Sectors) lbaSectors = imagePlugin.Info.Sectors - lbaStart;
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.status {0}",         entry.status);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.type {0}",           entry.type);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.lba_start {0}",      entry.lba_start);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.lba_sectors {0}",    entry.lba_sectors);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.start_cylinder {0}", startCylinder);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.start_head {0}",     entry.start_head);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.start_sector {0}",   startSector);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.end_cylinder {0}",   endCylinder);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.end_head {0}",       entry.end_head);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.end_sector {0}",     endSector);
+            AaruConsole.Debug(MODULE_NAME, "entry.status {0}",         entry.status);
+            AaruConsole.Debug(MODULE_NAME, "entry.type {0}",           entry.type);
+            AaruConsole.Debug(MODULE_NAME, "entry.lba_start {0}",      entry.lba_start);
+            AaruConsole.Debug(MODULE_NAME, "entry.lba_sectors {0}",    entry.lba_sectors);
+            AaruConsole.Debug(MODULE_NAME, "entry.start_cylinder {0}", startCylinder);
+            AaruConsole.Debug(MODULE_NAME, "entry.start_head {0}",     entry.start_head);
+            AaruConsole.Debug(MODULE_NAME, "entry.start_sector {0}",   startSector);
+            AaruConsole.Debug(MODULE_NAME, "entry.end_cylinder {0}",   endCylinder);
+            AaruConsole.Debug(MODULE_NAME, "entry.end_head {0}",       entry.end_head);
+            AaruConsole.Debug(MODULE_NAME, "entry.end_sector {0}",     endSector);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.minix = {0}", minix);
+            AaruConsole.Debug(MODULE_NAME, "entry.minix = {0}", minix);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "lba_start {0}",   lbaStart);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "lba_sectors {0}", lbaSectors);
+            AaruConsole.Debug(MODULE_NAME, "lba_start {0}",   lbaStart);
+            AaruConsole.Debug(MODULE_NAME, "lba_sectors {0}", lbaSectors);
 
             if(valid && minix) // Let's mix the fun
             {
@@ -507,7 +507,7 @@ public sealed class MBR : IPartition
                 }
             }
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "entry.extended = {0}", extended);
+            AaruConsole.Debug(MODULE_NAME, "entry.extended = {0}", extended);
 
             if(!extended) continue;
 
@@ -522,7 +522,7 @@ public sealed class MBR : IPartition
 
                 ExtendedBootRecord ebr = Marshal.ByteArrayToStructureLittleEndian<ExtendedBootRecord>(sector);
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "ebr.magic == MBR_Magic = {0}", ebr.magic == MBR_MAGIC);
+                AaruConsole.Debug(MODULE_NAME, "ebr.magic == MBR_Magic = {0}", ebr.magic == MBR_MAGIC);
 
                 if(ebr.magic != MBR_MAGIC) break;
 
@@ -539,16 +539,16 @@ public sealed class MBR : IPartition
                     ulong extSectors = ebrEntry.lba_sectors;
                     bool  extMinix   = false;
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "ebr_entry.status {0}",         ebrEntry.status);
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "ebr_entry.type {0}",           ebrEntry.type);
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "ebr_entry.lba_start {0}",      ebrEntry.lba_start);
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "ebr_entry.lba_sectors {0}",    ebrEntry.lba_sectors);
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "ebr_entry.start_cylinder {0}", startCylinder);
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "ebr_entry.start_head {0}",     ebrEntry.start_head);
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "ebr_entry.start_sector {0}",   startSector);
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "ebr_entry.end_cylinder {0}",   endCylinder);
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "ebr_entry.end_head {0}",       ebrEntry.end_head);
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "ebr_entry.end_sector {0}",     endSector);
+                    AaruConsole.Debug(MODULE_NAME, "ebr_entry.status {0}",         ebrEntry.status);
+                    AaruConsole.Debug(MODULE_NAME, "ebr_entry.type {0}",           ebrEntry.type);
+                    AaruConsole.Debug(MODULE_NAME, "ebr_entry.lba_start {0}",      ebrEntry.lba_start);
+                    AaruConsole.Debug(MODULE_NAME, "ebr_entry.lba_sectors {0}",    ebrEntry.lba_sectors);
+                    AaruConsole.Debug(MODULE_NAME, "ebr_entry.start_cylinder {0}", startCylinder);
+                    AaruConsole.Debug(MODULE_NAME, "ebr_entry.start_head {0}",     ebrEntry.start_head);
+                    AaruConsole.Debug(MODULE_NAME, "ebr_entry.start_sector {0}",   startSector);
+                    AaruConsole.Debug(MODULE_NAME, "ebr_entry.end_cylinder {0}",   endCylinder);
+                    AaruConsole.Debug(MODULE_NAME, "ebr_entry.end_head {0}",       ebrEntry.end_head);
+                    AaruConsole.Debug(MODULE_NAME, "ebr_entry.end_sector {0}",     endSector);
 
                     // Let's start the fun...
                     extValid &= ebrEntry.status is 0x00 or 0x80;
@@ -585,8 +585,8 @@ public sealed class MBR : IPartition
                     extStart   /= divider;
                     extSectors /= divider;
 
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "ext_start {0}",   extStart);
-                    AaruConsole.DebugWriteLine(MODULE_NAME, "ext_sectors {0}", extSectors);
+                    AaruConsole.Debug(MODULE_NAME, "ext_start {0}",   extStart);
+                    AaruConsole.Debug(MODULE_NAME, "ext_sectors {0}", extSectors);
 
                     if(ebrEntry.type is 0x05 or 0x0F or 0x15 or 0x1F or 0x85 or 0x91 or 0x9B or 0xC5 or 0xCF or 0xD5)
                     {
@@ -640,7 +640,7 @@ public sealed class MBR : IPartition
                     partitions.Add(part);
                 }
 
-                AaruConsole.DebugWriteLine(MODULE_NAME, "next_start {0}", nextStart);
+                AaruConsole.Debug(MODULE_NAME, "next_start {0}", nextStart);
                 processingExtended &= nextStart != 0;
                 processingExtended &= nextStart <= imagePlugin.Info.Sectors;
                 lbaStart           =  nextStart;
@@ -664,7 +664,7 @@ public sealed class MBR : IPartition
 
         ExtendedBootRecord mnx = Marshal.ByteArrayToStructureLittleEndian<ExtendedBootRecord>(sector);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "mnx.magic == MBR_Magic = {0}", mnx.magic == MBR_MAGIC);
+        AaruConsole.Debug(MODULE_NAME, "mnx.magic == MBR_Magic = {0}", mnx.magic == MBR_MAGIC);
 
         if(mnx.magic != MBR_MAGIC) return false;
 
@@ -680,16 +680,16 @@ public sealed class MBR : IPartition
             ulong  mnxStart      = mnxEntry.lba_start;
             ulong  mnxSectors    = mnxEntry.lba_sectors;
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "mnx_entry.status {0}",         mnxEntry.status);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "mnx_entry.type {0}",           mnxEntry.type);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "mnx_entry.lba_start {0}",      mnxEntry.lba_start);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "mnx_entry.lba_sectors {0}",    mnxEntry.lba_sectors);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "mnx_entry.start_cylinder {0}", startCylinder);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "mnx_entry.start_head {0}",     mnxEntry.start_head);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "mnx_entry.start_sector {0}",   startSector);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "mnx_entry.end_cylinder {0}",   endCylinder);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "mnx_entry.end_head {0}",       mnxEntry.end_head);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "mnx_entry.end_sector {0}",     endSector);
+            AaruConsole.Debug(MODULE_NAME, "mnx_entry.status {0}",         mnxEntry.status);
+            AaruConsole.Debug(MODULE_NAME, "mnx_entry.type {0}",           mnxEntry.type);
+            AaruConsole.Debug(MODULE_NAME, "mnx_entry.lba_start {0}",      mnxEntry.lba_start);
+            AaruConsole.Debug(MODULE_NAME, "mnx_entry.lba_sectors {0}",    mnxEntry.lba_sectors);
+            AaruConsole.Debug(MODULE_NAME, "mnx_entry.start_cylinder {0}", startCylinder);
+            AaruConsole.Debug(MODULE_NAME, "mnx_entry.start_head {0}",     mnxEntry.start_head);
+            AaruConsole.Debug(MODULE_NAME, "mnx_entry.start_sector {0}",   startSector);
+            AaruConsole.Debug(MODULE_NAME, "mnx_entry.end_cylinder {0}",   endCylinder);
+            AaruConsole.Debug(MODULE_NAME, "mnx_entry.end_head {0}",       mnxEntry.end_head);
+            AaruConsole.Debug(MODULE_NAME, "mnx_entry.end_sector {0}",     endSector);
 
             mnxValid &= mnxEntry.status is 0x00 or 0x80;
             mnxValid &= mnxEntry.type is 0x81 or 0x80;
@@ -723,8 +723,8 @@ public sealed class MBR : IPartition
             mnxStart   /= divider;
             mnxSectors /= divider;
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "mnx_start {0}",   mnxStart);
-            AaruConsole.DebugWriteLine(MODULE_NAME, "mnx_sectors {0}", mnxSectors);
+            AaruConsole.Debug(MODULE_NAME, "mnx_start {0}",   mnxStart);
+            AaruConsole.Debug(MODULE_NAME, "mnx_sectors {0}", mnxSectors);
 
             if(!mnxValid) continue;
 

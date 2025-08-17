@@ -83,7 +83,7 @@ public sealed partial class CloneCd
         catch(IOException ex)
         {
             ErrorMessage = string.Format(Localization.Could_not_create_new_image_file_exception_0, ex.Message);
-            AaruConsole.WriteException(ex);
+            AaruConsole.Exception(ex);
 
             return false;
         }
@@ -484,7 +484,7 @@ public sealed partial class CloneCd
                         ErrorMessage = string.Format(Localization.Could_not_create_subchannel_file_exception_0,
                                                      ex.Message);
 
-                        AaruConsole.WriteException(ex);
+                        AaruConsole.Exception(ex);
 
                         return false;
                     }
@@ -560,7 +560,7 @@ public sealed partial class CloneCd
                         ErrorMessage = string.Format(Localization.Could_not_create_subchannel_file_exception_0,
                                                      ex.Message);
 
-                        AaruConsole.WriteException(ex);
+                        AaruConsole.Exception(ex);
 
                         return false;
                     }

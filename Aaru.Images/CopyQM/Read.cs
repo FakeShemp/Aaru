@@ -55,35 +55,35 @@ public sealed partial class CopyQm
         stream.EnsureRead(hdr, 0, 133);
         _header = Marshal.ByteArrayToStructureLittleEndian<Header>(hdr);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.magic = 0x{0:X4}",       _header.magic);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.mark = 0x{0:X2}",        _header.mark);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.sectorSize = {0}",       _header.sectorSize);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.sectorPerCluster = {0}", _header.sectorPerCluster);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.reservedSectors = {0}",  _header.reservedSectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.fatCopy = {0}",          _header.fatCopy);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.rootEntries = {0}",      _header.rootEntries);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.sectors = {0}",          _header.sectors);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.mediaType = 0x{0:X2}",   _header.mediaType);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.sectorsPerFat = {0}",    _header.sectorsPerFat);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.sectorsPerTrack = {0}",  _header.sectorsPerTrack);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.heads = {0}",            _header.heads);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.hidden = {0}",           _header.hidden);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.sectorsBig = {0}",       _header.sectorsBig);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.description = {0}",      _header.description);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.blind = {0}",            _header.blind);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.density = {0}",          _header.density);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.imageCylinders = {0}",   _header.imageCylinders);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.totalCylinders = {0}",   _header.totalCylinders);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.crc = 0x{0:X8}",         _header.crc);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.volumeLabel = {0}",      _header.volumeLabel);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.time = 0x{0:X4}",        _header.time);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.date = 0x{0:X4}",        _header.date);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.commentLength = {0}",    _header.commentLength);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.secbs = {0}",            _header.secbs);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.unknown = 0x{0:X4}",     _header.unknown);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.interleave = {0}",       _header.interleave);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.skew = {0}",             _header.skew);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "header.drive = {0}",            _header.drive);
+        AaruConsole.Debug(MODULE_NAME, "header.magic = 0x{0:X4}",       _header.magic);
+        AaruConsole.Debug(MODULE_NAME, "header.mark = 0x{0:X2}",        _header.mark);
+        AaruConsole.Debug(MODULE_NAME, "header.sectorSize = {0}",       _header.sectorSize);
+        AaruConsole.Debug(MODULE_NAME, "header.sectorPerCluster = {0}", _header.sectorPerCluster);
+        AaruConsole.Debug(MODULE_NAME, "header.reservedSectors = {0}",  _header.reservedSectors);
+        AaruConsole.Debug(MODULE_NAME, "header.fatCopy = {0}",          _header.fatCopy);
+        AaruConsole.Debug(MODULE_NAME, "header.rootEntries = {0}",      _header.rootEntries);
+        AaruConsole.Debug(MODULE_NAME, "header.sectors = {0}",          _header.sectors);
+        AaruConsole.Debug(MODULE_NAME, "header.mediaType = 0x{0:X2}",   _header.mediaType);
+        AaruConsole.Debug(MODULE_NAME, "header.sectorsPerFat = {0}",    _header.sectorsPerFat);
+        AaruConsole.Debug(MODULE_NAME, "header.sectorsPerTrack = {0}",  _header.sectorsPerTrack);
+        AaruConsole.Debug(MODULE_NAME, "header.heads = {0}",            _header.heads);
+        AaruConsole.Debug(MODULE_NAME, "header.hidden = {0}",           _header.hidden);
+        AaruConsole.Debug(MODULE_NAME, "header.sectorsBig = {0}",       _header.sectorsBig);
+        AaruConsole.Debug(MODULE_NAME, "header.description = {0}",      _header.description);
+        AaruConsole.Debug(MODULE_NAME, "header.blind = {0}",            _header.blind);
+        AaruConsole.Debug(MODULE_NAME, "header.density = {0}",          _header.density);
+        AaruConsole.Debug(MODULE_NAME, "header.imageCylinders = {0}",   _header.imageCylinders);
+        AaruConsole.Debug(MODULE_NAME, "header.totalCylinders = {0}",   _header.totalCylinders);
+        AaruConsole.Debug(MODULE_NAME, "header.crc = 0x{0:X8}",         _header.crc);
+        AaruConsole.Debug(MODULE_NAME, "header.volumeLabel = {0}",      _header.volumeLabel);
+        AaruConsole.Debug(MODULE_NAME, "header.time = 0x{0:X4}",        _header.time);
+        AaruConsole.Debug(MODULE_NAME, "header.date = 0x{0:X4}",        _header.date);
+        AaruConsole.Debug(MODULE_NAME, "header.commentLength = {0}",    _header.commentLength);
+        AaruConsole.Debug(MODULE_NAME, "header.secbs = {0}",            _header.secbs);
+        AaruConsole.Debug(MODULE_NAME, "header.unknown = 0x{0:X4}",     _header.unknown);
+        AaruConsole.Debug(MODULE_NAME, "header.interleave = {0}",       _header.interleave);
+        AaruConsole.Debug(MODULE_NAME, "header.skew = {0}",             _header.skew);
+        AaruConsole.Debug(MODULE_NAME, "header.drive = {0}",            _header.drive);
 
         byte[] cmt = new byte[_header.commentLength];
         stream.EnsureRead(cmt, 0, _header.commentLength);
@@ -150,12 +150,12 @@ public sealed partial class CopyQm
 
         _headerChecksumOk = (-1 * sum & 0xFF) == _header.headerChecksum;
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    Localization.Calculated_header_checksum_equals_0_X2_1,
                                    -1 * sum & 0xFF,
                                    _headerChecksumOk);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    Localization.Calculated_data_CRC_equals_0_X8_1,
                                    _calculatedDataCrc,
                                    _calculatedDataCrc == _header.crc);
@@ -193,10 +193,10 @@ public sealed partial class CopyQm
 
         _decodedImage.Close();
 
-        AaruConsole.VerboseWriteLine(Localization.CopyQM_image_contains_a_disk_of_type_0, _imageInfo.MediaType);
+        AaruConsole.Verbose(Localization.CopyQM_image_contains_a_disk_of_type_0, _imageInfo.MediaType);
 
         if(!string.IsNullOrEmpty(_imageInfo.Comments))
-            AaruConsole.VerboseWriteLine(Localization.CopyQM_comments_0, _imageInfo.Comments);
+            AaruConsole.Verbose(Localization.CopyQM_comments_0, _imageInfo.Comments);
 
         _imageInfo.Heads           = _header.heads;
         _imageInfo.Cylinders       = _header.totalCylinders;

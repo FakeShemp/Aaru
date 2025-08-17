@@ -452,17 +452,17 @@ public class ReedSolomon
 
             if(count != noEras)
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.lambda_is_wrong);
+                AaruConsole.Debug(MODULE_NAME, Localization.lambda_is_wrong);
 
                 return -1;
             }
 
-            AaruConsole.DebugWriteLine(MODULE_NAME,
+            AaruConsole.Debug(MODULE_NAME,
                                        Localization.Erasure_positions_as_determined_by_roots_of_Eras_Loc_Poly);
 
-            for(i = 0; i < count; i++) AaruConsole.DebugWriteLine(MODULE_NAME, "{0} ", loc[i]);
+            for(i = 0; i < count; i++) AaruConsole.Debug(MODULE_NAME, "{0} ", loc[i]);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, "\n");
+            AaruConsole.Debug(MODULE_NAME, "\n");
 #endif
         }
 
@@ -569,11 +569,11 @@ public class ReedSolomon
         }
 
 #if DEBUG
-        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Final_error_positions);
+        AaruConsole.Debug(MODULE_NAME, Localization.Final_error_positions);
 
-        for(i = 0; i < count; i++) AaruConsole.DebugWriteLine(MODULE_NAME, "{0} ", loc[i]);
+        for(i = 0; i < count; i++) AaruConsole.Debug(MODULE_NAME, "{0} ", loc[i]);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "\n");
+        AaruConsole.Debug(MODULE_NAME, "\n");
 #endif
 
         if(degLambda != count) return -1;
@@ -625,7 +625,7 @@ public class ReedSolomon
 
             if(den == 0)
             {
-                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.ERROR_denominator_equals_zero);
+                AaruConsole.Debug(MODULE_NAME, Localization.ERROR_denominator_equals_zero);
 
                 return -1;
             }

@@ -299,7 +299,7 @@ public sealed partial class CPM
                             _workingDefinition.skew = 2;
                             _workingDefinition.sofs = 0;
 
-                            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Found_Amstrad_superblock);
+                            AaruConsole.Debug(MODULE_NAME, Localization.Found_Amstrad_superblock);
                         }
                     }
                 }
@@ -367,7 +367,7 @@ public sealed partial class CPM
                                                     directoryLength,
                                                     out directory);
 
-                            AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Found_CPM_86_hard_disk_superblock);
+                            AaruConsole.Debug(MODULE_NAME, Localization.Found_CPM_86_hard_disk_superblock);
 
                             // Build a CP/M disk definition
                             _workingDefinition = new CpmDefinition
@@ -874,7 +874,7 @@ public sealed partial class CPM
                                                 directoryLength,
                                                 out directory);
 
-                        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Found_CPM_86_floppy_identifier);
+                        AaruConsole.Debug(MODULE_NAME, Localization.Found_CPM_86_floppy_identifier);
                     }
                 }
             }
@@ -884,7 +884,7 @@ public sealed partial class CPM
             {
                 if(CheckDir(directory))
                 {
-                    AaruConsole.DebugWriteLine(MODULE_NAME, Localization.First_directory_block_seems_correct);
+                    AaruConsole.Debug(MODULE_NAME, Localization.First_directory_block_seems_correct);
 
                     return true;
                 }
@@ -896,11 +896,11 @@ public sealed partial class CPM
             if(!_cpmFound)
             {
                 // Load all definitions
-                AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Trying_to_load_definitions);
+                AaruConsole.Debug(MODULE_NAME, Localization.Trying_to_load_definitions);
 
                 if(LoadDefinitions() && _definitions?.definitions is { Count: > 0 })
                 {
-                    AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Trying_all_known_definitions);
+                    AaruConsole.Debug(MODULE_NAME, Localization.Trying_all_known_definitions);
 
                     foreach(CpmDefinition def in from def in _definitions.definitions
                                                  let sectors = (ulong)(def.cylinders * def.sides * def.sectorsPerTrack)
@@ -909,7 +909,7 @@ public sealed partial class CPM
                                                  select def)
                     {
                         // Definition seems to describe current disk, at least, same number of volume sectors and bytes per sector
-                        AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Trying_definition_0, def.comment);
+                        AaruConsole.Debug(MODULE_NAME, Localization.Trying_definition_0, def.comment);
                         ulong offset;
 
                         if(def.sofs != 0)
@@ -970,7 +970,7 @@ public sealed partial class CPM
                                                    StringComparison.InvariantCultureIgnoreCase) ==
                                     0)
                             {
-                                AaruConsole.DebugWriteLine(MODULE_NAME,
+                                AaruConsole.Debug(MODULE_NAME,
                                                            Localization
                                                               .Dont_know_how_to_handle_COLUMBIA_ordering_not_proceeding_with_this_definition);
 
@@ -981,7 +981,7 @@ public sealed partial class CPM
                             else if(string.Compare(def.order, "EAGLE", StringComparison.InvariantCultureIgnoreCase) ==
                                     0)
                             {
-                                AaruConsole.DebugWriteLine(MODULE_NAME,
+                                AaruConsole.Debug(MODULE_NAME,
                                                            Localization
                                                               .Don_know_how_to_handle_EAGLE_ordering_not_proceeding_with_this_definition);
 
@@ -989,7 +989,7 @@ public sealed partial class CPM
                             }
                             else
                             {
-                                AaruConsole.DebugWriteLine(MODULE_NAME,
+                                AaruConsole.Debug(MODULE_NAME,
                                                            Localization
                                                               .Unknown_order_type_0_not_proceeding_with_this_definition,
                                                            def.order);
@@ -1018,7 +1018,7 @@ public sealed partial class CPM
 
                         if(def.evenOdd)
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization
                                                           .Definition_contains_EVEN_ODD_field_with_unknown_meaning_detection_may_be_wrong);
                         }
@@ -1032,7 +1032,7 @@ public sealed partial class CPM
                         // Check the directory
                         if(CheckDir(directory))
                         {
-                            AaruConsole.DebugWriteLine(MODULE_NAME,
+                            AaruConsole.Debug(MODULE_NAME,
                                                        Localization.Definition_0_has_a_correct_directory,
                                                        def.comment);
 

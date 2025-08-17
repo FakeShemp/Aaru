@@ -239,7 +239,7 @@ public sealed partial class FAT
 
                 if(name == "" && extension == "")
                 {
-                    AaruConsole.DebugWriteLine(MODULE_NAME, Localization.Found_empty_filename_in_0, path);
+                    AaruConsole.Debug(MODULE_NAME, Localization.Found_empty_filename_in_0, path);
 
                     if(!_debug || dirent is { size: > 0, start_cluster: 0 }) continue; // Skip invalid name
 

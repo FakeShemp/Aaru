@@ -80,7 +80,7 @@ public sealed partial class T98
         catch(IOException ex)
         {
             ErrorMessage = string.Format(Localization.Could_not_create_new_image_file_exception_0, ex.Message);
-            AaruConsole.WriteException(ex);
+            AaruConsole.Exception(ex);
 
             return false;
         }

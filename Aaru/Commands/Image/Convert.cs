@@ -81,63 +81,63 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
         Statistics.AddCommand("convert-image");
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--cicm-xml={0}", Markup.Escape(settings.CicmXml  ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--comments={0}", Markup.Escape(settings.Comments ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--count={0}",    settings.Count);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--creator={0}",  Markup.Escape(settings.Creator ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",    settings.Debug);
+        AaruConsole.Debug(MODULE_NAME, "--cicm-xml={0}", Markup.Escape(settings.CicmXml  ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--comments={0}", Markup.Escape(settings.Comments ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--count={0}",    settings.Count);
+        AaruConsole.Debug(MODULE_NAME, "--creator={0}",  Markup.Escape(settings.Creator ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--debug={0}",    settings.Debug);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "--drive-manufacturer={0}",
                                    Markup.Escape(settings.DriveManufacturer ?? ""));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--drive-model={0}", Markup.Escape(settings.DriveModel ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--drive-model={0}", Markup.Escape(settings.DriveModel ?? ""));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "--drive-revision={0}",
                                    Markup.Escape(settings.DriveFirmwareRevision ?? ""));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--drive-serial={0}", Markup.Escape(settings.DriveSerialNumber ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--force={0}", settings.Force);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--format={0}", Markup.Escape(settings.Format ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--geometry={0}", Markup.Escape(settings.Geometry ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--input={0}", Markup.Escape(settings.InputPath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-barcode={0}", Markup.Escape(settings.MediaBarcode ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-lastsequence={0}", settings.LastMediaSequence);
+        AaruConsole.Debug(MODULE_NAME, "--drive-serial={0}", Markup.Escape(settings.DriveSerialNumber ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--force={0}", settings.Force);
+        AaruConsole.Debug(MODULE_NAME, "--format={0}", Markup.Escape(settings.Format ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--geometry={0}", Markup.Escape(settings.Geometry ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--input={0}", Markup.Escape(settings.InputPath ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--media-barcode={0}", Markup.Escape(settings.MediaBarcode ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--media-lastsequence={0}", settings.LastMediaSequence);
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "--media-manufacturer={0}",
                                    Markup.Escape(settings.MediaManufacturer ?? ""));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-model={0}", Markup.Escape(settings.MediaModel ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--media-model={0}", Markup.Escape(settings.MediaModel ?? ""));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME,
+        AaruConsole.Debug(MODULE_NAME,
                                    "--media-partnumber={0}",
                                    Markup.Escape(settings.MediaPartNumber ?? ""));
 
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-sequence={0}", settings.MediaSequence);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-serial={0}", Markup.Escape(settings.MediaSerialNumber ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--media-title={0}", Markup.Escape(settings.MediaTitle ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--options={0}", Markup.Escape(settings.Options ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--output={0}", Markup.Escape(settings.OutputPath ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--resume-file={0}", Markup.Escape(settings.ResumeFile ?? ""));
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--fix-subchannel-position={0}", fixSubchannelPosition);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--fix-subchannel={0}", fixSubchannel);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--fix-subchannel-crc={0}", fixSubchannelCrc);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--generate-subchannels={0}", settings.GenerateSubchannels);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--decrypt={0}", settings.Decrypt);
-        AaruConsole.DebugWriteLine(MODULE_NAME, "--aaru-metadata={0}", Markup.Escape(settings.AaruMetadata ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--media-sequence={0}", settings.MediaSequence);
+        AaruConsole.Debug(MODULE_NAME, "--media-serial={0}", Markup.Escape(settings.MediaSerialNumber ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--media-title={0}", Markup.Escape(settings.MediaTitle ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--options={0}", Markup.Escape(settings.Options ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--output={0}", Markup.Escape(settings.OutputPath ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--resume-file={0}", Markup.Escape(settings.ResumeFile ?? ""));
+        AaruConsole.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
+        AaruConsole.Debug(MODULE_NAME, "--fix-subchannel-position={0}", fixSubchannelPosition);
+        AaruConsole.Debug(MODULE_NAME, "--fix-subchannel={0}", fixSubchannel);
+        AaruConsole.Debug(MODULE_NAME, "--fix-subchannel-crc={0}", fixSubchannelCrc);
+        AaruConsole.Debug(MODULE_NAME, "--generate-subchannels={0}", settings.GenerateSubchannels);
+        AaruConsole.Debug(MODULE_NAME, "--decrypt={0}", settings.Decrypt);
+        AaruConsole.Debug(MODULE_NAME, "--aaru-metadata={0}", Markup.Escape(settings.AaruMetadata ?? ""));
 
         Dictionary<string, string> parsedOptions = Options.Parse(settings.Options);
-        AaruConsole.DebugWriteLine(MODULE_NAME, UI.Parsed_options);
+        AaruConsole.Debug(MODULE_NAME, UI.Parsed_options);
 
         foreach(KeyValuePair<string, string> parsedOption in parsedOptions)
-            AaruConsole.DebugWriteLine(MODULE_NAME, "{0} = {1}", parsedOption.Key, parsedOption.Value);
+            AaruConsole.Debug(MODULE_NAME, "{0} = {1}", parsedOption.Key, parsedOption.Value);
 
         if(settings.Count == 0)
         {
-            AaruConsole.ErrorWriteLine(UI.Need_to_specify_more_than_zero_sectors_to_copy_at_once);
+            AaruConsole.Error(UI.Need_to_specify_more_than_zero_sectors_to_copy_at_once);
 
             return (int)ErrorNumber.InvalidArgument;
         }
@@ -152,28 +152,28 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
             if(geometryPieces.Length != 3)
             {
-                AaruConsole.ErrorWriteLine(UI.Invalid_geometry_specified);
+                AaruConsole.Error(UI.Invalid_geometry_specified);
 
                 return (int)ErrorNumber.InvalidArgument;
             }
 
             if(!uint.TryParse(geometryPieces[0], out uint cylinders) || cylinders == 0)
             {
-                AaruConsole.ErrorWriteLine(UI.Invalid_number_of_cylinders_specified);
+                AaruConsole.Error(UI.Invalid_number_of_cylinders_specified);
 
                 return (int)ErrorNumber.InvalidArgument;
             }
 
             if(!uint.TryParse(geometryPieces[1], out uint heads) || heads == 0)
             {
-                AaruConsole.ErrorWriteLine(UI.Invalid_number_of_heads_specified);
+                AaruConsole.Error(UI.Invalid_number_of_heads_specified);
 
                 return (int)ErrorNumber.InvalidArgument;
             }
 
             if(!uint.TryParse(geometryPieces[2], out uint spt) || spt == 0)
             {
-                AaruConsole.ErrorWriteLine(UI.Invalid_sectors_per_track_specified);
+                AaruConsole.Error(UI.Invalid_sectors_per_track_specified);
 
                 return (int)ErrorNumber.InvalidArgument;
             }
@@ -202,15 +202,15 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                 }
                 catch(Exception ex)
                 {
-                    AaruConsole.ErrorWriteLine(UI.Incorrect_metadata_sidecar_file_not_continuing);
-                    AaruConsole.WriteException(ex);
+                    AaruConsole.Error(UI.Incorrect_metadata_sidecar_file_not_continuing);
+                    AaruConsole.Exception(ex);
 
                     return (int)ErrorNumber.InvalidSidecar;
                 }
             }
             else
             {
-                AaruConsole.ErrorWriteLine(UI.Could_not_find_metadata_sidecar);
+                AaruConsole.Error(UI.Could_not_find_metadata_sidecar);
 
                 return (int)ErrorNumber.NoSuchFile;
             }
@@ -238,15 +238,15 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                 }
                 catch(Exception ex)
                 {
-                    AaruConsole.ErrorWriteLine(UI.Incorrect_metadata_sidecar_file_not_continuing);
-                    AaruConsole.WriteException(ex);
+                    AaruConsole.Error(UI.Incorrect_metadata_sidecar_file_not_continuing);
+                    AaruConsole.Exception(ex);
 
                     return (int)ErrorNumber.InvalidSidecar;
                 }
             }
             else
             {
-                AaruConsole.ErrorWriteLine(UI.Could_not_find_metadata_sidecar);
+                AaruConsole.Error(UI.Could_not_find_metadata_sidecar);
 
                 return (int)ErrorNumber.NoSuchFile;
             }
@@ -288,15 +288,15 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                 }
                 catch(Exception ex)
                 {
-                    AaruConsole.ErrorWriteLine(UI.Incorrect_resume_file_not_continuing);
-                    AaruConsole.WriteException(ex);
+                    AaruConsole.Error(UI.Incorrect_resume_file_not_continuing);
+                    AaruConsole.Exception(ex);
 
                     return (int)ErrorNumber.InvalidResume;
                 }
             }
             else
             {
-                AaruConsole.ErrorWriteLine(UI.Could_not_find_resume_file);
+                AaruConsole.Error(UI.Could_not_find_resume_file);
 
                 return (int)ErrorNumber.NoSuchFile;
             }
@@ -312,14 +312,14 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
         if(inputFilter == null)
         {
-            AaruConsole.ErrorWriteLine(UI.Cannot_open_specified_file);
+            AaruConsole.Error(UI.Cannot_open_specified_file);
 
             return (int)ErrorNumber.CannotOpenFile;
         }
 
         if(File.Exists(settings.OutputPath))
         {
-            AaruConsole.ErrorWriteLine(UI.Output_file_already_exists);
+            AaruConsole.Error(UI.Output_file_already_exists);
 
             return (int)ErrorNumber.FileExists;
         }
@@ -351,7 +351,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         }
 
         if(settings.Verbose)
-            AaruConsole.VerboseWriteLine(UI.Input_image_format_identified_by_0_1, inputFormat.Name, inputFormat.Id);
+            AaruConsole.Verbose(UI.Input_image_format_identified_by_0_1, inputFormat.Name, inputFormat.Id);
         else
             AaruConsole.WriteLine(UI.Input_image_format_identified_by_0, inputFormat.Name);
 
@@ -386,13 +386,13 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                         };
 #pragma warning restore 612
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, UI.Correctly_opened_image_file);
+            AaruConsole.Debug(MODULE_NAME, UI.Correctly_opened_image_file);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, UI.Image_without_headers_is_0_bytes, inputFormat.Info.ImageSize);
+            AaruConsole.Debug(MODULE_NAME, UI.Image_without_headers_is_0_bytes, inputFormat.Info.ImageSize);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, UI.Image_has_0_sectors, inputFormat.Info.Sectors);
+            AaruConsole.Debug(MODULE_NAME, UI.Image_has_0_sectors, inputFormat.Info.Sectors);
 
-            AaruConsole.DebugWriteLine(MODULE_NAME, UI.Image_identifies_media_type_as_0, mediaType);
+            AaruConsole.Debug(MODULE_NAME, UI.Image_identifies_media_type_as_0, mediaType);
 
             Statistics.AddMediaFormat(inputFormat.Format);
             Statistics.AddMedia(mediaType, false);
@@ -400,9 +400,9 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         }
         catch(Exception ex)
         {
-            AaruConsole.ErrorWriteLine(UI.Unable_to_open_image_format);
-            AaruConsole.ErrorWriteLine(Localization.Core.Error_0, ex.Message);
-            AaruConsole.WriteException(ex);
+            AaruConsole.Error(UI.Unable_to_open_image_format);
+            AaruConsole.Error(Localization.Core.Error_0, ex.Message);
+            AaruConsole.Exception(ex);
 
             return (int)ErrorNumber.CannotOpenFormat;
         }
@@ -451,13 +451,13 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         IBaseWritableImage outputFormat = candidates[0];
 
         if(settings.Verbose)
-            AaruConsole.VerboseWriteLine(UI.Output_image_format_0_1, outputFormat.Name, outputFormat.Id);
+            AaruConsole.Verbose(UI.Output_image_format_0_1, outputFormat.Name, outputFormat.Id);
         else
             AaruConsole.WriteLine(UI.Output_image_format_0, outputFormat.Name);
 
         if(!outputFormat.SupportedMediaTypes.Contains(mediaType))
         {
-            AaruConsole.ErrorWriteLine(UI.Output_format_does_not_support_media_type);
+            AaruConsole.Error(UI.Output_format_does_not_support_media_type);
 
             return (int)ErrorNumber.UnsupportedMedia;
         }
@@ -465,8 +465,8 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         foreach(MediaTagType mediaTag in inputFormat.Info.ReadableMediaTags.Where(mediaTag =>
                     !outputFormat.SupportedMediaTags.Contains(mediaTag) && !settings.Force))
         {
-            AaruConsole.ErrorWriteLine(UI.Converting_image_will_lose_media_tag_0, mediaTag);
-            AaruConsole.ErrorWriteLine(UI.If_you_dont_care_use_force_option);
+            AaruConsole.Error(UI.Converting_image_will_lose_media_tag_0, mediaTag);
+            AaruConsole.Error(UI.If_you_dont_care_use_force_option);
 
             return (int)ErrorNumber.DataWillBeLost;
         }
@@ -486,9 +486,9 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                 continue;
             }
 
-            AaruConsole.ErrorWriteLine(UI.Converting_image_will_lose_sector_tag_0, sectorTag);
+            AaruConsole.Error(UI.Converting_image_will_lose_sector_tag_0, sectorTag);
 
-            AaruConsole.ErrorWriteLine(UI
+            AaruConsole.Error(UI
                                           .If_you_dont_care_use_force_option_This_will_skip_all_sector_tags_converting_only_user_data);
 
             return (int)ErrorNumber.DataWillBeLost;
@@ -499,7 +499,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
         if(inputTape?.IsTape == true && outputTape is null)
         {
-            AaruConsole.ErrorWriteLine(UI.Input_format_contains_a_tape_image_and_is_not_supported_by_output_format);
+            AaruConsole.Error(UI.Input_format_contains_a_tape_image_and_is_not_supported_by_output_format);
 
             return (int)ErrorNumber.UnsupportedMedia;
         }
@@ -513,8 +513,8 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
             // Cannot set image to tape mode
             if(!ret)
             {
-                AaruConsole.ErrorWriteLine(UI.Error_setting_output_image_in_tape_mode);
-                AaruConsole.ErrorWriteLine(outputFormat.ErrorMessage);
+                AaruConsole.Error(UI.Error_setting_output_image_in_tape_mode);
+                AaruConsole.Error(outputFormat.ErrorMessage);
 
                 return (int)ErrorNumber.WriteError;
             }
@@ -528,7 +528,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
             // TODO: Disabled until 6.0
             /*if(!_force)
             {*/
-            AaruConsole.ErrorWriteLine(Localization.Core.Output_format_does_not_support_sessions);
+            AaruConsole.Error(Localization.Core.Output_format_does_not_support_sessions);
 
             return (int)ErrorNumber.UnsupportedMedia;
             /*}
@@ -544,7 +544,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
             // TODO: Disabled until 6.0
             /*if(!_force)
             {*/
-            AaruConsole.ErrorWriteLine(Localization.Core.Output_format_does_not_support_hidden_tracks);
+            AaruConsole.Error(Localization.Core.Output_format_does_not_support_hidden_tracks);
 
             return (int)ErrorNumber.UnsupportedMedia;
             /*}
@@ -567,7 +567,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
         if(!created)
         {
-            AaruConsole.ErrorWriteLine(UI.Error_0_creating_output_image, outputFormat.ErrorMessage);
+            AaruConsole.Error(UI.Error_0_creating_output_image, outputFormat.ErrorMessage);
 
             return (int)ErrorNumber.CannotCreateFormat;
         }
@@ -597,12 +597,12 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         {
             if(!settings.Force)
             {
-                AaruConsole.ErrorWriteLine(UI.Error_0_setting_metadata_not_continuing, outputFormat.ErrorMessage);
+                AaruConsole.Error(UI.Error_0_setting_metadata_not_continuing, outputFormat.ErrorMessage);
 
                 return (int)ErrorNumber.WriteError;
             }
 
-            AaruConsole.ErrorWriteLine(Localization.Core.Error_0_setting_metadata, outputFormat.ErrorMessage);
+            AaruConsole.Error(Localization.Core.Error_0_setting_metadata, outputFormat.ErrorMessage);
         }
 
         Metadata           metadata     = inputFormat.AaruMetadata;
@@ -625,10 +625,10 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                             if(errno != ErrorNumber.NoError)
                             {
                                 if(settings.Force)
-                                    AaruConsole.ErrorWriteLine(UI.Error_0_reading_media_tag, errno);
+                                    AaruConsole.Error(UI.Error_0_reading_media_tag, errno);
                                 else
                                 {
-                                    AaruConsole.ErrorWriteLine(UI.Error_0_reading_media_tag_not_continuing, errno);
+                                    AaruConsole.Error(UI.Error_0_reading_media_tag_not_continuing, errno);
 
                                     errorNumber = errno;
                                 }
@@ -639,10 +639,10 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                             if((outputFormat as IWritableImage)?.WriteMediaTag(tag, mediaTag) == true) return;
 
                             if(settings.Force)
-                                AaruConsole.ErrorWriteLine(UI.Error_0_writing_media_tag, outputFormat.ErrorMessage);
+                                AaruConsole.Error(UI.Error_0_writing_media_tag, outputFormat.ErrorMessage);
                             else
                             {
-                                AaruConsole.ErrorWriteLine(UI.Error_0_writing_media_tag_not_continuing,
+                                AaruConsole.Error(UI.Error_0_writing_media_tag_not_continuing,
                                                            outputFormat.ErrorMessage);
 
                                 errorNumber = ErrorNumber.WriteError;
@@ -661,7 +661,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         {
             if(!outputOptical.SetTracks(inputOptical.Tracks))
             {
-                AaruConsole.ErrorWriteLine(UI.Error_0_sending_tracks_list_to_output_image, outputOptical.ErrorMessage);
+                AaruConsole.Error(UI.Error_0_sending_tracks_list_to_output_image, outputOptical.ErrorMessage);
 
                 return (int)ErrorNumber.WriteError;
             }
@@ -735,13 +735,13 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
                                             if(settings.Force)
                                             {
-                                                AaruConsole.ErrorWriteLine(UI.Error_0_reading_sector_1_continuing,
+                                                AaruConsole.Error(UI.Error_0_reading_sector_1_continuing,
                                                                            errno,
                                                                            doneSectors + track.StartSector);
                                             }
                                             else
                                             {
-                                                AaruConsole.ErrorWriteLine(UI.Error_0_reading_sector_1_not_continuing,
+                                                AaruConsole.Error(UI.Error_0_reading_sector_1_not_continuing,
                                                                            errno,
                                                                            doneSectors + track.StartSector);
 
@@ -756,7 +756,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                             if(!settings.Force)
                                             {
                                                 AaruConsole
-                                                   .ErrorWriteLine(UI
+                                                   .Error(UI
                                                                       .Input_image_is_not_returning_raw_sectors_use_force_if_you_want_to_continue);
 
                                                 errno = ErrorNumber.InOutError;
@@ -821,7 +821,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                                                       .TryGetValue("iso9660 filesystem",
                                                                            out IReadOnlyFilesystem rofs))
                                                             {
-                                                                AaruConsole.DebugWriteLine(MODULE_NAME,
+                                                                AaruConsole.Debug(MODULE_NAME,
                                                                     UI.Generating_decryption_keys);
 
                                                                 generatedTitleKeys =
@@ -879,7 +879,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                                                       .TryGetValue("iso9660 filesystem",
                                                                            out IReadOnlyFilesystem rofs))
                                                             {
-                                                                AaruConsole.DebugWriteLine(MODULE_NAME,
+                                                                AaruConsole.Debug(MODULE_NAME,
                                                                     UI.Generating_decryption_keys);
 
                                                                 generatedTitleKeys =
@@ -923,13 +923,13 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
                                             if(settings.Force)
                                             {
-                                                AaruConsole.ErrorWriteLine(UI.Error_0_reading_sector_1_continuing,
+                                                AaruConsole.Error(UI.Error_0_reading_sector_1_continuing,
                                                                            errno,
                                                                            doneSectors + track.StartSector);
                                             }
                                             else
                                             {
-                                                AaruConsole.ErrorWriteLine(UI.Error_0_reading_sector_1_not_continuing,
+                                                AaruConsole.Error(UI.Error_0_reading_sector_1_not_continuing,
                                                                            errno,
                                                                            doneSectors + track.StartSector);
 
@@ -944,13 +944,13 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     {
                                         if(settings.Force)
                                         {
-                                            AaruConsole.ErrorWriteLine(UI.Error_0_writing_sector_1_continuing,
+                                            AaruConsole.Error(UI.Error_0_writing_sector_1_continuing,
                                                                        outputOptical.ErrorMessage,
                                                                        doneSectors + track.StartSector);
                                         }
                                         else
                                         {
-                                            AaruConsole.ErrorWriteLine(UI.Error_0_writing_sector_1_not_continuing,
+                                            AaruConsole.Error(UI.Error_0_writing_sector_1_not_continuing,
                                                                        outputOptical.ErrorMessage,
                                                                        doneSectors + track.StartSector);
 
@@ -1100,13 +1100,13 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                                 {
                                                     if(settings.Force)
                                                     {
-                                                        AaruConsole.ErrorWriteLine(UI.Error_0_writing_tag_continuing,
+                                                        AaruConsole.Error(UI.Error_0_writing_tag_continuing,
                                                             outputOptical.ErrorMessage);
 
                                                         continue;
                                                     }
 
-                                                    AaruConsole.ErrorWriteLine(UI.Error_0_writing_tag_not_continuing,
+                                                    AaruConsole.Error(UI.Error_0_writing_tag_not_continuing,
                                                                                outputOptical.ErrorMessage);
 
                                                     errno = ErrorNumber.WriteError;
@@ -1119,12 +1119,12 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                             {
                                                 if(settings.Force)
                                                 {
-                                                    AaruConsole.ErrorWriteLine(UI.Error_0_writing_tag_continuing,
+                                                    AaruConsole.Error(UI.Error_0_writing_tag_continuing,
                                                                                outputOptical.ErrorMessage);
                                                 }
                                                 else
                                                 {
-                                                    AaruConsole.ErrorWriteLine(UI.Error_0_writing_tag_not_continuing,
+                                                    AaruConsole.Error(UI.Error_0_writing_tag_not_continuing,
                                                                                outputOptical.ErrorMessage);
 
                                                     errno = ErrorNumber.WriteError;
@@ -1205,14 +1205,14 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                                 if(settings.Force)
                                                 {
                                                     AaruConsole
-                                                       .ErrorWriteLine(UI.Error_0_reading_tag_for_sector_1_continuing,
+                                                       .Error(UI.Error_0_reading_tag_for_sector_1_continuing,
                                                                        errno,
                                                                        doneSectors + track.StartSector);
                                                 }
                                                 else
                                                 {
                                                     AaruConsole
-                                                       .ErrorWriteLine(UI
+                                                       .Error(UI
                                                                           .Error_0_reading_tag_for_sector_1_not_continuing,
                                                                        errno,
                                                                        doneSectors + track.StartSector);
@@ -1273,14 +1273,14 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                                 if(settings.Force)
                                                 {
                                                     AaruConsole
-                                                       .ErrorWriteLine(UI.Error_0_reading_tag_for_sector_1_continuing,
+                                                       .Error(UI.Error_0_reading_tag_for_sector_1_continuing,
                                                                        errno,
                                                                        doneSectors + track.StartSector);
                                                 }
                                                 else
                                                 {
                                                     AaruConsole
-                                                       .ErrorWriteLine(UI
+                                                       .Error(UI
                                                                           .Error_0_reading_tag_for_sector_1_not_continuing,
                                                                        errno,
                                                                        doneSectors + track.StartSector);
@@ -1295,14 +1295,14 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                             if(settings.Force)
                                             {
                                                 AaruConsole
-                                                   .ErrorWriteLine(UI.Error_0_writing_tag_for_sector_1_continuing,
+                                                   .Error(UI.Error_0_writing_tag_for_sector_1_continuing,
                                                                    outputOptical.ErrorMessage,
                                                                    doneSectors + track.StartSector);
                                             }
                                             else
                                             {
                                                 AaruConsole
-                                                   .ErrorWriteLine(UI.Error_0_writing_tag_for_sector_1_not_continuing,
+                                                   .Error(UI.Error_0_writing_tag_for_sector_1_not_continuing,
                                                                    outputOptical.ErrorMessage,
                                                                    doneSectors + track.StartSector);
 
@@ -1413,7 +1413,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
                 if(!outputMedia.SetGeometry(chs.cylinders, chs.heads, chs.sectors))
                 {
-                    AaruConsole.ErrorWriteLine(UI.Error_0_setting_geometry_image_may_be_incorrect_continuing,
+                    AaruConsole.Error(UI.Error_0_setting_geometry_image_may_be_incorrect_continuing,
                                                outputMedia.ErrorMessage);
                 }
             }
@@ -1465,13 +1465,13 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
                                         if(settings.Force)
                                         {
-                                            AaruConsole.ErrorWriteLine(UI.Error_0_reading_sector_1_continuing,
+                                            AaruConsole.Error(UI.Error_0_reading_sector_1_continuing,
                                                                        errno,
                                                                        doneSectors);
                                         }
                                         else
                                         {
-                                            AaruConsole.ErrorWriteLine(UI.Error_0_reading_sector_1_not_continuing,
+                                            AaruConsole.Error(UI.Error_0_reading_sector_1_not_continuing,
                                                                        errno,
                                                                        doneSectors);
 
@@ -1497,13 +1497,13 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
                                         if(settings.Force)
                                         {
-                                            AaruConsole.ErrorWriteLine(UI.Error_0_reading_sector_1_continuing,
+                                            AaruConsole.Error(UI.Error_0_reading_sector_1_continuing,
                                                                        errno,
                                                                        doneSectors);
                                         }
                                         else
                                         {
-                                            AaruConsole.ErrorWriteLine(UI.Error_0_reading_sector_1_not_continuing,
+                                            AaruConsole.Error(UI.Error_0_reading_sector_1_not_continuing,
                                                                        errno,
                                                                        doneSectors);
 
@@ -1516,13 +1516,13 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                 {
                                     if(settings.Force)
                                     {
-                                        AaruConsole.ErrorWriteLine(UI.Error_0_writing_sector_1_continuing,
+                                        AaruConsole.Error(UI.Error_0_writing_sector_1_continuing,
                                                                    outputMedia.ErrorMessage,
                                                                    doneSectors);
                                     }
                                     else
                                     {
-                                        AaruConsole.ErrorWriteLine(UI.Error_0_writing_sector_1_not_continuing,
+                                        AaruConsole.Error(UI.Error_0_writing_sector_1_not_continuing,
                                                                    outputMedia.ErrorMessage,
                                                                    doneSectors);
 
@@ -1596,13 +1596,13 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
                                         if(settings.Force)
                                         {
-                                            AaruConsole.ErrorWriteLine(UI.Error_0_reading_sector_1_continuing,
+                                            AaruConsole.Error(UI.Error_0_reading_sector_1_continuing,
                                                                        errno,
                                                                        doneSectors);
                                         }
                                         else
                                         {
-                                            AaruConsole.ErrorWriteLine(UI.Error_0_reading_sector_1_not_continuing,
+                                            AaruConsole.Error(UI.Error_0_reading_sector_1_not_continuing,
                                                                        errno,
                                                                        doneSectors);
 
@@ -1614,13 +1614,13 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     {
                                         if(settings.Force)
                                         {
-                                            AaruConsole.ErrorWriteLine(UI.Error_0_writing_sector_1_continuing,
+                                            AaruConsole.Error(UI.Error_0_writing_sector_1_continuing,
                                                                        outputMedia.ErrorMessage,
                                                                        doneSectors);
                                         }
                                         else
                                         {
-                                            AaruConsole.ErrorWriteLine(UI.Error_0_writing_sector_1_not_continuing,
+                                            AaruConsole.Error(UI.Error_0_writing_sector_1_not_continuing,
                                                                        outputMedia.ErrorMessage,
                                                                        doneSectors);
 
@@ -1756,7 +1756,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
         if(!closed)
         {
-            AaruConsole.ErrorWriteLine(UI.Error_0_closing_output_image_Contents_are_not_correct,
+            AaruConsole.Error(UI.Error_0_closing_output_image_Contents_are_not_correct,
                                        outputFormat.ErrorMessage);
 
             return (int)ErrorNumber.WriteError;
