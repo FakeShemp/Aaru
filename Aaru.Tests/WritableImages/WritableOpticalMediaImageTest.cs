@@ -103,10 +103,10 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                              .BeEquivalentTo(test.Tracks.Select(s => s.Pregap),
                                              string.Format(Localization.Track_pregap_0, testFile));
 
-                        var trackNo = 0;
+                        int trackNo = 0;
 
-                        var   flags           = new byte?[image.Tracks.Count];
-                        ulong latestEndSector = 0;
+                        byte?[] flags           = new byte?[image.Tracks.Count];
+                        ulong   latestEndSector = 0;
 
                         foreach(Track currentTrack in image.Tracks)
                         {
@@ -194,13 +194,14 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                                           .Any();
 
                 // TODO: Can be done with LINQ only
-                foreach(SectorTagType _ in inputFormat.Info.ReadableSectorTags
-                                                      .Where(sectorTag =>
-                                                                 !outputFormat.SupportedSectorTags.Contains(sectorTag))
-                                                      .Where(sectorTag =>
-                                                                 sectorTag != SectorTagType.CdTrackFlags &&
-                                                                 sectorTag != SectorTagType.CdTrackIsrc  &&
-                                                                 sectorTag != SectorTagType.CdSectorSubchannel))
+                foreach(SectorTagType unused in inputFormat.Info.ReadableSectorTags
+                                                           .Where(sectorTag =>
+                                                                      !outputFormat.SupportedSectorTags
+                                                                         .Contains(sectorTag))
+                                                           .Where(sectorTag =>
+                                                                      sectorTag != SectorTagType.CdTrackFlags &&
+                                                                      sectorTag != SectorTagType.CdTrackIsrc  &&
+                                                                      sectorTag != SectorTagType.CdSectorSubchannel))
                     useLong = false;
 
                 Assert.That(outputFormat.Create(outputPath,
@@ -239,8 +240,8 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                         else
                             sectorsToDo = (uint)(trackSectors - doneSectors);
 
-                        var useNotLong = false;
-                        var result     = false;
+                        bool useNotLong = false;
+                        bool result     = false;
 
                         if(useLong)
                         {
@@ -297,7 +298,7 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                 Dictionary<byte, int>    smallestPregapLbaPerTrack = new();
                 var                      tracks                    = new Track[inputFormat.Tracks.Count];
 
-                for(var i = 0; i < tracks.Length; i++)
+                for(int i = 0; i < tracks.Length; i++)
                 {
                     tracks[i] = new Track
                     {
@@ -634,10 +635,10 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                              .BeEquivalentTo(test.Tracks.Select(s => s.Pregap),
                                              string.Format(Localization.Track_pregap_output_0, testFile));
 
-                        var trackNo = 0;
+                        int trackNo = 0;
 
-                        var   flags           = new byte?[image.Tracks.Count];
-                        ulong latestEndSector = 0;
+                        byte?[] flags           = new byte?[image.Tracks.Count];
+                        ulong   latestEndSector = 0;
 
                         foreach(Track currentTrack in image.Tracks)
                         {
