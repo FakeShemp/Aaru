@@ -92,6 +92,11 @@ class MainClass
                 AnsiConsole.MarkupLine(format);
             else
                 AnsiConsole.MarkupLine(format, objects);
+
+            // Format the string so we can remove the markup
+            string formatted = objects is null ? format : string.Format(format, objects);
+            formatted = Markup.Remove(formatted);
+            Log.Information(formatted);
         };
 
         AaruLogging.WriteEvent += (format, objects) =>
@@ -100,6 +105,11 @@ class MainClass
                 AnsiConsole.Markup(format);
             else
                 AnsiConsole.Markup(format, objects);
+
+            // Format the string so we can remove the markup
+            string formatted = objects is null ? format : string.Format(format, objects);
+            formatted = Markup.Remove(formatted);
+            Log.Information(formatted);
         };
 
         AaruLogging.ErrorEvent += Log.Error;
@@ -411,8 +421,10 @@ class MainClass
         AnsiConsole.MarkupLine("[bold][blue]{0}[/][/]", _assemblyCopyright);
         AnsiConsole.WriteLine();
 
-        AaruLogging.Information("Aaru Data Preservation Suite {InformationalVersion}", _assemblyVersion?.InformationalVersion);
-        AaruLogging.Information("{AssemblyCopyright}",                                 _assemblyCopyright);
+        AaruLogging.Information("Aaru Data Preservation Suite {InformationalVersion}",
+                                _assemblyVersion?.InformationalVersion);
+
+        AaruLogging.Information("{AssemblyCopyright}", _assemblyCopyright);
         AaruLogging.Information("Logging started");
     }
 }
