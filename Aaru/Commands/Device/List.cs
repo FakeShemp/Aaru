@@ -58,7 +58,7 @@ sealed class ListDevicesCommand : Command<ListDevicesCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
         AaruLogging.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
-        Log.Information(UI.List_devices_command);
+        AaruLogging.Information(UI.List_devices_command);
 
         DeviceInfo[] devices = Devices.Device.ListDevices(out bool isRemote,
                                                           out string serverApplication,
@@ -80,7 +80,7 @@ sealed class ListDevicesCommand : Command<ListDevicesCommand.Settings>
         if(devices == null || devices.Length == 0)
         {
             AaruLogging.WriteLine(UI.No_known_devices_attached);
-            Log.Information(UI.No_known_devices_attached);
+            AaruLogging.Information(UI.No_known_devices_attached);
         }
         else
         {
@@ -103,7 +103,7 @@ sealed class ListDevicesCommand : Command<ListDevicesCommand.Settings>
                              $"[italic][rosybrown]{Markup.Escape(dev.Bus ?? "")}[/][/]",
                              $"[italic]{(dev.Supported ? "[green]✓[/]" : "[red]✗[/]")}[/]");
 
-                Log.Information("Path: {Path}, Vendor: {Vendor}, Model: {Model}, Serial: {Serial}, Bus: {Bus}, Supported: {Supported}",
+                AaruLogging.Information("Path: {Path}, Vendor: {Vendor}, Model: {Model}, Serial: {Serial}, Bus: {Bus}, Supported: {Supported}",
                                 dev.Path,
                                 dev.Vendor,
                                 dev.Model,

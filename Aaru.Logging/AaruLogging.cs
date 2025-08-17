@@ -60,6 +60,10 @@ public static class AaruLogging
     /// <summary>Event to receive exceptions to write to the debug output console.</summary>
     public static event ExceptionDelegate WriteExceptionEvent;
 
+    /// <summary>Event to receive writings to the informational output console that should be followed by a line termination.</summary>
+    public static event InformationDelegate InformationEvent;
+
+
     /// <summary>
     ///     Writes the text representation of the specified array of objects, followed by the current line terminator, to
     ///     the standard output console using the specified format information.
@@ -83,6 +87,14 @@ public static class AaruLogging
     /// <param name="format">A composite format string.</param>
     /// <param name="arg">An array of objects to write using <paramref name="format" />.</param>
     public static void Verbose(string format, params object[] arg) => VerboseEvent?.Invoke(format, arg);
+
+    /// <summary>
+    ///     Writes the text representation of the specified array of objects, followed by the current line terminator, to
+    ///     the verbose output console using the specified format information.
+    /// </summary>
+    /// <param name="format">A composite format string.</param>
+    /// <param name="arg">An array of objects to write using <paramref name="format" />.</param>
+    public static void Information(string format, params object[] arg) => InformationEvent?.Invoke(format, arg);
 
     /// <summary>
     ///     Writes the text representation of the specified array of objects, followed by the current line terminator, to

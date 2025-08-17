@@ -56,7 +56,7 @@ sealed class ListEncodingsCommand : Command<ListEncodingsCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--debug={0}",   settings.Debug);
         AaruLogging.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
-        Log.Information(UI.List_encodings_command);
+        AaruLogging.Information(UI.List_encodings_command);
 
         var encodings = Encoding.GetEncodings()
                                 .Select(info => new CommonEncodingInfo
@@ -84,7 +84,7 @@ sealed class ListEncodingsCommand : Command<ListEncodingsCommand.Settings>
             table.AddRow($"[italic][darkgreen]{Markup.Escape(info.Name)}[/][/]",
                          $"[italic][slateblue1]{Markup.Escape(info.DisplayName)}[/][/]");
 
-            Log.Information("({Name}) - {DisplayName}", info.Name, info.DisplayName);
+            AaruLogging.Information("({Name}) - {DisplayName}", info.Name, info.DisplayName);
         }
 
         AnsiConsole.Write(table);

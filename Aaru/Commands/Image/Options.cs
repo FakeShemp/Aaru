@@ -61,7 +61,7 @@ sealed class ListOptionsCommand : Command<ListOptionsCommand.Settings>
         PluginRegister plugins = PluginRegister.Singleton;
 
         AaruLogging.WriteLine(UI.Read_Write_media_images_options);
-        Log.Information(UI.Read_Write_media_images_options);
+        AaruLogging.Information(UI.Read_Write_media_images_options);
 
         foreach(IWritableImage plugin in plugins.WritableImages.Values)
         {
@@ -92,7 +92,7 @@ sealed class ListOptionsCommand : Command<ListOptionsCommand.Settings>
                              $"[italic][aqua]{option.@default?.ToString() ?? ""}[/][/]",
                              $"[slateblue1]{Markup.Escape(option.description)}[/]");
 
-                Log.Information("({Name}) - {Type} - {Default} - {Description}",
+                AaruLogging.Information("({Name}) - {Type} - {Default} - {Description}",
                                 option.name,
                                 TypeToString(option.type),
                                 option.@default?.ToString() ?? "",

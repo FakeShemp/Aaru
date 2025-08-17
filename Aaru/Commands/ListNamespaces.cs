@@ -56,7 +56,7 @@ sealed class ListNamespacesCommand : Command<ListNamespacesCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
         Statistics.AddCommand("list-namespaces");
 
-        Log.Information(UI.List_namespaces_command);
+        AaruLogging.Information(UI.List_namespaces_command);
 
         PluginRegister plugins = PluginRegister.Singleton;
 
@@ -64,7 +64,7 @@ sealed class ListNamespacesCommand : Command<ListNamespacesCommand.Settings>
         {
             if(fs?.Namespaces is null) continue;
 
-            Log.Information(UI.Namespaces_for_0, fs.Name);
+            AaruLogging.Information(UI.Namespaces_for_0, fs.Name);
 
             Table table = new()
             {
@@ -83,7 +83,7 @@ sealed class ListNamespacesCommand : Command<ListNamespacesCommand.Settings>
                 table.AddRow($"[italic][darkgreen]{Markup.Escape(@namespace.Key)}[/][/]",
                              $"[italic][slateblue1]{Markup.Escape(@namespace.Value)}[/][/]");
 
-                Log.Information("({Namespace}) - {Description}", @namespace.Key, @namespace.Value);
+                AaruLogging.Information("({Namespace}) - {Description}", @namespace.Key, @namespace.Value);
             }
 
             AnsiConsole.Write(table);

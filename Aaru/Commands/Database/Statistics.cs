@@ -50,7 +50,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
     {
         MainClass.PrintCopyright();
 
-        Log.Information(UI.Database_statistics_command);
+        AaruLogging.Information(UI.Database_statistics_command);
 
         var ctx = AaruContext.Create(Aaru.Settings.Settings.LocalDbPath);
 
@@ -63,7 +63,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
            !ctx.SeenDevices.Any())
         {
             AaruLogging.WriteLine(UI.There_are_no_statistics);
-            Log.Information(UI.There_are_no_statistics);
+            AaruLogging.Information(UI.There_are_no_statistics);
 
             return (int)ErrorNumber.NothingFound;
         }
@@ -78,7 +78,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                 Title = new TableTitle($"[blue]{UI.Commands_statistics}[/]")
             };
 
-            Log.Information(UI.Commands_statistics);
+            AaruLogging.Information(UI.Commands_statistics);
 
             table.AddColumn(new TableColumn(new Markup($"[bold][purple]{UI.Title_Command}[/][/]").Centered()));
             table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
@@ -126,7 +126,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                 if(count == 0) continue;
 
                 table.AddRow($"[italic][purple]{Markup.Escape(command)}[/][/]", $"[italic][aqua]{count}[/][/]");
-                Log.Information("({Command}) - {Count}", command, count);
+                AaruLogging.Information("({Command}) - {Count}", command, count);
                 thereAreStats = true;
             }
 
@@ -141,7 +141,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                 Title = new TableTitle($"[blue]{UI.Filters_statistics}[/]")
             };
 
-            Log.Information(UI.Filters_statistics);
+            AaruLogging.Information(UI.Filters_statistics);
 
             table.AddColumn(new TableColumn(new Markup($"[bold][purple]{UI.Title_Filter}[/][/]").Centered()));
             table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
@@ -160,7 +160,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                 if(count == 0) continue;
 
                 table.AddRow($"[italic][purple]{Markup.Escape(filter)}[/][/]", $"[italic][aqua]{count}[/][/]");
-                Log.Information("({Filter}) - {Count}", filter, count);
+                AaruLogging.Information("({Filter}) - {Count}", filter, count);
                 thereAreStats = true;
             }
 
@@ -175,7 +175,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                 Title = new TableTitle($"[blue]{UI.Media_image_format_statistics}[/]")
             };
 
-            Log.Information(UI.Media_image_format_statistics);
+            AaruLogging.Information(UI.Media_image_format_statistics);
 
             table.AddColumn(new TableColumn(new Markup($"[bold][purple]{UI.Title_Format}[/][/]").Centered()));
             table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
@@ -194,7 +194,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                 if(count == 0) continue;
 
                 table.AddRow($"[italic][purple]{Markup.Escape(format)}[/][/]", $"[italic][aqua]{count}[/][/]");
-                Log.Information("({Format}) - {Count}", format, count);
+                AaruLogging.Information("({Format}) - {Count}", format, count);
                 thereAreStats = true;
             }
 
@@ -209,7 +209,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                 Title = new TableTitle($"[blue]{UI.Partitioning_scheme_statistics}[/]")
             };
 
-            Log.Information(UI.Partitioning_scheme_statistics);
+            AaruLogging.Information(UI.Partitioning_scheme_statistics);
 
             table.AddColumn(new TableColumn(new Markup($"[bold][purple]{UI.Title_Scheme}[/][/]").Centered()));
             table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
@@ -228,7 +228,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                 if(count == 0) continue;
 
                 table.AddRow($"[italic][purple]{Markup.Escape(partition)}[/][/]", $"[italic][aqua]{count}[/][/]");
-                Log.Information("({Partition}) - {Count}", partition, count);
+                AaruLogging.Information("({Partition}) - {Count}", partition, count);
                 thereAreStats = true;
             }
 
@@ -243,7 +243,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                 Title = new TableTitle($"[blue]{UI.Filesystem_statistics}[/]")
             };
 
-            Log.Information(UI.Filesystem_statistics);
+            AaruLogging.Information(UI.Filesystem_statistics);
 
             table.AddColumn(new TableColumn(new Markup($"[bold][purple]{UI.Title_Filesystem}[/][/]").Centered()));
             table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
@@ -262,7 +262,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                 if(count == 0) continue;
 
                 table.AddRow($"[italic][purple]{Markup.Escape(filesystem)}[/][/]", $"[italic][aqua]{count}[/][/]");
-                Log.Information("({Filesystem}) - {Count}", filesystem, count);
+                AaruLogging.Information("({Filesystem}) - {Count}", filesystem, count);
                 thereAreStats = true;
             }
 
@@ -277,7 +277,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                 Title = new TableTitle($"[blue]{UI.Device_statistics}[/]")
             };
 
-            Log.Information(UI.Device_statistics);
+            AaruLogging.Information(UI.Device_statistics);
 
             table.AddColumn($"[bold][blue]{UI.Title_Manufacturer}[/][/]");
             table.AddColumn($"[bold][purple]{UI.Title_Model}[/][/]");
@@ -296,7 +296,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                              $"[italic][teal]{Markup.Escape(ds.Revision     ?? "")}[/][/]",
                              $"[italic][rosybrown]{Markup.Escape(ds.Bus     ?? "")}[/][/]");
 
-                Log.Information("({Manufacturer}) - {Model} {Revision} ({Bus})",
+                AaruLogging.Information("({Manufacturer}) - {Model} {Revision} ({Bus})",
                                 ds.Manufacturer ?? "",
                                 ds.Model        ?? "",
                                 ds.Revision     ?? "",
@@ -315,7 +315,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                 Title = new TableTitle($"[blue]{UI.Media_found_in_real_device_statistics}[/]")
             };
 
-            Log.Information(UI.Media_found_in_real_device_statistics);
+            AaruLogging.Information(UI.Media_found_in_real_device_statistics);
 
             table.AddColumn(new TableColumn(new Markup($"[bold][purple]{Localization.Core.Title_Type_for_media}[/][/]")
                                                .Centered()));
@@ -336,7 +336,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                 if(count <= 0) continue;
 
                 table.AddRow($"[italic][purple]{Markup.Escape(media)}[/][/]", $"[italic][aqua]{count}[/][/]");
-                Log.Information("({Media}) - {Count}", media, count);
+                AaruLogging.Information("({Media}) - {Count}", media, count);
 
                 thereAreStats = true;
             }
@@ -352,7 +352,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                 Title = new TableTitle($"[blue]{UI.Media_found_in_images_statistics}[/]")
             };
 
-            Log.Information(UI.Media_found_in_images_statistics);
+            AaruLogging.Information(UI.Media_found_in_images_statistics);
 
             table.AddColumn(new TableColumn(new Markup($"[bold][purple]{Localization.Core.Title_Type_for_media}[/][/]")
                                                .Centered()));
@@ -373,7 +373,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                 if(count <= 0) continue;
 
                 table.AddRow($"[italic][purple]{Markup.Escape(media)}[/][/]", $"[italic][aqua]{count}[/][/]");
-                Log.Information("({Media}) - {Count}", media, count);
+                AaruLogging.Information("({Media}) - {Count}", media, count);
 
                 thereAreStats = true;
             }
@@ -385,7 +385,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
         if(!thereAreStats)
         {
             AaruLogging.WriteLine(UI.There_are_no_statistics);
-            Log.Information(UI.There_are_no_statistics);
+            AaruLogging.Information(UI.There_are_no_statistics);
         }
 
         return (int)ErrorNumber.NoError;

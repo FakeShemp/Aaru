@@ -102,21 +102,11 @@ class MainClass
                 AnsiConsole.Markup(format, objects);
         };
 
-        AaruLogging.ErrorEvent += (format, objects) =>
-        {
-            if(objects is null)
-                stderrConsole.MarkupLine(format);
-            else
-                stderrConsole.MarkupLine(format, objects);
-
-            Log.Error(format, objects);
-        };
-
+        AaruLogging.ErrorEvent += Log.Error;
         AaruLogging.VerboseEvent += Log.Verbose;
-
         AaruLogging.DebugEvent += (module, format, objects) => Log.Debug($"[blue]{module}[/] {format}", objects);
-
         AaruLogging.WriteExceptionEvent += Log.Error;
+        AaruLogging.InformationEvent += Log.Information;
 
         Settings.Settings.LoadSettings();
 
@@ -421,8 +411,8 @@ class MainClass
         AnsiConsole.MarkupLine("[bold][blue]{0}[/][/]", _assemblyCopyright);
         AnsiConsole.WriteLine();
 
-        Log.Information("Aaru Data Preservation Suite {InformationalVersion}", _assemblyVersion?.InformationalVersion);
-        Log.Information("{AssemblyCopyright}",                                 _assemblyCopyright);
-        Log.Information("Logging started");
+        AaruLogging.Information("Aaru Data Preservation Suite {InformationalVersion}", _assemblyVersion?.InformationalVersion);
+        AaruLogging.Information("{AssemblyCopyright}",                                 _assemblyCopyright);
+        AaruLogging.Information("Logging started");
     }
 }

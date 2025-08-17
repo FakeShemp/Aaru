@@ -68,7 +68,7 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
         table.Border(TableBorder.Rounded);
         table.BorderColor(Color.Yellow);
 
-        Log.Information(UI.Supported_filters_0, PluginRegister.Singleton.Filters.Count);
+        AaruLogging.Information(UI.Supported_filters_0, PluginRegister.Singleton.Filters.Count);
 
         if(settings.Verbose)
             table.AddColumn(new TableColumn(new Markup($"[bold][red]{UI.Title_GUID}[/][/]").Centered()));
@@ -82,12 +82,12 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
                 table.AddRow($"[italic][red]{filter.Id.ToString()}[/][/]",
                              $"[italic][slateblue1]{Markup.Escape(filter.Name)}[/][/]");
 
-                Log.Information("({Id}) {Name}", filter.Id, filter.Name);
+                AaruLogging.Information("({Id}) {Name}", filter.Id, filter.Name);
             }
             else
             {
                 table.AddRow($"[italic][slateblue1]{Markup.Escape(filter.Name)}[/][/]");
-                Log.Information("{Name}", filter.Name);
+                AaruLogging.Information("{Name}", filter.Name);
             }
         }
 
@@ -105,7 +105,7 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
         table.Border(TableBorder.Rounded);
         table.BorderColor(Color.Yellow);
 
-        Log.Information(UI.Read_only_media_image_formats_0,
+        AaruLogging.Information(UI.Read_only_media_image_formats_0,
                         plugins.MediaImages.Count(t => !plugins.WritableImages.ContainsKey(t.Key)));
 
         if(settings.Verbose)
@@ -122,12 +122,12 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
                 table.AddRow($"[italic][red]{imagePlugin.Id.ToString()}[/][/]",
                              $"[italic][slateblue1]{Markup.Escape(imagePlugin.Name)}[/][/]");
 
-                Log.Information("({Id}) {Name}", imagePlugin.Id, imagePlugin.Name);
+                AaruLogging.Information("({Id}) {Name}", imagePlugin.Id, imagePlugin.Name);
             }
             else
             {
                 table.AddRow($"[italic][slateblue1]{Markup.Escape(imagePlugin.Name)}[/][/]");
-                Log.Information("{Name}", imagePlugin.Name);
+                AaruLogging.Information("{Name}", imagePlugin.Name);
             }
         }
 
@@ -144,7 +144,7 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
         table.Border(TableBorder.Rounded);
         table.BorderColor(Color.Yellow);
 
-        Log.Information(UI.Read_write_media_image_formats_0, plugins.WritableImages.Count);
+        AaruLogging.Information(UI.Read_write_media_image_formats_0, plugins.WritableImages.Count);
 
         if(settings.Verbose)
             table.AddColumn(new TableColumn(new Markup($"[bold][red]{UI.Title_GUID}[/][/]").Centered()));
@@ -161,12 +161,12 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
                 table.AddRow($"[italic][red]{plugin.Id.ToString()}[/][/]",
                              $"[italic][slateblue1]{Markup.Escape(plugin.Name)}[/][/]");
 
-                Log.Information("({Id}) {Name}", plugin.Id, plugin.Name);
+                AaruLogging.Information("({Id}) {Name}", plugin.Id, plugin.Name);
             }
             else
             {
                 table.AddRow($"[italic][slateblue1]{Markup.Escape(plugin.Name)}[/][/]");
-                Log.Information("{Name}", plugin.Name);
+                AaruLogging.Information("{Name}", plugin.Name);
             }
         }
 
@@ -188,7 +188,7 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
         table.Border(TableBorder.Rounded);
         table.BorderColor(Color.Yellow);
 
-        Log.Information(UI.Supported_filesystems_for_identification_and_information_only_0, idOnlyFilesystems.Count);
+        AaruLogging.Information(UI.Supported_filesystems_for_identification_and_information_only_0, idOnlyFilesystems.Count);
 
         if(settings.Verbose)
             table.AddColumn(new TableColumn(new Markup($"[bold][red]{UI.Title_GUID}[/][/]").Centered()));
@@ -202,12 +202,12 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
                 table.AddRow($"[italic][red]{fs.Id.ToString()}[/][/]",
                              $"[italic][slateblue1]{Markup.Escape(fs.Name)}[/][/]");
 
-                Log.Information("({Id}) {Name}", fs.Id, fs.Name);
+                AaruLogging.Information("({Id}) {Name}", fs.Id, fs.Name);
             }
             else
             {
                 table.AddRow($"[italic][slateblue1]{Markup.Escape(fs.Name)}[/][/]");
-                Log.Information("{Name}", fs.Name);
+                AaruLogging.Information("{Name}", fs.Name);
             }
         }
 
@@ -224,7 +224,7 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
         table.Border(TableBorder.Rounded);
         table.BorderColor(Color.Yellow);
 
-        Log.Information(UI.Supported_filesystems_that_can_read_their_contents_0, plugins.ReadOnlyFilesystems.Count);
+        AaruLogging.Information(UI.Supported_filesystems_that_can_read_their_contents_0, plugins.ReadOnlyFilesystems.Count);
 
         if(settings.Verbose)
             table.AddColumn(new TableColumn(new Markup($"[bold][red]{UI.Title_GUID}[/][/]").Centered()));
@@ -240,12 +240,12 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
                 table.AddRow($"[italic][red]{fs.Id.ToString()}[/][/]",
                              $"[italic][slateblue1]{Markup.Escape(fs.Name)}[/][/]");
 
-                Log.Information("({Id}) {Name}", fs.Id, fs.Name);
+                AaruLogging.Information("({Id}) {Name}", fs.Id, fs.Name);
             }
             else
             {
                 table.AddRow($"[italic][slateblue1]{Markup.Escape(fs.Name)}[/][/]");
-                Log.Information("{Name}", fs.Name);
+                AaruLogging.Information("{Name}", fs.Name);
             }
         }
 
@@ -262,7 +262,7 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
         table.Border(TableBorder.Rounded);
         table.BorderColor(Color.Yellow);
 
-        Log.Information(UI.Supported_partitioning_schemes_0, plugins.Partitions.Count);
+        AaruLogging.Information(UI.Supported_partitioning_schemes_0, plugins.Partitions.Count);
 
         if(settings.Verbose)
             table.AddColumn(new TableColumn(new Markup($"[bold][red]{UI.Title_GUID}[/][/]").Centered()));
@@ -278,12 +278,12 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
                 table.AddRow($"[italic][red]{plugin.Id.ToString()}[/][/]",
                              $"[italic][slateblue1]{Markup.Escape(plugin.Name)}[/][/]");
 
-                Log.Information("({Id}) {Name}", plugin.Id, plugin.Name);
+                AaruLogging.Information("({Id}) {Name}", plugin.Id, plugin.Name);
             }
             else
             {
                 table.AddRow($"[italic][slateblue1]{Markup.Escape(plugin.Name)}[/][/]");
-                Log.Information("{Name}", plugin.Name);
+                AaruLogging.Information("{Name}", plugin.Name);
             }
         }
 
@@ -300,7 +300,7 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
         table.Border(TableBorder.Rounded);
         table.BorderColor(Color.Yellow);
 
-        Log.Information(UI.Supported_archive_formats_0, PluginRegister.Singleton.Archives.Count);
+        AaruLogging.Information(UI.Supported_archive_formats_0, PluginRegister.Singleton.Archives.Count);
 
         if(settings.Verbose)
             table.AddColumn(new TableColumn(new Markup($"[bold][red]{UI.Title_GUID}[/][/]").Centered()));
@@ -316,12 +316,12 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
                 table.AddRow($"[italic][red]{archive.Id.ToString()}[/][/]",
                              $"[italic][slateblue1]{Markup.Escape(archive.Name)}[/][/]");
 
-                Log.Information("({Id}) {Name}", archive.Id, archive.Name);
+                AaruLogging.Information("({Id}) {Name}", archive.Id, archive.Name);
             }
             else
             {
                 table.AddRow($"[italic][slateblue1]{Markup.Escape(archive.Name)}[/][/]");
-                Log.Information("{Name}", archive.Name);
+                AaruLogging.Information("{Name}", archive.Name);
             }
         }
 

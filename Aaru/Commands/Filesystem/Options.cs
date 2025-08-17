@@ -61,7 +61,7 @@ sealed class ListOptionsCommand : Command<ListOptionsCommand.Settings>
         PluginRegister plugins = PluginRegister.Singleton;
 
         AaruLogging.WriteLine(UI.Read_only_filesystems_options);
-        Log.Information(UI.Read_only_filesystems_options);
+        AaruLogging.Information(UI.Read_only_filesystems_options);
 
         foreach(IReadOnlyFilesystem fs in plugins.ReadOnlyFilesystems.Values)
         {
@@ -89,7 +89,7 @@ sealed class ListOptionsCommand : Command<ListOptionsCommand.Settings>
                              $"[italic][olive]{TypeToString(option.type)}[/][/]",
                              $"[slateblue1]{Markup.Escape(option.description)}[/]");
 
-                Log.Information("({Name}) - {Type} - {Description}",
+                AaruLogging.Information("({Name}) - {Type} - {Description}",
                                 option.name,
                                 TypeToString(option.type),
                                 option.description);
