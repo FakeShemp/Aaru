@@ -36,6 +36,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.Console;
 using Aaru.Core;
 using Aaru.Localization;
+using Serilog;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -55,6 +56,8 @@ sealed class ListEncodingsCommand : Command<ListEncodingsCommand.Settings>
         AaruConsole.DebugWriteLine(MODULE_NAME, "--debug={0}",   settings.Debug);
         AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
+        Log.Information(UI.List_encodings_command);
+
         var encodings = Encoding.GetEncodings()
                                 .Select(info => new CommonEncodingInfo
                                  {
@@ -71,11 +74,18 @@ sealed class ListEncodingsCommand : Command<ListEncodingsCommand.Settings>
                                    }));
 
         Table table = new();
-        table.AddColumn(UI.Title_Name);
-        table.AddColumn(UI.Title_Description);
+        table.AddColumn(new TableColumn(new Markup($"[bold][darkgreen]{UI.Title_Name}[/][/]").Centered()));
+        table.AddColumn(new TableColumn(new Markup($"[bold][slateblue1]{UI.Title_Description}[/][/]").Centered()));
+        table.Border(TableBorder.Rounded);
+        table.BorderColor(Color.Yellow);
 
         foreach(CommonEncodingInfo info in encodings.OrderBy(t => t.DisplayName))
-            table.AddRow(info.Name, info.DisplayName);
+        {
+            table.AddRow($"[italic][darkgreen]{Markup.Escape(info.Name)}[/][/]",
+                         $"[italic][slateblue1]{Markup.Escape(info.DisplayName)}[/][/]");
+
+            Log.Information("({Name}) - {DisplayName}", info.Name, info.DisplayName);
+        }
 
         AnsiConsole.Write(table);
 

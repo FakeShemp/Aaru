@@ -6051,5 +6051,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Title_Archive_Format", resourceCulture);
             }
         }
+        
+        public static string List_encodings_command {
+            get {
+                return ResourceManager.GetString("List_encodings_command", resourceCulture);
+            }
+        }
     }
 }

@@ -3102,4 +3102,7 @@ Do you want to continue?</value>
     <data name="Title_Archive_Format" xml:space="preserve">
         <value>Archive format</value>
     </data>
+    <data name="List_encodings_command" xml:space="preserve">
+        <value>List encodings</value>
+    </data>
 </root>
