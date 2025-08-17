@@ -3126,4 +3126,7 @@ Do you want to continue?</value>
     <data name="Optimal_multiple_read_is_0_sectors" xml:space="preserve">
         <value>Optimal multiple read is {0} sectors.</value>
     </data>
+    <data name="Unable_to_get_separate_tracks_not_checksumming_them" xml:space="preserve">
+        <value>Unable to get separate tracks, not checksumming them</value>
+    </data>
 </root>

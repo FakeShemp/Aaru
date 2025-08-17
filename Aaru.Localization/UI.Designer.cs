@@ -6099,5 +6099,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Optimal_multiple_read_is_0_sectors", resourceCulture);
             }
         }
+        
+        public static string Unable_to_get_separate_tracks_not_checksumming_them {
+            get {
+                return ResourceManager.GetString("Unable_to_get_separate_tracks_not_checksumming_them", resourceCulture);
+            }
+        }
     }
 }
