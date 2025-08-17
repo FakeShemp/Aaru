@@ -2322,7 +2322,7 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Error trying to decode TOC...</value>
   </data>
     <data name="Using_MMC_READ_CD_command" xml:space="preserve">
-    <value>Using MMC READ CD command.</value>
+    <value>Using [fuchsia]MMC READ CD[/] command.</value>
   </data>
     <data name="READ_CD_error_0" xml:space="preserve">
     <value>READ CD error:
@@ -2350,34 +2350,34 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Device needs CHS commands but I can't issue them... Aborting.</value>
   </data>
     <data name="Using_ATA_READ_DMA_EXT_command" xml:space="preserve">
-    <value>Using ATA READ DMA EXT command.</value>
+    <value>Using [fuchsia]ATA READ DMA EXT[/] command.</value>
   </data>
     <data name="Using_ATA_READ_EXT_command" xml:space="preserve">
-    <value>Using ATA READ EXT command.</value>
+    <value>Using [fuchsia]ATA READ EXT[/] command.</value>
   </data>
     <data name="Using_ATA_READ_DMA_command_with_retries_LBA" xml:space="preserve">
-    <value>Using ATA READ DMA command with retries (LBA).</value>
+    <value>Using [fuchsia]ATA READ DMA[/] command with retries (LBA).</value>
   </data>
     <data name="Using_ATA_READ_DMA_command_LBA" xml:space="preserve">
-    <value>Using ATA READ DMA command (LBA).</value>
+    <value>Using [fuchsia]ATA READ DMA[/] command (LBA).</value>
   </data>
     <data name="Using_ATA_READ_command_with_retries_LBA" xml:space="preserve">
-    <value>Using ATA READ command with retries (LBA).</value>
+    <value>Using [fuchsia]ATA READ[/] command with retries (LBA).</value>
   </data>
     <data name="Using_ATA_READ_command_LBA" xml:space="preserve">
-    <value>Using ATA READ command (LBA).</value>
+    <value>Using [fuchsia]ATA READ[/] command (LBA).</value>
   </data>
     <data name="Using_ATA_READ_DMA_command_with_retries_CHS" xml:space="preserve">
-    <value>Using ATA READ DMA command with retries (CHS).</value>
+    <value>Using [fuchsia]ATA READ DMA[/] command with retries (CHS).</value>
   </data>
     <data name="Using_ATA_READ_DMA_command_CHS" xml:space="preserve">
-    <value>Using ATA READ DMA command (CHS).</value>
+    <value>Using [fuchsia]ATA READ DMA[/] command (CHS).</value>
   </data>
     <data name="Using_ATA_READ_command_with_retries_CHS" xml:space="preserve">
-    <value>Using ATA READ command with retries (CHS).</value>
+    <value>Using [fuchsia]ATA READ[/] command with retries (CHS).</value>
   </data>
     <data name="Using_ATA_READ_command_CHS" xml:space="preserve">
-    <value>Using ATA READ command (CHS).</value>
+    <value>Using [fuchsia]ATA READ[/] command (CHS).</value>
   </data>
     <data name="Could_not_get_a_working_read_command" xml:space="preserve">
     <value>Could not get a working read command!</value>
@@ -2392,31 +2392,31 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Device only supports SCSI READ (10) but has more than {0} blocks ({1} blocks total)</value>
   </data>
     <data name="Using_SCSI_READ_LONG_16_command" xml:space="preserve">
-    <value>Using SCSI READ LONG (16) command.</value>
+    <value>Using [fuchsia]SCSI READ LONG (16)[/] command.</value>
   </data>
     <data name="Using_SCSI_READ_LONG_10_command" xml:space="preserve">
-    <value>Using SCSI READ LONG (10) command.</value>
+    <value>Using [fuchsia]SCSI READ LONG (10)[/] command.</value>
   </data>
     <data name="Using_SyQuest_READ_LONG_10_command" xml:space="preserve">
-    <value>Using SyQuest READ LONG (10) command.</value>
+    <value>Using [fuchsia]SyQuest READ LONG (10)[/] command.</value>
   </data>
     <data name="Using_SyQuest_READ_LONG_6_command" xml:space="preserve">
-    <value>Using SyQuest READ LONG (6) command.</value>
+    <value>Using [fuchsia]SyQuest READ LONG (6)[/] command.</value>
   </data>
     <data name="Using_HL_DT_ST_raw_DVD_reading" xml:space="preserve">
-    <value>Using HL-DT-ST raw DVD reading.</value>
+    <value>Using [fuchsia]HL-DT-ST raw DVD[/] reading.</value>
   </data>
     <data name="Using_Plextor_raw_DVD_reading" xml:space="preserve">
-    <value>Using Plextor raw DVD reading.</value>
+    <value>Using [fuchsia]Plextor raw DVD[/] reading.</value>
   </data>
     <data name="Using_SCSI_READ_6_command" xml:space="preserve">
-    <value>Using SCSI READ (6) command.</value>
+    <value>Using [fuchsia]SCSI READ (6)[/] command.</value>
   </data>
     <data name="Using_SCSI_READ_10_command" xml:space="preserve">
-    <value>Using SCSI READ (10) command.</value>
+    <value>Using [fuchsia]SCSI READ (10)[/] command.</value>
   </data>
     <data name="Using_SCSI_READ_16_command" xml:space="preserve">
-    <value>Using SCSI READ (16) command.</value>
+    <value>Using [fuchsia]SCSI READ (16)[/] command.</value>
   </data>
     <data name="Unable_to_get_media_capacity" xml:space="preserve">
     <value>Unable to get media capacity

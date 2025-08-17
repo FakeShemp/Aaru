@@ -612,26 +612,27 @@ sealed partial class Reader
         if(CanReadRaw)
         {
             if(_readLong16)
-                AaruLogging.WriteLine(Localization.Core.Using_SCSI_READ_LONG_16_command);
+                AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_SCSI_READ_LONG_16_command}[/]");
             else if(_readLong10 || _readLongDvd)
-                AaruLogging.WriteLine(Localization.Core.Using_SCSI_READ_LONG_10_command);
+                AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_SCSI_READ_LONG_10_command}[/]");
             else if(_syqReadLong10)
-                AaruLogging.WriteLine(Localization.Core.Using_SyQuest_READ_LONG_10_command);
+                AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_SyQuest_READ_LONG_10_command}[/]");
             else if(_syqReadLong6)
-                AaruLogging.WriteLine(Localization.Core.Using_SyQuest_READ_LONG_6_command);
+                AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_SyQuest_READ_LONG_6_command}[/]");
             else if(HldtstReadRaw)
-                AaruLogging.WriteLine(Localization.Core.Using_HL_DT_ST_raw_DVD_reading);
+                AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_HL_DT_ST_raw_DVD_reading}[/]");
             else if(_plextorReadRaw)
-                AaruLogging.WriteLine(Localization.Core.Using_Plextor_raw_DVD_reading);
-            else if(LiteOnReadRaw) AaruLogging.WriteLine(Localization.Core.Using_Lite_On_raw_DVD_reading);
+                AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_Plextor_raw_DVD_reading}[/]");
+            else if(LiteOnReadRaw)
+                AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_Lite_On_raw_DVD_reading}[/]");
         }
         else if(_read6)
-            AaruLogging.WriteLine(Localization.Core.Using_SCSI_READ_6_command);
+            AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_SCSI_READ_6_command}[/]");
         else if(_read10)
-            AaruLogging.WriteLine(Localization.Core.Using_SCSI_READ_10_command);
+            AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_SCSI_READ_10_command}[/]");
         else if(_read12)
-            AaruLogging.WriteLine(Localization.Core.Using_SCSI_READ_12_command);
-        else if(_read16) AaruLogging.WriteLine(Localization.Core.Using_SCSI_READ_16_command);
+            AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_SCSI_READ_12_command}[/]");
+        else if(_read16) AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Using_SCSI_READ_16_command}[/]");
 
         return false;
     }

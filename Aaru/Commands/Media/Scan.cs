@@ -111,17 +111,14 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
                    .Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn())
                    .Start(ctx =>
                     {
-                        scanner.UpdateStatus += text => { AaruLogging.WriteLine(Markup.Escape(text)); };
+                        scanner.UpdateStatus += text => { AaruLogging.WriteLine(text); };
 
-                        scanner.StoppingErrorMessage += text =>
-                            {
-                                AaruLogging.Error($"[red]{Markup.Escape(text)}[/]");
-                            };
+                        scanner.StoppingErrorMessage += text => { AaruLogging.Error(text); };
 
                         scanner.UpdateProgress += (text, current, maximum) =>
                         {
                             _progressTask1             ??= ctx.AddTask("Progress");
-                            _progressTask1.Description =   Markup.Escape(text);
+                            _progressTask1.Description =   text;
                             _progressTask1.Value       =   current;
                             _progressTask1.MaxValue    =   maximum;
                         };
@@ -129,10 +126,10 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
                         scanner.PulseProgress += text =>
                         {
                             if(_progressTask1 is null)
-                                ctx.AddTask(Markup.Escape(text)).IsIndeterminate();
+                                ctx.AddTask(text).IsIndeterminate();
                             else
                             {
-                                _progressTask1.Description     = Markup.Escape(text);
+                                _progressTask1.Description     = text;
                                 _progressTask1.IsIndeterminate = true;
                             }
                         };
@@ -154,18 +151,18 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
                         results = scanner.Scan();
                     });
 
-        AaruLogging.WriteLine(Localization.Core.Took_a_total_of_0_1_processing_commands,
-                              results.TotalTime.Seconds().Humanize(minUnit: TimeUnit.Second),
-                              results.ProcessingTime.Seconds().Humanize(minUnit: TimeUnit.Second));
+        AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Took_a_total_of_0_1_processing_commands}[/]",
+                              $"[teal]{results.TotalTime.Seconds().Humanize(minUnit: TimeUnit.Second)}[/]",
+                              $"[teal]{results.ProcessingTime.Seconds().Humanize(minUnit: TimeUnit.Second)}[/]");
 
-        AaruLogging.WriteLine(Localization.Core.Average_speed_0,
-                              ByteSize.FromBytes(results.AvgSpeed).Per(1.Seconds()).Humanize());
+        AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Average_speed_0}[/]",
+                              $"[aqua]{ByteSize.FromBytes(results.AvgSpeed).Per(1.Seconds()).Humanize()}[/]");
 
-        AaruLogging.WriteLine(Localization.Core.Fastest_speed_burst_0,
-                              ByteSize.FromBytes(results.MaxSpeed).Per(1.Seconds()).Humanize());
+        AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Fastest_speed_burst_0}[/]",
+                              $"[aqua]{ByteSize.FromBytes(results.MaxSpeed).Per(1.Seconds()).Humanize()}[/]");
 
-        AaruLogging.WriteLine(Localization.Core.Slowest_speed_burst_0,
-                              ByteSize.FromBytes(results.MinSpeed).Per(1.Seconds()).Humanize());
+        AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Slowest_speed_burst_0}[/]",
+                              $"[aqua]{ByteSize.FromBytes(results.MinSpeed).Per(1.Seconds()).Humanize()}[/]");
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine($"[bold]{Localization.Core.Summary}:[/]");
@@ -185,19 +182,19 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
                                                        results.UnreadableSectors.Count)}[/]");
 
         foreach(ulong bad in results.UnreadableSectors)
-            AaruLogging.WriteLine(Localization.Core.Sector_0_could_not_be_read, bad);
+            AaruLogging.WriteLine($"[red]{Localization.Core.Sector_0_could_not_be_read}[/]", $"[teal]{bad}[/]");
 
         AaruLogging.WriteLine();
 
         if(results.SeekTotal > 0 || results.SeekMin < double.MaxValue || results.SeekMax > double.MinValue)
 
         {
-            AaruLogging.WriteLine(Localization.Core
-                                              .Testing_0_seeks_longest_seek_took_1_ms_fastest_one_took_2_ms_3_ms_average,
-                                  results.SeekTimes,
-                                  results.SeekMax,
-                                  results.SeekMin,
-                                  results.SeekTotal / 1000);
+            AaruLogging.WriteLine($"[slateblue1]{Localization.Core
+                                                             .Testing_0_seeks_longest_seek_took_1_ms_fastest_one_took_2_ms_3_ms_average}[/]",
+                                  $"[aqua]{results.SeekTimes}[/]",
+                                  $"[aqua]{results.SeekMax}[/]",
+                                  $"[aqua]{results.SeekMin}[/]",
+                                  $"[aqua]{results.SeekTotal / 1000}[/]");
         }
 
         dev.Close();
