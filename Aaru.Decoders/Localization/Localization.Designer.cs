@@ -19459,5 +19459,17 @@ namespace Aaru.Decoders {
                 return ResourceManager.GetString("Low_power_take_precedence_over_background", resourceCulture);
             }
         }
+        
+        internal static string Regional_Playback_Control_State {
+            get {
+                return ResourceManager.GetString("Regional_Playback_Control_State", resourceCulture);
+            }
+        }
+        
+        internal static string Lead_In_Copyright_Information {
+            get {
+                return ResourceManager.GetString("Lead_In_Copyright_Information", resourceCulture);
+            }
+        }
     }
 }

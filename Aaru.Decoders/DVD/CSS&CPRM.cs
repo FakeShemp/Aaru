@@ -103,43 +103,47 @@ public static class CSS_CPRM
 
         int userControlledChanges = decoded.TypeCode_VendorResetsAvailable_UserControlledChangesAvailable & 0x7;
 
+        sb.AppendLine($"[bold][blue]{Localization.Regional_Playback_Control_State}[/][/]");
+
         switch(typeCode)
         {
             case TypeCode.None:
-                sb.AppendLine(Localization.No_drive_region_setting);
+                sb.AppendLine($"\t[slateblue1]{Localization.No_drive_region_setting}[/]");
 
                 break;
             case TypeCode.Set:
-                sb.AppendLine(Localization.Drive_region_is_set);
+                sb.AppendLine($"\t[slateblue1]{Localization.Drive_region_is_set}[/]");
 
                 break;
             case TypeCode.LastChance:
-                sb.AppendLine(Localization.Drive_region_is_set_with_additional_restrictions_required_to_make_a_change);
+                sb.AppendLine($"\t[slateblue1]{Localization.Drive_region_is_set_with_additional_restrictions_required_to_make_a_change}[/]");
 
                 break;
             case TypeCode.Perm:
-                sb.AppendLine(Localization
-                                 .Drive_region_has_been_set_permanently_but_may_be_reset_by_the_vendor_if_necessary);
+                sb.AppendLine($"\t[slateblue1]{Localization.Drive_region_has_been_set_permanently_but_may_be_reset_by_the_vendor_if_necessary}[/]");
 
                 break;
         }
 
-        sb.AppendLine(string.Format(Localization.Drive_has_0_vendor_resets_available,           vendorResets));
-        sb.AppendLine(string.Format(Localization.Drive_has_0_user_controlled_changes_available, userControlledChanges));
+        sb.AppendLine(string.Format($"\t[slateblue1]{Localization.Drive_has_0_vendor_resets_available}[/]",
+                                    $"[teal]{vendorResets}[/]"));
+
+        sb.AppendLine(string.Format($"\t[slateblue1]{Localization.Drive_has_0_user_controlled_changes_available}[/]",
+                                    $"[teal]{userControlledChanges}[/]"));
 
         switch(decoded.RegionMask)
         {
             case 0xFF:
-                sb.AppendLine(Localization.Drive_has_no_region_set);
+                sb.AppendLine($"\t[slateblue1]{Localization.Drive_has_no_region_set}[/]");
 
                 break;
             case 0x00:
-                sb.AppendLine(Localization.Drive_is_region_free);
+                sb.AppendLine($"\t[slateblue1]{Localization.Drive_is_region_free}[/]");
 
                 break;
             default:
             {
-                sb.Append(Localization.Drive_has_the_following_regions_set);
+                sb.Append($"\t[slateblue1]{Localization.Drive_has_the_following_regions_set}[/][teal]");
 
                 if((decoded.RegionMask & 0x01) != 0x01) sb.Append(" 1");
 
@@ -161,21 +165,20 @@ public static class CSS_CPRM
             }
         }
 
-        sb.AppendLine("");
+        sb.AppendLine("[/]");
 
         switch(decoded.RPCScheme)
         {
             case 0x00:
-                sb.AppendLine(Localization.The_Logical_Unit_does_not_enforce_Region_Playback_Controls_RPC);
+                sb.AppendLine($"\t[slateblue1]{Localization.The_Logical_Unit_does_not_enforce_Region_Playback_Controls_RPC}[/]");
 
                 break;
             case 0x01:
-                sb.AppendLine(Localization
-                                 .The_Logical_Unit_shall_adhere_to_the_specification_and_all_requirements_of_the_CSS_license_agreement_concerning_RPC);
+                sb.AppendLine($"\t[slateblue1]{Localization.The_Logical_Unit_shall_adhere_to_the_specification_and_all_requirements_of_the_CSS_license_agreement_concerning_RPC}[/]");
 
                 break;
             default:
-                sb.AppendLine(Localization.The_Logical_Unit_uses_an_unknown_region_enforcement_scheme);
+                sb.AppendLine($"\t[slateblue1]{Localization.The_Logical_Unit_uses_an_unknown_region_enforcement_scheme}[/]");
 
                 break;
         }
@@ -193,27 +196,29 @@ public static class CSS_CPRM
         LeadInCopyright decoded = cmi.Value;
         var             sb      = new StringBuilder();
 
+        sb.AppendLine($"[bold][blue]{Localization.Lead_In_Copyright_Information}[/][/]");
+
         switch(decoded.CopyrightType)
         {
             case CopyrightType.NoProtection:
-                sb.AppendLine(Localization.Disc_has_no_encryption);
+                sb.AppendLine($"\t[slateblue1]{Localization.Disc_has_no_encryption}[/]");
 
                 break;
             case CopyrightType.CSS:
-                sb.AppendLine(Localization.Disc_is_encrypted_using_CSS_or_CPPM);
+                sb.AppendLine($"\t[slateblue1]{Localization.Disc_is_encrypted_using_CSS_or_CPPM}[/]");
 
                 break;
             case CopyrightType.CPRM:
-                sb.AppendLine(Localization.Disc_is_encrypted_using_CPRM);
+                sb.AppendLine($"\t[slateblue1]{Localization.Disc_is_encrypted_using_CPRM}[/]");
 
                 break;
             case CopyrightType.AACS:
-                sb.AppendLine(Localization.Disc_is_encrypted_using_AACS);
+                sb.AppendLine($"\t[slateblue1]{Localization.Disc_is_encrypted_using_AACS}[/]");
 
                 break;
             default:
-                sb.AppendFormat(Localization.Disc_is_encrypted_using_unknown_algorithm_with_ID_0,
-                                decoded.CopyrightType);
+                sb.AppendFormat($"\t[slateblue1]{Localization.Disc_is_encrypted_using_unknown_algorithm_with_ID_0}[/]",
+                                $"[teal]{decoded.CopyrightType}[/]");
 
                 break;
         }
@@ -223,16 +228,16 @@ public static class CSS_CPRM
         switch(decoded.RegionInformation)
         {
             case 0xFF:
-                sb.AppendLine(Localization.Disc_cannot_be_played_in_any_region_at_all);
+                sb.AppendLine($"\t[slateblue1]{Localization.Disc_cannot_be_played_in_any_region_at_all}[/]");
 
                 break;
             case 0x00:
-                sb.AppendLine(Localization.Disc_can_be_played_in_any_region);
+                sb.AppendLine($"\t[slateblue1]{Localization.Disc_can_be_played_in_any_region}[/]");
 
                 break;
             default:
             {
-                sb.Append(Localization.Disc_can_be_played_in_the_following_regions);
+                sb.Append($"\t[slateblue1]{Localization.Disc_can_be_played_in_the_following_regions}[/][teal]");
 
                 if((decoded.RegionInformation & 0x01) != 0x01) sb.Append(" 1");
 
@@ -249,6 +254,8 @@ public static class CSS_CPRM
                 if((decoded.RegionInformation & 0x40) != 0x40) sb.Append(" 7");
 
                 if((decoded.RegionInformation & 0x80) != 0x80) sb.Append(" 8");
+
+                sb.AppendLine("[/]");
 
                 break;
             }

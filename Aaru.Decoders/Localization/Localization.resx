@@ -9787,4 +9787,10 @@
     <data name="Low_power_take_precedence_over_background" xml:space="preserve">
         <value>Maintaining low power conditions take precedence over performing background functions</value>
     </data>
+    <data name="Regional_Playback_Control_State" xml:space="preserve">
+        <value>Regional Playback Control State:</value>
+    </data>
+    <data name="Lead_In_Copyright_Information" xml:space="preserve">
+        <value>Lead-In Copyright Information:</value>
+    </data>
 </root>
