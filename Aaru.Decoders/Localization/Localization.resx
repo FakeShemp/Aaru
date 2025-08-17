@@ -9754,4 +9754,7 @@
     <data name="Vendor_specific_bytes_96_to_0" xml:space="preserve">
     <value>Vendor-specific bytes 96 to {0}</value>
   </data>
+    <data name="MediumTypes_CDR_Mixed_80" xml:space="preserve">
+        <value>80 mm CD-R with data and audio</value>
+    </data>
 </root>

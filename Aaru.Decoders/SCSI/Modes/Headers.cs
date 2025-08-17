@@ -109,7 +109,7 @@ public static partial class Modes
 
         var sb = new StringBuilder();
 
-        sb.AppendLine(Localization.SCSI_Mode_Sense_Header);
+        sb.AppendLine($"[bold][blue]{Localization.SCSI_Mode_Sense_Header}[/][/]");
 
         switch(deviceType)
         {
@@ -119,13 +119,13 @@ public static partial class Modes
             {
                 if(header.Value.MediumType != MediumTypes.Default)
                 {
-                    sb.AppendFormat("\t" + Localization.Medium_is_0, GetMediumTypeDescription(header.Value.MediumType))
+                    sb.AppendFormat($"\t[slateblue1]{Localization.Medium_is_0}[/]", $"[italic][fuchsia]{GetMediumTypeDescription(header.Value.MediumType)}[/][/]")
                       .AppendLine();
                 }
 
-                if(header.Value.WriteProtected) sb.AppendLine("\t" + Localization.Medium_is_write_protected);
+                if(header.Value.WriteProtected) sb.AppendLine($"\t[red]{Localization.Medium_is_write_protected}[/]");
 
-                if(header.Value.DPOFUA) sb.AppendLine("\t" + Localization.Drive_supports_DPO_and_FUA_bits);
+                if(header.Value.DPOFUA) sb.AppendLine($"\t[green]{Localization.Drive_supports_DPO_and_FUA_bits}[/]");
 
                 if(header.Value.BlockDescriptors != null)
                 {
@@ -160,31 +160,31 @@ public static partial class Modes
                         {
                             if(descriptor.Blocks == 0)
                             {
-                                sb.AppendFormat("\t" + Localization.All_remaining_blocks_have_0_and_are_1_bytes_each,
-                                                density,
-                                                descriptor.BlockLength)
+                                sb.AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_have_0_and_are_1_bytes_each}[/]",
+                                                $"[lime]{density}[/]",
+                                                $"[lime]{descriptor.BlockLength}[/]")
                                   .AppendLine();
                             }
                             else
                             {
-                                sb.AppendFormat("\t" + Localization._0_blocks_have_1_and_are_2_bytes_each,
-                                                descriptor.Blocks,
-                                                density,
-                                                descriptor.BlockLength)
+                                sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_have_1_and_are_2_bytes_each}[/]",
+                                                $"[lime]{descriptor.Blocks}[/]",
+                                                $"[lime]{density}[/]",
+                                                $"[lime{descriptor.BlockLength}[/]")
                                   .AppendLine();
                             }
                         }
                         else if(descriptor.Blocks == 0)
                         {
-                            sb.AppendFormat("\t" + Localization.All_remaining_blocks_are_0_bytes_each,
-                                            descriptor.BlockLength)
+                            sb.AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_are_0_bytes_each}[/]",
+                                            $"[lime]{descriptor.BlockLength}[/]")
                               .AppendLine();
                         }
                         else
                         {
-                            sb.AppendFormat("\t" + Localization._0_blocks_are_1_bytes_each,
-                                            descriptor.Blocks,
-                                            descriptor.BlockLength)
+                            sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_are_1_bytes_each}[/]",
+                                            $"[lime]{descriptor.Blocks}[/]",
+                                            $"[lime]{descriptor.BlockLength}[/]")
                               .AppendLine();
                         }
                     }
@@ -202,31 +202,31 @@ public static partial class Modes
                 switch(header.Value.BufferedMode)
                 {
                     case 0:
-                        sb.AppendLine("\t" + Localization.Device_writes_directly_to_media);
+                        sb.AppendLine($"\t[olive]{Localization.Device_writes_directly_to_media}[/]");
 
                         break;
                     case 1:
-                        sb.AppendLine("\t" + Localization.Device_uses_a_write_cache);
+                        sb.AppendLine($"\t[green]{Localization.Device_uses_a_write_cache}[/]");
 
                         break;
                     case 2:
-                        sb.AppendLine("\t" +
-                                      Localization.Device_uses_a_write_cache_but_doesn_t_return_until_cache_is_flushed);
+                        sb.AppendLine($"\t[green]{
+                                      Localization.Device_uses_a_write_cache_but_doesn_t_return_until_cache_is_flushed}[/]");
 
                         break;
                     default:
-                        sb.AppendFormat("\t" + Localization.Unknown_buffered_mode_code_0, header.Value.BufferedMode)
+                        sb.AppendFormat($"\t[green]{Localization.Unknown_buffered_mode_code_0}[/]", $"[teal]{header.Value.BufferedMode}[/]")
                           .AppendLine();
 
                         break;
                 }
 
                 if(header.Value.Speed == 0)
-                    sb.AppendLine("\t" + Localization.Device_uses_default_speed);
+                    sb.AppendLine($"\t[green]{Localization.Device_uses_default_speed}[/]");
                 else
-                    sb.AppendFormat("\t" + Localization.Device_uses_speed_0, header.Value.Speed).AppendLine();
+                    sb.AppendFormat($"\t[green]{Localization.Device_uses_speed_0}[/]", $"[teal]{header.Value.Speed}[/]").AppendLine();
 
-                if(header.Value.WriteProtected) sb.AppendLine("\t" + Localization.Medium_is_write_protected);
+                if(header.Value.WriteProtected) sb.AppendLine($"\t[red]{Localization.Medium_is_write_protected}[/]");
 
                 string medium = header.Value.MediumType switch
                                 {
@@ -292,7 +292,7 @@ public static partial class Modes
                                                        (byte)header.Value.MediumType)
                                 };
 
-                sb.AppendFormat("\t" + Localization.Medium_is_0, medium).AppendLine();
+                sb.AppendFormat($"\t[slateblue1]{Localization.Medium_is_0}[/]", $"[fuchsia]{medium}[/]").AppendLine();
 
                 if(header.Value.BlockDescriptors != null)
                 {
@@ -1085,34 +1085,34 @@ public static partial class Modes
                             {
                                 if(descriptor.BlockLength == 0)
                                 {
-                                    sb.AppendFormat("\t" +
+                                    sb.AppendFormat($"\t[slateblue1]{
                                                     Localization
-                                                       .All_remaining_blocks_conform_to_0_and_have_a_variable_length,
-                                                    density)
+                                                       .All_remaining_blocks_conform_to_0_and_have_a_variable_length}[/]",
+                                                    $"[fuchsia]{density}[/]")
                                       .AppendLine();
                                 }
                                 else
                                 {
-                                    sb.AppendFormat("\t" +
-                                                    Localization.All_remaining_blocks_conform_to_0_and_are_1_bytes_each,
-                                                    density,
-                                                    descriptor.BlockLength)
+                                    sb.AppendFormat($"\t[slateblue1]{
+                                    Localization.All_remaining_blocks_conform_to_0_and_are_1_bytes_each}[/]",
+                                                    $"[fuchsia]{density}[/]",
+                                                    $"[teal]{descriptor.BlockLength}[/]")
                                       .AppendLine();
                                 }
                             }
                             else if(descriptor.BlockLength == 0)
                             {
-                                sb.AppendFormat("\t" + Localization._0_blocks_conform_to_1_and_have_a_variable_length,
-                                                descriptor.Blocks,
-                                                density)
+                                sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_conform_to_1_and_have_a_variable_length}[/]",
+                                                $"[teal]{descriptor.Blocks}[/]",
+                                                $"[fuchsia]{density}[/]")
                                   .AppendLine();
                             }
                             else
                             {
-                                sb.AppendFormat("\t" + Localization._0_blocks_conform_to_1_and_are_2_bytes_each,
-                                                descriptor.Blocks,
-                                                density,
-                                                descriptor.BlockLength)
+                                sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_conform_to_1_and_are_2_bytes_each}[/]",
+                                                $"[teal]{descriptor.Blocks}[/]",
+                                                $"[fuchsia]{density}[/]",
+                                                $"[teal]{descriptor.BlockLength}[/]")
                                   .AppendLine();
                             }
                         }
@@ -1120,26 +1120,26 @@ public static partial class Modes
                         {
                             if(descriptor.BlockLength == 0)
                             {
-                                sb.AppendFormat("\t" + Localization.All_remaining_blocks_have_a_variable_length)
+                                sb.AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_have_a_variable_length}[/]")
                                   .AppendLine();
                             }
                             else
                             {
-                                sb.AppendFormat("\t" + Localization.All_remaining_blocks_are_0_bytes_each,
-                                                descriptor.BlockLength)
+                                sb.AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_are_0_bytes_each}[/]",
+                                                $"[teal]{descriptor.BlockLength}[/]")
                                   .AppendLine();
                             }
                         }
                         else if(descriptor.BlockLength == 0)
                         {
-                            sb.AppendFormat("\t" + Localization._0_blocks_have_a_variable_length, descriptor.Blocks)
+                            sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_have_a_variable_length}[/]", $"[teal]{descriptor.Blocks}[/]")
                               .AppendLine();
                         }
                         else
                         {
-                            sb.AppendFormat("\t" + Localization._0_blocks_are_1_bytes_each,
-                                            descriptor.Blocks,
-                                            descriptor.BlockLength)
+                            sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_are_1_bytes_each}[/]",
+                                            $"[teal]{descriptor.Blocks}[/]",
+                                            $"[teal]{descriptor.BlockLength}[/]")
                               .AppendLine();
                         }
                     }
@@ -1157,15 +1157,15 @@ public static partial class Modes
                 switch(header.Value.BufferedMode)
                 {
                     case 0:
-                        sb.AppendLine("\t" + Localization.Device_prints_directly);
+                        sb.AppendLine($"\t[olive]{Localization.Device_prints_directly}[/]");
 
                         break;
                     case 1:
-                        sb.AppendLine("\t" + Localization.Device_uses_a_print_cache);
+                        sb.AppendLine($"\t[green]{Localization.Device_uses_a_print_cache}[/]");
 
                         break;
                     default:
-                        sb.AppendFormat("\t" + Localization.Unknown_buffered_mode_code_0, header.Value.BufferedMode)
+                        sb.AppendFormat($"\t[red]{Localization.Unknown_buffered_mode_code_0}[/]", $"[teal]{header.Value.BufferedMode}[/]")
                           .AppendLine();
 
                         break;
@@ -1182,51 +1182,52 @@ public static partial class Modes
             {
                 if(header.Value.MediumType != MediumTypes.Default)
                 {
-                    sb.Append("\t" + Localization.Medium_is_);
+                    sb.Append($"\t[slateblue1]{Localization.Medium_is_}");
 
                     switch(header.Value.MediumType)
                     {
                         case MediumTypes.ReadOnly:
-                            sb.AppendLine(Localization.GetMediumTypeDescription_ReadOnly);
+                            sb.Append(Localization.GetMediumTypeDescription_ReadOnly);
 
                             break;
                         case MediumTypes.WORM:
-                            sb.AppendLine(Localization.GetMediumTypeDescription_WORM);
+                            sb.Append(Localization.GetMediumTypeDescription_WORM);
 
                             break;
                         case MediumTypes.Erasable:
-                            sb.AppendLine(Localization.GetMediumTypeDescription_Erasable);
+                            sb.Append(Localization.GetMediumTypeDescription_Erasable);
 
                             break;
                         case MediumTypes.RO_WORM:
-                            sb.AppendLine(Localization.GetMediumTypeDescription_RO_WORM);
+                            sb.Append(Localization.GetMediumTypeDescription_RO_WORM);
 
                             break;
                         case MediumTypes.RO_RW:
-                            sb.AppendLine(Localization.a_combination_of_read_only_and_erasable_optical);
+                            sb.Append(Localization.a_combination_of_read_only_and_erasable_optical);
 
                             break;
                         case MediumTypes.WORM_RW:
-                            sb.AppendLine(Localization.a_combination_of_write_once_and_erasable_optical);
+                            sb.Append(Localization.a_combination_of_write_once_and_erasable_optical);
 
                             break;
                         case MediumTypes.DOW:
-                            sb.AppendLine(Localization.GetMediumTypeDescription_DOW);
+                            sb.Append(Localization.GetMediumTypeDescription_DOW);
 
                             break;
                         default:
-                            sb.AppendFormat(Localization.an_unknown_medium_type_0, (byte)header.Value.MediumType)
-                              .AppendLine();
+                            sb.AppendFormat(Localization.an_unknown_medium_type_0, $"[teal]{(byte)header.Value.MediumType}[/]");
 
                             break;
                     }
                 }
 
-                if(header.Value.WriteProtected) sb.AppendLine("\t" + Localization.Medium_is_write_protected);
+                sb.AppendLine("[/]");
 
-                if(header.Value.EBC) sb.AppendLine("\t" + Localization.Blank_checking_during_write_is_enabled);
+                if(header.Value.WriteProtected) sb.AppendLine($"\t[red]{Localization.Medium_is_write_protected}[/]");
 
-                if(header.Value.DPOFUA) sb.AppendLine("\t" + Localization.Drive_supports_DPO_and_FUA_bits);
+                if(header.Value.EBC) sb.AppendLine($"\t[green]{Localization.Blank_checking_during_write_is_enabled}[/]");
+
+                if(header.Value.DPOFUA) sb.AppendLine($"\t[green]{Localization.Drive_supports_DPO_and_FUA_bits}[/]");
 
                 if(header.Value.BlockDescriptors != null)
                 {
@@ -1286,32 +1287,32 @@ public static partial class Modes
                             {
                                 if(descriptor.BlockLength == 0)
                                 {
-                                    sb.AppendFormat("\t" +
-                                                    Localization.All_remaining_blocks_are_0_and_have_a_variable_length,
-                                                    density)
+                                    sb.AppendFormat($"\t[slateblue1]{
+                                                    Localization.All_remaining_blocks_are_0_and_have_a_variable_length}[/]",
+                                                    $"[fuchsia]{density}[/]")
                                       .AppendLine();
                                 }
                                 else
                                 {
-                                    sb.AppendFormat("\t" + Localization.All_remaining_blocks_are_0_and_are_1_bytes_each,
-                                                    density,
-                                                    descriptor.BlockLength)
+                                    sb.AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_are_0_and_are_1_bytes_each}[/]",
+                                                    $"[fuchsia]{density}[/]",
+                                                    $"[teal]{descriptor.BlockLength}[/]")
                                       .AppendLine();
                                 }
                             }
                             else if(descriptor.BlockLength == 0)
                             {
-                                sb.AppendFormat("\t" + Localization._0_blocks_are_1_and_have_a_variable_length,
-                                                descriptor.Blocks,
-                                                density)
+                                sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_are_1_and_have_a_variable_length}[/]",
+                                                $"[teal]{descriptor.Blocks}[/]",
+                                                $"[fuchsia]{density}[/]")
                                   .AppendLine();
                             }
                             else
                             {
-                                sb.AppendFormat("\t" + Localization._0_blocks_are_1_and_are_2_bytes_each,
-                                                descriptor.Blocks,
-                                                density,
-                                                descriptor.BlockLength)
+                                sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_are_1_and_are_2_bytes_each}[/]",
+                                                $"[teal]{descriptor.Blocks}[/]",
+                                                $"[fuchsia]{density}[/]",
+                                                $"[teal]{descriptor.BlockLength}[/]")
                                   .AppendLine();
                             }
                         }
@@ -1319,26 +1320,26 @@ public static partial class Modes
                         {
                             if(descriptor.BlockLength == 0)
                             {
-                                sb.AppendFormat("\t" + Localization.All_remaining_blocks_have_a_variable_length)
+                                sb.AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_have_a_variable_length}[/]")
                                   .AppendLine();
                             }
                             else
                             {
-                                sb.AppendFormat("\t" + Localization.All_remaining_blocks_are_0_bytes_each,
-                                                descriptor.BlockLength)
+                                sb.AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_are_0_bytes_each}[/]",
+                                                $"[teal]{descriptor.BlockLength}[/]")
                                   .AppendLine();
                             }
                         }
                         else if(descriptor.BlockLength == 0)
                         {
-                            sb.AppendFormat("\t" + Localization._0_blocks_have_a_variable_length, descriptor.Blocks)
+                            sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_have_a_variable_length}[/]", $"[teal]{descriptor.Blocks}[/]")
                               .AppendLine();
                         }
                         else
                         {
-                            sb.AppendFormat("\t" + Localization._0_blocks_are_1_bytes_each,
-                                            descriptor.Blocks,
-                                            descriptor.BlockLength)
+                            sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_are_1_bytes_each}[/]",
+                                            $"[teal]{descriptor.Blocks}[/]",
+                                            $"[teal]{descriptor.BlockLength}[/]")
                               .AppendLine();
                         }
                     }
@@ -1353,163 +1354,165 @@ public static partial class Modes
 
             case PeripheralDeviceTypes.MultiMediaDevice:
             {
-                sb.Append("\t" + Localization.Medium_is_);
+                sb.Append($"\t[slateblue1]{Localization.Medium_is_}[fuchsia]");
 
                 switch(header.Value.MediumType)
                 {
                     case MediumTypes.CDROM:
-                        sb.AppendLine(Localization.MediumTypes_CDROM);
+                        sb.Append(Localization.MediumTypes_CDROM);
 
                         break;
                     case MediumTypes.CDDA:
-                        sb.AppendLine(Localization.MediumTypes_CDDA);
+                        sb.Append(Localization.MediumTypes_CDDA);
 
                         break;
                     case MediumTypes.MixedCD:
-                        sb.AppendLine(Localization.MediumTypes_MixedCD);
+                        sb.Append(Localization.MediumTypes_MixedCD);
 
                         break;
                     case MediumTypes.CDROM_80:
-                        sb.AppendLine(Localization.MediumTypes_CDROM_80);
+                        sb.Append(Localization.MediumTypes_CDROM_80);
 
                         break;
                     case MediumTypes.CDDA_80:
-                        sb.AppendLine(Localization.MediumTypes_CDDA_80);
+                        sb.Append(Localization.MediumTypes_CDDA_80);
 
                         break;
                     case MediumTypes.MixedCD_80:
-                        sb.AppendLine(Localization.MediumTypes_MixedCD_80);
+                        sb.Append(Localization.MediumTypes_MixedCD_80);
 
                         break;
                     case MediumTypes.Unknown_CD:
-                        sb.AppendLine(Localization.Unknown_medium_type);
+                        sb.Append(Localization.Unknown_medium_type);
 
                         break;
                     case MediumTypes.HybridCD:
-                        sb.AppendLine(Localization.MediumTypes_HybridCD);
+                        sb.Append(Localization.MediumTypes_HybridCD);
 
                         break;
                     case MediumTypes.Unknown_CDR:
-                        sb.AppendLine(Localization.MediumTypes_Unknown_CDR);
+                        sb.Append(Localization.MediumTypes_Unknown_CDR);
 
                         break;
                     case MediumTypes.CDR:
-                        sb.AppendLine(Localization.MediumTypes_CDR);
+                        sb.Append(Localization.MediumTypes_CDR);
 
                         break;
                     case MediumTypes.CDR_DA:
-                        sb.AppendLine(Localization.MediumTypes_CDR_DA);
+                        sb.Append(Localization.MediumTypes_CDR_DA);
 
                         break;
                     case MediumTypes.CDR_Mixed:
-                        sb.AppendLine(Localization.MediumTypes_CDR_Mixed);
+                        sb.Append(Localization.MediumTypes_CDR_Mixed);
 
                         break;
                     case MediumTypes.HybridCDR:
-                        sb.AppendLine(Localization.MediumTypes_HybridCDR);
+                        sb.Append(Localization.MediumTypes_HybridCDR);
 
                         break;
                     case MediumTypes.CDR_80:
-                        sb.AppendLine(Localization.MediumTypes_CDR_80);
+                        sb.Append(Localization.MediumTypes_CDR_80);
 
                         break;
                     case MediumTypes.CDR_DA_80:
-                        sb.AppendLine(Localization.MediumTypes_CDR_DA_80);
+                        sb.Append(Localization.MediumTypes_CDR_DA_80);
 
                         break;
                     case MediumTypes.CDR_Mixed_80:
-                        sb.AppendLine("80 mm CD-R with data and audio");
+                        sb.Append(Localization.MediumTypes_CDR_Mixed_80);
 
                         break;
                     case MediumTypes.HybridCDR_80:
-                        sb.AppendLine(Localization.MediumTypes_HybridCDR_80);
+                        sb.Append(Localization.MediumTypes_HybridCDR_80);
 
                         break;
                     case MediumTypes.Unknown_CDRW:
-                        sb.AppendLine(Localization.MediumTypes_Unknown_CDRW);
+                        sb.Append(Localization.MediumTypes_Unknown_CDRW);
 
                         break;
                     case MediumTypes.CDRW:
-                        sb.AppendLine(Localization.MediumTypes_CDRW);
+                        sb.Append(Localization.MediumTypes_CDRW);
 
                         break;
                     case MediumTypes.CDRW_DA:
-                        sb.AppendLine(Localization.MediumTypes_CDRW_DA);
+                        sb.Append(Localization.MediumTypes_CDRW_DA);
 
                         break;
                     case MediumTypes.CDRW_Mixed:
-                        sb.AppendLine(Localization.MediumTypes_CDRW_Mixed);
+                        sb.Append(Localization.MediumTypes_CDRW_Mixed);
 
                         break;
                     case MediumTypes.HybridCDRW:
-                        sb.AppendLine(Localization.MediumTypes_HybridCDRW);
+                        sb.Append(Localization.MediumTypes_HybridCDRW);
 
                         break;
                     case MediumTypes.CDRW_80:
-                        sb.AppendLine(Localization.MediumTypes_CDRW_80);
+                        sb.Append(Localization.MediumTypes_CDRW_80);
 
                         break;
                     case MediumTypes.CDRW_DA_80:
-                        sb.AppendLine(Localization.MediumTypes_CDRW_DA_80);
+                        sb.Append(Localization.MediumTypes_CDRW_DA_80);
 
                         break;
                     case MediumTypes.CDRW_Mixed_80:
-                        sb.AppendLine(Localization.MediumTypes_CDRW_Mixed_80);
+                        sb.Append(Localization.MediumTypes_CDRW_Mixed_80);
 
                         break;
                     case MediumTypes.HybridCDRW_80:
-                        sb.AppendLine(Localization.MediumTypes_HybridCDRW_80);
+                        sb.Append(Localization.MediumTypes_HybridCDRW_80);
 
                         break;
                     case MediumTypes.Unknown_HD:
-                        sb.AppendLine(Localization.MediumTypes_Unknown_HD);
+                        sb.Append(Localization.MediumTypes_Unknown_HD);
 
                         break;
                     case MediumTypes.HD:
-                        sb.AppendLine(Localization.MediumTypes_HD);
+                        sb.Append(Localization.MediumTypes_HD);
 
                         break;
                     case MediumTypes.HD_80:
-                        sb.AppendLine(Localization.MediumTypes_HD_80);
+                        sb.Append(Localization.MediumTypes_HD_80);
 
                         break;
                     case MediumTypes.NoDisc:
-                        sb.AppendLine(Localization.No_disc_inserted_tray_closed_or_caddy_inserted);
+                        sb.Append(Localization.No_disc_inserted_tray_closed_or_caddy_inserted);
 
                         break;
                     case MediumTypes.TrayOpen:
-                        sb.AppendLine(Localization.Tray_open_or_no_caddy_inserted);
+                        sb.Append(Localization.Tray_open_or_no_caddy_inserted);
 
                         break;
                     case MediumTypes.MediumError:
-                        sb.AppendLine(Localization.Tray_closed_or_caddy_inserted_but_medium_error);
+                        sb.Append(Localization.Tray_closed_or_caddy_inserted_but_medium_error);
 
                         break;
                     case MediumTypes.UnknownBlockDevice:
-                        sb.AppendLine(Localization.Unknown_block_device);
+                        sb.Append(Localization.Unknown_block_device);
 
                         break;
                     case MediumTypes.ReadOnlyBlockDevice:
-                        sb.AppendLine(Localization.Read_only_block_device);
+                        sb.Append(Localization.Read_only_block_device);
 
                         break;
                     case MediumTypes.ReadWriteBlockDevice:
-                        sb.AppendLine(Localization.Read_Write_block_device);
+                        sb.Append(Localization.Read_Write_block_device);
 
                         break;
                     case MediumTypes.LTOCD:
-                        sb.AppendLine(Localization.LTO_in_CD_ROM_emulation_mode);
+                        sb.Append(Localization.LTO_in_CD_ROM_emulation_mode);
 
                         break;
                     default:
-                        sb.AppendFormat(Localization.Unknown_medium_type_0, (byte)header.Value.MediumType).AppendLine();
+                        sb.AppendFormat(Localization.Unknown_medium_type_0, $"[teal]{(byte)header.Value.MediumType}[/]");
 
                         break;
                 }
 
-                if(header.Value.WriteProtected) sb.AppendLine("\t" + Localization.Medium_is_write_protected);
+                sb.AppendLine("[/][/]");
 
-                if(header.Value.DPOFUA) sb.AppendLine("\t" + Localization.Drive_supports_DPO_and_FUA_bits);
+                if(header.Value.WriteProtected) sb.AppendLine($"\t[red]{Localization.Medium_is_write_protected}[/]");
+
+                if(header.Value.DPOFUA) sb.AppendLine($"\t[green]{Localization.Drive_supports_DPO_and_FUA_bits}[/]");
 
                 if(header.Value.BlockDescriptors != null)
                 {
@@ -1564,31 +1567,31 @@ public static partial class Modes
                         {
                             if(descriptor.Blocks == 0)
                             {
-                                sb.AppendFormat("\t" + Localization.All_remaining_blocks_have_0_and_are_1_bytes_each,
-                                                density,
-                                                descriptor.BlockLength)
+                                sb.AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_have_0_and_are_1_bytes_each}[/]",
+                                                $"[fuchsia]{density}[/]",
+                                                $"[teal]{descriptor.BlockLength}[/]")
                                   .AppendLine();
                             }
                             else
                             {
-                                sb.AppendFormat("\t" + Localization._0_blocks_have_1_and_are_2_bytes_each,
-                                                descriptor.Blocks,
-                                                density,
-                                                descriptor.BlockLength)
+                                sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_have_1_and_are_2_bytes_each}[/]",
+                                                $"[teal]{descriptor.Blocks}[/]",
+                                                $"[fuchsia]{density}[/]",
+                                                $"[teal]{descriptor.BlockLength}[/]")
                                   .AppendLine();
                             }
                         }
                         else if(descriptor.Blocks == 0)
                         {
-                            sb.AppendFormat("\t" + Localization.All_remaining_blocks_are_0_bytes_each,
-                                            descriptor.BlockLength)
+                            sb.AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_are_0_bytes_each}[/]",
+                                            $"[teal]{descriptor.BlockLength}[/]")
                               .AppendLine();
                         }
                         else
                         {
-                            sb.AppendFormat("\t" + Localization._0_blocks_are_1_bytes_each,
-                                            descriptor.Blocks,
-                                            descriptor.BlockLength)
+                            sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_are_1_bytes_each}[/]",
+                                            $"[teal]{descriptor.Blocks}[/]",
+                                            $"[teal]{descriptor.BlockLength}[/]")
                               .AppendLine();
                         }
                     }
