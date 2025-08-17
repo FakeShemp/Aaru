@@ -819,9 +819,9 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                         for(ushort i = (ushort)(mediaTest.BlockSize ?? 0);; i++)
                                                         {
                                                             task.Description =
-                                                                string.Format(Localization.Core
-                                                                                 .Trying_READ_LONG_with_size_0,
-                                                                              i);
+                                                                string.Format($"[slateblue1]{Localization.Core
+                                                                   .Trying_READ_LONG_with_size_0}[/]",
+                                                                              $"[lime]{i}[/]");
 
                                                             task.Value = i;
 
@@ -938,9 +938,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                  dev.Timeout,
                                                                  out _);
 
-                                                             AaruLogging.Debug(MODULE_NAME,
-                                                                 "sense = {0}",
-                                                                 sense);
+                                                             AaruLogging.Debug(MODULE_NAME, "sense = {0}", sense);
 
                                                              if(!sense) return;
 
@@ -1142,9 +1140,9 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                         task.Value = i;
 
                                                         task.Description =
-                                                            string.Format(Localization.Core
-                                                                             .Trying_READ_LONG_with_size_0,
-                                                                          i);
+                                                            string.Format($"[slateblue1]{Localization.Core
+                                                               .Trying_READ_LONG_with_size_0}[/]",
+                                                                          $"[lime]{i}[/]");
 
                                                         sense = mediaTest.SupportsReadLong16 == true
                                                                     ? dev.ReadLong16(out buffer,
@@ -1343,9 +1341,9 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                             task.Value = i;
 
                                                             task.Description =
-                                                                string.Format(Localization.Core
-                                                                                 .Trying_READ_LONG_with_size_0,
-                                                                              i);
+                                                                string.Format($"[slateblue1]{Localization.Core
+                                                                   .Trying_READ_LONG_with_size_0}[/]",
+                                                                              $"[lime]{i}[/]");
 
                                                             sense = mediaTest.SupportsReadLong16 == true
                                                                         ? dev.ReadLong16(out buffer,
@@ -1460,9 +1458,9 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                 {
                                                     task.Value = i;
 
-                                                    task.Description =
-                                                        string.Format(Localization.Core.Trying_READ_LONG_with_size_0,
-                                                                      i);
+                                                    task.Description = string.Format($"[slateblue1]{Localization.Core
+                                                       .Trying_READ_LONG_with_size_0}[/]",
+                                                        $"[lime]{i}[/]");
 
                                                     sense = report.SCSI.ReadCapabilities.SupportsReadLong16 == true
                                                                 ? dev.ReadLong16(out buffer,
