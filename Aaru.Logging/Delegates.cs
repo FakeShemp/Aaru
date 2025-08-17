@@ -43,21 +43,13 @@ public delegate void WriteDelegate(string format, params object[] arg);
 public delegate void VerboseWriteHandler(string format, params object[] arg);
 
 /// <summary>
-///     Writes the text representation of the specified array of objects, to the debug output console using the
-///     specified format information.
-/// </summary>
-/// <param name="format">A composite format string.</param>
-/// <param name="arg">An array of objects to write using <paramref name="format" />.</param>
-public delegate void DebugDelegate(string format, params object[] arg);
-
-/// <summary>
 ///     Writes the text representation of the specified array of objects, followed by the current line terminator, to
 ///     the debug output console using the specified format information.
 /// </summary>
 /// <param name="module">Description of the module writing to the debug console</param>
 /// <param name="format">A composite format string.</param>
 /// <param name="arg">An array of objects to write using <paramref name="format" />.</param>
-public delegate void DebugWithModuleDelegate(string module, string format, params object[] arg);
+public delegate void DebugDelegate(string module, string format, params object[] arg);
 
 /// <summary>
 ///     Writes the exception to the debug output console.

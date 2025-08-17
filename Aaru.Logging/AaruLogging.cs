@@ -54,9 +54,6 @@ public static class AaruLogging
     /// <summary>Event to receive line terminations to the debug output console.</summary>
     public static event DebugDelegate DebugEvent;
 
-    /// <summary>Event to receive writings to the debug output console that should be followed by a line termination.</summary>
-    public static event DebugWithModuleDelegate DebugWithModuleEvent;
-
     /// <summary>Event to receive writings to the standard output console.</summary>
     public static event WriteDelegate WriteEvent;
 
@@ -94,11 +91,8 @@ public static class AaruLogging
     /// <param name="module">Description of the module writing to the debug console</param>
     /// <param name="format">A composite format string.</param>
     /// <param name="arg">An array of objects to write using <paramref name="format" />.</param>
-    public static void Debug(string module, string format, params object[] arg)
-    {
-        DebugEvent?.Invoke($"[blue]({module}):[/] {format}", arg);
-        DebugWithModuleEvent?.Invoke(module, format, arg);
-    }
+    public static void Debug(string module, string format, params object[] arg) =>
+        DebugEvent?.Invoke(module, format, arg);
 
     /// <summary>Writes the current line terminator to the standard output console.</summary>
     public static void WriteLine() => WriteLineEvent?.Invoke("", null);

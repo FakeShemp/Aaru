@@ -114,7 +114,7 @@ class MainClass
 
         AaruLogging.VerboseEvent += Log.Verbose;
 
-        AaruLogging.DebugEvent += Log.Debug;
+        AaruLogging.DebugEvent += (module, format, objects) => Log.Debug($"[blue]{module}[/] {format}", objects);
 
         AaruLogging.WriteExceptionEvent += ex => Log.Error(ex, "Unhandled exception");
 

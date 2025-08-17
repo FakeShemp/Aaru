@@ -54,13 +54,13 @@ static class ConsoleHandler
 
             if(_debug)
             {
-                AaruLogging.DebugWithModuleEvent += OnDebugWriteHandler;
-                AaruLogging.WriteExceptionEvent           += OnWriteExceptionEvent;
+                AaruLogging.DebugEvent          += OnDebugWriteHandler;
+                AaruLogging.WriteExceptionEvent += OnWriteExceptionEvent;
             }
             else
             {
-                AaruLogging.DebugWithModuleEvent -= OnDebugWriteHandler;
-                AaruLogging.WriteExceptionEvent           -= OnWriteExceptionEvent;
+                AaruLogging.DebugEvent          -= OnDebugWriteHandler;
+                AaruLogging.WriteExceptionEvent -= OnWriteExceptionEvent;
             }
         }
     }
@@ -77,8 +77,8 @@ static class ConsoleHandler
 
     internal static void Init()
     {
-        AaruLogging.WriteLineEvent      += OnWriteHandler;
-        AaruLogging.ErrorEvent += OnErrorWriteHandler;
+        AaruLogging.WriteLineEvent += OnWriteHandler;
+        AaruLogging.ErrorEvent     += OnErrorWriteHandler;
     }
 
     static void OnWriteHandler([CanBeNull] string format, [CanBeNull] params object[] arg)
