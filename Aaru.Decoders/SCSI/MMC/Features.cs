@@ -1192,7 +1192,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0000) return null;
 
@@ -1204,7 +1204,7 @@ public static class Features
         decoded.Persistent |= (feature[2] & 0x02) == 0x02;
         decoded.Version    =  (byte)((feature[2] & 0x3C) >> 2);
 
-        var           offset       = 4;
+        int           offset       = 4;
         List<Profile> listProfiles = [];
 
         while(offset < feature.Length)
@@ -1230,7 +1230,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0001) return null;
 
@@ -1258,7 +1258,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0002) return null;
 
@@ -1283,7 +1283,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0003) return null;
 
@@ -1314,7 +1314,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0004) return null;
 
@@ -1342,7 +1342,7 @@ public static class Features
 
         if(feature.Length < 12) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0010) return null;
 
@@ -1369,7 +1369,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x001D) return null;
 
@@ -1390,7 +1390,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x001E) return null;
 
@@ -1419,7 +1419,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x001F) return null;
 
@@ -1449,7 +1449,7 @@ public static class Features
 
         if(feature.Length < 16) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0020) return null;
 
@@ -1479,7 +1479,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0021) return null;
 
@@ -1514,7 +1514,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0022) return null;
 
@@ -1535,7 +1535,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0023) return null;
 
@@ -1567,7 +1567,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0024) return null;
 
@@ -1590,7 +1590,7 @@ public static class Features
 
         if(feature.Length < 12) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0025) return null;
 
@@ -1617,7 +1617,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0026) return null;
 
@@ -1638,7 +1638,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0027) return null;
 
@@ -1659,7 +1659,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0028) return null;
 
@@ -1687,7 +1687,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0029) return null;
 
@@ -1712,7 +1712,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x002A) return null;
 
@@ -1738,7 +1738,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x002B) return null;
 
@@ -1761,7 +1761,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x002C) return null;
 
@@ -1787,7 +1787,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x002D) return null;
 
@@ -1819,7 +1819,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x002E) return null;
 
@@ -1850,7 +1850,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x002F) return null;
 
@@ -1878,7 +1878,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0030) return null;
 
@@ -1899,7 +1899,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0031) return null;
 
@@ -1922,7 +1922,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0032) return null;
 
@@ -1946,7 +1946,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0033) return null;
 
@@ -1972,7 +1972,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0035) return null;
 
@@ -1993,7 +1993,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0037) return null;
 
@@ -2016,7 +2016,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0038) return null;
 
@@ -2037,7 +2037,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x003A) return null;
 
@@ -2062,7 +2062,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x003B) return null;
 
@@ -2085,7 +2085,7 @@ public static class Features
 
         if(feature.Length < 32) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0040) return null;
 
@@ -2118,7 +2118,7 @@ public static class Features
 
         if(feature.Length < 24) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0041) return null;
 
@@ -2149,7 +2149,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0042) return null;
 
@@ -2170,7 +2170,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0050) return null;
 
@@ -2194,7 +2194,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0051) return null;
 
@@ -2218,7 +2218,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0080) return null;
 
@@ -2241,7 +2241,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0100) return null;
 
@@ -2262,7 +2262,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0101) return null;
 
@@ -2285,7 +2285,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0102) return null;
 
@@ -2310,7 +2310,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0103) return null;
 
@@ -2336,7 +2336,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0104) return null;
 
@@ -2359,7 +2359,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0105) return null;
 
@@ -2385,7 +2385,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0106) return null;
 
@@ -2408,7 +2408,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0107) return null;
 
@@ -2443,7 +2443,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0108) return null;
 
@@ -2455,7 +2455,7 @@ public static class Features
         decoded.Persistent |= (feature[2] & 0x02) == 0x02;
         decoded.Version    =  (byte)((feature[2] & 0x3C) >> 2);
 
-        var serial = new byte[feature.Length];
+        byte[] serial = new byte[feature.Length];
         Array.Copy(feature, 4, serial, 0, feature.Length - 4);
         decoded.Serial = StringHandlers.CToString(serial).Trim();
 
@@ -2468,7 +2468,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0109) return null;
 
@@ -2489,7 +2489,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x010A) return null;
 
@@ -2503,7 +2503,7 @@ public static class Features
 
         decoded.DCBs = new uint[feature[3] / 4];
 
-        for(var i = 0; i < decoded.DCBs.Length; i++)
+        for(int i = 0; i < decoded.DCBs.Length; i++)
         {
             decoded.DCBs[i] = (uint)((feature[0 + 4 + i * 4] << 24) +
                                      (feature[1 + 4 + i * 4] << 16) +
@@ -2520,7 +2520,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x010B) return null;
 
@@ -2543,7 +2543,7 @@ public static class Features
 
         if(feature.Length < 20) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x010C) return null;
 
@@ -2572,7 +2572,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x010D) return null;
 
@@ -2605,7 +2605,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x010E) return null;
 
@@ -2628,7 +2628,7 @@ public static class Features
 
         if(feature.Length < 8) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0110) return null;
 
@@ -2649,7 +2649,7 @@ public static class Features
 
         if(feature.Length < 4) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0113) return null;
 
@@ -2670,7 +2670,7 @@ public static class Features
 
         if(feature.Length < 6) return null;
 
-        var number = (ushort)((feature[0] << 8) + feature[1]);
+        ushort number = (ushort)((feature[0] << 8) + feature[1]);
 
         if(number != 0x0142) return null;
 
@@ -2689,7 +2689,7 @@ public static class Features
 
         if(feature[5] * 2 + 6 != feature.Length) return decoded;
 
-        for(var i = 0; i < feature[5]; i++)
+        for(int i = 0; i < feature[5]; i++)
             decoded.Profiles[i] = (ushort)((feature[0 + 6 + 2 * i] << 8) + feature[1 + 6 + 2 * i]);
 
         return decoded;
@@ -2702,7 +2702,7 @@ public static class Features
         Feature_0000 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.MMC_Supported_Profiles);
+        sb.AppendLine($"[bold][blue]{Localization.MMC_Supported_Profiles}[/][/]");
 
         if(ftr.Profiles == null) return sb.ToString();
 
@@ -2711,169 +2711,170 @@ public static class Features
             switch(prof.Number)
             {
                 case ProfileNumber.Reserved:
-                    sb.Append("\t" + Localization.Drive_reported_a_reserved_profile_number);
+                    sb.Append($"\t[green]{Localization.Drive_reported_a_reserved_profile_number}[/]");
 
                     break;
                 case ProfileNumber.NonRemovable:
-                    sb.Append("\t" + Localization.Drive_supports_non_removable_changeable_media);
+                    sb.Append($"\t[green]{Localization.Drive_supports_non_removable_changeable_media}[/]");
 
                     break;
                 case ProfileNumber.Removable:
-                    sb.Append("\t" + Localization.Drive_supports_rewritable_and_removable_media);
+                    sb.Append($"\t[green]{Localization.Drive_supports_rewritable_and_removable_media}[/]");
 
                     break;
                 case ProfileNumber.MOErasable:
-                    sb.Append("\t" + Localization.Drive_supports_Magneto_Optical_media);
+                    sb.Append($"\t[green]{Localization.Drive_supports_Magneto_Optical_media}[/]");
 
                     break;
                 case ProfileNumber.OpticalWORM:
-                    sb.Append("\t" + Localization.Drive_supports_optical_write_once_media);
+                    sb.Append($"\t[green]{Localization.Drive_supports_optical_write_once_media}[/]");
 
                     break;
                 case ProfileNumber.ASMO:
-                    sb.Append("\t" + Localization.Drive_supports_Advanced_Storage_Magneto_Optical);
+                    sb.Append($"\t[green]{Localization.Drive_supports_Advanced_Storage_Magneto_Optical}[/]");
 
                     break;
                 case ProfileNumber.CDROM:
-                    sb.Append("\t" + Localization.Drive_supports_CD_ROM);
+                    sb.Append($"\t[green]{Localization.Drive_supports_CD_ROM}[/]");
 
                     break;
                 case ProfileNumber.CDR:
-                    sb.Append("\t" + Localization.Drive_supports_CD_R);
+                    sb.Append($"\t[green]{Localization.Drive_supports_CD_R}[/]");
 
                     break;
                 case ProfileNumber.CDRW:
-                    sb.Append("\t" + Localization.Drive_supports_CD_RW);
+                    sb.Append($"\t[green]{Localization.Drive_supports_CD_RW}[/]");
 
                     break;
                 case ProfileNumber.DVDROM:
-                    sb.Append("\t" + Localization.Drive_supports_DVD_ROM);
+                    sb.Append($"\t[green]{Localization.Drive_supports_DVD_ROM}[/]");
 
                     break;
                 case ProfileNumber.DVDRSeq:
-                    sb.Append("\t" + Localization.Drive_supports_DVD_R);
+                    sb.Append($"\t[green]{Localization.Drive_supports_DVD_R}[/]");
 
                     break;
                 case ProfileNumber.DVDRAM:
-                    sb.Append("\t" + Localization.Drive_supports_DVD_RAM);
+                    sb.Append($"\t[green]{Localization.Drive_supports_DVD_RAM}[/]");
 
                     break;
                 case ProfileNumber.DVDRWRes:
-                    sb.Append("\t" + Localization.Drive_supports_restricted_overwrite_DVD_RW);
+                    sb.Append($"\t[green]{Localization.Drive_supports_restricted_overwrite_DVD_RW}[/]");
 
                     break;
                 case ProfileNumber.DVDRWSeq:
-                    sb.Append("\t" + Localization.Drive_supports_sequentially_recorded_DVD_RW);
+                    sb.Append($"\t[green]{Localization.Drive_supports_sequentially_recorded_DVD_RW}[/]");
 
                     break;
                 case ProfileNumber.DVDRDLSeq:
-                    sb.Append("\t" + Localization.Drive_supports_sequentially_recorded_DVD_R_DL);
+                    sb.Append($"\t[green]{Localization.Drive_supports_sequentially_recorded_DVD_R_DL}[/]");
 
                     break;
                 case ProfileNumber.DVDRDLJump:
-                    sb.Append("\t" + Localization.Drive_supports_layer_jump_recorded_DVD_R_DL);
+                    sb.Append($"\t[green]{Localization.Drive_supports_layer_jump_recorded_DVD_R_DL}[/]");
 
                     break;
                 case ProfileNumber.DVDRWDL:
-                    sb.Append("\t" + Localization.Drive_supports_DVD_RW_DL);
+                    sb.Append($"\t[green]{Localization.Drive_supports_DVD_RW_DL}[/]");
 
                     break;
                 case ProfileNumber.DVDDownload:
-                    sb.Append("\t" + Localization.Drive_supports_DVD_Download);
+                    sb.Append($"\t[green]{Localization.Drive_supports_DVD_Download}[/]");
 
                     break;
                 case ProfileNumber.DVDRWPlus:
-                    sb.Append("\t" + Localization.Drive_supports_DVD_Plus_RW);
+                    sb.Append($"\t[green]{Localization.Drive_supports_DVD_Plus_RW}[/]");
 
                     break;
                 case ProfileNumber.DVDRPlus:
-                    sb.Append("\t" + Localization.Drive_supports_DVD_Plus_R);
+                    sb.Append($"\t[green]{Localization.Drive_supports_DVD_Plus_R}[/]");
 
                     break;
                 case ProfileNumber.DDCDROM:
-                    sb.Append("\t" + Localization.Drive_supports_DDCD_ROM);
+                    sb.Append($"\t[green]{Localization.Drive_supports_DDCD_ROM}[/]");
 
                     break;
                 case ProfileNumber.DDCDR:
-                    sb.Append("\t" + Localization.Drive_supports_DDCD_R);
+                    sb.Append($"\t[green]{Localization.Drive_supports_DDCD_R}[/]");
 
                     break;
                 case ProfileNumber.DDCDRW:
-                    sb.Append("\t" + Localization.Drive_supports_DDCD_RW);
+                    sb.Append($"\t[green]{Localization.Drive_supports_DDCD_RW}[/]");
 
                     break;
                 case ProfileNumber.DVDRWDLPlus:
-                    sb.Append("\t" + Localization.Drive_supports_DVD_Plus_RW_DL);
+                    sb.Append($"\t[green]{Localization.Drive_supports_DVD_Plus_RW_DL}[/]");
 
                     break;
                 case ProfileNumber.DVDRDLPlus:
-                    sb.Append("\t" + Localization.Drive_supports_DVD_Plus_R_DL);
+                    sb.Append($"\t[green]{Localization.Drive_supports_DVD_Plus_R_DL}[/]");
 
                     break;
                 case ProfileNumber.BDROM:
-                    sb.Append("\t" + Localization.Drive_supports_BD_ROM);
+                    sb.Append($"\t[green]{Localization.Drive_supports_BD_ROM}[/]");
 
                     break;
                 case ProfileNumber.BDRSeq:
-                    sb.Append("\t" + Localization.Drive_supports_BD_R_SRM);
+                    sb.Append($"\t[green]{Localization.Drive_supports_BD_R_SRM}[/]");
 
                     break;
                 case ProfileNumber.BDRRdm:
-                    sb.Append("\t" + Localization.Drive_supports_BD_R_RRM);
+                    sb.Append($"\t[green]{Localization.Drive_supports_BD_R_RRM}[/]");
 
                     break;
                 case ProfileNumber.BDRE:
-                    sb.Append("\t" + Localization.Drive_supports_BD_RE);
+                    sb.Append($"\t[green]{Localization.Drive_supports_BD_RE}[/]");
 
                     break;
                 case ProfileNumber.HDDVDROM:
-                    sb.Append("\t" + Localization.Drive_supports_HD_DVD_ROM);
+                    sb.Append($"\t[green]{Localization.Drive_supports_HD_DVD_ROM}[/]");
 
                     break;
                 case ProfileNumber.HDDVDR:
-                    sb.Append("\t" + Localization.Drive_supports_HD_DVD_R);
+                    sb.Append($"\t[green]{Localization.Drive_supports_HD_DVD_R}[/]");
 
                     break;
                 case ProfileNumber.HDDVDRAM:
-                    sb.Append("\t" + Localization.Drive_supports_HD_DVD_RAM);
+                    sb.Append($"\t[green]{Localization.Drive_supports_HD_DVD_RAM}[/]");
 
                     break;
                 case ProfileNumber.HDDVDRW:
-                    sb.Append("\t" + Localization.Drive_supports_HD_DVD_RW);
+                    sb.Append($"\t[green]{Localization.Drive_supports_HD_DVD_RW}[/]");
 
                     break;
                 case ProfileNumber.HDDVDRDL:
-                    sb.Append("\t" + Localization.Drive_supports_HD_DVD_R_DL);
+                    sb.Append($"\t[green]{Localization.Drive_supports_HD_DVD_R_DL}[/]");
 
                     break;
                 case ProfileNumber.HDDVDRWDL:
-                    sb.Append("\t" + Localization.Drive_supports_HD_DVD_RW_DL);
+                    sb.Append($"\t[green]{Localization.Drive_supports_HD_DVD_RW_DL}[/]");
 
                     break;
                 case ProfileNumber.HDBURNROM:
-                    sb.Append("\t" + Localization.Drive_supports_HDBurn_CD_ROM);
+                    sb.Append($"\t[green]{Localization.Drive_supports_HDBurn_CD_ROM}[/]");
 
                     break;
                 case ProfileNumber.HDBURNR:
-                    sb.Append("\t" + Localization.Drive_supports_HDBurn_CD_R);
+                    sb.Append($"\t[green]{Localization.Drive_supports_HDBurn_CD_R}[/]");
 
                     break;
                 case ProfileNumber.HDBURNRW:
-                    sb.Append("\t" + Localization.Drive_supports_HDBurn_CD_RW);
+                    sb.Append($"\t[green]{Localization.Drive_supports_HDBurn_CD_RW}[/]");
 
                     break;
                 case ProfileNumber.Unconforming:
-                    sb.Append("\t" + Localization.Drive_is_not_conforming_to_any_profile);
+                    sb.Append($"\t[green]{Localization.Drive_is_not_conforming_to_any_profile}[/]");
 
                     break;
                 default:
-                    sb.AppendFormat("\t" + Localization.Drive_informs_of_unknown_profile_0, (ushort)prof.Number);
+                    sb.AppendFormat($"\t[green]{Localization.Drive_informs_of_unknown_profile_0}[/]",
+                                    $"[teal]{(ushort)prof.Number}[/]");
 
                     break;
             }
 
             if(prof.Current)
-                sb.AppendLine(Localization.current);
+                sb.AppendLine($"[fuchsia]{Localization.current}[/]");
             else
                 sb.AppendLine();
         }
@@ -2888,66 +2889,65 @@ public static class Features
         Feature_0001 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.MMC_Core_Feature);
+        sb.AppendLine($"[bold][blue]{Localization.MMC_Core_Feature}[/][/]");
         sb.Append("\t");
 
         switch(ftr.PhysicalInterfaceStandard)
         {
             case PhysicalInterfaces.Unspecified:
-                sb.AppendLine(Localization.Drive_uses_an_unspecified_physical_interface);
+                sb.AppendLine($"[slateblue1]{Localization.Drive_uses_an_unspecified_physical_interface}[/]");
 
                 break;
             case PhysicalInterfaces.SCSI:
-                sb.AppendLine(Localization.Drive_uses_a_SCSI_interface);
+                sb.AppendLine($"[slateblue1]{Localization.Drive_uses_a_SCSI_interface}[/]");
 
                 break;
             case PhysicalInterfaces.ATAPI:
-                sb.AppendLine(Localization.Drive_uses_an_ATAPI_interface);
+                sb.AppendLine($"[slateblue1]{Localization.Drive_uses_an_ATAPI_interface}[/]");
 
                 break;
             case PhysicalInterfaces.IEEE1394:
-                sb.AppendLine(Localization.Drive_uses_an_IEEE_1394_interface);
+                sb.AppendLine($"[slateblue1]{Localization.Drive_uses_an_IEEE_1394_interface}[/]");
 
                 break;
             case PhysicalInterfaces.IEEE1394A:
-                sb.AppendLine(Localization.Drive_uses_an_IEEE_1394A_interface);
+                sb.AppendLine($"[slateblue1]{Localization.Drive_uses_an_IEEE_1394A_interface}[/]");
 
                 break;
             case PhysicalInterfaces.FC:
-                sb.AppendLine(Localization.Drive_uses_a_Fibre_Channel_interface);
+                sb.AppendLine($"[slateblue1]{Localization.Drive_uses_a_Fibre_Channel_interface}[/]");
 
                 break;
             case PhysicalInterfaces.IEEE1394B:
-                sb.AppendLine(Localization.Drive_uses_an_IEEE_1394B_interface);
+                sb.AppendLine($"[slateblue1]{Localization.Drive_uses_an_IEEE_1394B_interface}[/]");
 
                 break;
             case PhysicalInterfaces.SerialATAPI:
-                sb.AppendLine(Localization.Drive_uses_a_Serial_ATAPI_interface);
+                sb.AppendLine($"[slateblue1]{Localization.Drive_uses_a_Serial_ATAPI_interface}[/]");
 
                 break;
             case PhysicalInterfaces.USB:
-                sb.AppendLine(Localization.Drive_uses_an_USB_interface);
+                sb.AppendLine($"[slateblue1]{Localization.Drive_uses_an_USB_interface}[/]");
 
                 break;
             case PhysicalInterfaces.Vendor:
-                sb.AppendLine(Localization.Drive_uses_a_vendor_unique_interface);
+                sb.AppendLine($"[slateblue1]{Localization.Drive_uses_a_vendor_unique_interface}[/]");
 
                 break;
             default:
-                sb.AppendFormat(Localization.Drive_uses_an_unknown_interface_with_code_0,
-                                (uint)ftr.PhysicalInterfaceStandard)
+                sb.AppendFormat($"[slateblue1]{Localization.Drive_uses_an_unknown_interface_with_code_0}[/]",
+                                $"[teal]{(uint)ftr.PhysicalInterfaceStandard}[/]")
                   .AppendLine();
 
                 break;
         }
 
-        if(ftr.DBE) sb.AppendLine("\t" + Localization.Drive_supports_Device_Busy_events);
+        if(ftr.DBE) sb.AppendLine($"\t[green]{Localization.Drive_supports_Device_Busy_events}[/]");
 
         if(ftr.INQ2)
         {
-            sb.AppendLine("\t" +
-                          Localization
-                             .Drive_supports_EVPD_Page_Code_and_16_bit_Allocation_Length_as_described_in_SPC_3);
+            sb.AppendLine($"\t[green]{Localization
+               .Drive_supports_EVPD_Page_Code_and_16_bit_Allocation_Length_as_described_in_SPC_3}[/]");
         }
 
         return sb.ToString();
@@ -2960,14 +2960,14 @@ public static class Features
         Feature_0002 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.MMC_Morphing);
+        sb.AppendLine($"[bold][blue]{Localization.MMC_Morphing}[/][/]");
 
         sb.AppendLine(ftr.Async
-                          ? "\t" + Localization.Drive_supports_polling_and_asynchronous_GET_EVENT_STATUS_NOTIFICATION
-                          : "\t" + Localization.Drive_supports_only_polling_GET_EVENT_STATUS_NOTIFICATION);
+                          ? $"\t[green]{Localization.Drive_supports_polling_and_asynchronous_GET_EVENT_STATUS_NOTIFICATION}[/]"
+                          : $"\t[green]{Localization.Drive_supports_only_polling_GET_EVENT_STATUS_NOTIFICATION}[/]");
 
         if(ftr.OCEvent)
-            sb.AppendLine("\t" + Localization.Drive_supports_operational_change_request_notification_class_events);
+            sb.AppendLine($"\t[green]{Localization.Drive_supports_operational_change_request_notification_class_events}[/]");
 
         return sb.ToString();
     }
@@ -2979,53 +2979,55 @@ public static class Features
         Feature_0003 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.Features_Prettify_0003_MMC_Removable_Medium);
+        sb.AppendLine($"[bold][blue]{Localization.Features_Prettify_0003_MMC_Removable_Medium}[/][/]");
 
         switch(ftr.LoadingMechanismType)
         {
             case 0:
-                sb.AppendLine("\t" + Localization.Features_Prettify_0003_Drive_uses_media_caddy);
+                sb.AppendLine($"\t[slateblue1]{Localization.Features_Prettify_0003_Drive_uses_media_caddy}[/]");
 
                 break;
             case 1:
-                sb.AppendLine("\t" + Localization.Features_Prettify_0003_Drive_uses_a_tray);
+                sb.AppendLine($"\t[slateblue1]{Localization.Features_Prettify_0003_Drive_uses_a_tray}[/]");
 
                 break;
             case 2:
-                sb.AppendLine("\t" + Localization.Features_Prettify_0003_Drive_is_pop_up);
+                sb.AppendLine($"\t[slateblue1]{Localization.Features_Prettify_0003_Drive_is_pop_up}[/]");
 
                 break;
             case 4:
-                sb.AppendLine("\t" +
-                              Localization
-                                 .Features_Prettify_0003_Drive_is_a_changer_with_individually_changeable_discs);
+                sb.AppendLine($"\t[slateblue1]{
+                    Localization
+                       .Features_Prettify_0003_Drive_is_a_changer_with_individually_changeable_discs}[/]");
 
                 break;
             case 5:
-                sb.AppendLine("\t" + Localization.Features_Prettify_0003_Drive_is_a_changer_using_cartridges);
+                sb.AppendLine($"\t[slateblue1]{Localization.Features_Prettify_0003_Drive_is_a_changer_using_cartridges}[/]");
 
                 break;
             default:
-                sb.AppendFormat("\t" + Localization.Features_Prettify_0003_Drive_uses_unknown_loading_mechanism_type_0,
-                                ftr.LoadingMechanismType)
-                  .AppendLine();
+                sb
+                   .AppendFormat($"\t[slateblue1]{Localization.Features_Prettify_0003_Drive_uses_unknown_loading_mechanism_type_0}[/]",
+                                 ftr.LoadingMechanismType)
+                   .AppendLine();
 
                 break;
         }
 
-        if(ftr.Lock) sb.AppendLine("\t" + Localization.Features_Prettify_0003_Drive_can_lock_media);
+        if(ftr.Lock) sb.AppendLine($"\t[slateblue1]{Localization.Features_Prettify_0003_Drive_can_lock_media}[/]");
 
-        if(ftr.PreventJumper) sb.AppendLine("\t" + Localization.Features_Prettify_0003_Drive_power_ups_locked);
+        if(ftr.PreventJumper)
+            sb.AppendLine($"\t[slateblue1]{Localization.Features_Prettify_0003_Drive_power_ups_locked}[/]");
 
-        if(ftr.Eject) sb.AppendLine("\t" + Localization.Features_Prettify_0003_Drive_can_eject_media);
+        if(ftr.Eject) sb.AppendLine($"\t[slateblue1]{Localization.Features_Prettify_0003_Drive_can_eject_media}[/]");
 
-        if(ftr.Load) sb.AppendLine("\t" + Localization.Features_Prettify_0003_Drive_can_load_media);
+        if(ftr.Load) sb.AppendLine($"\t[slateblue1]{Localization.Features_Prettify_0003_Drive_can_load_media}[/]");
 
         if(ftr.DBML)
         {
-            sb.AppendLine("\t" +
-                          Localization
-                             .Features_Prettify_0003_Drive_reports_Device_Busy_Class_events_during_medium_loading_unloading);
+            sb.AppendLine($"\t[slateblue1]{
+                Localization
+                   .Features_Prettify_0003_Drive_reports_Device_Busy_Class_events_during_medium_loading_unloading}[/]");
         }
 
         return sb.ToString();
@@ -3038,20 +3040,21 @@ public static class Features
         Feature_0004 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.MMC_Write_Protect);
+        sb.AppendLine($"[bold][blue]{Localization.MMC_Write_Protect}[/][/]");
 
         if(ftr.DWP)
         {
-            sb.AppendLine("\t" +
-                          Localization.Drive_supports_reading_writing_the_Disc_Write_Protect_PAC_on_BD_R_RE_media);
+            sb.AppendLine($"\t[green]{
+                Localization.Drive_supports_reading_writing_the_Disc_Write_Protect_PAC_on_BD_R_RE_media}[/]");
         }
 
-        if(ftr.WDCB) sb.AppendLine("\t" + Localization.Drive_supports_writing_the_Write_Inhibit_DCB_on_DVD_RW_media);
+        if(ftr.WDCB)
+            sb.AppendLine($"\t[green]{Localization.Drive_supports_writing_the_Write_Inhibit_DCB_on_DVD_RW_media}[/]");
 
-        if(ftr.SPWP) sb.AppendLine("\t" + Localization.Drive_supports_set_release_of_PWP_status);
+        if(ftr.SPWP) sb.AppendLine($"\t[green]{Localization.Drive_supports_set_release_of_PWP_status}[/]");
 
         if(ftr.SSWPP)
-            sb.AppendLine("\t" + Localization.Drive_supports_the_SWPP_bit_of_the_Timeout_and_Protect_mode_page);
+            sb.AppendLine($"\t[green]{Localization.Drive_supports_the_SWPP_bit_of_the_Timeout_and_Protect_mode_page}[/]");
 
         return sb.ToString();
     }
@@ -3063,19 +3066,23 @@ public static class Features
         Feature_0010 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.Append(Localization.MMC_Random_Readable);
+        sb.Append($"[bold][blue]{Localization.MMC_Random_Readable}");
 
-        if(ftr.Current) sb.Append(Localization.current);
+        if(ftr.Current) sb.Append($"[fuchsia]{Localization.current}[/]");
 
-        sb.AppendLine(":");
+        sb.AppendLine(":[/][/]");
 
-        if(ftr.PP) sb.AppendLine("\t" + Localization.Drive_shall_report_Read_Write_Error_Recovery_mode_page);
+        if(ftr.PP) sb.AppendLine($"\t[green]{Localization.Drive_shall_report_Read_Write_Error_Recovery_mode_page}[/]");
 
         if(ftr.LogicalBlockSize > 0)
-            sb.AppendFormat("\t" + Localization._0_bytes_per_logical_block, ftr.LogicalBlockSize).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization._0_bytes_per_logical_block}[/]",
+                            $"[lime]{ftr.LogicalBlockSize}[/]")
+              .AppendLine();
 
         if(ftr.Blocking > 1)
-            sb.AppendFormat("\t" + Localization._0_logical_blocks_per_media_readable_unit, ftr.Blocking).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization._0_logical_blocks_per_media_readable_unit}[/]",
+                            $"[lime]{ftr.Blocking}[/]")
+              .AppendLine();
 
         return sb.ToString();
     }
@@ -3083,8 +3090,7 @@ public static class Features
     public static string Prettify_001D(Feature_001D? feature) =>
         !feature.HasValue
             ? null
-            : Localization.Drive_claims_capability_to_read_all_CD_formats_according_to_OSTA_Multi_Read_Specification +
-              "\n";
+            : $"[green]{Localization.Drive_claims_capability_to_read_all_CD_formats_according_to_OSTA_Multi_Read_Specification}[/]\n";
 
     public static string Prettify_001E(Feature_001E? feature)
     {
@@ -3093,18 +3099,18 @@ public static class Features
         Feature_001E ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.Append(Localization.MMC_CD_Read);
+        sb.Append($"[bold][blue]{Localization.MMC_CD_Read}[/][/]");
 
-        if(ftr.Current) sb.Append(Localization.current);
+        if(ftr.Current) sb.Append($"[fuchsia]{Localization.current}[/]");
 
         sb.AppendLine(":");
 
         if(ftr.DAP)
-            sb.AppendLine("\t" + Localization.Drive_supports_the_DAP_bit_in_the_READ_CD_and_READ_CD_MSF_commands);
+            sb.AppendLine($"\t[green]{Localization.Drive_supports_the_DAP_bit_in_the_READ_CD_and_READ_CD_MSF_commands}[/]");
 
-        if(ftr.C2) sb.AppendLine("\t" + Localization.Drive_supports_C2_Error_Pointers);
+        if(ftr.C2) sb.AppendLine($"\t[green]{Localization.Drive_supports_C2_Error_Pointers}[/]");
 
-        if(ftr.CDText) sb.AppendLine("\t" + Localization.Drive_can_return_CD_Text_from_Lead_In);
+        if(ftr.CDText) sb.AppendLine($"\t[green]{Localization.Drive_can_return_CD_Text_from_Lead_In}[/]");
 
         return sb.ToString();
     }
@@ -3116,18 +3122,19 @@ public static class Features
         Feature_001F ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.Append(Localization.MMC_DVD_Read);
+        sb.Append($"[bold][blue]{Localization.MMC_DVD_Read}");
 
-        if(ftr.Current) sb.Append(Localization.current);
+        if(ftr.Current) sb.Append($"[fuchsia]{Localization.current}[/]");
 
-        sb.AppendLine(":");
-        sb.AppendLine("\t" + Localization.Drive_can_read_DVD_media);
+        sb.AppendLine(":[/][/]");
+        sb.AppendLine($"\t[green]{Localization.Drive_can_read_DVD_media}[/]");
 
-        if(ftr.DualR) sb.AppendLine("\t" + Localization.Drive_can_read_DVD_R_DL_from_all_recording_modes);
+        if(ftr.DualR) sb.AppendLine($"\t[green]{Localization.Drive_can_read_DVD_R_DL_from_all_recording_modes}[/]");
 
-        if(ftr.DualRW) sb.AppendLine("\t" + Localization.Drive_can_read_DVD_RW_DL_from_all_recording_modes);
+        if(ftr.DualRW) sb.AppendLine($"\t[green]{Localization.Drive_can_read_DVD_RW_DL_from_all_recording_modes}[/]");
 
-        if(ftr.MULTI110) sb.AppendLine("\t" + Localization.Drive_conforms_to_DVD_Multi_Drive_Read_only_Specifications);
+        if(ftr.MULTI110)
+            sb.AppendLine($"\t[green]{Localization.Drive_conforms_to_DVD_Multi_Drive_Read_only_Specifications}[/]");
 
         return sb.ToString();
     }
@@ -3139,22 +3146,28 @@ public static class Features
         Feature_0020 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.Append(Localization.MMC_Random_Writable);
+        sb.Append($"[bold][blue]{Localization.MMC_Random_Writable}");
 
-        if(ftr.Current) sb.Append(Localization.current);
+        if(ftr.Current) sb.Append($"[fuchsia]{Localization.current}[/]");
 
-        sb.AppendLine(":");
+        sb.AppendLine(":[/][/]");
 
-        if(ftr.PP) sb.AppendLine("\t" + Localization.Drive_shall_report_Read_Write_Error_Recovery_mode_page);
+        if(ftr.PP) sb.AppendLine($"\t[green]{Localization.Drive_shall_report_Read_Write_Error_Recovery_mode_page}[/]");
 
         if(ftr.LogicalBlockSize > 0)
-            sb.AppendFormat("\t" + Localization._0_bytes_per_logical_block, ftr.LogicalBlockSize).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization._0_bytes_per_logical_block}[/]",
+                            $"[lime]{ftr.LogicalBlockSize}[/]")
+              .AppendLine();
 
         if(ftr.Blocking > 1)
-            sb.AppendFormat("\t" + Localization._0_logical_blocks_per_media_writable_unit, ftr.Blocking).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization._0_logical_blocks_per_media_writable_unit}[/]",
+                            $"[lime]{ftr.Blocking}[/]")
+              .AppendLine();
 
         if(ftr.LastLBA > 0)
-            sb.AppendFormat("\t" + Localization.Last_addressable_logical_block_is_0, ftr.LastLBA).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization.Last_addressable_logical_block_is_0}[/]",
+                            $"[lime]{ftr.LastLBA}[/]")
+              .AppendLine();
 
         return sb.ToString();
     }
@@ -3166,11 +3179,13 @@ public static class Features
         Feature_0021 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.MMC_Incremental_Streaming_Writable);
+        sb.AppendLine($"[bold][blue]{Localization.MMC_Incremental_Streaming_Writable}[/][/]");
 
         if(ftr.DataTypeSupported > 0)
         {
-            sb.Append("\t" + Localization.Drive_supports_data_block_types);
+            sb.Append($"\t[green]{Localization.Drive_supports_data_block_types}[/]");
+
+            sb.Append("[teal]");
 
             if((ftr.DataTypeSupported & 0x0001) == 0x0001) sb.Append(" 0");
 
@@ -3204,21 +3219,24 @@ public static class Features
 
             if((ftr.DataTypeSupported & 0x8000) == 0x8000) sb.Append(" 15");
 
-            sb.AppendLine();
+            sb.AppendLine("[/]");
         }
 
-        if(ftr.TRIO) sb.AppendLine("\t" + Localization.Drive_claims_support_to_report_Track_Resources_Information);
+        if(ftr.TRIO)
+            sb.AppendLine($"\t[green]{Localization.Drive_claims_support_to_report_Track_Resources_Information}[/]");
 
         if(ftr.ARSV)
-            sb.AppendLine("\t" + Localization.Drive_supports_address_mode_reservation_on_the_RESERVE_TRACK_command);
+            sb.AppendLine($"\t[green]{Localization.Drive_supports_address_mode_reservation_on_the_RESERVE_TRACK_command}[/]");
 
-        if(ftr.BUF) sb.AppendLine("\t" + Localization.Drive_is_capable_of_zero_loss_linking);
+        if(ftr.BUF) sb.AppendLine($"\t[green]{Localization.Drive_is_capable_of_zero_loss_linking}[/]");
 
         return sb.ToString();
     }
 
     public static string Prettify_0022(Feature_0022? feature) =>
-        !feature.HasValue ? null : Localization.Drive_supports_media_that_require_erasing_before_writing + "\n";
+        !feature.HasValue
+            ? null
+            : $"[green]{Localization.Drive_supports_media_that_require_erasing_before_writing}[/]\n";
 
     public static string Prettify_0023(Feature_0023? feature)
     {
@@ -3227,20 +3245,22 @@ public static class Features
         Feature_0023 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.MMC_Formattable);
-        sb.AppendLine("\t" + Localization.Drive_can_format_media_into_logical_blocks);
+        sb.AppendLine($"[bold][blue]{Localization.MMC_Formattable}[/][/]");
+        sb.AppendLine($"\t[green]{Localization.Drive_can_format_media_into_logical_blocks}[/]");
 
-        if(ftr.RENoSA) sb.AppendLine("\t" + Localization.Drive_can_format_BD_RE_with_no_spares_allocated);
+        if(ftr.RENoSA) sb.AppendLine($"\t[green]{Localization.Drive_can_format_BD_RE_with_no_spares_allocated}[/]");
 
-        if(ftr.Expand) sb.AppendLine("\t" + Localization.Drive_can_expand_the_spare_area_on_a_formatted_BD_RE_disc);
+        if(ftr.Expand)
+            sb.AppendLine($"\t[green]{Localization.Drive_can_expand_the_spare_area_on_a_formatted_BD_RE_disc}[/]");
 
-        if(ftr.QCert) sb.AppendLine("\t" + Localization.Drive_can_format_BD_RE_discs_with_quick_certification);
+        if(ftr.QCert)
+            sb.AppendLine($"\t[green]{Localization.Drive_can_format_BD_RE_discs_with_quick_certification}[/]");
 
-        if(ftr.Cert) sb.AppendLine("\t" + Localization.Drive_can_format_BD_RE_discs_with_full_certification);
+        if(ftr.Cert) sb.AppendLine($"\t[green]{Localization.Drive_can_format_BD_RE_discs_with_full_certification}[/]");
 
-        if(ftr.FRF) sb.AppendLine("\t" + Localization.Drive_can_fast_re_format_BD_RE_discs);
+        if(ftr.FRF) sb.AppendLine($"\t[green]{Localization.Drive_can_fast_re_format_BD_RE_discs}[/]");
 
-        if(ftr.RRM) sb.AppendLine("\t" + Localization.Drive_can_format_BD_R_discs_with_RRM_format);
+        if(ftr.RRM) sb.AppendLine($"\t[green]{Localization.Drive_can_format_BD_R_discs_with_RRM_format}[/]");
 
         return sb.ToString();
     }
@@ -3252,10 +3272,10 @@ public static class Features
         Feature_0024 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.MMC_Hardware_Defect_Management);
-        sb.AppendLine("\t" + Localization.Drive_shall_be_able_to_provide_a_defect_free_contiguous_address_space);
+        sb.AppendLine($"[bold][blue]{Localization.MMC_Hardware_Defect_Management}[/][/]");
+        sb.AppendLine($"\t[green]{Localization.Drive_shall_be_able_to_provide_a_defect_free_contiguous_address_space}[/]");
 
-        if(ftr.SSA) sb.AppendLine("\t" + Localization.Drive_can_return_Spare_Area_Information);
+        if(ftr.SSA) sb.AppendLine($"\t[green]{Localization.Drive_can_return_Spare_Area_Information}[/]");
 
         return sb.ToString();
     }
@@ -3267,19 +3287,21 @@ public static class Features
         Feature_0025 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.Append(Localization.MMC_Write_Once);
+        sb.Append($"[bold][blue]{Localization.MMC_Write_Once}");
 
-        if(ftr.Current) sb.Append(Localization.current);
+        if(ftr.Current) sb.Append($"[fuchsia]{Localization.current}[/]");
 
-        sb.AppendLine(":");
+        sb.AppendLine(":[/][/]");
 
-        if(ftr.PP) sb.AppendLine("\t" + Localization.Drive_shall_report_Read_Write_Error_Recovery_mode_page);
+        if(ftr.PP) sb.AppendLine($"\t[green]{Localization.Drive_shall_report_Read_Write_Error_Recovery_mode_page}[/]");
 
         if(ftr.LogicalBlockSize > 0)
-            sb.AppendFormat("\t" + Localization._0_bytes_per_logical_block, ftr.LogicalBlockSize).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization._0_bytes_per_logical_block}[/]", ftr.LogicalBlockSize)
+              .AppendLine();
 
         if(ftr.Blocking > 1)
-            sb.AppendFormat("\t" + Localization._0_logical_blocks_per_media_writable_unit, ftr.Blocking).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization._0_logical_blocks_per_media_writable_unit}[/]", ftr.Blocking)
+              .AppendLine();
 
         return sb.ToString();
     }
@@ -3287,7 +3309,7 @@ public static class Features
     public static string Prettify_0026(Feature_0026? feature) =>
         !feature.HasValue
             ? null
-            : Localization.Drive_shall_have_the_ability_to_overwrite_logical_blocks_only_in_fixed_sets_at_a_time + "\n";
+            : $"[slateblue1]{Localization.Drive_shall_have_the_ability_to_overwrite_logical_blocks_only_in_fixed_sets_at_a_time}[/]\n";
 
     public static string Prettify_0027(Feature_0027? feature)
     {
@@ -3296,10 +3318,10 @@ public static class Features
         Feature_0027 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.Append(Localization.Drive_can_write_High_Speed_CD_RW);
+        sb.Append($"[green]{Localization.Drive_can_write_High_Speed_CD_RW}[/]");
 
         if(ftr.Current)
-            sb.AppendLine(Localization.current);
+            sb.AppendLine($"[fuchsia]{Localization.current}[/]");
         else
             sb.AppendLine();
 
@@ -3314,26 +3336,26 @@ public static class Features
         var          sb  = new StringBuilder();
 
         if(ftr.Write && ftr is { DVDPRead: true, DVDPWrite: true })
-            sb.Append(Localization.Drive_can_read_and_write_CD_MRW_and_DVD_MRW);
+            sb.Append($"[green]{Localization.Drive_can_read_and_write_CD_MRW_and_DVD_MRW}[/]");
         else if(ftr is { DVDPRead: true, DVDPWrite: true })
-            sb.Append(Localization.Drive_can_read_and_write_DVD_MRW);
+            sb.Append($"[green]{Localization.Drive_can_read_and_write_DVD_MRW}[/]");
         else
         {
             switch(ftr.Write)
             {
                 case true when ftr.DVDPRead:
-                    sb.Append(Localization.Drive_and_read_DVD_MRW_and_read_and_write_CD_MRW);
+                    sb.Append($"[green]{Localization.Drive_and_read_DVD_MRW_and_read_and_write_CD_MRW}[/]");
 
                     break;
                 case true:
-                    sb.Append(Localization.Drive_can_read_and_write_CD_MRW);
+                    sb.Append($"[green]{Localization.Drive_can_read_and_write_CD_MRW}[/]");
 
                     break;
                 default:
                 {
                     sb.Append(ftr.DVDPRead
-                                  ? Localization.Drive_can_read_CD_MRW_and_DVD_MRW
-                                  : Localization.Drive_can_read_CD_MRW);
+                                  ? $"[green]{Localization.Drive_can_read_CD_MRW_and_DVD_MRW}[/]"
+                                  : $"[green]{Localization.Drive_can_read_CD_MRW}[/]");
 
                     break;
                 }
@@ -3341,7 +3363,7 @@ public static class Features
         }
 
         if(ftr.Current)
-            sb.AppendLine(Localization.current);
+            sb.AppendLine($"[fuchsia]{Localization.current}[/]");
         else
             sb.AppendLine();
 
@@ -3355,16 +3377,18 @@ public static class Features
         Feature_0029 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.MMC_Enhanced_Defect_Reporting_Feature);
+        sb.AppendLine($"[bold][blue]{Localization.MMC_Enhanced_Defect_Reporting_Feature}[/][/]");
 
         sb.AppendLine(ftr.DRTDM
-                          ? "\t" + Localization.Drive_supports_DRT_DM_mode
-                          : "\t" + Localization.Drive_supports_Persistent_DM_mode);
+                          ? $"\t[green]{Localization.Drive_supports_DRT_DM_mode}[/]"
+                          : $"\t[green]{Localization.Drive_supports_Persistent_DM_mode}[/]");
 
         if(ftr.DBICacheZones > 0)
-            sb.AppendFormat("\t" + Localization.Drive_has_0_DBI_cache_zones, ftr.DBICacheZones).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization.Drive_has_0_DBI_cache_zones}[/]", ftr.DBICacheZones)
+              .AppendLine();
 
-        if(ftr.Entries > 0) sb.AppendFormat("\t" + Localization.Drive_has_0_DBI_entries, ftr.Entries).AppendLine();
+        if(ftr.Entries > 0)
+            sb.AppendFormat($"\t[slateblue1]{Localization.Drive_has_0_DBI_entries}[/]", ftr.Entries).AppendLine();
 
         return sb.ToString();
     }
@@ -3378,25 +3402,25 @@ public static class Features
 
         if(ftr.Write)
         {
-            sb.Append(Localization.Drive_can_read_and_write_DVD_RW);
+            sb.Append($"[bold][blue]{Localization.Drive_can_read_and_write_DVD_RW}[/][/]");
 
             if(ftr.Current)
-                sb.AppendLine(Localization.current);
+                sb.AppendLine($"[fuchsia]{Localization.current}[/]");
             else
                 sb.AppendLine();
 
             sb.AppendLine(ftr.CloseOnly
-                              ? "\t" + Localization.Drive_supports_only_the_read_compatibility_stop
-                              : "\t" + Localization.Drive_supports_both_forms_of_background_format_stopping);
+                              ? $"\t[green]{Localization.Drive_supports_only_the_read_compatibility_stop}[/]"
+                              : $"\t[green]{Localization.Drive_supports_both_forms_of_background_format_stopping}[/]");
 
-            if(ftr.QuickStart) sb.AppendLine("\t" + Localization.Drive_can_do_a_quick_start_formatting);
+            if(ftr.QuickStart) sb.AppendLine($"\t[green]{Localization.Drive_can_do_a_quick_start_formatting}[/]");
         }
         else
         {
-            sb.Append(Localization.Drive_can_read_DVD_Plus_RW);
+            sb.Append($"[green]{Localization.Drive_can_read_DVD_Plus_RW}[/]");
 
             if(ftr.Current)
-                sb.AppendLine(Localization.current);
+                sb.AppendLine($"[fuchsia]{Localization.current}[/]");
             else
                 sb.AppendLine();
         }
@@ -3413,19 +3437,19 @@ public static class Features
 
         if(ftr.Write)
         {
-            sb.Append(Localization.Drive_can_read_and_write_DVD_Plus_R);
+            sb.Append($"[green]{Localization.Drive_can_read_and_write_DVD_Plus_R}[/]");
 
             if(ftr.Current)
-                sb.AppendLine(Localization.current);
+                sb.AppendLine($"[fuchsia]{Localization.current}[/]");
             else
                 sb.AppendLine();
         }
         else
         {
-            sb.Append(Localization.Drive_can_read_DVD_Plus_R);
+            sb.Append($"[green]{Localization.Drive_can_read_DVD_Plus_R}[/]");
 
             if(ftr.Current)
-                sb.AppendLine(Localization.current);
+                sb.AppendLine($"[fuchsia]{Localization.current}[/]");
             else
                 sb.AppendLine();
         }
@@ -3440,20 +3464,19 @@ public static class Features
         Feature_002C ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.Append(Localization.MMC_Rigid_Restricted_Overwrite);
-        sb.AppendLine(ftr.Current ? $"{Localization.current}:" : ":");
+        sb.Append($"[bold][blue]{Localization.MMC_Rigid_Restricted_Overwrite}[/][/]");
+        sb.AppendLine(ftr.Current ? $"{$"[fuchsia]{Localization.current}[/]"}:" : ":");
 
-        if(ftr.Blank) sb.AppendLine("\t" + Localization.Drive_supports_the_BLANK_command);
+        if(ftr.Blank) sb.AppendLine($"\t[green]{Localization.Drive_supports_the_BLANK_command}[/]");
 
         if(ftr.Intermediate)
-        {
-            sb.AppendLine("\t" +
-                          Localization.Drive_supports_writing_on_an_intermediate_state_session_and_quick_formatting);
-        }
+            sb.AppendLine($"\t[green]{Localization.Drive_supports_writing_on_an_intermediate_state_session_and_quick_formatting}[/]");
 
-        if(ftr.DSDR) sb.AppendLine("\t" + Localization.Drive_can_read_Defect_Status_data_recorded_on_the_medium);
+        if(ftr.DSDR)
+            sb.AppendLine($"\t[green]{Localization.Drive_can_read_Defect_Status_data_recorded_on_the_medium}[/]");
 
-        if(ftr.DSDG) sb.AppendLine("\t" + Localization.Drive_can_generate_Defect_Status_data_during_formatting);
+        if(ftr.DSDG)
+            sb.AppendLine($"\t[green]{Localization.Drive_can_generate_Defect_Status_data_during_formatting}[/]");
 
         return sb.ToString();
     }
@@ -3465,26 +3488,29 @@ public static class Features
         Feature_002D ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.Drive_can_write_CDs_in_Track_at_Once_Mode);
+        sb.AppendLine($"[slateblue1]{Localization.Drive_can_write_CDs_in_Track_at_Once_Mode}[/]");
 
         if(ftr.RWSubchannel)
         {
-            sb.AppendLine("\t" + Localization.Drive_can_write_user_provided_data_in_the_R_W_subchannels);
+            sb.AppendLine($"\t[green]{Localization.Drive_can_write_user_provided_data_in_the_R_W_subchannels}[/]");
 
-            if(ftr.RWRaw) sb.AppendLine("\t" + Localization.Drive_accepts_RAW_R_W_subchannel_data);
+            if(ftr.RWRaw) sb.AppendLine($"\t[green]{Localization.Drive_accepts_RAW_R_W_subchannel_data}[/]");
 
-            if(ftr.RWPack) sb.AppendLine("\t" + Localization.Drive_accepts_Packed_R_W_subchannel_data);
+            if(ftr.RWPack) sb.AppendLine($"\t[green]{Localization.Drive_accepts_Packed_R_W_subchannel_data}[/]");
         }
 
-        if(ftr.CDRW) sb.AppendLine("\t" + Localization.Drive_can_overwrite_a_TAO_track_with_another_in_CD_RWs);
+        if(ftr.CDRW)
+            sb.AppendLine($"\t[green]{Localization.Drive_can_overwrite_a_TAO_track_with_another_in_CD_RWs}[/]");
 
-        if(ftr.TestWrite) sb.AppendLine("\t" + Localization.Drive_can_do_a_test_writing);
+        if(ftr.TestWrite) sb.AppendLine($"\t[green]{Localization.Drive_can_do_a_test_writing}[/]");
 
-        if(ftr.BUF) sb.AppendLine("\t" + Localization.Drive_supports_zero_loss_linking);
+        if(ftr.BUF) sb.AppendLine($"\t[green]{Localization.Drive_supports_zero_loss_linking}[/]");
 
         if(ftr.DataTypeSupported <= 0) return sb.ToString();
 
-        sb.Append("\t" + Localization.Drive_supports_data_block_types);
+        sb.Append($"\t[green]{Localization.Drive_supports_data_block_types}[/]");
+
+        sb.Append("[teal]");
 
         if((ftr.DataTypeSupported & 0x0001) == 0x0001) sb.Append(" 0");
 
@@ -3518,7 +3544,7 @@ public static class Features
 
         if((ftr.DataTypeSupported & 0x8000) == 0x8000) sb.Append(" 15");
 
-        sb.AppendLine();
+        sb.AppendLine("[/]");
 
         return sb.ToString();
     }
@@ -3533,33 +3559,34 @@ public static class Features
         switch(ftr.SAO)
         {
             case true when !ftr.RAW:
-                sb.AppendLine(Localization.Drive_can_write_CDs_in_Session_at_Once_Mode);
+                sb.AppendLine($"[slateblue1]{Localization.Drive_can_write_CDs_in_Session_at_Once_Mode}[/]");
 
                 break;
             case false when ftr.RAW:
-                sb.AppendLine(Localization.Drive_can_write_CDs_in_raw_Mode);
+                sb.AppendLine($"[slateblue1]{Localization.Drive_can_write_CDs_in_raw_Mode}[/]");
 
                 break;
             default:
-                sb.AppendLine(Localization.Drive_can_write_CDs_in_Session_at_Once_and_in_Raw_Modes);
+                sb.AppendLine($"[slateblue1]{Localization.Drive_can_write_CDs_in_Session_at_Once_and_in_Raw_Modes}[/]");
 
                 break;
         }
 
         if(ftr is { RAW: true, RAWMS: true })
-            sb.AppendLine("\t" + Localization.Drive_can_write_multi_session_CDs_in_raw_mode);
+            sb.AppendLine($"\t[green]{Localization.Drive_can_write_multi_session_CDs_in_raw_mode}[/]");
 
-        if(ftr.RW) sb.AppendLine("\t" + Localization.Drive_can_write_user_provided_data_in_the_R_W_subchannels);
+        if(ftr.RW)
+            sb.AppendLine($"\t[green]{Localization.Drive_can_write_user_provided_data_in_the_R_W_subchannels}[/]");
 
-        if(ftr.CDRW) sb.AppendLine("\t" + Localization.Drive_can_write_CD_RW);
+        if(ftr.CDRW) sb.AppendLine($"\t[green]{Localization.Drive_can_write_CD_RW}[/]");
 
-        if(ftr.TestWrite) sb.AppendLine("\t" + Localization.Drive_can_do_a_test_writing);
+        if(ftr.TestWrite) sb.AppendLine($"\t[green]{Localization.Drive_can_do_a_test_writing}[/]");
 
-        if(ftr.BUF) sb.AppendLine("\t" + Localization.Drive_supports_zero_loss_linking);
+        if(ftr.BUF) sb.AppendLine($"\t[green]{Localization.Drive_supports_zero_loss_linking}[/]");
 
         if(ftr.MaxCueSheet > 0)
         {
-            sb.AppendFormat("\t" + Localization.Drive_supports_a_maximum_of_0_bytes_in_a_single_cue_sheet,
+            sb.AppendFormat($"\t[green]{Localization.Drive_supports_a_maximum_of_0_bytes_in_a_single_cue_sheet}[/]",
                             ftr.MaxCueSheet)
               .AppendLine();
         }
@@ -3575,23 +3602,23 @@ public static class Features
         var          sb  = new StringBuilder();
 
         if(ftr is { DVDRW: true, RDL: true })
-            sb.AppendLine(Localization.Drive_supports_writing_DVD_R_DVD_RW_and_DVD_R_DL);
+            sb.AppendLine($"[slateblue1]{Localization.Drive_supports_writing_DVD_R_DVD_RW_and_DVD_R_DL}[/]");
         else if(ftr.RDL)
-            sb.AppendLine(Localization.Drive_supports_writing_DVD_R_and_DVD_R_DL);
+            sb.AppendLine($"[slateblue1]{Localization.Drive_supports_writing_DVD_R_and_DVD_R_DL}[/]");
         else if(ftr.DVDRW)
-            sb.AppendLine(Localization.Drive_supports_writing_DVD_R_and_DVD_RW);
+            sb.AppendLine($"[slateblue1]{Localization.Drive_supports_writing_DVD_R_and_DVD_RW}[/]");
         else
-            sb.AppendLine(Localization.Drive_supports_writing_DVD_R);
+            sb.AppendLine($"[slateblue1]{Localization.Drive_supports_writing_DVD_R}[/]");
 
-        if(ftr.TestWrite) sb.AppendLine("\t" + Localization.Drive_can_do_a_test_writing);
+        if(ftr.TestWrite) sb.AppendLine($"\t[green]{Localization.Drive_can_do_a_test_writing}[/]");
 
-        if(ftr.BUF) sb.AppendLine("\t" + Localization.Drive_supports_zero_loss_linking);
+        if(ftr.BUF) sb.AppendLine($"\t[green]{Localization.Drive_supports_zero_loss_linking}[/]");
 
         return sb.ToString();
     }
 
     public static string Prettify_0030(Feature_0030? feature) =>
-        !feature.HasValue ? null : Localization.Drive_can_read_DDCDs + "\n";
+        !feature.HasValue ? null : $"[green]{Localization.Drive_can_read_DDCDs}[/]" + "\n";
 
     public static string Prettify_0031(Feature_0031? feature)
     {
@@ -3600,9 +3627,9 @@ public static class Features
         Feature_0031 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.Drive_supports_writing_DDCD_R);
+        sb.AppendLine($"[green]{Localization.Drive_supports_writing_DDCD_R}[/]");
 
-        if(ftr.TestWrite) sb.AppendLine("\t" + Localization.Drive_can_do_a_test_writing);
+        if(ftr.TestWrite) sb.AppendLine($"\t[green]{Localization.Drive_can_do_a_test_writing}[/]");
 
         return sb.ToString();
     }
@@ -3614,11 +3641,11 @@ public static class Features
         Feature_0032 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.Drive_supports_writing_DDCD_RW);
+        sb.AppendLine($"[green]{Localization.Drive_supports_writing_DDCD_RW}[/]");
 
-        if(ftr.Blank) sb.AppendLine("\t" + Localization.Drive_supports_the_BLANK_command);
+        if(ftr.Blank) sb.AppendLine($"\t[green]{Localization.Drive_supports_the_BLANK_command}[/]");
 
-        if(ftr.Intermediate) sb.AppendLine("\t" + Localization.Drive_supports_quick_formatting);
+        if(ftr.Intermediate) sb.AppendLine($"\t[green]{Localization.Drive_supports_quick_formatting}[/]");
 
         return sb.ToString();
     }
@@ -3630,18 +3657,20 @@ public static class Features
         Feature_0033 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.MMC_Layer_Jump_Recording);
+        sb.AppendLine($"[bold][blue]{Localization.MMC_Layer_Jump_Recording}[/][/]");
 
         if(ftr.LinkSizes == null) return sb.ToString();
 
         foreach(byte link in ftr.LinkSizes)
-            sb.AppendFormat("\t" + Localization.Current_media_has_a_0_bytes_link_available, link).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization.Current_media_has_a_0_bytes_link_available}",
+                            $"[lime]{link}[/]")
+              .AppendLine();
 
         return sb.ToString();
     }
 
     public static string Prettify_0035(Feature_0035? feature) =>
-        !feature.HasValue ? null : Localization.Drive_can_stop_a_long_immediate_operation + "\n";
+        !feature.HasValue ? null : $"[green]{Localization.Drive_can_stop_a_long_immediate_operation}[/]" + "\n";
 
     public static string Prettify_0037(Feature_0037? feature)
     {
@@ -3650,12 +3679,13 @@ public static class Features
         Feature_0037 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.Drive_can_write_CD_RW);
+        sb.AppendLine($"[slateblue1]{Localization.Drive_can_write_CD_RW}[/]");
 
         if(ftr.SubtypeSupport <= 0) return sb.ToString();
 
-        sb.Append("\t" + Localization.Drive_supports_CD_RW_subtypes);
+        sb.Append($"\t[green]{Localization.Drive_supports_CD_RW_subtypes}[/]");
 
+        sb.Append("[teal]");
         if((ftr.SubtypeSupport & 0x01) == 0x01) sb.Append(" 0");
 
         if((ftr.SubtypeSupport & 0x02) == 0x02) sb.Append(" 1");
@@ -3672,13 +3702,13 @@ public static class Features
 
         if((ftr.SubtypeSupport & 0x80) == 0x80) sb.Append(" 7");
 
-        sb.AppendLine();
+        sb.AppendLine("[/]");
 
         return sb.ToString();
     }
 
     public static string Prettify_0038(Feature_0038? feature) =>
-        !feature.HasValue ? null : Localization.Drive_can_write_BD_R_on_Pseudo_OVerwrite_SRM_mode + "\n";
+        !feature.HasValue ? null : $"[green]{Localization.Drive_can_write_BD_R_on_Pseudo_OVerwrite_SRM_mode}[/]" + "\n";
 
     public static string Prettify_003A(Feature_003A? feature)
     {
@@ -3689,25 +3719,25 @@ public static class Features
 
         if(ftr.Write)
         {
-            sb.Append(Localization.Drive_can_read_and_write_DVD_Plus_RW_DL);
+            sb.Append($"[green]{Localization.Drive_can_read_and_write_DVD_Plus_RW_DL}[/]");
 
             if(ftr.Current)
-                sb.AppendLine(Localization.current);
+                sb.AppendLine($"[fuchsia]{Localization.current}[/]");
             else
                 sb.AppendLine();
 
             sb.AppendLine(ftr.CloseOnly
-                              ? "\t" + Localization.Drive_supports_only_the_read_compatibility_stop
-                              : "\t" + Localization.Drive_supports_both_forms_of_background_format_stopping);
+                              ? $"\t[green]{Localization.Drive_supports_only_the_read_compatibility_stop}[/]"
+                              : $"\t[green]{Localization.Drive_supports_both_forms_of_background_format_stopping}[/]");
 
-            if(ftr.QuickStart) sb.AppendLine("\t" + Localization.Drive_can_do_a_quick_start_formatting);
+            if(ftr.QuickStart) sb.AppendLine($"\t[green]{Localization.Drive_can_do_a_quick_start_formatting}[/]");
         }
         else
         {
-            sb.Append(Localization.Drive_can_read_DVD_Plus_RW_DL);
+            sb.Append($"[green]{Localization.Drive_can_read_DVD_Plus_RW_DL}[/]");
 
             if(ftr.Current)
-                sb.AppendLine(Localization.current);
+                sb.AppendLine($"[fuchsia]{Localization.current}[/]");
             else
                 sb.AppendLine();
         }
@@ -3724,19 +3754,19 @@ public static class Features
 
         if(ftr.Write)
         {
-            sb.Append(Localization.Drive_can_read_and_write_DVD_Plus_R_DL);
+            sb.Append($"[green]{Localization.Drive_can_read_and_write_DVD_Plus_R_DL}[/]");
 
             if(ftr.Current)
-                sb.AppendLine(Localization.current);
+                sb.AppendLine($"[fuchsia]{Localization.current}[/]");
             else
                 sb.AppendLine();
         }
         else
         {
-            sb.Append(Localization.Features_Prettify_003B_Drive_can_read_DVD_Plus_R_DL);
+            sb.Append($"[green]{Localization.Features_Prettify_003B_Drive_can_read_DVD_Plus_R_DL}[/]");
 
             if(ftr.Current)
-                sb.AppendLine(Localization.current);
+                sb.AppendLine($"[fuchsia]{Localization.current}[/]");
             else
                 sb.AppendLine();
         }
@@ -3751,24 +3781,24 @@ public static class Features
         Feature_0040 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.Append(Localization.MMC_BD_Read);
-        sb.AppendLine(ftr.Current ? $"{Localization.current}:" : ":");
+        sb.Append($"[bold][blue]{Localization.MMC_BD_Read}");
+        sb.AppendLine(ftr.Current ? $"{$"[fuchsia]{Localization.current}[/]"}:[/][/]" : ":[/][/]");
 
-        if(ftr.OldROM) sb.AppendLine("\t" + Localization.Drive_can_read_BD_ROM_pre_1_0);
+        if(ftr.OldROM) sb.AppendLine($"\t[green]{Localization.Drive_can_read_BD_ROM_pre_1_0}[/]");
 
-        if(ftr.ROM) sb.AppendLine("\t" + Localization.Drive_can_read_BD_ROM_Ver_1);
+        if(ftr.ROM) sb.AppendLine($"\t[green]{Localization.Drive_can_read_BD_ROM_Ver_1}[/]");
 
-        if(ftr.OldR) sb.AppendLine("\t" + Localization.Drive_can_read_BD_R_pre_1_0);
+        if(ftr.OldR) sb.AppendLine($"\t[green]{Localization.Drive_can_read_BD_R_pre_1_0}[/]");
 
-        if(ftr.R) sb.AppendLine("\t" + Localization.Drive_can_read_BD_R_Ver_1);
+        if(ftr.R) sb.AppendLine($"\t[green]{Localization.Drive_can_read_BD_R_Ver_1}[/]");
 
-        if(ftr.OldRE) sb.AppendLine("\t" + Localization.Drive_can_read_BD_RE_pre_1_0);
+        if(ftr.OldRE) sb.AppendLine($"\t[green]{Localization.Drive_can_read_BD_RE_pre_1_0}[/]");
 
-        if(ftr.RE1) sb.AppendLine("\t" + Localization.Drive_can_read_BD_RE_Ver_1);
+        if(ftr.RE1) sb.AppendLine($"\t[green]{Localization.Drive_can_read_BD_RE_Ver_1}[/]");
 
-        if(ftr.RE2) sb.AppendLine("\t" + Localization.Drive_can_read_BD_RE_Ver_2);
+        if(ftr.RE2) sb.AppendLine($"\t[green]{Localization.Drive_can_read_BD_RE_Ver_2}[/]");
 
-        if(ftr.BCA) sb.AppendLine("\t" + Localization.Drive_can_read_BDs_Burst_Cutting_Area);
+        if(ftr.BCA) sb.AppendLine($"\t[green]{Localization.Drive_can_read_BDs_Burst_Cutting_Area}[/]");
 
         return sb.ToString();
     }
@@ -3780,30 +3810,28 @@ public static class Features
         Feature_0041 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.Append(Localization.MMC_BD_Write);
-        sb.AppendLine(ftr.Current ? $"{Localization.current}:" : ":");
+        sb.Append($"[bold][blue]{Localization.MMC_BD_Write}");
+        sb.AppendLine(ftr.Current ? $"{$"[fuchsia]{Localization.current}[/]"}:[/][/]" : ":[/][/]");
 
-        if(ftr.OldR) sb.AppendLine("\t" + Localization.Drive_can_write_BD_R_pre_1_0);
+        if(ftr.OldR) sb.AppendLine($"\t[green]{Localization.Drive_can_write_BD_R_pre_1_0}[/]");
 
-        if(ftr.R) sb.AppendLine("\t" + Localization.Drive_can_write_BD_R_Ver_1);
+        if(ftr.R) sb.AppendLine($"\t[green]{Localization.Drive_can_write_BD_R_Ver_1}[/]");
 
-        if(ftr.OldRE) sb.AppendLine("\t" + Localization.Drive_can_write_BD_RE_pre_1_0);
+        if(ftr.OldRE) sb.AppendLine($"\t[green]{Localization.Drive_can_write_BD_RE_pre_1_0}[/]");
 
-        if(ftr.RE1) sb.AppendLine("\t" + Localization.Drive_can_write_BD_RE_Ver_1);
+        if(ftr.RE1) sb.AppendLine($"\t[green]{Localization.Drive_can_write_BD_RE_Ver_1}[/]");
 
-        if(ftr.RE2) sb.AppendLine("\t" + Localization.Drive_can_write_BD_RE_Ver_2);
+        if(ftr.RE2) sb.AppendLine($"\t[green]{Localization.Drive_can_write_BD_RE_Ver_2}[/]");
 
-        if(ftr.SVNR) sb.AppendLine("\t" + Localization.Drive_supports_write_without_verify_requirement);
+        if(ftr.SVNR) sb.AppendLine($"\t[green]{Localization.Drive_supports_write_without_verify_requirement}[/]");
 
         return sb.ToString();
     }
 
-    public static string Prettify_0042(Feature_0042? feature) =>
-        !feature.HasValue
-            ? null
-            : Localization
-                 .Features_Prettify_0042_Drive_is_able_to_detect_and_report_defective_writable_unit_and_behave_accordingly +
-              "\n";
+    public static string Prettify_0042(Feature_0042? feature) => !feature.HasValue
+                                                                     ? null
+                                                                     : $"[green]{Localization
+                                                                        .Features_Prettify_0042_Drive_is_able_to_detect_and_report_defective_writable_unit_and_behave_accordingly}[/]\n";
 
     public static string Prettify_0050(Feature_0050? feature)
     {
@@ -3815,25 +3843,25 @@ public static class Features
         switch(ftr.HDDVDR)
         {
             case true when ftr.HDDVDRAM:
-                sb.Append(Localization.Drive_can_read_HD_DVD_ROM_HD_DVD_RW_HD_DVD_R_and_HD_DVD_RAM);
+                sb.Append($"[green]{Localization.Drive_can_read_HD_DVD_ROM_HD_DVD_RW_HD_DVD_R_and_HD_DVD_RAM}[/]");
 
                 break;
             case true:
-                sb.Append(Localization.Drive_can_read_HD_DVD_ROM_HD_DVD_RW_and_HD_DVD_R);
+                sb.Append($"[green]{Localization.Drive_can_read_HD_DVD_ROM_HD_DVD_RW_and_HD_DVD_R}[/]");
 
                 break;
             default:
             {
                 sb.Append(ftr.HDDVDRAM
-                              ? Localization.Drive_can_read_HD_DVD_ROM_HD_DVD_RW_and_HD_DVD_RAM
-                              : Localization.Drive_can_read_HD_DVD_ROM_and_HD_DVD_RW);
+                              ? $"[green]{Localization.Drive_can_read_HD_DVD_ROM_HD_DVD_RW_and_HD_DVD_RAM}[/]"
+                              : $"[green]{Localization.Drive_can_read_HD_DVD_ROM_and_HD_DVD_RW}[/]");
 
                 break;
             }
         }
 
         if(ftr.Current)
-            sb.AppendLine(Localization.current);
+            sb.AppendLine($"[fuchsia]{Localization.current}[/]");
         else
             sb.AppendLine();
 
@@ -3850,25 +3878,25 @@ public static class Features
         switch(ftr.HDDVDR)
         {
             case true when ftr.HDDVDRAM:
-                sb.Append(Localization.Drive_can_write_HD_DVD_RW_HD_DVD_R_and_HD_DVD_RAM);
+                sb.Append($"[green]{Localization.Drive_can_write_HD_DVD_RW_HD_DVD_R_and_HD_DVD_RAM}[/]");
 
                 break;
             case true:
-                sb.Append(Localization.Drive_can_write_HD_DVD_RW_and_HD_DVD_R);
+                sb.Append($"[green]{Localization.Drive_can_write_HD_DVD_RW_and_HD_DVD_R}[/]");
 
                 break;
             default:
             {
                 sb.Append(ftr.HDDVDRAM
-                              ? Localization.Drive_can_write_HD_DVD_RW_and_HD_DVD_RAM
-                              : Localization.Drive_can_write_HD_DVD_RW);
+                              ? $"[green]{Localization.Drive_can_write_HD_DVD_RW_and_HD_DVD_RAM}[/]"
+                              : $"[green]{Localization.Drive_can_write_HD_DVD_RW}[/]");
 
                 break;
             }
         }
 
         if(ftr.Current)
-            sb.AppendLine(Localization.current);
+            sb.AppendLine($"[fuchsia]{Localization.current}[/]");
         else
             sb.AppendLine();
 
@@ -3882,18 +3910,18 @@ public static class Features
         Feature_0080 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.Append(Localization.Drive_is_able_to_access_Hybrid_discs);
+        sb.Append($"[green]{Localization.Drive_is_able_to_access_Hybrid_discs}[/]");
 
         if(ftr.Current)
-            sb.AppendLine(Localization.current);
+            sb.AppendLine($"[fuchsia]{Localization.current}[/]");
         else
             sb.AppendLine();
 
         if(ftr.RI)
         {
-            sb.AppendLine("\t" +
-                          Localization
-                             .Drive_is_able_to_maintain_the_online_format_layer_through_reset_and_power_cycling);
+            sb.AppendLine($"\t[green]{
+                Localization
+                   .Drive_is_able_to_maintain_the_online_format_layer_through_reset_and_power_cycling}[/]");
         }
 
         return sb.ToString();
@@ -3902,7 +3930,7 @@ public static class Features
     public static string Prettify_0100(Feature_0100? feature) =>
         !feature.HasValue
             ? null
-            : Localization.Drive_is_able_to_perform_host_and_drive_directed_power_management + "\n";
+            : $"[green]{Localization.Drive_is_able_to_perform_host_and_drive_directed_power_management}[/]\n";
 
     public static string Prettify_0101(Feature_0101? feature)
     {
@@ -3911,9 +3939,10 @@ public static class Features
         Feature_0101 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.Drive_supports_SMART);
+        sb.AppendLine($"[green]{Localization.Drive_supports_SMART}[/]");
 
-        if(ftr.PP) sb.AppendLine("\t" + Localization.Drive_supports_the_Informational_Exceptions_Control_mode_page_1Ch);
+        if(ftr.PP)
+            sb.AppendLine($"\t[green]{Localization.Drive_supports_the_Informational_Exceptions_Control_mode_page_1Ch}[/]");
 
         return sb.ToString();
     }
@@ -3925,13 +3954,15 @@ public static class Features
         Feature_0102 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.MMC_Embedded_Changer);
+        sb.AppendLine($"[bold][blue]{Localization.MMC_Embedded_Changer}[/][/]");
 
-        if(ftr.SCC) sb.AppendLine("\t" + Localization.Drive_can_change_disc_side);
+        if(ftr.SCC) sb.AppendLine($"\t[green]{Localization.Drive_can_change_disc_side}[/]");
 
-        if(ftr.SDP) sb.AppendLine("\t" + Localization.Drive_is_able_to_report_slots_contents_after_a_reset_or_change);
+        if(ftr.SDP)
+            sb.AppendLine($"\t[green]{Localization.Drive_is_able_to_report_slots_contents_after_a_reset_or_change}[/]");
 
-        sb.AppendFormat("\t" + Localization.Drive_has_0_slots, ftr.HighestSlotNumber + 1).AppendLine();
+        sb.AppendFormat($"\t[slateblue1]{Localization.Drive_has_0_slots}[/]", $"[teal]{ftr.HighestSlotNumber + 1}[/]")
+          .AppendLine();
 
         return sb.ToString();
     }
@@ -3943,15 +3974,17 @@ public static class Features
         Feature_0103 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.Drive_has_an_analogue_audio_output);
+        sb.AppendLine($"[bold][blue]{Localization.Drive_has_an_analogue_audio_output}[/][/]");
 
-        if(ftr.Scan) sb.AppendLine("\t" + Localization.Drive_supports_the_SCAN_command);
+        if(ftr.Scan) sb.AppendLine($"\t[green]{Localization.Drive_supports_the_SCAN_command}[/]");
 
-        if(ftr.SCM) sb.AppendLine("\t" + Localization.Drive_is_able_to_mute_channels_separately);
+        if(ftr.SCM) sb.AppendLine($"\t[green]{Localization.Drive_is_able_to_mute_channels_separately}[/]");
 
-        if(ftr.SV) sb.AppendLine("\t" + Localization.Drive_supports_separate_volume_per_channel);
+        if(ftr.SV) sb.AppendLine($"\t[green]{Localization.Drive_supports_separate_volume_per_channel}[/]");
 
-        sb.AppendFormat("\t" + Localization.Drive_has_0_volume_levels, ftr.VolumeLevels + 1).AppendLine();
+        sb.AppendFormat($"\t[slateblue1]{Localization.Drive_has_0_volume_levels}[/]",
+                        $"[teal]{ftr.VolumeLevels + 1}[/]")
+          .AppendLine();
 
         return sb.ToString();
     }
@@ -3963,12 +3996,12 @@ public static class Features
         Feature_0104 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.Drive_supports_Microcode_Upgrade);
+        sb.AppendLine($"[green]{Localization.Drive_supports_Microcode_Upgrade}[/]");
 
         if(ftr.M5)
         {
-            sb.AppendLine(Localization
-                             .Drive_supports_validating_the_5_bit_Mode_of_the_READ_BUFFER_and_WRITE_BUFFER_commands);
+            sb.AppendLine($"[green]{Localization
+               .Drive_supports_validating_the_5_bit_Mode_of_the_READ_BUFFER_and_WRITE_BUFFER_commands}[/]");
         }
 
         return sb.ToString();
@@ -3981,14 +4014,16 @@ public static class Features
         Feature_0105 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.Drive_supports_Timeout_Protect_mode_page_1Dh);
+        sb.AppendLine($"[green]{Localization.Drive_supports_Timeout_Protect_mode_page_1Dh}[/]");
 
         if(!ftr.Group3) return sb.ToString();
 
-        sb.AppendLine("\t" + Localization.Drive_supports_the_Group3_in_Timeout_Protect_mode_page_1Dh);
+        sb.AppendLine($"\t[green]{Localization.Drive_supports_the_Group3_in_Timeout_Protect_mode_page_1Dh}[/]");
 
         if(ftr.UnitLength > 0)
-            sb.AppendFormat("\t" + Localization.Drive_has_0_increase_of_Group_3_time_unit, ftr.UnitLength).AppendLine();
+            sb.AppendFormat($"\t[slateblue1]{Localization.Drive_has_0_increase_of_Group_3_time_unit}[/]",
+                            ftr.UnitLength)
+              .AppendLine();
 
         return sb.ToString();
     }
@@ -4002,12 +4037,15 @@ public static class Features
 
         if(ftr.Current)
         {
-            sb.AppendFormat(Localization.Drive_supports_DVD_CSS_CPPM_version_0_and_current_disc_is_encrypted,
-                            ftr.CSSVersion)
-              .AppendLine();
+            sb
+               .AppendFormat($"[green]{Localization.Drive_supports_DVD_CSS_CPPM_version_0_and_current_disc_is_encrypted}[/]",
+                             $"[teal]{ftr.CSSVersion}[/]")
+               .AppendLine();
         }
         else
-            sb.AppendFormat(Localization.Drive_supports_DVD_CSS_CPPM_version_0, ftr.CSSVersion).AppendLine();
+            sb.AppendFormat($"[green]{Localization.Drive_supports_DVD_CSS_CPPM_version_0}[/]",
+                            $"[teal]{ftr.CSSVersion}[/]")
+              .AppendLine();
 
         return sb.ToString();
     }
@@ -4019,31 +4057,31 @@ public static class Features
         Feature_0107 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.MMC_Real_Time_Streaming_);
+        sb.AppendLine($"[bold][blue]{Localization.MMC_Real_Time_Streaming_}[/][/]");
 
         if(ftr.SMP)
-            sb.AppendLine("\t" + Localization.Drive_supports_Set_Minimum_Performance_with_the_SET_STREAMING_command);
+            sb.AppendLine($"\t[green]{Localization.Drive_supports_Set_Minimum_Performance_with_the_SET_STREAMING_command}[/]");
 
         if(ftr.RBCB)
-            sb.AppendLine("\t" + Localization.Drive_supports_the_block_bit_in_the_READ_BUFFER_CAPACITY_command);
+            sb.AppendLine($"\t[green]{Localization.Drive_supports_the_block_bit_in_the_READ_BUFFER_CAPACITY_command}[/]");
 
-        if(ftr.SCS) sb.AppendLine("\t" + Localization.Drive_supports_the_SET_CD_SPEED_command);
+        if(ftr.SCS) sb.AppendLine($"\t[green]{Localization.Drive_supports_the_SET_CD_SPEED_command}[/]");
 
         if(ftr.MP2A)
         {
-            sb.AppendLine("\t" +
-                          Localization
-                             .Drive_supports_the_Write_Speed_Performance_Descriptor_Blocks_in_the_MMC_mode_page_2Ah);
+            sb.AppendLine($"\t[green]{
+                Localization
+                   .Drive_supports_the_Write_Speed_Performance_Descriptor_Blocks_in_the_MMC_mode_page_2Ah}[/]");
         }
 
         if(ftr.WSPD)
         {
-            sb.AppendLine("\t" +
-                          Localization
-                             .Drive_supports_the_Write_Speed_data_of_GET_PERFORMANCE_and_the_WRC_field_of_SET_STREAMING);
+            sb.AppendLine($"\t[green]{
+                Localization
+                   .Drive_supports_the_Write_Speed_data_of_GET_PERFORMANCE_and_the_WRC_field_of_SET_STREAMING}[/]");
         }
 
-        if(ftr.SW) sb.AppendLine("\t" + Localization.Drive_supports_stream_recording);
+        if(ftr.SW) sb.AppendLine($"\t[green]{Localization.Drive_supports_stream_recording}[/]");
 
         return sb.ToString();
     }
@@ -4055,13 +4093,13 @@ public static class Features
         Feature_0108 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendFormat(Core.Drive_serial_number_0, ftr.Serial).AppendLine();
+        sb.AppendFormat($"[slateblue1]{Core.Drive_serial_number_0}[/]", $"[aqua]{ftr.Serial}[/]").AppendLine();
 
         return sb.ToString();
     }
 
     public static string Prettify_0109(Feature_0109? feature) =>
-        !feature.HasValue ? null : Localization.Drive_is_able_to_read_media_serial_number + "\n";
+        !feature.HasValue ? null : $"[green]{Localization.Drive_is_able_to_read_media_serial_number}[/]" + "\n";
 
     public static string Prettify_010A(Feature_010A? feature)
     {
@@ -4072,7 +4110,8 @@ public static class Features
 
         if(ftr.DCBs == null) return sb.ToString();
 
-        foreach(uint dcb in ftr.DCBs) sb.AppendFormat(Localization.Drive_supports_DCB_0, dcb).AppendLine();
+        foreach(uint dcb in ftr.DCBs)
+            sb.AppendFormat($"[green]{Localization.Drive_supports_DCB_0}[/]", $"[teal]{dcb}[/]").AppendLine();
 
         return sb.ToString();
     }
@@ -4086,12 +4125,15 @@ public static class Features
 
         if(ftr.Current)
         {
-            sb.AppendFormat(Localization.Drive_supports_DVD_CPRM_version_0_and_current_disc_is_or_can_be_encrypted,
-                            ftr.CPRMVersion)
-              .AppendLine();
+            sb
+               .AppendFormat($"[green]{Localization.Drive_supports_DVD_CPRM_version_0_and_current_disc_is_or_can_be_encrypted}[/]",
+                             $"[teal]{ftr.CPRMVersion}[/]")
+               .AppendLine();
         }
         else
-            sb.AppendFormat(Localization.Drive_supports_DVD_CPRM_version_0, ftr.CPRMVersion).AppendLine();
+            sb.AppendFormat($"[green]{Localization.Drive_supports_DVD_CPRM_version_0}[/]",
+                            $"[teal]{ftr.CPRMVersion}[/]")
+              .AppendLine();
 
         return sb.ToString();
     }
@@ -4103,7 +4145,7 @@ public static class Features
         Feature_010C ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        var temp = new byte[4];
+        byte[] temp = new byte[4];
         temp[0] = (byte)((ftr.Century & 0xFF00) >> 8);
         temp[1] = (byte)(ftr.Century & 0xFF);
         temp[2] = (byte)((ftr.Year & 0xFF00) >> 8);
@@ -4140,7 +4182,8 @@ public static class Features
                                       int.Parse(ssecond),
                                       DateTimeKind.Utc);
 
-            sb.AppendFormat(Localization.Drive_firmware_is_dated_0, fwDate).AppendLine();
+            sb.AppendFormat($"[slateblue1]{Localization.Drive_firmware_is_dated_0}[/]", $"[yellow3]{fwDate}[/]")
+              .AppendLine();
         }
 #pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
         catch
@@ -4161,34 +4204,39 @@ public static class Features
 
         if(ftr.Current)
         {
-            sb.AppendFormat(Localization.Drive_supports_AACS_version_0_and_current_disc_is_encrypted, ftr.AACSVersion)
-              .AppendLine();
+            sb
+               .AppendFormat($"[slateblue1]{Localization.Drive_supports_AACS_version_0_and_current_disc_is_encrypted}[/]",
+                             $"[teal]{ftr.AACSVersion}[/]")
+               .AppendLine();
         }
         else
-            sb.AppendFormat(Localization.Drive_supports_AACS_version_0, ftr.AACSVersion).AppendLine();
+            sb.AppendFormat($"[slateblue1]{Localization.Drive_supports_AACS_version_0}[/]",
+                            $"[teal]{ftr.AACSVersion}[/]")
+              .AppendLine();
 
-        if(ftr.RDC) sb.AppendLine("\t" + Localization.Drive_supports_reading_the_Drive_Certificate);
+        if(ftr.RDC) sb.AppendLine($"\t[green]{Localization.Drive_supports_reading_the_Drive_Certificate}[/]");
 
-        if(ftr.RMC) sb.AppendLine("\t" + Localization.Drive_supports_reading_Media_Key_Block_of_CPRM);
+        if(ftr.RMC) sb.AppendLine($"\t[green]{Localization.Drive_supports_reading_Media_Key_Block_of_CPRM}[/]");
 
-        if(ftr.WBE) sb.AppendLine("\t" + Localization.Drive_supports_writing_with_bus_encryption);
+        if(ftr.WBE) sb.AppendLine($"\t[green]{Localization.Drive_supports_writing_with_bus_encryption}[/]");
 
-        if(ftr.BEC) sb.AppendLine("\t" + Localization.Drive_supports_bus_encryption);
+        if(ftr.BEC) sb.AppendLine($"\t[green]{Localization.Drive_supports_bus_encryption}[/]");
 
         if(ftr.BNG)
         {
-            sb.AppendLine("\t" + Localization.Drive_supports_generating_the_binding_nonce);
+            sb.AppendLine($"\t[green]{Localization.Drive_supports_generating_the_binding_nonce}[/]");
 
             if(ftr.BindNonceBlocks > 0)
             {
-                sb.AppendFormat("\t" + Localization._0_media_blocks_are_required_for_the_binding_nonce,
-                                ftr.BindNonceBlocks)
+                sb.AppendFormat($"\t[slateblue1]{Localization._0_media_blocks_are_required_for_the_binding_nonce}[/]",
+                                $"[teal]{ftr.BindNonceBlocks}[/]")
                   .AppendLine();
             }
         }
 
         if(ftr.AGIDs > 0)
-            sb.AppendFormat("\t" + Localization.Drive_supports_0_AGIDs_concurrently, ftr.AGIDs).AppendLine();
+            sb.AppendFormat($"\t[green]{Localization.Drive_supports_0_AGIDs_concurrently}[/]", $"[teal]{ftr.AGIDs}[/]")
+              .AppendLine();
 
         return sb.ToString();
     }
@@ -4200,16 +4248,17 @@ public static class Features
         Feature_010E ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.Append(Localization.Drive_supports_DVD_Download);
+        sb.Append($"[bold][blue]{Localization.Drive_supports_DVD_Download}[/][/]");
 
         if(ftr.Current)
-            sb.AppendLine(Localization.current);
+            sb.AppendLine($"[fuchsia]{Localization.current}[/]");
         else
             sb.AppendLine();
 
         if(ftr.MaxScrambleExtent > 0)
         {
-            sb.AppendFormat("\t" + Localization.Maximum_0_scramble_extent_information_entries, ftr.MaxScrambleExtent)
+            sb.AppendFormat($"\t[slateblue1]{Localization.Maximum_0_scramble_extent_information_entries}[/]",
+                            $"[teal]{ftr.MaxScrambleExtent}[/]")
               .AppendLine();
         }
 
@@ -4224,8 +4273,8 @@ public static class Features
         var          sb  = new StringBuilder();
 
         sb.AppendLine(ftr.Current
-                          ? Localization.Drive_and_currently_inserted_media_support_VCPS
-                          : Localization.Drive_supports_VCPS);
+                          ? $"[green]{Localization.Drive_and_currently_inserted_media_support_VCPS}[/]"
+                          : $"[green]{Localization.Drive_supports_VCPS}[/]");
 
         return sb.ToString();
     }
@@ -4238,8 +4287,8 @@ public static class Features
         var          sb  = new StringBuilder();
 
         sb.AppendLine(ftr.Current
-                          ? Localization.Drive_and_currently_inserted_media_support_SecurDisc
-                          : Localization.Drive_supports_SecurDisc);
+                          ? $"[green]{Localization.Drive_and_currently_inserted_media_support_SecurDisc}[/]"
+                          : $"[green]{Localization.Drive_supports_SecurDisc}[/]");
 
         return sb.ToString();
     }
@@ -4251,20 +4300,20 @@ public static class Features
         Feature_0142 ftr = feature.Value;
         var          sb  = new StringBuilder();
 
-        sb.AppendLine(Localization.Drive_supports_the_Trusted_Computing_Group_Optical_Security_Subsystem_Class);
+        sb.AppendLine($"[slateblue1]{Localization.Drive_supports_the_Trusted_Computing_Group_Optical_Security_Subsystem_Class}[/]");
 
-        if(ftr.Current) sb.AppendLine("\t" + Localization.Current_media_is_initialized_with_TCG_OSSC);
+        if(ftr.Current) sb.AppendLine($"\t[slateblue1]{Localization.Current_media_is_initialized_with_TCG_OSSC}[/]");
 
-        if(ftr.PSAU) sb.AppendLine("\t" + Localization.Drive_supports_PSA_updates_on_write_once_media);
+        if(ftr.PSAU) sb.AppendLine($"\t[green]{Localization.Drive_supports_PSA_updates_on_write_once_media}[/]");
 
-        if(ftr.LOSPB) sb.AppendLine("\t" + Localization.Drive_supports_linked_OSPBs);
+        if(ftr.LOSPB) sb.AppendLine($"\t[green]{Localization.Drive_supports_linked_OSPBs}[/]");
 
-        if(ftr.ME) sb.AppendLine("\t" + Localization.Drive_will_only_record_on_the_OSSC_Disc_Format);
+        if(ftr.ME) sb.AppendLine($"\t[slateblue1]{Localization.Drive_will_only_record_on_the_OSSC_Disc_Format}[/]");
 
         if(ftr.Profiles == null) return sb.ToString();
 
-        for(var i = 0; i < ftr.Profiles.Length; i++)
-            sb.AppendFormat("\t" + Localization.Profile_0_1, i, ftr.Profiles[i]).AppendLine();
+        for(int i = 0; i < ftr.Profiles.Length; i++)
+            sb.AppendFormat($"\t[slateblue1]{Localization.Profile_0_1}[/]", i, ftr.Profiles[i]).AppendLine();
 
         return sb.ToString();
     }
