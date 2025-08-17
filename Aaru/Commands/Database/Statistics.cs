@@ -36,6 +36,7 @@ using Aaru.Console;
 using Aaru.Database;
 using Aaru.Database.Models;
 using Aaru.Localization;
+using Serilog;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Command = Aaru.Database.Models.Command;
@@ -49,6 +50,8 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
     {
         MainClass.PrintCopyright();
 
+        Log.Information(UI.Database_statistics_command);
+
         var ctx = AaruContext.Create(Aaru.Settings.Settings.LocalDbPath);
 
         if(!ctx.Commands.Any()     &&
@@ -60,6 +63,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
            !ctx.SeenDevices.Any())
         {
             AaruConsole.WriteLine(UI.There_are_no_statistics);
+            Log.Information(UI.There_are_no_statistics);
 
             return (int)ErrorNumber.NothingFound;
         }
@@ -71,12 +75,16 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
         {
             table = new Table
             {
-                Title = new TableTitle(UI.Commands_statistics)
+                Title = new TableTitle($"[blue]{UI.Commands_statistics}[/]")
             };
 
-            table.AddColumn(UI.Title_Command);
-            table.AddColumn(UI.Title_Times_used);
+            Log.Information(UI.Commands_statistics);
+
+            table.AddColumn(new TableColumn(new Markup($"[bold][purple]{UI.Title_Command}[/][/]").Centered()));
+            table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
             table.Columns[1].RightAligned();
+            table.Border(TableBorder.Rounded);
+            table.BorderColor(Color.Yellow);
 
             if(ctx.Commands.Any(c => c.Name == "analyze"))
             {
@@ -117,7 +125,8 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
 
                 if(count == 0) continue;
 
-                table.AddRow(Markup.Escape(command), $"{count}");
+                table.AddRow($"[italic][purple]{Markup.Escape(command)}[/][/]", $"[italic][aqua]{count}[/][/]");
+                Log.Information("({Command}) - {Count}", command, count);
                 thereAreStats = true;
             }
 
@@ -129,12 +138,16 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
         {
             table = new Table
             {
-                Title = new TableTitle(UI.Filters_statistics)
+                Title = new TableTitle($"[blue]{UI.Filters_statistics}[/]")
             };
 
-            table.AddColumn(UI.Title_Filter);
-            table.AddColumn(UI.Title_Times_used);
+            Log.Information(UI.Filters_statistics);
+
+            table.AddColumn(new TableColumn(new Markup($"[bold][purple]{UI.Title_Filter}[/][/]").Centered()));
+            table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
             table.Columns[1].RightAligned();
+            table.Border(TableBorder.Rounded);
+            table.BorderColor(Color.Yellow);
 
             foreach(string filter in ctx.Filters.Select(c => c.Name).Distinct().OrderBy(c => c))
             {
@@ -146,7 +159,8 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
 
                 if(count == 0) continue;
 
-                table.AddRow(Markup.Escape(filter), $"{count}");
+                table.AddRow($"[italic][purple]{Markup.Escape(filter)}[/][/]", $"[italic][aqua]{count}[/][/]");
+                Log.Information("({Filter}) - {Count}", filter, count);
                 thereAreStats = true;
             }
 
@@ -158,12 +172,16 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
         {
             table = new Table
             {
-                Title = new TableTitle(UI.Media_image_format_statistics)
+                Title = new TableTitle($"[blue]{UI.Media_image_format_statistics}[/]")
             };
 
-            table.AddColumn(UI.Title_Format);
-            table.AddColumn(UI.Title_Times_used);
+            Log.Information(UI.Media_image_format_statistics);
+
+            table.AddColumn(new TableColumn(new Markup($"[bold][purple]{UI.Title_Format}[/][/]").Centered()));
+            table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
             table.Columns[1].RightAligned();
+            table.Border(TableBorder.Rounded);
+            table.BorderColor(Color.Yellow);
 
             foreach(string format in ctx.MediaFormats.Select(c => c.Name).Distinct().OrderBy(c => c))
             {
@@ -175,7 +193,8 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
 
                 if(count == 0) continue;
 
-                table.AddRow(Markup.Escape(format), $"{count}");
+                table.AddRow($"[italic][purple]{Markup.Escape(format)}[/][/]", $"[italic][aqua]{count}[/][/]");
+                Log.Information("({Format}) - {Count}", format, count);
                 thereAreStats = true;
             }
 
@@ -187,12 +206,16 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
         {
             table = new Table
             {
-                Title = new TableTitle(UI.Partitioning_scheme_statistics)
+                Title = new TableTitle($"[blue]{UI.Partitioning_scheme_statistics}[/]")
             };
 
-            table.AddColumn(UI.Title_Scheme);
-            table.AddColumn(UI.Title_Times_used);
+            Log.Information(UI.Partitioning_scheme_statistics);
+
+            table.AddColumn(new TableColumn(new Markup($"[bold][purple]{UI.Title_Scheme}[/][/]").Centered()));
+            table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
             table.Columns[1].RightAligned();
+            table.Border(TableBorder.Rounded);
+            table.BorderColor(Color.Yellow);
 
             foreach(string partition in ctx.Partitions.Select(c => c.Name).Distinct().OrderBy(c => c))
             {
@@ -204,7 +227,8 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
 
                 if(count == 0) continue;
 
-                table.AddRow(Markup.Escape(partition), $"{count}");
+                table.AddRow($"[italic][purple]{Markup.Escape(partition)}[/][/]", $"[italic][aqua]{count}[/][/]");
+                Log.Information("({Partition}) - {Count}", partition, count);
                 thereAreStats = true;
             }
 
@@ -216,12 +240,16 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
         {
             table = new Table
             {
-                Title = new TableTitle(UI.Filesystem_statistics)
+                Title = new TableTitle($"[blue]{UI.Filesystem_statistics}[/]")
             };
 
-            table.AddColumn(UI.Title_Filesystem);
-            table.AddColumn(UI.Title_Times_used);
+            Log.Information(UI.Filesystem_statistics);
+
+            table.AddColumn(new TableColumn(new Markup($"[bold][purple]{UI.Title_Filesystem}[/][/]").Centered()));
+            table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
             table.Columns[1].RightAligned();
+            table.Border(TableBorder.Rounded);
+            table.BorderColor(Color.Yellow);
 
             foreach(string filesystem in ctx.Filesystems.Select(c => c.Name).Distinct().OrderBy(c => c))
             {
@@ -233,7 +261,8 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
 
                 if(count == 0) continue;
 
-                table.AddRow(Markup.Escape(filesystem), $"{count}");
+                table.AddRow($"[italic][purple]{Markup.Escape(filesystem)}[/][/]", $"[italic][aqua]{count}[/][/]");
+                Log.Information("({Filesystem}) - {Count}", filesystem, count);
                 thereAreStats = true;
             }
 
@@ -245,23 +274,33 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
         {
             table = new Table
             {
-                Title = new TableTitle(UI.Device_statistics)
+                Title = new TableTitle($"[blue]{UI.Device_statistics}[/]")
             };
 
-            table.AddColumn(UI.Title_Manufacturer);
-            table.AddColumn(UI.Title_Model);
-            table.AddColumn(UI.Title_Revision);
-            table.AddColumn(UI.Title_Bus);
+            Log.Information(UI.Device_statistics);
+
+            table.AddColumn($"[bold][blue]{UI.Title_Manufacturer}[/][/]");
+            table.AddColumn($"[bold][purple]{UI.Title_Model}[/][/]");
+            table.AddColumn($"[bold][teal]{UI.Title_Revision}[/][/]");
+            table.AddColumn($"[bold][rosybrown]{UI.Title_Bus}[/][/]");
+            table.Border(TableBorder.Rounded);
+            table.BorderColor(Color.Yellow);
 
             foreach(DeviceStat ds in ctx.SeenDevices.OrderBy(ds => ds.Manufacturer)
                                         .ThenBy(ds => ds.Model)
                                         .ThenBy(ds => ds.Revision)
                                         .ThenBy(ds => ds.Bus))
             {
-                table.AddRow(Markup.Escape(ds.Manufacturer ?? ""),
-                             Markup.Escape(ds.Model        ?? ""),
-                             Markup.Escape(ds.Revision     ?? ""),
-                             Markup.Escape(ds.Bus          ?? ""));
+                table.AddRow($"[italic][blue]{Markup.Escape(ds.Manufacturer ?? "")}[/][/]",
+                             $"[italic][purple]{Markup.Escape(ds.Model      ?? "")}[/][/]",
+                             $"[italic][teal]{Markup.Escape(ds.Revision     ?? "")}[/][/]",
+                             $"[italic][rosybrown]{Markup.Escape(ds.Bus     ?? "")}[/][/]");
+
+                Log.Information("({Manufacturer}) - {Model} {Revision} ({Bus})",
+                                ds.Manufacturer ?? "",
+                                ds.Model        ?? "",
+                                ds.Revision     ?? "",
+                                ds.Bus          ?? "");
             }
 
             AnsiConsole.Write(table);
@@ -273,12 +312,18 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
         {
             table = new Table
             {
-                Title = new TableTitle(UI.Media_found_in_real_device_statistics)
+                Title = new TableTitle($"[blue]{UI.Media_found_in_real_device_statistics}[/]")
             };
 
-            table.AddColumn(Localization.Core.Title_Type_for_media);
-            table.AddColumn(UI.Title_Times_used);
+            Log.Information(UI.Media_found_in_real_device_statistics);
+
+            table.AddColumn(new TableColumn(new Markup($"[bold][purple]{Localization.Core.Title_Type_for_media}[/][/]")
+                                               .Centered()));
+
+            table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
             table.Columns[1].RightAligned();
+            table.Border(TableBorder.Rounded);
+            table.BorderColor(Color.Yellow);
 
             foreach(string media in ctx.Medias.Where(ms => ms.Real).Select(ms => ms.Type).Distinct().OrderBy(ms => ms))
             {
@@ -290,7 +335,8 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
 
                 if(count <= 0) continue;
 
-                table.AddRow(Markup.Escape(media), $"{count}");
+                table.AddRow($"[italic][purple]{Markup.Escape(media)}[/][/]", $"[italic][aqua]{count}[/][/]");
+                Log.Information("({Media}) - {Count}", media, count);
 
                 thereAreStats = true;
             }
@@ -303,12 +349,18 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
         {
             table = new Table
             {
-                Title = new TableTitle(UI.Media_found_in_images_statistics)
+                Title = new TableTitle($"[blue]{UI.Media_found_in_images_statistics}[/]")
             };
 
-            table.AddColumn(Localization.Core.Title_Type_for_media);
-            table.AddColumn(UI.Title_Times_used);
+            Log.Information(UI.Media_found_in_images_statistics);
+
+            table.AddColumn(new TableColumn(new Markup($"[bold][purple]{Localization.Core.Title_Type_for_media}[/][/]")
+                                               .Centered()));
+
+            table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
             table.Columns[1].RightAligned();
+            table.Border(TableBorder.Rounded);
+            table.BorderColor(Color.Yellow);
 
             foreach(string media in ctx.Medias.Where(ms => !ms.Real).Select(ms => ms.Type).Distinct().OrderBy(ms => ms))
             {
@@ -320,7 +372,8 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
 
                 if(count <= 0) continue;
 
-                table.AddRow(Markup.Escape(media), $"{count}");
+                table.AddRow($"[italic][purple]{Markup.Escape(media)}[/][/]", $"[italic][aqua]{count}[/][/]");
+                Log.Information("({Media}) - {Count}", media, count);
 
                 thereAreStats = true;
             }
@@ -329,7 +382,11 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
             AaruConsole.WriteLine();
         }
 
-        if(!thereAreStats) AaruConsole.WriteLine(UI.There_are_no_statistics);
+        if(!thereAreStats)
+        {
+            AaruConsole.WriteLine(UI.There_are_no_statistics);
+            Log.Information(UI.There_are_no_statistics);
+        }
 
         return (int)ErrorNumber.NoError;
     }

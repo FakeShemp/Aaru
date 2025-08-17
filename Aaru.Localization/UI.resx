@@ -3108,4 +3108,7 @@ Do you want to continue?</value>
     <data name="List_namespaces_command" xml:space="preserve">
         <value>List namespaces</value>
     </data>
+    <data name="Database_statistics_command" xml:space="preserve">
+        <value>Database statistics:</value>
+    </data>
 </root>
