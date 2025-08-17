@@ -38,6 +38,7 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.Console;
 using Aaru.Core;
 using Aaru.Localization;
+using Serilog;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -55,22 +56,35 @@ sealed class ListNamespacesCommand : Command<ListNamespacesCommand.Settings>
         AaruConsole.DebugWriteLine(MODULE_NAME, "--verbose={0}", settings.Verbose);
         Statistics.AddCommand("list-namespaces");
 
+        Log.Information(UI.List_namespaces_command);
+
         PluginRegister plugins = PluginRegister.Singleton;
 
         foreach(IReadOnlyFilesystem fs in plugins.ReadOnlyFilesystems.Values)
         {
             if(fs?.Namespaces is null) continue;
 
+            Log.Information(UI.Namespaces_for_0, fs.Name);
+
             Table table = new()
             {
-                Title = new TableTitle(string.Format(UI.Namespaces_for_0, fs.Name))
+                Title = new TableTitle(string.Format($"[bold][blue]{UI.Namespaces_for_0}[/][/]",
+                                                     $"[teal]{Markup.Escape(fs.Name)}[/]"))
             };
 
-            table.AddColumn(UI.Title_Namespace);
-            table.AddColumn(UI.Title_Description);
+            table.Border(TableBorder.Rounded);
+            table.BorderColor(Color.Yellow);
+
+            table.AddColumn(new TableColumn(new Markup($"[bold][darkgreen]{UI.Title_Namespace}[/][/]").Centered()));
+            table.AddColumn(new TableColumn(new Markup($"[bold][slateblue1]{UI.Title_Description}[/][/]").Centered()));
 
             foreach(KeyValuePair<string, string> @namespace in fs.Namespaces.OrderBy(t => t.Key))
-                table.AddRow(@namespace.Key, @namespace.Value);
+            {
+                table.AddRow($"[italic][darkgreen]{Markup.Escape(@namespace.Key)}[/][/]",
+                             $"[italic][slateblue1]{Markup.Escape(@namespace.Value)}[/][/]");
+
+                Log.Information("({Namespace}) - {Description}", @namespace.Key, @namespace.Value);
+            }
 
             AnsiConsole.Write(table);
             AaruConsole.WriteLine();

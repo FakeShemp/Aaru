@@ -3105,4 +3105,7 @@ Do you want to continue?</value>
     <data name="List_encodings_command" xml:space="preserve">
         <value>List encodings</value>
     </data>
+    <data name="List_namespaces_command" xml:space="preserve">
+        <value>List namespaces</value>
+    </data>
 </root>
