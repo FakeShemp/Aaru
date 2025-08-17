@@ -42,7 +42,7 @@ public static partial class Modes
 {
     public static byte[] EncodeModePage_01(ModePage_01 page)
     {
-        var pg = new byte[8];
+        byte[] pg = new byte[8];
 
         pg[0] = 0x01;
         pg[1] = 6;
@@ -167,56 +167,59 @@ public static partial class Modes
         ModePage_01 page = modePage.Value;
         var         sb   = new StringBuilder();
 
-        sb.AppendLine(Localization.SCSI_Read_write_error_recovery_page);
+        sb.AppendLine($"[bold][blue]{Localization.SCSI_Read_write_error_recovery_page}[/][/]");
 
-        if(page.PS) sb.AppendLine("\t" + Localization.Parameters_can_be_saved);
+        if(page.PS) sb.AppendLine($"\t[green]{Localization.Parameters_can_be_saved}[/]");
 
-        if(page.AWRE) sb.AppendLine("\t" + Localization.Automatic_write_reallocation_is_enabled);
+        if(page.AWRE) sb.AppendLine($"\t[green]{Localization.Automatic_write_reallocation_is_enabled}[/]");
 
-        if(page.ARRE) sb.AppendLine("\t" + Localization.Automatic_read_reallocation_is_enabled);
+        if(page.ARRE) sb.AppendLine($"\t[green]{Localization.Automatic_read_reallocation_is_enabled}[/]");
 
         if(page.TB)
         {
-            sb.AppendLine("\t" +
-                          Localization
-                             .Data_not_recovered_within_limits_shall_be_transferred_back_before_a_CHECK_CONDITION);
+            sb.AppendLine($"\t[slateblue1]{Localization
+               .Data_not_recovered_within_limits_shall_be_transferred_back_before_a_CHECK_CONDITION}[/]");
         }
 
         if(page.RC)
         {
-            sb.AppendLine("\t" +
-                          Localization
-                             .Drive_will_transfer_the_entire_requested_length_without_delaying_to_perform_error_recovery);
+            sb.AppendLine($"\t[slateblue1]{
+                Localization
+                   .Drive_will_transfer_the_entire_requested_length_without_delaying_to_perform_error_recovery}[/]");
         }
 
-        if(page.EER) sb.AppendLine("\t" + Localization.Drive_will_use_the_most_expedient_form_of_error_recovery_first);
+        if(page.EER)
+            sb.AppendLine($"\t[green]{Localization.Drive_will_use_the_most_expedient_form_of_error_recovery_first}[/]");
 
-        if(page.PER) sb.AppendLine("\t" + Localization.Drive_shall_report_recovered_errors);
+        if(page.PER) sb.AppendLine($"\t[green]{Localization.Drive_shall_report_recovered_errors}[/]");
 
-        if(page.DTE) sb.AppendLine("\t" + Localization.Transfer_will_be_terminated_upon_error_detection);
+        if(page.DTE) sb.AppendLine($"\t[red]{Localization.Transfer_will_be_terminated_upon_error_detection}[/]");
 
-        if(page.DCR) sb.AppendLine("\t" + Localization.Error_correction_is_disabled);
+        if(page.DCR) sb.AppendLine($"\t[red]{Localization.Error_correction_is_disabled}[/]");
 
         if(page.ReadRetryCount > 0)
         {
-            sb.AppendFormat("\t" + Localization.Drive_will_repeat_read_operations_0_times, page.ReadRetryCount)
+            sb.AppendFormat($"\t[slateblue1]{Localization.Drive_will_repeat_read_operations_0_times}[/]",
+                            $"[teal]{page.ReadRetryCount}[/]")
               .AppendLine();
         }
 
         if(page.WriteRetryCount > 0)
         {
-            sb.AppendFormat("\t" + Localization.Drive_will_repeat_write_operations_0_times, page.WriteRetryCount)
+            sb.AppendFormat($"\t[slateblue1]{Localization.Drive_will_repeat_write_operations_0_times}[/]",
+                            $"[teal]{page.WriteRetryCount}[/]")
               .AppendLine();
         }
 
         if(page.RecoveryTimeLimit > 0)
         {
-            sb.AppendFormat("\t" + Localization.Drive_will_employ_a_maximum_of_0_ms_to_recover_data,
+            sb.AppendFormat($"\t[slateblue1]{Localization.Drive_will_employ_a_maximum_of_0_ms_to_recover_data}[/]",
                             page.RecoveryTimeLimit)
               .AppendLine();
         }
 
-        if(page.LBPERE) sb.AppendLine(Localization.Logical_block_provisioning_error_reporting_is_enabled);
+        if(page.LBPERE)
+            sb.AppendLine($"\t[green]{Localization.Logical_block_provisioning_error_reporting_is_enabled}[/]");
 
         return sb.ToString();
     }
