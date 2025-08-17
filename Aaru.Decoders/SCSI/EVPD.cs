@@ -100,6 +100,8 @@ public static class EVPD
 
         for(int i = 0; i < ascii.Length - 1; i++)
         {
+            if(ascii[i] == 0x00) break;
+
             if(ascii[i] < 0x20) return null;
         }
 
@@ -553,9 +555,11 @@ public static class EVPD
                     break;
                 case IdentificationTypes.EUI:
                     if(descriptor.CodeSet is IdentificationCodeSet.ASCII or IdentificationCodeSet.UTF8)
+                    {
                         sb.AppendFormat($"\t[slateblue1]{Localization.IEEE_EUI_64_0}[/]",
                                         $"[teal]{Markup.Escape(descriptor.ASCII)}[/]")
                           .AppendLine();
+                    }
                     else
                     {
                         sb.AppendFormat($"\t[slateblue1]{Localization.IEEE_EUI_64_0_X2}",
@@ -569,9 +573,11 @@ public static class EVPD
                     break;
                 case IdentificationTypes.NAA:
                     if(descriptor.CodeSet is IdentificationCodeSet.ASCII or IdentificationCodeSet.UTF8)
+                    {
                         sb.AppendFormat($"\t[slateblue1]{Localization.NAA_0}[/]",
                                         $"[teal]{Markup.Escape(descriptor.ASCII)}[/]")
                           .AppendLine();
+                    }
                     else
                     {
                         sb.AppendFormat($"\t[slateblue1]{Localization.NAA_0_X2}", $"[teal]{descriptor.Binary[0]}");
@@ -600,9 +606,11 @@ public static class EVPD
                     break;
                 case IdentificationTypes.TargetPortGroup:
                     if(descriptor.CodeSet is IdentificationCodeSet.ASCII or IdentificationCodeSet.UTF8)
+                    {
                         sb.AppendFormat($"\t[slateblue1]{Localization.Target_group_identifier_0}[/]",
                                         $"[teal]{Markup.Escape(descriptor.ASCII)}[/]")
                           .AppendLine();
+                    }
                     else
                     {
                         sb.AppendFormat("\t[slateblue1]{ Localization.Target_group_identifier_0}[/]",
