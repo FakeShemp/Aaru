@@ -121,85 +121,92 @@ public static partial class Modes
         ModePage_1C page = modePage.Value;
         var         sb   = new StringBuilder();
 
-        sb.AppendLine(Localization.SCSI_Informational_exceptions_control_page);
+        sb.AppendLine($"[bold][blue]{Localization.SCSI_Informational_exceptions_control_page}[/][/]");
 
-        if(page.PS) sb.AppendLine("\t" + Localization.Parameters_can_be_saved);
+        if(page.PS) sb.AppendLine($"\t[green]{Localization.Parameters_can_be_saved}[/]");
 
         if(page.DExcpt)
-            sb.AppendLine("\t" + Localization.Informational_exceptions_are_disabled);
+            sb.AppendLine($"\t[red]{Localization.Informational_exceptions_are_disabled}[/]");
         else
         {
-            sb.AppendLine("\t" + Localization.Informational_exceptions_are_enabled);
+            sb.AppendLine($"\t[green]{Localization.Informational_exceptions_are_enabled}[/]");
 
             switch(page.MRIE)
             {
                 case 0:
-                    sb.AppendLine("\t" + Localization.No_reporting_of_informational_exception_condition);
+                    sb.AppendLine($"\t[slateblue1]{Localization.No_reporting_of_informational_exception_condition}[/]");
 
                     break;
                 case 1:
-                    sb.AppendLine("\t" + Localization.Asynchronous_event_reporting_of_informational_exceptions);
+                    sb.AppendLine($"\t[slateblue1]{Localization.Asynchronous_event_reporting_of_informational_exceptions}[/]");
 
                     break;
                 case 2:
-                    sb.AppendLine("\t" + Localization.Generate_unit_attention_on_informational_exceptions);
+                    sb.AppendLine($"\t[slateblue1]{Localization.Generate_unit_attention_on_informational_exceptions}[/]");
 
                     break;
                 case 3:
-                    sb.AppendLine("\t" +
-                                  Localization.Conditionally_generate_recovered_error_on_informational_exceptions);
+                    sb.AppendLine($"\t[slateblue1]{
+                        Localization.Conditionally_generate_recovered_error_on_informational_exceptions}[/]");
 
                     break;
                 case 4:
-                    sb.AppendLine("\t" +
-                                  Localization.Unconditionally_generate_recovered_error_on_informational_exceptions);
+                    sb.AppendLine($"\t[slateblue1]{
+                        Localization.Unconditionally_generate_recovered_error_on_informational_exceptions}[/]");
 
                     break;
                 case 5:
-                    sb.AppendLine("\t" + Localization.Generate_no_sense_on_informational_exceptions);
+                    sb.AppendLine($"\t[slateblue1]{Localization.Generate_no_sense_on_informational_exceptions}[/]");
 
                     break;
                 case 6:
-                    sb.AppendLine("\t" + Localization.Only_report_informational_exception_condition_on_request);
+                    sb.AppendLine($"\t[slateblue1]{Localization.Only_report_informational_exception_condition_on_request}[/]");
 
                     break;
                 default:
-                    sb.AppendFormat("\t" + Localization.Unknown_method_of_reporting_0, page.MRIE).AppendLine();
+                    sb.AppendFormat($"\t[slateblue1]{Localization.Unknown_method_of_reporting_0}[/]",
+                                    $"[teal]{page.MRIE}[/]")
+                      .AppendLine();
 
                     break;
             }
 
             if(page.Perf)
             {
-                sb.AppendLine("\t" +
-                              Localization.Informational_exceptions_reporting_should_not_affect_drive_performance);
+                sb.AppendLine($"\t[slateblue1]{
+                    Localization.Informational_exceptions_reporting_should_not_affect_drive_performance}[/]");
             }
 
-            if(page.Test) sb.AppendLine("\t" + Localization.A_test_informational_exception_will_raise_on_next_timer);
+            if(page.Test)
+                sb.AppendLine($"\t[slateblue1]{Localization.A_test_informational_exception_will_raise_on_next_timer}[/]");
 
-            if(page.LogErr) sb.AppendLine("\t" + Localization.Drive_shall_log_informational_exception_conditions);
+            if(page.LogErr)
+                sb.AppendLine($"\t[slateblue1]{Localization.Drive_shall_log_informational_exception_conditions}[/]");
 
             if(page.IntervalTimer > 0)
             {
                 if(page.IntervalTimer == 0xFFFFFFFF)
-                    sb.AppendLine("\t" + Localization.Timer_interval_is_vendor_specific);
+                    sb.AppendLine($"\t[slateblue1]{Localization.Timer_interval_is_vendor_specific}[/]");
                 else
-                    sb.AppendFormat("\t" + Localization.Timer_interval_is_0_ms, page.IntervalTimer * 100).AppendLine();
+                    sb.AppendFormat($"\t[slateblue1]{Localization.Timer_interval_is_0_ms}[/]",
+                                    $"[teal]{page.IntervalTimer * 100}[/]")
+                      .AppendLine();
             }
 
             if(page.ReportCount > 0)
             {
-                sb.AppendFormat("\t" +
-                                Localization.Informational_exception_conditions_will_be_reported_a_maximum_of_0_times,
-                                page.ReportCount);
+                sb.AppendFormat($"\t[slateblue1]{
+                    Localization.Informational_exception_conditions_will_be_reported_a_maximum_of_0_times}[/]",
+                                $"[teal]{page.ReportCount}[/]");
             }
         }
 
-        if(page.EWasc) sb.AppendLine("\t" + Localization.Warning_reporting_is_enabled);
+        if(page.EWasc) sb.AppendLine($"\t[slateblue1]{Localization.Warning_reporting_is_enabled}[/]");
 
-        if(page.EBF) sb.AppendLine("\t" + Localization.Background_functions_are_enabled);
+        if(page.EBF) sb.AppendLine($"\t[slateblue1]{Localization.Background_functions_are_enabled}[/]");
 
-        if(page.EBACKERR) sb.AppendLine("\t" + Localization.Drive_will_report_background_self_test_errors);
+        if(page.EBACKERR)
+            sb.AppendLine($"\t[slateblue1]{Localization.Drive_will_report_background_self_test_errors}[/]");
 
         return sb.ToString();
     }
@@ -270,50 +277,52 @@ public static partial class Modes
         ModePage_1C_S01 page = modePage.Value;
         var             sb   = new StringBuilder();
 
-        sb.AppendLine(Localization.SCSI_Background_Control_page);
+        sb.AppendLine($"[bold][blue]{Localization.SCSI_Background_Control_page}[/][/]");
 
-        if(page.PS) sb.AppendLine("\t" + Localization.Parameters_can_be_saved);
+        if(page.PS) sb.AppendLine($"\t[slateblue1]{Localization.Parameters_can_be_saved}[/]");
 
-        if(page.S_L_Full) sb.AppendLine("\t" + Localization.Background_scans_will_be_halted_if_log_is_full);
+        if(page.S_L_Full)
+            sb.AppendLine($"\t[slateblue1]{Localization.Background_scans_will_be_halted_if_log_is_full}[/]");
 
         if(page.LOWIR)
-            sb.AppendLine("\t" + Localization.Background_scans_will_only_be_logged_if_they_require_intervention);
+            sb.AppendLine($"\t[slateblue1]{Localization.Background_scans_will_only_be_logged_if_they_require_intervention}[/]");
 
-        if(page.En_Bms) sb.AppendLine("\t" + Localization.Background_medium_scans_are_enabled);
+        if(page.En_Bms) sb.AppendLine($"\t[slateblue1]{Localization.Background_medium_scans_are_enabled}[/]");
 
-        if(page.En_Ps) sb.AppendLine("\t" + Localization.Background_pre_scans_are_enabled);
+        if(page.En_Ps) sb.AppendLine($"\t[slateblue1]{Localization.Background_pre_scans_are_enabled}[/]");
 
         if(page.BackgroundScanInterval > 0)
         {
-            sb.AppendFormat("\t" +
-                            Localization
-                               ._0__hours_shall_be_between_the_start_of_a_background_scan_operation_and_the_next,
-                            page.BackgroundScanInterval)
+            sb.AppendFormat($"\t[slateblue1]{
+                Localization
+                   ._0__hours_shall_be_between_the_start_of_a_background_scan_operation_and_the_next}[/]",
+                            $"[teal]{page.BackgroundScanInterval}[/]")
               .AppendLine();
         }
 
         if(page.BackgroundPrescanTimeLimit > 0)
         {
-            sb.AppendFormat("\t" + Localization.Background_pre_scan_operations_can_take_a_maximum_of_0_hours,
-                            page.BackgroundPrescanTimeLimit)
-              .AppendLine();
+            sb
+               .AppendFormat($"\t[slateblue1]{Localization.Background_pre_scan_operations_can_take_a_maximum_of_0_hours}[/]",
+                             $"[teal]{page.BackgroundPrescanTimeLimit}[/]")
+               .AppendLine();
         }
 
         if(page.MinIdleBeforeBgScan > 0)
         {
-            sb.AppendFormat("\t" +
-                            Localization
-                               .At_least_0_ms_must_be_idle_before_resuming_a_suspended_background_scan_operation,
-                            page.MinIdleBeforeBgScan)
+            sb.AppendFormat($"\t[slateblue1]{
+                Localization
+                   .At_least_0_ms_must_be_idle_before_resuming_a_suspended_background_scan_operation}[/]",
+                            $"[teal]{page.MinIdleBeforeBgScan}[/]")
               .AppendLine();
         }
 
         if(page.MaxTimeSuspendBgScan > 0)
         {
-            sb.AppendFormat("\t" +
-                            Localization
-                               .At_most_0_ms_must_be_before_suspending_a_background_scan_operation_and_processing_received_commands,
-                            page.MaxTimeSuspendBgScan)
+            sb.AppendFormat($"\t[slateblue1]{
+                Localization
+                   .At_most_0_ms_must_be_before_suspending_a_background_scan_operation_and_processing_received_commands}[/]",
+                            $"[teal]{page.MaxTimeSuspendBgScan}[/]")
               .AppendLine();
         }
 
