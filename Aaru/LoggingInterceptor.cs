@@ -26,13 +26,20 @@ public class LoggingInterceptor : ICommandInterceptor
         // Configure Serilog
         LoggerConfiguration loggerConfig = new LoggerConfiguration().MinimumLevel.ControlledBy(_levelSwitch)
                                                                     .Enrich.FromLogContext()
-                                                                    .WriteTo.Spectre(levelSwitch: _levelSwitch,
-                                                                         renderTextAsMarkup: true);
+                                                                    .WriteTo.Logger(lc => lc.Filter
+                                                                        .ByIncludingOnly(e =>
+                                                                             e.Level is LogEventLevel
+                                                                                    .Debug
+                                                                              or LogEventLevel.Verbose
+                                                                              or LogEventLevel.Error)
+                                                                        .WriteTo
+                                                                        .Spectre(renderTextAsMarkup: true));
 
         // If logfile is present, add file sink and redirect Spectre.Console output
         if(!string.IsNullOrWhiteSpace(global.LogFile))
         {
-            loggerConfig = loggerConfig.WriteTo.File(global.LogFile,
+            loggerConfig = loggerConfig.Enrich.FromLogContext()
+                                       .WriteTo.File(global.LogFile,
                                                      outputTemplate:
                                                      "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}");
         }
