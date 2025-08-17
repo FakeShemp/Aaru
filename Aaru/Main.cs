@@ -414,11 +414,15 @@ class MainClass
 
     internal static void PrintCopyright()
     {
-        AaruConsole.WriteLine("[bold][red]{0}[/] [green]{1}[/][/]",
-                              _assemblyTitle,
-                              _assemblyVersion?.InformationalVersion);
+        AnsiConsole.MarkupLine("[bold][red]{0}[/] [green]{1}[/][/]",
+                               _assemblyTitle,
+                               _assemblyVersion?.InformationalVersion);
 
-        AaruConsole.WriteLine("[bold][blue]{0}[/][/]", _assemblyCopyright);
-        AaruConsole.WriteLine();
+        AnsiConsole.MarkupLine("[bold][blue]{0}[/][/]", _assemblyCopyright);
+        AnsiConsole.WriteLine();
+
+        Log.Information("Aaru Data Preservation Suite {InformationalVersion}", _assemblyVersion?.InformationalVersion);
+        Log.Information("{AssemblyCopyright}",                                 _assemblyCopyright);
+        Log.Information("Logging started");
     }
 }
