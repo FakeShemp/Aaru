@@ -402,7 +402,7 @@ In you are unsure, please press N to not continue.</value>
     <value>Command not supported for this image type.</value>
   </data>
     <data name="Image_format_identified_by_0_1" xml:space="preserve">
-    <value>Image format identified by {0} ({1}).</value>
+    <value>[slateblue1]Image format identified by [green]{0}[/] ([italic][red]{1}[/][/]).[/]</value>
   </data>
     <data name="Image_format_identified_by_0" xml:space="preserve">
     <value>Image format identified by {0}.</value>
@@ -719,19 +719,19 @@ In you are unsure, please press N to not continue.</value>
     <value>Input file 1 format not identified, not proceeding with comparison.</value>
   </data>
     <data name="First_input_file_format_identified_by_0_1" xml:space="preserve">
-    <value>[slateblue1]Input file 1 format identified by [fuchsia]{0}[/] ([rosybrown]{1}[/]).[/]</value>
+    <value>[slateblue1]Input file 1 format identified by [green]{0}[/] ([red]{1}[/][/]).[/]</value>
   </data>
     <data name="First_input_file_format_identified_by_0" xml:space="preserve">
-    <value>[slateblue1]Input file 1 format identified by [fuchsia]{0}[/].[/]</value>
+    <value>[slateblue1]Input file 1 format identified by [green]{0}[/].[/]</value>
   </data>
     <data name="Second_input_file_format_not_identified" xml:space="preserve">
     <value>Input file 2 format not identified, not proceeding with comparison.</value>
   </data>
     <data name="Second_input_file_format_identified_by_0_1" xml:space="preserve">
-    <value>[slateblue1]Input file 2 format identified by [fuchsia]{0}[/] ([rosybrown]{1}[/]).[/]</value>
+    <value>[slateblue1]Input file 2 format identified by [green]{0}[/] ([italic][red]{1}[/][/]).[/]</value>
   </data>
     <data name="Second_input_file_format_identified_by_0" xml:space="preserve">
-    <value>[slateblue1]Input file 2 format identified by [fuchsia]{0}[/].[/]</value>
+    <value>[slateblue1]Input file 2 format identified by [green]{0}[/].[/]</value>
   </data>
     <data name="Opening_first_image_file" xml:space="preserve">
     <value>[slateblue1]Opening image 1 file...[/]</value>
