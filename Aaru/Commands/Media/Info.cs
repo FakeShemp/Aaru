@@ -784,15 +784,15 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
                              "SCSI READ MEDIA SERIAL NUMBER",
                              scsiInfo.MediaSerialNumber);
 
-            AaruLogging.Write($"[bold]{Localization.Core.Media_Serial_Number}:[/] ");
+            AaruLogging.Write(Localization.Core.Media_Serial_Number);
 
             for(int i = 4; i < scsiInfo.MediaSerialNumber.Length; i++)
-                AaruLogging.Write("{0:X2}", scsiInfo.MediaSerialNumber[i]);
+                AaruLogging.Write("[teal]{0:X2}[/]", scsiInfo.MediaSerialNumber[i]);
 
-            AaruLogging.WriteLine();
+            AaruLogging.WriteLine("");
         }
 
-        AaruLogging.WriteLine($"[bold]{Localization.Core.Media_identified_as} [italic]{scsiInfo.MediaType}[/][/]");
+        AaruLogging.WriteLine(Localization.Core.Media_identified_as_0, scsiInfo.MediaType);
         Statistics.AddMedia(scsiInfo.MediaType, true);
 
         if(scsiInfo.Toc != null || scsiInfo.RawToc != null)
@@ -831,14 +831,11 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
                 tracks[^1].EndSector = (ulong)lastSector;
 
                 AaruLogging.WriteLine();
-                AaruLogging.WriteLine($"[bold]{Localization.Core.Track_calculations}:[/]");
+                AaruLogging.WriteLine(Localization.Core.Track_calculations);
 
                 if(inexactPositioning)
-                {
-                    AaruLogging.WriteLine($"[yellow]{Localization.Core.
-                                                                  The_drive_has_returned_incorrect_Q_positioning_calculating_pregaps
-                    }[/]");
-                }
+                    AaruLogging.WriteLine(Localization.Core
+                                                      .The_drive_has_returned_incorrect_Q_positioning_calculating_pregaps);
 
                 if(firstLba > 0) AaruLogging.WriteLine(UI.Hidden_track_starts_at_LBA_0_ends_at_LBA_1, 0, firstLba - 1);
 
@@ -854,7 +851,7 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
                 }
 
                 AaruLogging.WriteLine();
-                AaruLogging.WriteLine($"[bold]{Localization.Core.Offsets}:[/]");
+                AaruLogging.WriteLine(Localization.Core.Offsets);
 
                 // Search for read offset in main database
                 CdOffset cdOffset =
@@ -878,10 +875,9 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
                 {
                     if(driveOffset is null)
                     {
-                        AaruLogging.WriteLine($"[red]{Localization.Core.Drive_reading_offset_not_found_in_database
-                        }[/]");
+                        AaruLogging.WriteLine(Localization.Core.Drive_reading_offset_not_found_in_database);
 
-                        AaruLogging.WriteLine($"[red]{Localization.Core.Disc_offset_cannot_be_calculated}[/]");
+                        AaruLogging.WriteLine(Localization.Core.Disc_offset_cannot_be_calculated);
                     }
                     else
                     {
@@ -889,7 +885,7 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
                                                             driveOffset,
                                                             driveOffset / 4));
 
-                        AaruLogging.WriteLine($"[red]{Localization.Core.Disc_write_offset_is_unknown}[/]");
+                        AaruLogging.WriteLine(Localization.Core.Disc_write_offset_is_unknown);
                     }
                 }
                 else
@@ -898,8 +894,7 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 
                     if(driveOffset is null)
                     {
-                        AaruLogging.WriteLine($"[red]{Localization.Core.Drive_reading_offset_not_found_in_database
-                        }[/]");
+                        AaruLogging.WriteLine(Localization.Core.Drive_reading_offset_not_found_in_database);
 
                         AaruLogging.WriteLine(string.Format(Localization.Core
                                                                         .Combined_disc_and_drive_offset_are_0_bytes_1_samples,

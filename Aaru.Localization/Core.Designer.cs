@@ -747,12 +747,6 @@ namespace Aaru.Localization {
             }
         }
         
-        public static string Media_identified_as {
-            get {
-                return ResourceManager.GetString("Media_identified_as", resourceCulture);
-            }
-        }
-        
         public static string Track_calculations {
             get {
                 return ResourceManager.GetString("Track_calculations", resourceCulture);

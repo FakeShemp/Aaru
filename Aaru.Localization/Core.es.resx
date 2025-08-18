@@ -365,11 +365,11 @@
     <value>Cerrando fichero de salida.</value>
   </data>
     <data name="Combined_disc_and_drive_offset_are_0_bytes_1_samples" xml:space="preserve">
-    <value>El desplazamiento combinado del disco y la unidad es de {0} bytes ({1} muestras).</value>
-  </data>
+        <value>[slateblue1]El desplazamiento combinado del disco y la unidad es de [lime]{0}[/] bytes ([teal]{1}[/] muestras).[/]</value>
+    </data>
     <data name="Combined_offset_is_0_bytes_1_samples" xml:space="preserve">
-    <value>El desplazamiento combinado es de {0} bytes ({1} muestras).</value>
-  </data>
+        <value>[slateblue1]El desplazamiento combinado es de [lime]{0}[/] bytes ([teal]{1}[/] muestras).[/]</value>
+    </data>
     <data name="Command_line_0" xml:space="preserve">
     <value>Línea de comandos: {0}</value>
   </data>
@@ -745,14 +745,14 @@
     <value>El disco tiene pistas de video y una única sesión, estableciendo su tipo como CD Video.</value>
   </data>
     <data name="Disc_offset_cannot_be_calculated" xml:space="preserve">
-    <value>El desplazamiento del disco no pudo ser calculado.</value>
-  </data>
+        <value>[red]El desplazamiento del disco no pudo ser calculado.[/]</value>
+    </data>
     <data name="Disc_offset_is_0_bytes_1_samples" xml:space="preserve">
-    <value>El desplazamiento del disco es de {0} bytes ({1} muestras)</value>
-  </data>
+        <value>[slateblue1]El desplazamiento del disco es de [lime]{0}[/] bytes ([teal]{1}[/] muestras)[/]</value>
+    </data>
     <data name="Disc_write_offset_is_unknown" xml:space="preserve">
-    <value>El desplazamiento de escritura del disco es desconocido.</value>
-  </data>
+        <value>[olive]El desplazamiento de escritura del disco es desconocido.[/]</value>
+    </data>
     <data name="Disc_write_offset_is_unknown_dump_may_not_be_correct" xml:space="preserve">
     <value>El desplazamiento de escritura del disco es desconocido, el volcado puede no ser correcto.</value>
   </data>
@@ -844,11 +844,11 @@
     <value>La unidad no está en la partición 0. Rebobinando, por favor espere...</value>
   </data>
     <data name="Drive_reading_offset_is_0_bytes_1_samples" xml:space="preserve">
-    <value>El desplazamiento de lectura de la unidad es de {0} bytes ({1} muestras).</value>
-  </data>
+        <value>[slateblue1]El desplazamiento de lectura de la unidad es de [lime]{0}[/] bytes ([teal]{1}[/] muestras).[/]</value>
+    </data>
     <data name="Drive_reading_offset_not_found_in_database" xml:space="preserve">
-    <value>El desplazamiento de lectura de la unidad no se encontró en la base de datos.</value>
-  </data>
+        <value>[red]El desplazamiento de lectura de la unidad no se encontró en la base de datos.[/]</value>
+    </data>
     <data name="Drive_reports_0_copy_protection_not_yet_supported_dump_incorrect" xml:space="preserve">
     <value>La unidad reporta que el disco usa la protección anticopia {0}. Aún no está soportada y el volcado será incorrecto.</value>
   </data>
@@ -1569,8 +1569,8 @@
     <value>Medio identificado como</value>
   </data>
     <data name="Media_identified_as_0" xml:space="preserve">
-    <value>Medio identificado como {0}.</value>
-  </data>
+        <value>[slateblue1]Medio identificado como [fuchsia]{0}[/].[/]</value>
+    </data>
     <data name="Media_is_number_0_on_a_set_of_1_medias" xml:space="preserve">
         <value>[slateblue1]El medio es el número [teal]{0}[/] de un conjunto de [teal]{1}[/]</value>
     </data>
@@ -1590,8 +1590,8 @@
     <value>El número de parte del medio es {0}.</value>
   </data>
     <data name="Media_Serial_Number" xml:space="preserve">
-    <value>Número de serie del medio</value>
-  </data>
+        <value>[bold][blue]Número de serie del medio[/][/]</value>
+    </data>
     <data name="Media_serial_number_0" xml:space="preserve">
     <value>Número de serie del medio: {0}</value>
   </data>
@@ -1686,8 +1686,8 @@
     <value>OCR obtenido correctamente...</value>
   </data>
     <data name="Offsets" xml:space="preserve">
-    <value>Desplazamientos</value>
-  </data>
+        <value>[bold][blue]Desplazamientos:[/][/]</value>
+    </data>
     <data name="Operating_system_0_1" xml:space="preserve">
     <value>Sistema operativo: {0} {1}</value>
   </data>
@@ -2778,8 +2778,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>El entorno actual no soporta el comando MEDIUM SCAN, el volcado tardará mucho más de lo normal.</value>
   </data>
     <data name="The_drive_has_returned_incorrect_Q_positioning_calculating_pregaps" xml:space="preserve">
-    <value>ATENCIÓN: La unidad ha devuelto la posición de Q incorrecta calculando los huecos anteriores. Se ha hecho todo lo posible pero pueden ser incorrectos.</value>
-  </data>
+        <value>[olive][bold]ATENCIÓN:[/] La unidad ha devuelto la posición de Q incorrecta calculando los huecos anteriores. Se ha hecho todo lo posible pero pueden ser incorrectos.[/]</value>
+    </data>
     <data name="The_selected_image_does_not_support_tracks" xml:space="preserve">
     <value>La imagen seleccionada no soporta pistas.</value>
   </data>
@@ -2960,8 +2960,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>La pista {0} empieza en el LBA {1} y termina en el {2}</value>
   </data>
     <data name="Track_calculations" xml:space="preserve">
-    <value>Cálculos de pista</value>
-  </data>
+        <value>[bold][blue]Cálculos de pista[/][/]</value>
+    </data>
     <data name="Track_Resources_Information" xml:space="preserve">
     <value>Información de recursos de pista</value>
   </data>

@@ -1190,8 +1190,8 @@
     <value>Número de serie del ensamblado de la cabeza</value>
   </data>
     <data name="Hidden_track_starts_at_LBA_0_ends_at_LBA_1" xml:space="preserve">
-    <value>Pista oculta empieza en el LBA {0} y termina en el {1}</value>
-  </data>
+        <value>[slateblue1]Pista oculta empieza en el LBA [lime]{0}[/] y termina en el [lime]{1}[/][/]</value>
+    </data>
     <data name="How_many_bytes_to_print_per_line" xml:space="preserve">
     <value>Cuando bytes deben mostrarse por línea.</value>
   </data>
@@ -1683,8 +1683,8 @@
     <value>El número en la secuencia del medio representado por la imagen.</value>
   </data>
     <data name="Opening_device" xml:space="preserve">
-    <value>Abriendo dispositivo...</value>
-  </data>
+        <value>[slateblue1]Abriendo dispositivo...[/]</value>
+    </data>
     <data name="Opening_first_image_file" xml:space="preserve">
         <value>[slateblue1]Abriendo 1ª imagen...[/]</value>
     </data>
@@ -2700,8 +2700,8 @@ Probadores:
         <value>[slateblue1]La pista [teal]{0}[/] tiene [teal]{1}[/] sectores únicos ([aqua]{2:P3}[/])[/]</value>
     </data>
     <data name="Track_0_starts_at_LBA_1_ends_at_LBA_2_has_a_pregap_of_3_sectors_and_is_of_type_4" xml:space="preserve">
-    <value>La pista {0} empieza en el LBA {1}, termina en el {2}, tiene un hueco anterior de {3} sectores y es de tipo {4}</value>
-  </data>
+        <value>[slateblue1]La pista [teal]{0}[/] empieza en el LBA [lime]{1}[/], termina en el [lime]{2}[/], tiene un hueco anterior de [green]{3}[/] sectores y es de tipo [darkorange]{4}[/][/]</value>
+    </data>
     <data name="Track_0_starts_at_sector_1_and_ends_at_sector_2" xml:space="preserve">
         <value>[slateblue1]La pista [teal]{0}[/] empieza en el sector [lime]{1}[/] y termina en el [lime]{2}[/]</value>
     </data>

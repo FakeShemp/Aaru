@@ -372,32 +372,29 @@
     <value>Real layer break</value>
   </data>
     <data name="Media_Serial_Number" xml:space="preserve">
-    <value>Media Serial Number</value>
-  </data>
-    <data name="Media_identified_as" xml:space="preserve">
-    <value>Media identified as</value>
-  </data>
+        <value>[bold][blue]Media Serial Number:[/][/]</value>
+    </data>
     <data name="Track_calculations" xml:space="preserve">
-    <value>Track calculations</value>
-  </data>
+        <value>[bold][blue]Track calculations:[/][/]</value>
+    </data>
     <data name="Offsets" xml:space="preserve">
-    <value>Offsets</value>
-  </data>
+        <value>[bold][blue]Offsets:[/][/]</value>
+    </data>
     <data name="Drive_reading_offset_not_found_in_database" xml:space="preserve">
-    <value>Drive reading offset not found in database.</value>
-  </data>
+        <value>[red]Drive reading offset not found in database.[/]</value>
+    </data>
     <data name="Disc_offset_cannot_be_calculated" xml:space="preserve">
-    <value>Disc offset cannot be calculated.</value>
-  </data>
+        <value>[red]Disc offset cannot be calculated.[/]</value>
+    </data>
     <data name="Drive_reading_offset_is_0_bytes_1_samples" xml:space="preserve">
-    <value>Drive reading offset is {0} bytes ({1} samples).</value>
-  </data>
+        <value>[slateblue1]Drive reading offset is [lime]{0}[/] bytes ([teal]{1}[/] samples).[/]</value>
+    </data>
     <data name="Disc_write_offset_is_unknown" xml:space="preserve">
-    <value>Disc write offset is unknown.</value>
-  </data>
+        <value>[olive]Disc write offset is unknown.[/]</value>
+    </data>
     <data name="Combined_offset_is_0_bytes_1_samples" xml:space="preserve">
-    <value>Combined offset is {0} bytes ({1} samples).</value>
-  </data>
+        <value>[slateblue1]Combined offset is [lime]{0}[/] bytes ([teal]{1}[/] samples).[/]</value>
+    </data>
     <data name="Took_a_total_of_0_1_processing_commands" xml:space="preserve">
     <value>[slateblue1]Took a total of [teal]{0}[/] ([teal]{1}[/] processing commands).[/]</value>
   </data>
@@ -833,8 +830,8 @@
     <value>SCSI device type: {0}.</value>
   </data>
     <data name="Media_identified_as_0" xml:space="preserve">
-    <value>Media identified as {0}.</value>
-  </data>
+        <value>[slateblue1]Media identified as [fuchsia]{0}[/].[/]</value>
+    </data>
     <data name="Error_creating_output_image_not_continuing" xml:space="preserve">
     <value>Error creating output image, not continuing.</value>
   </data>
@@ -875,11 +872,11 @@
     <value>Disc write offset is unknown, dump may not be correct.</value>
   </data>
     <data name="Combined_disc_and_drive_offset_are_0_bytes_1_samples" xml:space="preserve">
-    <value>Combined disc and drive offsets are {0} bytes ({1} samples).</value>
-  </data>
+        <value>[slateblue1]Combined disc and drive offsets are [lime]{0}[/] bytes ([teal]{1}[/] samples).[/]</value>
+    </data>
     <data name="Disc_offset_is_0_bytes_1_samples" xml:space="preserve">
-    <value>Disc offset is {0} bytes ({1} samples)</value>
-  </data>
+        <value>[slateblue1]Disc offset is [lime]{0}[/] bytes ([teal]{1}[/] samples)[/]</value>
+    </data>
     <data name="Dumping_CD_i_Ready_requires_the_output_image_format_to_support_long_sectors" xml:space="preserve">
     <value>Dumping CD-i Ready requires the output image format to support long sectors.</value>
   </data>
@@ -3418,8 +3415,8 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Error: {0}</value>
   </data>
     <data name="The_drive_has_returned_incorrect_Q_positioning_calculating_pregaps" xml:space="preserve">
-    <value>WARNING: The drive has returned incorrect Q positioning when calculating pregaps. A best effort has been tried but they may be incorrect.</value>
-  </data>
+        <value>[olive][bold]WARNING:[/] The drive has returned incorrect Q positioning when calculating pregaps. A best effort has been tried but they may be incorrect.[/]</value>
+    </data>
     <data name="Output_format_does_not_support_sessions" xml:space="preserve">
     <value>Output format does not support sessions, this will end in a loss of data, not continuing...</value>
   </data>
