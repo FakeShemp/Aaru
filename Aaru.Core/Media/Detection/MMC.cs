@@ -271,8 +271,8 @@ public static class MMC
             Features.SeparatedFeatures ftr = Features.Separate(cmdBuf);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization.Core.GET_CONFIGURATION_current_profile_is_0,
-                                       ftr.CurrentProfile);
+                              Localization.Core.GET_CONFIGURATION_current_profile_is_0,
+                              ftr.CurrentProfile);
 
             mediaType = ftr.CurrentProfile switch
                         {
@@ -394,15 +394,15 @@ public static class MMC
                 {
                     case true when hasAudioTrack && allFirstSessionTracksAreAudio && sessions == 2:
                         AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Core
-                                                               .Disc_has_audio_and_data_two_sessions_all_data_second_CD_Plus);
+                                          Localization.Core
+                                                      .Disc_has_audio_and_data_two_sessions_all_data_second_CD_Plus);
 
                         mediaType = MediaType.CDPLUS;
 
                         break;
                     case false when hasAudioTrack && sessions == 1:
                         AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Core.Disc_has_only_audio_in_a_session_CD_Digital_Audio);
+                                          Localization.Core.Disc_has_only_audio_in_a_session_CD_Digital_Audio);
 
                         mediaType = MediaType.CDDA;
 
@@ -689,8 +689,7 @@ public static class MMC
                         {
                             mediaType = MediaType.CDIREADY;
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.Core.Disc_has_hidden_CD_i_pregap_CD_i_Ready);
+                            AaruLogging.Debug(MODULE_NAME, Localization.Core.Disc_has_hidden_CD_i_pregap_CD_i_Ready);
 
                             return;
                         }
@@ -782,7 +781,7 @@ public static class MMC
                                 mediaType = MediaType.CDIREADY;
 
                                 AaruLogging.Debug(MODULE_NAME,
-                                                           Localization.Core.Disc_has_hidden_CD_i_pregap_CD_i_Ready);
+                                                  Localization.Core.Disc_has_hidden_CD_i_pregap_CD_i_Ready);
 
                                 return;
                             }
@@ -1497,7 +1496,7 @@ public static class MMC
                         if(DMI.IsXbox(cmdBuf))
                         {
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "Found Xbox DMI, setting disc type to Xbox Game Disc (XGD).");
+                                              "Found Xbox DMI, setting disc type to Xbox Game Disc (XGD).");
 
                             mediaType = MediaType.XGD;
 
@@ -1510,7 +1509,7 @@ public static class MMC
                             if(blocks is 25063 or 4229664 or 4246304) // Wxripper unlock
                             {
                                 AaruLogging.Debug(MODULE_NAME,
-                                                           "Found Xbox 360 DMI with {0} blocks, setting disc type to Xbox 360 Game Disc 3 (XGD3).");
+                                                  "Found Xbox 360 DMI with {0} blocks, setting disc type to Xbox 360 Game Disc 3 (XGD3).");
 
                                 mediaType = MediaType.XGD3;
 
@@ -1518,7 +1517,7 @@ public static class MMC
                             }
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "Found Xbox 360 DMI with {0} blocks, setting disc type to Xbox 360 Game Disc 2 (XGD2).");
+                                              "Found Xbox 360 DMI with {0} blocks, setting disc type to Xbox 360 Game Disc 2 (XGD2).");
 
                             mediaType = MediaType.XGD2;
 
@@ -1760,8 +1759,7 @@ public static class MMC
                                 case "PHOTO_CD":
                                     mediaType = MediaType.PCD;
 
-                                    AaruLogging.Debug(MODULE_NAME,
-                                                               Localization.Core.Found_Photo_CD_description_file);
+                                    AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_Photo_CD_description_file);
 
                                     return;
                             }
@@ -1847,15 +1845,14 @@ public static class MMC
                     string ps2BootSectorsHash = Sha256Context.Data(ps2BootSectors, out _);
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               Localization.Core.PlayStation_2_boot_sectors_SHA256_0,
-                                               ps2BootSectorsHash);
+                                      Localization.Core.PlayStation_2_boot_sectors_SHA256_0,
+                                      ps2BootSectorsHash);
 
                     if(ps2BootSectorsHash is PS2_PAL_HASH or PS2_NTSC_HASH or PS2_JAPANESE_HASH)
                     {
                         mediaType = MediaType.PS2CD;
 
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Core.Found_Sony_PlayStation_2_boot_sectors);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_Sony_PlayStation_2_boot_sectors);
 
                         goto hasPs2CdBoot;
                     }
@@ -1960,8 +1957,7 @@ public static class MMC
                     {
                         mediaType = MediaType.MilCD;
 
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Core.Found_Sega_Dreamcast_IP_BIN_on_second_session);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_Sega_Dreamcast_IP_BIN_on_second_session);
 
                         return;
                     }
@@ -2021,8 +2017,7 @@ public static class MMC
                         {
                             mediaType = MediaType.CDEG;
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.Core.Found_enhanced_graphics_RW_packet);
+                            AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_enhanced_graphics_RW_packet);
 
                             return;
                         }
@@ -2382,8 +2377,7 @@ public static class MMC
                         {
                             mediaType = MediaType.NeoGeoCD;
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.Core.Found_correct_IPL_TXT_file_in_root);
+                            AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_correct_IPL_TXT_file_in_root);
 
                             return;
                         }
@@ -2484,22 +2478,20 @@ public static class MMC
                             case "VIDEO_CD":
                                 mediaType = MediaType.VCD;
 
-                                AaruLogging.Debug(MODULE_NAME,
-                                                           Localization.Core.Found_Video_CD_description_file);
+                                AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_Video_CD_description_file);
 
                                 return;
                             case "SUPERVCD":
                                 mediaType = MediaType.SVCD;
 
-                                AaruLogging.Debug(MODULE_NAME,
-                                                           Localization.Core.Found_Super_Video_CD_description_file);
+                                AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_Super_Video_CD_description_file);
 
                                 break;
                             case "HQ-VCD":
                                 mediaType = MediaType.CVD;
 
                                 AaruLogging.Debug(MODULE_NAME,
-                                                           Localization.Core.Found_China_Video_Disc_description_file);
+                                                  Localization.Core.Found_China_Video_Disc_description_file);
 
                                 break;
                         }
@@ -2600,8 +2592,7 @@ public static class MMC
                             case "PHOTO_CD":
                                 mediaType = MediaType.PCD;
 
-                                AaruLogging.Debug(MODULE_NAME,
-                                                           Localization.Core.Found_Photo_CD_description_file);
+                                AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_Photo_CD_description_file);
 
                                 return;
                         }
@@ -2697,16 +2688,14 @@ public static class MMC
                         {
                             mediaType = MediaType.PS1CD;
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.Core.Found_correct_SYSTEM_CNF_file_in_root_PS1);
+                            AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_correct_SYSTEM_CNF_file_in_root_PS1);
                         }
 
                         if(ps2BootFile != null && rootEntries.Contains(ps2BootFile.ToUpperInvariant()))
                         {
                             mediaType = MediaType.PS2CD;
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.Core.Found_correct_SYSTEM_CNF_file_in_root_PS2);
+                            AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_correct_SYSTEM_CNF_file_in_root_PS2);
                         }
                     }
                 }
@@ -2733,13 +2722,12 @@ public static class MMC
                     string ps2BootSectorsHash = Sha256Context.Data(ps2BootSectors, out _);
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               Localization.Core.PlayStation_2_boot_sectors_SHA256_0,
-                                               ps2BootSectorsHash);
+                                      Localization.Core.PlayStation_2_boot_sectors_SHA256_0,
+                                      ps2BootSectorsHash);
 
                     if(ps2BootSectorsHash is PS2_PAL_HASH or PS2_NTSC_HASH or PS2_JAPANESE_HASH)
                     {
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Core.Found_Sony_PlayStation_2_boot_sectors_DVD);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_Sony_PlayStation_2_boot_sectors_DVD);
 
                         mediaType = MediaType.PS2DVD;
                     }
@@ -2755,15 +2743,14 @@ public static class MMC
                         switch(mediaType)
                         {
                             case MediaType.BDROM:
-                                AaruLogging.Debug(MODULE_NAME,
-                                                           Localization.Core.Found_Sony_PlayStation_3_boot_sectors);
+                                AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_Sony_PlayStation_3_boot_sectors);
 
                                 mediaType = MediaType.PS3BD;
 
                                 break;
                             case MediaType.DVDROM:
                                 AaruLogging.Debug(MODULE_NAME,
-                                                           Localization.Core.Found_Sony_PlayStation_3_boot_sectors_DVD);
+                                                  Localization.Core.Found_Sony_PlayStation_3_boot_sectors_DVD);
 
                                 mediaType = MediaType.PS3DVD;
 
@@ -2778,8 +2765,7 @@ public static class MMC
                     {
                         mediaType = MediaType.PS4BD;
 
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Core.Found_Sony_PlayStation_4_boot_sectors);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_Sony_PlayStation_4_boot_sectors);
                     }
                 }
 
@@ -2789,9 +2775,14 @@ public static class MMC
 
                     switch(blurayType)
                     {
+                        case "BDR":
+                            AaruLogging.Debug(MODULE_NAME, Localization.Core.Blu_ray_type_BDR_setting_disc_type_BDR);
+
+                            mediaType = MediaType.BDR;
+
+                            break;
                         case "XG4":
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.Core.Blu_ray_type_XG4_setting_disc_type_XGD4);
+                            AaruLogging.Debug(MODULE_NAME, Localization.Core.Blu_ray_type_XG4_setting_disc_type_XGD4);
 
                             mediaType = MediaType.XGD4;
 
@@ -2809,14 +2800,13 @@ public static class MMC
                                     mediaType = MediaType.PS5BD;
 
                                     AaruLogging.Debug(MODULE_NAME,
-                                                               Localization.Core.Found_Sony_PlayStation_5_boot_sectors);
+                                                      Localization.Core.Found_Sony_PlayStation_5_boot_sectors);
 
                                     break;
                                 }
                             }
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.Core.Blu_ray_type_BDU_setting_disc_type_UHD);
+                            AaruLogging.Debug(MODULE_NAME, Localization.Core.Blu_ray_type_BDU_setting_disc_type_UHD);
 
                             mediaType = MediaType.UHDBD;
 
