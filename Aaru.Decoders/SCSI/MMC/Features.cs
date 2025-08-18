@@ -3075,14 +3075,18 @@ public static class Features
         if(ftr.PP) sb.AppendLine($"\t[green]{Localization.Drive_shall_report_Read_Write_Error_Recovery_mode_page}[/]");
 
         if(ftr.LogicalBlockSize > 0)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization._0_bytes_per_logical_block}[/]",
                             $"[lime]{ftr.LogicalBlockSize}[/]")
               .AppendLine();
+        }
 
         if(ftr.Blocking > 1)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization._0_logical_blocks_per_media_readable_unit}[/]",
                             $"[lime]{ftr.Blocking}[/]")
               .AppendLine();
+        }
 
         return sb.ToString();
     }
@@ -3155,19 +3159,25 @@ public static class Features
         if(ftr.PP) sb.AppendLine($"\t[green]{Localization.Drive_shall_report_Read_Write_Error_Recovery_mode_page}[/]");
 
         if(ftr.LogicalBlockSize > 0)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization._0_bytes_per_logical_block}[/]",
                             $"[lime]{ftr.LogicalBlockSize}[/]")
               .AppendLine();
+        }
 
         if(ftr.Blocking > 1)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization._0_logical_blocks_per_media_writable_unit}[/]",
                             $"[lime]{ftr.Blocking}[/]")
               .AppendLine();
+        }
 
         if(ftr.LastLBA > 0)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization.Last_addressable_logical_block_is_0}[/]",
                             $"[lime]{ftr.LastLBA}[/]")
               .AppendLine();
+        }
 
         return sb.ToString();
     }
@@ -3296,12 +3306,16 @@ public static class Features
         if(ftr.PP) sb.AppendLine($"\t[green]{Localization.Drive_shall_report_Read_Write_Error_Recovery_mode_page}[/]");
 
         if(ftr.LogicalBlockSize > 0)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization._0_bytes_per_logical_block}[/]", ftr.LogicalBlockSize)
               .AppendLine();
+        }
 
         if(ftr.Blocking > 1)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization._0_logical_blocks_per_media_writable_unit}[/]", ftr.Blocking)
               .AppendLine();
+        }
 
         return sb.ToString();
     }
@@ -3384,8 +3398,10 @@ public static class Features
                           : $"\t[green]{Localization.Drive_supports_Persistent_DM_mode}[/]");
 
         if(ftr.DBICacheZones > 0)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization.Drive_has_0_DBI_cache_zones}[/]", ftr.DBICacheZones)
               .AppendLine();
+        }
 
         if(ftr.Entries > 0)
             sb.AppendFormat($"\t[slateblue1]{Localization.Drive_has_0_DBI_entries}[/]", ftr.Entries).AppendLine();
@@ -3662,9 +3678,11 @@ public static class Features
         if(ftr.LinkSizes == null) return sb.ToString();
 
         foreach(byte link in ftr.LinkSizes)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization.Current_media_has_a_0_bytes_link_available}",
                             $"[lime]{link}[/]")
               .AppendLine();
+        }
 
         return sb.ToString();
     }
@@ -4021,9 +4039,11 @@ public static class Features
         sb.AppendLine($"\t[green]{Localization.Drive_supports_the_Group3_in_Timeout_Protect_mode_page_1Dh}[/]");
 
         if(ftr.UnitLength > 0)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization.Drive_has_0_increase_of_Group_3_time_unit}[/]",
                             ftr.UnitLength)
               .AppendLine();
+        }
 
         return sb.ToString();
     }
@@ -4043,9 +4063,11 @@ public static class Features
                .AppendLine();
         }
         else
+        {
             sb.AppendFormat($"[green]{Localization.Drive_supports_DVD_CSS_CPPM_version_0}[/]",
                             $"[teal]{ftr.CSSVersion}[/]")
               .AppendLine();
+        }
 
         return sb.ToString();
     }
@@ -4131,9 +4153,11 @@ public static class Features
                .AppendLine();
         }
         else
+        {
             sb.AppendFormat($"[green]{Localization.Drive_supports_DVD_CPRM_version_0}[/]",
                             $"[teal]{ftr.CPRMVersion}[/]")
               .AppendLine();
+        }
 
         return sb.ToString();
     }
@@ -4210,9 +4234,11 @@ public static class Features
                .AppendLine();
         }
         else
+        {
             sb.AppendFormat($"[slateblue1]{Localization.Drive_supports_AACS_version_0}[/]",
                             $"[teal]{ftr.AACSVersion}[/]")
               .AppendLine();
+        }
 
         if(ftr.RDC) sb.AppendLine($"\t[green]{Localization.Drive_supports_reading_the_Drive_Certificate}[/]");
 
@@ -4235,8 +4261,10 @@ public static class Features
         }
 
         if(ftr.AGIDs > 0)
+        {
             sb.AppendFormat($"\t[green]{Localization.Drive_supports_0_AGIDs_concurrently}[/]", $"[teal]{ftr.AGIDs}[/]")
               .AppendLine();
+        }
 
         return sb.ToString();
     }
@@ -4436,6 +4464,8 @@ public static class Features
 
     public static SeparatedFeatures Separate(byte[] response)
     {
+        if(response.Length < 8) return new SeparatedFeatures();
+
         var dec = new SeparatedFeatures
         {
             DataLength     = (uint)((response[0]   << 24) + (response[1] << 16) + (response[2] << 8) + response[4]),
