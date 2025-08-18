@@ -649,8 +649,8 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 
                 if(scsiInfo.DecodedToc.HasValue)
                 {
-                    AaruLogging.WriteLine($"[bold]{UI.Title_TOC}:[/]" +
-                                          $"\n{Markup.Escape(TOC.Prettify(scsiInfo.DecodedToc))}");
+                    AaruLogging.WriteLine(UI.Title_TOC);
+                    AaruLogging.WriteLine(TOC.Prettify(scsiInfo.DecodedToc));
                 }
             }
 

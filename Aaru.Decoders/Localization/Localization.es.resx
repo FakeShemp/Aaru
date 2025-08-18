@@ -1065,11 +1065,11 @@
         <value>[slateblue1]Pista de datos [teal]{3}[/] comienza en: [lime]{4:D2}:{1:D2}:{2:D2}[/] [italic](</value>
     </data>
     <data name="Data_track_recorded_incrementally" xml:space="preserve">
-    <value>Pista de datos, grabada incrementalmente</value>
-  </data>
+        <value>[slateblue1]Pista de datos, grabada incrementalmente[/]</value>
+    </data>
     <data name="Data_track_recorded_uninterrupted" xml:space="preserve">
-    <value>Pista de datos, graba ininterrumpidamente</value>
-  </data>
+        <value>[slateblue1]Pista de datos, graba ininterrumpidamente[/]</value>
+    </data>
     <data name="Data_transfer_disconnect_control_is_not_used" xml:space="preserve">
     <value>El control de desconexión de la transferencia de datos no se usa</value>
   </data>
@@ -3773,11 +3773,11 @@
     <value>El dispositivo escribe directamente en el medio</value>
   </data>
     <data name="Digital_copy_of_track_is_permitted" xml:space="preserve">
-    <value>Se permite la copia digital de la pista</value>
-  </data>
+        <value>[slateblue1]Se permite la copia digital de la pista[/]</value>
+    </data>
     <data name="Digital_copy_of_track_is_prohibited" xml:space="preserve">
-    <value>Se prohíbe la copia digital de la pista</value>
-  </data>
+        <value>[slateblue1]Se prohíbe la copia digital de la pista[/]</value>
+    </data>
     <data name="Direct_access_device" xml:space="preserve">
     <value>Dispositivo de acceso directo</value>
   </data>
@@ -5702,8 +5702,8 @@
         <value>[slateblue1]Número de la primera pista: [teal]{0}[/] [italic](</value>
     </data>
     <data name="First_track_number_in_first_complete_session_0" xml:space="preserve">
-    <value>Número de la primera pista en la primera sesión completa: {0}</value>
-  </data>
+        <value>[slateblue1]Número de la primera pista en la primera sesión completa: [teal]{0}[/][/]</value>
+    </data>
     <data name="First_track_number_in_last_complete_session_0" xml:space="preserve">
     <value>Número de la primera pista en la último sesión completa: {0}</value>
   </data>
@@ -6335,8 +6335,8 @@
         <value>[slateblue1]Número de la última pista: [teal]{0}[/] [italic](</value>
     </data>
     <data name="Last_track_number_in_last_complete_session_0" xml:space="preserve">
-    <value>Número de la última pista en la última sesión completa: {0}</value>
-  </data>
+        <value>[slateblue1]Número de la última pista en la última sesión completa: [teal]{0}[/][/]</value>
+    </data>
     <data name="Last_User_Data_Areas_LSN_0_0" xml:space="preserve">
     <value>LSN 0 del último área de datos de usuario: 0x{0:X8}</value>
   </data>
@@ -7612,11 +7612,11 @@
     <value>QIC-320: Cartucho de cinta magnética de 6,3mm y 26 pistas, 630 bpmm, GCR</value>
   </data>
     <data name="Quadraphonic_audio_track_with_50_15_us_pre_emphasis" xml:space="preserve">
-    <value>Pista de audio cuadrafónico con pre-énfasis de 50/15 µs</value>
-  </data>
+        <value>[slateblue1]Pista de audio cuadrafónico con pre-énfasis de [teal]50/15 µs[/][/]</value>
+    </data>
     <data name="Quadraphonic_audio_track_with_no_pre_emphasis" xml:space="preserve">
-    <value>Pista de audio cuadrafónico sin pre-énfasis</value>
-  </data>
+        <value>[slateblue1]Pista de audio cuadrafónico sin pre-énfasis[/]</value>
+    </data>
     <data name="Quantum_EEPROM_firmware_checksum_0" xml:space="preserve">
     <value>Checksum de la EEPROM del firmware: 0x{0:X4}</value>
   </data>
@@ -7636,26 +7636,26 @@
     <value>Información específica del fabricante de Quantum:</value>
   </data>
     <data name="Q_subchannel_mode_0" xml:space="preserve">
-    <value>Subcanal Q modo {0}</value>
-  </data>
+        <value>[slateblue1]Subcanal Q modo [teal]{0}[/][/]</value>
+    </data>
     <data name="Q_subchannel_mode_not_given" xml:space="preserve">
-    <value>Subcanal Q sin modo</value>
-  </data>
+        <value>[slateblue1]Subcanal Q sin modo[/]</value>
+    </data>
     <data name="Q_subchannel_stores_current_position" xml:space="preserve">
-    <value>El subcanal Q contiene la posición actual</value>
-  </data>
+        <value>[slateblue1]El subcanal Q contiene la posición actual[/]</value>
+    </data>
     <data name="Q_subchannel_stores_ISRC" xml:space="preserve">
-    <value>El subcanal Q contiene el ISRC</value>
-  </data>
+        <value>[slateblue1]El subcanal Q contiene el ISRC[/]</value>
+    </data>
     <data name="Q_subchannel_stores_media_catalog_number" xml:space="preserve">
-    <value>El subcanal Q contiene el número de catálogo del medio</value>
-  </data>
+        <value>[slateblue1]El subcanal Q contiene el número de catálogo del medio[/]</value>
+    </data>
     <data name="Q_subchannel_stores_track_pointer" xml:space="preserve">
-    <value>El subcanal Q contiene el puntero a pista</value>
-  </data>
+        <value>[slateblue1]El subcanal Q contiene el puntero a pista[/]</value>
+    </data>
     <data name="Q_subchannel_stores_video_track_pointer" xml:space="preserve">
-    <value>El subcanal Q contiene el puntero a pista de video</value>
-  </data>
+        <value>[slateblue1]El subcanal Q contiene el puntero a pista de video[/]</value>
+    </data>
     <data name="Read_after_TRIM_is_deterministic" xml:space="preserve">
     <value>La lectura después de TRIM es determinista</value>
   </data>
@@ -7894,8 +7894,8 @@
         <value>[slateblue1]Reservado = [teal]0x{0:X2}[/][/]</value>
     </data>
     <data name="Reserved_flags_0_set" xml:space="preserve">
-    <value>Valores reservados 0x{0:X2} establecidos</value>
-  </data>
+        <value>[slateblue1]Valores reservados [teal]0x{0:X2}[/] establecidos[/]</value>
+    </data>
     <data name="Reserved_QErr_value_2_is_set" xml:space="preserve">
     <value>El valor reservado 2 para QErr está establecido</value>
   </data>
@@ -8276,7 +8276,7 @@
         <value>[slateblue1]La asignación [teal]{0}[/] del intervalo de tiempo de omisión dice que desde [lime]{1:D2}:{2:D2}:{3:D2}[/] hasta [lime]{4:D2}:{5:D2}:{6:D2}[/] deben ser omitidos[/]</value>
     </data>
     <data name="Skip_time_interval_assignment_0_says_that_from_4_1_2_3_to_8_5_6_7_should_be_skipped"
-        xml:space="preserve">
+          xml:space="preserve">
         <value>[slateblue1]La asignación [teal]{0}[/] del intervalo de tiempo de omisión dice que desde [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] hasta [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/] deben ser omitidos</value>
     </data>
     <data name="Skip_track_0" xml:space="preserve">
@@ -8370,11 +8370,11 @@
         <value>[slateblue1]Tiempo de comienzo del primer área de Lead-In del disco: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2}[/][/]</value>
     </data>
     <data name="Stereo_audio_track_with_50_15_us_pre_emphasis" xml:space="preserve">
-        <value>Pista de audio estéreo con un pre-énfasis de [teal]50/15 µs[/]</value>
+        <value>[slateblue1]Pista de audio estéreo con un pre-énfasis de [teal]50/15 µs[/][/]</value>
     </data>
     <data name="Stereo_audio_track_with_no_pre_emphasis" xml:space="preserve">
-    <value>Pista de audio estéreo sin pre-énfasis</value>
-  </data>
+        <value>[slateblue1]Pista de audio estéreo sin pre-énfasis[/]</value>
+    </data>
     <data name="Stop_position_of_inner_part_lead_out_area_0_1_2" xml:space="preserve">
         <value>[slateblue1]Posición de parada de la parte interna del área del Lead-Out: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
     </data>
@@ -8822,15 +8822,15 @@
         <value>[slateblue1]Pista [teal]{0}[/] (Datos, grabada ininterrumpidamente) comienza en [lime]{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{4:D2}:{5:D2}:{6:D2}[/][/]</value>
     </data>
     <data name="Track_0_Quadraphonic_audio_track_with_50_15_us_pre_emphasis_starts_at_1_2_3_and_ends_at_4_5_6"
-        xml:space="preserve">
+          xml:space="preserve">
         <value>[slateblue1]Pista [teal]{0}[/] (Audio cuadrafónico con pre-énfasis de [teal]50/15 µs[/]) comienza en [lime]{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{4:D2}:{5:D2}:{6:D2}[/][/]</value>
     </data>
     <data name="Track_0_Stereo_audio_track_with_50_15_s_pre_emphasis_starts_at_4_1_2_3_and_ends_at_8_5_6_7"
-        xml:space="preserve">
+          xml:space="preserve">
         <value>[slateblue1]Pista [teal]{0}[/] (Audio estéreo con pre-énfasis de [teal]50/15 µs[/]) comienza en [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/][/]</value>
     </data>
     <data name="Track_0_Quadraphonic_audio_track_with_no_pre_emphasis_starts_at_1_2_3_and_ends_at_4_5_6"
-        xml:space="preserve">
+          xml:space="preserve">
         <value>[slateblue1]Pista [teal]{0}[/] (Audio cuadrafónico sin pre-énfasis) comienza en [lime]{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{4:D2}:{5:D2}:{6:D2}[/][/]</value>
     </data>
     <data name="Track_0_Stereo_audio_track_with_no_pre_emphasis_starts_at_1_2_3_and_ends_at_4_5_6" xml:space="preserve">
@@ -8843,27 +8843,27 @@
         <value>[slateblue1]Pista [teal]{0}[/] (Datos, grabada ininterrumpidamente) comienza en [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/][/]</value>
     </data>
     <data name="Track_0_Quadraphonic_audio_track_with_50_15_us_pre_emphasis_starts_at_4_1_2_3_and_ends_at_8_5_6_7"
-        xml:space="preserve">
+          xml:space="preserve">
         <value>[slateblue1]Pista [teal]{0}[/] (Audio cuadrafónico con pre-énfasis de [teal]50/15 µs[/]) comienza en [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/][/]</value>
     </data>
     <data name="Track_0_Quadraphonic_audio_track_with_no_pre_emphasis_starts_at_4_1_2_3_and_ends_at_8_5_6_7"
-        xml:space="preserve">
+          xml:space="preserve">
         <value>[slateblue1]Pista [teal]{0}[/] (Audio cuadrafónico sin pre-énfasis) comienza en [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/][/]</value>
     </data>
     <data name="Track_0_Stereo_audio_track_with_50_15_us_pre_emphasis_starts_at_1_2_3_and_ends_at_4_5_6"
-        xml:space="preserve">
+          xml:space="preserve">
         <value>[slateblue1]Pista [teal]{0}[/] (Audio estéreo con pre-énfasis de [teal]50/15 µs[/]) comienza en [lime]{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{4:D2}:{5:D2}:{6:D2}[/][/]</value>
     </data>
     <data name="Track_0_Stereo_audio_track_with_no_pre_emphasis_starts_at_4_1_2_3_and_ends_at_8_5_6_7"
-        xml:space="preserve">
+          xml:space="preserve">
         <value>[slateblue1]Pista [teal]{0}[/] (Audio estéreo sin pre-énfasis) comienza en [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/]</value>
     </data>
     <data name="Track_number_0" xml:space="preserve">
-    <value>Pista número: {0}</value>
-  </data>
+        <value>[slateblue1]Pista número: [teal]{0}[/][/]</value>
+    </data>
     <data name="Track_number_Lead_Out" xml:space="preserve">
-    <value>Pista número: Lead-Out</value>
-  </data>
+        <value>[slateblue1]Pista número: Lead-Out[/]</value>
+    </data>
     <data name="Track_offset_option_is_available" xml:space="preserve">
     <value>La opción de compensación de pista está disponible</value>
   </data>
@@ -8883,8 +8883,8 @@
     <value>El tamaño de la pista es 0,80 µm</value>
   </data>
     <data name="Track_starts_at_LBA_0_or_MSF_2_3" xml:space="preserve">
-    <value>La pista comienza en el LBA {0}, o el MSF {1:X2}:{2:X2}:{3:X2}</value>
-  </data>
+        <value>[slateblue1]La pista comienza en el LBA [lime]{0}[/], o el MSF [lime]{1:X2}:{2:X2}:{3:X2}[/][/]</value>
+    </data>
     <data name="Transfer_rate_0_kbits" xml:space="preserve">
     <value>Velocidad de transferencia: {0} kbit/s</value>
   </data>
@@ -9150,11 +9150,11 @@
     <value>Los errores ECC no recuperables devolverán CHECK CONDITION y los datos sin corregir.</value>
   </data>
     <data name="Unskip_time_interval_assignment_0_says_that_from_1_2_3_to_4_5_6_should_not_be_skipped"
-        xml:space="preserve">
+          xml:space="preserve">
         <value>[slateblue1]La asignación [teal]{0}[/] de no-omitir intervarlos dice que desde [lime]{1:D2}:{2:D2}:{3:D2}[/] hasta [lime{4:D2}:{5:D2}:{6:D2}[/] no deben omitirse[/]</value>
     </data>
     <data name="Unskip_time_interval_assignment_0_says_that_from_4_1_2_3_to_8_5_6_7_should_not_be_skipped"
-        xml:space="preserve">
+          xml:space="preserve">
         <value>[slateblue1]La asignación [teal]{0}[/] de no-omitir intervarlos dice que desde [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] hasta [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/] no deben omitirse[/]</value>
     </data>
     <data name="Unskip_track_assignment_0_says_that_tracks_1_should_not_be_skipped" xml:space="preserve">

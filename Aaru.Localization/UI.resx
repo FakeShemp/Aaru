@@ -2358,8 +2358,8 @@ Do you want to continue?</value>
     <value>Save READ DISC INFORMATION response</value>
   </data>
     <data name="Title_TOC" xml:space="preserve">
-    <value>TOC</value>
-  </data>
+        <value>[bold][blue]TOC:[/][/]</value>
+    </data>
     <data name="ButtonLabel_Save_READ_TOC_response" xml:space="preserve">
     <value>Save READ TOC response</value>
   </data>

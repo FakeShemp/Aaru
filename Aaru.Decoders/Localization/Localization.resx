@@ -1699,23 +1699,23 @@
     <value>)[/][/]</value>
   </data>
     <data name="Stereo_audio_track_with_no_pre_emphasis" xml:space="preserve">
-    <value>Stereo audio track with no pre-emphasis</value>
-  </data>
+        <value>[slateblue1]Stereo audio track with no pre-emphasis[/]</value>
+    </data>
     <data name="Stereo_audio_track_with_50_15_us_pre_emphasis" xml:space="preserve">
-    <value>Stereo audio track with [teal]50/15 μs[/] pre-emphasis</value>
-  </data>
+        <value>[slateblue1]Stereo audio track with [teal]50/15 μs[/] pre-emphasis[/]</value>
+    </data>
     <data name="Quadraphonic_audio_track_with_no_pre_emphasis" xml:space="preserve">
-    <value>Quadraphonic audio track with no pre-emphasis</value>
-  </data>
+        <value>[slateblue1]Quadraphonic audio track with no pre-emphasis[/]</value>
+    </data>
     <data name="Quadraphonic_audio_track_with_50_15_us_pre_emphasis" xml:space="preserve">
-    <value>Quadraphonic audio track with [teal]50/15 μs[/] pre-emphasis</value>
-  </data>
+        <value>[slateblue1]Quadraphonic audio track with [teal]50/15 μs[/] pre-emphasis[/]</value>
+    </data>
     <data name="Data_track_recorded_uninterrupted" xml:space="preserve">
-    <value>Data track, recorded uninterrupted</value>
-  </data>
+        <value>[slateblue1]Data track, recorded uninterrupted[/]</value>
+    </data>
     <data name="Data_track_recorded_incrementally" xml:space="preserve">
-    <value>Data track, recorded incrementally</value>
-  </data>
+        <value>[slateblue1]Data track, recorded incrementally[/]</value>
+    </data>
     <data name="Disc_type_0" xml:space="preserve">
     <value>[slateblue1]Disc type: [teal]{0}[/][/]</value>
   </data>
@@ -2012,29 +2012,29 @@
     <value>First track number in last complete session: {0}</value>
   </data>
     <data name="Track_starts_at_LBA_0_or_MSF_2_3" xml:space="preserve">
-    <value>Track starts at LBA {0}, or MSF {1:X2}:{2:X2}:{3:X2}</value>
-  </data>
+        <value>[slateblue1]Track starts at LBA [lime]{0}[/], or MSF [lime]{1:X2}:{2:X2}:{3:X2}[/][/]</value>
+    </data>
     <data name="Q_subchannel_mode_not_given" xml:space="preserve">
-    <value>Q subchannel mode not given</value>
-  </data>
+        <value>[slateblue1]Q subchannel mode not given[/]</value>
+    </data>
     <data name="Q_subchannel_stores_current_position" xml:space="preserve">
-    <value>Q subchannel stores current position</value>
-  </data>
+        <value>[slateblue1]Q subchannel stores current position[/]</value>
+    </data>
     <data name="Q_subchannel_stores_ISRC" xml:space="preserve">
-    <value>Q subchannel stores ISRC</value>
-  </data>
+        <value>[slateblue1]Q subchannel stores ISRC[/]</value>
+    </data>
     <data name="Q_subchannel_stores_media_catalog_number" xml:space="preserve">
-    <value>Q subchannel stores media catalog number</value>
-  </data>
+        <value>[slateblue1]Q subchannel stores media catalog number[/]</value>
+    </data>
     <data name="Reserved_flags_0_set" xml:space="preserve">
-    <value>Reserved flags 0x{0:X2} set</value>
-  </data>
+        <value>[slateblue1]Reserved flags [teal]0x{0:X2}[/] set[/]</value>
+    </data>
     <data name="Digital_copy_of_track_is_permitted" xml:space="preserve">
-    <value>Digital copy of track is permitted</value>
-  </data>
+        <value>[slateblue1]Digital copy of track is permitted[/]</value>
+    </data>
     <data name="Digital_copy_of_track_is_prohibited" xml:space="preserve">
-    <value>Digital copy of track is prohibited</value>
-  </data>
+        <value>[slateblue1]Digital copy of track is prohibited[/]</value>
+    </data>
     <data name="Subchannel_PrettifyQ_stereo_audio_with_pre_emphasis" xml:space="preserve">
     <value>stereo audio with pre-emphasis</value>
   </data>
@@ -2169,26 +2169,26 @@
     <value>Expected CD TOC size ({0} bytes) is not received size ({1} bytes), not decoding</value>
   </data>
     <data name="First_track_number_in_first_complete_session_0" xml:space="preserve">
-    <value>First track number in first complete session: {0}</value>
-  </data>
+        <value>[slateblue1]First track number in first complete session: [teal]{0}[/][/]</value>
+    </data>
     <data name="Last_track_number_in_last_complete_session_0" xml:space="preserve">
-    <value>Last track number in last complete session: {0}</value>
-  </data>
+        <value>[slateblue1]Last track number in last complete session: [teal]{0}[/][/]</value>
+    </data>
     <data name="Track_number_Lead_Out" xml:space="preserve">
-    <value>Track number: Lead-Out</value>
-  </data>
+        <value>[slateblue1]Track number: Lead-Out[/]</value>
+    </data>
     <data name="Track_number_0" xml:space="preserve">
-    <value>Track number: {0}</value>
-  </data>
+        <value>[slateblue1]Track number: [teal]{0}[/][/]</value>
+    </data>
     <data name="Q_subchannel_stores_track_pointer" xml:space="preserve">
-    <value>Q subchannel stores track pointer</value>
-  </data>
+        <value>[slateblue1]Q subchannel stores track pointer[/]</value>
+    </data>
     <data name="Q_subchannel_stores_video_track_pointer" xml:space="preserve">
-    <value>Q subchannel stores video track pointer</value>
-  </data>
+        <value>[slateblue1]Q subchannel stores video track pointer[/]</value>
+    </data>
     <data name="Q_subchannel_mode_0" xml:space="preserve">
-    <value>Q subchannel mode {0}</value>
-  </data>
+        <value>[slateblue1]Q subchannel mode [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_surface_is_set_to_write_protected_status" xml:space="preserve">
     <value>Disc surface is set to write protected status</value>
   </data>

@@ -2634,8 +2634,8 @@ Probadores:
     <value>Título</value>
   </data>
     <data name="Title_TOC" xml:space="preserve">
-    <value>Tabla de contenidos</value>
-  </data>
+        <value>[bold][blue]Tabla de contenidos:[/][/]</value>
+    </data>
     <data name="Title_TOC_full" xml:space="preserve">
     <value>Tabla de contenidos completa</value>
   </data>
