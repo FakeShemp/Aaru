@@ -1980,8 +1980,8 @@
     <value>El vocado de dispositivos ATA en crudo no está implementado, continuando...</value>
   </data>
     <data name="Raw_TOC" xml:space="preserve">
-    <value>Tabla de contenidos sin procesar</value>
-  </data>
+        <value>[bold][blue]Tabla de contenidos sin procesar:[/][/]</value>
+    </data>
     <data name="Reading_0_raw_bytes_1_cooked_bytes_per_sector" xml:space="preserve">
     <value>Leyendo {0} bytes sin procesar ({1} procesados) por sector.</value>
   </data>

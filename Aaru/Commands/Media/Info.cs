@@ -698,8 +698,8 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 
                 if(scsiInfo.FullToc.HasValue)
                 {
-                    AaruLogging.WriteLine($"[bold]{Localization.Core.Raw_TOC}:[/]" +
-                                          $"\n{Markup.Escape(FullTOC.Prettify(scsiInfo.RawToc))}");
+                    AaruLogging.WriteLine(Localization.Core.Raw_TOC);
+                    AaruLogging.WriteLine(FullTOC.Prettify(scsiInfo.RawToc));
                 }
             }
 

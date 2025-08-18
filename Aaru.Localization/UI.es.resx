@@ -1851,8 +1851,8 @@
     <value>Obteniendo información del fichero...</value>
   </data>
     <data name="Retrieving_SCSI_information" xml:space="preserve">
-    <value>Obteniendo información SCSI...</value>
-  </data>
+        <value>[slateblue1]Obteniendo información SCSI...[/]</value>
+    </data>
     <data name="Retry_passes" xml:space="preserve">
     <value>Pasos de reintento</value>
   </data>

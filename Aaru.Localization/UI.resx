@@ -1523,8 +1523,8 @@ In you are unsure, please press N to not continue.</value>
     <value>Please use device-info command for MMC/SD devices.</value>
   </data>
     <data name="Retrieving_SCSI_information" xml:space="preserve">
-    <value>Retrieving SCSI information...</value>
-  </data>
+        <value>[slateblue1]Retrieving SCSI information...[/]</value>
+    </data>
     <data name="Densities_supported_by_currently_inserted_media" xml:space="preserve">
     <value>Densities supported by currently inserted media</value>
   </data>

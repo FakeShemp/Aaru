@@ -336,8 +336,8 @@
     <value>Session information</value>
   </data>
     <data name="Raw_TOC" xml:space="preserve">
-    <value>Raw TOC</value>
-  </data>
+        <value>[bold][blue]Raw TOC:[/][/]</value>
+    </data>
     <data name="PMA" xml:space="preserve">
     <value>PMA</value>
   </data>
