@@ -39,7 +39,6 @@ using Aaru.Core;
 using Aaru.Localization;
 using Aaru.Logging;
 using JetBrains.Annotations;
-using Serilog;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -73,30 +72,29 @@ sealed class ListOptionsCommand : Command<ListOptionsCommand.Settings>
 
             var table = new Table
             {
-                Title = new TableTitle(string.Format($"[bold][blue]{UI.Options_for_0}[/][/]",
-                                                     $"[italic][teal]{plugin.Name}[/][/]"))
+                Title = new TableTitle(string.Format(UI.Options_for_0, plugin.Name))
             };
 
-            table.AddColumn(new TableColumn(new Markup($"[bold][purple]{UI.Title_Name}[/][/]").Centered()));
-            table.AddColumn(new TableColumn(new Markup($"[bold][olive]{UI.Title_Type}[/][/]").Centered()));
-            table.AddColumn(new TableColumn(new Markup($"[bold][aqua]{UI.Default}[/][/]").Centered()));
-            table.AddColumn(new TableColumn(new Markup($"[bold][slateblue1]{UI.Title_Description}[/][/]").Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Name).Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Type).Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Default).Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Description).Centered()));
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
 
             foreach((string name, Type type, string description, object @default) option in
                     options.OrderBy(t => t.name))
             {
-                table.AddRow($"[purple]{Markup.Escape(option.name)}[/]",
+                table.AddRow($"[darkgreen]{Markup.Escape(option.name)}[/]",
                              $"[italic][olive]{TypeToString(option.type)}[/][/]",
                              $"[italic][aqua]{option.@default?.ToString() ?? ""}[/][/]",
                              $"[slateblue1]{Markup.Escape(option.description)}[/]");
 
                 AaruLogging.Information("({Name}) - {Type} - {Default} - {Description}",
-                                option.name,
-                                TypeToString(option.type),
-                                option.@default?.ToString() ?? "",
-                                option.description);
+                                        option.name,
+                                        TypeToString(option.type),
+                                        option.@default?.ToString() ?? "",
+                                        option.description);
             }
 
             AnsiConsole.Write(table);

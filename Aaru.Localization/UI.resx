@@ -516,7 +516,7 @@ In you are unsure, please press N to not continue.</value>
     <value>[bold][darkgreen]Name[/][/]</value>
   </data>
     <data name="Title_Type" xml:space="preserve">
-    <value>Type</value>
+    <value>[bold][olive]Type[/][/]</value>
   </data>
     <data name="Title_Length" xml:space="preserve">
     <value>Length</value>
@@ -559,7 +559,7 @@ In you are unsure, please press N to not continue.</value>
     <value>Read-only filesystems options:</value>
   </data>
     <data name="Options_for_0" xml:space="preserve">
-    <value>Options for {0}:</value>
+    <value>[bold][blue]Options for [italic][teal]{0}[/][/]:[/][/]</value>
         <comment>0 is plugin name</comment>
   </data>
     <data name="TypeToString_boolean" xml:space="preserve">
@@ -1293,7 +1293,7 @@ In you are unsure, please press N to not continue.</value>
     <value>Read/Write media images options:</value>
   </data>
     <data name="Default" xml:space="preserve">
-    <value>Default</value>
+    <value>[bold][aqua]Default[/][/]</value>
   </data>
     <data name="How_many_sectors_to_print" xml:space="preserve">
     <value>How many sectors to print.</value>
