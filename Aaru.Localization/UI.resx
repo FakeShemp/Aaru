@@ -1657,11 +1657,11 @@ pool with no way of using them to identify you.</value>
         <comment>{0} is the number of supported archive formats</comment>
   </data>
     <data name="Namespaces_for_0" xml:space="preserve">
-    <value>Namespaces for {0}:</value>
+    <value>[bold][blue]Namespaces for [teal]{0}[/]:[/][/]</value>
         <comment>{0} is the filesystem plugin name</comment>
   </data>
     <data name="Title_Namespace" xml:space="preserve">
-    <value>Namespace</value>
+    <value>[darkgreen]Namespace[/]</value>
   </data>
     <data name="Invalid_list_of_items" xml:space="preserve">
     <value>Invalid list of items</value>

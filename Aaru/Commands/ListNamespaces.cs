@@ -68,15 +68,15 @@ sealed class ListNamespacesCommand : Command<ListNamespacesCommand.Settings>
 
             Table table = new()
             {
-                Title = new TableTitle(string.Format($"[bold][blue]{UI.Namespaces_for_0}[/][/]",
-                                                     $"[teal]{Markup.Escape(fs.Name)}[/]"))
+                Title = new TableTitle(string.Format(UI.Namespaces_for_0,
+                                                     Markup.Escape(fs.Name)))
             };
 
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
 
-            table.AddColumn(new TableColumn(new Markup($"[bold][darkgreen]{UI.Title_Namespace}[/][/]").Centered()));
-            table.AddColumn(new TableColumn(new Markup($"[bold][slateblue1]{UI.Title_Description}[/][/]").Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Namespace).Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Description).Centered()));
 
             foreach(KeyValuePair<string, string> @namespace in fs.Namespaces.OrderBy(t => t.Key))
             {
