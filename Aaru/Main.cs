@@ -314,7 +314,7 @@ class MainClass
                                                    .WithAlias("chk")
                                                    .WithDescription(UI.Image_Checksum_Command_Description);
 
-                                              image.AddCommand<CompareCommand>("compate")
+                                              image.AddCommand<CompareCommand>("compare")
                                                    .WithAlias("cmp")
                                                    .WithDescription(UI.Image_Compare_Command_Description);
 

@@ -698,10 +698,10 @@ In you are unsure, please press N to not continue.</value>
     <value>Second media image path</value>
   </data>
     <data name="Identifying_first_file_filter" xml:space="preserve">
-    <value>Identifying file 1 filter...</value>
+    <value>[slateblue1]Identifying file 1 filter...[/]</value>
   </data>
     <data name="Identifying_second_file_filter" xml:space="preserve">
-    <value>Identifying file 2 filter...</value>
+    <value>[slateblue1]Identifying file 2 filter...[/]</value>
   </data>
     <data name="Cannot_open_first_input_file" xml:space="preserve">
     <value>Cannot open input file 1</value>
@@ -710,160 +710,160 @@ In you are unsure, please press N to not continue.</value>
     <value>Cannot open input file 2</value>
   </data>
     <data name="Identifying_first_image_format" xml:space="preserve">
-    <value>Identifying image 1 format...</value>
+    <value>[slateblue1]Identifying image 1 format...[/]</value>
   </data>
     <data name="Identifying_second_image_format" xml:space="preserve">
-    <value>Identifying image 2 format...</value>
+    <value>[slateblue1]Identifying image 2 format...[/]</value>
   </data>
     <data name="First_input_file_format_not_identified" xml:space="preserve">
     <value>Input file 1 format not identified, not proceeding with comparison.</value>
   </data>
     <data name="First_input_file_format_identified_by_0_1" xml:space="preserve">
-    <value>Input file 1 format identified by {0} ({1}).</value>
+    <value>[slateblue1]Input file 1 format identified by [fuchsia]{0}[/] ([rosybrown]{1}[/]).[/]</value>
   </data>
     <data name="First_input_file_format_identified_by_0" xml:space="preserve">
-    <value>Input file 1 format identified by {0}.</value>
+    <value>[slateblue1]Input file 1 format identified by [fuchsia]{0}[/].[/]</value>
   </data>
     <data name="Second_input_file_format_not_identified" xml:space="preserve">
     <value>Input file 2 format not identified, not proceeding with comparison.</value>
   </data>
     <data name="Second_input_file_format_identified_by_0_1" xml:space="preserve">
-    <value>Input file 2 format identified by {0} ({1}).</value>
+    <value>[slateblue1]Input file 2 format identified by [fuchsia]{0}[/] ([rosybrown]{1}[/]).[/]</value>
   </data>
     <data name="Second_input_file_format_identified_by_0" xml:space="preserve">
-    <value>Input file 2 format identified by {0}.</value>
+    <value>[slateblue1]Input file 2 format identified by [fuchsia]{0}[/].[/]</value>
   </data>
     <data name="Opening_first_image_file" xml:space="preserve">
-    <value>Opening image 1 file...</value>
+    <value>[slateblue1]Opening image 1 file...[/]</value>
   </data>
     <data name="Unable_to_open_first_image_format" xml:space="preserve">
     <value>Unable to open image 1 format</value>
   </data>
     <data name="Opening_second_image_file" xml:space="preserve">
-    <value>Opening image 2 file...</value>
+    <value>[slateblue1]Opening image 2 file...[/]</value>
   </data>
     <data name="Unable_to_open_second_image_format" xml:space="preserve">
     <value>Unable to open image 2 format</value>
   </data>
     <data name="Title_First_Media_image" xml:space="preserve">
-    <value>Media image 1</value>
+    <value>[green]Media image 1[/]</value>
   </data>
     <data name="Title_Second_Media_image" xml:space="preserve">
-    <value>Media image 2</value>
+    <value>[red]Media image 2[/]</value>
   </data>
     <data name="Title_File" xml:space="preserve">
-    <value>File</value>
+    <value>[slateblue1]File[/]</value>
   </data>
     <data name="Title_Media_image_format" xml:space="preserve">
-    <value>Media image format</value>
+    <value>[slateblue1]Media image format[/]</value>
   </data>
     <data name="Has_partitions_Question" xml:space="preserve">
-    <value>Has partitions?</value>
+    <value>[slateblue1]Has partitions?[/]</value>
   </data>
     <data name="Has_sessions_Question" xml:space="preserve">
-    <value>Has sessions?</value>
+    <value>[slateblue1]Has sessions?[/]</value>
   </data>
     <data name="Title_Image_size" xml:space="preserve">
-    <value>Image size</value>
+    <value>[slateblue1]Image size[/]</value>
   </data>
     <data name="Title_Sectors" xml:space="preserve">
-    <value>Sectors</value>
+    <value>[slateblue1]Sectors[/]</value>
   </data>
     <data name="Title_Sector_size" xml:space="preserve">
-    <value>Sector size</value>
+    <value>[slateblue1]Sector size[/]</value>
   </data>
     <data name="Title_Creation_time" xml:space="preserve">
-    <value>Creation time</value>
+    <value>[slateblue1]Creation time[/]</value>
   </data>
     <data name="Title_Last_modification_time" xml:space="preserve">
-    <value>Last modification time</value>
+    <value>[slateblue1]Last modification time[/]</value>
   </data>
     <data name="Title_Media_type" xml:space="preserve">
-    <value>Media type</value>
+    <value>[slateblue1]Media type[/]</value>
   </data>
     <data name="Title_Image_version" xml:space="preserve">
-    <value>Image version</value>
+    <value>[slateblue1]Image version[/]</value>
   </data>
     <data name="Title_Image_application" xml:space="preserve">
-    <value>Image application</value>
+    <value>[slateblue1]Image application[/]</value>
   </data>
     <data name="Title_Image_application_version" xml:space="preserve">
-    <value>Image application version</value>
+    <value>[slateblue1]Image application version[/]</value>
   </data>
     <data name="Title_Image_creator" xml:space="preserve">
-    <value>Image creator</value>
+    <value>[slateblue1]Image creator[/]</value>
   </data>
     <data name="Title_Image_name" xml:space="preserve">
-    <value>Image name</value>
+    <value>[slateblue1]Image name[/]</value>
   </data>
     <data name="Title_Image_comments" xml:space="preserve">
-    <value>Image comments</value>
+    <value>[slateblue1]Image comments[/]</value>
   </data>
     <data name="Title_Media_manufacturer" xml:space="preserve">
-    <value>Media manufacturer</value>
+    <value>[slateblue1]Media manufacturer[/]</value>
   </data>
     <data name="Title_Media_model" xml:space="preserve">
-    <value>Media model</value>
+    <value>[slateblue1]Media model[/]</value>
   </data>
     <data name="Title_Media_serial_number" xml:space="preserve">
-    <value>Media serial number</value>
+    <value>[slateblue1]Media serial number[/]</value>
   </data>
     <data name="Title_Media_barcode" xml:space="preserve">
-    <value>Media barcode</value>
+    <value>[slateblue1]Media barcode[/]</value>
   </data>
     <data name="Title_Media_part_number" xml:space="preserve">
-    <value>Media part no.</value>
+    <value>[slateblue1]Media part no.[/]</value>
   </data>
     <data name="Title_Media_sequence" xml:space="preserve">
-    <value>Media sequence</value>
+    <value>[slateblue1]Media sequence[/]</value>
   </data>
     <data name="Title_Last_media_on_sequence" xml:space="preserve">
-    <value>Last media on sequence</value>
+    <value>[slateblue1]Last media on sequence[/]</value>
   </data>
     <data name="Title_Drive_manufacturer" xml:space="preserve">
-    <value>Drive manufacturer</value>
+    <value>[slateblue1]Drive manufacturer[/]</value>
   </data>
     <data name="Title_Drive_firmware_revision" xml:space="preserve">
-    <value>Drive firmware revision</value>
+    <value>[slateblue1]Drive firmware revision[/]</value>
   </data>
     <data name="Title_Drive_model" xml:space="preserve">
-    <value>Drive model</value>
+    <value>[slateblue1]Drive model[/]</value>
   </data>
     <data name="Title_Drive_serial_number" xml:space="preserve">
-    <value>Drive serial number</value>
+    <value>[slateblue1]Drive serial number[/]</value>
   </data>
     <data name="Has_tag_0_Question" xml:space="preserve">
-    <value>Has {0}?</value>
+    <value>[slateblue1]Has [rosybrown]{0}[/]?[/]</value>
   </data>
     <data name="Comparing_media_image_characteristics" xml:space="preserve">
     <value>Comparing media image characteristics</value>
   </data>
     <data name="Image_partitioned_status_differ" xml:space="preserve">
-    <value>Image partitioned status differ</value>
+    <value>[red]Image partitioned status differ[/]</value>
   </data>
     <data name="Image_session_status_differ" xml:space="preserve">
-    <value>Image session status differ</value>
+    <value>[red]Image session status differ[/]</value>
   </data>
     <data name="Image_sectors_differ" xml:space="preserve">
-    <value>Image sectors differ</value>
+    <value>[red]Image sectors differ[/]</value>
   </data>
     <data name="Image_sector_size_differ" xml:space="preserve">
-    <value>Image sector size differ</value>
+    <value>[red]Image sector size differ[/]</value>
   </data>
     <data name="Media_type_differs" xml:space="preserve">
-    <value>Media type differs</value>
+    <value>[red]Media type differs[/]</value>
   </data>
     <data name="Second_image_has_more_sectors" xml:space="preserve">
-    <value>Image 2 has more sectors</value>
+    <value>[red]Image 2 has more sectors[/]</value>
   </data>
     <data name="First_image_has_more_sectors" xml:space="preserve">
-    <value>Image 1 has more sectors</value>
+    <value>[red]Image 1 has more sectors[/]</value>
   </data>
     <data name="Comparing_sectors" xml:space="preserve">
     <value>Comparing sectors...</value>
   </data>
     <data name="Comparing_sector_0_of_1" xml:space="preserve">
-    <value>Comparing sector {0} of {1}...</value>
+    <value>[slateblue1]Comparing sector [lime]{0}[/] of [violet]{1}[/]...[/]</value>
   </data>
     <data name="Error_0_reading_sector_1_from_first_image" xml:space="preserve">
     <value>Error {0} reading sector {1} from image 1.</value>
@@ -875,10 +875,10 @@ In you are unsure, please press N to not continue.</value>
     <value>Comparing images...</value>
   </data>
     <data name="Images_differ" xml:space="preserve">
-    <value>Images differ</value>
+    <value>[red]Images differ[/]</value>
   </data>
     <data name="Images_do_not_differ" xml:space="preserve">
-    <value>Images do not differ</value>
+    <value>[green]Images do not differ[/]</value>
   </data>
     <data name="Take_metadata_from_existing_CICM_XML_sidecar" xml:space="preserve">
     <value>Take metadata from existing CICM XML sidecar.</value>

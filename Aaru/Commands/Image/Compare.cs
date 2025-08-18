@@ -117,9 +117,7 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
         if(settings.Verbose)
         {
-            AaruLogging.Verbose(UI.First_input_file_format_identified_by_0_1,
-                                         input1Format.Name,
-                                         input1Format.Id);
+            AaruLogging.Verbose(UI.First_input_file_format_identified_by_0_1, input1Format.Name, input1Format.Id);
         }
         else
             AaruLogging.WriteLine(UI.First_input_file_format_identified_by_0, input1Format.Name);
@@ -133,9 +131,7 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
         if(settings.Verbose)
         {
-            AaruLogging.Verbose(UI.Second_input_file_format_identified_by_0_1,
-                                         input2Format.Name,
-                                         input2Format.Id);
+            AaruLogging.Verbose(UI.Second_input_file_format_identified_by_0_1, input2Format.Name, input2Format.Id);
         }
         else
             AaruLogging.WriteLine(UI.Second_input_file_format_identified_by_0, input2Format.Name);
@@ -181,19 +177,31 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
         var   sb    = new StringBuilder();
         Table table = new();
         table.AddColumn("");
-        table.AddColumn(UI.Title_First_Media_image);
-        table.AddColumn(UI.Title_Second_Media_image);
+        table.AddColumn(new TableColumn(new Markup(UI.Title_First_Media_image).Centered()));
+        table.AddColumn(new TableColumn(new Markup(UI.Title_Second_Media_image).Centered()));
         table.Columns[0].RightAligned();
+        table.Border(TableBorder.Rounded);
+        table.BorderColor(Color.Yellow);
 
         if(settings.Verbose)
         {
-            table.AddRow(UI.Title_File, Markup.Escape(settings.ImagePath1), Markup.Escape(settings.ImagePath2));
-            table.AddRow(UI.Title_Media_image_format, input1Format.Name, input2Format.Name);
+            table.AddRow(UI.Title_File,
+                         $"[navy]{Markup.Escape(settings.ImagePath1)}[/]",
+                         $"[navy]{Markup.Escape(settings.ImagePath2)}[/]");
+
+            table.AddRow(UI.Title_Media_image_format,
+                         $"[fuchsia]{input1Format.Name}[/]",
+                         $"[fuchsia]{input2Format.Name}[/]");
         }
         else
         {
-            sb.AppendFormat($"[bold]{UI.Title_First_Media_image}:[/] {settings.ImagePath1}").AppendLine();
-            sb.AppendFormat($"[bold]{UI.Title_Second_Media_image}:[/] {settings.ImagePath2}").AppendLine();
+            sb
+               .AppendFormat($"[bold][green]{UI.Title_First_Media_image}:[/] [italic]{Markup.Escape(settings.ImagePath1)}[/][/]")
+               .AppendLine();
+
+            sb
+               .AppendFormat($"[bold][red]{UI.Title_Second_Media_image}:[/] [italic]{Markup.Escape(settings.ImagePath2)}[/][/]")
+               .AppendLine();
         }
 
         bool        imagesDiffer = false;
@@ -201,8 +209,8 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
         ImageInfo                        image1Info       = input1Format.Info;
         ImageInfo                        image2Info       = input2Format.Info;
-        Dictionary<MediaTagType, byte[]> image1DiskTags   = new();
-        Dictionary<MediaTagType, byte[]> image2DiskTags   = new();
+        Dictionary<MediaTagType, byte[]> image1DiskTags   = [];
+        Dictionary<MediaTagType, byte[]> image2DiskTags   = [];
         var                              input1MediaImage = input1Format as IMediaImage;
         var                              input2MediaImage = input2Format as IMediaImage;
 
@@ -229,87 +237,119 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
         if(settings.Verbose)
         {
             table.AddRow(UI.Has_partitions_Question,
-                         image1Info.HasPartitions.ToString(),
-                         image2Info.HasPartitions.ToString());
+                         image1Info.HasPartitions
+                             ? $"[green]{image1Info.HasPartitions}[/]"
+                             : $"[red]{image1Info.HasPartitions}[/]",
+                         image2Info.HasPartitions
+                             ? $"[green]{image2Info.HasPartitions}[/]"
+                             : $"[red]{image2Info.HasPartitions}[/]");
 
             table.AddRow(UI.Has_sessions_Question,
-                         image1Info.HasSessions.ToString(),
-                         image2Info.HasSessions.ToString());
+                         image1Info.HasSessions
+                             ? $"[green]{image1Info.HasSessions}[/]"
+                             : $"[red]{image1Info.HasSessions}[/]",
+                         image2Info.HasSessions
+                             ? $"[green]{image2Info.HasSessions}[/]"
+                             : $"[red]{image2Info.HasSessions}[/]");
 
-            table.AddRow(UI.Title_Image_size, image1Info.ImageSize.ToString(), image2Info.ImageSize.ToString());
+            table.AddRow(UI.Title_Image_size, $"[teal]{image1Info.ImageSize}[/]", $"[teal]{image2Info.ImageSize}[/]");
 
-            table.AddRow(UI.Title_Sectors, image1Info.Sectors.ToString(), image2Info.Sectors.ToString());
+            table.AddRow(UI.Title_Sectors, $"[lime]{image1Info.Sectors}[/]", $"[lime]{image2Info.Sectors}[/]");
 
-            table.AddRow(UI.Title_Sector_size, image1Info.SectorSize.ToString(), image2Info.SectorSize.ToString());
+            table.AddRow(UI.Title_Sector_size,
+                         $"[aqua]{image1Info.SectorSize}[/]",
+                         $"[aqua]{image2Info.SectorSize}[/]");
 
             table.AddRow(UI.Title_Creation_time,
-                         image1Info.CreationTime.ToString(CultureInfo.CurrentCulture),
-                         image2Info.CreationTime.ToString(CultureInfo.CurrentCulture));
+                         $"[yellow3]{image1Info.CreationTime.ToString(CultureInfo.CurrentCulture)}[/]",
+                         $"[yellow3]{image2Info.CreationTime.ToString(CultureInfo.CurrentCulture)}[/]");
 
             table.AddRow(UI.Title_Last_modification_time,
-                         image1Info.LastModificationTime.ToString(CultureInfo.CurrentCulture),
-                         image2Info.LastModificationTime.ToString(CultureInfo.CurrentCulture));
+                         $"[yellow3]{image1Info.LastModificationTime.ToString(CultureInfo.CurrentCulture)}[/]",
+                         $"[yellow3]{image2Info.LastModificationTime.ToString(CultureInfo.CurrentCulture)}[/]");
 
-            table.AddRow(UI.Title_Media_type, image1Info.MediaType.ToString(), image2Info.MediaType.ToString());
+            table.AddRow(UI.Title_Media_type,
+                         $"[orange3]{image1Info.MediaType}[/]",
+                         $"[orange3]{image2Info.MediaType}[/]");
 
-            table.AddRow(UI.Title_Image_version, image1Info.Version ?? "", image2Info.Version ?? "");
+            table.AddRow(UI.Title_Image_version,
+                         $"[rosybrown]{image1Info.Version ?? ""}[/]",
+                         $"[rosybrown]{image2Info.Version ?? ""}[/]");
 
-            table.AddRow(UI.Title_Image_application, image1Info.Application ?? "", image2Info.Application ?? "");
+            table.AddRow(UI.Title_Image_application,
+                         $"[fuchsia]{image1Info.Application ?? ""}[/]",
+                         $"[fuchsia]{image2Info.Application ?? ""}[/]");
 
             table.AddRow(UI.Title_Image_application_version,
-                         image1Info.ApplicationVersion ?? "",
-                         image2Info.ApplicationVersion ?? "");
+                         $"[rosybrown]{image1Info.ApplicationVersion ?? ""}[/]",
+                         $"[rosybrown]{image2Info.ApplicationVersion ?? ""}[/]");
 
-            table.AddRow(UI.Title_Image_creator, image1Info.Creator ?? "", image2Info.Creator ?? "");
+            table.AddRow(UI.Title_Image_creator,
+                         $"[blue]{Markup.Escape(image1Info.Creator ?? "")}[/]",
+                         $"[blue]{Markup.Escape(image2Info.Creator ?? "")}[/]");
 
-            table.AddRow(UI.Title_Image_name, image1Info.MediaTitle ?? "", image2Info.MediaTitle ?? "");
+            table.AddRow(UI.Title_Image_name,
+                         $"[blue]{Markup.Escape(image1Info.MediaTitle ?? "")}[/]",
+                         $"[blue]{Markup.Escape(image2Info.MediaTitle ?? "")}[/]");
 
-            table.AddRow(UI.Title_Image_comments, image1Info.Comments ?? "", image2Info.Comments ?? "");
+            table.AddRow(UI.Title_Image_comments,
+                         $"[blue]{Markup.Escape(image1Info.Comments ?? "")}[/]",
+                         $"[blue]{Markup.Escape(image2Info.Comments ?? "")}[/]");
 
             table.AddRow(UI.Title_Media_manufacturer,
-                         image1Info.MediaManufacturer ?? "",
-                         image2Info.MediaManufacturer ?? "");
+                         $"[blue]{Markup.Escape(image1Info.MediaManufacturer ?? "")}[/]",
+                         $"[blue]{Markup.Escape(image2Info.MediaManufacturer ?? "")}[/]");
 
-            table.AddRow(UI.Title_Media_model, image1Info.MediaModel ?? "", image2Info.MediaModel ?? "");
+            table.AddRow(UI.Title_Media_model,
+                         $"[blue]{Markup.Escape(image1Info.MediaModel ?? "")}[/]",
+                         $"[blue]{Markup.Escape(image2Info.MediaModel ?? "")}[/]");
 
             table.AddRow(UI.Title_Media_serial_number,
-                         image1Info.MediaSerialNumber ?? "",
-                         image2Info.MediaSerialNumber ?? "");
+                         $"[blue]{Markup.Escape(image1Info.MediaSerialNumber ?? "")}[/]",
+                         $"[blue]{Markup.Escape(image2Info.MediaSerialNumber ?? "")}[/]");
 
-            table.AddRow(UI.Title_Media_barcode, image1Info.MediaBarcode ?? "", image2Info.MediaBarcode ?? "");
+            table.AddRow(UI.Title_Media_barcode,
+                         $"[blue]{Markup.Escape(image1Info.MediaBarcode ?? "")}[/]",
+                         $"[blue]{Markup.Escape(image2Info.MediaBarcode ?? "")}[/]");
 
             table.AddRow(UI.Title_Media_part_number,
-                         image1Info.MediaPartNumber ?? "",
-                         image2Info.MediaPartNumber ?? "");
+                         $"[blue]{Markup.Escape(image1Info.MediaPartNumber ?? "")}[/]",
+                         $"[blue]{Markup.Escape(image2Info.MediaPartNumber ?? "")}[/]");
 
             table.AddRow(UI.Title_Media_sequence,
-                         image1Info.MediaSequence.ToString(),
-                         image2Info.MediaSequence.ToString());
+                         $"[teal]{image1Info.MediaSequence}[/]",
+                         $"[teal]{image2Info.MediaSequence}[/]");
 
             table.AddRow(UI.Title_Last_media_on_sequence,
-                         image1Info.LastMediaSequence.ToString(),
-                         image2Info.LastMediaSequence.ToString());
+                         $"[teal]{image1Info.LastMediaSequence}[/]",
+                         $"[teal]{image2Info.LastMediaSequence}[/]");
 
             table.AddRow(UI.Title_Drive_manufacturer,
-                         image1Info.DriveManufacturer ?? "",
-                         image2Info.DriveManufacturer ?? "");
+                         $"[blue]{Markup.Escape(image1Info.DriveManufacturer ?? "")}[/]",
+                         $"[blue]{Markup.Escape(image2Info.DriveManufacturer ?? "")}[/]");
 
             table.AddRow(UI.Title_Drive_firmware_revision,
-                         image1Info.DriveFirmwareRevision ?? "",
-                         image2Info.DriveFirmwareRevision ?? "");
+                         $"[blue]{Markup.Escape(image1Info.DriveFirmwareRevision ?? "")}[/]",
+                         $"[blue]{Markup.Escape(image2Info.DriveFirmwareRevision ?? "")}[/]");
 
-            table.AddRow(UI.Title_Drive_model, image1Info.DriveModel ?? "", image2Info.DriveModel ?? "");
+            table.AddRow(UI.Title_Drive_model,
+                         $"[blue]{Markup.Escape(image1Info.DriveModel ?? "")}[/]",
+                         $"[blue]{Markup.Escape(image2Info.DriveModel ?? "")}[/]");
 
             table.AddRow(UI.Title_Drive_serial_number,
-                         image1Info.DriveSerialNumber ?? "",
-                         image2Info.DriveSerialNumber ?? "");
+                         $"[blue]{Markup.Escape(image1Info.DriveSerialNumber ?? "")}[/]",
+                         $"[blue]{Markup.Escape(image2Info.DriveSerialNumber ?? "")}[/]");
 
             foreach(MediaTagType diskTag in
                     (Enum.GetValues(typeof(MediaTagType)) as MediaTagType[]).OrderBy(e => e.ToString()))
             {
                 table.AddRow(string.Format(UI.Has_tag_0_Question, diskTag),
-                             image1DiskTags.ContainsKey(diskTag).ToString(),
-                             image2DiskTags.ContainsKey(diskTag).ToString());
+                             image1DiskTags.ContainsKey(diskTag)
+                                 ? $"[green]{image1DiskTags.ContainsKey(diskTag)}[/]"
+                                 : $"[red]{image1DiskTags.ContainsKey(diskTag)}[/]",
+                             image2DiskTags.ContainsKey(diskTag)
+                                 ? $"[green]{image2DiskTags.ContainsKey(diskTag)}[/]"
+                                 : $"[red]{image2DiskTags.ContainsKey(diskTag)}[/]");
             }
         }
 
@@ -405,20 +445,18 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
                                     if(errno != ErrorNumber.NoError)
                                     {
-                                        AaruLogging
-                                           .Error(string.Format(UI.Error_0_reading_sector_1_from_first_image,
-                                                                         errno,
-                                                                         sector));
+                                        AaruLogging.Error(string.Format(UI.Error_0_reading_sector_1_from_first_image,
+                                                                        errno,
+                                                                        sector));
                                     }
 
                                     errno = input2MediaImage.ReadSector(sector, out byte[] image2Sector);
 
                                     if(errno != ErrorNumber.NoError)
                                     {
-                                        AaruLogging
-                                           .Error(string.Format(UI.Error_0_reading_sector_1_from_second_image,
-                                                                         errno,
-                                                                         sector));
+                                        AaruLogging.Error(string.Format(UI.Error_0_reading_sector_1_from_second_image,
+                                                                        errno,
+                                                                        sector));
                                     }
 
                                     ArrayHelpers.CompareBytes(out bool different,
