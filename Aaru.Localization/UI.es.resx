@@ -23,8 +23,8 @@
     <value>¡Aaru empezó!</value>
   </data>
     <data name="all_sectors" xml:space="preserve">
-    <value>todos los sectores.</value>
-  </data>
+        <value>[red]todos los sectores.[/]</value>
+    </data>
     <data name="All_sectors_are_unknown" xml:space="preserve">
     <value>La integridad de todos los sectores es desconocida</value>
   </data>
@@ -32,8 +32,8 @@
     <value>Todos los sectores contienen errores</value>
   </data>
     <data name="All_sector_checksums_are_correct" xml:space="preserve">
-    <value>El checksum de todos los sectores es correcto</value>
-  </data>
+        <value>[green]El checksum de todos los sectores es correcto[/]</value>
+    </data>
     <data name="Archive_Command_Family_Description" xml:space="preserve">
     <value>Comandos para gestionar archivos</value>
   </data>
@@ -374,8 +374,8 @@
     <value>Página de estado de la unidad Certance</value>
   </data>
     <data name="Checking_disc_image_checksums_took_0" xml:space="preserve">
-    <value>Comprobar los checksums de la imagen tomó {0}</value>
-  </data>
+        <value>[slateblue1]Comprobar los checksums de la imagen tomó [aqua]{0}[/][/]</value>
+    </data>
     <data name="Checking_GDPR_compliance" xml:space="preserve">
     <value>Comprobando cumplimiento de la GDPR...</value>
   </data>
@@ -389,44 +389,44 @@
     <value>Comprobando sectores...</value>
   </data>
     <data name="Checking_sector_0_of_1" xml:space="preserve">
-    <value>Comprobando sector {0} de {1}</value>
-  </data>
+        <value>[slateblue1]Comprobando sector [lime]{0}[/] de [violet]{1}[/]</value>
+    </data>
     <data name="Checking_sector_0_of_1_on_track_2" xml:space="preserve">
-    <value>Comprobando sector {0} de {1}, en la pista {2}</value>
-  </data>
+        <value>[slateblue1]Comprobando sector [lime]{0}[/] de [violet]{1}[/], en la pista [teal]{2}[/]</value>
+    </data>
     <data name="Checking_sector_checksums_took_0" xml:space="preserve">
-    <value>Comprobar los checksums de los sectores tomó {0}</value>
-  </data>
+        <value>[slateblue1]Comprobar los checksums de los sectores tomó [aqua]{0}[/][/]</value>
+    </data>
     <data name="Checking_tracks" xml:space="preserve">
     <value>Comprobando pistas...</value>
   </data>
     <data name="Checking_track_0_of_1" xml:space="preserve">
-    <value>Comprobando pista {0} de {1}</value>
-  </data>
+        <value>[slateblue1]Comprobando pista [teal]{0}[/] de [teal]{1}[/][/]</value>
+    </data>
     <data name="Checksums_Disc_has_0_1" xml:space="preserve">
-    <value>{0} del disco</value>
-  </data>
+        <value>[bold][fuchsia]{0}[/][slateblue1] del disco:[/][/] [rosybrown]{1}[/]</value>
+    </data>
     <data name="Checksums_Disk_has_0_1" xml:space="preserve">
-    <value>{0} del disco:</value>
-  </data>
+        <value>[bold][fuchsia]{0}[/][slateblue1] del disco:[/][/] [rosybrown]{1}[/]</value>
+    </data>
     <data name="Checksums_each_track_separately" xml:space="preserve">
     <value>Calcular el checksum de cada pista por separado.</value>
   </data>
     <data name="Checksums_File_0_has_1_2" xml:space="preserve">
-    <value>{1} del fichero {0}</value>
-  </data>
+        <value>[bold][fuchsia]{1}[/][slateblue1] del fichero [teal]{0}[/]:[/][/] [rosybrown]{2}[/]</value>
+    </data>
     <data name="Checksums_Media_has_0_1" xml:space="preserve">
-    <value>{0} del medio:</value>
-  </data>
+        <value>[bold][fuchsia]{0}[/][slateblue1] del medio:[/][/] [rosybrown]{1}[/]</value>
+    </data>
     <data name="Checksums_Tape_has_0_1" xml:space="preserve">
-    <value>{0} de la cinta:</value>
-  </data>
+        <value>[bold][fuchsia]{0}[/][slateblue1] de la cinta:[/][/] [rosybrown]{1}[/]</value>
+    </data>
     <data name="Checksums_the_whole_disc" xml:space="preserve">
     <value>Calcular el checksum del disco completo.</value>
   </data>
     <data name="Checksums_Track_0_has_1_2" xml:space="preserve">
-    <value>{1} de la pista {0}:</value>
-  </data>
+        <value>[bold][fuchsia]{1}[/][slateblue1] de la pista [teal]{0}[/]:[/][/] [rosybrown]{2}[/]</value>
+    </data>
     <data name="Clear_existing_main_and_local_database" xml:space="preserve">
     <value>Limpiar las bases de datos local y principal existentes.</value>
   </data>
@@ -437,8 +437,8 @@
     <value>Cerrando imagen de salida...</value>
   </data>
     <data name="Commands_statistics" xml:space="preserve">
-    <value>Estadísticas de comandos</value>
-  </data>
+        <value>[bold][blue]Estadísticas de comandos[/][/]</value>
+    </data>
     <data name="Command_not_supported_for_this_image_type" xml:space="preserve">
     <value>Comando no soportado para este tipo de imagen.</value>
   </data>
@@ -461,8 +461,8 @@
     <value>Comparando sectores...</value>
   </data>
     <data name="Comparing_sector_0_of_1" xml:space="preserve">
-    <value>Comparando sector {0} de {1}...</value>
-  </data>
+        <value>[slateblue1]Comparando sector [lime]{0}[/] de [violet]{1}[/]...[/]</value>
+    </data>
     <data name="Configure_Command_Description" xml:space="preserve">
     <value>Configura las preferencias de usuario y las estadísticas.</value>
   </data>
@@ -626,14 +626,14 @@
     <value>Intentar desencriptar los sectores encriptados.</value>
   </data>
     <data name="Default" xml:space="preserve">
-    <value>Por defecto</value>
-  </data>
+        <value>[bold][aqua]Por defecto[/][/]</value>
+    </data>
     <data name="Densities_supported_by_currently_inserted_media" xml:space="preserve">
     <value>Densidades soportadas por el medio actualmente introducido</value>
   </data>
     <data name="Densities_supported_by_device" xml:space="preserve">
-    <value>Densidades soportadas por el dispositivo:</value>
-  </data>
+        <value>[bold][blue]Densidades soportadas por el dispositivo:[/][/]</value>
+    </data>
     <data name="Destination_exists_aborting" xml:space="preserve">
     <value>El destino existe, abortando.</value>
   </data>
@@ -665,8 +665,8 @@
     <value>Crea un reporte del dispositivo usando un disco trampa.</value>
   </data>
     <data name="Device_statistics" xml:space="preserve">
-    <value>Estadísticas de dispositivos</value>
-  </data>
+        <value>[bold][blue]Estadísticas de dispositivos[/][/]</value>
+    </data>
     <data name="Dialog_Aaru_Metadata" xml:space="preserve">
     <value>Metadatos de Aaru</value>
   </data>
@@ -707,14 +707,14 @@
     <value>Estructura de definición del disco</value>
   </data>
     <data name="Disc_image_checksums_are_correct" xml:space="preserve">
-    <value>Los checksums de la imagen de disco son correctos</value>
-  </data>
+        <value>[green]Los checksums de la imagen de disco son correctos[/]</value>
+    </data>
     <data name="Disc_image_checksums_are_incorrect" xml:space="preserve">
-    <value>Los checksums de la imagen de disco son incorrectos</value>
-  </data>
+        <value>[red]Los checksums de la imagen de disco son incorrectos[/]</value>
+    </data>
     <data name="Disc_image_does_not_contain_checksums" xml:space="preserve">
-    <value>La imagen de disco no contiene checksums</value>
-  </data>
+        <value>[olive]La imagen de disco no contiene checksums[/]</value>
+    </data>
     <data name="Disc_image_does_not_support_verification" xml:space="preserve">
     <value>La imagen de disco no soporta la verificación</value>
   </data>
@@ -725,8 +725,8 @@
     <value>Información del disco</value>
   </data>
     <data name="Disk_has_0_unique_sectors_1" xml:space="preserve">
-    <value>El disco tiene {0} sectores únicos ({1:P3})</value>
-  </data>
+        <value>[slateblue1]El disco tiene [teal]{0}[/] sectores únicos ([aqua]{1:P3}[/])[/]</value>
+    </data>
     <data name="Doesnt_have_partitions" xml:space="preserve">
     <value>No contiene particiones</value>
   </data>
@@ -845,11 +845,11 @@
     <value>Codificación para usar en la creación del sidecar de metadatos.</value>
   </data>
     <data name="Entropy_for_disk_is_0" xml:space="preserve">
-    <value>La entropía del disco es {0:F4}.</value>
-  </data>
+        <value>[slateblue1]La entropía del disco es [teal]{0:F4}[/].[/]</value>
+    </data>
     <data name="Entropy_for_track_0_is_1" xml:space="preserve">
-    <value>La entropía de la pista {0} es {1:F4}.</value>
-  </data>
+        <value>[slateblue1]La entropía de la pista [teal]{0}[/] es [teal]{1:F4}[/].[/]</value>
+    </data>
     <data name="Enumerating_partitions" xml:space="preserve">
     <value>Enumerando particiones...</value>
   </data>
@@ -1040,8 +1040,8 @@
     <value>Lista todas las opciones soportadas por los sistemas de ficheros de sólo lectura.</value>
   </data>
     <data name="Filesystem_statistics" xml:space="preserve">
-    <value>Estadísticas de sistemas de ficheros</value>
-  </data>
+        <value>[bold][blue]Estadísticas de sistemas de ficheros[/][/]</value>
+    </data>
     <data name="File_0_starts_at_block_1_and_ends_at_block_2" xml:space="preserve">
     <value>El fichero {0} empieza en el bloque {1} y termina en el {2}</value>
   </data>
@@ -1049,8 +1049,8 @@
     <value>Ya existe un fichero llamado {0} en el directorio de destino. ¿Desea sobreescribirlo?</value>
   </data>
     <data name="Filters_statistics" xml:space="preserve">
-    <value>Estadísticas de filtros</value>
-  </data>
+        <value>[bold][blue]Estadísticas de filtros[/][/]</value>
+    </data>
     <data name="Filter_0" xml:space="preserve">
     <value>Filtro: {0}</value>
   </data>
@@ -1061,11 +1061,11 @@
     <value>La 1ª imagen tiene más sectores</value>
   </data>
     <data name="First_input_file_format_identified_by_0" xml:space="preserve">
-    <value>El formato del 1er fichero es identificado por {0}.</value>
-  </data>
+        <value>[slateblue1]El formato del 1er fichero es identificado por [green]{0}[/].[/]</value>
+    </data>
     <data name="First_input_file_format_identified_by_0_1" xml:space="preserve">
-    <value>El formato del 1er fichero es identificado por {0} ({1}).</value>
-  </data>
+        <value>[slateblue1]El formato del 1er fichero es identificado por [green]{0}[/] ([red]{1}[/]).[/]</value>
+    </data>
     <data name="First_input_file_format_not_identified" xml:space="preserve">
     <value>No se identificó el formato del 1er fichero, no se procederá con la comparativa.</value>
   </data>
@@ -1145,17 +1145,17 @@
     <value>Llaves de desencriptación no encontrados. Intentando generarlas.</value>
   </data>
     <data name="Hashing_blocks_0_to_2_of_file_1" xml:space="preserve">
-    <value>Calculando hash de los bloques {0} a {2} del fichero {1}</value>
-  </data>
+        <value>[slateblue1]Calculando hash de los bloques [lime]{0}[/] a [violet]{2}[/] del fichero [teal]{1}[/][/]</value>
+    </data>
     <data name="Hashing_bytes_0_to_1" xml:space="preserve">
-    <value>Calculando hash de los bytes {0} a {1}</value>
-  </data>
+        <value>[slateblue1]Calculando hash de los bytes [lime]{0}[/] a [violet]{1}[/]</value>
+    </data>
     <data name="Hashing_file_0_of_1" xml:space="preserve">
-    <value>Calculando hash del fichero {0} de {1}</value>
-  </data>
+        <value>[slateblue1]Calculando hash del fichero [lime]{0}[/] de [violet]{1}[/]</value>
+    </data>
     <data name="Hashing_file_less_block_0" xml:space="preserve">
-    <value>Calculando hash del bloque {0} sin fichero</value>
-  </data>
+        <value>[slateblue1]Calculando hash del bloque [lime]{0}[/] sin fichero[/]</value>
+    </data>
     <data name="Hashing_image" xml:space="preserve">
     <value>Calculando hash de la imagen...</value>
   </data>
@@ -1163,29 +1163,29 @@
     <value>Calculando hash del sector</value>
   </data>
     <data name="Hashing_sectors_0_to_1" xml:space="preserve">
-    <value>Calculando hash de los sectores del {0} al {1}</value>
-  </data>
+        <value>[slateblue1]Calculando hash de los sectores del [lime]{0}[/] al [violet]{1}[/][/]</value>
+    </data>
     <data name="Hashing_sectors_0_to_2_of_track_1" xml:space="preserve">
-    <value>Calculando hash de los sectores del {0} al {2} de la pista {1}</value>
-  </data>
+        <value>[slateblue1]Calculando hash de los sectores del [lime]{0}[/] al [violet]{2}[/] de la pista [teal]{1}[/][/]</value>
+    </data>
     <data name="Hashing_track_0_of_1" xml:space="preserve">
-    <value>Calculando hash de la pista {0} de {1}</value>
-  </data>
+        <value>[slateblue1]Calculando hash de la pista [teal]{0}[/] de [teal]{1}[/][/]</value>
+    </data>
     <data name="Has_partitions" xml:space="preserve">
     <value>Tiene particiones</value>
   </data>
     <data name="Has_partitions_Question" xml:space="preserve">
-    <value>¿Tiene particiones?</value>
-  </data>
+        <value>[slateblue1]¿Tiene particiones?[/]</value>
+    </data>
     <data name="Has_sessions" xml:space="preserve">
     <value>Tiene sesiones</value>
   </data>
     <data name="Has_sessions_Question" xml:space="preserve">
-    <value>¿Tiene sesiones?</value>
-  </data>
+        <value>[slateblue1]¿Tiene sesiones?[/]</value>
+    </data>
     <data name="Has_tag_0_Question" xml:space="preserve">
-    <value>¿Tiene {0}?</value>
-  </data>
+        <value>[slateblue1]¿Tiene [rosybrown]{0}[/]?[/]</value>
+    </data>
     <data name="Head_Assembly_Serial_Number" xml:space="preserve">
     <value>Número de serie del ensamblado de la cabeza</value>
   </data>
@@ -1247,23 +1247,23 @@
     <value>Identificando sistemas de ficheros en la partición...</value>
   </data>
     <data name="Identifying_file_filter" xml:space="preserve">
-    <value>Identificando el filtro de fichero...</value>
-  </data>
+        <value>[slateblue1]Identificando el filtro de fichero...[/]</value>
+    </data>
     <data name="Identifying_first_file_filter" xml:space="preserve">
-    <value>Identificando el filtro del 1er fichero...</value>
-  </data>
+        <value>[slateblue1]Identificando el filtro del 1er fichero..[/]</value>
+    </data>
     <data name="Identifying_first_image_format" xml:space="preserve">
-    <value>Identificando el formato de la 1ª imagen...</value>
-  </data>
+        <value>[slateblue1]Identificando el formato de la 1ª imagen..[/]</value>
+    </data>
     <data name="Identifying_image_format" xml:space="preserve">
-    <value>Identificando el formato de la imagen...</value>
-  </data>
+        <value>[slateblue1]Identificando el formato de la imagen...[/]</value>
+    </data>
     <data name="Identifying_second_file_filter" xml:space="preserve">
-    <value>Identificando el filtro del 2º fichero...</value>
-  </data>
+        <value>[slateblue1]Identificando el filtro del 2º fichero...[/]</value>
+    </data>
     <data name="Identifying_second_image_format" xml:space="preserve">
-    <value>Identificando el formato de la 2ª imagen...</value>
-  </data>
+        <value>[slateblue1]Identificando el formato de la 2ª imagen..[/]</value>
+    </data>
     <data name="If_you_dont_care_use_force_option" xml:space="preserve">
     <value>Si no le importa, use la opción "force".</value>
   </data>
@@ -1308,8 +1308,8 @@
     <value>Formato de imagen identificado por {0}.</value>
   </data>
     <data name="Image_format_identified_by_0_1" xml:space="preserve">
-    <value>Formato de imagen identificado por {0} ({1}).</value>
-  </data>
+        <value>[slateblue1]Formato de imagen identificado por [green]{0}[/] ([italic][red]{1}[/][/]).[/]</value>
+    </data>
     <data name="Image_format_not_identified" xml:space="preserve">
     <value>Format de imagen no identificado.</value>
   </data>
@@ -1338,20 +1338,20 @@
     <value>Muestra todas las opciones para los formatos de imagen escribibles.</value>
   </data>
     <data name="Image_partitioned_status_differ" xml:space="preserve">
-    <value>El estado de particionado de las imágenes difiere</value>
-  </data>
+        <value>[red]El estado de particionado de las imágenes difiere[/]</value>
+    </data>
     <data name="Image_Print_Command_Description" xml:space="preserve">
     <value>Muestra un sector, en valores hexadecimales, en la consola</value>
   </data>
     <data name="Image_sectors_differ" xml:space="preserve">
-    <value>Los sectores de las imágenes difieren</value>
-  </data>
+        <value>[red]Los sectores de las imágenes difieren[/]</value>
+    </data>
     <data name="Image_sector_size_differ" xml:space="preserve">
-    <value>El tamaño de sector de las imágenes difieren</value>
-  </data>
+        <value>[red]El tamaño de sector de las imágenes difieren[/]</value>
+    </data>
     <data name="Image_session_status_differ" xml:space="preserve">
-    <value>El estado de sesiones de las imágenes difiere</value>
-  </data>
+        <value>[red]El estado de sesiones de las imágenes difiere[/]</value>
+    </data>
     <data name="Image_Verify_Command_Description" xml:space="preserve">
     <value>Verifica la integridad de una imagen, y si está soportado, de sus sectores.</value>
   </data>
@@ -1419,8 +1419,8 @@
     <value>El número de sectores por pista especificado no es válido</value>
   </data>
     <data name="Invoke_Opening_image_file" xml:space="preserve">
-    <value>Abriendo fichero de imagen...</value>
-  </data>
+        <value>[slateblue1]Abriendo fichero de imagen...[/]</value>
+    </data>
     <data name="Is_forcing_only_first_session" xml:space="preserve">
     <value>Está forzando una única sesión</value>
   </data>
@@ -1464,11 +1464,11 @@
     <value>Última velocidad de PoweRec usada</value>
   </data>
     <data name="LBAs_without_checksum" xml:space="preserve">
-    <value>LBAs sin checksum:</value>
-  </data>
+        <value>[slateblue1]LBAs sin checksum:[/]</value>
+    </data>
     <data name="LBAs_with_error" xml:space="preserve">
-    <value>LBAs sin errores:</value>
-  </data>
+        <value>[slateblue1]LBAs sin errores:[/]</value>
+    </data>
     <data name="Level_1_Version_Product_Information_Tuple" xml:space="preserve">
     <value>Tupla de Información del Producto o Versión Nivel 1</value>
   </data>
@@ -1533,11 +1533,11 @@
     <value>Vuelca el medio a una imagen.</value>
   </data>
     <data name="Media_found_in_images_statistics" xml:space="preserve">
-    <value>Estadísticas de tipos de medio encontrados en imágenes</value>
-  </data>
+        <value>[bold][blue]Estadísticas de tipos de medio encontrados en imágenes[/][/]</value>
+    </data>
     <data name="Media_found_in_real_device_statistics" xml:space="preserve">
-    <value>Estadísticas de tipos de medio encontrados en dispositivos</value>
-  </data>
+        <value>[bold][blue]Estadísticas de tipos de medio encontrados en dispositivos[/][/]</value>
+    </data>
     <data name="Media_found_type_image" xml:space="preserve">
     <value>imagen</value>
   </data>
@@ -1548,8 +1548,8 @@
     <value>Geometría del medio: {0} cilindros, {1} cabezas y {2} sectores por pista</value>
   </data>
     <data name="Media_image_format_statistics" xml:space="preserve">
-    <value>Estadísticas de formatos de imagen de medio</value>
-  </data>
+        <value>[bold][blue]Estadísticas de formatos de imagen de medio[/][/]</value>
+    </data>
     <data name="Media_Info_Command_Description" xml:space="preserve">
     <value>Obtiene información sobre el medio introducido en un dispositivo.</value>
   </data>
@@ -1572,8 +1572,8 @@
     <value>Tipos de medio actualmente introducidos en la unidad</value>
   </data>
     <data name="Medium_types_supported_by_device" xml:space="preserve">
-    <value>Tipos de medio actualmente soportados por la unidad:</value>
-  </data>
+        <value>[bold][blue]Tipos de medio actualmente soportados por la unidad:[/][/]</value>
+    </data>
     <data name="Menu_About" xml:space="preserve">
     <value>_Acerca de</value>
   </data>
@@ -1686,17 +1686,17 @@
     <value>Abriendo dispositivo...</value>
   </data>
     <data name="Opening_first_image_file" xml:space="preserve">
-    <value>Abriendo 1ª imagen...</value>
-  </data>
+        <value>[slateblue1]Abriendo 1ª imagen...[/]</value>
+    </data>
     <data name="Opening_second_image_file" xml:space="preserve">
-    <value>Abriendo 2ª imagen...</value>
-  </data>
+        <value>[slateblue1]Abriendo 2ª imagen...[/]</value>
+    </data>
     <data name="Operation_canceled_the_output_file_is_not_correct" xml:space="preserve">
     <value>Operación cancelada, el fichero de salida no es correcto.</value>
   </data>
     <data name="Options_for_0" xml:space="preserve">
-    <value>Opciones para {0}:</value>
-  </data>
+        <value>[bold][blue]Opciones para [italic][teal]{0}[/][/]:[/][/]</value>
+    </data>
     <data name="OS_buffered_reads_help" xml:space="preserve">
     <value>Para MMC/SD, usar lecturas con el búfer del SO si CMD23 no está soportado.</value>
   </data>
@@ -1734,8 +1734,8 @@
     <value>Opciones interpretadas:</value>
   </data>
     <data name="Partitioning_scheme_statistics" xml:space="preserve">
-    <value>Estadísticas de esquemas de particionado</value>
-  </data>
+        <value>[bold][blue]Estadísticas de esquemas de particionado[/][/]</value>
+    </data>
     <data name="Partition_0" xml:space="preserve">
     <value>Partición {0}:</value>
   </data>
@@ -1743,8 +1743,8 @@
     <value>Número de parte del medio representado por la imagen.</value>
   </data>
     <data name="Path" xml:space="preserve">
-    <value>Ruta</value>
-  </data>
+        <value>[bold][olive]Ruta[/][/]</value>
+    </data>
     <data name="Path_0" xml:space="preserve">
     <value>Ruta: {0}</value>
   </data>
@@ -1752,8 +1752,8 @@
     <value>Pausa antes de salir.</value>
   </data>
     <data name="PCMCIA_CIS_is_0_bytes" xml:space="preserve">
-    <value>El CIS de PCMCIA ocupa {0} bytes</value>
-  </data>
+        <value>[slateblue1]El CIS de PCMCIA ocupa [teal]{0}[/] bytes[/]</value>
+    </data>
     <data name="PCMCIA_CIS_returned_no_tuples" xml:space="preserve">
     <value>El CIS de PCMCIA no retornó ninguna tupla</value>
   </data>
@@ -1821,8 +1821,8 @@
     <value>Opciones de los formatos de lectura/escritura:</value>
   </data>
     <data name="Read_write_media_image_formats_0" xml:space="preserve">
-    <value>{0} formatos de imagen de lectura escritura:</value>
-  </data>
+        <value>[bold][blue][teal]{0}[/] formatos de imagen de lectura escritura:[/][/]</value>
+    </data>
     <data name="Recommended_speed" xml:space="preserve">
     <value>Velocidad recomendada</value>
   </data>
@@ -1908,14 +1908,14 @@
     <value>Busca y muesta información sobre sistemas de ficheros.</value>
   </data>
     <data name="Second_image_has_more_sectors" xml:space="preserve">
-    <value>La 2ª imagen tiene más sectores</value>
-  </data>
+        <value>[red]La 2ª imagen tiene más sectores[/]</value>
+    </data>
     <data name="Second_input_file_format_identified_by_0" xml:space="preserve">
-    <value>El formato del 2º fichero es identificado por {0}.</value>
-  </data>
+        <value>[slateblue1]El formato del 2º fichero es identificado por [green]{0}[/].[/]</value>
+    </data>
     <data name="Second_input_file_format_identified_by_0_1" xml:space="preserve">
-    <value>El formato del 2º fichero es identificado por {0} ({1}).</value>
-  </data>
+        <value>[slateblue1]El formato del 2º fichero es identificado por [green]{0}[/] ([italic][red]{1}[/][/]).[/]</value>
+    </data>
     <data name="Second_input_file_format_not_identified" xml:space="preserve">
     <value>No se identificó el formato del 2º fichero, no se procederá con la comparativa.</value>
   </data>
@@ -1935,8 +1935,8 @@
     <value>Velocidad PoweRec seleccionada para el medio insertado:</value>
   </data>
     <data name="Serial" xml:space="preserve">
-    <value>Número de serie</value>
-  </data>
+        <value>[aqua]Número de serie[/]</value>
+    </data>
     <data name="Serial_number_of_drive_read_the_media_by_image" xml:space="preserve">
     <value>Número de serie de la unidad usada para leer el medio representado por la imagen.</value>
   </data>
@@ -2028,23 +2028,23 @@
     <value>Subcanal a volcar. Sólo aplicable a CD/GD. Valores: cualquiera, rw, rw-o-pq, pq, ninguno.</value>
   </data>
     <data name="Supported_archive_formats_0" xml:space="preserve">
-    <value>{0} formatos de archivo soportados:</value>
-  </data>
+        <value>[bold][blue][teal]{0}[/] formatos de archivo soportados:[/][/]</value>
+    </data>
     <data name="Supported_filesystems_for_identification_and_information_only_0" xml:space="preserve">
-    <value>{0} sistemas de ficheros soportados sólo para identificación e información:</value>
-  </data>
+        <value>[bold][blue][teal]{0}[/] sistemas de ficheros soportados sólo para identificación e información:[/][/]</value>
+    </data>
     <data name="Supported_filesystems_that_can_read_their_contents_0" xml:space="preserve">
-    <value>{0} sistemas de ficheros que podemos leer su contenido:</value>
-  </data>
+        <value>[bold][blue][teal]{0}[/] sistemas de ficheros que podemos leer su contenido:[/][/]</value>
+    </data>
     <data name="Supported_filters_0" xml:space="preserve">
-    <value>{0} filtros soportados:</value>
-  </data>
+        <value>[bold][blue][teal]{0}[/] filtros soportados:[/][/]</value>
+    </data>
     <data name="Supported_partitioning_schemes_0" xml:space="preserve">
-    <value>{0} esquemas de particionado soportados:</value>
-  </data>
+        <value>[bold][blue][teal]{0}[/] esquemas de particionado soportados:[/][/]</value>
+    </data>
     <data name="Supported_Question" xml:space="preserve">
-    <value>¿Soportado?</value>
-  </data>
+        <value>[green]¿Soportado?[/]</value>
+    </data>
     <data name="Supports_bitsetting_DVD_R_book_type" xml:space="preserve">
     <value>Soporta establecer el tipo de libro de DVD+R</value>
   </data>
@@ -2112,11 +2112,11 @@ Probadores:
     <value>No hay estadísticas.</value>
   </data>
     <data name="There_is_at_least_one_sector_that_does_not_contain_a_checksum" xml:space="preserve">
-    <value>Al menos un sector no contenía un checksum.</value>
-  </data>
+        <value>[olive]Al menos un sector no contenía un checksum.[/]</value>
+    </data>
     <data name="There_is_at_least_one_sector_with_incorrect_checksum_or_errors" xml:space="preserve">
-    <value>Al menos un sector tenía un checksum incorrecto o errores</value>
-  </data>
+        <value>[red]Al menos un sector tenía un checksum incorrecto o errores[/]</value>
+    </data>
     <data name="The_specified_image_does_not_support_any_kind_of_verification" xml:space="preserve">
     <value>La imagen especificada no soporta ningún tipo de verificación</value>
   </data>
@@ -2166,8 +2166,8 @@ Probadores:
     <value>Bloque</value>
   </data>
     <data name="Title_Bus" xml:space="preserve">
-    <value>Bus</value>
-  </data>
+        <value>[bold][rosybrown]Bus[/][/]</value>
+    </data>
     <data name="Title_Calculating_entropy" xml:space="preserve">
     <value>Calculando entropía</value>
   </data>
@@ -2187,8 +2187,8 @@ Probadores:
     <value>Código</value>
   </data>
     <data name="Title_Command" xml:space="preserve">
-    <value>Comando</value>
-  </data>
+        <value>[bold][purple]Comando[/][/]</value>
+    </data>
     <data name="Title_Commands" xml:space="preserve">
     <value>Comandos</value>
   </data>
@@ -2208,8 +2208,8 @@ Probadores:
     <value>Creación</value>
   </data>
     <data name="Title_Creation_time" xml:space="preserve">
-    <value>Tiempo de creación</value>
-  </data>
+        <value>[slateblue1]Tiempo de creación[/]</value>
+    </data>
     <data name="Title_CSD" xml:space="preserve">
     <value>CSD</value>
   </data>
@@ -2217,11 +2217,11 @@ Probadores:
     <value>Descodificado</value>
   </data>
     <data name="Title_Description" xml:space="preserve">
-    <value>Descripción</value>
-  </data>
+        <value>[bold][slateblue1]Descripción[/][/]</value>
+    </data>
     <data name="Title_Descriptor_size" xml:space="preserve">
-    <value>Tamaño del descriptor</value>
-  </data>
+        <value>[bold][slateblue1]Tamaño del descriptor[/][/]</value>
+    </data>
     <data name="Title_Destination_file" xml:space="preserve">
     <value>Fichero destino</value>
   </data>
@@ -2247,23 +2247,23 @@ Probadores:
     <value>Unidad</value>
   </data>
     <data name="Title_Drive_firmware_revision" xml:space="preserve">
-    <value>Revisión del firmware de la unidad</value>
-  </data>
+        <value>[slateblue1]Revisión del firmware de la unidad[/]</value>
+    </data>
     <data name="Title_Drive_has_kreon_firmware" xml:space="preserve">
-    <value>La unidad tiene firmware Kreon:</value>
-  </data>
+        <value>[bold[blue]La unidad tiene firmware Kreon:[/][/]</value>
+    </data>
     <data name="Title_Drive_information" xml:space="preserve">
     <value>Información de la unidad</value>
   </data>
     <data name="Title_Drive_manufacturer" xml:space="preserve">
-    <value>Fabricante de la unidad</value>
-  </data>
+        <value>[slateblue1]Fabricante de la unidad[/]</value>
+    </data>
     <data name="Title_Drive_model" xml:space="preserve">
-    <value>Modelo de la unidad</value>
-  </data>
+        <value>[slateblue1]Modelo de la unidad[/]</value>
+    </data>
     <data name="Title_Drive_serial_number" xml:space="preserve">
-    <value>Número de serie de la unidad</value>
-  </data>
+        <value>[slateblue1]Número de serie de la unidad[/]</value>
+    </data>
     <data name="Title_Dump_hardware" xml:space="preserve">
     <value>Hardware de volcado</value>
   </data>
@@ -2289,17 +2289,17 @@ Probadores:
     <value>Funcionalidad</value>
   </data>
     <data name="Title_File" xml:space="preserve">
-    <value>Fichero</value>
-  </data>
+        <value>[slateblue1]Fichero[/]</value>
+    </data>
     <data name="Title_Filesystem" xml:space="preserve">
-    <value>Sistema de ficheros</value>
-  </data>
+        <value>[bold][purple]Sistema de ficheros[/][/]</value>
+    </data>
     <data name="Title_Filesystems" xml:space="preserve">
     <value>Sistemas de ficheros</value>
   </data>
     <data name="Title_Filter" xml:space="preserve">
-    <value>Filtro</value>
-  </data>
+        <value>[bold][purple]Filtro[/][/]</value>
+    </data>
     <data name="Title_Filters" xml:space="preserve">
     <value>Filtros</value>
   </data>
@@ -2307,20 +2307,20 @@ Probadores:
     <value>FireWire</value>
   </data>
     <data name="Title_FireWire_device" xml:space="preserve">
-    <value>Dispositivo FireWire</value>
-  </data>
+        <value>[bold][blue]Dispositivo FireWire[/][/]</value>
+    </data>
     <data name="Title_Firmware_revision" xml:space="preserve">
     <value>Revisión de firmware</value>
   </data>
     <data name="Title_First_Media_image" xml:space="preserve">
-    <value>1ª imagen</value>
-  </data>
+        <value>[green]1ª imagen[/]</value>
+    </data>
     <data name="Title_Floppy_images" xml:space="preserve">
     <value>Imágenes de disquete</value>
   </data>
     <data name="Title_Format" xml:space="preserve">
-    <value>Formato</value>
-  </data>
+        <value>[bold][purple]Formato[/][/]</value>
+    </data>
     <data name="Title_Formats" xml:space="preserve">
     <value>Formatos</value>
   </data>
@@ -2337,8 +2337,8 @@ Probadores:
     <value>GID</value>
   </data>
     <data name="Title_GUID" xml:space="preserve">
-    <value>GUID</value>
-  </data>
+        <value>[bold][slateblue1]GUID[/][/]</value>
+    </data>
     <data name="Title_Hash" xml:space="preserve">
     <value>Hash</value>
   </data>
@@ -2355,29 +2355,29 @@ Probadores:
     <value>Imágenes</value>
   </data>
     <data name="Title_Image_application" xml:space="preserve">
-    <value>Aplicación de la imagen</value>
-  </data>
+        <value>[slateblue1]Aplicación de la imagen[/]</value>
+    </data>
     <data name="Title_Image_application_version" xml:space="preserve">
-    <value>Versión de la aplicación de la imagen</value>
-  </data>
+        <value>[slateblue1]Versión de la aplicación de la imagen[/]</value>
+    </data>
     <data name="Title_Image_comments" xml:space="preserve">
-    <value>Comentarios de la imagen</value>
-  </data>
+        <value>[slateblue1]Comentarios de la imagen[/]</value>
+    </data>
     <data name="Title_Image_creator" xml:space="preserve">
-    <value>Creador de la imagen</value>
-  </data>
+        <value>[slateblue1]Creador de la imagen[/]</value>
+    </data>
     <data name="Title_Image_information" xml:space="preserve">
     <value>Información de la imagen</value>
   </data>
     <data name="Title_Image_name" xml:space="preserve">
-    <value>Nombre de la imagen</value>
-  </data>
+        <value>[slateblue1]Nombre de la imagen[/]</value>
+    </data>
     <data name="Title_Image_size" xml:space="preserve">
-    <value>Tamaño de la imagen</value>
-  </data>
+        <value>[slateblue1]Tamaño de la imagen[/]</value>
+    </data>
     <data name="Title_Image_version" xml:space="preserve">
-    <value>Versión de la imagen</value>
-  </data>
+        <value>[slateblue1]Versión de la imagen[/]</value>
+    </data>
     <data name="Title_Information" xml:space="preserve">
     <value>Información</value>
   </data>
@@ -2406,11 +2406,11 @@ Probadores:
     <value>Último medio de la secuencia</value>
   </data>
     <data name="Title_Last_media_on_sequence" xml:space="preserve">
-    <value>Último medio en la secuencia</value>
-  </data>
+        <value>[slateblue1]Último medio en la secuencia[/]</value>
+    </data>
     <data name="Title_Last_modification_time" xml:space="preserve">
-    <value>Fecha de última modificación</value>
-  </data>
+        <value>[slateblue1]Fecha de última modificación[/]</value>
+    </data>
     <data name="Title_Last_write" xml:space="preserve">
     <value>Última escritura</value>
   </data>
@@ -2430,8 +2430,8 @@ Probadores:
     <value>Registro</value>
   </data>
     <data name="Title_Manufacturer" xml:space="preserve">
-    <value>Fabricante</value>
-  </data>
+        <value>[bold][blue]Fabricante[/][/]</value>
+    </data>
     <data name="Title_Media" xml:space="preserve">
     <value>Medio</value>
   </data>
@@ -2439,8 +2439,8 @@ Probadores:
     <value>Medios</value>
   </data>
     <data name="Title_Media_barcode" xml:space="preserve">
-    <value>Código de barras del medio</value>
-  </data>
+        <value>[slateblue1]Código de barras del medio[/]</value>
+    </data>
     <data name="Title_Media_catalog_number" xml:space="preserve">
     <value>Número de catálogo del medio</value>
   </data>
@@ -2451,29 +2451,29 @@ Probadores:
     <value>Imágenes de medios</value>
   </data>
     <data name="Title_Media_image_format" xml:space="preserve">
-    <value>Formato de imagen</value>
-  </data>
+        <value>[slateblue1]Formato de imagen[/]</value>
+    </data>
     <data name="Title_Media_information" xml:space="preserve">
     <value>Información del medio</value>
   </data>
     <data name="Title_Media_manufacturer" xml:space="preserve">
-    <value>Fabricante del medio</value>
-  </data>
+        <value>[slateblue1]Fabricante del medio[/]</value>
+    </data>
     <data name="Title_Media_model" xml:space="preserve">
-    <value>Modelo del medio</value>
-  </data>
+        <value>[slateblue1]Modelo del medio[/]</value>
+    </data>
     <data name="Title_Media_part_number" xml:space="preserve">
-    <value>Nº de parte del medio</value>
-  </data>
+        <value>[slateblue1]Nº de parte del medio[/]</value>
+    </data>
     <data name="Title_Media_sequence" xml:space="preserve">
-    <value>Secuencia del medio</value>
-  </data>
+        <value>[slateblue1]Secuencia del medio[/]</value>
+    </data>
     <data name="Title_Media_serial_number" xml:space="preserve">
-    <value>Número de serie del medio</value>
-  </data>
+        <value>[slateblue1]Número de serie del medio[/]</value>
+    </data>
     <data name="Title_Media_type" xml:space="preserve">
-    <value>Tipo de medio</value>
-  </data>
+        <value>[slateblue1]Tipo de medio[/]</value>
+    </data>
     <data name="Title_Message" xml:space="preserve">
     <value>Mensaje</value>
   </data>
@@ -2490,11 +2490,11 @@ Probadores:
     <value>Modo</value>
   </data>
     <data name="Title_Model" xml:space="preserve">
-    <value>Modelo</value>
-  </data>
+        <value>[bold][purple]Modelo[/][/]</value>
+    </data>
     <data name="Title_Model_ID" xml:space="preserve">
-    <value>ID de modelo</value>
-  </data>
+        <value>[bold][slateblue1]ID de modelo[/][/]</value>
+    </data>
     <data name="Title_MODE_SENSE" xml:space="preserve">
     <value>MODE SENSE</value>
   </data>
@@ -2502,11 +2502,11 @@ Probadores:
     <value>Módulo</value>
   </data>
     <data name="Title_Name" xml:space="preserve">
-    <value>Nombre</value>
-  </data>
+        <value>[bold][darkgreen]Nombre[/][/]</value>
+    </data>
     <data name="Title_Namespace" xml:space="preserve">
-    <value>Espacio de nombres</value>
-  </data>
+        <value>[dargreen]Espacio de nombres[/]</value>
+    </data>
     <data name="Title_Number_in_sequence" xml:space="preserve">
     <value>Número en secuencia</value>
   </data>
@@ -2535,8 +2535,8 @@ Probadores:
     <value>PCMCIA</value>
   </data>
     <data name="Title_PCMCIA_device" xml:space="preserve">
-    <value>Dispositivo PCMCIA</value>
-  </data>
+        <value>[bold][blue]Dispositivo PCMCIA[/][/]</value>
+    </data>
     <data name="Title_Peripheral_device_type" xml:space="preserve">
     <value>Tipo de periférico del dispositivo</value>
   </data>
@@ -2547,11 +2547,11 @@ Probadores:
     <value>Extensiones</value>
   </data>
     <data name="Title_Product" xml:space="preserve">
-    <value>Producto</value>
-  </data>
+        <value>[bold][slateblue1]Producto[/][/]</value>
+    </data>
     <data name="Title_Product_ID" xml:space="preserve">
-    <value>ID de producto</value>
-  </data>
+        <value>[bold][slateblue1]ID de producto[/][/]</value>
+    </data>
     <data name="Title_Readable" xml:space="preserve">
     <value>Legible:</value>
   </data>
@@ -2568,11 +2568,11 @@ Probadores:
     <value>Reportes</value>
   </data>
     <data name="Title_Revision" xml:space="preserve">
-    <value>Revisión</value>
-  </data>
+        <value>[bold][teal]Revisión[/][/]</value>
+    </data>
     <data name="Title_Scheme" xml:space="preserve">
-    <value>Esquema</value>
-  </data>
+        <value>[bold][purple]Esquema[/][/]</value>
+    </data>
     <data name="Title_SCR" xml:space="preserve">
     <value>SCR</value>
   </data>
@@ -2580,35 +2580,35 @@ Probadores:
     <value>SCSI</value>
   </data>
     <data name="Title_SCSI_device" xml:space="preserve">
-    <value>Dispositivo SCSI</value>
-  </data>
+        <value>[bold][blue]Dispositivo SCSI[/][/]</value>
+    </data>
     <data name="Title_SCSI_INQUIRY" xml:space="preserve">
     <value>SCSI INQUIRY</value>
   </data>
     <data name="Title_SCSI_MMC_GET_CONFIGURATION_Features" xml:space="preserve">
-    <value>Funcionas de SCSI MMC GET CONFIGURATION:</value>
-  </data>
+        <value>[bold][blue]Funcionas de SCSI MMC GET CONFIGURATION:[/][/]</value>
+    </data>
     <data name="Title_SD_MMC" xml:space="preserve">
     <value>SD / MMC</value>
   </data>
     <data name="Title_Second_Media_image" xml:space="preserve">
-    <value>2ª imagen</value>
-  </data>
+        <value>[red]2ª imagen[/]</value>
+    </data>
     <data name="Title_Sector" xml:space="preserve">
     <value>Sector</value>
   </data>
     <data name="Title_Sectors" xml:space="preserve">
-    <value>Sectores</value>
-  </data>
+        <value>[slateblue1]Sectores[/]</value>
+    </data>
     <data name="Title_Sector_size" xml:space="preserve">
-    <value>Tamaño de sector</value>
-  </data>
+        <value>[slateblue1]Tamaño de sector[/]</value>
+    </data>
     <data name="Title_Security_Sector" xml:space="preserve">
     <value>Sector de Seguridad</value>
   </data>
     <data name="Title_Serial_number" xml:space="preserve">
-    <value>Número de serie</value>
-  </data>
+        <value>[bold][fuchsia]Número de serie[/][/]</value>
+    </data>
     <data name="Title_Sessions" xml:space="preserve">
     <value>Sesiones</value>
   </data>
@@ -2628,8 +2628,8 @@ Probadores:
     <value>Hora</value>
   </data>
     <data name="Title_Times_used" xml:space="preserve">
-    <value>Veces usado</value>
-  </data>
+        <value>[bold][teal]Veces usado[/][/]</value>
+    </data>
     <data name="Title_Title" xml:space="preserve">
     <value>Título</value>
   </data>
@@ -2649,8 +2649,8 @@ Probadores:
     <value>Entropía de pista</value>
   </data>
     <data name="Title_Type" xml:space="preserve">
-    <value>Tipo</value>
-  </data>
+        <value>[bold][olive]Tipo[/][/]</value>
+    </data>
     <data name="Title_UID" xml:space="preserve">
     <value>UID</value>
   </data>
@@ -2661,17 +2661,17 @@ Probadores:
     <value>USB</value>
   </data>
     <data name="Title_USB_device" xml:space="preserve">
-    <value>Dispositivo USB</value>
-  </data>
+        <value>[bold][blue]Dispositivo USB[/][/]</value>
+    </data>
     <data name="Title_UUID" xml:space="preserve">
     <value>UUID</value>
   </data>
     <data name="Title_Vendor" xml:space="preserve">
-    <value>Fabricante</value>
-  </data>
+        <value>[bold][slateblue1]Fabricante[/][/]</value>
+    </data>
     <data name="Title_Vendor_ID" xml:space="preserve">
-    <value>ID de fabricante</value>
-  </data>
+        <value>[bold][slateblue1]ID de fabricante[/][/]</value>
+    </data>
     <data name="Title_Version" xml:space="preserve">
     <value>Versión</value>
   </data>
@@ -2682,29 +2682,29 @@ Probadores:
     <value>Escribible</value>
   </data>
     <data name="Total_errors_plus_unknowns" xml:space="preserve">
-    <value>Total desconocidos+errores....</value>
-  </data>
+        <value>[bold][italic][slateblue1]Total desconocidos+errores[/][/][/]</value>
+    </data>
     <data name="Total_errors" xml:space="preserve">
-    <value>Total de errores..............</value>
-  </data>
+        <value>[bold][italic][slateblue1]Total de errores[/][/][/]</value>
+    </data>
     <data name="Total_sectors" xml:space="preserve">
-    <value>Total de sectores.............</value>
-  </data>
+        <value>[bold][italic][slateblue1]Total de sectores[/][/][/]</value>
+    </data>
     <data name="Total_unknowns" xml:space="preserve">
-    <value>Total desconocidos............</value>
-  </data>
+        <value>[bold][italic][slateblue1]Total desconocidos[/][/][/]</value>
+    </data>
     <data name="Total_loaded_discs" xml:space="preserve">
     <value>Discos cargados en total:</value>
   </data>
     <data name="Track_0_has_1_unique_sectors_2" xml:space="preserve">
-    <value>La pista {0} tiene {1} sectores únicos ({2:P3})</value>
-  </data>
+        <value>[slateblue1]La pista [teal]{0}[/] tiene [teal]{1}[/] sectores únicos ([aqua]{2:P3}[/])[/]</value>
+    </data>
     <data name="Track_0_starts_at_LBA_1_ends_at_LBA_2_has_a_pregap_of_3_sectors_and_is_of_type_4" xml:space="preserve">
     <value>La pista {0} empieza en el LBA {1}, termina en el {2}, tiene un hueco anterior de {3} sectores y es de tipo {4}</value>
   </data>
     <data name="Track_0_starts_at_sector_1_and_ends_at_sector_2" xml:space="preserve">
-    <value>La pista {0} empieza en el sector {1} y termina en el {2}</value>
-  </data>
+        <value>[slateblue1]La pista [teal]{0}[/] empieza en el sector [lime]{1}[/] y termina en el [lime]{2}[/]</value>
+    </data>
     <data name="Track_Resources" xml:space="preserve">
     <value>Recursos de pista</value>
   </data>
@@ -3019,5 +3019,38 @@ Probadores:
     </data>
     <data name="Dialog_Aaru_Resume" xml:space="preserve">
         <value>Fichero de resumen de Aaru</value>
+    </data>
+    <data name="Archive_List_Command_Description" xml:space="preserve">
+        <value>Lista el contenido de un archivo.</value>
+    </data>
+    <data name="CD_reading_offset_is_0_samples_1_bytes" xml:space="preserve">
+        <value>[slateblue1]El desplazamiento de lectura es de [teal]{0}[/] muestras ([lime]{1}[/] bytes).[/]</value>
+    </data>
+    <data name="CD_reading_offset_not_found_in_database" xml:space="preserve">
+        <value>[slateblue1]No se encuentra el desplazamiento de lectura en la base de datos.[/]</value>
+    </data>
+    <data name="Could_not_get_any_kind_of_information_from_the_device" xml:space="preserve">
+        <value>¡¡¡ No se pudo obtener ninguna información del dispositivo !!!</value>
+    </data>
+    <data name="Database_statistics_command" xml:space="preserve">
+        <value>Estadísticas de la base de datos:</value>
+    </data>
+    <data name="List_devices_command" xml:space="preserve">
+        <value>Listar dispositivos</value>
+    </data>
+    <data name="List_encodings_command" xml:space="preserve">
+        <value>Listar codificaciones</value>
+    </data>
+    <data name="List_namespaces_command" xml:space="preserve">
+        <value>Listar espaciosde nombres</value>
+    </data>
+    <data name="Optimal_multiple_read_is_0_sectors" xml:space="preserve">
+        <value>[slateblue1]La lectura mútiple óptima es de [aqua]{0}[/] sectores.[/]</value>
+    </data>
+    <data name="Title_Archive_Format" xml:space="preserve">
+        <value>[bold][red3]Formato de archivo[/][/]</value>
+    </data>
+    <data name="Unable_to_get_separate_tracks_not_checksumming_them" xml:space="preserve">
+        <value>[yellow]No se pudieron separar las pistas, no se harán checksum de ellas[/]</value>
     </data>
 </root>

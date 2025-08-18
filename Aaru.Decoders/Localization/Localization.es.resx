@@ -47,11 +47,11 @@
     <value>Abortar cualquier comando de escritura sin información de protección</value>
   </data>
     <data name="Absolute_time_0_1_2" xml:space="preserve">
-    <value>Tiempo absoluto: {0:D2}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Tiempo absoluto: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
+    </data>
     <data name="Absolute_time_3_0_1_2" xml:space="preserve">
-    <value>Tiempo absoluto: {3:D2}:{0:D2}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Tiempo absoluto: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2}[/][/]</value>
+    </data>
     <data name="Accessible_Max_Address_Configuration_is_supported" xml:space="preserve">
     <value>Accessible Max Address Configuration está soportada</value>
   </data>
@@ -502,11 +502,11 @@
     <value>sólo información de audio</value>
   </data>
     <data name="Audio_track_3_starts_at_0_1_2_open_parenthesis" xml:space="preserve">
-    <value>La pista de audio {3} comienza en: {0:D2}:{1:D2}:{2:D2} (</value>
-  </data>
+        <value>[slateblue1]La pista de audio [teal]{3}[/] comienza en: [lime]{0:D2}:{1:D2}:{2:D2}[/] [italic](</value>
+    </data>
     <data name="Audio_track_3_starts_at_4_0_1_2_open_parenthesis" xml:space="preserve">
-    <value>La pista de audio {3} comienza en: {4:D2}:{0:D2}:{1:D2}:{2:D2} (</value>
-  </data>
+        <value>[slateblue1]La pista de audio [teal]{3}[/] comienza en: [lime]{4:D2}:{0:D2}:{1:D2}:{2:D2}[/] [italic](</value>
+    </data>
     <data name="Audio_Visual_data_support_mode_is_applied" xml:space="preserve">
     <value>El soporte del modo de datos audiovisual está aplicado</value>
   </data>
@@ -603,8 +603,8 @@
     <value>Contenidos de información de disco dependiente del formato de Blu-ray en hexadecimal a continuación:</value>
   </data>
     <data name="Book_type_0" xml:space="preserve">
-    <value>Tipo de libro: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]Tipo de libro: [teal]0x{0:X2}[/][/]</value>
+    </data>
     <data name="Boot_area_one_is_not_protected" xml:space="preserve">
     <value>El área de arranque 1 no está protegida</value>
   </data>
@@ -859,8 +859,8 @@
     <value>El acceso a datos dependiente del reloj es de {0} ciclos del reloj</value>
   </data>
     <data name="close_parenthesis" xml:space="preserve">
-    <value>)</value>
-  </data>
+        <value>)[/][/]</value>
+    </data>
     <data name="Code_name_0" xml:space="preserve">
     <value>Nombre del código: {0}</value>
   </data>
@@ -934,8 +934,8 @@
     <value>Copyright: {0}</value>
   </data>
     <data name="Copy_of_information_of_A1_from_ATIP_found" xml:space="preserve">
-    <value>Encontrada copia de la información A1 del ATIP</value>
-  </data>
+        <value>[slateblue1]Encontrada copia de la información A1 del ATIP[/]</value>
+    </data>
     <data name="Correct_ECC_P" xml:space="preserve">
     <value>ECC P correcto.</value>
   </data>
@@ -1059,11 +1059,11 @@
     <value>Las cintas de datos se enroscarán al principio, y las demás se descargarán</value>
   </data>
     <data name="Data_track_3_starts_at_0_1_2_open_parenthesis" xml:space="preserve">
-    <value>Pista de datos {3} comienza en: {0:D2}:{1:D2}:{2:D2} (</value>
-  </data>
+        <value>[slateblue1]Pista de datos [teal]{3}[/] comienza en: [lime]{0:D2}:{1:D2}:{2:D2}[/] [italic](</value>
+    </data>
     <data name="Data_track_3_starts_at_4_0_1_2_open_parenthesis" xml:space="preserve">
-    <value>Pista de datos {3} comienza en: {4:D2}:{1:D2}:{2:D2} (</value>
-  </data>
+        <value>[slateblue1]Pista de datos [teal]{3}[/] comienza en: [lime]{4:D2}:{1:D2}:{2:D2}[/] [italic](</value>
+    </data>
     <data name="Data_track_recorded_incrementally" xml:space="preserve">
     <value>Pista de datos, grabada incrementalmente</value>
   </data>
@@ -3920,8 +3920,8 @@
     <value>El disco tiene inihibda la escritura por la razón desconocida {0}</value>
   </data>
     <data name="Disc_ID_0_X6" xml:space="preserve">
-    <value>ID del disco: {0:X6}</value>
-  </data>
+        <value>[slateblue1]ID del disco: [teal]{0:X6}[/][/]</value>
+    </data>
     <data name="Disc_is_a_0_1_version_2" xml:space="preserve">
     <value>El disco es un {0} {1} versión {2}</value>
   </data>
@@ -4115,8 +4115,8 @@
     <value>La pendiente de pista es de 0,74µm</value>
   </data>
     <data name="Disc_type_0" xml:space="preserve">
-    <value>Tipo de disco: {0}</value>
-  </data>
+        <value>[slateblue1]Tipo de disco: [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_type_declared_as_CD_DA_or_CD_ROM" xml:space="preserve">
     <value>El disco está declarado como un CD-DA o un CD-ROM</value>
   </data>
@@ -5505,8 +5505,8 @@
     <value>Dispositivo de servicios de carcasa</value>
   </data>
     <data name="Ending_time_for_interval_that_should_be_skipped_0_1_2" xml:space="preserve">
-    <value>Tiempo final del intervalo que debe ser esquivado: {0:D2}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Tiempo final del intervalo que debe ser esquivado: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
+    </data>
     <data name="End_of_file" xml:space="preserve">
     <value>Fin de fichero.</value>
   </data>
@@ -5562,8 +5562,8 @@
     <value>Se esperaba un tamaño de ATIP de CD (32 bytes) que no es el recibido ({0} bytes), no se descodificará</value>
   </data>
     <data name="Expected_CD_PMA_size_0_bytes_is_not_received_size_1_bytes_not_decoding" xml:space="preserve">
-    <value>Se esperaba un tamaño de PMA de CD ({0} bytes) que no es el recibido ({1} bytes), no se descodificará</value>
-  </data>
+        <value>[slateblue1]Se esperaba un tamaño de PMA de CD ([lime]{0}[/] bytes) que no es el recibido ([lime]{1}[/] bytes), no se descodificará[/]</value>
+    </data>
     <data name="Expected_CD_TEXT_size_0_bytes_is_not_received_size_1_bytes_not_decoding" xml:space="preserve">
     <value>Se esperaba un tamaño de CD-Text ({0} bytes) que no es el recibido ({1} bytes), no se descodificará</value>
   </data>
@@ -5681,8 +5681,8 @@
     <value>Número de dirección de la primera zona de datos en esta capa: {0}</value>
   </data>
     <data name="First_complete_session_number_0" xml:space="preserve">
-    <value>Número de la primera sesión completa: {0}</value>
-  </data>
+        <value>[slateblue1]Número de la primera sesión completa:[/] [teal]{0}[/]</value>
+    </data>
     <data name="First_PSN_of_Defect_List_0" xml:space="preserve">
     <value>Primer PSN de la Lista de Defectos: 0x{0:X8}</value>
   </data>
@@ -5699,8 +5699,8 @@
     <value>La primera pista de la última sesión es la pisa {0}</value>
   </data>
     <data name="First_track_number_0_open_parenthesis" xml:space="preserve">
-    <value>Número de la primera pista: {0} (</value>
-  </data>
+        <value>[slateblue1]Número de la primera pista: [teal]{0}[/] [italic](</value>
+    </data>
     <data name="First_track_number_in_first_complete_session_0" xml:space="preserve">
     <value>Número de la primera pista en la primera sesión completa: {0}</value>
   </data>
@@ -5711,8 +5711,8 @@
     <value>La primera pista del disco es la pista {0}</value>
   </data>
     <data name="First_video_track_number_0" xml:space="preserve">
-    <value>Número de la primera pista de video: {0}</value>
-  </data>
+        <value>[slateblue1]Número de la primera pista de video:[/] [teal]{0}[/]</value>
+    </data>
     <data name="FLUSH_CACHE_EXT_is_supported" xml:space="preserve">
     <value>FLUSH CACHE EXT está soportado</value>
   </data>
@@ -6299,8 +6299,8 @@
     <value>Número de unidad de la última dirección de la zona de datos de esta capa: {0}</value>
   </data>
     <data name="Last_complete_session_number_0" xml:space="preserve">
-    <value>Número de la última sesión completa: {0}</value>
-  </data>
+        <value>[slateblue1]Número de la última sesión completa:[/] [teal]{0}[/]</value>
+    </data>
     <data name="Last_data_read_was_compressed_with_" xml:space="preserve">
     <value>Los últimos datos leídos estaban comprimidos con</value>
   </data>
@@ -6332,8 +6332,8 @@
     <value>La última pista en la última sesión es la pista {0}</value>
   </data>
     <data name="Last_track_number_0_open_parenthesis" xml:space="preserve">
-    <value>Número de la última pista: {0} (</value>
-  </data>
+        <value>[slateblue1]Número de la última pista: [teal]{0}[/] [italic](</value>
+    </data>
     <data name="Last_track_number_in_last_complete_session_0" xml:space="preserve">
     <value>Número de la última pista en la última sesión completa: {0}</value>
   </data>
@@ -6344,8 +6344,8 @@
     <value>Último PSN de datos de usuari para el disco: {0}</value>
   </data>
     <data name="Last_video_track_number_0" xml:space="preserve">
-    <value>Número de la última pista de video: {0}</value>
-  </data>
+        <value>[slateblue1]Número de la última pista de video: [teal]{0}[/][/]</value>
+    </data>
     <data name="Last_writable_ECC_block_address_0_X6_" xml:space="preserve">
     <value>Dirección del último bloque ECC escribible: 0x{0:X6}</value>
   </data>
@@ -6383,20 +6383,20 @@
     <value>El Lead-In está pre-grabado</value>
   </data>
     <data name="Lead_out_is_audio_type" xml:space="preserve">
-    <value>El Lead-Out es de tipo audio</value>
-  </data>
+        <value>[slateblue1]El Lead-Out es de tipo audio[/]</value>
+    </data>
     <data name="Lead_out_is_data_type" xml:space="preserve">
-    <value>El Lead-Out es de tipo datos</value>
-  </data>
+        <value>[slateblue1]El Lead-Out es de tipo datos[/]</value>
+    </data>
     <data name="Lead_Out_is_pre_recorded" xml:space="preserve">
     <value>El Lead-Out está pre-grabado</value>
   </data>
     <data name="Lead_out_start_position_0_1_2" xml:space="preserve">
-    <value>Posición de comienzo del Lead-Out: {0:D2}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Posición de comienzo del Lead-Out: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
+    </data>
     <data name="Lead_out_start_position_3_0_1_2" xml:space="preserve">
-    <value>Posición de comienzo del Lead-Out: {3:D2}:{0:D2}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Posición de comienzo del Lead-Out: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2}[/][/]</value>
+    </data>
     <data name="Legacy_value_0" xml:space="preserve">
     <value>Valor antiguo: 0x{0:X2}</value>
   </data>
@@ -6559,8 +6559,8 @@
     <value>Código de revisión de la contraseña maestra: {0}</value>
   </data>
     <data name="Material_type_0" xml:space="preserve">
-    <value>Tipo de material: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]Tipo de material: [teal]0x{0:X2}[/][/]</value>
+    </data>
     <data name="Maximum_0_scramble_extent_information_entries" xml:space="preserve">
     <value>Máximo {0} entradas de información de mezcla de extents</value>
   </data>
@@ -6571,11 +6571,11 @@
     <value>El tamaño de datos de sense máximo sería de {0} bytes</value>
   </data>
     <data name="Maximum_start_of_outermost_Lead_out_in_the_recordable_area_of_the_disc_0_1_2" xml:space="preserve">
-    <value>Comienzo máximo del Lead-Out más externo del área grabable del disco: {0:D2}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Comienzo máximo del Lead-Out más externo del área grabable del disco: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
+    </data>
     <data name="Maximum_start_of_outermost_Lead_out_in_the_recordable_area_of_the_disc_3_0_1_2" xml:space="preserve">
-    <value>Comienzo máximo del Lead-Out más externo del área grabable del disco: {3:D2}:{0:D2}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Comienzo máximo del Lead-Out más externo del área grabable del disco: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2}[/][/]</value>
+    </data>
     <data name="Maximum_timeout_for_switch_command_when_setting_a_value_to_the_mode_operation_codes_field_is_0_ms"
           xml:space="preserve">
     <value>El tiempo de espera máximo para cambiar el comando cuando se establece un valor en el campo de códigos del modo de operación es {0:D2}ms</value>
@@ -7033,8 +7033,8 @@
     <value>Revisión del módulo: {0}</value>
   </data>
     <data name="Moment_of_inertia_0" xml:space="preserve">
-    <value>Momento de inercia: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]Momento de inercia: [teal]0x{0:X2}[/][/]</value>
+    </data>
     <data name="MRW_is_dirty" xml:space="preserve">
     <value>El MRW está corrupto</value>
   </data>
@@ -7153,11 +7153,11 @@
     <value>El número de las particiones puede ser definido pero su tamaño lo definirá el dispositivo</value>
   </data>
     <data name="Number_of_skip_interval_pointers_0" xml:space="preserve">
-    <value>Número de punteros de intervalos de salto: {0}</value>
-  </data>
+        <value>[slateblue1]Número de punteros de intervalos de salto: [teal]{0}[/][/]</value>
+    </data>
     <data name="Number_of_skip_track_pointers_0" xml:space="preserve">
-    <value>Número de punteros de saltos de pista: {0}</value>
-  </data>
+        <value>[slateblue1]Número de punteros de saltos de pista: [teal]{0}[/][/]</value>
+    </data>
     <data name="Object_based_Storage_Device" xml:space="preserve">
     <value>Dispositivo de almacenamiento basado en objetos</value>
   </data>
@@ -7216,8 +7216,8 @@
     <value>El tamaño óptimo de escritura es de {0} KiB</value>
   </data>
     <data name="Optimum_recording_power_0" xml:space="preserve">
-    <value>Potencia óptica de grabado: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]Potencia óptima de grabación: [teal]0x{0:X2}[/][/]</value>
+    </data>
     <data name="OSA_size_0" xml:space="preserve">
     <value>Tamaño OSA: {0}</value>
   </data>
@@ -7891,8 +7891,8 @@
     <value>Valor reservado {0} de control de desconexión de la transferencia de datos</value>
   </data>
     <data name="Reserved_equals_0_X2" xml:space="preserve">
-    <value>Reservado = 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]Reservado = [teal]0x{0:X2}[/][/]</value>
+    </data>
     <data name="Reserved_flags_0_set" xml:space="preserve">
     <value>Valores reservados 0x{0:X2} establecidos</value>
   </data>
@@ -8252,8 +8252,8 @@
     <value>Versión del firmware del servo: {0}</value>
   </data>
     <data name="Session_0" xml:space="preserve">
-    <value>Sesión {0}</value>
-  </data>
+        <value>[slateblue1]Sesión[/] [teal]{0}[/]</value>
+    </data>
     <data name="SET_FEATURES_is_required_before_spin_up" xml:space="preserve">
     <value>SET FEATURES es requerido antes del inicio</value>
   </data>
@@ -8273,18 +8273,18 @@
     <value>DMA de palabra única:</value>
   </data>
     <data name="Skip_time_interval_assignment_0_says_that_from_1_2_3_to_4_5_6_should_be_skipped" xml:space="preserve">
-    <value>La asignación {0} del intervalo de tiempo de omisión dice que desde {1:D2}:{2:D2}:{3:D2} hasta {4:D2}:{5:D2}:{6:D2} deben ser omitidos</value>
-  </data>
+        <value>[slateblue1]La asignación [teal]{0}[/] del intervalo de tiempo de omisión dice que desde [lime]{1:D2}:{2:D2}:{3:D2}[/] hasta [lime]{4:D2}:{5:D2}:{6:D2}[/] deben ser omitidos[/]</value>
+    </data>
     <data name="Skip_time_interval_assignment_0_says_that_from_4_1_2_3_to_8_5_6_7_should_be_skipped"
-          xml:space="preserve">
-    <value>La asignación {0} del intervalo de tiempo de omisión dice que desde {4}:{1:D2}:{2:D2}:{3:D2} hasta {8}:{5:D2}:{6:D2}:{7:D2} deben ser omitidos</value>
-  </data>
+        xml:space="preserve">
+        <value>[slateblue1]La asignación [teal]{0}[/] del intervalo de tiempo de omisión dice que desde [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] hasta [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/] deben ser omitidos</value>
+    </data>
     <data name="Skip_track_0" xml:space="preserve">
-    <value>Omitir pista {0}</value>
-  </data>
+        <value>[slateblue1]Omitir pista [teal]{0}[/][/]</value>
+    </data>
     <data name="Skip_track_assignment_0_says_that_tracks_1_should_be_skipped" xml:space="preserve">
-    <value>La asignación de omisión de pista {0} dice que la pista {1} debe omitirse</value>
-  </data>
+        <value>[slateblue1]La asignación de omisión de pista [teal]{0}[/] dice que la pista [teal]{1}[/] debe omitirse[/]</value>
+    </data>
     <data name="SLR32SL" xml:space="preserve">
     <value>SLR-32 SL</value>
   </data>
@@ -8349,38 +8349,38 @@
     <value>Los valores del tiempo de reposo son estándar</value>
   </data>
     <data name="Start_of_next_possible_program_in_the_recordable_area_of_the_disc_0_1_2" xml:space="preserve">
-    <value>Comienzo del posible siguiente programa en el área grabable del disco: {0:D2}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Comienzo del posible siguiente programa en el área grabable del disco: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
+    </data>
     <data name="Start_of_next_possible_program_in_the_recordable_area_of_the_disc_3_0_1_2" xml:space="preserve">
-    <value>Comienzo del posible siguiente programa en el área grabable del disco: {3:D2}:{0:D2}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Comienzo del posible siguiente programa en el área grabable del disco: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2}[/][/]</value>
+    </data>
     <data name="Start_position_of_outer_part_lead_in_area_0_1_2" xml:space="preserve">
-    <value>Posición de comienzo de la parte exterior del área del Lead-In: {0:D2}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Posición de comienzo de la parte exterior del área del Lead-In: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
+    </data>
     <data name="Start_position_of_outer_part_lead_in_area_3_0_1_2" xml:space="preserve">
-    <value>Posición de comienzo de la parte exterior del área del Lead-In: {3:D2}:{0:D2}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Posición de comienzo de la parte exterior del área del Lead-In: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2[/][/]</value>
+    </data>
     <data name="Start_time_for_interval_that_should_be_skipped_0_1_2" xml:space="preserve">
-    <value>Tiempo de comienzo del intervalo que se debe omitir: {0:D2}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Tiempo de comienzo del intervalo que se debe omitir: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
+    </data>
     <data name="Start_time_of_the_first_Lead_in_area_in_the_disc_0_1_2" xml:space="preserve">
-    <value>Tiempo de comienzo del primer área de Lead-In del disco: {0:D2}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Tiempo de comienzo del primer área de Lead-In del disco: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
+    </data>
     <data name="Start_time_of_the_first_Lead_in_area_in_the_disc_3_0_1_2" xml:space="preserve">
-    <value>Tiempo de comienzo del primer área de Lead-In del disco: {3:D2}:{0:D2}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Tiempo de comienzo del primer área de Lead-In del disco: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2}[/][/]</value>
+    </data>
     <data name="Stereo_audio_track_with_50_15_us_pre_emphasis" xml:space="preserve">
-    <value>Pista de audio estéreo con un pre-énfasis de 50/15 µs</value>
-  </data>
+        <value>Pista de audio estéreo con un pre-énfasis de [teal]50/15 µs[/]</value>
+    </data>
     <data name="Stereo_audio_track_with_no_pre_emphasis" xml:space="preserve">
     <value>Pista de audio estéreo sin pre-énfasis</value>
   </data>
     <data name="Stop_position_of_inner_part_lead_out_area_0_1_2" xml:space="preserve">
-    <value>Posición de parada de la parte interna del área del Lead-Out: {0:D2}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Posición de parada de la parte interna del área del Lead-Out: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
+    </data>
     <data name="Stop_position_of_inner_part_lead_out_area_3_0_1_2" xml:space="preserve">
-    <value>Posición de parada de la parte interna del área del Lead-Out: {3:D2}:{0:D2}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Posición de parada de la parte interna del área del Lead-Out: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2}[/][/]</value>
+    </data>
     <data name="Streaming" xml:space="preserve">
     <value>Transmisión:</value>
   </data>
@@ -8816,48 +8816,48 @@
     <value>pista {0}</value>
   </data>
     <data name="Track_0_Data_track_recorded_incrementally_starts_at_1_2_3_and_ends_at_4_5_6" xml:space="preserve">
-    <value>Pista {0} (Datos, grabada incrementalmente) comienza en {1:D2}:{2:D2}:{3:D2} y termina en {4:D2}:{5:D2}:{6:D2}</value>
-  </data>
+        <value>[slateblue1]Pista [teal]{0}[/] (Datos, grabada incrementalmente) comienza en [lime]{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{4:D2}:{5:D2}:{6:D2}[/][/]</value>
+    </data>
     <data name="Track_0_Data_track_recorded_uninterrupted_starts_at_1_2_3_and_ends_at_4_5_6" xml:space="preserve">
-    <value>Pista {0} (Datos, grabada ininterrumpidamente) comienza en {1:D2}:{2:D2}:{3:D2} y termina en {4:D2}:{5:D2}:{6:D2}</value>
-  </data>
+        <value>[slateblue1]Pista [teal]{0}[/] (Datos, grabada ininterrumpidamente) comienza en [lime]{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{4:D2}:{5:D2}:{6:D2}[/][/]</value>
+    </data>
     <data name="Track_0_Quadraphonic_audio_track_with_50_15_us_pre_emphasis_starts_at_1_2_3_and_ends_at_4_5_6"
-          xml:space="preserve">
-    <value>Pista {0} (Audio cuadrafónico con pre-énfasis de 50/15 µs) comienza en {1:D2}:{2:D2}:{3:D2} y termina en {4:D2}:{5:D2}:{6:D2}</value>
-  </data>
+        xml:space="preserve">
+        <value>[slateblue1]Pista [teal]{0}[/] (Audio cuadrafónico con pre-énfasis de [teal]50/15 µs[/]) comienza en [lime]{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{4:D2}:{5:D2}:{6:D2}[/][/]</value>
+    </data>
     <data name="Track_0_Stereo_audio_track_with_50_15_s_pre_emphasis_starts_at_4_1_2_3_and_ends_at_8_5_6_7"
-          xml:space="preserve">
-    <value>Pista {0} (Audio estéreo con pre-énfasis de 50/15 µs) comienza en {4}:{1:D2}:{2:D2}:{3:D2} y termina en {8}:{5:D2}:{6:D2}:{7:D2}</value>
-  </data>
+        xml:space="preserve">
+        <value>[slateblue1]Pista [teal]{0}[/] (Audio estéreo con pre-énfasis de [teal]50/15 µs[/]) comienza en [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/][/]</value>
+    </data>
     <data name="Track_0_Quadraphonic_audio_track_with_no_pre_emphasis_starts_at_1_2_3_and_ends_at_4_5_6"
-          xml:space="preserve">
-    <value>Pista {0} (Audio cuadrafónico sin pre-énfasis) comienza en {1:D2}:{2:D2}:{3:D2} y termina en {4:D2}:{5:D2}:{6:D2}</value>
-  </data>
+        xml:space="preserve">
+        <value>[slateblue1]Pista [teal]{0}[/] (Audio cuadrafónico sin pre-énfasis) comienza en [lime]{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{4:D2}:{5:D2}:{6:D2}[/][/]</value>
+    </data>
     <data name="Track_0_Stereo_audio_track_with_no_pre_emphasis_starts_at_1_2_3_and_ends_at_4_5_6" xml:space="preserve">
-    <value>Pista {0} (Audio estéreo sin pre-énfasis) comienza en {1:D2}:{2:D2}:{3:D2} y termina en {4:D2}:{5:D2}:{6:D2}</value>
-  </data>
+        <value>[slateblue1]Pista [teal]{0}[/] (Audio estéreo sin pre-énfasis) comienza en [lime]{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{4:D2}:{5:D2}:{6:D2}[/][/]</value>
+    </data>
     <data name="Track_0_Data_track_recorded_incrementally_starts_at_4_1_2_3_and_ends_at_8_5_6_7" xml:space="preserve">
-    <value>Pista {0} (Datos, grabada incrementalmente) comienza en {4}:{1:D2}:{2:D2}:{3:D2} y termina en {8}:{5:D2}:{6:D2}:{7:D2}</value>
-  </data>
+        <value>[slateblue1]Pista [teal]{0}[/] (Datos, grabada incrementalmente) comienza en [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/][/]</value>
+    </data>
     <data name="Track_0_Data_track_recorded_uninterrupted_starts_at_4_1_2_3_and_ends_at_8_5_6_7" xml:space="preserve">
-    <value>Pista {0} (Datos, grabada ininterrumpidamente) comienza en {4}:{1:D2}:{2:D2}:{3:D2} y termina en {8}:{5:D2}:{6:D2}:{7:D2}</value>
-  </data>
+        <value>[slateblue1]Pista [teal]{0}[/] (Datos, grabada ininterrumpidamente) comienza en [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/][/]</value>
+    </data>
     <data name="Track_0_Quadraphonic_audio_track_with_50_15_us_pre_emphasis_starts_at_4_1_2_3_and_ends_at_8_5_6_7"
-          xml:space="preserve">
-    <value>Pista {0} (Audio cuadrafónico con pre-énfasis de 50/15 µs) comienza en {4}:{1:D2}:{2:D2}:{3:D2} y termina en {8}:{5:D2}:{6:D2}:{7:D2}</value>
-  </data>
+        xml:space="preserve">
+        <value>[slateblue1]Pista [teal]{0}[/] (Audio cuadrafónico con pre-énfasis de [teal]50/15 µs[/]) comienza en [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/][/]</value>
+    </data>
     <data name="Track_0_Quadraphonic_audio_track_with_no_pre_emphasis_starts_at_4_1_2_3_and_ends_at_8_5_6_7"
-          xml:space="preserve">
-    <value>Pista {0} (Audio cuadrafónico sin pre-énfasis) comienza en {4}:{1:D2}:{2:D2}:{3:D2} y termina en {8}:{5:D2}:{6:D2}:{7:D2}</value>
-  </data>
+        xml:space="preserve">
+        <value>[slateblue1]Pista [teal]{0}[/] (Audio cuadrafónico sin pre-énfasis) comienza en [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/][/]</value>
+    </data>
     <data name="Track_0_Stereo_audio_track_with_50_15_us_pre_emphasis_starts_at_1_2_3_and_ends_at_4_5_6"
-          xml:space="preserve">
-    <value>Pista {0} (Audio estéreo con pre-énfasis de 50/15 µs) comienza en {1:D2}:{2:D2}:{3:D2} y termina en {4:D2}:{5:D2}:{6:D2}</value>
-  </data>
+        xml:space="preserve">
+        <value>[slateblue1]Pista [teal]{0}[/] (Audio estéreo con pre-énfasis de [teal]50/15 µs[/]) comienza en [lime]{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{4:D2}:{5:D2}:{6:D2}[/][/]</value>
+    </data>
     <data name="Track_0_Stereo_audio_track_with_no_pre_emphasis_starts_at_4_1_2_3_and_ends_at_8_5_6_7"
-          xml:space="preserve">
-    <value>Pista {0} (Audio estéreo sin pre-énfasis) comienza en {4}:{1:D2}:{2:D2}:{3:D2} y termina en {8}:{5:D2}:{6:D2}:{7:D2}</value>
-  </data>
+        xml:space="preserve">
+        <value>[slateblue1]Pista [teal]{0}[/] (Audio estéreo sin pre-énfasis) comienza en [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] y termina en [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/]</value>
+    </data>
     <data name="Track_number_0" xml:space="preserve">
     <value>Pista número: {0}</value>
   </data>
@@ -9099,8 +9099,8 @@
     <value>Tipo de conjuntos de tareas desconocido ({0})</value>
   </data>
     <data name="Unknown_TOC_entry_format_printing_values_as_is" xml:space="preserve">
-    <value>Formato de entrada de la TOC desconocido, mostrando los valores tal cual</value>
-  </data>
+        <value>[slateblue1]Formato de entrada de la TOC desconocido, mostrando los valores tal cual[/]</value>
+    </data>
     <data name="Unknown_track_pitch" xml:space="preserve">
     <value>Pendiente pista desconocida</value>
   </data>
@@ -9150,16 +9150,16 @@
     <value>Los errores ECC no recuperables devolverán CHECK CONDITION y los datos sin corregir.</value>
   </data>
     <data name="Unskip_time_interval_assignment_0_says_that_from_1_2_3_to_4_5_6_should_not_be_skipped"
-          xml:space="preserve">
-    <value>La asignación {0} de no-omitir intervarlos dice que desde {1:D2}:{2:D2}:{3:D2} hasta {4:D2}:{5:D2}:{6:D2} no deben omitirse</value>
-  </data>
+        xml:space="preserve">
+        <value>[slateblue1]La asignación [teal]{0}[/] de no-omitir intervarlos dice que desde [lime]{1:D2}:{2:D2}:{3:D2}[/] hasta [lime{4:D2}:{5:D2}:{6:D2}[/] no deben omitirse[/]</value>
+    </data>
     <data name="Unskip_time_interval_assignment_0_says_that_from_4_1_2_3_to_8_5_6_7_should_not_be_skipped"
-          xml:space="preserve">
-    <value>La asignación {0} de no-omitir intervarlos dice que desde {4}:{1:D2}:{2:D2}:{3:D2} hasta {8}:{5:D2}:{6:D2}:{7:D2} no deben omitirse</value>
-  </data>
+        xml:space="preserve">
+        <value>[slateblue1]La asignación [teal]{0}[/] de no-omitir intervarlos dice que desde [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] hasta [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/] no deben omitirse[/]</value>
+    </data>
     <data name="Unskip_track_assignment_0_says_that_tracks_1_should_not_be_skipped" xml:space="preserve">
-    <value>La asignación {0} de no-omitir pistas dice la que la pista {1} no debe ser omitida</value>
-  </data>
+        <value>[slateblue1]La asignación [teal]{0}[/] de no-omitir pistas dice la que la pista [teal]{1}[/] no debe ser omitida[/]</value>
+    </data>
     <data name="Unspecified_address_0" xml:space="preserve">
     <value>Dirección no especificada: {0}</value>
   </data>
@@ -9245,8 +9245,8 @@
     <value>Bloque de video.</value>
   </data>
     <data name="Video_track_3_starts_at_0_1_2" xml:space="preserve">
-    <value>La pista de video {3} comienza en: {0:D2}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]La pista de video [teal]{3}[/] comienza en: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
+    </data>
     <data name="Volume_0" xml:space="preserve">
     <value>Volumen {0}</value>
   </data>
@@ -9746,4 +9746,43 @@
     <data name="_active_" xml:space="preserve">
     <value>(activo)</value>
   </data>
+    <data name="Background_take_precedence_over_low_power_conditions" xml:space="preserve">
+        <value>Ejecutar operaciones en segundo plano tiene preferencia sobre mantener condiciones de bajo consumo</value>
+    </data>
+    <data name="Drive_will_not_enter_idle_mode" xml:space="preserve">
+        <value>La unidad no entrará en el modo de reposo</value>
+    </data>
+    <data name="Drive_will_not_enter_standby_mode" xml:space="preserve">
+        <value>La unidad no entrará en el modo de espera</value>
+    </data>
+    <data name="Lead_In_Copyright_Information" xml:space="preserve">
+        <value>Información de derechos del Lead-In:</value>
+    </data>
+    <data name="Low_power_take_precedence_over_background" xml:space="preserve">
+        <value>Mantener las condiciones de bajo consumo tienen preferencia sobre las funciones de segundo plano</value>
+    </data>
+    <data name="MediumTypes_CDR_Mixed_80" xml:space="preserve">
+        <value>CD-R de 80mm con datos y audio</value>
+    </data>
+    <data name="Regional_Playback_Control_State" xml:space="preserve">
+        <value>Estado del Control de Reproducción Regional:</value>
+    </data>
+    <data name="SCSI_Power_condition_page" xml:space="preserve">
+        <value>Página SCSI de condiciones energéticas:</value>
+    </data>
+    <data name="Standby_timer_Y_is_set_to_0_ms" xml:space="preserve">
+        <value>El temporizador de reposo Y está establecido en {0} ms</value>
+    </data>
+    <data name="Standby_timer_Z_is_set_to_0_ms" xml:space="preserve">
+        <value>El temporizador de reposo Z está establecido en {0} ms</value>
+    </data>
+    <data name="Idle_timer_A_is_set_to_0_ms" xml:space="preserve">
+        <value>Temporizador de reposo A establecido en {0} ms</value>
+    </data>
+    <data name="Idle_timer_C_is_set_to_0_ms" xml:space="preserve">
+        <value>Temporizador de reposo C establecido en {0} ms</value>
+    </data>
+    <data name="Idle_timer_B_is_set_to_0_ms" xml:space="preserve">
+        <value>Temporizador de reposo B establecido en {0} ms</value>
+    </data>
 </root>

@@ -341,8 +341,8 @@ In you are unsure, please press N to not continue.</value>
     <value>[bold][slateblue1]GUID[/][/]</value>
   </data>
     <data name="PCMCIA_CIS_is_0_bytes" xml:space="preserve">
-    <value>[slateblue]PCMCIA CIS is [teal]{0}[/] bytes[/]</value>
-  </data>
+        <value>[slateblue1]PCMCIA CIS is [teal]{0}[/] bytes[/]</value>
+    </data>
     <data name="aaruremote_host" xml:space="preserve">
     <value>aaruremote host</value>
   </data>
@@ -645,9 +645,9 @@ In you are unsure, please press N to not continue.</value>
         <comment>{0} is track number, {1} is checksum name</comment>
   </data>
     <data name="Checksums_Disc_has_0_1" xml:space="preserve">
-    <value>[bold][slateblue1]Disc's [fuchsia]{0}[/]:[/] [rosybrown]{1}[/]</value>
+        <value>[bold][slateblue1]Disc's [fuchsia]{0}[/]:[/][/] [rosybrown]{1}[/]</value>
         <comment>{0} is checksum name</comment>
-  </data>
+    </data>
     <data name="Hashing_file_0_of_1" xml:space="preserve">
     <value>[slateblue1]Hashing file [lime]{0}[/] of [violet]{1}[/][/]</value>
   </data>

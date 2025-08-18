@@ -114,8 +114,8 @@
     <value>Device identified as {0}</value>
   </data>
     <data name="ASCII_Page_0_1" xml:space="preserve">
-    <value>[bold][blue]ASCII Page[/bold][/] [italic][teal]{0:X2}h[/][/]: [slateblue1]{1}[/]</value>
-  </data>
+        <value>[bold][blue]ASCII Page[/][/] [italic][teal]{0:X2}h[/][/]: [slateblue1]{1}[/]</value>
+    </data>
     <data name="Unit_Serial_Number_0" xml:space="preserve">
     <value>[bold][blue]Unit Serial Number:[/][/] [italic][teal]{0}[/][/]</value>
   </data>
@@ -3075,14 +3075,14 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>The selected image format does not support tracks.</value>
   </data>
     <data name="Entropying_track_0_of_1" xml:space="preserve">
-    <value>Entropying track {0} of {1}</value>
-  </data>
+        <value>[slateblue1]Entropying track [lime]{0}[/] of [teal]{1}[/][/]</value>
+    </data>
     <data name="Track_0_has_1_sectors" xml:space="preserve">
     <value>Track {0} has {1} sectors</value>
   </data>
     <data name="Entropying_sector_0_of_track_1" xml:space="preserve">
-    <value>Entropying sector {0} of track {1}</value>
-  </data>
+        <value>[slateblue1]Entropying sector [lime]{0}[/] of track [teal]{1}[/][/]</value>
+    </data>
     <data name="Unable_to_get_separate_tracks_not_calculating_their_entropy" xml:space="preserve">
     <value>Unable to get separate tracks, not calculating their entropy</value>
   </data>
@@ -3246,14 +3246,14 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>[green]Has partitions[/]</value>
   </data>
     <data name="Doesnt_have_partitions" xml:space="preserve">
-    <value>[red]Doesn't have partitions[/red]</value>
-  </data>
+        <value>[red]Doesn't have partitions[/]</value>
+    </data>
     <data name="Has_sessions" xml:space="preserve">
     <value>[green]Has sessions[/]</value>
   </data>
     <data name="Doesnt_have_sessions" xml:space="preserve">
-    <value>[red]Doesn't have sessions[/red]</value>
-  </data>
+        <value>[red]Doesn't have sessions[/]</value>
+    </data>
     <data name="Comments_0_WithMarkup" xml:space="preserve">
     <value>[slateblue1][bold]Comments:[/][/] {0}</value>
   </data>
@@ -3488,8 +3488,8 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>[bold]Drive serial number:[/] [italic]{0}[/]</value>
   </data>
     <data name="CompactDisc_Power_Management_Area_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]CompactDisc Power Management Area contained in image:[/]</value>
-  </data>
+        <value>[bold][blue]CompactDisc Power Management Area contained in image:[/][/]</value>
+    </data>
     <data name="Output_format_does_not_support_hidden_tracks" xml:space="preserve">
     <value>Output format does not properly support storing hidden tracks, this will end in a loss of data, not continuing...</value>
   </data>

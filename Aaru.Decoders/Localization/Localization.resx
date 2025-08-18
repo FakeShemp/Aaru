@@ -1726,8 +1726,8 @@
     <value>[slateblue1]Last track number: [teal]{0}[/] [italic](</value>
   </data>
     <data name="Lead_out_start_position_3_0_1_2" xml:space="preserve">
-    <value>[slateblue1]Lead-Out start position: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2}[/]</value>
-  </data>
+        <value>[slateblue1]Lead-Out start position: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2}[/][/]</value>
+    </data>
     <data name="Lead_out_start_position_0_1_2" xml:space="preserve">
     <value>[slateblue1]Lead-Out start position: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
   </data>
@@ -1868,8 +1868,8 @@
     <value>[slateblue1]Track [teal]{0}[/] [italic](Data track, recorded incrementally)[/] starts at [lime]{1:D2}:{2:D2}:{3:D2}[/] and ends at [lime]{4:D2}:{5:D2}:{6:D2}[/][/]</value>
   </data>
     <data name="Reserved_equals_0_X2" xml:space="preserve">
-    <value>[slateblue1]Reserved = [teal]0x{0:X2}[/]</value>
-  </data>
+        <value>[slateblue1]Reserved = [teal]0x{0:X2}[/][/]</value>
+    </data>
     <data name="Skip_track_assignment_0_says_that_tracks_1_should_be_skipped" xml:space="preserve">
     <value>[slateblue1]Skip track assignment [teal]{0}[/] says that tracks [teal]{1}[/] should be skipped</value>
   </data>
