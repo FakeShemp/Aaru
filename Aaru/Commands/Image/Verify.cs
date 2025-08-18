@@ -164,7 +164,7 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
             correctImage = discCheckStatus;
 
             AaruLogging.Verbose(UI.Checking_disc_image_checksums_took_0,
-                                         chkWatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
+                                chkWatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
         }
 
         if(!settings.VerifySectors)
@@ -191,16 +191,14 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
 
             if(spiralParameters is not null)
             {
-                mediaGraph = new Spiral((int)settings.Dimensions,
-                                        (int)settings.Dimensions,
+                mediaGraph = new Spiral(settings.Dimensions,
+                                        settings.Dimensions,
                                         spiralParameters,
                                         opticalMediaImage.Info.Sectors);
             }
             else if(settings.CreateGraph)
             {
-                mediaGraph = new BlockMap((int)settings.Dimensions,
-                                          (int)settings.Dimensions,
-                                          opticalMediaImage.Info.Sectors);
+                mediaGraph = new BlockMap(settings.Dimensions, settings.Dimensions, opticalMediaImage.Info.Sectors);
             }
 
             List<Track> inputTracks      = opticalMediaImage.Tracks;
@@ -390,8 +388,7 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
 
         if(unknownLbas.Count == 0 && failingLbas.Count == 0) AaruLogging.WriteLine(UI.All_sector_checksums_are_correct);
 
-        AaruLogging.Verbose(UI.Checking_sector_checksums_took_0,
-                                     stopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
+        AaruLogging.Verbose(UI.Checking_sector_checksums_took_0, stopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
 
         if(settings.Verbose)
         {
@@ -400,25 +397,37 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
             if(failingLbas.Count == (int)inputFormat.Info.Sectors)
                 AaruLogging.Verbose($"\t[red]{UI.all_sectors}[/]");
             else
-            {
-                foreach(ulong t in failingLbas) AaruLogging.Verbose("\t{0}", t);
-            }
+                foreach(ulong t in failingLbas)
+                    AaruLogging.Verbose("\t{0}", t);
 
             AaruLogging.WriteLine($"[yellow3_1]{UI.LBAs_without_checksum}[/]");
 
             if(unknownLbas.Count == (int)inputFormat.Info.Sectors)
                 AaruLogging.Verbose($"\t[yellow3_1]{UI.all_sectors}[/]");
             else
-            {
-                foreach(ulong t in unknownLbas) AaruLogging.Verbose("\t{0}", t);
-            }
+                foreach(ulong t in unknownLbas)
+                    AaruLogging.Verbose("\t{0}", t);
         }
 
-        // TODO: Convert to table
-        AaruLogging.WriteLine($"[italic]{UI.Total_sectors}[/] {inputFormat.Info.Sectors}");
-        AaruLogging.WriteLine($"[italic]{UI.Total_errors}[/] {failingLbas.Count}");
-        AaruLogging.WriteLine($"[italic]{UI.Total_unknowns}[/] {unknownLbas.Count}");
-        AaruLogging.WriteLine($"[italic]{UI.Total_errors_plus_unknowns}[/] {failingLbas.Count + unknownLbas.Count}");
+        var table = new Table();
+        table.HideHeaders();
+        table.AddColumn(new TableColumn("").RightAligned());
+        table.AddColumn(new TableColumn("").RightAligned());
+        table.Border(TableBorder.Rounded);
+        table.BorderColor(Color.Yellow);
+
+
+        table.AddRow(UI.Total_sectors,              $"[lime]{inputFormat.Info.Sectors}[/]");
+        table.AddRow(UI.Total_errors,               $"[lime]{failingLbas.Count}[/]");
+        table.AddRow(UI.Total_unknowns,             $"[lime]{unknownLbas.Count}[/]");
+        table.AddRow(UI.Total_errors_plus_unknowns, $"[lime]{failingLbas.Count + unknownLbas.Count}[/]");
+
+        AnsiConsole.Write(table);
+
+        AaruLogging.Information($"{UI.Total_sectors}: {inputFormat.Info.Sectors}");
+        AaruLogging.Information($"{UI.Total_errors}: {failingLbas.Count}");
+        AaruLogging.Information($"{UI.Total_unknowns}: {unknownLbas.Count}");
+        AaruLogging.Information($"{UI.Total_errors_plus_unknowns}: {failingLbas.Count + unknownLbas.Count}");
 
         mediaGraph?.WriteTo($"{Path.GetFileNameWithoutExtension(inputFilter.Filename)}.verify.png");
 
@@ -459,7 +468,7 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
         [Description("Dimensions, as a square, in pixels, for the graph of verified media.")]
         [DefaultValue(1080)]
         [CommandOption("-d|--dimensions")]
-        public uint Dimensions { get; init; }
+        public int Dimensions { get; init; }
         [Description("Disc image path")]
         [CommandArgument(0, "<image-path>")]
         public string ImagePath { get; init; }

@@ -378,7 +378,7 @@ In you are unsure, please press N to not continue.</value>
     <value>Directory where extracted files will be created. Will abort if it exists</value>
   </data>
     <data name="Identifying_file_filter" xml:space="preserve">
-    <value>Identifying file filter...</value>
+    <value>[slateblue1]Identifying file filter...[/]</value>
   </data>
     <data name="Parsed_options" xml:space="preserve">
     <value>Parsed options:</value>
@@ -393,7 +393,7 @@ In you are unsure, please press N to not continue.</value>
     <value>Specified encoding is not supported.</value>
   </data>
     <data name="Identifying_image_format" xml:space="preserve">
-    <value>Identifying image format...</value>
+    <value>[slateblue1]Identifying image format...[/]</value>
   </data>
     <data name="Image_format_not_identified_not_proceeding_with_file_extraction" xml:space="preserve">
     <value>Image format not identified, not proceeding with file extraction.</value>
@@ -414,7 +414,7 @@ In you are unsure, please press N to not continue.</value>
     <value>Destination exists, aborting.</value>
   </data>
     <data name="Invoke_Opening_image_file" xml:space="preserve">
-    <value>Opening image file...</value>
+    <value>[slateblue1]Opening image file...[/]</value>
   </data>
     <data name="Unable_to_open_image_format" xml:space="preserve">
     <value>Unable to open image format</value>
@@ -1349,70 +1349,70 @@ In you are unsure, please press N to not continue.</value>
     <value>The specified image does not support any kind of verification</value>
   </data>
     <data name="Verifying_image_checksums" xml:space="preserve">
-    <value>Verifying image checksums...</value>
+    <value>[slateblue1]Verifying image checksums...[/]</value>
   </data>
     <data name="Disc_image_checksums_are_correct" xml:space="preserve">
-    <value>Disc image checksums are correct</value>
+    <value>[green]Disc image checksums are correct[/]</value>
   </data>
     <data name="Disc_image_checksums_are_incorrect" xml:space="preserve">
-    <value>Disc image checksums are incorrect</value>
+    <value>[red]Disc image checksums are incorrect[/]</value>
   </data>
     <data name="Disc_image_does_not_contain_checksums" xml:space="preserve">
-    <value>Disc image does not contain checksums</value>
+    <value>[olive]Disc image does not contain checksums[/]</value>
   </data>
     <data name="Checking_disc_image_checksums_took_0" xml:space="preserve">
-    <value>Checking disc image checksums took {0}</value>
+    <value>[slateblue1]Checking disc image checksums took [aqua]{0}[/][/]</value>
   </data>
     <data name="Checking_tracks" xml:space="preserve">
     <value>Checking tracks...</value>
   </data>
     <data name="Checking_track_0_of_1" xml:space="preserve">
-    <value>Checking track {0} of {1}</value>
+    <value>[slateblue1]Checking track [teal]{0}[/] of [teal]{1}[/][/]</value>
   </data>
     <data name="Checking_sector" xml:space="preserve">
     <value>Checking sector</value>
   </data>
     <data name="Checking_sector_0_of_1_on_track_2" xml:space="preserve">
-    <value>Checking sector {0} of {1}, on track {2}</value>
+    <value>[slateblue1]Checking sector [lime]{0}[/] of [violet]{1}[/], on track [teal]{2}[/][/]</value>
   </data>
     <data name="Checking_sectors" xml:space="preserve">
     <value>Checking sectors...</value>
   </data>
     <data name="Checking_sector_0_of_1" xml:space="preserve">
-    <value>Checking sector {0} of {1}</value>
+    <value>[slateblue1]Checking sector [lime]{0}[/] of [violet]{1}[/]</value>
   </data>
     <data name="There_is_at_least_one_sector_that_does_not_contain_a_checksum" xml:space="preserve">
-    <value>There is at least one sector that does not contain a checksum</value>
+    <value>[olive]There is at least one sector that does not contain a checksum[/]</value>
   </data>
     <data name="There_is_at_least_one_sector_with_incorrect_checksum_or_errors" xml:space="preserve">
-    <value>There is at least one sector with incorrect checksum or errors</value>
+    <value>[red]There is at least one sector with incorrect checksum or errors[/]</value>
   </data>
     <data name="All_sector_checksums_are_correct" xml:space="preserve">
-    <value>All sector checksums are correct</value>
+    <value>[green]All sector checksums are correct[/]</value>
   </data>
     <data name="Checking_sector_checksums_took_0" xml:space="preserve">
-    <value>Checking sector checksums took {0}</value>
+    <value>[slateblue1]Checking sector checksums took [aqua]{0}[/][/]</value>
   </data>
     <data name="LBAs_with_error" xml:space="preserve">
-    <value>LBAs with error:</value>
+    <value>[slateblue1]LBAs with error:[/]</value>
   </data>
     <data name="all_sectors" xml:space="preserve">
-    <value>all sectors.</value>
+    <value>[red]all sectors.[/]</value>
   </data>
     <data name="LBAs_without_checksum" xml:space="preserve">
-    <value>LBAs without checksum:</value>
+    <value>[slateblue1]LBAs without checksum:[/]</value>
   </data>
     <data name="Total_sectors" xml:space="preserve">
-    <value>Total sectors...........</value>
+    <value>[bold][italic][slateblue1]Total sectors[/][/][/]</value>
   </data>
     <data name="Total_errors" xml:space="preserve">
-    <value>Total errors............</value>
+    <value>[bold][italic][slateblue1]Total errors[/][/][/]</value>
   </data>
     <data name="Total_unknowns" xml:space="preserve">
-    <value>Total unknowns..........</value>
+    <value>[bold][italic][slateblue1]Total unknowns[/][/][/]</value>
   </data>
     <data name="Total_errors_plus_unknowns" xml:space="preserve">
-    <value>Total errors+unknowns...</value>
+    <value>[bold][italic][slateblue1]Total errors+unknowns[/][/][/]</value>
   </data>
     <data name="Try_to_read_first_track_pregap" xml:space="preserve">
     <value>Try to read first track pregap. Only applicable to CD/DDCD/GD.</value>
