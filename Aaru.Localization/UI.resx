@@ -350,14 +350,14 @@ In you are unsure, please press N to not continue.</value>
     <value>No known devices attached.</value>
   </data>
     <data name="Path" xml:space="preserve">
-    <value>Path</value>
+    <value>[bold][olive]Path[/][/]</value>
   </data>
     <data name="Serial" xml:space="preserve">
-    <value>Serial</value>
+    <value>[aqua]Serial[/]</value>
         <comment>From "Serial number"</comment>
   </data>
     <data name="Supported_Question" xml:space="preserve">
-    <value>Supported?</value>
+    <value>[green]Supported?[/]</value>
   </data>
     <data name="Name_of_character_encoding_to_use" xml:space="preserve">
     <value>Name of character encoding to use.</value>

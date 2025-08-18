@@ -38,7 +38,6 @@ using Aaru.Devices;
 using Aaru.Localization;
 using Aaru.Logging;
 using JetBrains.Annotations;
-using Serilog;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -85,25 +84,26 @@ sealed class ListDevicesCommand : Command<ListDevicesCommand.Settings>
         else
         {
             Table table = new();
-            table.AddColumn($"[bold][olive]{UI.Path}[/][/]");
-            table.AddColumn($"[bold][blue]{UI.Title_Vendor}[/][/]");
-            table.AddColumn($"[bold][purple]{UI.Title_Model}[/][/]");
-            table.AddColumn($"[bold][aqua]{UI.Serial}[/][/]");
-            table.AddColumn($"[bold][rosybrown]{UI.Title_Bus}[/][/]");
-            table.AddColumn($"[bold][green]{UI.Supported_Question}[/][/]");
+            table.AddColumn(UI.Path);
+            table.AddColumn(UI.Title_Vendor);
+            table.AddColumn(UI.Title_Model);
+            table.AddColumn(UI.Serial);
+            table.AddColumn(UI.Title_Bus);
+            table.AddColumn(UI.Supported_Question);
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
 
             foreach(DeviceInfo dev in devices.OrderBy(d => d.Path))
             {
-                table.AddRow($"[italic][olive]{Markup.Escape(dev.Path    ?? "")}[/][/]",
-                             $"[italic][blue]{Markup.Escape(dev.Vendor   ?? "")}[/][/]",
-                             $"[italic][purple]{Markup.Escape(dev.Model  ?? "")}[/][/]",
-                             $"[italic][aqua]{Markup.Escape(dev.Serial   ?? "")}[/][/]",
-                             $"[italic][rosybrown]{Markup.Escape(dev.Bus ?? "")}[/][/]",
+                table.AddRow($"[italic][olive]{Markup.Escape(dev.Path        ?? "")}[/][/]",
+                             $"[italic][slateblue1]{Markup.Escape(dev.Vendor ?? "")}[/][/]",
+                             $"[italic][purple]{Markup.Escape(dev.Model      ?? "")}[/][/]",
+                             $"[italic][aqua]{Markup.Escape(dev.Serial       ?? "")}[/][/]",
+                             $"[italic][rosybrown]{Markup.Escape(dev.Bus     ?? "")}[/][/]",
                              $"[italic]{(dev.Supported ? "[green]✓[/]" : "[red]✗[/]")}[/]");
 
-                AaruLogging.Information("Path: {Path}, Vendor: {Vendor}, Model: {Model}, Serial: {Serial}, Bus: {Bus}, Supported: {Supported}",
+                AaruLogging
+                   .Information("Path: {Path}, Vendor: {Vendor}, Model: {Model}, Serial: {Serial}, Bus: {Bus}, Supported: {Supported}",
                                 dev.Path,
                                 dev.Vendor,
                                 dev.Model,
