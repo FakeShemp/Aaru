@@ -150,58 +150,58 @@
     <value>There are no statistics.</value>
   </data>
     <data name="Commands_statistics" xml:space="preserve">
-    <value>Commands statistics</value>
+    <value>[bold][blue]Commands statistics[/][/]</value>
   </data>
     <data name="Title_Command" xml:space="preserve">
-    <value>Command</value>
+    <value>[bold][purple]Command[/][/]</value>
   </data>
     <data name="Title_Times_used" xml:space="preserve">
-    <value>Times used</value>
+    <value>[bold][teal]Times used[/][/]</value>
   </data>
     <data name="Title_Filter" xml:space="preserve">
-    <value>Filter</value>
+    <value>[bold][purple]Filter[/][/]</value>
   </data>
     <data name="Filters_statistics" xml:space="preserve">
-    <value>Filters statistics</value>
+    <value>[bold][blue]Filters statistics[/][/]</value>
   </data>
     <data name="Media_image_format_statistics" xml:space="preserve">
-    <value>Media image format statistics</value>
+    <value>[bold][blue]Media image format statistics[/][/]</value>
   </data>
     <data name="Title_Format" xml:space="preserve">
-    <value>Format</value>
+    <value>[bold][purple]Format[/][/]</value>
   </data>
     <data name="Partitioning_scheme_statistics" xml:space="preserve">
-    <value>Partitioning scheme statistics</value>
+    <value>[bold][blue]Partitioning scheme statistics[/][/]</value>
   </data>
     <data name="Title_Scheme" xml:space="preserve">
-    <value>Scheme</value>
+    <value>[bold][purple]Scheme[/][/]</value>
   </data>
     <data name="Filesystem_statistics" xml:space="preserve">
-    <value>Filesystem statistics</value>
+    <value>[bold][blue]Filesystem statistics[/][/]</value>
   </data>
     <data name="Title_Filesystem" xml:space="preserve">
-    <value>Filesystem</value>
+    <value>[bold][purple]Filesystem[/][/]</value>
   </data>
     <data name="Device_statistics" xml:space="preserve">
-    <value>Device statistics</value>
+    <value>[bold][blue]Device statistics[/][/]</value>
   </data>
     <data name="Title_Manufacturer" xml:space="preserve">
-    <value>Manufacturer</value>
+    <value>[bold][blue]Manufacturer[/][/]</value>
   </data>
     <data name="Title_Model" xml:space="preserve">
-    <value>Model</value>
+    <value>[bold][purple]Model[/][/]</value>
   </data>
     <data name="Title_Revision" xml:space="preserve">
-    <value>Revision</value>
+    <value>[bold][teal]Revision[/][/]</value>
   </data>
     <data name="Title_Bus" xml:space="preserve">
-    <value>Bus</value>
+    <value>[bold][rosybrown]Bus[/][/]</value>
   </data>
     <data name="Media_found_in_real_device_statistics" xml:space="preserve">
-    <value>Media found in real device statistics</value>
+    <value>[bold][blue]Media found in real device statistics[/][/]</value>
   </data>
     <data name="Media_found_in_images_statistics" xml:space="preserve">
-    <value>Media found in images statistics</value>
+    <value>[bold][blue]Media found in images statistics[/][/]</value>
   </data>
     <data name="Clear_existing_main_database" xml:space="preserve">
     <value>Clear existing main database.</value>

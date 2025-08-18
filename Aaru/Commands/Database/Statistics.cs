@@ -36,7 +36,6 @@ using Aaru.Database;
 using Aaru.Database.Models;
 using Aaru.Localization;
 using Aaru.Logging;
-using Serilog;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Command = Aaru.Database.Models.Command;
@@ -75,13 +74,13 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
         {
             table = new Table
             {
-                Title = new TableTitle($"[blue]{UI.Commands_statistics}[/]")
+                Title = new TableTitle(UI.Commands_statistics)
             };
 
             AaruLogging.Information(UI.Commands_statistics);
 
-            table.AddColumn(new TableColumn(new Markup($"[bold][purple]{UI.Title_Command}[/][/]").Centered()));
-            table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Command).Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Times_used).Centered()));
             table.Columns[1].RightAligned();
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
@@ -138,13 +137,13 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
         {
             table = new Table
             {
-                Title = new TableTitle($"[blue]{UI.Filters_statistics}[/]")
+                Title = new TableTitle(UI.Filters_statistics)
             };
 
             AaruLogging.Information(UI.Filters_statistics);
 
-            table.AddColumn(new TableColumn(new Markup($"[bold][purple]{UI.Title_Filter}[/][/]").Centered()));
-            table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Filter).Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Times_used).Centered()));
             table.Columns[1].RightAligned();
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
@@ -172,13 +171,13 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
         {
             table = new Table
             {
-                Title = new TableTitle($"[blue]{UI.Media_image_format_statistics}[/]")
+                Title = new TableTitle(UI.Media_image_format_statistics)
             };
 
             AaruLogging.Information(UI.Media_image_format_statistics);
 
-            table.AddColumn(new TableColumn(new Markup($"[bold][purple]{UI.Title_Format}[/][/]").Centered()));
-            table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Format).Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Times_used).Centered()));
             table.Columns[1].RightAligned();
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
@@ -206,13 +205,13 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
         {
             table = new Table
             {
-                Title = new TableTitle($"[blue]{UI.Partitioning_scheme_statistics}[/]")
+                Title = new TableTitle(UI.Partitioning_scheme_statistics)
             };
 
             AaruLogging.Information(UI.Partitioning_scheme_statistics);
 
-            table.AddColumn(new TableColumn(new Markup($"[bold][purple]{UI.Title_Scheme}[/][/]").Centered()));
-            table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Scheme).Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Times_used).Centered()));
             table.Columns[1].RightAligned();
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
@@ -240,13 +239,13 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
         {
             table = new Table
             {
-                Title = new TableTitle($"[blue]{UI.Filesystem_statistics}[/]")
+                Title = new TableTitle(UI.Filesystem_statistics)
             };
 
             AaruLogging.Information(UI.Filesystem_statistics);
 
-            table.AddColumn(new TableColumn(new Markup($"[bold][purple]{UI.Title_Filesystem}[/][/]").Centered()));
-            table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Filesystem).Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Times_used).Centered()));
             table.Columns[1].RightAligned();
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
@@ -274,15 +273,15 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
         {
             table = new Table
             {
-                Title = new TableTitle($"[blue]{UI.Device_statistics}[/]")
+                Title = new TableTitle(UI.Device_statistics)
             };
 
             AaruLogging.Information(UI.Device_statistics);
 
-            table.AddColumn($"[bold][blue]{UI.Title_Manufacturer}[/][/]");
-            table.AddColumn($"[bold][purple]{UI.Title_Model}[/][/]");
-            table.AddColumn($"[bold][teal]{UI.Title_Revision}[/][/]");
-            table.AddColumn($"[bold][rosybrown]{UI.Title_Bus}[/][/]");
+            table.AddColumn(UI.Title_Manufacturer);
+            table.AddColumn(UI.Title_Model);
+            table.AddColumn(UI.Title_Revision);
+            table.AddColumn(UI.Title_Bus);
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
 
@@ -297,10 +296,10 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                              $"[italic][rosybrown]{Markup.Escape(ds.Bus     ?? "")}[/][/]");
 
                 AaruLogging.Information("({Manufacturer}) - {Model} {Revision} ({Bus})",
-                                ds.Manufacturer ?? "",
-                                ds.Model        ?? "",
-                                ds.Revision     ?? "",
-                                ds.Bus          ?? "");
+                                        ds.Manufacturer ?? "",
+                                        ds.Model        ?? "",
+                                        ds.Revision     ?? "",
+                                        ds.Bus          ?? "");
             }
 
             AnsiConsole.Write(table);
@@ -312,7 +311,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
         {
             table = new Table
             {
-                Title = new TableTitle($"[blue]{UI.Media_found_in_real_device_statistics}[/]")
+                Title = new TableTitle(UI.Media_found_in_real_device_statistics)
             };
 
             AaruLogging.Information(UI.Media_found_in_real_device_statistics);
@@ -320,7 +319,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
             table.AddColumn(new TableColumn(new Markup($"[bold][purple]{Localization.Core.Title_Type_for_media}[/][/]")
                                                .Centered()));
 
-            table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Times_used).Centered()));
             table.Columns[1].RightAligned();
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
@@ -349,7 +348,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
         {
             table = new Table
             {
-                Title = new TableTitle($"[blue]{UI.Media_found_in_images_statistics}[/]")
+                Title = new TableTitle(UI.Media_found_in_images_statistics)
             };
 
             AaruLogging.Information(UI.Media_found_in_images_statistics);
@@ -357,7 +356,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
             table.AddColumn(new TableColumn(new Markup($"[bold][purple]{Localization.Core.Title_Type_for_media}[/][/]")
                                                .Centered()));
 
-            table.AddColumn(new TableColumn(new Markup($"[bold][teal]{UI.Title_Times_used}[/][/]").Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Times_used).Centered()));
             table.Columns[1].RightAligned();
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
