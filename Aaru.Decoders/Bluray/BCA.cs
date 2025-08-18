@@ -35,6 +35,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Spectre.Console;
 
 namespace Aaru.Decoders.Bluray;
 
@@ -123,8 +124,8 @@ public static class BCA
             sb.AppendFormat(Localization.Reserved2_equals_0_X8, response.Reserved2).AppendLine();
 #endif
 
-        sb.AppendFormat(Localization.Blu_ray_Burst_Cutting_Area_in_hex_follows);
-        sb.AppendLine(PrintHex.ByteArrayToHexArrayString(response.BCA, 80));
+        sb.AppendLine(Localization.Blu_ray_Burst_Cutting_Area_in_hex_follows);
+        sb.AppendLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(response.BCA, color:true)));
 
         return sb.ToString();
     }

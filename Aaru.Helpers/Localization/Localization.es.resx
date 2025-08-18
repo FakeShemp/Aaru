@@ -17,8 +17,8 @@
         </value>
     </resheader>
     <data name="Offset" xml:space="preserve">
-    <value>Compensación</value>
-  </data>
+        <value>Posición</value>
+    </data>
     <data name="Length_of_value_array_must_not_be_more_than_length_of_destination" xml:space="preserve">
     <value>La longitud de una colección no puede ser mayor que la longitud del destino</value>
   </data>

@@ -312,8 +312,8 @@
         <value>[bold][blue]Blu-ray Disc Information:[/][/]</value>
     </data>
     <data name="Bluray_Burst_Cutting_Area" xml:space="preserve">
-    <value>Blu-ray Burst Cutting Area</value>
-  </data>
+        <value>[bold][blue]Blu-ray Burst Cutting Area:[/][/]</value>
+    </data>
     <data name="Bluray_Disc_Definition_Structure" xml:space="preserve">
     <value>Blu-ray Disc Definition Structure</value>
   </data>

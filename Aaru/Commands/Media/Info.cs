@@ -568,8 +568,8 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
                                  "SCSI READ DISC STRUCTURE",
                                  scsiInfo.BlurayBurstCuttingArea);
 
-                AaruLogging.WriteLine($"[bold]{Localization.Core.Bluray_Burst_Cutting_Area}:[/]" +
-                                      $"\n{Markup.Escape(BCA.Prettify(scsiInfo.BlurayBurstCuttingArea))}");
+                AaruLogging.WriteLine(Localization.Core.Bluray_Burst_Cutting_Area);
+                AaruLogging.WriteLine(BCA.Prettify(scsiInfo.BlurayBurstCuttingArea));
             }
 
             if(scsiInfo.BlurayDds != null)

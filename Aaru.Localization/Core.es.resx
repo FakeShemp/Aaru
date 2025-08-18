@@ -134,8 +134,8 @@
         <value>[bold][blue]Límites de bloques para el dispositivo:[/][/]</value>
     </data>
     <data name="Bluray_Burst_Cutting_Area" xml:space="preserve">
-    <value>Burst Cutting Area de Blu-ray</value>
-  </data>
+        <value>[bold][blue]Burst Cutting Area de Blu-ray:[/][/]</value>
+    </data>
     <data name="Bluray_Cartridge_Status" xml:space="preserve">
     <value>Estado de cartucho de Blu-ray</value>
   </data>
