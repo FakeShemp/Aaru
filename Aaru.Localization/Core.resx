@@ -516,10 +516,10 @@
     <value>Filesystem has not been unmounted correctly or contains errors</value>
   </data>
     <data name="Image_without_headers_is_0_bytes_long" xml:space="preserve">
-    <value>Image without headers is {0} bytes long</value>
+    <value>[slateblue1]Image without headers is [lime]{0}[/] bytes long[/]</value>
   </data>
     <data name="Contains_a_media_of_0_sectors_with_a_maximum_sector_size_of_1_bytes_etc" xml:space="preserve">
-    <value>Contains a media of {0} sectors with a maximum sector size of {1} bytes (if all sectors are of the same size this would be {2})</value>
+    <value>[slateblue1]Contains a media of [lime]{0}[/] sectors with a maximum sector size of [teal]{1}[/] bytes (if all sectors are of the same size this would be [aqua]{2}[/])[/]</value>
   </data>
     <data name="Contains_a_media_of_type_0_and_XML_type_1" xml:space="preserve">
     <value>Contains a media of type {0} and XML type {1}</value>
@@ -535,13 +535,13 @@
         <comment>{0} is a person's name</comment>
   </data>
     <data name="Created_on_0" xml:space="preserve">
-    <value>Created on {0}</value>
+    <value>[slateblue1]Created on[/] [yellow3]{0}[/]</value>
   </data>
     <data name="Last_modified_on_0" xml:space="preserve">
-    <value>Last modified on {0}</value>
+    <value>[slateblue1]Last modified on[/] [yellow3]{0}[/]</value>
   </data>
     <data name="Media_is_number_0_on_a_set_of_1_medias" xml:space="preserve">
-    <value>Media is number {0} on a set of {1} medias</value>
+    <value>[slateblue1]Media is number [teal]{0}[/] on a set of [teal]{1}[/] medias[/]</value>
   </data>
     <data name="Media_manufacturer_0" xml:space="preserve">
     <value>Media manufacturer: {0}</value>
@@ -553,36 +553,36 @@
     <value>Drive serial number: {0}</value>
   </data>
     <data name="Title_Session" xml:space="preserve">
-    <value>Session</value>
+    <value>[bold][navy]Session[/][/]</value>
   </data>
     <data name="Title_Start" xml:space="preserve">
-    <value>Start</value>
+    <value>[bold][lime]Start[/][/]</value>
   </data>
     <data name="Title_First_track" xml:space="preserve">
-    <value>First track</value>
+    <value>[bold][purple]First track[/][/]</value>
   </data>
     <data name="Title_Last_track" xml:space="preserve">
-    <value>Last track</value>
+    <value>[bold][purple]Last track[/][/]</value>
   </data>
     <data name="Title_End" xml:space="preserve">
-    <value>End</value>
+    <value>[bold][lime]End[/][/]</value>
   </data>
     <data name="Title_Track" xml:space="preserve">
-    <value>Track</value>
+    <value>[bold][teal]Track[/][/]</value>
   </data>
     <data name="Title_Bps" xml:space="preserve">
-    <value>Bps</value>
+    <value>[bold][aqua]Bps[/][/]</value>
         <comment>Bytes per sector</comment>
   </data>
     <data name="Title_Raw_bps" xml:space="preserve">
-    <value>Raw bps</value>
+    <value>[bold][aqua]Raw bps[/][/]</value>
         <comment>Bytes per sector</comment>
   </data>
     <data name="Title_Subchannel" xml:space="preserve">
-    <value>Subchannel</value>
+    <value>[bold][fuchsia]Subchannel[/][/]</value>
   </data>
     <data name="Title_Pregap" xml:space="preserve">
-    <value>Pregap</value>
+    <value>[bold][darkgreen]Pregap[/][/]</value>
   </data>
     <data name="Title_CompactDisc" xml:space="preserve">
     <value>CompactDisc</value>
@@ -3111,10 +3111,10 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Trying plugin {0}</value>
   </data>
     <data name="Title_Index" xml:space="preserve">
-    <value>Index</value>
+    <value>[bold][darkgreen]Index[/][/]</value>
   </data>
     <data name="Title_Image_indexes" xml:space="preserve">
-    <value>Image indexes</value>
+    <value>[bold][blue]Image indexes[/][/]</value>
   </data>
     <data name="Found_0_at_1" xml:space="preserve">
     <value>Found {0} @ {1}</value>
@@ -3237,176 +3237,176 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Uploading partial statistics file {0}</value>
   </data>
     <data name="Was_created_with_0_version_1_WithMarkup" xml:space="preserve">
-    <value>Was created with [italic]{0}[/] version [italic]{1}[/]</value>
+    <value>[slateblue1]Was created with [italic][rosybrown]{0}[/][/] version [italic][rosybrown]{1}[/][/][/]</value>
   </data>
     <data name="Created_by_0_WithMarkup" xml:space="preserve">
-    <value>[bold]Created by:[/] {0}</value>
+    <value>[slateblue1][bold]Created by:[/][/] [green]{0}[/]</value>
   </data>
     <data name="Has_partitions" xml:space="preserve">
-    <value>Has partitions</value>
+    <value>[green]Has partitions[/]</value>
   </data>
     <data name="Doesnt_have_partitions" xml:space="preserve">
-    <value>Doesn't have partitions</value>
+    <value>[red]Doesn't have partitions[/red]</value>
   </data>
     <data name="Has_sessions" xml:space="preserve">
-    <value>Has sessions</value>
+    <value>[green]Has sessions[/]</value>
   </data>
     <data name="Doesnt_have_sessions" xml:space="preserve">
-    <value>Doesn't have sessions</value>
+    <value>[red]Doesn't have sessions[/red]</value>
   </data>
     <data name="Comments_0_WithMarkup" xml:space="preserve">
-    <value>[bold]Comments:[/] {0}</value>
+    <value>[slateblue1][bold]Comments:[/][/] {0}</value>
   </data>
     <data name="Media_title_0_WithMarkup" xml:space="preserve">
-    <value>[bold]Media title:[/] [italic]{0}[/]</value>
+    <value>[bold][slateblue1]Media title:[/][/] [italic]{0}[/]</value>
   </data>
     <data name="Media_manufacturer_0_WithMarkup" xml:space="preserve">
-    <value>[bold]Media manufacturer:[/] [italic]{0}[/]</value>
+    <value>[bold][slateblue1]Media manufacturer:[/][/] [italic]{0}[/]</value>
   </data>
     <data name="Media_model_0_WithMarkup" xml:space="preserve">
-    <value>[bold]Media model:[/] [italic]{0}[/]</value>
+    <value>[bold][slateblue1]Media model:[/][/] [italic]{0}[/]</value>
   </data>
     <data name="Media_serial_number_0_WithMarkup" xml:space="preserve">
-    <value>[bold]Media serial number:[/] [italic]{0}[/]</value>
+    <value>[bold][slateblue1]Media serial number:[/][/] [italic]{0}[/]</value>
   </data>
     <data name="Media_barcode_0_WithMarkup" xml:space="preserve">
-    <value>[bold]Media barcode:[/] [italic]{0}[/]</value>
+    <value>[bold][slateblue1]Media barcode:[/][/] [italic]{0}[/]</value>
   </data>
     <data name="Media_part_number_0_WithMarkup" xml:space="preserve">
-    <value>[bold]Media part number:[/] [italic]{0}[/]</value>
+    <value>[bold][slateblue1]Media part number:[/][/] [italic]{0}[/]</value>
   </data>
     <data name="Drive_manufacturer_0_WithMarkup" xml:space="preserve">
-    <value>[bold]Drive manufacturer:[/] [italic]{0}[/]</value>
+    <value>[bold][slateblue1]Drive manufacturer:[/][/] [italic]{0}[/]</value>
   </data>
     <data name="Drive_model_0_WithMarkup" xml:space="preserve">
-    <value>[bold]Drive model:[/] [italic]{0}[/]</value>
+    <value>[bold][slateblue1]Drive model:[/][/] [italic]{0}[/]</value>
   </data>
     <data name="Drive_firmware_info_0_WithMarkup" xml:space="preserve">
-    <value>[bold]Drive firmware info:[/] [italic]{0}[/]</value>
+    <value>[bold][slateblue1]Drive firmware info:[/][/] [italic]{0}[/]</value>
   </data>
     <data name="Media_geometry_0_cylinders_1_heads_2_sectors_per_track_WithMarkup" xml:space="preserve">
-    <value>[bold]Media geometry:[/] [italic]{0} cylinders, {1} heads, {2} sectors per track[/]</value>
+    <value>[bold][slateblue1]Media geometry:[/] [italic][teal]{0}[/] cylinders, [teal]{1}[/] heads, [teal]{2}[/] sectors per track[/][/]</value>
   </data>
     <data name="Contains_0_readable_media_tags_WithMarkup" xml:space="preserve">
-    <value>[bold]Contains {0} readable media tags:[/]</value>
+    <value>[bold][blue]Contains [teal]{0}[/] readable media tags:[/][/]</value>
   </data>
     <data name="Contains_0_readable_sector_tags_WithMarkup" xml:space="preserve">
-    <value>[bold]Contains {0} readable sector tags:[/]</value>
+    <value>[bold][blue]Contains [teal]{0}[/] readable sector tags:[/][/]</value>
   </data>
     <data name="Title_Manufacturer" xml:space="preserve">
-    <value>Manufacturer</value>
+    <value>[bold][navy]Manufacturer[/][/]</value>
   </data>
     <data name="Title_Model" xml:space="preserve">
-    <value>Model</value>
+    <value>[bold][navy]Model[/][/]</value>
   </data>
     <data name="Title_Serial" xml:space="preserve">
-    <value>Serial</value>
+    <value>[bold][fuchsia]Serial[/][/]</value>
         <comment>As in serial number</comment>
   </data>
     <data name="Title_Software" xml:space="preserve">
-    <value>Software</value>
+    <value>[bold][red3]Software[/][/]</value>
   </data>
     <data name="Title_Version" xml:space="preserve">
-    <value>Version</value>
+    <value>[bold][red3]Version[/][/]</value>
   </data>
     <data name="Title_Operating_system" xml:space="preserve">
-    <value>Operating system</value>
+    <value>[bold][red3]Operating system[/][/]</value>
   </data>
     <data name="Title_Dump_hardware_information" xml:space="preserve">
-    <value>Dump hardware information</value>
+    <value>[bold][blue]Dump hardware information[/][/]</value>
   </data>
     <data name="Mapping_WithMarkup" xml:space="preserve">
-    <value>[bold]Mapping:[/]</value>
+    <value>[bold][blue]Mapping:[/][/]</value>
   </data>
     <data name="SCSI_INQUIRY_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]SCSI INQUIRY contained in image:[/]</value>
+    <value>[bold][blue]SCSI INQUIRY contained in image:[/][/]</value>
   </data>
     <data name="ATA_IDENTIFY_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]ATA IDENTIFY contained in image:[/]</value>
+    <value>[bold][blue]ATA IDENTIFY contained in image:[/][/]</value>
   </data>
     <data name="ATAPI_IDENTIFY_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]ATAPI IDENTIFY contained in image:[/]</value>
+    <value>[bold][blue]ATAPI IDENTIFY contained in image:[/][/]</value>
   </data>
     <data name="SCSI_MODE_SENSE_10_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]SCSI MODE SENSE (10) contained in image:[/]</value>
+    <value>[bold][blue]SCSI MODE SENSE (10) contained in image:[/][/]</value>
   </data>
     <data name="SCSI_MODE_SENSE_6_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]SCSI MODE SENSE (6) contained in image:[/]</value>
+    <value>[bold][blue]SCSI MODE SENSE (6) contained in image:[/][/]</value>
   </data>
     <data name="CompactDisc_Table_of_Contents_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]CompactDisc Table of Contents contained in image:[/]</value>
+    <value>[bold][blue]CompactDisc Table of Contents contained in image:[/][/]</value>
   </data>
     <data name="CompactDisc_Absolute_Time_In_Pregroove_ATIP_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]CompactDisc Absolute Time In Pregroove (ATIP) contained in image:[/]</value>
+    <value>[bold][blue]CompactDisc Absolute Time In Pregroove (ATIP) contained in image:[/][/]</value>
   </data>
     <data name="CompactDisc_Lead_in_CD_Text_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]CompactDisc Lead-in's CD-Text contained in image:[/]</value>
+    <value>[bold][blue]CompactDisc Lead-in's CD-Text contained in image:[/][/]</value>
   </data>
     <data name="CompactDisc_Media_Catalogue_Number_contained_in_image_0_WithMarkup" xml:space="preserve">
-    <value>[bold]CompactDisc Media Catalogue Number contained in image:[/] {0}</value>
+    <value>[bold][blue]CompactDisc Media Catalogue Number contained in image:[/][/] [teal]{0}[/]</value>
   </data>
     <data name="DVD_RW_Pre_Recorded_Information_WithMarkup" xml:space="preserve">
-    <value>[bold]DVD-R(W) Pre-Recorded Information:[/]</value>
+    <value>[bold][blue]DVD-R(W) Pre-Recorded Information:[/][/]</value>
   </data>
     <data name="DVD_Physical_Format_Information_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]DVD Physical Format Information contained in image:[/]</value>
+    <value>[bold][blue]DVD Physical Format Information contained in image:[/][/]</value>
   </data>
     <data name="DVD_RAM_Disc_Definition_Structure_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]DVD-RAM Disc Definition Structure contained in image:[/]</value>
+    <value>[bold][blue]DVD-RAM Disc Definition Structure contained in image:[/][/]</value>
   </data>
     <data name="DVD_R_Physical_Format_Information_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]DVD-R Physical Format Information contained in image:[/]</value>
+    <value>[bold][blue]DVD-R Physical Format Information contained in image:[/][/]</value>
   </data>
     <data name="Bluray_Disc_Information_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]Blu-ray Disc Information contained in image:[/]</value>
+    <value>[bold][blue]Blu-ray Disc Information contained in image:[/][/]</value>
   </data>
     <data name="Bluray_Disc_Definition_Structure_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]Blu-ray Disc Definition Structure contained in image:[/]</value>
+    <value>[bold][blue]Blu-ray Disc Definition Structure contained in image:[/][/]</value>
   </data>
     <data name="PCMCIA_CIS_WithMarkup" xml:space="preserve">
-    <value>[bold]PCMCIA CIS:[/]</value>
+    <value>[bold][blue]PCMCIA CIS:[/][/]</value>
   </data>
     <data name="SecureDigital_CID_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]SecureDigital CID contained in image:[/]</value>
+    <value>[bold][blue]SecureDigital CID contained in image:[/][/]</value>
   </data>
     <data name="SecureDigital_CSD_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]SecureDigital CSD contained in image:[/]</value>
+    <value>[bold][blue]SecureDigital CSD contained in image:[/][/]</value>
   </data>
     <data name="SecureDigital_SCR_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]SecureDigital SCR contained in image:[/]</value>
+    <value>[bold][blue]SecureDigital SCR contained in image:[/][/]</value>
   </data>
     <data name="SecureDigital_OCR_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]SecureDigital OCR contained in image:[/]</value>
+    <value>[bold][blue]SecureDigital OCR contained in image:[/][/]</value>
   </data>
     <data name="MultiMediaCard_CID_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]MultiMediaCard CID contained in image:[/]</value>
+    <value>[bold][blue]MultiMediaCard CID contained in image:[/][/]</value>
   </data>
     <data name="MultiMediaCard_CSD_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]MultiMediaCard CSD contained in image:[/]</value>
+    <value>[bold][blue]MultiMediaCard CSD contained in image:[/][/]</value>
   </data>
     <data name="MultiMediaCard_Extended_CSD_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]MultiMediaCard Extended CSD contained in image:[/]</value>
+    <value>[bold][blue]MultiMediaCard Extended CSD contained in image:[/][/]</value>
   </data>
     <data name="MultiMediaCard_OCR_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]MultiMediaCard OCR contained in image:[/]</value>
+    <value>[bold][blue]MultiMediaCard OCR contained in image:[/][/]</value>
   </data>
     <data name="Xbox_Physical_Format_Information_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]Xbox Physical Format Information contained in image:[/]</value>
+    <value>[bold][blue]Xbox Physical Format Information contained in image:[/][/]</value>
   </data>
     <data name="Xbox_DMI_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]Xbox DMI contained in image:[/]</value>
+    <value>[bold][blue]Xbox DMI contained in image:[/][/]</value>
   </data>
     <data name="Xbox_360_DMI_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]Xbox 360 DMI contained in image:[/]</value>
+    <value>[bold][blue]Xbox 360 DMI contained in image:[/][/]</value>
   </data>
     <data name="Xbox_Security_Sectors_contained_in_image_WithMarkup" xml:space="preserve">
-    <value>[bold]Xbox Security Sectors contained in image:[/]</value>
+    <value>[bold][blue]Xbox Security Sectors contained in image:[/][/]</value>
   </data>
     <data name="Title_Image_tracks" xml:space="preserve">
-    <value>Image tracks</value>
+    <value>[bold][blue]Image tracks[/][/]</value>
   </data>
     <data name="Title_Image_sessions" xml:space="preserve">
-    <value>Image sessions</value>
+    <value>[bold][blue]Image sessions[/][/]</value>
   </data>
     <data name="Please_write_description_of_media_type" xml:space="preserve">
     <value>Please write a description of the media type and press enter: </value>
@@ -3467,22 +3467,22 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Could not get tuples</value>
   </data>
     <data name="Title_Type_for_media" xml:space="preserve">
-    <value>Type</value>
+    <value>[bold][orange3]Type[/][/]</value>
   </data>
     <data name="Image_information_WithMarkup" xml:space="preserve">
-    <value>[bold]Image information:[/]</value>
+    <value>[bold][blue]Image information:[/][/]</value>
   </data>
     <data name="Format_0_version_1_WithMarkup" xml:space="preserve">
-    <value>[bold]Format:[/] [italic]{0}[/] version {1}</value>
+    <value>[bold][slateblue1]Format:[/][/] [italic][rosybrown]{0}[/][/] [slateblue1]version[/] [rosybrown]{1}[/]</value>
   </data>
     <data name="Format_0_WithMarkup" xml:space="preserve">
-    <value>[bold]Format:[/] [italic]{0}[/]</value>
+    <value>[bold][slateblue1]Format:[/][/] [italic][rosybrown]{0}[/][/]</value>
   </data>
     <data name="Was_created_with_0_WithMarkup" xml:space="preserve">
-    <value>Was created with [italic]{0}[/]</value>
+    <value>[slateblue1]Was created with [italic][rosybrown]{0}[/][/][/]</value>
   </data>
     <data name="Contains_a_media_of_type_0_and_XML_type_1_WithMarkup" xml:space="preserve">
-    <value>Contains a media of type [italic]{0}[/] and XML type [italic]{1}[/]</value>
+    <value>[slateblue1]Contains a media of type [italic][fuchsia]{0}[/][/] and XML type [italic][rosybrown]{1}[/][/][/]</value>
   </data>
     <data name="Drive_serial_number_0_WithMarkup" xml:space="preserve">
     <value>[bold]Drive serial number:[/] [italic]{0}[/]</value>

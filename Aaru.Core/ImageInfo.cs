@@ -53,6 +53,7 @@ using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
 using Spectre.Console;
+using Spectre.Console.Json;
 using DDS = Aaru.Decoders.DVD.DDS;
 using DMI = Aaru.Decoders.Xbox.DMI;
 using Inquiry = Aaru.Decoders.SCSI.Inquiry;
@@ -212,7 +213,7 @@ public static class ImageInfo
                                   imageFormat.Info.ReadableMediaTags.Count);
 
             foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.OrderBy(t => t))
-                AaruLogging.Write("[italic]{0}[/] ", Markup.Escape(tag.ToString()));
+                AaruLogging.Write("[italic][rosybrown]{0}[/][/] ", Markup.Escape(tag.ToString()));
 
             AaruLogging.WriteLine();
         }
@@ -223,7 +224,7 @@ public static class ImageInfo
                                   imageFormat.Info.ReadableSectorTags.Count);
 
             foreach(SectorTagType tag in imageFormat.Info.ReadableSectorTags.OrderBy(t => t))
-                AaruLogging.Write("[italic]{0}[/] ", tag);
+                AaruLogging.Write("[italic][rosybrown]{0}[/][/] ", Markup.Escape(tag.ToString()));
 
             AaruLogging.WriteLine();
         }
@@ -272,6 +273,8 @@ public static class ImageInfo
             Title = new TableTitle(Localization.Core.Title_Dump_hardware_information)
         };
 
+        AaruLogging.Information(Localization.Core.Title_Dump_hardware_information);
+
         table.AddColumn(Localization.Core.Title_Manufacturer);
         table.AddColumn(Localization.Core.Title_Model);
         table.AddColumn(Localization.Core.Title_Serial);
@@ -280,22 +283,31 @@ public static class ImageInfo
         table.AddColumn(Localization.Core.Title_Operating_system);
         table.AddColumn(Localization.Core.Title_Start);
         table.AddColumn(Localization.Core.Title_End);
+        table.Border(TableBorder.Rounded);
+        table.BorderColor(Color.Yellow);
+        table.Columns[6].RightAligned();
+        table.Columns[7].RightAligned();
 
         foreach(DumpHardware dump in imageFormat.DumpHardware)
         {
             foreach(Extent extent in dump.Extents)
             {
-                table.AddRow(Markup.Escape(dump.Manufacturer             ?? ""),
-                             Markup.Escape(dump.Model                    ?? ""),
-                             Markup.Escape(dump.Serial                   ?? ""),
-                             Markup.Escape(dump.Software.Name            ?? ""),
-                             Markup.Escape(dump.Software.Version         ?? ""),
-                             Markup.Escape(dump.Software.OperatingSystem ?? ""),
-                             extent.Start.ToString(),
-                             extent.End.ToString());
+                table.AddRow($"[navy]{Markup.Escape(dump.Manufacturer             ?? "")}[/]",
+                             $"[navy]{Markup.Escape(dump.Model                    ?? "")}[/]",
+                             $"[fuchsia]{Markup.Escape(dump.Serial                ?? "")}[/]",
+                             $"[red3]{Markup.Escape(dump.Software.Name            ?? "")}[/]",
+                             $"[red3]{Markup.Escape(dump.Software.Version         ?? "")}[/]",
+                             $"[red3]{Markup.Escape(dump.Software.OperatingSystem ?? "")}[/]",
+                             $"[lime]{extent.Start}[/]",
+                             $"[lime]{extent.End}[/]");
+
+                // Write each row to AaruLogging.Information as a line
+                AaruLogging
+                   .Information($"Manufacturer {dump.Manufacturer ?? ""}, model {dump.Model ?? ""}, serial {dump.Serial ?? ""}, software {dump.Software?.Name ?? ""}, version {dump.Software?.Version ?? ""}, operating system {dump.Software?.OperatingSystem ?? ""}, start {extent.Start}, end {extent.End}");
             }
         }
 
+        AnsiConsole.Write(table);
         AaruLogging.WriteLine();
     }
 
@@ -305,20 +317,24 @@ public static class ImageInfo
 
         if(errno != ErrorNumber.NoError) return;
 
-        AaruLogging.WriteLine(Localization.Core.Mapping_WithMarkup);
+        string jsonString = JsonSerializer.Serialize(mappings,
+                                                     new JsonSerializerOptions
+                                                     {
+                                                         WriteIndented          = true,
+                                                         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                                                         Converters =
+                                                         {
+                                                             new JsonStringEnumConverter()
+                                                         }
+                                                     });
 
-        AaruLogging.WriteLine("{0}",
-                              Markup.Escape(JsonSerializer.Serialize(mappings,
-                                                                     new JsonSerializerOptions
-                                                                     {
-                                                                         WriteIndented = true,
-                                                                         DefaultIgnoreCondition =
-                                                                             JsonIgnoreCondition.WhenWritingNull,
-                                                                         Converters =
-                                                                         {
-                                                                             new JsonStringEnumConverter()
-                                                                         }
-                                                                     })));
+        AaruLogging.Information(Localization.Core.Mapping_WithMarkup);
+        AaruLogging.Information(jsonString);
+
+        AnsiConsole.Write(new Panel(new JsonText(jsonString)).Header(Localization.Core.Mapping_WithMarkup)
+                                                             .Collapse()
+                                                             .RoundedBorder()
+                                                             .BorderColor(Color.Yellow));
     }
 
     static void PrintBlockImageInfo(IMediaImage imageFormat)
@@ -673,14 +689,14 @@ public static class ImageInfo
                             case TupleCodes.CISTPL_SWIL:
                             case TupleCodes.CISTPL_VERS_2:
                                 AaruLogging.Debug(MODULE_NAME,
-                                                           Localization.Core.Invoke_Found_undecoded_tuple_ID_0,
-                                                           tuple.Code);
+                                                  Localization.Core.Invoke_Found_undecoded_tuple_ID_0,
+                                                  tuple.Code);
 
                                 break;
                             default:
                                 AaruLogging.Debug(MODULE_NAME,
-                                                           Localization.Core.Found_unknown_tuple_ID_0,
-                                                           (byte)tuple.Code);
+                                                  Localization.Core.Found_unknown_tuple_ID_0,
+                                                  (byte)tuple.Code);
 
                                 break;
                         }
@@ -856,19 +872,33 @@ public static class ImageInfo
                     Title = new TableTitle(Localization.Core.Title_Image_sessions)
                 };
 
+                AaruLogging.Information(Localization.Core.Title_Image_sessions);
+
+                table.Border(TableBorder.Rounded);
+                table.BorderColor(Color.Yellow);
+
                 table.AddColumn(Localization.Core.Title_Session);
                 table.AddColumn(Localization.Core.Title_First_track);
                 table.AddColumn(Localization.Core.Title_Last_track);
                 table.AddColumn(Localization.Core.Title_Start);
                 table.AddColumn(Localization.Core.Title_End);
+                table.Columns[0].RightAligned();
+                table.Columns[1].RightAligned();
+                table.Columns[2].RightAligned();
+                table.Columns[3].RightAligned();
+                table.Columns[4].RightAligned();
 
                 foreach(Session session in opticalImage.Sessions)
                 {
-                    table.AddRow(session.Sequence.ToString(),
-                                 session.StartTrack.ToString(),
-                                 session.EndTrack.ToString(),
-                                 session.StartSector.ToString(),
-                                 session.EndSector.ToString());
+                    table.AddRow($"[navy]{session.Sequence}[/]",
+                                 $"[purple]{session.StartTrack}[/]",
+                                 $"[purple]{session.EndTrack}[/]",
+                                 $"[lime]{session.StartSector}[/]",
+                                 $"[lime]{session.EndSector}[/]");
+
+                    // Write all the session infomation to AaruLogging.Information in a single line
+                    AaruLogging
+                       .Information($"Session {session.Sequence}: first track {session.StartTrack}, last track {session.EndTrack}, start sector {session.StartSector}, end sector {session.EndSector}");
                 }
 
                 AnsiConsole.Write(table);
@@ -889,6 +919,9 @@ public static class ImageInfo
                 Title = new TableTitle(Localization.Core.Title_Image_tracks)
             };
 
+            table.Border(TableBorder.Rounded);
+            table.BorderColor(Color.Yellow);
+
             table.AddColumn(Localization.Core.Title_Track);
             table.AddColumn(Localization.Core.Title_Type_for_media);
             table.AddColumn(Localization.Core.Title_Bps);
@@ -897,17 +930,27 @@ public static class ImageInfo
             table.AddColumn(Localization.Core.Title_Pregap);
             table.AddColumn(Localization.Core.Title_Start);
             table.AddColumn(Localization.Core.Title_End);
+            table.Columns[0].RightAligned();
+            table.Columns[2].RightAligned();
+            table.Columns[3].RightAligned();
+            table.Columns[5].RightAligned();
+            table.Columns[6].RightAligned();
+            table.Columns[7].RightAligned();
 
             foreach(Track track in opticalImage.Tracks)
             {
-                table.AddRow(track.Sequence.ToString(),
-                             track.Type.ToString(),
-                             track.BytesPerSector.ToString(),
-                             track.RawBytesPerSector.ToString(),
-                             track.SubchannelType.ToString(),
-                             track.Pregap.ToString(),
-                             track.StartSector.ToString(),
-                             track.EndSector.ToString());
+                table.AddRow($"[teal]{track.Sequence}[/]",
+                             $"[orange3]{track.Type}[/]",
+                             $"[aqua]{track.BytesPerSector}[/]",
+                             $"[aqua]{track.RawBytesPerSector}[/]",
+                             $"[fuchsia]{track.SubchannelType}[/]",
+                             $"[darkgreen]{track.Pregap}[/]",
+                             $"[lime]{track.StartSector}[/]",
+                             $"[lime]{track.EndSector}[/]");
+
+                // Write all the track information to AaruLogging.Information in a single line
+                AaruLogging
+                   .Information($"Track {track.Sequence}: type {track.Type}, bytes per sector {track.BytesPerSector}, raw bytes per sector {track.RawBytesPerSector}, subchannel type {track.SubchannelType}, pregap {track.Pregap}, start sector {track.StartSector}, end sector {track.EndSector}");
             }
 
             AnsiConsole.Write(table);
@@ -921,14 +964,27 @@ public static class ImageInfo
                 Title = new TableTitle(Localization.Core.Title_Image_indexes)
             };
 
+            AaruLogging.Information(Localization.Core.Title_Image_indexes);
+
+            table.Border(TableBorder.Rounded);
+            table.BorderColor(Color.Yellow);
+
             table.AddColumn(Localization.Core.Title_Track);
             table.AddColumn(Localization.Core.Title_Index);
             table.AddColumn(Localization.Core.Title_Start);
+            table.Columns[0].RightAligned();
+            table.Columns[1].RightAligned();
+            table.Columns[2].RightAligned();
 
             foreach(Track track in opticalImage.Tracks)
             {
                 foreach(KeyValuePair<ushort, int> index in track.Indexes)
-                    table.AddRow(track.Sequence.ToString(), index.Key.ToString(), index.Value.ToString());
+                {
+                    table.AddRow($"[teal]{track.Sequence}[/]", $"[darkgreen]{index.Key}[/]", $"[lime]{index.Value}[/]");
+
+                    // Write all the index information to AaruLogging.Information in a single line
+                    AaruLogging.Information($"Track {track.Sequence}, index {index.Key}: start sector {index.Value}");
+                }
             }
 
             AnsiConsole.Write(table);

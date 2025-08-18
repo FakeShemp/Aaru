@@ -61,7 +61,7 @@ sealed class ImageInfoCommand : Command<ImageInfoCommand.Settings>
 
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
-            ctx.AddTask(UI.Identifying_file_filter).IsIndeterminate();
+            ctx.AddTask($"[slateblue1]{UI.Identifying_file_filter}[/]").IsIndeterminate();
             inputFilter = PluginRegister.Singleton.GetFilter(settings.ImagePath);
         });
 
@@ -78,7 +78,7 @@ sealed class ImageInfoCommand : Command<ImageInfoCommand.Settings>
 
             Core.Spectre.ProgressSingleSpinner(ctx =>
             {
-                ctx.AddTask(UI.Identifying_image_format).IsIndeterminate();
+                ctx.AddTask($"[slateblue1]{UI.Identifying_image_format}[/]").IsIndeterminate();
                 imageFormat = ImageFormat.Detect(inputFilter);
             });
 
@@ -89,7 +89,10 @@ sealed class ImageInfoCommand : Command<ImageInfoCommand.Settings>
                 return (int)ErrorNumber.UnrecognizedFormat;
             }
 
-            AaruLogging.WriteLine(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
+            AaruLogging.WriteLine($"[slateblue1]{UI.Image_format_identified_by_0_1}[/]",
+                                  $"[green]{imageFormat.Name}[/]",
+                                  $"[italic][red]{imageFormat.Id}[/][/]");
+
             AaruLogging.WriteLine();
 
             try
@@ -98,7 +101,7 @@ sealed class ImageInfoCommand : Command<ImageInfoCommand.Settings>
 
                 Core.Spectre.ProgressSingleSpinner(ctx =>
                 {
-                    ctx.AddTask(UI.Invoke_Opening_image_file).IsIndeterminate();
+                    ctx.AddTask($"[slateblue1]{UI.Invoke_Opening_image_file}[/]").IsIndeterminate();
                     opened = imageFormat.Open(inputFilter);
                 });
 
