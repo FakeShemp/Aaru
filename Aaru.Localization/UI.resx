@@ -626,33 +626,33 @@ In you are unsure, please press N to not continue.</value>
     <value>Unable to recognize image format, not checksumming</value>
   </data>
     <data name="Hashing_track_0_of_1" xml:space="preserve">
-    <value>Hashing track {0} of {1}</value>
+    <value>[slateblue1]Hashing track [teal]{0}[/] of [teal]{1}[/][/]</value>
   </data>
     <data name="Hashing_sector" xml:space="preserve">
     <value>Hashing sector</value>
   </data>
     <data name="Track_0_starts_at_sector_1_and_ends_at_sector_2" xml:space="preserve">
-    <value>Track {0} starts at sector {1} and ends at sector {2}</value>
+    <value>[slateblue1]Track [teal]{0}[/] starts at sector [lime]{1}[/] and ends at sector [lime]{2}[/][/]</value>
   </data>
     <data name="Hashing_sectors_0_to_2_of_track_1" xml:space="preserve">
-    <value>Hashing sectors {0} to {2} of track {1}</value>
+    <value>[slateblue1]Hashing sectors [lime]{0}[/] to [violet]{2}[/] of track [teal]{1}[/][/]</value>
   </data>
     <data name="Error_0_while_reading_1_sectors_from_sector_2" xml:space="preserve">
     <value>Error {0} while reading {1} sectors from sector {2}, not continuing...</value>
   </data>
-    <data name="Checksums_Track_0_has_1" xml:space="preserve">
-    <value>Track {0}'s {1}:</value>
+    <data name="Checksums_Track_0_has_1_2" xml:space="preserve">
+    <value>[bold][slateblue1]Track [teal]{0}[/]'s [fuchsia]{1}[/]:[/][/] [rosybrown]{2}[/]</value>
         <comment>{0} is track number, {1} is checksum name</comment>
   </data>
-    <data name="Checksums_Disc_has_0" xml:space="preserve">
-    <value>Disc's {0}</value>
+    <data name="Checksums_Disc_has_0_1" xml:space="preserve">
+    <value>[bold][slateblue1]Disc's [fuchsia]{0}[/]:[/] [rosybrown]{1}[/]</value>
         <comment>{0} is checksum name</comment>
   </data>
     <data name="Hashing_file_0_of_1" xml:space="preserve">
-    <value>Hashing file {0} of {1}</value>
+    <value>[slateblue1]Hashing file [lime]{0}[/] of [violet]{1}[/][/]</value>
   </data>
     <data name="Hashing_file_less_block_0" xml:space="preserve">
-    <value>Hashing file-less block {0}</value>
+    <value>[slateblue1]Hashing file-less block [lime]{0}[/][/]</value>
   </data>
     <data name="Error_0_while_reading_block_1" xml:space="preserve">
     <value>Error {0} while reading block {1}, not continuing...</value>
@@ -661,14 +661,14 @@ In you are unsure, please press N to not continue.</value>
     <value>File {0} starts at block {1} and ends at block {2}</value>
   </data>
     <data name="Hashing_blocks_0_to_2_of_file_1" xml:space="preserve">
-    <value>Hashing blocks {0} to {2} of file {1}</value>
+    <value>[slateblue1]Hashing blocks [lime]{0}[/] to [violet]{2}[/] of file [teal]{1}[/][/]</value>
   </data>
-    <data name="Checksums_File_0_has_1" xml:space="preserve">
-    <value>File {0}'s {1}</value>
+    <data name="Checksums_File_0_has_1_2" xml:space="preserve">
+    <value>[bold][slateblue1]File [teal]{0}[/teal]'s [fuchsia]{1}[/]:[/][/] [rosybrown]{2}[/]</value>
         <comment>{0} is file's number, {1} is checksum name</comment>
   </data>
-    <data name="Checksums_Tape_has_0" xml:space="preserve">
-    <value>Tape's {0}:</value>
+    <data name="Checksums_Tape_has_0_1" xml:space="preserve">
+    <value>[bold][slateblue1]Tape's [fuchsia]{0}[/]:[/][/] [rosybrown]{1}[/]</value>
         <comment>{0} is checksum name</comment>
   </data>
     <data name="Hashing_image" xml:space="preserve">
@@ -678,17 +678,17 @@ In you are unsure, please press N to not continue.</value>
     <value>Error {0} while reading {1} bytes from {2}, not continuing...</value>
   </data>
     <data name="Hashing_bytes_0_to_1" xml:space="preserve">
-    <value>Hashing bytes {0} to {1}</value>
+    <value>[slateblue1]Hashing bytes [lime]{0}[/] to [violet]{1}[/][/]</value>
   </data>
-    <data name="Checksums_Media_has_0" xml:space="preserve">
-    <value>Media's {0}:</value>
+    <data name="Checksums_Media_has_0_1" xml:space="preserve">
+    <value>[bold][slateblue1]Media's [fuchsia]{0}[/]:[/][/] [rosybrown]{1}[/]</value>
         <comment>{0} is checksum name</comment>
   </data>
     <data name="Hashing_sectors_0_to_1" xml:space="preserve">
-    <value>Hashing sectors {0} to {1}</value>
+    <value>[slateblue1]Hashing sectors [lime]{0}[/] to [violet]{1}[/][/]</value>
   </data>
-    <data name="Checksums_Disk_has_0" xml:space="preserve">
-    <value>Disk's {0}:</value>
+    <data name="Checksums_Disk_has_0_1" xml:space="preserve">
+    <value>[bold][slateblue1]Disk's [fuchsia]{0}[/]:[/][/] [rosybrown]{1}[/]</value>
         <comment>{0} is checksum name</comment>
   </data>
     <data name="First_media_image_path" xml:space="preserve">
@@ -3127,6 +3127,6 @@ Do you want to continue?</value>
         <value>[slateblue1]Optimal multiple read is [aqua]{0}[/] sectors.[/]</value>
     </data>
     <data name="Unable_to_get_separate_tracks_not_checksumming_them" xml:space="preserve">
-        <value>Unable to get separate tracks, not checksumming them</value>
+        <value>[yellow]Unable to get separate tracks, not checksumming them[/]</value>
     </data>
 </root>

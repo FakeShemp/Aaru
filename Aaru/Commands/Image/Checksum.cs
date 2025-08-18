@@ -180,9 +180,9 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                     foreach(Track currentTrack in inputTracks)
                                     {
                                         discTask.Description =
-                                            string.Format($"[slateblue1]{UI.Hashing_track_0_of_1}[/]",
-                                                          $"[teal]{discTask.Value + 1}[/]",
-                                                          $"[teal]{inputTracks.Count}[/]");
+                                            string.Format(UI.Hashing_track_0_of_1,
+                                                          discTask.Value + 1,
+                                                          inputTracks.Count);
 
                                         ProgressTask trackTask = ctx.AddTask(UI.Hashing_sector);
 
@@ -224,11 +224,10 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                                     out sector);
 
                                                 trackTask.Description =
-                                                    string
-                                                       .Format($"[slateblue1]{UI.Hashing_sectors_0_to_2_of_track_1}[/]",
-                                                               $"[lime]{doneSectors}[/]",
-                                                               $"[teal]{currentTrack.Sequence}[/]",
-                                                               $"[violet]{doneSectors + SECTORS_TO_READ}[/]");
+                                                    string.Format(UI.Hashing_sectors_0_to_2_of_track_1,
+                                                                  doneSectors,
+                                                                  currentTrack.Sequence,
+                                                                  doneSectors + SECTORS_TO_READ);
 
                                                 if(errno != ErrorNumber.NoError)
                                                 {
@@ -253,11 +252,10 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                                     out sector);
 
                                                 trackTask.Description =
-                                                    string
-                                                       .Format($"[slateblue1]{UI.Hashing_sectors_0_to_2_of_track_1}[/]",
-                                                               $"[lime]{doneSectors}[/]",
-                                                               $"[teal]{currentTrack.Sequence}[/]",
-                                                               $"[violet]{doneSectors + (sectors - doneSectors)}[/]");
+                                                    string.Format(UI.Hashing_sectors_0_to_2_of_track_1,
+                                                                  doneSectors,
+                                                                  currentTrack.Sequence,
+                                                                  doneSectors + (sectors - doneSectors));
 
                                                 if(errno != ErrorNumber.NoError)
                                                 {
@@ -291,9 +289,10 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                         foreach(CommonTypes.AaruMetadata.Checksum chk in trackChecksum.End())
                                         {
-                                            AaruLogging
-                                               .WriteLine($"[bold][slateblue1]{string.Format(UI.Checksums_Track_0_has_1,
-                                                   currentTrack.Sequence, chk.Type)}[/][/] [rosybrown]{chk.Value}[/]");
+                                            AaruLogging.WriteLine(UI.Checksums_Track_0_has_1_2,
+                                                                  currentTrack.Sequence,
+                                                                  chk.Type,
+                                                                  chk.Value);
                                         }
 
                                         discTask.Increment(1);
@@ -318,9 +317,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                     foreach(CommonTypes.AaruMetadata.Checksum chk in mediaChecksum.End())
                                     {
-                                        AaruLogging
-                                           .WriteLine($"[bold][slateblue1]{string.Format(UI.Checksums_Disc_has_0, chk.Type)
-                                           }:[/][/] [rosybrown]{chk.Value}[/]");
+                                        AaruLogging.WriteLine(UI.Checksums_Disc_has_0_1, chk.Type, chk.Value);
                                     }
                                 });
 
@@ -355,9 +352,9 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                 foreach(TapeFile currentFile in tapeImage.Files)
                                 {
-                                    tapeTask.Description = string.Format($"[slateblue1]{UI.Hashing_file_0_of_1}[/]",
-                                                                         $"[lime]{currentFile.File}[/]",
-                                                                         $"[violet]{tapeImage.Files.Count}[/]");
+                                    tapeTask.Description = string.Format(UI.Hashing_file_0_of_1,
+                                                                         currentFile.File,
+                                                                         tapeImage.Files.Count);
 
                                     if(currentFile.FirstBlock - previousFileEnd != 0 && settings.WholeDisc)
                                     {
@@ -366,9 +363,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                         for(ulong i = previousFileEnd + 1; i < currentFile.FirstBlock; i++)
                                         {
-                                            preFileTask.Description =
-                                                string.Format($"[slateblue1]{UI.Hashing_file_less_block_0}[/]",
-                                                              $"[lime]{i}[/]");
+                                            preFileTask.Description = string.Format(UI.Hashing_file_less_block_0, i);
 
                                             errno = tapeImage.ReadSector(i, out byte[] hiddenSector);
 
@@ -424,11 +419,10 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                                 return;
                                             }
 
-                                            fileTask.Description =
-                                                string.Format($"[slateblue1]{UI.Hashing_blocks_0_to_2_of_file_1}[/]",
-                                                              $"[lime]{doneSectors}[/]",
-                                                              $"[teal]{currentFile.File}[/]",
-                                                              $"[violet]{doneSectors + SECTORS_TO_READ}[/]");
+                                            fileTask.Description = string.Format(UI.Hashing_blocks_0_to_2_of_file_1,
+                                                doneSectors,
+                                                currentFile.File,
+                                                doneSectors + SECTORS_TO_READ);
 
                                             doneSectors += SECTORS_TO_READ;
                                         }
@@ -450,11 +444,10 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                                 return;
                                             }
 
-                                            fileTask.Description =
-                                                string.Format($"[slateblue1]{UI.Hashing_blocks_0_to_2_of_file_1}[/]",
-                                                              $"[lime]{doneSectors}[/]",
-                                                              $"[teal]{currentFile.File}[/]",
-                                                              $"[violet]{doneSectors + (sectors - doneSectors)}[/]");
+                                            fileTask.Description = string.Format(UI.Hashing_blocks_0_to_2_of_file_1,
+                                                doneSectors,
+                                                currentFile.File,
+                                                doneSectors + (sectors - doneSectors));
 
                                             doneSectors += sectors - doneSectors;
                                         }
@@ -475,9 +468,10 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         {
                                             foreach(CommonTypes.AaruMetadata.Checksum chk in trackChecksum.End())
                                             {
-                                                AaruLogging
-                                                   .WriteLine($"[bold][slateblue1]{string.Format(UI.Checksums_File_0_has_1,
-                                                       currentFile.File, chk.Type)}:[/][/] [rosybrown]{chk.Value}[/]");
+                                                AaruLogging.WriteLine(UI.Checksums_File_0_has_1_2,
+                                                                      currentFile.File,
+                                                                      chk.Type,
+                                                                      chk.Value);
                                             }
                                         }
                                     }
@@ -494,9 +488,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                 for(ulong i = previousFileEnd + 1; i < tapeImage.Info.Sectors; i++)
                                 {
-                                    postFileTask.Description =
-                                        string.Format($"[slateblue1]{UI.Hashing_file_less_block_0}[/]",
-                                                      $"[lime]{i}[/]");
+                                    postFileTask.Description = string.Format(UI.Hashing_file_less_block_0, i);
 
                                     errno = tapeImage.ReadSector(i, out byte[] hiddenSector);
 
@@ -520,9 +512,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                     foreach(CommonTypes.AaruMetadata.Checksum chk in mediaChecksum.End())
                     {
-                        AaruLogging
-                           .WriteLine($"[bold][slateblue1]{string.Format(UI.Checksums_Tape_has_0, chk.Type)}[/][/] [rosybrown]{chk.Value
-                           }[/]");
+                        AaruLogging.WriteLine(UI.Checksums_Tape_has_0_1, chk.Type, chk.Value);
                     }
                 }
 
@@ -564,9 +554,9 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         }
 
                                         imageTask.Description =
-                                            string.Format($"[slateblue1]{UI.Hashing_bytes_0_to_1}[/]",
-                                                          $"[lime]{doneBytes}[/]",
-                                                          $"[violet]{doneBytes + BYTES_TO_READ}[/]");
+                                            string.Format(UI.Hashing_bytes_0_to_1,
+                                                          doneBytes,
+                                                          doneBytes + BYTES_TO_READ);
 
                                         doneBytes += (ulong)bytesRead;
 
@@ -607,8 +597,9 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                 AaruLogging.WriteLine();
 
                 foreach(CommonTypes.AaruMetadata.Checksum chk in mediaChecksum.End())
-                    AaruLogging
-                       .WriteLine($"[bold][blueslate1]{string.Format(UI.Checksums_Media_has_0, chk.Type)}[/][/] [rosybrown]{chk.Value}[/]");
+                {
+                    AaruLogging.WriteLine(UI.Checksums_Media_has_0_1, chk.Type, chk.Value);
+                }
 
                 break;
             }
@@ -649,9 +640,9 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         }
 
                                         diskTask.Description =
-                                            string.Format($"[slateblue1]{UI.Hashing_sectors_0_to_1}[/]",
-                                                          $"[lime]{doneSectors}[/]",
-                                                          $"[violet]{doneSectors + SECTORS_TO_READ}[/]");
+                                            string.Format(UI.Hashing_sectors_0_to_1,
+                                                          doneSectors,
+                                                          doneSectors + SECTORS_TO_READ);
 
                                         doneSectors += SECTORS_TO_READ;
                                     }
@@ -672,10 +663,9 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                             return;
                                         }
 
-                                        diskTask.Description =
-                                            string.Format($"[slateblue1]{UI.Hashing_sectors_0_to_1}[/]",
-                                                          $"[lime]{doneSectors}[/]",
-                                                          $"[violet]{doneSectors + (sectors - doneSectors)}[/]");
+                                        diskTask.Description = string.Format(UI.Hashing_sectors_0_to_1,
+                                                                             doneSectors,
+                                                                             doneSectors + (sectors - doneSectors));
 
                                         doneSectors += sectors - doneSectors;
                                     }
@@ -690,8 +680,9 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                 AaruLogging.WriteLine();
 
                 foreach(CommonTypes.AaruMetadata.Checksum chk in mediaChecksum.End())
-                    AaruLogging
-                       .WriteLine($"[bold][slateblue1]{string.Format(UI.Checksums_Disk_has_0, chk.Type)}[/][/] [rosybrown]{chk.Value}[/]");
+                {
+                    AaruLogging.WriteLine(UI.Checksums_Disk_has_0_1, chk.Type, chk.Value);
+                }
 
                 break;
             }

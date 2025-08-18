@@ -1269,15 +1269,15 @@ namespace Aaru.Localization {
             }
         }
         
-        public static string Checksums_Track_0_has_1 {
+        public static string Checksums_Track_0_has_1_2 {
             get {
-                return ResourceManager.GetString("Checksums_Track_0_has_1", resourceCulture);
+                return ResourceManager.GetString("Checksums_Track_0_has_1_2", resourceCulture);
             }
         }
         
-        public static string Checksums_Disc_has_0 {
+        public static string Checksums_Disc_has_0_1 {
             get {
-                return ResourceManager.GetString("Checksums_Disc_has_0", resourceCulture);
+                return ResourceManager.GetString("Checksums_Disc_has_0_1", resourceCulture);
             }
         }
         
@@ -1311,15 +1311,15 @@ namespace Aaru.Localization {
             }
         }
         
-        public static string Checksums_File_0_has_1 {
+        public static string Checksums_File_0_has_1_2 {
             get {
-                return ResourceManager.GetString("Checksums_File_0_has_1", resourceCulture);
+                return ResourceManager.GetString("Checksums_File_0_has_1_2", resourceCulture);
             }
         }
         
-        public static string Checksums_Tape_has_0 {
+        public static string Checksums_Tape_has_0_1 {
             get {
-                return ResourceManager.GetString("Checksums_Tape_has_0", resourceCulture);
+                return ResourceManager.GetString("Checksums_Tape_has_0_1", resourceCulture);
             }
         }
         
@@ -1341,9 +1341,9 @@ namespace Aaru.Localization {
             }
         }
         
-        public static string Checksums_Media_has_0 {
+        public static string Checksums_Media_has_0_1 {
             get {
-                return ResourceManager.GetString("Checksums_Media_has_0", resourceCulture);
+                return ResourceManager.GetString("Checksums_Media_has_0_1", resourceCulture);
             }
         }
         
@@ -1353,9 +1353,9 @@ namespace Aaru.Localization {
             }
         }
         
-        public static string Checksums_Disk_has_0 {
+        public static string Checksums_Disk_has_0_1 {
             get {
-                return ResourceManager.GetString("Checksums_Disk_has_0", resourceCulture);
+                return ResourceManager.GetString("Checksums_Disk_has_0_1", resourceCulture);
             }
         }
         

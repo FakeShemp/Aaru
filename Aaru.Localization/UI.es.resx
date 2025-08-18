@@ -403,28 +403,28 @@
     <data name="Checking_track_0_of_1" xml:space="preserve">
     <value>Comprobando pista {0} de {1}</value>
   </data>
-    <data name="Checksums_Disc_has_0" xml:space="preserve">
+    <data name="Checksums_Disc_has_0_1" xml:space="preserve">
     <value>{0} del disco</value>
   </data>
-    <data name="Checksums_Disk_has_0" xml:space="preserve">
+    <data name="Checksums_Disk_has_0_1" xml:space="preserve">
     <value>{0} del disco:</value>
   </data>
     <data name="Checksums_each_track_separately" xml:space="preserve">
     <value>Calcular el checksum de cada pista por separado.</value>
   </data>
-    <data name="Checksums_File_0_has_1" xml:space="preserve">
+    <data name="Checksums_File_0_has_1_2" xml:space="preserve">
     <value>{1} del fichero {0}</value>
   </data>
-    <data name="Checksums_Media_has_0" xml:space="preserve">
+    <data name="Checksums_Media_has_0_1" xml:space="preserve">
     <value>{0} del medio:</value>
   </data>
-    <data name="Checksums_Tape_has_0" xml:space="preserve">
+    <data name="Checksums_Tape_has_0_1" xml:space="preserve">
     <value>{0} de la cinta:</value>
   </data>
     <data name="Checksums_the_whole_disc" xml:space="preserve">
     <value>Calcular el checksum del disco completo.</value>
   </data>
-    <data name="Checksums_Track_0_has_1" xml:space="preserve">
+    <data name="Checksums_Track_0_has_1_2" xml:space="preserve">
     <value>{1} de la pista {0}:</value>
   </data>
     <data name="Clear_existing_main_and_local_database" xml:space="preserve">
