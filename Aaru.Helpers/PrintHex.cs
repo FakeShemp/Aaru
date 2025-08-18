@@ -77,14 +77,14 @@ public static class PrintHex
 
         while(str.Length < offsetLength) str += ' ';
 
-        if(color) sb.Append("\u001b[36m");
+        if(color) sb.Append("\e[36m");
 
         sb.Append(str);
         sb.Append("  ");
 
         for(int i = 0; i < width; i++) sb.Append($" {i:X2}");
 
-        if(color) sb.Append("\u001b[0m");
+        if(color) sb.Append("\e[0m");
 
         sb.AppendLine();
 
@@ -94,11 +94,11 @@ public static class PrintHex
 
         for(int i = 0; i < rows; i++)
         {
-            if(color) sb.Append("\u001b[36m");
+            if(color) sb.Append("\e[36m");
 
             sb.AppendFormat(format, b);
 
-            if(color) sb.Append("\u001b[0m");
+            if(color) sb.Append("\e[0m");
 
             sb.Append("  ");
             int lastBytes  = i == rows - 1 ? last : width;
