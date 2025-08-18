@@ -333,8 +333,8 @@
     <value>Standard Disc Information</value>
   </data>
     <data name="Session_information" xml:space="preserve">
-    <value>Session information</value>
-  </data>
+        <value>[bold][blue]Session information:[/][/]</value>
+    </data>
     <data name="Raw_TOC" xml:space="preserve">
         <value>[bold][blue]Raw TOC:[/][/]</value>
     </data>

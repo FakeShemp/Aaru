@@ -687,8 +687,8 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 
                 if(scsiInfo.DecodedSession.HasValue)
                 {
-                    AaruLogging.WriteLine($"[bold]{Localization.Core.Session_information}:[/]" +
-                                          $"\n{Markup.Escape(Session.Prettify(scsiInfo.DecodedSession))}");
+                    AaruLogging.WriteLine(Localization.Core.Session_information);
+                    AaruLogging.WriteLine(Session.Prettify(scsiInfo.DecodedSession));
                 }
             }
 

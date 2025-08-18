@@ -2009,8 +2009,8 @@
     <value>Expected CDSessionInfo size ({0} bytes) is not received size ({1} bytes), not decoding</value>
   </data>
     <data name="First_track_number_in_last_complete_session_0" xml:space="preserve">
-    <value>First track number in last complete session: {0}</value>
-  </data>
+        <value>[slateblue1]First track number in last complete session: [teal]{0}[/][/]</value>
+    </data>
     <data name="Track_starts_at_LBA_0_or_MSF_2_3" xml:space="preserve">
         <value>[slateblue1]Track starts at LBA [lime]{0}[/], or MSF [lime]{1:X2}:{2:X2}:{3:X2}[/][/]</value>
     </data>

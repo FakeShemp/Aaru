@@ -5705,8 +5705,8 @@
         <value>[slateblue1]Número de la primera pista en la primera sesión completa: [teal]{0}[/][/]</value>
     </data>
     <data name="First_track_number_in_last_complete_session_0" xml:space="preserve">
-    <value>Número de la primera pista en la último sesión completa: {0}</value>
-  </data>
+        <value>[slateblue1]Número de la primera pista en la último sesión completa: [teal]{0}[/][/]</value>
+    </data>
     <data name="First_track_on_disc_is_track_0" xml:space="preserve">
     <value>La primera pista del disco es la pista {0}</value>
   </data>

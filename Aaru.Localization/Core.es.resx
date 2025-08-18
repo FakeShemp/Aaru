@@ -2657,8 +2657,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>Servidor: {0}</value>
   </data>
     <data name="Session_information" xml:space="preserve">
-    <value>Información de sesión</value>
-  </data>
+        <value>[bold][blue]Información de sesión:[/][/]</value>
+    </data>
     <data name="Setting_disc_Media_Catalogue_Number_to_0" xml:space="preserve">
     <value>Estableciendo el número de catálogo del medio a {0}</value>
   </data>
