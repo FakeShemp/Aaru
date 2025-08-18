@@ -2723,8 +2723,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>Traza de pila: {0}</value>
   </data>
     <data name="Standard_Disc_Information" xml:space="preserve">
-    <value>Información estándar del disco</value>
-  </data>
+        <value>[bold][blue]Información estándar del disco:[/][/]</value>
+    </data>
     <data name="Start_error_logging_on_0" xml:space="preserve">
     <value>Registro de errores empezado el {0}</value>
   </data>

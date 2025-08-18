@@ -675,9 +675,8 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 
                 if(scsiInfo.DecodedDiscInformation.HasValue)
                 {
-                    AaruLogging.WriteLine($"[bold]{Localization.Core.Standard_Disc_Information}:[/]" +
-                                          $"\n{Markup.Escape(DiscInformation.Prettify000b(scsiInfo.
-                                                                 DecodedDiscInformation))}");
+                    AaruLogging.WriteLine(Localization.Core.Standard_Disc_Information);
+                    AaruLogging.WriteLine(DiscInformation.Prettify000b(scsiInfo.DecodedDiscInformation));
                 }
             }
 

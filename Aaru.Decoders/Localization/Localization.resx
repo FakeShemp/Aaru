@@ -2480,8 +2480,8 @@
     <value>Layer 0 ends at PSN {0:X}h</value>
   </data>
     <data name="Disc_is_empty" xml:space="preserve">
-    <value>Disc is empty</value>
-  </data>
+        <value>[slateblue1]Disc is empty[/]</value>
+    </data>
     <data name="Media_attribute_is_0" xml:space="preserve">
     <value>Media attribute is {0}</value>
   </data>
@@ -3698,86 +3698,86 @@
     <value>CPRM Media Key Blocks in hex follows:</value>
   </data>
     <data name="Disc_type_declared_as_CD_DA_or_CD_ROM" xml:space="preserve">
-    <value>Disc type declared as CD-DA or CD-ROM</value>
-  </data>
+        <value>[slateblue1]Disc type declared as [red]CD-DA[/] or [yellow]CD-ROM[/][/]</value>
+    </data>
     <data name="Disc_type_declared_as_CD_i" xml:space="preserve">
-    <value>Disc type declared as CD-i</value>
-  </data>
+        <value>[slateblue1]Disc type declared as [green]CD-i[/][/]</value>
+    </data>
     <data name="Disc_type_declared_as_CD_ROM_XA" xml:space="preserve">
-    <value>Disc type declared as CD-ROM XA</value>
-  </data>
+        <value>[slateblue1]Disc type declared as [darkorange]CD-ROM XA[/][/]</value>
+    </data>
     <data name="Disc_type_is_undefined" xml:space="preserve">
-    <value>Disc type is undefined</value>
-  </data>
+        <value>[slateblue1]Disc type is undefined[/]</value>
+    </data>
     <data name="Unknown_disc_type_0" xml:space="preserve">
-    <value>Unknown disc type {0:X2}h</value>
-  </data>
+        <value>[slateblue1]Unknown disc type [teal]{0:X2}h[/][/]</value>
+    </data>
     <data name="Disc_is_incomplete" xml:space="preserve">
-    <value>Disc is incomplete</value>
-  </data>
+        <value>[slateblue1]Disc is incomplete[/]</value>
+    </data>
     <data name="Disc_is_finalized" xml:space="preserve">
-    <value>Disc is finalized</value>
-  </data>
+        <value>[slateblue1]Disc is finalized[/]</value>
+    </data>
     <data name="Disc_is_erasable" xml:space="preserve">
-    <value>Disc is erasable</value>
-  </data>
+        <value>[slateblue1]Disc is erasable[/]</value>
+    </data>
     <data name="Last_session_is_empty" xml:space="preserve">
-    <value>Last session is empty</value>
-  </data>
+        <value>[slateblue1]Last session is empty[/]</value>
+    </data>
     <data name="Last_session_is_incomplete" xml:space="preserve">
-    <value>Last session is incomplete</value>
-  </data>
+        <value>[slateblue1]Last session is incomplete[/]</value>
+    </data>
     <data name="Last_session_is_damaged" xml:space="preserve">
-    <value>Last session is damaged</value>
-  </data>
+        <value>[slateblue1]Last session is damaged[/]</value>
+    </data>
     <data name="Last_session_is_complete" xml:space="preserve">
-    <value>Last session is complete</value>
-  </data>
+        <value>[slateblue1]Last session is complete[/]</value>
+    </data>
     <data name="Media_was_being_formatted_in_the_background_but_it_is_stopped_and_incomplete" xml:space="preserve">
-    <value>Media was being formatted in the background but it is stopped and incomplete</value>
-  </data>
+        <value>[slateblue1]Media was being formatted in the background but it is stopped and incomplete[/]</value>
+    </data>
     <data name="Media_is_currently_being_formatted_in_the_background" xml:space="preserve">
-    <value>Media is currently being formatted in the background</value>
-  </data>
+        <value>[slateblue1]Media is currently being formatted in the background[/]</value>
+    </data>
     <data name="Media_background_formatting_has_completed" xml:space="preserve">
-    <value>Media background formatting has completed</value>
-  </data>
+        <value>[slateblue1]Media background formatting has completed[/]</value>
+    </data>
     <data name="MRW_is_dirty" xml:space="preserve">
-    <value>MRW is dirty</value>
-  </data>
+        <value>[slateblue1]MRW is dirty[/]</value>
+    </data>
     <data name="First_track_on_disc_is_track_0" xml:space="preserve">
-    <value>First track on disc is track {0}</value>
-  </data>
+        <value>[slateblue1]First track on disc is track [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_has_0_sessions" xml:space="preserve">
-    <value>Disc has {0} sessions</value>
-  </data>
+        <value>[slateblue1]Disc has [teal]{0}[/] sessions[/]</value>
+    </data>
     <data name="First_track_in_last_session_is_track_0" xml:space="preserve">
-    <value>First track in last session is track {0}</value>
-  </data>
+        <value>[slateblue1]First track in last session is track [teal]{0}[/][/]</value>
+    </data>
     <data name="Last_track_in_last_session_is_track_0" xml:space="preserve">
-    <value>Last track in last session is track {0}</value>
-  </data>
+        <value>[slateblue1]Last track in last session is track [teal]{0}[/][/]</value>
+    </data>
     <data name="Last_session_Lead_In_address_is_0_as_LBA_or_1_2_3" xml:space="preserve">
-    <value>Last session Lead-In address is {0} (as LBA) or {1:X2}:{2:X2}:{3:X2}</value>
-  </data>
+        <value>[slateblue1]Last session Lead-In address is [lime]{0}[/] (as LBA) or [lime]{1:X2}:{2:X2}:{3:X2}[/][/]</value>
+    </data>
     <data name="Last_possible_Lead_Out_address_is_0_as_LBA_or_1_2_3" xml:space="preserve">
-    <value>Last possible Lead-Out address is {0} (as LBA) or {1:X2}:{2:X2}:{3:X2}</value>
-  </data>
+        <value>[slateblue1]Last possible Lead-Out address is [lime]{0}[/] (as LBA) or [lime]{1:X2}:{2:X2}:{3:X2}[/][/]</value>
+    </data>
     <data name="Disc_is_defined_for_unrestricted_use" xml:space="preserve">
-    <value>Disc is defined for unrestricted use</value>
-  </data>
+        <value>[slateblue1]Disc is defined for unrestricted use[/]</value>
+    </data>
     <data name="Disc_is_defined_for_restricted_use" xml:space="preserve">
-    <value>Disc is defined for restricted use</value>
-  </data>
+        <value>[slateblue1]Disc is defined for restricted use[/]</value>
+    </data>
     <data name="Disc_barcode_0" xml:space="preserve">
-    <value>Disc barcode: {0:X16}</value>
-  </data>
+        <value>[slateblue1]Disc barcode:[/] [teal]{0:X16}[/]</value>
+    </data>
     <data name="Disc_application_code_0" xml:space="preserve">
-    <value>Disc application code: {0}</value>
-  </data>
+        <value>[slateblue1]Disc application code:[/] [teal]{0}[/]</value>
+    </data>
     <data name="OPC_values_for_0_Kbit_sec_1_2_3_4_5_6" xml:space="preserve">
-    <value>OPC values for {0}Kbit/sec.: {1}, {2}, {3}, {4}, {5}, {6}</value>
-  </data>
+        <value>[slateblue1]OPC values for [lime]{0}[/]Kbit/sec.: [teal]{1}[/], [teal]{2}[/], [teal]{3}[/], [teal]{4}[/], [teal]{5}[/], [teal]{6}[/][/]</value>
+    </data>
     <data name="_0_maximum_possible_tracks_on_the_disc" xml:space="preserve">
     <value>{0} maximum possible tracks on the disc</value>
   </data>

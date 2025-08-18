@@ -3782,11 +3782,11 @@
     <value>Dispositivo de acceso directo</value>
   </data>
     <data name="Disc_application_code_0" xml:space="preserve">
-    <value>Código de aplicación del disco: {0}</value>
-  </data>
+        <value>[slateblue1]Código de aplicación del disco:[/] [teal]{0}[/]</value>
+    </data>
     <data name="Disc_barcode_0" xml:space="preserve">
-    <value>Código de barras del disco: {0}</value>
-  </data>
+        <value>[slateblue1]Código de barras del disco:[/] [teal]{0:X16}[/]</value>
+    </data>
     <data name="Disc_book_type_is_0" xml:space="preserve">
     <value>El tipo de libro del disco es {0}</value>
   </data>
@@ -3887,8 +3887,8 @@
     <value>El disco tiene {0} capas</value>
   </data>
     <data name="Disc_has_0_sessions" xml:space="preserve">
-    <value>El disco tiene {0} sesiones</value>
-  </data>
+        <value>[slateblue1]El disco tiene [teal]{0}[/] sesiones[/]</value>
+    </data>
     <data name="Disc_has_0_zones" xml:space="preserve">
     <value>El disco tiene {0} zonas</value>
   </data>
@@ -3944,14 +3944,14 @@
     <value>El disco es un DDCD-RW</value>
   </data>
     <data name="Disc_is_defined_for_restricted_use" xml:space="preserve">
-    <value>El disco está definido para el uso restringido</value>
-  </data>
+        <value>[slateblue1]El disco está definido para el uso restringido[/]</value>
+    </data>
     <data name="Disc_is_defined_for_unrestricted_use" xml:space="preserve">
-    <value>El disco está definido para el uso no restringido</value>
-  </data>
+        <value>[slateblue1]El disco está definido para el uso no restringido[/]</value>
+    </data>
     <data name="Disc_is_empty" xml:space="preserve">
-    <value>El disco está vacío</value>
-  </data>
+        <value>[slateblue1]El disco está vacío[/]</value>
+    </data>
     <data name="Disc_is_encrypted_using_AACS" xml:space="preserve">
     <value>El disco está encriptado usando AACS.</value>
   </data>
@@ -3965,11 +3965,11 @@
     <value>El disco está encriptado usando un algoritmo desconocido con ID {0}.</value>
   </data>
     <data name="Disc_is_erasable" xml:space="preserve">
-    <value>El disco es borrable</value>
-  </data>
+        <value>[slateblue1]El disco es borrable[/]</value>
+    </data>
     <data name="Disc_is_finalized" xml:space="preserve">
-    <value>El disco está finalizado</value>
-  </data>
+        <value>[slateblue1]El disco está finalizado[/]</value>
+    </data>
     <data name="Disc_is_high_speed_CAV_CD_R" xml:space="preserve">
     <value>El disco es un CD-R de alta velocidad (CAV)</value>
   </data>
@@ -3977,8 +3977,8 @@
     <value>El disco es un CD-RW High-Speed</value>
   </data>
     <data name="Disc_is_incomplete" xml:space="preserve">
-    <value>El disco está incompleto</value>
-  </data>
+        <value>[slateblue1]El disco está incompleto[/]</value>
+    </data>
     <data name="Disc_is_medium_type_A_high_beta_category_CD_R" xml:space="preserve">
     <value>El disco es un medio de tipo A, CD-R de categoría beta alta (A+)</value>
   </data>
@@ -4118,20 +4118,20 @@
         <value>[slateblue1]Tipo de disco: [teal]{0}[/][/]</value>
     </data>
     <data name="Disc_type_declared_as_CD_DA_or_CD_ROM" xml:space="preserve">
-    <value>El disco está declarado como un CD-DA o un CD-ROM</value>
-  </data>
+        <value>[slateblue1]El disco está declarado como un [red]CD-DA[/] o un [yellow]CD-ROM[/][/]</value>
+    </data>
     <data name="Disc_type_declared_as_CD_i" xml:space="preserve">
-    <value>El disco está declarado como un CD-i</value>
-  </data>
+        <value>[slateblue1]El disco está declarado como un [green]CD-i[/][/]</value>
+    </data>
     <data name="Disc_type_declared_as_CD_ROM_XA" xml:space="preserve">
-    <value>El disco está declarado como un CD-ROM XA</value>
-  </data>
+        <value>[slateblue1]El disco está declarado como un [darkorange]CD-ROM XA[/][/]</value>
+    </data>
     <data name="Disc_type_identifier_0" xml:space="preserve">
         <value>[slateblue1]Identificador del tipo de disco: [green]"{0}"[/][/]</value>
     </data>
     <data name="Disc_type_is_undefined" xml:space="preserve">
-    <value>El tipo de disco no está definido</value>
-  </data>
+        <value>[slateblue1]El tipo de disco no está definido[/]</value>
+    </data>
     <data name="Disc_Type_Specific_Field_1_0" xml:space="preserve">
     <value>1er campo específico del tipo de disco: 0x{0:X2}</value>
   </data>
@@ -5696,8 +5696,8 @@
     <value>Primer bloque de salida</value>
   </data>
     <data name="First_track_in_last_session_is_track_0" xml:space="preserve">
-    <value>La primera pista de la última sesión es la pisa {0}</value>
-  </data>
+        <value>[slateblue1]La primera pista de la última sesión es la pista [teal]{0}[/][/]</value>
+    </data>
     <data name="First_track_number_0_open_parenthesis" xml:space="preserve">
         <value>[slateblue1]Número de la primera pista: [teal]{0}[/] [italic](</value>
     </data>
@@ -5708,8 +5708,8 @@
         <value>[slateblue1]Número de la primera pista en la último sesión completa: [teal]{0}[/][/]</value>
     </data>
     <data name="First_track_on_disc_is_track_0" xml:space="preserve">
-    <value>La primera pista del disco es la pista {0}</value>
-  </data>
+        <value>[slateblue1]La primera pista del disco es la pista [teal]{0}[/][/]</value>
+    </data>
     <data name="First_video_track_number_0" xml:space="preserve">
         <value>[slateblue1]Número de la primera pista de video:[/] [teal]{0}[/]</value>
     </data>
@@ -6311,26 +6311,26 @@
     <value>El último error de seguridad extendida fue {0}</value>
   </data>
     <data name="Last_possible_Lead_Out_address_is_0_as_LBA_or_1_2_3" xml:space="preserve">
-    <value>La última dirección posible para el Lead-Out es {0} (como LBA) o {1:X2}:{2:X2}:{3:X2}</value>
-  </data>
+        <value>[slateblue1]La última dirección posible para el Lead-Out es [lime]{0}[/] (como LBA) o [lime]{1:X2}:{2:X2}:{3:X2}[/][/]</value>
+    </data>
     <data name="Last_session_is_complete" xml:space="preserve">
-    <value>La última sesión está completa</value>
-  </data>
+        <value>[slateblue1]La última sesión está completa[/]</value>
+    </data>
     <data name="Last_session_is_damaged" xml:space="preserve">
-    <value>La última sesión está dañada</value>
-  </data>
+        <value>[slateblue1]La última sesión está dañada[/]</value>
+    </data>
     <data name="Last_session_is_empty" xml:space="preserve">
-    <value>La última sesión está vacía</value>
-  </data>
+        <value>[slateblue1]La última sesión está vacía[/]</value>
+    </data>
     <data name="Last_session_is_incomplete" xml:space="preserve">
-    <value>La última sesión está incompleta</value>
-  </data>
+        <value>[slateblue1]La última sesión está incompleta[/]</value>
+    </data>
     <data name="Last_session_Lead_In_address_is_0_as_LBA_or_1_2_3" xml:space="preserve">
-    <value>La dirección del Lead-In de la última sesión es {0} (como LBA) o {1:X2}:{2:X2}:{3:X2}</value>
-  </data>
+        <value>[slateblue1]La dirección del Lead-In de la última sesión es [lime]{0}[/] (como LBA) o [lime]{1:X2}:{2:X2}:{3:X2}[/][/]</value>
+    </data>
     <data name="Last_track_in_last_session_is_track_0" xml:space="preserve">
-    <value>La última pista en la última sesión es la pista {0}</value>
-  </data>
+        <value>[slateblue1]La última pista en la última sesión es la pista [teal]{0}[/][/]</value>
+    </data>
     <data name="Last_track_number_0_open_parenthesis" xml:space="preserve">
         <value>[slateblue1]Número de la última pista: [teal]{0}[/] [italic](</value>
     </data>
@@ -6604,8 +6604,8 @@
     <value>El atributo del medio es {0}</value>
   </data>
     <data name="Media_background_formatting_has_completed" xml:space="preserve">
-    <value>El formateo del medio en segundo plano ha terminado</value>
-  </data>
+        <value>[slateblue1]El formateo del medio en segundo plano ha terminado[/]</value>
+    </data>
     <data name="Media_Card_Pass_Through_command_set_is_supported" xml:space="preserve">
     <value>El set de comandos de tarjetas de memoria está soportado</value>
   </data>
@@ -6625,8 +6625,8 @@
     <value>ID del medio:</value>
   </data>
     <data name="Media_is_currently_being_formatted_in_the_background" xml:space="preserve">
-    <value>El medio está siendo formateado actualmente en segundo plano</value>
-  </data>
+        <value>[slateblue1]El medio está siendo formateado actualmente en segundo plano[/]</value>
+    </data>
     <data name="Media_is_inserted_in_a_cartridge" xml:space="preserve">
     <value>El medio está insertado en un cartucho</value>
   </data>
@@ -6658,8 +6658,8 @@
     <value>La superficie del medio activa la protección contra escritura</value>
   </data>
     <data name="Media_was_being_formatted_in_the_background_but_it_is_stopped_and_incomplete" xml:space="preserve">
-    <value>El medio estaba siendo formateado en segundo plano pero ha sido parado y está incompleto</value>
-  </data>
+        <value>[slateblue1]El medio estaba siendo formateado en segundo plano pero ha sido parado y está incompleto[/]</value>
+    </data>
     <data name="MediumTypes_CDDA" xml:space="preserve">
     <value>Compact Disc Digital Audio de 120 mm</value>
   </data>
@@ -7036,8 +7036,8 @@
         <value>[slateblue1]Momento de inercia: [teal]0x{0:X2}[/][/]</value>
     </data>
     <data name="MRW_is_dirty" xml:space="preserve">
-    <value>El MRW está corrupto</value>
-  </data>
+        <value>[slateblue1]El MRW está corrupto[/]</value>
+    </data>
     <data name="MultiMediaCard_Device_Identification_Register" xml:space="preserve">
     <value>Registro de Identificación del Dispositivo MultiMediaCard:</value>
   </data>
@@ -7192,8 +7192,8 @@
     <value>En el segmento {0}</value>
   </data>
     <data name="OPC_values_for_0_Kbit_sec_1_2_3_4_5_6" xml:space="preserve">
-    <value>Valores de OPC para {0}Kbit/seg.: {1}, {2}, {3}, {4}, {5}, {6}</value>
-  </data>
+        <value>[slateblue1]Valores de OPC para [lime]{0}[/]Kbit/seg.: [teal]{1}[/], [teal]{2}[/], [teal]{3}[/], [teal]{4}[/], [teal]{5}[/], [teal]{6}[/][/]</value>
+    </data>
     <data name="Operating_systems_support_is_standard_LTO" xml:space="preserve">
     <value>El soporte de sistemas operativos es el estándar LTO</value>
   </data>
@@ -9024,8 +9024,8 @@
     <value>tipo de disco desconocido</value>
   </data>
     <data name="Unknown_disc_type_0" xml:space="preserve">
-    <value>Tipo de disco {0:X2}h desconocido</value>
-  </data>
+        <value>[slateblue1]Tipo de disco [teal]{0:X2}h[/] desconocido[/]</value>
+    </data>
     <data name="Unknown_disc_type_id_0" xml:space="preserve">
     <value>ID de tipo de disco desconocida ({0})</value>
   </data>

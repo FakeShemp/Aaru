@@ -330,8 +330,8 @@
     <value>POW Resources Information</value>
   </data>
     <data name="Standard_Disc_Information" xml:space="preserve">
-    <value>Standard Disc Information</value>
-  </data>
+        <value>[bold][blue]Standard Disc Information:[/][/]</value>
+    </data>
     <data name="Session_information" xml:space="preserve">
         <value>[bold][blue]Session information:[/][/]</value>
     </data>
@@ -3501,5 +3501,8 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
   </data>
     <data name="Filesystems_Identify_Error" xml:space="preserve">
         <value>Error identifying filesystem {0}. Please open a report with the following line in a Github issue.</value>
+    </data>
+    <data name="Blu_ray_type_BDR_setting_disc_type_BDR" xml:space="preserve">
+        <value>Blu-ray type set to "BDR", setting disc type to BD-R.</value>
     </data>
 </root>
