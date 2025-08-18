@@ -1654,19 +1654,19 @@
     <value>Expected CDFullTOC size ({0} bytes) is not received size ({1} bytes), not decoding</value>
   </data>
     <data name="First_complete_session_number_0" xml:space="preserve">
-    <value>First complete session number: {0}</value>
+    <value>[slateblue1]First complete session number:[/] [teal]{0}[/]</value>
   </data>
     <data name="Last_complete_session_number_0" xml:space="preserve">
-    <value>Last complete session number: {0}</value>
+    <value>[slateblue1]Last complete session number:[/] [teal]{0}[/]</value>
   </data>
     <data name="Unknown_TOC_entry_format_printing_values_as_is" xml:space="preserve">
-    <value>Unknown TOC entry format, printing values as-is</value>
+    <value>[slateblue1]Unknown TOC entry format, printing values as-is[/]</value>
   </data>
     <data name="Session_0" xml:space="preserve">
-    <value>Session {0}</value>
+    <value>[slateblue1]Session[/] [teal]{0}[/]</value>
   </data>
     <data name="First_video_track_number_0" xml:space="preserve">
-    <value>First video track number: {0}</value>
+    <value>[slateblue1]First video track number:[/] [teal]{0}[/]</value>
   </data>
     <data name="CD_V_single_in_NTSC_format_with_digital_stereo_sound" xml:space="preserve">
     <value>CD-V single in NTSC format with digital stereo sound</value>
@@ -1693,22 +1693,22 @@
     <value>CD-V disc in PAL format with digital bilingual sound</value>
   </data>
     <data name="First_track_number_0_open_parenthesis" xml:space="preserve">
-    <value>First track number: {0} (</value>
+    <value>[slateblue1]First track number: [teal]{0}[/] [italic](</value>
   </data>
     <data name="close_parenthesis" xml:space="preserve">
-    <value>)</value>
+    <value>)[/][/]</value>
   </data>
     <data name="Stereo_audio_track_with_no_pre_emphasis" xml:space="preserve">
     <value>Stereo audio track with no pre-emphasis</value>
   </data>
     <data name="Stereo_audio_track_with_50_15_us_pre_emphasis" xml:space="preserve">
-    <value>Stereo audio track with 50/15 μs pre-emphasis</value>
+    <value>Stereo audio track with [teal]50/15 μs[/] pre-emphasis</value>
   </data>
     <data name="Quadraphonic_audio_track_with_no_pre_emphasis" xml:space="preserve">
     <value>Quadraphonic audio track with no pre-emphasis</value>
   </data>
     <data name="Quadraphonic_audio_track_with_50_15_us_pre_emphasis" xml:space="preserve">
-    <value>Quadraphonic audio track with 50/15 μs pre-emphasis</value>
+    <value>Quadraphonic audio track with [teal]50/15 μs[/] pre-emphasis</value>
   </data>
     <data name="Data_track_recorded_uninterrupted" xml:space="preserve">
     <value>Data track, recorded uninterrupted</value>
@@ -1717,179 +1717,179 @@
     <value>Data track, recorded incrementally</value>
   </data>
     <data name="Disc_type_0" xml:space="preserve">
-    <value>Disc type: {0}</value>
+    <value>[slateblue1]Disc type: [teal]{0}[/][/]</value>
   </data>
     <data name="Last_video_track_number_0" xml:space="preserve">
-    <value>Last video track number: {0}</value>
+    <value>[slateblue1]Last video track number: [teal]{0}[/][/]</value>
   </data>
     <data name="Last_track_number_0_open_parenthesis" xml:space="preserve">
-    <value>Last track number: {0} (</value>
+    <value>[slateblue1]Last track number: [teal]{0}[/] [italic](</value>
   </data>
     <data name="Lead_out_start_position_3_0_1_2" xml:space="preserve">
-    <value>Lead-Out start position: {3:D2}:{0:D2}:{1:D2}:{2:D2}</value>
+    <value>[slateblue1]Lead-Out start position: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2}[/]</value>
   </data>
     <data name="Lead_out_start_position_0_1_2" xml:space="preserve">
-    <value>Lead-Out start position: {0:D2}:{1:D2}:{2:D2}</value>
+    <value>[slateblue1]Lead-Out start position: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
   </data>
     <data name="Lead_out_is_audio_type" xml:space="preserve">
-    <value>Lead-Out is audio type</value>
+    <value>[slateblue1]Lead-Out is audio type[/]</value>
   </data>
     <data name="Lead_out_is_data_type" xml:space="preserve">
-    <value>Lead-Out is data type</value>
+    <value>[slateblue1]Lead-Out is data type[/]</value>
   </data>
     <data name="Book_type_0" xml:space="preserve">
-    <value>Book type: 0x{0:X2}</value>
+    <value>[slateblue1]Book type: [teal]0x{0:X2}[/][/]</value>
   </data>
     <data name="Material_type_0" xml:space="preserve">
-    <value>Material type: 0x{0:X2}</value>
+    <value>[slateblue1]Material type: [teal]0x{0:X2}[/][/]</value>
   </data>
     <data name="Moment_of_inertia_0" xml:space="preserve">
-    <value>Moment of inertia: 0x{0:X2}</value>
+    <value>[slateblue1]Moment of inertia: [teal]0x{0:X2}[/][/]</value>
   </data>
     <data name="Data_track_3_starts_at_4_0_1_2_open_parenthesis" xml:space="preserve">
-    <value>Data track {3} starts at: {4:D2}:{0:D2}:{1:D2}:{2:D2} (</value>
+    <value>[slateblue1]Data track [teal]{3}[/] starts at: [lime]{4:D2}:{0:D2}:{1:D2}:{2:D2}[/] [italic](</value>
   </data>
     <data name="Audio_track_3_starts_at_4_0_1_2_open_parenthesis" xml:space="preserve">
-    <value>Audio track {3} starts at: {4:D2}:{0:D2}:{1:D2}:{2:D2} (</value>
+    <value>[slateblue1]Audio track [teal]{3}[/] starts at: [lime]{4:D2}:{0:D2}:{1:D2}:{2:D2}[/] [italic](</value>
   </data>
     <data name="Data_track_3_starts_at_0_1_2_open_parenthesis" xml:space="preserve">
-    <value>Data track {3} starts at: {0:D2}:{1:D2}:{2:D2} (</value>
+    <value>[slateblue1]Data track [teal]{3}[/] starts at: [lime]{0:D2}:{1:D2}:{2:D2}[/] [italic](</value>
   </data>
     <data name="Audio_track_3_starts_at_0_1_2_open_parenthesis" xml:space="preserve">
-    <value>Audio track {3} starts at: {0:D2}:{1:D2}:{2:D2} (</value>
+    <value>[slateblue1]Audio track [teal]{3}[/] starts at: [lime]{0:D2}:{1:D2}:{2:D2}[/] [italic](</value>
   </data>
     <data name="Absolute_time_3_0_1_2" xml:space="preserve">
-    <value>Absolute time: {3:D2}:{0:D2}:{1:D2}:{2:D2}</value>
+    <value>[slateblue1]Absolute time: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2}[/][/]</value>
   </data>
     <data name="Absolute_time_0_1_2" xml:space="preserve">
-    <value>Absolute time: {0:D2}:{1:D2}:{2:D2}</value>
+    <value>[slateblue1]Absolute time: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
   </data>
     <data name="Video_track_3_starts_at_0_1_2" xml:space="preserve">
-    <value>Video track {3} starts at: {0:D2}:{1:D2}:{2:D2}</value>
+    <value>[slateblue1]Video track [teal]{3}[/] starts at: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
   </data>
     <data name="Start_of_next_possible_program_in_the_recordable_area_of_the_disc_3_0_1_2" xml:space="preserve">
-    <value>Start of next possible program in the recordable area of the disc: {3:D2}:{0:D2}:{1:D2}:{2:D2}</value>
+    <value>[slateblue1]Start of next possible program in the recordable area of the disc: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2}[/][/]</value>
   </data>
     <data name="Maximum_start_of_outermost_Lead_out_in_the_recordable_area_of_the_disc_3_0_1_2" xml:space="preserve">
-    <value>Maximum start of outermost Lead-Out in the recordable area of the disc: {3:D2}:{0:D2}:{1:D2}:{2:D2}</value>
+    <value>[slateblue1]Maximum start of outermost Lead-Out in the recordable area of the disc: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2}[/][/]</value>
   </data>
     <data name="Start_of_next_possible_program_in_the_recordable_area_of_the_disc_0_1_2" xml:space="preserve">
-    <value>Start of next possible program in the recordable area of the disc: {0:D2}:{1:D2}:{2:D2}</value>
+    <value>[slateblue1]Start of next possible program in the recordable area of the disc: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
   </data>
     <data name="Maximum_start_of_outermost_Lead_out_in_the_recordable_area_of_the_disc_0_1_2" xml:space="preserve">
-    <value>Maximum start of outermost Lead-Out in the recordable area of the disc: {0:D2}:{1:D2}:{2:D2}</value>
+    <value>[slateblue1]Maximum start of outermost Lead-Out in the recordable area of the disc: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
   </data>
     <data name="Number_of_skip_interval_pointers_0" xml:space="preserve">
-    <value>Number of skip interval pointers: {0}</value>
+    <value>[slateblue1]Number of skip interval pointers: [teal]{0}[/][/]</value>
   </data>
     <data name="Number_of_skip_track_pointers_0" xml:space="preserve">
-    <value>Number of skip track pointers: {0}</value>
+    <value>[slateblue1]Number of skip track pointers: [teal]{0}[/][/]</value>
   </data>
     <data name="Skip_track_0" xml:space="preserve">
-    <value>Skip track {0}</value>
+    <value>[slateblue1]Skip track [teal]{0}[/][/]</value>
   </data>
     <data name="Optimum_recording_power_0" xml:space="preserve">
-    <value>Optimum recording power: 0x{0:X2}</value>
+    <value>[slateblue1]Optimum recording power: [teal]0x{0:X2}[/][/]</value>
   </data>
     <data name="Start_time_of_the_first_Lead_in_area_in_the_disc_3_0_1_2" xml:space="preserve">
-    <value>Start time of the first Lead-in area in the disc: {3:D2}:{0:D2}:{1:D2}:{2:D2}</value>
+    <value>[slateblue1]Start time of the first Lead-in area in the disc: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2}[/][/]</value>
   </data>
     <data name="Start_time_of_the_first_Lead_in_area_in_the_disc_0_1_2" xml:space="preserve">
-    <value>Start time of the first Lead-in area in the disc: {0:D2}:{1:D2}:{2:D2}</value>
+    <value>[slateblue1]Start time of the first Lead-in area in the disc: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
   </data>
     <data name="Copy_of_information_of_A1_from_ATIP_found" xml:space="preserve">
-    <value>Copy of information of A1 from ATIP found</value>
+    <value>[slateblue1]Copy of information of A1 from ATIP found[/]</value>
   </data>
     <data name="Start_position_of_outer_part_lead_in_area_3_0_1_2" xml:space="preserve">
-    <value>Start position of outer part lead-in area: {3:D2}:{0:D2}:{1:D2}:{2:D2}</value>
+    <value>[slateblue1]Start position of outer part lead-in area: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2}[/][/]</value>
   </data>
     <data name="Stop_position_of_inner_part_lead_out_area_3_0_1_2" xml:space="preserve">
-    <value>Stop position of inner part lead-out area: {3:D2}:{0:D2}:{1:D2}:{2:D2}</value>
+    <value>[slateblue1]Stop position of inner part lead-out area: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2}[/][/]</value>
   </data>
     <data name="Start_position_of_outer_part_lead_in_area_0_1_2" xml:space="preserve">
-    <value>Start position of outer part lead-in area: {0:D2}:{1:D2}:{2:D2}</value>
+    <value>[slateblue1]Start position of outer part lead-in area: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
   </data>
     <data name="Stop_position_of_inner_part_lead_out_area_0_1_2" xml:space="preserve">
-    <value>Stop position of inner part lead-out area: {0:D2}:{1:D2}:{2:D2}</value>
+    <value>[slateblue1]Stop position of inner part lead-out area: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
   </data>
     <data name="Start_time_for_interval_that_should_be_skipped_0_1_2" xml:space="preserve">
-    <value>Start time for interval that should be skipped: {0:D2}:{1:D2}:{2:D2}</value>
+    <value>[slateblue1]Start time for interval that should be skipped: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
   </data>
     <data name="Ending_time_for_interval_that_should_be_skipped_0_1_2" xml:space="preserve">
-    <value>Ending time for interval that should be skipped: {0:D2}:{1:D2}:{2:D2}</value>
+    <value>[slateblue1]Ending time for interval that should be skipped: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
   </data>
     <data name="Disc_ID_0_X6" xml:space="preserve">
-    <value>Disc ID: {0:X6}</value>
+    <value>[slateblue1]Disc ID: [teal]{0:X6}[/][/]</value>
   </data>
     <data name="Expected_CD_PMA_size_0_bytes_is_not_received_size_1_bytes_not_decoding" xml:space="preserve">
-    <value>Expected CD PMA size ({0} bytes) is not received size ({1} bytes), not decoding</value>
+    <value>[slateblue1]Expected CD PMA size ([lime]{0}[/] bytes) is not received size ([lime]{1}[/] bytes), not decoding[/]</value>
   </data>
     <data name="Track_0_Stereo_audio_track_with_no_pre_emphasis_starts_at_4_1_2_3_and_ends_at_8_5_6_7"
           xml:space="preserve">
-    <value>Track {0} (Stereo audio track with no pre-emphasis) starts at {4}:{1:D2}:{2:D2}:{3:D2} and ends at {8}:{5:D2}:{6:D2}:{7:D2}</value>
+    <value>[slateblue1]Track [teal]{0}[/] [italic](Stereo audio track with no pre-emphasis)[/] starts at [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] and ends at [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/][/]</value>
   </data>
     <data name="Track_0_Stereo_audio_track_with_no_pre_emphasis_starts_at_1_2_3_and_ends_at_4_5_6" xml:space="preserve">
-    <value>Track {0} (Stereo audio track with no pre-emphasis) starts at {1:D2}:{2:D2}:{3:D2} and ends at {4:D2}:{5:D2}:{6:D2}</value>
+    <value>[slateblue1]Track [teal]{0}[/] [italic](Stereo audio track with no pre-emphasis)[/] starts at [lime]{1:D2}:{2:D2}:{3:D2}[/] and ends at [lime]{4:D2}:{5:D2}:{6:D2}[/][/]</value>
   </data>
     <data name="Track_0_Stereo_audio_track_with_50_15_s_pre_emphasis_starts_at_4_1_2_3_and_ends_at_8_5_6_7"
           xml:space="preserve">
-    <value>Track {0} (Stereo audio track with 50/15 μs pre-emphasis) starts at {4}:{1:D2}:{2:D2}:{3:D2} and ends at {8}:{5:D2}:{6:D2}:{7:D2}</value>
+    <value>[slateblue1]Track [teal]{0}[/] [italic](Stereo audio track with [teal]50/15 μs[/] pre-emphasis)[/] starts at [lime]{4}:{1:D2}:{2:D2}:{3:D2} and ends at [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/][/]</value>
   </data>
     <data name="Track_0_Stereo_audio_track_with_50_15_us_pre_emphasis_starts_at_1_2_3_and_ends_at_4_5_6"
           xml:space="preserve">
-    <value>Track {0} (Stereo audio track with 50/15 μs pre-emphasis) starts at {1:D2}:{2:D2}:{3:D2} and ends at {4:D2}:{5:D2}:{6:D2}</value>
+    <value>[slateblue1]Track [teal]{0}[/] [italic](Stereo audio track with [teal]50/15 μs[/] pre-emphasis)[/] starts at [lime]{1:D2}:{2:D2}:{3:D2}[/] and ends at [lime]{4:D2}:{5:D2}:{6:D2}[/][/]</value>
   </data>
     <data name="Track_0_Quadraphonic_audio_track_with_no_pre_emphasis_starts_at_4_1_2_3_and_ends_at_8_5_6_7"
           xml:space="preserve">
-    <value>Track {0} (Quadraphonic audio track with no pre-emphasis) starts at {4}:{1:D2}:{2:D2}:{3:D2} and ends at {8}:{5:D2}:{6:D2}:{7:D2}</value>
+    <value>[slateblue1]Track [teal]{0}[/] [italic](Quadraphonic audio track with no pre-emphasis)[/] starts at [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] and ends at [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/][/]</value>
   </data>
     <data name="Track_0_Quadraphonic_audio_track_with_no_pre_emphasis_starts_at_1_2_3_and_ends_at_4_5_6"
           xml:space="preserve">
-    <value>Track {0} (Quadraphonic audio track with no pre-emphasis) starts at {1:D2}:{2:D2}:{3:D2} and ends at {4:D2}:{5:D2}:{6:D2}</value>
+    <value>[slateblue1]Track [teal]{0}[/] [italic](Quadraphonic audio track with no pre-emphasis)[/] starts at [lime]{1:D2}:{2:D2}:{3:D2}[/] and ends at [lime]{4:D2}:{5:D2}:{6:D2}[/][/]</value>
   </data>
     <data name="Track_0_Quadraphonic_audio_track_with_50_15_us_pre_emphasis_starts_at_4_1_2_3_and_ends_at_8_5_6_7"
           xml:space="preserve">
-    <value>Track {0} (Quadraphonic audio track with 50/15 μs pre-emphasis) starts at {4}:{1:D2}:{2:D2}:{3:D2} and ends at {8}:{5:D2}:{6:D2}:{7:D2}</value>
+    <value>[slateblue1]Track [teal]{0}[/] [italic](Quadraphonic audio track with [teal]50/15[/] μs pre-emphasis)[/] starts at [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] and ends at [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/][/]</value>
   </data>
     <data name="Track_0_Quadraphonic_audio_track_with_50_15_us_pre_emphasis_starts_at_1_2_3_and_ends_at_4_5_6"
           xml:space="preserve">
-    <value>Track {0} (Quadraphonic audio track with 50/15 μs pre-emphasis) starts at {1:D2}:{2:D2}:{3:D2} and ends at {4:D2}:{5:D2}:{6:D2}</value>
+    <value>[slateblue1]Track [teal]{0}[/] [italic](Quadraphonic audio track with [teal]50/15[/] μs pre-emphasis)[/] starts at [lime]{1:D2}:{2:D2}:{3:D2}[/] and ends at [lime]{4:D2}:{5:D2}:{6:D2}[/][/]</value>
   </data>
     <data name="Track_0_Data_track_recorded_uninterrupted_starts_at_4_1_2_3_and_ends_at_8_5_6_7" xml:space="preserve">
-    <value>Track {0} (Data track, recorded uninterrupted) starts at {4}:{1:D2}:{2:D2}:{3:D2} and ends at {8}:{5:D2}:{6:D2}:{7:D2}</value>
+    <value>[slateblue1]Track [teal]{0}[/] [italic](Data track, recorded uninterrupted)[/] starts at [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] and ends at [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/][/]</value>
   </data>
     <data name="Track_0_Data_track_recorded_uninterrupted_starts_at_1_2_3_and_ends_at_4_5_6" xml:space="preserve">
-    <value>Track {0} (Data track, recorded uninterrupted) starts at {1:D2}:{2:D2}:{3:D2} and ends at {4:D2}:{5:D2}:{6:D2}</value>
+    <value>[slateblue1]Track [teal]{0}[/] [italic](Data track, recorded uninterrupted)[/] starts at [lime]{1:D2}:{2:D2}:{3:D2}[/] and ends at [lime]{4:D2}:{5:D2}:{6:D2}[/][/]</value>
   </data>
     <data name="Track_0_Data_track_recorded_incrementally_starts_at_4_1_2_3_and_ends_at_8_5_6_7" xml:space="preserve">
-    <value>Track {0} (Data track, recorded incrementally) starts at {4}:{1:D2}:{2:D2}:{3:D2} and ends at {8}:{5:D2}:{6:D2}:{7:D2}</value>
+    <value>[slateblue1]Track [teal]{0}[/] [italic](Data track, recorded incrementally)[/] starts at [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] and ends at [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/][/]</value>
   </data>
     <data name="Track_0_Data_track_recorded_incrementally_starts_at_1_2_3_and_ends_at_4_5_6" xml:space="preserve">
-    <value>Track {0} (Data track, recorded incrementally) starts at {1:D2}:{2:D2}:{3:D2} and ends at {4:D2}:{5:D2}:{6:D2}</value>
+    <value>[slateblue1]Track [teal]{0}[/] [italic](Data track, recorded incrementally)[/] starts at [lime]{1:D2}:{2:D2}:{3:D2}[/] and ends at [lime]{4:D2}:{5:D2}:{6:D2}[/][/]</value>
   </data>
     <data name="Reserved_equals_0_X2" xml:space="preserve">
-    <value>Reserved = 0x{0:X2}</value>
+    <value>[slateblue1]Reserved = [teal]0x{0:X2}[/]</value>
   </data>
     <data name="Skip_track_assignment_0_says_that_tracks_1_should_be_skipped" xml:space="preserve">
-    <value>Skip track assignment {0} says that tracks {1} should be skipped</value>
+    <value>[slateblue1]Skip track assignment [teal]{0}[/] says that tracks [teal]{1}[/] should be skipped</value>
   </data>
     <data name="Unskip_track_assignment_0_says_that_tracks_1_should_not_be_skipped" xml:space="preserve">
-    <value>Unskip track assignment {0} says that tracks {1} should not be skipped</value>
+    <value>[slateblue1]Unskip track assignment [teal]{0}[/] says that tracks [teal]{1}[/] should not be skipped</value>
   </data>
     <data name="Skip_time_interval_assignment_0_says_that_from_4_1_2_3_to_8_5_6_7_should_be_skipped"
           xml:space="preserve">
-    <value>Skip time interval assignment {0} says that from {4}:{1:D2}:{2:D2}:{3:D2} to {8}:{5:D2}:{6:D2}:{7:D2} should be skipped</value>
+    <value>[slateblue1]Skip time interval assignment [teal]{0}[/] says that from [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] to [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/] should be skipped[/]</value>
   </data>
     <data name="Skip_time_interval_assignment_0_says_that_from_1_2_3_to_4_5_6_should_be_skipped" xml:space="preserve">
-    <value>Skip time interval assignment {0} says that from {1:D2}:{2:D2}:{3:D2} to {4:D2}:{5:D2}:{6:D2} should be skipped</value>
+    <value>[slateblue1]Skip time interval assignment [teal]{0}[/] says that from [lime]{1:D2}:{2:D2}:{3:D2}[/] to [lime]{4:D2}:{5:D2}:{6:D2}[/] should be skipped[/]</value>
   </data>
     <data name="Unskip_time_interval_assignment_0_says_that_from_4_1_2_3_to_8_5_6_7_should_not_be_skipped"
           xml:space="preserve">
-    <value>Unskip time interval assignment {0} says that from {4}:{1:D2}:{2:D2}:{3:D2} to {8}:{5:D2}:{6:D2}:{7:D2} should not be skipped</value>
+    <value>[slateblue1]Unskip time interval assignment [teal]{0}[/] says that from [lime]{4}:{1:D2}:{2:D2}:{3:D2}[/] to [lime]{8}:{5:D2}:{6:D2}:{7:D2}[/] should not be skipped[/]</value>
   </data>
     <data name="Unskip_time_interval_assignment_0_says_that_from_1_2_3_to_4_5_6_should_not_be_skipped"
           xml:space="preserve">
-    <value>Unskip time interval assignment {0} says that from {1:D2}:{2:D2}:{3:D2} to {4:D2}:{5:D2}:{6:D2} should not be skipped</value>
+    <value>[slateblue1]Unskip time interval assignment [teal]{0}[/] says that from [lime]{1:D2}:{2:D2}:{3:D2}[/] to [lime]{4:D2}:{5:D2}:{6:D2}[/] should not be skipped[/]</value>
   </data>
     <data name="CD_sector" xml:space="preserve">
     <value>CD sector.</value>

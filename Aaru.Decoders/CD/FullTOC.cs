@@ -79,10 +79,9 @@ public static class FullTOC
         if(decoded.DataLength + 2 != CDFullTOCResponse.Length)
         {
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization
-                                          .Expected_CDFullTOC_size_0_bytes_is_not_received_size_1_bytes_not_decoding,
-                                       decoded.DataLength + 2,
-                                       CDFullTOCResponse.Length);
+                              Localization.Expected_CDFullTOC_size_0_bytes_is_not_received_size_1_bytes_not_decoding,
+                              decoded.DataLength + 2,
+                              CDFullTOCResponse.Length);
 
             return null;
         }
@@ -128,19 +127,19 @@ public static class FullTOC
                descriptor.TNO != 0)
             {
                 sb.AppendLine(Localization.Unknown_TOC_entry_format_printing_values_as_is);
-                sb.AppendLine($"SessionNumber = {descriptor.SessionNumber}");
-                sb.AppendLine($"ADR = {descriptor.ADR}");
-                sb.AppendLine($"CONTROL = {descriptor.CONTROL}");
-                sb.AppendLine($"TNO = {descriptor.TNO}");
-                sb.AppendLine($"POINT = {descriptor.POINT}");
-                sb.AppendLine($"Min = {descriptor.Min}");
-                sb.AppendLine($"Sec = {descriptor.Sec}");
-                sb.AppendLine($"Frame = {descriptor.Frame}");
-                sb.AppendLine($"HOUR = {descriptor.HOUR}");
-                sb.AppendLine($"PHOUR = {descriptor.PHOUR}");
-                sb.AppendLine($"PMIN = {descriptor.PMIN}");
-                sb.AppendLine($"PSEC = {descriptor.PSEC}");
-                sb.AppendLine($"PFRAME = {descriptor.PFRAME}");
+                sb.AppendLine($"[slateblue1]SessionNumber = [teal]{descriptor.SessionNumber}[/][/]");
+                sb.AppendLine($"[slateblue1]ADR = [teal]{descriptor.ADR}[/][/]");
+                sb.AppendLine($"[slateblue1]CONTROL = [teal]{descriptor.CONTROL}[/][/]");
+                sb.AppendLine($"[slateblue1]TNO = [teal]{descriptor.TNO}[/][/]");
+                sb.AppendLine($"[slateblue1]POINT = [teal]{descriptor.POINT}[/][/]");
+                sb.AppendLine($"[slateblue1]Min = [teal]{descriptor.Min}[/][/]");
+                sb.AppendLine($"[slateblue1]Sec = [teal]{descriptor.Sec}[/][/]");
+                sb.AppendLine($"[slateblue1]Frame = [teal]{descriptor.Frame}[/][/]");
+                sb.AppendLine($"[slateblue1]HOUR = [teal]{descriptor.HOUR}[/][/]");
+                sb.AppendLine($"[slateblue1]PHOUR = [teal]{descriptor.PHOUR}[/][/]");
+                sb.AppendLine($"[slateblue1]PMIN = [teal]{descriptor.PMIN}[/][/]");
+                sb.AppendLine($"[slateblue1]PSEC = [teal]{descriptor.PSEC}[/][/]");
+                sb.AppendLine($"[slateblue1]PFRAME = [teal]{descriptor.PFRAME}[/][/]");
             }
             else
             {
