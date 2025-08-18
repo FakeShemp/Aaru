@@ -547,8 +547,8 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
                                  "SCSI READ DISC STRUCTURE",
                                  scsiInfo.BlurayDiscInformation);
 
-                AaruLogging.WriteLine($"[bold]{Localization.Core.Bluray_Disc_Information}:[/]" +
-                                      $"\n{Markup.Escape(DI.Prettify(scsiInfo.BlurayDiscInformation))}");
+                AaruLogging.WriteLine(Localization.Core.Bluray_Disc_Information);
+                AaruLogging.WriteLine(DI.Prettify(scsiInfo.BlurayDiscInformation));
             }
 
             if(scsiInfo.BlurayPac != null)
@@ -834,8 +834,10 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
                 AaruLogging.WriteLine(Localization.Core.Track_calculations);
 
                 if(inexactPositioning)
+                {
                     AaruLogging.WriteLine(Localization.Core
                                                       .The_drive_has_returned_incorrect_Q_positioning_calculating_pregaps);
+                }
 
                 if(firstLba > 0) AaruLogging.WriteLine(UI.Hidden_track_starts_at_LBA_0_ends_at_LBA_1, 0, firstLba - 1);
 

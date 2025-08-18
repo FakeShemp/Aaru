@@ -1297,137 +1297,137 @@
     <value>Blu-ray DI Unit format dependent contents as hex follows:</value>
   </data>
     <data name="Disc_product_revision_number_0" xml:space="preserve">
-    <value>Disc product revision number: {0}</value>
-  </data>
+        <value>[slateblue1]Disc product revision number:[/] [teal]{0}[/]</value>
+    </data>
     <data name="Disc_timestamp_0" xml:space="preserve">
-    <value>Disc timestamp: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]Disc timestamp:[/] [yellow3]0x{0:X2}[/]</value>
+    </data>
     <data name="Disc_media_type_ID_0" xml:space="preserve">
-    <value>Disc media type ID: "{0}"</value>
-  </data>
+        <value>[slateblue1]Disc media type ID:[/] [green]"{0}"[/]</value>
+    </data>
     <data name="Disc_manufacturer_ID_0" xml:space="preserve">
-    <value>Disc manufacturer ID: "{0}"</value>
-  </data>
+        <value>[slateblue1]Disc manufacturer ID:[/] [green]"{0}"[/]</value>
+    </data>
     <data name="Last_address_unit_number_of_data_zone_in_this_layer_0" xml:space="preserve">
-    <value>Last address unit number of data zone in this layer: {0}</value>
-  </data>
+        <value>[slateblue1]Last address unit number of data zone in this layer:[/] [lime]{0}[/]</value>
+    </data>
     <data name="First_address_unit_number_of_data_zone_in_this_layer_0" xml:space="preserve">
-    <value>First address unit number of data zone in this layer: {0}</value>
-  </data>
+        <value>[slateblue1]First address unit number of data zone in this layer:[/] [lime]{0}[/]</value>
+    </data>
     <data name="Last_user_data_PSN_for_disc_0" xml:space="preserve">
-    <value>Last user data PSN for disc: {0}</value>
-  </data>
+        <value>[slateblue1]Last user data PSN for disc:[/] [lime]{0}[/]</value>
+    </data>
     <data name="Disc_does_not_specify_a_maximum_transfer_rate" xml:space="preserve">
-    <value>Disc does not specify a maximum transfer rate.</value>
-  </data>
+        <value>[slateblue1]Disc does not specify a maximum transfer rate.[/]</value>
+    </data>
     <data name="Disc_has_a_maximum_transfer_rate_of_0_Mbit_sec" xml:space="preserve">
-    <value>Disc has a maximum transfer rate of {0} Mbit/sec.</value>
-  </data>
+        <value>[slateblue1]Disc has a maximum transfer rate of [aqua]{0}[/] Mbit/sec.[/]</value>
+    </data>
     <data name="Disc_uses_unknown_BCA_code_0" xml:space="preserve">
-    <value>Disc uses unknown BCA code {0}</value>
-  </data>
+        <value>[slateblue1]Disc uses unknown BCA code [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_has_a_BCA" xml:space="preserve">
-    <value>Disc has a BCA.</value>
-  </data>
+        <value>[slateblue1]Disc has a BCA[/]</value>
+    </data>
     <data name="Disc_doesn_t_have_a_BCA" xml:space="preserve">
-    <value>Disc doesn't have a BCA.</value>
-  </data>
+        <value>[slateblue1]Disc doesn't have a BCA.[/]</value>
+    </data>
     <data name="Disc_uses_unknown_recorded_reflectivity_polarity_with_code_0" xml:space="preserve">
-    <value>Disc uses unknown recorded reflectivity polarity with code {0}</value>
-  </data>
+        <value>[slateblue1]Disc uses unknown recorded reflectivity polarity with code [teal]{0}[/][/]</value>
+    </data>
     <data name="Recorded_marks_have_a_higher_reflectivity_than_unrecorded_ones_LTH_disc" xml:space="preserve">
-    <value>Recorded marks have a higher reflectivity than unrecorded ones (LTH disc).</value>
-  </data>
+        <value>[slateblue1]Recorded marks have a higher reflectivity than unrecorded ones (LTH disc).[/]</value>
+    </data>
     <data name="Recorded_marks_have_a_lower_reflectivity_than_unrecorded_ones_HTL_disc" xml:space="preserve">
-    <value>Recorded marks have a lower reflectivity than unrecorded ones (HTL disc).</value>
-  </data>
+        <value>[slateblue1]Recorded marks have a lower reflectivity than unrecorded ones (HTL disc).[/]</value>
+    </data>
     <data name="Disc_uses_unknown_polarity_with_code_0" xml:space="preserve">
-    <value>Disc uses unknown polarity with code {0}</value>
-  </data>
+        <value>[slateblue1]Disc uses unknown polarity with code [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_uses_negative_polarity" xml:space="preserve">
-    <value>Disc uses negative polarity.</value>
-  </data>
+        <value>[slateblue1]Disc uses negative polarity.[/]</value>
+    </data>
     <data name="Disc_uses_positive_polarity" xml:space="preserve">
-    <value>Disc uses positive polarity.</value>
-  </data>
+        <value>[slateblue1]Disc uses positive polarity.[/]</value>
+    </data>
     <data name="Disc_uses_unknown_channel_length_with_code_0" xml:space="preserve">
-    <value>Disc uses unknown channel length with code {0}</value>
-  </data>
+        <value>[slateblue1]Disc uses unknown channel length with code [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_uses_a_69_0nm_channel_giving_27_Gb_per_layer" xml:space="preserve">
-    <value>Disc uses a 69.0nm channel giving 27 Gb per layer.</value>
-  </data>
+        <value>[slateblue1]Disc uses a [teal]69.0nm[/] channel giving [green]27[/] Gb per layer.[/]</value>
+    </data>
     <data name="Disc_uses_a_74_5nm_channel_giving_25_Gb_per_layer" xml:space="preserve">
-    <value>Disc uses a 74.5nm channel giving 25 Gb per layer.</value>
-  </data>
+        <value>[slateblue1]Disc uses a [teal]74.5nm[/] channel giving [green]25[/] Gb per layer.[/]</value>
+    </data>
     <data name="This_disc_contains_a_CD_RW_layer" xml:space="preserve">
-    <value>This disc contains a CD-RW layer.</value>
-  </data>
+        <value>[slateblue1]This disc contains a [rosybrown]CD-RW[/] layer.[/]</value>
+    </data>
     <data name="This_disc_contains_a_CD_R_layer" xml:space="preserve">
-    <value>This disc contains a CD-R layer.</value>
-  </data>
+        <value>[slateblue1]This disc contains a [rosybrown]CD-R[/] layer.[/]</value>
+    </data>
     <data name="This_disc_contains_a_CD_ROM_layer" xml:space="preserve">
-    <value>This disc contains a CD-ROM layer.</value>
-  </data>
+        <value>[slateblue1]This disc contains a [rosybrown]CD-ROM[/] layer.[/]</value>
+    </data>
     <data name="This_disc_does_not_contain_a_CD_layer" xml:space="preserve">
-    <value>This disc does not contain a CD layer.</value>
-  </data>
+        <value>[slateblue1]This disc does not contain a [rosybrown]CD[/] layer.[/]</value>
+    </data>
     <data name="This_disc_contains_a_DVD_RW_layer" xml:space="preserve">
-    <value>This disc contains a DVD-RW layer.</value>
-  </data>
+        <value>[slateblue1]This disc contains a [red]DVD-RW[/] layer.[/]</value>
+    </data>
     <data name="This_disc_contains_a_DVD_R_layer" xml:space="preserve">
-    <value>This disc contains a DVD-R layer.</value>
-  </data>
+        <value>[slateblue1]This disc contains a [red]DVD-R[/] layer.[/]</value>
+    </data>
     <data name="This_disc_contains_a_DVD_ROM_layer" xml:space="preserve">
-    <value>This disc contains a DVD-ROM layer.</value>
-  </data>
+        <value>[slateblue1]This disc contains a [red]DVD-ROM[/] layer.[/]</value>
+    </data>
     <data name="This_disc_does_not_contain_a_DVD_layer" xml:space="preserve">
-    <value>This disc does not contain a DVD layer.</value>
-  </data>
+        <value>[slateblue1]This disc does not contain a [red]DVD[/] layer.[/]</value>
+    </data>
     <data name="This_disc_has_0_layers" xml:space="preserve">
-    <value>This disc has {0} layers</value>
-  </data>
+        <value>[slateblue1]This disc has [teal]{0}[/] layers[/]</value>
+    </data>
     <data name="Disc_version_0" xml:space="preserve">
-    <value>Disc version: {0}</value>
-  </data>
+        <value>[slateblue1]Disc version: [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_class_0" xml:space="preserve">
-    <value>Disc class: {0}</value>
-  </data>
+        <value>[slateblue1]Disc class: [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_size_Unknown_code_0" xml:space="preserve">
-    <value>Disc size: Unknown code {0}</value>
-  </data>
+        <value>[slateblue1]Disc size: Unknown code [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_size_80mm" xml:space="preserve">
-    <value>Disc size: 80mm</value>
-  </data>
+        <value>[slateblue1]Disc size: [teal]80mm[/][/]</value>
+    </data>
     <data name="Disc_size_120mm" xml:space="preserve">
-    <value>Disc size: 120mm</value>
-  </data>
+        <value>[slateblue1]Disc size: [teal]120mm[/][/]</value>
+    </data>
     <data name="Disc_type_identifier_0" xml:space="preserve">
-    <value>Disc type identifier: "{0}"</value>
-  </data>
+        <value>[slateblue1]Disc type identifier: [green]"{0}"[/][/]</value>
+    </data>
     <data name="DI_Unit_is_0_bytes" xml:space="preserve">
-    <value>DI Unit is {0} bytes</value>
-  </data>
+        <value>[slateblue1]DI Unit is [teal]{0}[/] bytes[/]</value>
+    </data>
     <data name="This_DI_starts_a_new_unit" xml:space="preserve">
-    <value>This DI starts a new unit</value>
-  </data>
+        <value>[slateblue1]This DI starts a new unit[/]</value>
+    </data>
     <data name="This_DI_continues_previous_unit" xml:space="preserve">
-    <value>This DI continues previous unit</value>
-  </data>
+        <value>[slateblue1]This DI continues previous unit[/]</value>
+    </data>
     <data name="Legacy_value_0" xml:space="preserve">
-    <value>Legacy value: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]Legacy value: [teal]0x{0:X2}[/][/]</value>
+    </data>
     <data name="This_DI_refers_to_layer_0" xml:space="preserve">
-    <value>This DI refers to layer {0}</value>
-  </data>
+        <value>[slateblue1]This DI refers to layer [teal]{0}[/][/]</value>
+    </data>
     <data name="There_are_0_per_block" xml:space="preserve">
-    <value>There are {0} per block</value>
-  </data>
+        <value>[slateblue1]There are [teal]{0}[/] per block[/]</value>
+    </data>
     <data name="DI_Unit_Format_0" xml:space="preserve">
-    <value>DI Unit Format: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]DI Unit Format: [teal]0x{0:X2}[/][/]</value>
+    </data>
     <data name="DI_Unit_Sequence_0" xml:space="preserve">
-    <value>DI Unit Sequence: {0}</value>
-  </data>
+        <value>[slateblue1]DI Unit Sequence: [teal]{0}[/][/]</value>
+    </data>
     <data name="Found_unknown_disc_type_identifier_0" xml:space="preserve">
     <value>Found unknown disc type identifier "{0}"</value>
   </data>

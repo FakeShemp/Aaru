@@ -146,8 +146,8 @@
         <value>[bold][blue]Estructura de definición del disco Blu-ray contenida en la imagen:[/][/]</value>
     </data>
     <data name="Bluray_Disc_Information" xml:space="preserve">
-    <value>Información del disco Blu-ray</value>
-  </data>
+        <value>[bold][blue]Información del disco Blu-ray:[/][/]</value>
+    </data>
     <data name="Bluray_Disc_Information_contained_in_image_WithMarkup" xml:space="preserve">
         <value>[bold][blue]Información del disco Blu-ray contenida en la imagen:[/][/]</value>
     </data>

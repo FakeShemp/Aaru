@@ -309,8 +309,8 @@
     <value>DVD-R(W) PFI</value>
   </data>
     <data name="Bluray_Disc_Information" xml:space="preserve">
-    <value>Blu-ray Disc Information</value>
-  </data>
+        <value>[bold][blue]Blu-ray Disc Information:[/][/]</value>
+    </data>
     <data name="Bluray_Burst_Cutting_Area" xml:space="preserve">
     <value>Blu-ray Burst Cutting Area</value>
   </data>

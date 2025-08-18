@@ -3860,8 +3860,8 @@
     <value>El disco es conforme a ECMA-384</value>
   </data>
     <data name="Disc_class_0" xml:space="preserve">
-    <value>Clase del disco: {0}</value>
-  </data>
+        <value>[slateblue1]Clase del disco: [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_comes_in_a_cartridge" xml:space="preserve">
     <value>El disco viene en un cartucho</value>
   </data>
@@ -3869,11 +3869,11 @@
     <value>El disco contiene información extendida para VCPS</value>
   </data>
     <data name="Disc_doesn_t_have_a_BCA" xml:space="preserve">
-    <value>El disco no tiene una BCA.</value>
-  </data>
+        <value>[slateblue1]El disco no tiene una BCA.[/]</value>
+    </data>
     <data name="Disc_does_not_specify_a_maximum_transfer_rate" xml:space="preserve">
-    <value>El disco no especifica una velocidad de transferencia máxima.</value>
-  </data>
+        <value>[slateblue1]El disco no especifica una velocidad de transferencia máxima.[/]</value>
+    </data>
     <data name="Disc_for_restricted_use" xml:space="preserve">
     <value>Disco para uso restringido.</value>
   </data>
@@ -3899,11 +3899,11 @@
     <value>El disco tiene un diámetro de 80mm</value>
   </data>
     <data name="Disc_has_a_BCA" xml:space="preserve">
-    <value>El disco tiene una BCA.</value>
-  </data>
+        <value>[slateblue1]El disco tiene una BCA.[/]</value>
+    </data>
     <data name="Disc_has_a_maximum_transfer_rate_of_0_Mbit_sec" xml:space="preserve">
-    <value>El disco tiene una velocidad de transferencia máxima de {0} Mbit/seg.</value>
-  </data>
+        <value>[slateblue1]El disco tiene una velocidad de transferencia máxima de [aqua]{0}[/] Mbit/seg.[/]</value>
+    </data>
     <data name="Disc_has_been_certified_by_a_manufacturer" xml:space="preserve">
     <value>El disco ha sido certificado por el fabricante</value>
   </data>
@@ -4034,8 +4034,8 @@
     <value>Disco fabricado por: {0}</value>
   </data>
     <data name="Disc_manufacturer_ID_0" xml:space="preserve">
-    <value>ID del fabricante del disco: "{0}"</value>
-  </data>
+        <value>[slateblue1]ID del fabricante del disco:[/] [green]"{0}"[/]</value>
+    </data>
     <data name="Disc_manufacturer_is_0" xml:space="preserve">
     <value>El fabricante del disco es {0}</value>
   </data>
@@ -4070,8 +4070,8 @@
     <value>Medio del disco: {0}</value>
   </data>
     <data name="Disc_media_type_ID_0" xml:space="preserve">
-    <value>El ID del tipo de medio del disco es: "{0}"</value>
-  </data>
+        <value>[slateblue1]El ID del tipo de medio del disco es:[/] [green]"{0}"[/]</value>
+    </data>
     <data name="Disc_media_type_is_0" xml:space="preserve">
     <value>El tipo de medio del disco es {0}</value>
   </data>
@@ -4082,8 +4082,8 @@
     <value>La revisión de producto del disco es {0}</value>
   </data>
     <data name="Disc_product_revision_number_0" xml:space="preserve">
-    <value>Número de revisión de producto del disco: {0}</value>
-  </data>
+        <value>[slateblue1]Número de revisión de producto del disco:[/] [teal]{0}[/]</value>
+    </data>
     <data name="Disc_reflectivity_is_between_18_and_30" xml:space="preserve">
     <value>La reflectividad del disco está entre el 18% y el 30%</value>
   </data>
@@ -4097,20 +4097,20 @@
     <value>El disco no debería escribirse sin un cartucho</value>
   </data>
     <data name="Disc_size_120mm" xml:space="preserve">
-    <value>Tamaño del disco: 120mm</value>
-  </data>
+        <value>[slateblue1]Tamaño del disco: [teal]120mm[/][/]</value>
+    </data>
     <data name="Disc_size_80mm" xml:space="preserve">
-    <value>Tamaño del disco: 80mm</value>
-  </data>
+        <value>[slateblue1]Tamaño del disco: [teal]80mm[/][/]</value>
+    </data>
     <data name="Disc_size_Unknown_code_0" xml:space="preserve">
-    <value>Tamaño del disco: código desconocido {0}</value>
-  </data>
+        <value>[slateblue1]Tamaño del disco: código desconocido [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_surface_is_set_to_write_protected_status" xml:space="preserve">
     <value>La superficie del disco tiene el estado de protección contra escritura</value>
   </data>
     <data name="Disc_timestamp_0" xml:space="preserve">
-    <value>Fechado del disco: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]Fechado del disco:[/] [yellow3]0x{0:X2}[/]</value>
+    </data>
     <data name="Disc_track_pitch_is_0_74_μm" xml:space="preserve">
     <value>La pendiente de pista es de 0,74µm</value>
   </data>
@@ -4127,8 +4127,8 @@
     <value>El disco está declarado como un CD-ROM XA</value>
   </data>
     <data name="Disc_type_identifier_0" xml:space="preserve">
-    <value>Identificador del tipo de disco: "{0}"</value>
-  </data>
+        <value>[slateblue1]Identificador del tipo de disco: [green]"{0}"[/][/]</value>
+    </data>
     <data name="Disc_type_is_undefined" xml:space="preserve">
     <value>El tipo de disco no está definido</value>
   </data>
@@ -4139,38 +4139,38 @@
     <value>2º campo específico del tipo de disco: 0x{0:X8}</value>
   </data>
     <data name="Disc_uses_a_69_0nm_channel_giving_27_Gb_per_layer" xml:space="preserve">
-    <value>El disco usa un canal de 69,0nm dando 27Gb por capa.</value>
-  </data>
+        <value>[slateblue1]El disco usa un canal de [teal]69,0nm[/] dando [green]27[/]Gb por capa.[/]</value>
+    </data>
     <data name="Disc_uses_a_74_5nm_channel_giving_25_Gb_per_layer" xml:space="preserve">
-    <value>El disco usa un canal de 74,5nm dando 25Gb por capa.</value>
-  </data>
+        <value>[slateblue1]El disco usa un canal de [teal]74,5nm[/] dando [green]25[/]Gb por capa.[/]</value>
+    </data>
     <data name="Disc_uses_long_strategy_type_dye_Cyanine_AZO_etc" xml:space="preserve">
     <value>El disco usa un tipo de colorante de larga estrategia (Cianina, AZO, etc...)</value>
   </data>
     <data name="Disc_uses_negative_polarity" xml:space="preserve">
-    <value>El disco usa polaridad negativa.</value>
-  </data>
+        <value>[slateblue1]El disco usa polaridad negativa.[/]</value>
+    </data>
     <data name="Disc_uses_phase_change" xml:space="preserve">
     <value>El disco usa cambio de fase</value>
   </data>
     <data name="Disc_uses_positive_polarity" xml:space="preserve">
-    <value>El disco usa polaridad positiva</value>
-  </data>
+        <value>[slateblue1]El disco usa polaridad positiva.[/]</value>
+    </data>
     <data name="Disc_uses_short_strategy_type_dye_Phthalocyanine_etc" xml:space="preserve">
     <value>El disco usa un tipo de colorante de corta estrategia (Ftalocianina, etc...)</value>
   </data>
     <data name="Disc_uses_unknown_BCA_code_0" xml:space="preserve">
-    <value>El disco tiene un código de BCA desconocido: {0}</value>
-  </data>
+        <value>[slateblue1]El disco tiene un código de BCA desconocido: [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_uses_unknown_channel_length_with_code_0" xml:space="preserve">
-    <value>El disco usa una longitud de canal desconocido con código {0}</value>
-  </data>
+        <value>[slateblue1]El disco usa una longitud de canal desconocido con código [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_uses_unknown_polarity_with_code_0" xml:space="preserve">
-    <value>El disco usa una polaridad desconocida con código {0}</value>
-  </data>
+        <value>[slateblue1]El disco usa una polaridad desconocida con código [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_uses_unknown_recorded_reflectivity_polarity_with_code_0" xml:space="preserve">
-    <value>El disco usa una polaridad de reflectividad grabada desconocida con código {0}</value>
-  </data>
+        <value>[slateblue1]El disco usa una polaridad de reflectividad grabada desconocida con código [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_use_is_restricted" xml:space="preserve">
     <value>El uso del disco es restringido</value>
   </data>
@@ -4178,17 +4178,17 @@
     <value>El uso del disco no es restringido</value>
   </data>
     <data name="Disc_version_0" xml:space="preserve">
-    <value>Versión del disco: {0}</value>
-  </data>
+        <value>[slateblue1]Versión del disco: [teal]{0}[/][/]</value>
+    </data>
     <data name="DI_Unit_Format_0" xml:space="preserve">
-    <value>Formato de la unidad DI: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]Formato de la unidad DI: [teal]0x{0:X2}[/][/]</value>
+    </data>
     <data name="DI_Unit_is_0_bytes" xml:space="preserve">
-    <value>La unidad DI ocupa {0} bytes</value>
-  </data>
+        <value>[slateblue1]La unidad DI ocupa [teal]{0}[/] bytes[/]</value>
+    </data>
     <data name="DI_Unit_Sequence_0" xml:space="preserve">
-    <value>Secuencia de la unidad DI: {0}</value>
-  </data>
+        <value>[slateblue1]Secuencia de la unidad DI: [teal]{0}[/][/]</value>
+    </data>
     <data name="DLT3c" xml:space="preserve">
     <value>DLTtape III comprimida</value>
   </data>
@@ -5678,8 +5678,8 @@
     <value>Firmware versión: {0}.{1}</value>
   </data>
     <data name="First_address_unit_number_of_data_zone_in_this_layer_0" xml:space="preserve">
-    <value>Número de dirección de la primera zona de datos en esta capa: {0}</value>
-  </data>
+        <value>[slateblue1]Número de dirección de la primera zona de datos en esta capa:[/] [lime]{0}[/]</value>
+    </data>
     <data name="First_complete_session_number_0" xml:space="preserve">
         <value>[slateblue1]Número de la primera sesión completa:[/] [teal]{0}[/]</value>
     </data>
@@ -6296,8 +6296,8 @@
     <value>El último bloque lógico direccionable es {0}</value>
   </data>
     <data name="Last_address_unit_number_of_data_zone_in_this_layer_0" xml:space="preserve">
-    <value>Número de unidad de la última dirección de la zona de datos de esta capa: {0}</value>
-  </data>
+        <value>[slateblue1]Número de unidad de la última dirección de la zona de datos de esta capa:[/] [lime]{0}[/]</value>
+    </data>
     <data name="Last_complete_session_number_0" xml:space="preserve">
         <value>[slateblue1]Número de la última sesión completa:[/] [teal]{0}[/]</value>
     </data>
@@ -6341,8 +6341,8 @@
     <value>LSN 0 del último área de datos de usuario: 0x{0:X8}</value>
   </data>
     <data name="Last_user_data_PSN_for_disc_0" xml:space="preserve">
-    <value>Último PSN de datos de usuari para el disco: {0}</value>
-  </data>
+        <value>[slateblue1]Último PSN de datos de usuario para el disco:[/] [lime]{0}[/]</value>
+    </data>
     <data name="Last_video_track_number_0" xml:space="preserve">
         <value>[slateblue1]Número de la última pista de video: [teal]{0}[/][/]</value>
     </data>
@@ -6398,8 +6398,8 @@
         <value>[slateblue1]Posición de comienzo del Lead-Out: [lime]{3:D2}:{0:D2}:{1:D2}:{2:D2}[/][/]</value>
     </data>
     <data name="Legacy_value_0" xml:space="preserve">
-    <value>Valor antiguo: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]Valor antiguo: [teal]0x{0:X2}[/][/]</value>
+    </data>
     <data name="Library_interface_transmits_1_stop_bits_per_byte" xml:space="preserve">
     <value>La interfaz de la librería emite un bit de parada por byte</value>
   </data>
@@ -7732,11 +7732,11 @@
     <value>La energía de grabación recomendada es de {0} mW</value>
   </data>
     <data name="Recorded_marks_have_a_higher_reflectivity_than_unrecorded_ones_LTH_disc" xml:space="preserve">
-    <value>Las marcas grabadas tienen una reflectividad superior que las no grabadas (disco LTH).</value>
-  </data>
+        <value>[slateblue1]Las marcas grabadas tienen una reflectividad superior que las no grabadas (disco LTH).[/]</value>
+    </data>
     <data name="Recorded_marks_have_a_lower_reflectivity_than_unrecorded_ones_HTL_disc" xml:space="preserve">
-    <value>Las marcas grabadas tienen una reflectividad inferior que las no grabadas (disco HTL).</value>
-  </data>
+        <value>[slateblue1]Las marcas grabadas tienen una reflectividad inferior que las no grabadas (disco HTL).[/]</value>
+    </data>
     <data name="Recording_power_is_not_specified" xml:space="preserve">
     <value>La potencia de grabación no está especificada</value>
   </data>
@@ -8682,8 +8682,8 @@
     <value>Hay {0} bloques por cada segundo de audio</value>
   </data>
     <data name="There_are_0_per_block" xml:space="preserve">
-    <value>Hay {0} por bloque</value>
-  </data>
+        <value>[slateblue1]Hay [teal]{0}[/] por bloque[/]</value>
+    </data>
     <data name="There_are_commands_pending_to_be_forwarded" xml:space="preserve">
     <value>Hay comandos pendientes de re-envío</value>
   </data>
@@ -8750,41 +8750,41 @@
     <value>Este descriptor está duplicado</value>
   </data>
     <data name="This_disc_contains_a_CD_ROM_layer" xml:space="preserve">
-    <value>El disco contiene una capa CD-ROM.</value>
-  </data>
+        <value>[slateblue1]El disco contiene una capa [rosybrownCD-ROM[/].[/]</value>
+    </data>
     <data name="This_disc_contains_a_CD_RW_layer" xml:space="preserve">
-    <value>El disco contiene una capa CD-RW.</value>
-  </data>
+        <value>[slateblue1]El disco contiene una capa [rosybrown]CD-RW[/].[/]</value>
+    </data>
     <data name="This_disc_contains_a_CD_R_layer" xml:space="preserve">
-    <value>El disco contiene una capa CD-R.</value>
-  </data>
+        <value>[slateblue1]El disco contiene una capa [rosybrown]CD-R[/].[/]</value>
+    </data>
     <data name="This_disc_contains_a_DVD_ROM_layer" xml:space="preserve">
-    <value>El disco contiene una capa DVD-ROM.</value>
-  </data>
+        <value>[slateblue1]El disco contiene una capa [red]DVD-ROM[/].[/]</value>
+    </data>
     <data name="This_disc_contains_a_DVD_RW_layer" xml:space="preserve">
-    <value>El disco contiene una capa DVD-RW.</value>
-  </data>
+        <value>[slateblue1]El disco contiene una capa [red]DVD-RW[/].[/]</value>
+    </data>
     <data name="This_disc_contains_a_DVD_R_layer" xml:space="preserve">
-    <value>El disco contiene una capa DVD-R.</value>
-  </data>
+        <value>[slateblue1]El disco contiene una capa [red]DVD-R[/].[/]</value>
+    </data>
     <data name="This_disc_does_not_contain_a_CD_layer" xml:space="preserve">
-    <value>El disco no contiene una capa CD.</value>
-  </data>
+        <value>[slateblue1]El disco no contiene una capa [rosybrown]CD[/].[/]</value>
+    </data>
     <data name="This_disc_does_not_contain_a_DVD_layer" xml:space="preserve">
-    <value>El disco no contiene una capa DVD.</value>
-  </data>
+        <value>[slateblue1]El disco no contiene una capa [red]DVD[/].[/]</value>
+    </data>
     <data name="This_disc_has_0_layers" xml:space="preserve">
-    <value>El disco tiene {0} capas</value>
-  </data>
+        <value>[slateblue1]El disco tiene [teal]{0}[/] capas[/]</value>
+    </data>
     <data name="This_DI_continues_previous_unit" xml:space="preserve">
-    <value>Este DI continúa la unidad anterior</value>
-  </data>
+        <value>[slateblue1]Este DI continúa la unidad anterior[/]</value>
+    </data>
     <data name="This_DI_refers_to_layer_0" xml:space="preserve">
-    <value>Este DI se refiere a la capa {0}</value>
-  </data>
+        <value>[slateblue1]Este DI se refiere a la capa [teal]{0}[/][/]</value>
+    </data>
     <data name="This_DI_starts_a_new_unit" xml:space="preserve">
-    <value>Este DI comienza una nueva unidad</value>
-  </data>
+        <value>[slateblue1]Este DI comienza una nueva unidad[/]</value>
+    </data>
     <data name="This_is_the_default_density_on_the_drive" xml:space="preserve">
     <value>Esta es la densidad por defecto de la unidad</value>
   </data>
