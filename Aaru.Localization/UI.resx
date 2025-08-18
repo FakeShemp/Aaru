@@ -513,7 +513,7 @@ In you are unsure, please press N to not continue.</value>
     <value>No partitions found, not searching for filesystems</value>
   </data>
     <data name="Title_Name" xml:space="preserve">
-    <value>Name</value>
+    <value>[bold][darkgreen]Name[/][/]</value>
   </data>
     <data name="Title_Type" xml:space="preserve">
     <value>Type</value>
@@ -528,7 +528,7 @@ In you are unsure, please press N to not continue.</value>
     <value>{0} sectors, {1} bytes</value>
   </data>
     <data name="Title_Description" xml:space="preserve">
-    <value>Description</value>
+    <value>[bold][slateblue1]Description[/][/]</value>
   </data>
     <data name="Identifying_filesystems" xml:space="preserve">
     <value>Identifying filesystems...</value>

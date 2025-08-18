@@ -36,7 +36,6 @@ using Aaru.CommonTypes.Enums;
 using Aaru.Core;
 using Aaru.Localization;
 using Aaru.Logging;
-using Serilog;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -74,8 +73,8 @@ sealed class ListEncodingsCommand : Command<ListEncodingsCommand.Settings>
                                    }));
 
         Table table = new();
-        table.AddColumn(new TableColumn(new Markup($"[bold][darkgreen]{UI.Title_Name}[/][/]").Centered()));
-        table.AddColumn(new TableColumn(new Markup($"[bold][slateblue1]{UI.Title_Description}[/][/]").Centered()));
+        table.AddColumn(new TableColumn(new Markup(UI.Title_Name).Centered()));
+        table.AddColumn(new TableColumn(new Markup(UI.Title_Description).Centered()));
         table.Border(TableBorder.Rounded);
         table.BorderColor(Color.Yellow);
 
