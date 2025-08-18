@@ -1273,17 +1273,17 @@ In you are unsure, please press N to not continue.</value>
     <value>Calculating disc entropy of multisession images is not yet implemented.</value>
   </data>
     <data name="Entropy_for_track_0_is_1" xml:space="preserve">
-    <value>Entropy for track {0} is {1:F4}.</value>
+    <value>[slateblue1]Entropy for track [teal]{0}[/] is [teal]{1:F4}[/].[/]</value>
   </data>
     <data name="Track_0_has_1_unique_sectors_2" xml:space="preserve">
-    <value>Track {0} has {1} unique sectors ({2:P3})</value>
+    <value>[slateblue1]Track [teal]{0}[/] has [teal]{1}[/] unique sectors ([aqua]{2:P3}[/])[/]</value>
         <comment>{0} is the track number, {1} how many sectors are unique, {2:P3} the percentage of total sectors that are unique (percent symbol included)</comment>
   </data>
     <data name="Entropy_for_disk_is_0" xml:space="preserve">
-    <value>Entropy for disk is {0:F4}.</value>
+    <value>[slateblue1]Entropy for disk is [teal]{0:F4}[/].[/]</value>
   </data>
     <data name="Disk_has_0_unique_sectors_1" xml:space="preserve">
-    <value>Disk has {0} unique sectors ({1:P3})</value>
+    <value>[slateblue1]Disk has [teal]{0}[/] unique sectors ([aqua]{1:P3}[/])[/]</value>
         <comment>{0} is how many sectors are unique, {1:P3} the percentage of total sectors that are unique (percent symbol included)</comment>
   </data>
     <data name="Image_format_not_identified" xml:space="preserve">

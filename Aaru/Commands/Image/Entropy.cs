@@ -129,7 +129,7 @@ sealed class EntropyCommand : Command<EntropyCommand.Settings>
                         entropyCalculator.UpdateProgressEvent += (text, current, maximum) =>
                         {
                             _progressTask1             ??= ctx.AddTask("Progress");
-                            _progressTask1.Description =   Markup.Escape(text);
+                            _progressTask1.Description =   text;
                             _progressTask1.Value       =   current;
                             _progressTask1.MaxValue    =   maximum;
                         };
@@ -137,7 +137,7 @@ sealed class EntropyCommand : Command<EntropyCommand.Settings>
                         entropyCalculator.UpdateProgress2Event += (text, current, maximum) =>
                         {
                             _progressTask2             ??= ctx.AddTask("Progress");
-                            _progressTask2.Description =   Markup.Escape(text);
+                            _progressTask2.Description =   text;
                             _progressTask2.Value       =   current;
                             _progressTask2.MaxValue    =   maximum;
                         };
@@ -158,9 +158,8 @@ sealed class EntropyCommand : Command<EntropyCommand.Settings>
                         {
                             if(opticalFormat.Sessions?.Count > 1)
                             {
-                                AaruLogging
-                                   .Error(UI
-                                                      .Calculating_disc_entropy_of_multisession_images_is_not_yet_implemented);
+                                AaruLogging.Error(UI
+                                                     .Calculating_disc_entropy_of_multisession_images_is_not_yet_implemented);
 
                                 wholeDisc = false;
                             }

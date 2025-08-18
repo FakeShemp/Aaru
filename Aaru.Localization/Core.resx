@@ -3060,10 +3060,10 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Unable to write file {0}</value>
   </data>
     <data name="Sectors_0" xml:space="preserve">
-    <value>Sectors {0}</value>
+    <value>[slateblue1]Sectors [lime]{0}[/][/]</value>
   </data>
     <data name="Entropying_sector_0" xml:space="preserve">
-    <value>Entropying sector {0}</value>
+    <value>[slateblue1]Entropying sector [lime]{0}[/][/]</value>
   </data>
     <data name="Error_0_while_reading_sector_1_continuing" xml:space="preserve">
     <value>Error {0} while reading sector {1}, continuing...</value>
