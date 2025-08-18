@@ -80,8 +80,7 @@ public sealed partial class MediaScan
 
                             while(leftRetries > 0)
                             {
-                                PulseProgress
-                                  ?.Invoke($"[olive]{Localization.Core.Waiting_for_drive_to_become_ready}[/]");
+                                PulseProgress?.Invoke(Localization.Core.Waiting_for_drive_to_become_ready);
 
                                 Thread.Sleep(2000);
                                 sense = _dev.ScsiTestUnitReady(out senseBuf, _dev.Timeout, out _);
@@ -106,8 +105,7 @@ public sealed partial class MediaScan
 
                             while(leftRetries > 0)
                             {
-                                PulseProgress
-                                  ?.Invoke($"[olive]{Localization.Core.Waiting_for_drive_to_become_ready}[/]");
+                                PulseProgress?.Invoke(Localization.Core.Waiting_for_drive_to_become_ready);
 
                                 Thread.Sleep(2000);
                                 sense = _dev.ScsiTestUnitReady(out senseBuf, _dev.Timeout, out _);
@@ -136,8 +134,7 @@ public sealed partial class MediaScan
 
                             while(leftRetries > 0)
                             {
-                                PulseProgress
-                                  ?.Invoke($"[olive]{Localization.Core.Waiting_for_drive_to_become_ready}[/]");
+                                PulseProgress?.Invoke(Localization.Core.Waiting_for_drive_to_become_ready);
 
                                 Thread.Sleep(2000);
                                 sense = _dev.ScsiTestUnitReady(out senseBuf, _dev.Timeout, out _);
@@ -203,12 +200,12 @@ public sealed partial class MediaScan
                 {
                     results.Blocks++;
 
-                    UpdateStatus?.Invoke(string.Format($"[slateblue1]{Localization.Core
-                       .Media_has_0_blocks_of_1_bytes_each_for_a_total_of_2}[/]",
-                                                       $"[violet]{results.Blocks}[/]",
-                                                       $"[lime]{blockSize}[/]",
-                                                       $"[lime]{ByteSize.FromBytes(results.Blocks * blockSize)
-                                                                        .ToString("0.000")}[/]"));
+                    UpdateStatus?.Invoke(string.Format(Localization.Core
+                                                                   .Media_has_0_blocks_of_1_bytes_each_for_a_total_of_2,
+                                                       results.Blocks,
+                                                       blockSize,
+                                                       ByteSize.FromBytes(results.Blocks * blockSize)
+                                                               .ToString("0.000")));
                 }
 
                 break;
@@ -320,7 +317,7 @@ public sealed partial class MediaScan
                                   out _);
 
             if(readcd)
-                UpdateStatus?.Invoke($"[slateblue1]{Localization.Core.Using_MMC_READ_CD_command}[/]");
+                UpdateStatus?.Invoke(Localization.Core.Using_MMC_READ_CD_command);
             else if(!foundReadCommand)
             {
                 StoppingErrorMessage?.Invoke(Localization.Core.Unable_to_read_medium);
@@ -366,8 +363,7 @@ public sealed partial class MediaScan
                 return results;
             }
 
-            UpdateStatus?.Invoke(string.Format($"[slateblue1]{Localization.Core.Reading_0_sectors_at_a_time}[/]",
-                                               $"[violet]{blocksToRead}[/]"));
+            UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_0_sectors_at_a_time, blocksToRead));
 
             InitBlockMap?.Invoke(results.Blocks, blockSize, blocksToRead, currentProfile);
             mhddLog = new MhddLog(_mhddLogPath, _dev, results.Blocks, blockSize, blocksToRead, false);
@@ -389,10 +385,10 @@ public sealed partial class MediaScan
 
                 if(currentSpeed < results.MinSpeed && currentSpeed > 0) results.MinSpeed = currentSpeed;
 
-                UpdateProgress?.Invoke(string.Format($"[slateblue1]{Localization.Core.Reading_sector_0_of_1_2}[/]",
-                                                     $"[lime]{i}[/]",
-                                                     $"[violet]{results.Blocks}[/]",
-                                                     $"[aqua]{ByteSize.FromMegabytes(currentSpeed).Per(_oneSecond).Humanize()}[/]"),
+                UpdateProgress?.Invoke(string.Format(Localization.Core.Reading_sector_0_of_1_2,
+                                                     i,
+                                                     results.Blocks,
+                                                     ByteSize.FromMegabytes(currentSpeed).Per(_oneSecond).Humanize()),
                                        (long)i,
                                        (long)results.Blocks);
 
@@ -539,8 +535,7 @@ public sealed partial class MediaScan
         {
             _scanStopwatch.Restart();
 
-            UpdateStatus?.Invoke(string.Format($"[slateblue1]{Localization.Core.Reading_0_sectors_at_a_time}[/]",
-                                               $"[violet]{scsiReader.BlocksToRead}[/]"));
+            UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_0_sectors_at_a_time, scsiReader.BlocksToRead));
 
             InitBlockMap?.Invoke(results.Blocks, blockSize, scsiReader.BlocksToRead, currentProfile);
             mhddLog = new MhddLog(_mhddLogPath, _dev, results.Blocks, blockSize, scsiReader.BlocksToRead, false);
@@ -562,10 +557,10 @@ public sealed partial class MediaScan
 
                 if(currentSpeed < results.MinSpeed && currentSpeed > 0) results.MinSpeed = currentSpeed;
 
-                UpdateProgress?.Invoke(string.Format($"[slateblue1]{Localization.Core.Reading_sector_0_of_1_2}[/]",
-                                                     $"[lime]{i}[/]",
-                                                     $"[violet]{results.Blocks}[/]",
-                                                     $"[aqua]{ByteSize.FromMegabytes(currentSpeed).Per(_oneSecond).Humanize()}[/]"),
+                UpdateProgress?.Invoke(string.Format(Localization.Core.Reading_sector_0_of_1_2,
+                                                     i,
+                                                     results.Blocks,
+                                                     ByteSize.FromMegabytes(currentSpeed).Per(_oneSecond).Humanize()),
                                        (long)i,
                                        (long)results.Blocks);
 
@@ -660,8 +655,7 @@ public sealed partial class MediaScan
 
             uint seekPos = (uint)rnd.Next((int)results.Blocks);
 
-            PulseProgress?.Invoke(string.Format($"[slateblue1]{Localization.Core.Seeking_to_sector_0}[/]",
-                                                $"[lime]{seekPos}[/]"));
+            PulseProgress?.Invoke(string.Format(Localization.Core.Seeking_to_sector_0, seekPos));
 
             double seekCur;
 

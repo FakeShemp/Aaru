@@ -39,7 +39,7 @@
     <value>Querying ATAPI IDENTIFY...</value>
   </data>
     <data name="Waiting_for_drive_to_become_ready" xml:space="preserve">
-    <value>Waiting for drive to become ready</value>
+    <value>[olive]Waiting for drive to become ready[/]</value>
   </data>
     <data name="Device_not_ready_Sense" xml:space="preserve">
     <value>Device not ready. Sense {0} ASC {1:X2}h ASCQ {2:X2}h</value>
@@ -288,7 +288,7 @@
     <value>Stack trace: {0}</value>
   </data>
     <data name="Media_has_0_blocks_of_1_bytes_each_for_a_total_of_2" xml:space="preserve">
-    <value>Media has {0} blocks of {1} bytes/each. (for a total of {2})</value>
+    <value>[slateblue1]Media has [violet]{0}[/] blocks of [lime]{1}[/] bytes/each. (for a total of [lime]{2}[/])[/]</value>
   </data>
     <data name="Xbox_DMI" xml:space="preserve">
     <value>Xbox DMI</value>
@@ -399,43 +399,43 @@
     <value>Combined offset is {0} bytes ({1} samples).</value>
   </data>
     <data name="Took_a_total_of_0_1_processing_commands" xml:space="preserve">
-    <value>Took a total of {0} ({1} processing commands).</value>
+    <value>[slateblue1]Took a total of [teal]{0}[/] ([teal]{1}[/] processing commands).[/]</value>
   </data>
     <data name="Average_speed_0" xml:space="preserve">
-    <value>Average speed: {0}</value>
+    <value>[slateblue1]Average speed: [aqua]{0}[/].[/]</value>
   </data>
     <data name="Fastest_speed_burst_0" xml:space="preserve">
-    <value>Fastest speed burst: {0}.</value>
+    <value>[slateblue1]Fastest speed burst: [aqua]{0}[/].[/]</value>
   </data>
     <data name="Slowest_speed_burst_0" xml:space="preserve">
-    <value>Slowest speed burst: {0}.</value>
+    <value>[slateblue1]Slowest speed burst: [aqua]{0}[/].[/]</value>
   </data>
     <data name="Summary" xml:space="preserve">
-    <value>Summary</value>
+    <value>[bold][blue]Summary[/][/]</value>
   </data>
     <data name="_0_sectors_took_less_than_3_ms" xml:space="preserve">
-    <value>{0} sectors took less than 3 ms.</value>
+    <value>[lime]{0} sectors took less than 3 ms.[/]</value>
   </data>
     <data name="_0_sectors_took_less_than_10_ms_but_more_than_3_ms" xml:space="preserve">
-    <value>{0} sectors took less than 10 ms but more than 3 ms.</value>
+    <value>[green]{0} sectors took less than 10 ms but more than 3 ms.[/]</value>
   </data>
     <data name="_0_sectors_took_less_than_50_ms_but_more_than_10_ms" xml:space="preserve">
-    <value>{0} sectors took less than 50 ms but more than 10 ms.</value>
+    <value>[darkorange]{0} sectors took less than 50 ms but more than 10 ms.[/]</value>
   </data>
     <data name="_0_sectors_took_less_than_150_ms_but_more_than_50_ms" xml:space="preserve">
-    <value>{0} sectors took less than 150 ms but more than 50 ms.</value>
+    <value>[olive]{0} sectors took less than 150 ms but more than 50 ms.[/]</value>
   </data>
     <data name="_0_sectors_took_less_than_500_ms_but_more_than_150_ms" xml:space="preserve">
-    <value>{0} sectors took less than 500 ms but more than 150 ms.</value>
+    <value>[orange3]{0} sectors took less than 500 ms but more than 150 ms.[/]</value>
   </data>
     <data name="_0_sectors_took_more_than_500_ms" xml:space="preserve">
-    <value>{0} sectors took more than 500 ms.</value>
+    <value>[red]{0} sectors took more than 500 ms.[/]</value>
   </data>
     <data name="_0_sectors_could_not_be_read" xml:space="preserve">
-    <value>{0} sectors could not be read.</value>
+    <value>[maroon]{0} sectors could not be read.[/]</value>
   </data>
     <data name="Testing_0_seeks_longest_seek_took_1_ms_fastest_one_took_2_ms_3_ms_average" xml:space="preserve">
-    <value>Testing {0} seeks, longest seek took {1:F3} ms, fastest one took {2:F3} ms. ({3:F3} ms average)</value>
+    <value>[slateblue1]Testing [teal]{0}[/] seeks, longest seek took [aqua]{1:F3}[/] ms, fastest one took [aqua]{2:F3}[/] ms. ([aqua]{3:F3}[/] ms average)[/]</value>
   </data>
     <data name="Whole_device" xml:space="preserve">
     <value>Whole device</value>
@@ -648,7 +648,7 @@
     <value>Aborted!</value>
   </data>
     <data name="Reading_sector_0_of_1_2" xml:space="preserve">
-    <value>Reading sector {0} of {1} ({2})</value>
+    <value>[slateblue1]Reading sector [lime]{0}[/] of [violet]{1}[/] ([aqua]{2}[/])[/]</value>
   </data>
     <data name="Adding_CD_i_Ready_hole_from_LBA_0_to_1_inclusive" xml:space="preserve">
     <value>Adding CD-i Ready hole from LBA {0} to {1} inclusive.</value>
@@ -818,7 +818,7 @@
     <value>Device error {0} trying to guess ideal transfer length.</value>
   </data>
     <data name="Reading_0_sectors_at_a_time" xml:space="preserve">
-    <value>Reading {0} sectors at a time.</value>
+    <value>[slateblue1]Reading [violet]{0}[/] sectors at a time.[/]</value>
   </data>
     <data name="Device_reports_0_blocks_1_bytes" xml:space="preserve">
     <value>Device reports {0} blocks ({1} bytes).</value>
@@ -909,7 +909,7 @@
     <value>Cannot write tag {0}.</value>
   </data>
     <data name="Sector_0_could_not_be_read" xml:space="preserve">
-    <value>Sector {0} could not be read.</value>
+    <value>[red]Sector [teal]{0}[/] could not be read.[/]</value>
   </data>
     <data name="Setting_ISRC_for_track_0_to_1" xml:space="preserve">
     <value>Setting ISRC for track {0} to {1}</value>
@@ -1372,7 +1372,7 @@
     <value>Output format does not support ATA IDENTIFY.</value>
   </data>
     <data name="Reading_cylinder_0_head_1_sector_2_3" xml:space="preserve">
-    <value>Reading cylinder {0} head {1} sector {2} ({3})</value>
+    <value>[slateblue1]Reading cylinder [lime]{0}[/] head [lime]{1}[/] sector [lime]{2}[/] ([aqua]{3}[/])</value>
   </data>
     <data name="Error_reading_cylinder_0_head_1_sector_2" xml:space="preserve">
     <value>Error reading cylinder {0} head {1} sector {2}.</value>
@@ -2309,10 +2309,10 @@ Do you want to proceed? (Y/N): </value>
     <value>Querying SCSI REPORT DENSITY SUPPORT for medium types for current media...</value>
   </data>
     <data name="Seeking_to_sector_0" xml:space="preserve">
-    <value>Seeking to sector {0}...</value>
+    <value>[slateblue1]Seeking to sector [lime]{0}[/]...[/]</value>
   </data>
     <data name="Seeking_to_cylinder_0_head_1_sector_2" xml:space="preserve">
-    <value>Seeking to cylinder {0}, head {1}, sector {2}...</value>
+    <value>[slateblue1]Seeking to cylinder [lime]{0}[/], head [lime]{1}[/], sector [lime]{2}[/]...[/]</value>
   </data>
     <data name="Scanning_never_supported_in_SSC" xml:space="preserve">
     <value>Scanning will never be supported on SCSI Streaming Devices.
@@ -2322,20 +2322,20 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Error trying to decode TOC...</value>
   </data>
     <data name="Using_MMC_READ_CD_command" xml:space="preserve">
-    <value>Using [fuchsia]MMC READ CD[/] command.</value>
+    <value>[slateblue1]Using [fuchsia]MMC READ CD[/] command.[/]</value>
   </data>
     <data name="READ_CD_error_0" xml:space="preserve">
     <value>READ CD error:
 {0}</value>
   </data>
     <data name="Environment_does_not_support_setting_block_count_downgrading_to_OS_reading" xml:space="preserve">
-    <value>Environment does not support setting block count, downgrading to OS reading.</value>
+    <value>[slateblue1]Environment does not support setting block count, downgrading to OS reading.[/]</value>
   </data>
     <data name="Reading_0_sectors_at_a_time_using_OS_buffered_reads" xml:space="preserve">
-    <value>Reading {0} sectors at a time using OS buffered reads.</value>
+    <value>[slateblue1]Reading [violet]{0}[/] sectors at a time using OS buffered reads.[/]</value>
   </data>
     <data name="Reading_0_sectors_using_sequential_single_commands" xml:space="preserve">
-    <value>Reading {0} sectors using sequential single commands.</value>
+    <value>[slateblue1]Reading [violet]{0}[/] sectors using sequential single commands.[/]</value>
   </data>
     <data name="Unknown_device_type_0" xml:space="preserve">
     <value>Unknown device type {0}.</value>

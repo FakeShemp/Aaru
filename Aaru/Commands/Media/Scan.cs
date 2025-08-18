@@ -151,50 +151,49 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
                         results = scanner.Scan();
                     });
 
-        AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Took_a_total_of_0_1_processing_commands}[/]",
-                              $"[teal]{results.TotalTime.Seconds().Humanize(minUnit: TimeUnit.Second)}[/]",
-                              $"[teal]{results.ProcessingTime.Seconds().Humanize(minUnit: TimeUnit.Second)}[/]");
+        AaruLogging.WriteLine(Localization.Core.Took_a_total_of_0_1_processing_commands,
+                              results.TotalTime.Seconds().Humanize(minUnit: TimeUnit.Second),
+                              results.ProcessingTime.Seconds().Humanize(minUnit: TimeUnit.Second));
 
-        AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Average_speed_0}[/]",
-                              $"[aqua]{ByteSize.FromMegabytes(results.AvgSpeed).Per(1.Seconds()).Humanize()}[/]");
+        AaruLogging.WriteLine(Localization.Core.Average_speed_0,
+                              ByteSize.FromMegabytes(results.AvgSpeed).Per(1.Seconds()).Humanize());
 
-        AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Fastest_speed_burst_0}[/]",
-                              $"[aqua]{ByteSize.FromMegabytes(results.MaxSpeed).Per(1.Seconds()).Humanize()}[/]");
+        AaruLogging.WriteLine(Localization.Core.Fastest_speed_burst_0,
+                              ByteSize.FromMegabytes(results.MaxSpeed).Per(1.Seconds()).Humanize());
 
-        AaruLogging.WriteLine($"[slateblue1]{Localization.Core.Slowest_speed_burst_0}[/]",
-                              $"[aqua]{ByteSize.FromMegabytes(results.MinSpeed).Per(1.Seconds()).Humanize()}[/]");
+        AaruLogging.WriteLine(Localization.Core.Slowest_speed_burst_0,
+                              ByteSize.FromMegabytes(results.MinSpeed).Per(1.Seconds()).Humanize());
 
         AaruLogging.WriteLine();
-        AaruLogging.WriteLine($"[bold]{Localization.Core.Summary}:[/]");
-        AaruLogging.WriteLine($"[lime]{string.Format(Localization.Core._0_sectors_took_less_than_3_ms, results.A)}[/]");
+        AaruLogging.WriteLine(Localization.Core.Summary);
+        AaruLogging.WriteLine(Localization.Core._0_sectors_took_less_than_3_ms, results.A);
 
-        AaruLogging.WriteLine($"[green]{string.Format(Localization.Core._0_sectors_took_less_than_10_ms_but_more_than_3_ms, results.B)}[/]");
+        AaruLogging.WriteLine(Localization.Core._0_sectors_took_less_than_10_ms_but_more_than_3_ms, results.B);
 
-        AaruLogging.WriteLine($"[darkorange]{string.Format(Localization.Core._0_sectors_took_less_than_50_ms_but_more_than_10_ms, results.C)}[/]");
+        AaruLogging.WriteLine(Localization.Core._0_sectors_took_less_than_50_ms_but_more_than_10_ms, results.C);
 
-        AaruLogging.WriteLine($"[olive]{string.Format(Localization.Core._0_sectors_took_less_than_150_ms_but_more_than_50_ms, results.D)}[/]");
+        AaruLogging.WriteLine(Localization.Core._0_sectors_took_less_than_150_ms_but_more_than_50_ms, results.D);
 
-        AaruLogging.WriteLine($"[orange3]{string.Format(Localization.Core._0_sectors_took_less_than_500_ms_but_more_than_150_ms, results.E)}[/]");
+        AaruLogging.WriteLine(Localization.Core._0_sectors_took_less_than_500_ms_but_more_than_150_ms, results.E);
 
-        AaruLogging.WriteLine($"[red]{string.Format(Localization.Core._0_sectors_took_more_than_500_ms, results.F)}[/]");
+        AaruLogging.WriteLine(Localization.Core._0_sectors_took_more_than_500_ms, results.F);
 
-        AaruLogging.WriteLine($"[maroon]{string.Format(Localization.Core._0_sectors_could_not_be_read,
-                                                       results.UnreadableSectors.Count)}[/]");
+        AaruLogging.WriteLine(Localization.Core._0_sectors_could_not_be_read, results.UnreadableSectors.Count);
 
         foreach(ulong bad in results.UnreadableSectors)
-            AaruLogging.WriteLine($"[red]{Localization.Core.Sector_0_could_not_be_read}[/]", $"[teal]{bad}[/]");
+            AaruLogging.WriteLine(Localization.Core.Sector_0_could_not_be_read, bad);
 
         AaruLogging.WriteLine();
 
         if(results.SeekTotal > 0 || results.SeekMin < double.MaxValue || results.SeekMax > double.MinValue)
 
         {
-            AaruLogging.WriteLine($"[slateblue1]{Localization.Core
-                                                             .Testing_0_seeks_longest_seek_took_1_ms_fastest_one_took_2_ms_3_ms_average}[/]",
-                                  $"[aqua]{results.SeekTimes}[/]",
-                                  $"[aqua]{results.SeekMax}[/]",
-                                  $"[aqua]{results.SeekMin}[/]",
-                                  $"[aqua]{results.SeekTotal / 1000}[/]");
+            AaruLogging.WriteLine(Localization.Core
+                                              .Testing_0_seeks_longest_seek_took_1_ms_fastest_one_took_2_ms_3_ms_average,
+                                  results.SeekTimes,
+                                  results.SeekMax,
+                                  results.SeekMin,
+                                  results.SeekTotal / 1000);
         }
 
         dev.Close();
