@@ -35,9 +35,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:gui="clr-namespace:Aaru.Gui"
              x:Class="Aaru.Gui.App">
-    <Application.DataTemplates>
-        <gui:ViewLocator />
-    </Application.DataTemplates>
     <Application.Styles>
         <FluentTheme />
         <!-- TODO: Abandoned project need to find replacement
