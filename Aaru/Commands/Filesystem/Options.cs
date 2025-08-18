@@ -73,13 +73,13 @@ sealed class ListOptionsCommand : Command<ListOptionsCommand.Settings>
 
             var table = new Table
             {
-                Title = new TableTitle(string.Format($"[bold][blue]{UI.Options_for_0}[/][/]",
-                                                     $"[italic][teal]{fs.Name}[/][/]"))
+                Title = new TableTitle(string.Format(UI.Options_for_0,
+                                                     fs.Name))
             };
 
-            table.AddColumn(new TableColumn(new Markup($"[bold][purple]{UI.Title_Name}[/][/]").Centered()));
-            table.AddColumn(new TableColumn(new Markup($"[bold][olive]{UI.Title_Type}[/][/]").Centered()));
-            table.AddColumn(new TableColumn(new Markup($"[bold][slateblue1]{UI.Title_Description}[/][/]").Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Name).Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Type).Centered()));
+            table.AddColumn(new TableColumn(new Markup(UI.Title_Description).Centered()));
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
 
