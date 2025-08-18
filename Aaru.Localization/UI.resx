@@ -299,49 +299,49 @@ In you are unsure, please press N to not continue.</value>
     <value>Prefix for saving binary information from device.</value>
   </data>
     <data name="Title_USB_device" xml:space="preserve">
-    <value>USB device</value>
+    <value>[bold][blue]USB device[/][/]</value>
   </data>
     <data name="Title_FireWire_device" xml:space="preserve">
-    <value>FireWire device</value>
+    <value>[bold][blue]FireWire device[/][/]</value>
   </data>
     <data name="Title_PCMCIA_device" xml:space="preserve">
-    <value>PCMCIA device</value>
+    <value>[bold][blue]PCMCIA device[/][/]</value>
   </data>
     <data name="Title_SCSI_device" xml:space="preserve">
-    <value>SCSI device</value>
+    <value>[bold][blue]SCSI device[/][/]</value>
   </data>
     <data name="Title_SCSI_MMC_GET_CONFIGURATION_Features" xml:space="preserve">
-    <value>SCSI MMC GET CONFIGURATION Features:</value>
+    <value>[bold][blue]SCSI MMC GET CONFIGURATION Features:[/][/]</value>
   </data>
     <data name="Title_Drive_has_kreon_firmware" xml:space="preserve">
-    <value>Drive has kreon firmware:</value>
+    <value>[bold][blue]Drive has kreon firmware:[/][/]</value>
   </data>
     <data name="Title_Descriptor_size" xml:space="preserve">
-    <value>Descriptor size</value>
+    <value>[bold][slateblue1]Descriptor size[/][/]</value>
   </data>
     <data name="Title_Vendor_ID" xml:space="preserve">
-    <value>Vendor ID</value>
+    <value>[bold][slateblue1]Vendor ID[/][/]</value>
   </data>
     <data name="Title_Product_ID" xml:space="preserve">
-    <value>Product ID</value>
+    <value>[bold][slateblue1]Product ID[/][/]</value>
   </data>
     <data name="Title_Product" xml:space="preserve">
-    <value>Product</value>
+    <value>[bold][slateblue1]Product[/][/]</value>
   </data>
     <data name="Title_Serial_number" xml:space="preserve">
-    <value>Serial number</value>
+    <value>[bold][slateblue1]Serial number[/][/]</value>
   </data>
     <data name="Title_Model_ID" xml:space="preserve">
-    <value>Model ID</value>
+    <value>[bold][slateblue1]Model ID[/][/]</value>
   </data>
     <data name="Title_Vendor" xml:space="preserve">
-    <value>Vendor</value>
+    <value>[bold][slateblue1]Vendor[/][/]</value>
   </data>
     <data name="Title_GUID" xml:space="preserve">
-    <value>GUID</value>
+    <value>[bold][slateblue1]GUID[/][/]</value>
   </data>
     <data name="PCMCIA_CIS_is_0_bytes" xml:space="preserve">
-    <value>PCMCIA CIS is {0} bytes</value>
+    <value>[slateblue]PCMCIA CIS is [teal]{0}[/] bytes[/]</value>
   </data>
     <data name="aaruremote_host" xml:space="preserve">
     <value>aaruremote host</value>
@@ -2044,10 +2044,10 @@ Testers:
     <value>Kreon</value>
   </data>
     <data name="Densities_supported_by_device" xml:space="preserve">
-    <value>Densities supported by device:</value>
+    <value>[bold][blue]Densities supported by device:[/][/]</value>
   </data>
     <data name="Medium_types_supported_by_device" xml:space="preserve">
-    <value>Medium types supported by device:</value>
+    <value>[bold][blue]Medium types supported by device:[/][/]</value>
   </data>
     <data name="Title_CID" xml:space="preserve">
     <value>CID</value>
@@ -3115,16 +3115,16 @@ Do you want to continue?</value>
         <value>List devices</value>
     </data>
     <data name="CD_reading_offset_not_found_in_database" xml:space="preserve">
-        <value>CD reading offset not found in database.</value>
+        <value>[slateblue1]CD reading offset not found in database.[/]</value>
     </data>
     <data name="CD_reading_offset_is_0_samples_1_bytes" xml:space="preserve">
-        <value>CD reading offset is {0} samples ({1} bytes).</value>
+        <value>[slateblue1]CD reading offset is [teal]{0}[/] samples ([lime]{1}[/] bytes).[/]</value>
     </data>
     <data name="Could_not_get_any_kind_of_information_from_the_device" xml:space="preserve">
         <value>Could not get any kind of information from the device !!!</value>
     </data>
     <data name="Optimal_multiple_read_is_0_sectors" xml:space="preserve">
-        <value>Optimal multiple read is {0} sectors.</value>
+        <value>[slateblue1]Optimal multiple read is [aqua]{0}[/] sectors.[/]</value>
     </data>
     <data name="Unable_to_get_separate_tracks_not_checksumming_them" xml:space="preserve">
         <value>Unable to get separate tracks, not checksumming them</value>

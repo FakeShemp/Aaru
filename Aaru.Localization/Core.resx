@@ -114,28 +114,28 @@
     <value>Device identified as {0}</value>
   </data>
     <data name="ASCII_Page_0_1" xml:space="preserve">
-    <value>ASCII Page {0:X2}h: {1}</value>
+    <value>[bold][blue]ASCII Page[/bold][/] [italic][teal]{0:X2}h[/][/]: [slateblue1]{1}[/]</value>
   </data>
     <data name="Unit_Serial_Number_0" xml:space="preserve">
-    <value>Unit Serial Number: {0}</value>
+    <value>[bold][blue]Unit Serial Number:[/][/] [italic][teal]{0}[/][/]</value>
   </data>
     <data name="ASCII_implemented_operating_definitions_0" xml:space="preserve">
-    <value>ASCII implemented operating definitions: {0}</value>
+    <value>[bold][blue]ASCII implemented operating definitions:[/][/] [slateblue1]{0}[/]</value>
   </data>
     <data name="Manufacturer_assigned_Serial_Number_0" xml:space="preserve">
-    <value>Manufacturer-assigned Serial Number: {0}</value>
+    <value>[bold][blue]Manufacturer-assigned Serial Number:[/][/] [italic][teal]{0}[/][/]</value>
   </data>
     <data name="TapeAlert_Supported_Flags_Bitmap_0" xml:space="preserve">
-    <value>TapeAlert Supported Flags Bitmap: 0x{0:X16}</value>
+    <value>[bold][blue]TapeAlert Supported Flags Bitmap:[/][/] [italic][teal]0x{0:X16}[/][/]</value>
   </data>
     <data name="Automation_Device_Serial_Number_0" xml:space="preserve">
-    <value>Automation Device Serial Number: {0}</value>
+    <value>[bold][blue]Automation Device Serial Number:[/][/] [italic][teal]{0}[/][/]</value>
   </data>
     <data name="Data_Transfer_Device_Element_Address_0" xml:space="preserve">
-    <value>Data Transfer Device Element Address: 0x{0}</value>
+    <value>[bold][blue]Data Transfer Device Element Address:[/][/] [italic][teal]0x{0}[/][/]</value>
   </data>
     <data name="Found_undecoded_SCSI_VPD_page_0" xml:space="preserve">
-    <value>Found undecoded SCSI VPD page 0x{0:X2}</value>
+    <value>[bold][blue]Found undecoded SCSI VPD page[/][/] [italic][teal]0x{0:X2}[/][/]</value>
   </data>
     <data name="GET_CONFIGURATION_length_is_0" xml:space="preserve">
     <value>GET CONFIGURATION length is {0} bytes</value>
@@ -153,127 +153,127 @@
     <value>GET CONFIGURATION returned no feature descriptors</value>
   </data>
     <data name="Drive_has_loaded_a_total_of_0_discs" xml:space="preserve">
-    <value>Drive has loaded a total of {0} discs</value>
+    <value>[slateblue1]Drive has loaded a total of [teal]{0}[/] discs[/]</value>
   </data>
     <data name="Drive_has_spent_0_reading_CDs" xml:space="preserve">
-    <value>Drive has spent {0} reading CDs</value>
+    <value>[slateblue1]Drive has spent [aqua]{0}[/] reading CDs[/]</value>
   </data>
     <data name="Drive_has_spent_0_writing_CDs" xml:space="preserve">
-    <value>Drive has spent {0} writing CDs</value>
+    <value>[slateblue1]Drive has spent [aqua]{0}[/] writing CDs[/]</value>
   </data>
     <data name="Drive_has_spent_0_reading_DVDs" xml:space="preserve">
-    <value>Drive has spent {0} reading DVDs</value>
+    <value>[slateblue1]Drive has spent [aqua]{0}[/] reading DVDs[/]</value>
   </data>
     <data name="Drive_has_spent_0_writing_DVDs" xml:space="preserve">
-    <value>Drive has spent {0} writing DVDs</value>
+    <value>[slateblue1]Drive has spent [aqua]{0}[/] writing DVDs[/]</value>
   </data>
     <data name="Drive_supports_PoweRec_is_enabled_and_recommends_0" xml:space="preserve">
-    <value>Drive supports PoweRec, is enabled and recommends {0} Kb/sec.</value>
+    <value>[slateblue1]Drive supports PoweRec, is enabled and recommends [lime]{0}[/] Kb/sec.[/]</value>
   </data>
     <data name="Drive_supports_PoweRec_and_has_it_enabled" xml:space="preserve">
-    <value>Drive supports PoweRec and has it enabled.</value>
+    <value>[slateblue1]Drive supports PoweRec and has it enabled.[/]</value>
   </data>
     <data name="Selected_PoweRec_speed_for_currently_inserted_media_is_0_1" xml:space="preserve">
-    <value>Selected PoweRec speed for currently inserted media is {0} Kb/sec ({1}x)</value>
+    <value>[slateblue1]Selected PoweRec speed for currently inserted media is [lime]{0}[/] Kb/sec ([teal]{1}x[/])[/]</value>
   </data>
     <data name="Maximum_PoweRec_speed_for_currently_inserted_media_is_0_1" xml:space="preserve">
-    <value>Maximum PoweRec speed for currently inserted media is {0} Kb/sec ({1}x)</value>
+    <value>[slateblue1]Maximum PoweRec speed for currently inserted media is [lime]{0}[/] Kb/sec ([teal]{1}x[/])[/]</value>
   </data>
     <data name="Last_used_PoweRec_was_0_1" xml:space="preserve">
-    <value>Last used PoweRec was {0} Kb/sec ({1}x)</value>
+    <value>[slateblue1]Last used PoweRec was [lime]{0}[/] Kb/sec ([teal]{1}x[/])[/]</value>
   </data>
     <data name="Drive_supports_PoweRec_and_has_it_disabled" xml:space="preserve">
-    <value>Drive supports PoweRec and has it disabled.</value>
+    <value>[slateblue1]Drive supports PoweRec and has it disabled.[/]</value>
   </data>
     <data name="Drive_supports_Plextor_SilentMode" xml:space="preserve">
-    <value>Drive supports Plextor SilentMode</value>
+    <value>[slateblue1]Drive supports Plextor SilentMode[/]</value>
   </data>
     <data name="Plextor_SilentMode_is_enabled" xml:space="preserve">
-    <value>Plextor SilentMode is enabled:</value>
+    <value>[slateblue1]Plextor SilentMode is enabled:[/]</value>
   </data>
     <data name="Access_time_is_slow" xml:space="preserve">
-    <value>Access time is slow</value>
+    <value>[slateblue1]Access time is slow[/]</value>
   </data>
     <data name="Access_time_is_fast" xml:space="preserve">
-    <value>Access time is fast</value>
+    <value>[slateblue1]Access time is fast[/]</value>
   </data>
     <data name="CD_read_speed_limited_to_0" xml:space="preserve">
-    <value>CD read speed limited to {0}x</value>
+    <value>[slateblue1]CD read speed limited to [teal]{0}x[/][/]</value>
   </data>
     <data name="DVD_read_speed_limited_to_0" xml:space="preserve">
-    <value>DVD read speed limited to {0}x</value>
+    <value>[slateblue1]DVD read speed limited to [teal]{0}x[/][/]</value>
   </data>
     <data name="CD_write_speed_limited_to_0" xml:space="preserve">
-    <value>CD write speed limited to {0}x</value>
+    <value>[slateblue1]CD write speed limited to [teal]{0}x[/][/]</value>
   </data>
     <data name="Drive_supports_Plextor_GigaRec" xml:space="preserve">
-    <value>Drive supports Plextor GigaRec</value>
+    <value>[slateblue1]Drive supports Plextor GigaRec[/]</value>
   </data>
     <data name="Drive_supports_Plextor_SecuRec" xml:space="preserve">
-    <value>Drive supports Plextor SecuRec</value>
+    <value>[slateblue1]Drive supports Plextor SecuRec[/]</value>
   </data>
     <data name="Drive_supports_Plextor_SpeedRead" xml:space="preserve">
-    <value>Drive supports Plextor SpeedRead</value>
+    <value>[slateblue1]Drive supports Plextor SpeedRead[/]</value>
   </data>
     <data name="Drive_supports_Plextor_SpeedRead_and_has_it_enabled" xml:space="preserve">
-    <value>Drive supports Plextor SpeedRead and has it enabled</value>
+    <value>[green]Drive supports Plextor SpeedRead and has it enabled[/]</value>
   </data>
     <data name="Drive_supports_hiding_CDRs_and_forcing_single_session" xml:space="preserve">
-    <value>Drive supports hiding CD-Rs and forcing single session</value>
+    <value>[slateblue1]Drive supports hiding CD-Rs and forcing single session[/]</value>
   </data>
     <data name="Drive_currently_hides_CDRs" xml:space="preserve">
-    <value>Drive currently hides CD-Rs</value>
+    <value>[green]Drive currently hides CD-Rs[/]</value>
   </data>
     <data name="Drive_currently_forces_single_session" xml:space="preserve">
-    <value>Drive currently forces single session</value>
+    <value>[green]Drive currently forces single session[/]</value>
   </data>
     <data name="Drive_supports_Plextor_VariRec" xml:space="preserve">
-    <value>Drive supports Plextor VariRec</value>
+    <value>[slateblue1]Drive supports Plextor VariRec[/]</value>
   </data>
     <data name="Drive_supports_Plextor_VariRec_for_DVDs" xml:space="preserve">
-    <value>Drive supports Plextor VariRec for DVDs</value>
+    <value>[slateblue1]Drive supports Plextor VariRec for DVDs[/]</value>
   </data>
     <data name="Drive_supports_bitsetting_DVD_R_book_type" xml:space="preserve">
-    <value>Drive supports bitsetting DVD+R book type</value>
+    <value>[slateblue1]Drive supports bitsetting DVD+R book type[/]</value>
   </data>
     <data name="Drive_supports_bitsetting_DVD_R_DL_book_type" xml:space="preserve">
-    <value>Drive supports bitsetting DVD+R DL book type</value>
+    <value>[slateblue1]Drive supports bitsetting DVD+R DL book type[/]</value>
   </data>
     <data name="Drive_supports_test_writing_DVD_Plus" xml:space="preserve">
-    <value>Drive supports test writing DVD+</value>
+    <value>[slateblue1]Drive supports test writing DVD+[/]</value>
   </data>
     <data name="Can_do_challenge_response_with_Xbox_discs" xml:space="preserve">
-    <value>Can do challenge/response with Xbox discs</value>
+    <value>[slateblue1]Can do challenge/response with Xbox discs[/]</value>
   </data>
     <data name="Can_read_and_decrypt_SS_from_Xbox_discs" xml:space="preserve">
-    <value>Can read and decrypt SS from Xbox discs</value>
+    <value>[slateblue1]Can read and decrypt SS from Xbox discs[/]</value>
   </data>
     <data name="Can_set_xtreme_unlock_state_with_Xbox_discs" xml:space="preserve">
-    <value>Can set xtreme unlock state with Xbox discs</value>
+    <value>[slateblue1]Can set xtreme unlock state with Xbox discs[/]</value>
   </data>
     <data name="Can_set_wxripper_unlock_state_with_Xbox_discs" xml:space="preserve">
-    <value>Can set wxripper unlock state with Xbox discs</value>
+    <value>[slateblue1]Can set wxripper unlock state with Xbox discs[/]</value>
   </data>
     <data name="Can_do_challenge_response_with_Xbox_360_discs" xml:space="preserve">
-    <value>Can do challenge/response with Xbox 360 discs</value>
+    <value>[slateblue1]Can do challenge/response with Xbox 360 discs[/]</value>
   </data>
     <data name="Can_read_and_decrypt_SS_from_Xbox_360_discs" xml:space="preserve">
-    <value>Can read and decrypt SS from Xbox 360 discs</value>
+    <value>[slateblue1]Can read and decrypt SS from Xbox 360 discs[/]</value>
   </data>
     <data name="Can_set_xtreme_unlock_state_with_Xbox_360_discs" xml:space="preserve">
-    <value>Can set xtreme unlock state with Xbox 360 discs</value>
+    <value>[slateblue1]Can set xtreme unlock state with Xbox 360 discs[/]</value>
   </data>
     <data name="Can_set_wxripper_unlock_state_with_Xbox_360_discs" xml:space="preserve">
-    <value>Can set wxripper unlock state with Xbox 360 discs</value>
+    <value>[slateblue1]Can set wxripper unlock state with Xbox 360 discs[/]</value>
   </data>
     <data name="Can_set_Kreon_locked_state" xml:space="preserve">
-    <value>Can set locked state</value>
+    <value>[slateblue1]Can set locked state[/]</value>
   </data>
     <data name="Kreon_Can_skip_read_errors" xml:space="preserve">
-    <value>Can skip read errors</value>
+    <value>[slateblue1]Can skip read errors[/]</value>
   </data>
     <data name="Block_limits_for_device" xml:space="preserve">
-    <value>Block limits for device:</value>
+    <value>[bold][blue]Block limits for device:[/][/]</value>
   </data>
     <data name="Generating_subchannels" xml:space="preserve">
     <value>Generating subchannels...</value>
@@ -1387,10 +1387,10 @@
     <value>Unable to communicate with ATA device.</value>
   </data>
     <data name="Device_not_in_database" xml:space="preserve">
-    <value>Device not in database, please create a device report and attach it to a Github issue.</value>
+    <value>[red]Device not in database, please create a device report and attach it to a Github issue.[/]</value>
   </data>
     <data name="Device_in_database_since_0" xml:space="preserve">
-    <value>Device in database since {0}.</value>
+    <value>[slateblue1]Device in database since [yellow3]{0}[/].[/]</value>
   </data>
     <data name="Could_not_detect_image_format" xml:space="preserve">
     <value>Could not detect image format.</value>
