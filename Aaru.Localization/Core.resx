@@ -3508,4 +3508,7 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <data name="Running_in_0_architecture" xml:space="preserve">
         <value>Running in {0} architecture</value>
     </data>
+    <data name="Cartridge_has_0_bytes_1" xml:space="preserve">
+        <value>[slateblue1]Cartridge has [lime]{0} bytes[/] ([lime]{1}[/]).[/]</value>
+    </data>
 </root>

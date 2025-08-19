@@ -232,32 +232,8 @@ public partial class Dump
         uint romSectors   = romSize / 512;
         uint romRemaining = romSize % 512;
 
-        // TODO: Humanizer
-        switch(romSize)
-        {
-            case > 1073741824:
-                UpdateStatus?.Invoke(string.Format(Localization.Core.Cartridge_has_0_bytes_1_GiB,
-                                                   romSize,
-                                                   romSize / 1073741824d));
-
-                break;
-            case > 1048576:
-                UpdateStatus?.Invoke(string.Format(Localization.Core.Cartridge_has_0_bytes_1_MiB,
-                                                   romSize,
-                                                   romSize / 1048576d));
-
-                break;
-            case > 1024:
-                UpdateStatus?.Invoke(string.Format(Localization.Core.Cartridge_has_0_bytes_1_KiB,
-                                                   romSize,
-                                                   romSize / 1024d));
-
-                break;
-            default:
-                UpdateStatus?.Invoke(string.Format(Localization.Core.Cartridge_has_0_bytes, romSize));
-
-                break;
-        }
+        UpdateStatus?.Invoke(string.Format(Localization.Core.Cartridge_has_0_bytes_1, romSize,
+                                           ByteSize.FromBytes(romSize).ToString("0.000")));
 
         UpdateStatus?.Invoke(string.Format(Localization.Core.Media_identified_as_0, mediaType));
 

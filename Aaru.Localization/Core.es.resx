@@ -301,18 +301,6 @@
     <data name="Card_specific_data_0" xml:space="preserve">
     <value>Datos específicos de la tarjeta: 0x{0:X4}</value>
   </data>
-    <data name="Cartridge_has_0_bytes" xml:space="preserve">
-        <value>[slateblue1]El cartucho tiene [lime]{0}[/] bytes[/]</value>
-    </data>
-    <data name="Cartridge_has_0_bytes_1_GiB" xml:space="preserve">
-        <value>[slateblue1]El cartucho tiene [lime]{0}[/] bytes ([lime]{1:F3}[/] GiB)[/]</value>
-    </data>
-    <data name="Cartridge_has_0_bytes_1_KiB" xml:space="preserve">
-        <value>[slateblue1]El cartucho tiene [lime]{0}[/] bytes ([lime]{1:F3}[/] KiB)[/]</value>
-    </data>
-    <data name="Cartridge_has_0_bytes_1_MiB" xml:space="preserve">
-        <value>[slateblue1]El cartucho tiene [lime]{0}[/] bytes ([lime]{1:F3}[/] MiB)[/]</value>
-    </data>
     <data name="CD_read_speed_limited_to_0" xml:space="preserve">
         <value>[slateblue1]Velocidad de lectura de CD limitada a [teal]{0}x[/][/]</value>
     </data>
@@ -3483,5 +3471,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     </data>
     <data name="Filesystems_Identify_Error" xml:space="preserve">
         <value>Error {0} identificando el sistema de ficheros. Por favor abra un reporte con la siguiente línea en Github.</value>
+    </data>
+    <data name="Cartridge_has_0_bytes_1" xml:space="preserve">
+        <value>[slateblue1]El cartucho tiene [lime]{0} bytes[/] ([lime]{1}[/]).[/]</value>
     </data>
 </root>

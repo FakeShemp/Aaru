@@ -6874,5 +6874,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Running_in_0_architecture", resourceCulture);
             }
         }
+        
+        public static string Cartridge_has_0_bytes_1 {
+            get {
+                return ResourceManager.GetString("Cartridge_has_0_bytes_1", resourceCulture);
+            }
+        }
     }
 }
