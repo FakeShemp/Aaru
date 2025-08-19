@@ -321,8 +321,8 @@
         <value>[bold][blue]Blu-ray Cartridge Status:[/][/]</value>
     </data>
     <data name="Bluray_Spare_Area_Information" xml:space="preserve">
-    <value>Blu-ray Spare Area Information</value>
-  </data>
+        <value>[bold][blue]Blu-ray Spare Area Information:[/][/]</value>
+    </data>
     <data name="Track_Resources_Information" xml:space="preserve">
     <value>Track Resources Information</value>
   </data>

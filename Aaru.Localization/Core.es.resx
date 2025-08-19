@@ -152,8 +152,8 @@
         <value>[bold][blue]Información del disco Blu-ray contenida en la imagen:[/][/]</value>
     </data>
     <data name="Bluray_Spare_Area_Information" xml:space="preserve">
-    <value>Información del área de reserva de Blu-ray</value>
-  </data>
+        <value>[bold][blue]Información del área de reserva de Blu-ray:[/][/]</value>
+    </data>
     <data name="Blu_ray_type_BDU_setting_disc_type_UHD" xml:space="preserve">
     <value>El tipo de Blu-ray es "BDU", estableciendo el tipo de disco como Blu-ray Ultra HD.</value>
   </data>

@@ -9470,8 +9470,8 @@
     <value>{0} particiones adicionales definidas</value>
   </data>
     <data name="_0_allocated_spare_blocks" xml:space="preserve">
-    <value>{0} bloques de reserva asignados</value>
-  </data>
+        <value>[slateblue1][teal]{0}[/] bloques de reserva asignados[/]</value>
+    </data>
     <data name="_0_allocated_supplementary_spare_blocks" xml:space="preserve">
     <value>{0} bloques suplementarios de reserva asignados</value>
   </data>
@@ -9540,8 +9540,8 @@
     <value>reconocidas {0} capas de formato</value>
   </data>
     <data name="_0_free_spare_blocks" xml:space="preserve">
-    <value>{0} bloques de reserva libres</value>
-  </data>
+        <value>[slateblue1][teal]{0}[/] bloques de reserva libres[/]</value>
+    </data>
     <data name="_0_heads" xml:space="preserve">
     <value>{0} cabezas</value>
   </data>
