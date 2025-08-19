@@ -75,7 +75,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         bool fixSubchannel         = settings.FixSubchannel;
         bool fixSubchannelCrc      = settings.FixSubchannelCrc;
         bool fixSubchannelPosition = settings.FixSubchannelPosition;
-        uint maxBlocks             = settings.MaxBlocks;
+        uint maxBlocks             = (uint)settings.MaxBlocks;
         bool eject                 = settings.Eject;
 
         fixSubchannel         |= fixSubchannelCrc;
@@ -85,41 +85,41 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
 
         Statistics.AddCommand("dump-media");
 
-        AaruLogging.Debug(MODULE_NAME, "--cicm-xml={0}", Markup.Escape(settings.CicmXml ?? ""));
-        AaruLogging.Debug(MODULE_NAME, "--debug={0}", settings.Debug);
-        AaruLogging.Debug(MODULE_NAME, "--device={0}", Markup.Escape(settings.DevicePath ?? ""));
-        AaruLogging.Debug(MODULE_NAME, "--encoding={0}", Markup.Escape(settings.Encoding ?? ""));
-        AaruLogging.Debug(MODULE_NAME, "--first-pregap={0}", settings.FirstPregap);
-        AaruLogging.Debug(MODULE_NAME, "--fix-offset={0}", settings.FixOffset);
-        AaruLogging.Debug(MODULE_NAME, "--force={0}", settings.Force);
-        AaruLogging.Debug(MODULE_NAME, "--format={0}", Markup.Escape(settings.Format ?? ""));
-        AaruLogging.Debug(MODULE_NAME, "--metadata={0}", settings.Metadata);
-        AaruLogging.Debug(MODULE_NAME, "--options={0}", Markup.Escape(settings.Options ?? ""));
-        AaruLogging.Debug(MODULE_NAME, "--output={0}", Markup.Escape(settings.OutputPath ?? ""));
-        AaruLogging.Debug(MODULE_NAME, "--persistent={0}", settings.Persistent);
-        AaruLogging.Debug(MODULE_NAME, "--resume={0}", settings.Resume);
-        AaruLogging.Debug(MODULE_NAME, "--retry-passes={0}", settings.RetryPasses);
-        AaruLogging.Debug(MODULE_NAME, "--skip={0}", settings.Skip);
-        AaruLogging.Debug(MODULE_NAME, "--stop-on-error={0}", settings.StopOnError);
-        AaruLogging.Debug(MODULE_NAME, "--trim={0}", settings.Trim);
-        AaruLogging.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
-        AaruLogging.Debug(MODULE_NAME, "--subchannel={0}", Markup.Escape(settings.Subchannel ?? ""));
-        AaruLogging.Debug(MODULE_NAME, "----private={0}", settings.Private);
+        AaruLogging.Debug(MODULE_NAME, "--cicm-xml={0}",                Markup.Escape(settings.CicmXml ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--debug={0}",                   settings.Debug);
+        AaruLogging.Debug(MODULE_NAME, "--device={0}",                  Markup.Escape(settings.DevicePath ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--encoding={0}",                Markup.Escape(settings.Encoding   ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--first-pregap={0}",            settings.FirstPregap);
+        AaruLogging.Debug(MODULE_NAME, "--fix-offset={0}",              settings.FixOffset);
+        AaruLogging.Debug(MODULE_NAME, "--force={0}",                   settings.Force);
+        AaruLogging.Debug(MODULE_NAME, "--format={0}",                  Markup.Escape(settings.Format ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--metadata={0}",                settings.Metadata);
+        AaruLogging.Debug(MODULE_NAME, "--options={0}",                 Markup.Escape(settings.Options    ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--output={0}",                  Markup.Escape(settings.OutputPath ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--persistent={0}",              settings.Persistent);
+        AaruLogging.Debug(MODULE_NAME, "--resume={0}",                  settings.Resume);
+        AaruLogging.Debug(MODULE_NAME, "--retry-passes={0}",            settings.RetryPasses);
+        AaruLogging.Debug(MODULE_NAME, "--skip={0}",                    settings.Skip);
+        AaruLogging.Debug(MODULE_NAME, "--stop-on-error={0}",           settings.StopOnError);
+        AaruLogging.Debug(MODULE_NAME, "--trim={0}",                    settings.Trim);
+        AaruLogging.Debug(MODULE_NAME, "--verbose={0}",                 settings.Verbose);
+        AaruLogging.Debug(MODULE_NAME, "--subchannel={0}",              Markup.Escape(settings.Subchannel ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "----private={0}",               settings.Private);
         AaruLogging.Debug(MODULE_NAME, "--fix-subchannel-position={0}", settings.FixSubchannelPosition);
-        AaruLogging.Debug(MODULE_NAME, "--retry-subchannel={0}", settings.RetrySubchannel);
-        AaruLogging.Debug(MODULE_NAME, "--fix-subchannel={0}", fixSubchannel);
-        AaruLogging.Debug(MODULE_NAME, "--fix-subchannel-crc={0}", fixSubchannelCrc);
-        AaruLogging.Debug(MODULE_NAME, "--generate-subchannels={0}", settings.GenerateSubchannels);
-        AaruLogging.Debug(MODULE_NAME, "--skip-cdiready-hole={0}", settings.SkipCdiReadyHole);
-        AaruLogging.Debug(MODULE_NAME, "--eject={0}", eject);
-        AaruLogging.Debug(MODULE_NAME, "--max-blocks={0}", maxBlocks);
-        AaruLogging.Debug(MODULE_NAME, "--use-buffered-reads={0}", settings.UseBufferedReads);
-        AaruLogging.Debug(MODULE_NAME, "--store-encrypted={0}", settings.StoreEncrypted);
-        AaruLogging.Debug(MODULE_NAME, "--title-keys={0}", settings.TitleKeys);
-        AaruLogging.Debug(MODULE_NAME, "--ignore-cdr-runouts={0}", settings.IgnoreCdrRunOuts);
-        AaruLogging.Debug(MODULE_NAME, "--create-graph={0}", settings.CreateGraph);
-        AaruLogging.Debug(MODULE_NAME, "--dimensions={0}", settings.Dimensions);
-        AaruLogging.Debug(MODULE_NAME, "--aaru-metadata={0}", Markup.Escape(settings.AaruMetadata ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--retry-subchannel={0}",        settings.RetrySubchannel);
+        AaruLogging.Debug(MODULE_NAME, "--fix-subchannel={0}",          fixSubchannel);
+        AaruLogging.Debug(MODULE_NAME, "--fix-subchannel-crc={0}",      fixSubchannelCrc);
+        AaruLogging.Debug(MODULE_NAME, "--generate-subchannels={0}",    settings.GenerateSubchannels);
+        AaruLogging.Debug(MODULE_NAME, "--skip-cdiready-hole={0}",      settings.SkipCdiReadyHole);
+        AaruLogging.Debug(MODULE_NAME, "--eject={0}",                   eject);
+        AaruLogging.Debug(MODULE_NAME, "--max-blocks={0}",              maxBlocks);
+        AaruLogging.Debug(MODULE_NAME, "--use-buffered-reads={0}",      settings.UseBufferedReads);
+        AaruLogging.Debug(MODULE_NAME, "--store-encrypted={0}",         settings.StoreEncrypted);
+        AaruLogging.Debug(MODULE_NAME, "--title-keys={0}",              settings.TitleKeys);
+        AaruLogging.Debug(MODULE_NAME, "--ignore-cdr-runouts={0}",      settings.IgnoreCdrRunOuts);
+        AaruLogging.Debug(MODULE_NAME, "--create-graph={0}",            settings.CreateGraph);
+        AaruLogging.Debug(MODULE_NAME, "--dimensions={0}",              settings.Dimensions);
+        AaruLogging.Debug(MODULE_NAME, "--aaru-metadata={0}",           Markup.Escape(settings.AaruMetadata ?? ""));
 
         // TODO: Disabled temporarily
         //AaruLogging.DebugWriteLine(MODULE_NAME, "--raw={0}", Markup.Escape(raw ?? ""));
@@ -493,7 +493,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                                   dev,
                                   devicePath,
                                   outputFormat,
-                                  settings.RetryPasses,
+                                  (ushort)settings.RetryPasses,
                                   settings.Force,
                                   false,
                                   settings.Persistent,
@@ -505,7 +505,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                                   outputPrefix + extension,
                                   parsedOptions,
                                   sidecar,
-                                  settings.Skip,
+                                  (uint)settings.Skip,
                                   settings.Metadata,
                                   settings.Trim,
                                   settings.FirstPregap,
@@ -525,9 +525,9 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                                   settings.UseBufferedReads,
                                   settings.StoreEncrypted,
                                   settings.TitleKeys,
-                                  settings.IgnoreCdrRunOuts,
+                                  (uint)settings.IgnoreCdrRunOuts,
                                   settings.CreateGraph,
-                                  settings.Dimensions);
+                                  (uint)settings.Dimensions);
 
             AnsiConsole.Progress()
                        .AutoClear(true)
@@ -537,15 +537,12 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                         {
                             dumper.UpdateStatus += text => { AaruLogging.WriteLine(Markup.Escape(text)); };
 
-                            dumper.ErrorMessage += text =>
+                            dumper.ErrorMessage += text => { AaruLogging.Error($"[red]{Markup.Escape(text)}[/]"); };
+
+                            dumper.StoppingErrorMessage += text =>
                                 {
                                     AaruLogging.Error($"[red]{Markup.Escape(text)}[/]");
                                 };
-
-                            dumper.StoppingErrorMessage += text =>
-                            {
-                                AaruLogging.Error($"[red]{Markup.Escape(text)}[/]");
-                            };
 
                             dumper.UpdateProgress += (text, current, maximum) =>
                             {
@@ -700,11 +697,11 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [Description("How many retry passes to do.")]
         [CommandOption("-p|--retry-passes")]
         [DefaultValue(5)]
-        public ushort RetryPasses { get; init; }
+        public int RetryPasses { get; init; }
         [Description("When an unreadable sector is found skip this many sectors.")]
         [CommandOption("-k|--skip")]
         [DefaultValue(512)]
-        public uint Skip { get; init; }
+        public int Skip { get; init; }
         [Description("Stop media dump on first error.")]
         [CommandOption("-s|--stop-on-error")]
         [DefaultValue(false)]
@@ -716,7 +713,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [Description("Speed to dump. Only applicable to optical drives, 0 for maximum.")]
         [CommandOption("--speed")]
         [DefaultValue(0)]
-        public byte Speed { get; init; }
+        public int Speed { get; init; }
         [Description("Do not store paths and serial numbers in log or metadata.")]
         [CommandOption("--private")]
         [DefaultValue(false)]
@@ -752,7 +749,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [Description("Maximum number of blocks to read at once.")]
         [CommandOption("--max-blocks")]
         [DefaultValue(64)]
-        public uint MaxBlocks { get; init; }
+        public int MaxBlocks { get; init; }
         [Description("Use OS buffered reads if CMD23 is not supported. Only applicable to MMC/SD.")]
         [CommandOption("--use-buffered-reads")]
         [DefaultValue(true)]
@@ -768,7 +765,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [Description("How many CD-R(W) run-out sectors to ignore and regenerate (0 for none).")]
         [CommandOption("--ignore-cdr-runouts")]
         [DefaultValue(10)]
-        public uint IgnoreCdrRunOuts { get; init; }
+        public int IgnoreCdrRunOuts { get; init; }
         [Description("Create graph of dumped media. Currently only supported for CD/DVD/BD/GD/UMD.")]
         [CommandOption("-g|--create-graph")]
         [DefaultValue(true)]
@@ -776,7 +773,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [Description("Dimensions in pixels of the square that will contain the graph of dumped media.")]
         [CommandOption("--dimensions")]
         [DefaultValue(1080)]
-        public uint Dimensions { get; init; }
+        public int Dimensions { get; init; }
         [Description("Take metadata from existing Aaru Metadata sidecar.")]
         [CommandOption("--aaru-metadata")]
         [DefaultValue(null)]
