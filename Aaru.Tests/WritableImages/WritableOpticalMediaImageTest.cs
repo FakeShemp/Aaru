@@ -434,7 +434,6 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                                         true,
                                         true,
                                         null,
-                                        null,
                                         smallestPregapLbaPerTrack,
                                         false,
                                         out _);
@@ -474,7 +473,6 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                                         outputFormat,
                                         true,
                                         true,
-                                        null,
                                         null,
                                         smallestPregapLbaPerTrack,
                                         false,
@@ -564,7 +562,6 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                                                     tracks,
                                                     trackFlags,
                                                     inputFormat.Info.Sectors,
-                                                    null,
                                                     null,
                                                     null,
                                                     null,

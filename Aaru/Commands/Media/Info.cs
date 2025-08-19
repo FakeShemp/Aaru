@@ -798,15 +798,14 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 
         if(scsiInfo.Toc != null || scsiInfo.RawToc != null)
         {
-            Track[] tracks =
-                Dump.GetCdTracks(dev, null, false, out long lastSector, null, null, null, out _, null, null);
+            Track[] tracks = Dump.GetCdTracks(dev, false, out long lastSector, null, null, null, out _, null, null);
 
             if(tracks != null)
             {
                 uint firstLba = (uint)tracks.Min(t => t.StartSector);
 
-                bool supportsPqSubchannel = Dump.SupportsPqSubchannel(dev, null, null, firstLba);
-                bool supportsRwSubchannel = Dump.SupportsRwSubchannel(dev, null, null, firstLba);
+                bool supportsPqSubchannel = Dump.SupportsPqSubchannel(dev, null, firstLba);
+                bool supportsRwSubchannel = Dump.SupportsRwSubchannel(dev, null, firstLba);
 
                 // Open main database
                 var ctx = AaruContext.Create(Aaru.Settings.Settings.MainDbPath);
@@ -818,7 +817,6 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
                                                     d.Revision     == dev.FirmwareRevision);
 
                 Dump.SolveTrackPregaps(dev,
-                                       null,
                                        null,
                                        tracks,
                                        supportsPqSubchannel,
@@ -867,7 +865,6 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
                                       debug,
                                       dev,
                                       scsiInfo.MediaType,
-                                      null,
                                       tracks,
                                       null,
                                       out int? driveOffset,

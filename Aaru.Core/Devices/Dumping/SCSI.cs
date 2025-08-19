@@ -46,7 +46,7 @@ public partial class Dump
     /// <summary>Dumps a SCSI Block Commands device or a Reduced Block Commands devices</summary>
     void Scsi()
     {
-        var resets = 0;
+        int resets = 0;
 
         if(_dev.IsRemovable)
         {
@@ -65,10 +65,6 @@ public partial class Dump
                                                        decSense.Value.ASC,
                                                        decSense.Value.ASCQ));
 
-                    _dumpLog.WriteLine(Localization.Core.Device_not_ready_Sense,
-                                       decSense.Value.SenseKey,
-                                       decSense.Value.ASC,
-                                       decSense.Value.ASCQ);
 
                     // Just retry, for 5 times
                     if(decSense.Value.ASC == 0x29)
@@ -82,7 +78,7 @@ public partial class Dump
                     {
                         case 0x3A:
                         {
-                            var leftRetries = 5;
+                            int leftRetries = 5;
 
                             while(leftRetries > 0)
                             {
@@ -100,11 +96,6 @@ public partial class Dump
                                                                        decSense.Value.SenseKey,
                                                                        decSense.Value.ASC,
                                                                        decSense.Value.ASCQ));
-
-                                    _dumpLog.WriteLine(Localization.Core.Device_not_ready_Sense,
-                                                       decSense.Value.SenseKey,
-                                                       decSense.Value.ASC,
-                                                       decSense.Value.ASCQ);
                                 }
 
                                 leftRetries--;
@@ -121,7 +112,7 @@ public partial class Dump
                         }
                         case 0x04 when decSense.Value.ASCQ == 0x01:
                         {
-                            var leftRetries = 50;
+                            int leftRetries = 50;
 
                             while(leftRetries > 0)
                             {
@@ -139,11 +130,6 @@ public partial class Dump
                                                                        decSense.Value.SenseKey,
                                                                        decSense.Value.ASC,
                                                                        decSense.Value.ASCQ));
-
-                                    _dumpLog.WriteLine(Localization.Core.Device_not_ready_Sense,
-                                                       decSense.Value.SenseKey,
-                                                       decSense.Value.ASC,
-                                                       decSense.Value.ASCQ);
                                 }
 
                                 leftRetries--;
@@ -176,7 +162,7 @@ public partial class Dump
                         // These should be trapped by the OS but seems in some cases they're not
                         case 0x28:
                         {
-                            var leftRetries = 10;
+                            int leftRetries = 10;
 
                             while(leftRetries > 0)
                             {
@@ -194,11 +180,6 @@ public partial class Dump
                                                                        decSense.Value.SenseKey,
                                                                        decSense.Value.ASC,
                                                                        decSense.Value.ASCQ));
-
-                                    _dumpLog.WriteLine(Localization.Core.Device_not_ready_Sense,
-                                                       decSense.Value.SenseKey,
-                                                       decSense.Value.ASC,
-                                                       decSense.Value.ASCQ);
                                 }
 
                                 leftRetries--;

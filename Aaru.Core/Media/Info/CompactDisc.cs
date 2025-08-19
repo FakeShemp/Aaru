@@ -36,7 +36,6 @@ using System.Linq;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Core.Logging;
 using Aaru.Core.Media.Detection;
 using Aaru.Database.Models;
 using Aaru.Decoders.CD;
@@ -62,8 +61,8 @@ public static class CompactDisc
     /// <param name="supportsPlextorReadCdDa">Set to <c>true</c> if drive supports PLEXTOR READ CD-DA vendor command</param>
     /// <returns><c>true</c> if offset could be found, <c>false</c> otherwise</returns>
     [SuppressMessage("ReSharper", "TooWideLocalVariableScope")]
-    public static void GetOffset(CdOffset  cdOffset, Device dbDev, bool debug, Aaru.Devices.Device dev,
-                                 MediaType dskType, DumpLog dumpLog, Track[] tracks, UpdateStatusHandler updateStatus,
+    public static void GetOffset(CdOffset  cdOffset,    Device   dbDev,          bool debug, Aaru.Devices.Device dev,
+                                 MediaType dskType,     Track[]  tracks,         UpdateStatusHandler updateStatus,
                                  out int?  driveOffset, out int? combinedOffset, out bool supportsPlextorReadCdDa)
     {
         byte[]     cmdBuf;
@@ -77,7 +76,7 @@ public static class CompactDisc
         int        diff;
         Track      dataTrack   = default;
         Track      audioTrack  = default;
-        var        offsetFound = false;
+        bool       offsetFound = false;
         const uint sectorSize  = 2352;
         driveOffset             = cdOffset?.Offset * 4;
         combinedOffset          = null;
@@ -97,7 +96,7 @@ public static class CompactDisc
                     tmpBuf = new byte[sectorSync.Length];
 
                     // Ensure to be out of the pregap, or multi-session discs give funny values
-                    var wantedLba = (uint)(dataTrack.StartSector + 151);
+                    uint wantedLba = (uint)(dataTrack.StartSector + 151);
 
                     // Plextor READ CDDA
                     if(dbDev?.ATAPI?.RemovableMedias?.Any(d => d.SupportsPlextorReadCDDA == true) == true ||
@@ -117,7 +116,7 @@ public static class CompactDisc
                         {
                             supportsPlextorReadCdDa = true;
 
-                            for(var i = 0; i < cmdBuf.Length - sectorSync.Length; i++)
+                            for(int i = 0; i < cmdBuf.Length - sectorSync.Length; i++)
                             {
                                 Array.Copy(cmdBuf, i, tmpBuf, 0, sectorSync.Length);
 
@@ -174,7 +173,7 @@ public static class CompactDisc
                         if(!sense && !dev.Error)
                         {
                             // Clear cache
-                            for(var i = 0; i < 63; i++)
+                            for(int i = 0; i < 63; i++)
                             {
                                 sense = dev.ReadCd(out _,
                                                    out _,
@@ -213,7 +212,7 @@ public static class CompactDisc
                                        dev.Timeout,
                                        out _);
 
-                            for(var i = 0; i < cmdBuf.Length - sectorSync.Length; i++)
+                            for(int i = 0; i < cmdBuf.Length - sectorSync.Length; i++)
                             {
                                 Array.Copy(cmdBuf, i, tmpBuf, 0, sectorSync.Length);
 
@@ -249,7 +248,7 @@ public static class CompactDisc
 
             // Try to get another the offset some other way, we need an audio track just after a data track, same session
 
-            for(var i = 1; i < tracks.Length; i++)
+            for(int i = 1; i < tracks.Length; i++)
             {
                 if(tracks[i - 1].Type == TrackType.Audio || tracks[i].Type != TrackType.Audio) continue;
 
@@ -308,7 +307,7 @@ public static class CompactDisc
 
             tmpBuf = new byte[sectorSync.Length];
 
-            for(var i = 0; i < cmdBuf.Length - sectorSync.Length; i++)
+            for(int i = 0; i < cmdBuf.Length - sectorSync.Length; i++)
             {
                 Array.Copy(cmdBuf, i, tmpBuf, 0, sectorSync.Length);
 
@@ -341,12 +340,12 @@ public static class CompactDisc
 
             if(sense || dev.Error) return;
 
-            for(var i = 0; i < dataBuf.Length; i++) dataBuf[i] ^= Sector.ScrambleTable[i];
+            for(int i = 0; i < dataBuf.Length; i++) dataBuf[i] ^= Sector.ScrambleTable[i];
 
-            for(var i = 0; i < 2352; i++)
+            for(int i = 0; i < 2352; i++)
             {
-                var dataSide  = new byte[2352 - i];
-                var audioSide = new byte[2352 - i];
+                byte[] dataSide  = new byte[2352 - i];
+                byte[] audioSide = new byte[2352 - i];
 
                 Array.Copy(dataBuf, i, dataSide,  0, dataSide.Length);
                 Array.Copy(cmdBuf,  0, audioSide, 0, audioSide.Length);
@@ -360,7 +359,7 @@ public static class CompactDisc
         }
         else
         {
-            var videoNowColorFrame = new byte[9 * sectorSize];
+            byte[] videoNowColorFrame = new byte[9 * sectorSize];
 
             sense = dev.ReadCd(out cmdBuf,
                                out _,
@@ -402,18 +401,13 @@ public static class CompactDisc
             }
 
             if(videoNowColorFrame is null)
-            {
-                dumpLog?.WriteLine(Localization.Core.Could_not_find_VideoNow_Color_frame_offset);
-                updateStatus?.Invoke("Could not find VideoNow Color frame offset, dump may not be correct.");
-            }
+                updateStatus?.Invoke(Localization.Core.Could_not_find_VideoNow_Color_frame_offset);
             else
             {
                 combinedOffset = MMC.GetVideoNowColorOffset(videoNowColorFrame);
 
-                dumpLog?.WriteLine(string.Format(Localization.Core.VideoNow_Color_frame_is_offset_0_bytes,
-                                                 combinedOffset));
-
-                updateStatus?.Invoke($"VideoNow Color frame is offset {combinedOffset} bytes.");
+                updateStatus?.Invoke(string.Format(Localization.Core.VideoNow_Color_frame_is_offset_0_bytes,
+                                                   combinedOffset));
             }
         }
     }

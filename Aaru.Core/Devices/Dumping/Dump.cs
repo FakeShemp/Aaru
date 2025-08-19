@@ -77,7 +77,6 @@ public partial class Dump
     readonly        string                     _devicePath;
     readonly        uint                       _dimensions;
     readonly        bool                       _doResume;
-    readonly        DumpLog                    _dumpLog;
     readonly        bool                       _dumpRaw;
     readonly        Stopwatch                  _dumpStopwatch;
     readonly        Encoding                   _encoding;
@@ -128,7 +127,6 @@ public partial class Dump
     /// <param name="doResume">Should resume?</param>
     /// <param name="dev">Device</param>
     /// <param name="devicePath">Path to the device</param>
-    /// <param name="outputPrefix">Prefix for output log files</param>
     /// <param name="outputPlugin">Plugin for output file</param>
     /// <param name="retryPasses">How many times to retry</param>
     /// <param name="force">Force to continue dump whenever possible</param>
@@ -136,15 +134,15 @@ public partial class Dump
     /// <param name="persistent">Store whatever data the drive returned on error</param>
     /// <param name="stopOnError">Stop dump on first error</param>
     /// <param name="resume">Information for dump resuming</param>
-    /// <param name="dumpLog">Dump logger</param>
     /// <param name="encoding">Encoding to use when analyzing dump</param>
+    /// <param name="outputPrefix">Prefix for output log files</param>
     /// <param name="outputPath">Path to output file</param>
     /// <param name="formatOptions">Formats to pass to output file plugin</param>
-    /// <param name="trim">Trim errors from skipped sectors</param>
-    /// <param name="dumpFirstTrackPregap">Try to read and dump as much first track pregap as possible</param>
     /// <param name="preSidecar">Sidecar to store in dumped image</param>
     /// <param name="skip">How many sectors to skip reading on error</param>
     /// <param name="metadata">Create metadata sidecar after dump?</param>
+    /// <param name="trim">Trim errors from skipped sectors</param>
+    /// <param name="dumpFirstTrackPregap">Try to read and dump as much first track pregap as possible</param>
     /// <param name="fixOffset">Fix audio offset</param>
     /// <param name="debug">Debug mode</param>
     /// <param name="subchannel">Desired subchannel to save to image</param>
@@ -167,14 +165,14 @@ public partial class Dump
     /// <param name="ignoreCdrRunOuts">How many CD-R(W) run end sectors to ignore and regenerate</param>
     /// <param name="createGraph">If set to <c>true</c> creates a graph of the dump.</param>
     /// <param name="dimensions">Dimensions of graph in pixels for a square</param>
-    public Dump(bool     doResume, Device dev, string devicePath, IBaseWritableImage outputPlugin, ushort retryPasses,
-                bool     force, bool dumpRaw, bool persistent, bool stopOnError, Resume resume, DumpLog dumpLog,
-                Encoding encoding, string outputPrefix, string outputPath, Dictionary<string, string> formatOptions,
-                Metadata preSidecar, uint skip, bool metadata, bool trim, bool dumpFirstTrackPregap, bool fixOffset,
-                bool     debug, DumpSubchannel subchannel, int speed, bool @private, bool fixSubchannelPosition,
-                bool     retrySubchannel, bool fixSubchannel, bool fixSubchannelCrc, bool skipCdireadyHole,
-                ErrorLog errorLog, bool generateSubchannels, uint maximumReadable, bool useBufferedReads,
-                bool     storeEncrypted, bool titleKeys, uint ignoreCdrRunOuts, bool createGraph, uint dimensions)
+    public Dump(bool doResume, Device dev, string devicePath, IBaseWritableImage outputPlugin, ushort retryPasses,
+                bool force, bool dumpRaw, bool persistent, bool stopOnError, Resume resume, Encoding encoding,
+                string outputPrefix, string outputPath, Dictionary<string, string> formatOptions, Metadata preSidecar,
+                uint skip, bool metadata, bool trim, bool dumpFirstTrackPregap, bool fixOffset, bool debug,
+                DumpSubchannel subchannel, int speed, bool @private, bool fixSubchannelPosition, bool retrySubchannel,
+                bool fixSubchannel, bool fixSubchannelCrc, bool skipCdireadyHole, ErrorLog errorLog,
+                bool generateSubchannels, uint maximumReadable, bool useBufferedReads, bool storeEncrypted,
+                bool titleKeys, uint ignoreCdrRunOuts, bool createGraph, uint dimensions)
     {
         _doResume              = doResume;
         _dev                   = dev;
@@ -186,7 +184,6 @@ public partial class Dump
         _persistent            = persistent;
         _stopOnError           = stopOnError;
         _resume                = resume;
-        _dumpLog               = dumpLog;
         _encoding              = encoding;
         _outputPrefix          = outputPrefix;
         _outputPath            = outputPath;
@@ -237,14 +234,9 @@ public partial class Dump
                                                   d.Revision     == _dev.FirmwareRevision);
 
         if(_dbDev is null)
-        {
-            _dumpLog.WriteLine(Localization.Core.Device_not_in_database);
-
             UpdateStatus?.Invoke(Localization.Core.Device_not_in_database);
-        }
         else
         {
-            _dumpLog.WriteLine(string.Format(Localization.Core.Device_in_database_since_0,   _dbDev.LastSynchronized));
             UpdateStatus?.Invoke(string.Format(Localization.Core.Device_in_database_since_0, _dbDev.LastSynchronized));
 
             if(_dbDev.OptimalMultipleSectorsRead > 0) _maximumReadable = (uint)_dbDev.OptimalMultipleSectorsRead;
@@ -282,8 +274,6 @@ public partial class Dump
 
                         break;
                     default:
-                        _dumpLog.WriteLine(Localization.Core.Unknown_device_type);
-                        _dumpLog.Close();
                         StoppingErrorMessage?.Invoke(Localization.Core.Unknown_device_type);
 
                         return;
@@ -293,7 +283,6 @@ public partial class Dump
         }
 
         _errorLog.Close();
-        _dumpLog.Close();
 
         if(_resume == null || !_doResume) return;
 

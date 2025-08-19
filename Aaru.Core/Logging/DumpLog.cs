@@ -36,27 +36,21 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Interop;
 using Aaru.Devices;
+using Aaru.Logging;
 using PlatformID = Aaru.CommonTypes.Interop.PlatformID;
 using Version = Aaru.CommonTypes.Interop.Version;
 
 namespace Aaru.Core.Logging;
 
 /// <summary>Creates a dump log</summary>
-public sealed class DumpLog
+public static class DumpLog
 {
-    readonly StreamWriter _logSw;
-
     /// <summary>Initializes the dump log</summary>
-    /// <param name="outputFile">Output log file</param>
     /// <param name="dev">Device</param>
     /// <param name="private">Disable saving paths or serial numbers in log</param>
-    public DumpLog(string outputFile, Device dev, bool @private)
+    public static void StartLog(Device dev, bool @private)
     {
-        if(string.IsNullOrEmpty(outputFile)) return;
-
-        _logSw = new StreamWriter(outputFile, true);
-
-        _logSw.WriteLine(Localization.Core.Start_logging_at_0, DateTime.Now);
+        AaruLogging.Information(Localization.Core.Start_logging_at_0, DateTime.Now);
 
         PlatformID platId  = DetectOS.GetRealPlatformID();
         string     platVer = DetectOS.GetVersion();
@@ -65,37 +59,35 @@ public sealed class DumpLog
             Attribute.GetCustomAttribute(typeof(DumpLog).Assembly, typeof(AssemblyInformationalVersionAttribute)) as
                 AssemblyInformationalVersionAttribute;
 
-        _logSw.WriteLine(Localization.Core.System_information);
+        AaruLogging.Information(Localization.Core.System_information);
 
-        _logSw.WriteLine("{0} {1} ({2}-bit)",
-                         DetectOS.GetPlatformName(platId, platVer),
-                         platVer,
-                         Environment.Is64BitOperatingSystem ? 64 : 32);
+        AaruLogging.Information("{0} {1} ({2}-bit)",
+                                DetectOS.GetPlatformName(platId, platVer),
+                                platVer,
+                                Environment.Is64BitOperatingSystem ? 64 : 32);
 
         if(DetectOS.IsMono)
-            _logSw.WriteLine("Mono {0}", Version.GetMonoVersion());
+            AaruLogging.Information("Mono {0}", Version.GetMonoVersion());
         else if(DetectOS.IsNetCore)
-            _logSw.WriteLine(".NET Core {0}", Version.GetNetCoreVersion());
+            AaruLogging.Information(".NET Core {0}", Version.GetNetCoreVersion());
         else
-            _logSw.WriteLine(RuntimeInformation.FrameworkDescription);
+            AaruLogging.Information(RuntimeInformation.FrameworkDescription);
 
-        _logSw.WriteLine();
+        AaruLogging.Information(Localization.Core.Program_information);
+        AaruLogging.Information("Aaru {0}",                         assemblyVersion?.InformationalVersion);
+        AaruLogging.Information(Localization.Core.Running_in_0_bit, Environment.Is64BitProcess ? 64 : 32);
 
-        _logSw.WriteLine(Localization.Core.Program_information);
-        _logSw.WriteLine("Aaru {0}",                         assemblyVersion?.InformationalVersion);
-        _logSw.WriteLine(Localization.Core.Running_in_0_bit, Environment.Is64BitProcess ? 64 : 32);
-
-        _logSw.WriteLine(DetectOS.IsAdmin
-                             ? Localization.Core.Running_as_superuser_Yes
-                             : Localization.Core.Running_as_superuser_No);
+        AaruLogging.Information(DetectOS.IsAdmin
+                                    ? Localization.Core.Running_as_superuser_Yes
+                                    : Localization.Core.Running_as_superuser_No);
 #if DEBUG
-        _logSw.WriteLine(Localization.Core.DEBUG_version);
+        AaruLogging.Information(Localization.Core.DEBUG_version);
 #endif
         if(@private)
         {
             string[] args = Environment.GetCommandLineArgs();
 
-            for(var i = 0; i < args.Length; i++)
+            for(int i = 0; i < args.Length; i++)
             {
                 if(args[i].StartsWith("/dev",    StringComparison.OrdinalIgnoreCase) ||
                    args[i].StartsWith("aaru://", StringComparison.OrdinalIgnoreCase))
@@ -111,94 +103,71 @@ public sealed class DumpLog
                 }
             }
 
-            _logSw.WriteLine(Localization.Core.Command_line_0, string.Join(" ", args));
+            AaruLogging.Information(Localization.Core.Command_line_0, string.Join(" ", args));
         }
         else
-            _logSw.WriteLine(Localization.Core.Command_line_0, Environment.CommandLine);
+            AaruLogging.Information(Localization.Core.Command_line_0, Environment.CommandLine);
 
-        _logSw.WriteLine();
 
         if(dev is Aaru.Devices.Remote.Device remoteDev)
         {
-            _logSw.WriteLine(Localization.Core.Remote_information);
-            _logSw.WriteLine(Localization.Core.Server_0,  remoteDev.RemoteApplication);
-            _logSw.WriteLine(Localization.Core.Version_0, remoteDev.RemoteVersion);
+            AaruLogging.Information(Localization.Core.Remote_information);
+            AaruLogging.Information(Localization.Core.Server_0,  remoteDev.RemoteApplication);
+            AaruLogging.Information(Localization.Core.Version_0, remoteDev.RemoteVersion);
 
-            _logSw.WriteLine(Localization.Core.Operating_system_0_1,
-                             remoteDev.RemoteOperatingSystem,
-                             remoteDev.RemoteOperatingSystemVersion);
+            AaruLogging.Information(Localization.Core.Operating_system_0_1,
+                                    remoteDev.RemoteOperatingSystem,
+                                    remoteDev.RemoteOperatingSystemVersion);
 
-            _logSw.WriteLine(Localization.Core.Architecture_0,     remoteDev.RemoteArchitecture);
-            _logSw.WriteLine(Localization.Core.Protocol_version_0, remoteDev.RemoteProtocolVersion);
+            AaruLogging.Information(Localization.Core.Architecture_0,     remoteDev.RemoteArchitecture);
+            AaruLogging.Information(Localization.Core.Protocol_version_0, remoteDev.RemoteProtocolVersion);
 
-            _logSw.WriteLine(DetectOS.IsAdmin
-                                 ? Localization.Core.Running_as_superuser_Yes
-                                 : Localization.Core.Running_as_superuser_No);
+            AaruLogging.Information(DetectOS.IsAdmin
+                                        ? Localization.Core.Running_as_superuser_Yes
+                                        : Localization.Core.Running_as_superuser_No);
 
-            _logSw.WriteLine(Localization.Core.Log_section_separator);
+            AaruLogging.Information(Localization.Core.Log_section_separator);
         }
 
-        _logSw.WriteLine(Localization.Core.Device_information);
-        _logSw.WriteLine(Localization.Core.Manufacturer_0,      dev.Manufacturer);
-        _logSw.WriteLine(Localization.Core.Model_0,             dev.Model);
-        _logSw.WriteLine(Localization.Core.Firmware_revision_0, dev.FirmwareRevision);
+        AaruLogging.Information(Localization.Core.Device_information);
+        AaruLogging.Information(Localization.Core.Manufacturer_0,      dev.Manufacturer);
+        AaruLogging.Information(Localization.Core.Model_0,             dev.Model);
+        AaruLogging.Information(Localization.Core.Firmware_revision_0, dev.FirmwareRevision);
 
-        if(!@private) _logSw.WriteLine(Localization.Core.Serial_number_0, dev.Serial);
+        if(!@private) AaruLogging.Information(Localization.Core.Serial_number_0, dev.Serial);
 
-        _logSw.WriteLine(Localization.Core.Removable_device_0,    dev.IsRemovable);
-        _logSw.WriteLine(Localization.Core.Device_type_0,         dev.Type);
-        _logSw.WriteLine(Localization.Core.CompactFlash_device_0, dev.IsCompactFlash);
-        _logSw.WriteLine(Localization.Core.PCMCIA_device_0,       dev.IsPcmcia);
-        _logSw.WriteLine(Localization.Core.USB_device_0,          dev.IsUsb);
+        AaruLogging.Information(Localization.Core.Removable_device_0,    dev.IsRemovable);
+        AaruLogging.Information(Localization.Core.Device_type_0,         dev.Type);
+        AaruLogging.Information(Localization.Core.CompactFlash_device_0, dev.IsCompactFlash);
+        AaruLogging.Information(Localization.Core.PCMCIA_device_0,       dev.IsPcmcia);
+        AaruLogging.Information(Localization.Core.USB_device_0,          dev.IsUsb);
 
         if(dev.IsUsb)
         {
-            _logSw.WriteLine(Localization.Core.USB_manufacturer_0, dev.UsbManufacturerString);
-            _logSw.WriteLine(Localization.Core.USB_product_0,      dev.UsbProductString);
+            AaruLogging.Information(Localization.Core.USB_manufacturer_0, dev.UsbManufacturerString);
+            AaruLogging.Information(Localization.Core.USB_product_0,      dev.UsbProductString);
 
-            if(!@private) _logSw.WriteLine(Localization.Core.USB_serial_0, dev.UsbSerialString);
+            if(!@private) AaruLogging.Information(Localization.Core.USB_serial_0, dev.UsbSerialString);
 
-            _logSw.WriteLine(Localization.Core.USB_vendor_ID_0,  dev.UsbVendorId);
-            _logSw.WriteLine(Localization.Core.USB_product_ID_0, dev.UsbProductId);
+            AaruLogging.Information(Localization.Core.USB_vendor_ID_0,  dev.UsbVendorId);
+            AaruLogging.Information(Localization.Core.USB_product_ID_0, dev.UsbProductId);
         }
 
-        _logSw.WriteLine(Localization.Core.FireWire_device_0, dev.IsFireWire);
+        AaruLogging.Information(Localization.Core.FireWire_device_0, dev.IsFireWire);
 
         if(dev.IsFireWire)
         {
-            _logSw.WriteLine(Localization.Core.FireWire_vendor_0, dev.FireWireVendorName);
-            _logSw.WriteLine(Localization.Core.FireWire_model_0,  dev.FireWireModelName);
+            AaruLogging.Information(Localization.Core.FireWire_vendor_0, dev.FireWireVendorName);
+            AaruLogging.Information(Localization.Core.FireWire_model_0,  dev.FireWireModelName);
 
-            if(!@private) _logSw.WriteLine(Localization.Core.FireWire_GUID_0, dev.FireWireGuid);
+            if(!@private) AaruLogging.Information(Localization.Core.FireWire_GUID_0, dev.FireWireGuid);
 
-            _logSw.WriteLine(Localization.Core.FireWire_vendor_ID_0,  dev.FireWireVendor);
-            _logSw.WriteLine(Localization.Core.FireWire_product_ID_0, dev.FireWireModel);
+            AaruLogging.Information(Localization.Core.FireWire_vendor_ID_0,  dev.FireWireVendor);
+            AaruLogging.Information(Localization.Core.FireWire_product_ID_0, dev.FireWireModel);
         }
 
-        _logSw.WriteLine(Localization.Core.Log_section_separator);
+        AaruLogging.Information(Localization.Core.Log_section_separator);
 
-        _logSw.WriteLine();
-        _logSw.WriteLine(Localization.Core.Dumping_progress_log);
-        _logSw.Flush();
-    }
-
-    /// <summary>Adds a new line to the dump log</summary>
-    /// <param name="format">Format string</param>
-    /// <param name="args">Arguments</param>
-    public void WriteLine(string format, params object[] args)
-    {
-        if(_logSw == null) return;
-
-        var text = string.Format(format, args);
-        _logSw.WriteLine("{0:s} {1}", DateTime.Now, text);
-        _logSw.Flush();
-    }
-
-    /// <summary>Finishes and closes the dump log</summary>
-    public void Close()
-    {
-        _logSw?.WriteLine(Localization.Core.Log_section_separator);
-        _logSw?.WriteLine(Localization.Core.End_logging_on_0, DateTime.Now);
-        _logSw?.Close();
+        AaruLogging.Information(Localization.Core.Dumping_progress_log);
     }
 }

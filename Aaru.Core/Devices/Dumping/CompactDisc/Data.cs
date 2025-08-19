@@ -133,7 +133,6 @@ partial class Dump
             {
                 currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                 UpdateStatus?.Invoke(Localization.Core.Aborted);
-                _dumpLog.WriteLine(Localization.Core.Aborted);
 
                 break;
             }
@@ -218,7 +217,6 @@ partial class Dump
             switch(inData)
             {
                 case false when currentReadSpeed == 0xFFFF:
-                    _dumpLog.WriteLine(Localization.Core.Setting_speed_to_8x_for_audio_reading);
                     UpdateStatus?.Invoke(Localization.Core.Setting_speed_to_8x_for_audio_reading);
 
                     _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 1416, 0, _dev.Timeout, out _);
@@ -228,11 +226,6 @@ partial class Dump
                     break;
                 case true when currentReadSpeed != _speed:
                 {
-                    _dumpLog.WriteLine(_speed == 0xFFFF
-                                           ? Localization.Core.Setting_speed_to_MAX_for_data_reading
-                                           : string.Format(Localization.Core.Setting_speed_to_0_x_for_data_reading,
-                                                           _speed));
-
                     UpdateStatus?.Invoke(_speed == 0xFFFF
                                              ? Localization.Core.Setting_speed_to_MAX_for_data_reading
                                              : string.Format(Localization.Core.Setting_speed_to_0_x_for_data_reading,
@@ -814,7 +807,6 @@ partial class Dump
                                 outputFormat as IWritableOpticalImage,
                                 _fixSubchannel,
                                 _fixSubchannelCrc,
-                                _dumpLog,
                                 UpdateStatus,
                                 smallestPregapLbaPerTrack,
                                 true,
@@ -903,14 +895,12 @@ partial class Dump
 
                         _resume.BadBlocks.Add(i + r);
 
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Core.READ_error_0,
-                                                   Sense.PrettifySense(senseBuf));
+                        AaruLogging.Debug(MODULE_NAME, Localization.Core.READ_error_0, Sense.PrettifySense(senseBuf));
 
                         mhddLog.Write(i + r, cmdDuration < 500 ? 65535 : cmdDuration);
 
-                        ibgLog.Write(i                                                                    + r, 0);
-                        _dumpLog.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, 1, i + r);
+                        ibgLog.Write(i                                                                       + r, 0);
+                        AaruLogging.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, 1, i + r);
                         newTrim = true;
                     }
 
@@ -1003,7 +993,6 @@ partial class Dump
                         outputFormat as IWritableOpticalImage,
                         _fixSubchannel,
                         _fixSubchannelCrc,
-                        _dumpLog,
                         UpdateStatus,
                         smallestPregapLbaPerTrack,
                         true,
@@ -1108,7 +1097,7 @@ partial class Dump
                 mhddLog.Write(i, cmdDuration < 500 ? 65535 : cmdDuration, _skip);
 
                 ibgLog.Write(i, 0);
-                _dumpLog.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, i);
+                AaruLogging.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, i);
                 i       += _skip - blocksToRead;
                 newTrim =  true;
             }
@@ -1135,7 +1124,6 @@ partial class Dump
 
         if(!failedCrossingLeadOut) return;
 
-        _dumpLog.WriteLine(Localization.Core.Failed_crossing_into_Lead_Out);
         UpdateStatus?.Invoke(Localization.Core.Failed_crossing_into_Lead_Out);
     }
 }

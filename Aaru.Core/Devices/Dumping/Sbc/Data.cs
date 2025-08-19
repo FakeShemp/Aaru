@@ -35,6 +35,7 @@ using Aaru.Core.Logging;
 using Aaru.Decoders.DVD;
 using Aaru.Decryption;
 using Aaru.Decryption.DVD;
+using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
 using DVDDecryption = Aaru.Decryption.DVD.Dump;
@@ -84,7 +85,6 @@ partial class Dump
             {
                 currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                 UpdateStatus?.Invoke(Localization.Core.Aborted);
-                _dumpLog.WriteLine(Localization.Core.Aborted);
 
                 break;
             }
@@ -203,8 +203,6 @@ partial class Dump
                     _resume.NextBlock++;
                     _aborted = true;
 
-                    _dumpLog?.WriteLine(Localization.Core
-                                                    .INSITE_floptical_drives_get_crazy_on_the_SCSI_bus_when_an_error_is_found);
 
                     UpdateStatus?.Invoke(Localization.Core
                                                      .INSITE_floptical_drives_get_crazy_on_the_SCSI_bus_when_an_error_is_found);
@@ -227,7 +225,7 @@ partial class Dump
                 mhddLog.Write(i, cmdDuration < 500 ? 65535 : cmdDuration, _skip);
 
                 ibgLog.Write(i, 0);
-                _dumpLog.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, i);
+                AaruLogging.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, i);
                 i       += _skip - blocksToRead;
                 newTrim =  true;
             }

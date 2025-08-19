@@ -40,7 +40,6 @@ using System.Linq;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Core.Logging;
 using Aaru.Decoders.CD;
 using Aaru.Devices;
 
@@ -60,9 +59,9 @@ partial class Dump
     /// <param name="trackFlags">Track flags</param>
     /// <param name="updateStatus">Update status handler</param>
     /// <returns>List of tracks</returns>
-    public static Track[] GetCdTracks(Device                 dev, DumpLog dumpLog, bool force, out long lastSector,
-                                      Dictionary<int, long>  leadOutStarts, Dictionary<MediaTagType, byte[]> mediaTags,
-                                      ErrorMessageHandler    stoppingErrorMessage, out FullTOC.CDFullTOC? toc,
+    public static Track[] GetCdTracks(Device dev, bool force, out long lastSector, Dictionary<int, long> leadOutStarts,
+                                      Dictionary<MediaTagType, byte[]> mediaTags,
+                                      ErrorMessageHandler stoppingErrorMessage, out FullTOC.CDFullTOC? toc,
                                       Dictionary<byte, byte> trackFlags, UpdateStatusHandler updateStatus)
     {
         byte[]      cmdBuf;            // Data buffer
@@ -76,7 +75,6 @@ partial class Dump
 
         // We discarded all discs that falsify a TOC before requesting a real TOC
         // No TOC, no CD (or an empty one)
-        dumpLog?.WriteLine(Localization.Core.Reading_full_TOC);
         updateStatus?.Invoke(Localization.Core.Reading_full_TOC);
         sense = dev.ReadRawToc(out cmdBuf, out _, 0, dev.Timeout, out _);
 
@@ -93,7 +91,6 @@ partial class Dump
         }
 
         updateStatus?.Invoke(Localization.Core.Building_track_map);
-        dumpLog?.WriteLine(Localization.Core.Building_track_map);
 
         if(toc.HasValue)
         {
@@ -179,16 +176,12 @@ partial class Dump
         else
         {
             updateStatus?.Invoke(Localization.Core.Cannot_read_RAW_TOC_requesting_processed_one);
-            dumpLog?.WriteLine(Localization.Core.Cannot_read_RAW_TOC_requesting_processed_one);
             sense = dev.ReadToc(out cmdBuf, out _, false, 0, dev.Timeout, out _);
 
             TOC.CDTOC? oldToc = TOC.Decode(cmdBuf);
 
             if((sense || !oldToc.HasValue) && !force)
             {
-                dumpLog?.WriteLine(Localization.Core
-                                               .Could_not_read_TOC_if_you_want_to_continue_use_force_and_will_try_from_LBA_0_to_360000);
-
                 stoppingErrorMessage?.Invoke(Localization.Core
                                                          .Could_not_read_TOC_if_you_want_to_continue_use_force_and_will_try_from_LBA_0_to_360000);
 
@@ -237,7 +230,6 @@ partial class Dump
         if(trackList.Count == 0)
         {
             updateStatus?.Invoke(Localization.Core.No_tracks_found_adding_a_single_track_from_zero_to_Lead_Out);
-            dumpLog?.WriteLine(Localization.Core.No_tracks_found_adding_a_single_track_from_zero_to_Lead_Out);
 
             trackList.Add(new Track
             {
@@ -258,7 +250,7 @@ partial class Dump
 
         if(!sense)
         {
-            var temp = new byte[8];
+            byte[] temp = new byte[8];
 
             Array.Copy(cmdBuf, 0, temp, 0, 8);
             Array.Reverse(temp);
@@ -278,14 +270,12 @@ partial class Dump
             stoppingErrorMessage?.Invoke(Localization.Core
                                                      .Could_not_find_Lead_Out_if_you_want_to_continue_use_force_option);
 
-            dumpLog?.WriteLine(Localization.Core.Could_not_find_Lead_Out_if_you_want_to_continue_use_force_option);
 
             return null;
         }
 
         updateStatus?.Invoke(Localization.Core.WARNING_Could_not_find_Lead_Out_start_will_try_to_read_up_to);
 
-        dumpLog?.WriteLine(Localization.Core.WARNING_Could_not_find_Lead_Out_start_will_try_to_read_up_to);
         lastSector = 360000;
 
         return trackList.ToArray();

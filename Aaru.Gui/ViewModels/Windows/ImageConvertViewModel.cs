@@ -979,7 +979,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                 warning = true;
 
                 AaruLogging.Error(UI.Error_0_setting_geometry_image_may_be_incorrect_continuing,
-                                           outputFormat.ErrorMessage);
+                                  outputFormat.ErrorMessage);
             }
 
             await Dispatcher.UIThread.InvokeAsync(() =>
@@ -1106,8 +1106,8 @@ public sealed class ImageConvertViewModel : ViewModelBase
                         warning = true;
 
                         AaruLogging.Error(UI.Error_0_writing_sector_1_continuing,
-                                                   outputFormat.ErrorMessage,
-                                                   doneSectors);
+                                          outputFormat.ErrorMessage,
+                                          doneSectors);
                     }
                     else
                     {
@@ -1123,8 +1123,8 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                                                              .ShowWindowDialogAsync(_view));
 
                         AaruLogging.Error(UI.Error_0_writing_sector_1_not_continuing,
-                                                   outputFormat.ErrorMessage,
-                                                   doneSectors);
+                                          outputFormat.ErrorMessage,
+                                          doneSectors);
 
                         return;
                     }
@@ -1266,7 +1266,6 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                     false,
                                     false,
                                     null,
-                                    null,
                                     smallestPregapLbaPerTrack,
                                     false,
                                     out _);
@@ -1300,9 +1299,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                                                               icon: Icon.Error)
                                                                          .ShowWindowDialogAsync(_view));
 
-                                AaruLogging.Error(UI.Error_0_reading_sector_1_not_continuing,
-                                                           errno,
-                                                           doneSectors);
+                                AaruLogging.Error(UI.Error_0_reading_sector_1_not_continuing, errno, doneSectors);
 
                                 return;
                             }
@@ -1334,7 +1331,6 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                     outputFormat as IWritableOpticalImage,
                                     false,
                                     false,
-                                    null,
                                     null,
                                     smallestPregapLbaPerTrack,
                                     false,
@@ -1369,9 +1365,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                                                               icon: Icon.Error)
                                                                          .ShowWindowDialogAsync(_view));
 
-                                AaruLogging.Error(UI.Error_0_reading_sector_1_not_continuing,
-                                                           errno,
-                                                           doneSectors);
+                                AaruLogging.Error(UI.Error_0_reading_sector_1_not_continuing, errno, doneSectors);
 
                                 return;
                             }
@@ -1385,8 +1379,8 @@ public sealed class ImageConvertViewModel : ViewModelBase
                             warning = true;
 
                             AaruLogging.Error(UI.Error_0_writing_sector_1_continuing,
-                                                       outputFormat.ErrorMessage,
-                                                       doneSectors);
+                                              outputFormat.ErrorMessage,
+                                              doneSectors);
                         }
                         else
                         {
@@ -1402,8 +1396,8 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                                                                  .ShowWindowDialogAsync(_view));
 
                             AaruLogging.Error(UI.Error_0_writing_sector_1_not_continuing,
-                                                       outputFormat.ErrorMessage,
-                                                       doneSectors);
+                                              outputFormat.ErrorMessage,
+                                              doneSectors);
 
                             return;
                         }
@@ -1573,8 +1567,8 @@ public sealed class ImageConvertViewModel : ViewModelBase
                             warning = true;
 
                             AaruLogging.Error(UI.Error_0_writing_sector_1_continuing,
-                                                       outputFormat.ErrorMessage,
-                                                       doneSectors);
+                                              outputFormat.ErrorMessage,
+                                              doneSectors);
                         }
                         else
                         {
@@ -1683,8 +1677,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                 {
                                     warning = true;
 
-                                    AaruLogging.Error(UI.Error_0_writing_tag_continuing,
-                                                               outputFormat.ErrorMessage);
+                                    AaruLogging.Error(UI.Error_0_writing_tag_continuing, outputFormat.ErrorMessage);
                                 }
                                 else
                                 {
@@ -1755,9 +1748,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                             {
                                 warning = true;
 
-                                AaruLogging.Error(UI.Error_0_reading_tag_for_sector_1_continuing,
-                                                           errno,
-                                                           doneSectors);
+                                AaruLogging.Error(UI.Error_0_reading_tag_for_sector_1_continuing, errno, doneSectors);
                             }
                             else
                             {
@@ -1782,8 +1773,8 @@ public sealed class ImageConvertViewModel : ViewModelBase
                                 warning = true;
 
                                 AaruLogging.Error(UI.Error_0_writing_tag_for_sector_1_continuing,
-                                                           outputFormat.ErrorMessage,
-                                                           doneSectors);
+                                                  outputFormat.ErrorMessage,
+                                                  doneSectors);
                             }
                             else
                             {

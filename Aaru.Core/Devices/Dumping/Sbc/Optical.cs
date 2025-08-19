@@ -101,7 +101,6 @@ partial class Dump
                 {
                     _resume.BlankExtents = null;
                     UpdateStatus?.Invoke(Localization.Core.Aborted);
-                    _dumpLog.WriteLine(Localization.Core.Aborted);
 
                     break;
                 }
@@ -182,15 +181,13 @@ partial class Dump
             writtenExtents.Add(0, blocks - 1);
 
             foreach(Tuple<ulong, ulong> blank in blankExtents.ToArray())
-            {
-                for(ulong b = blank.Item1; b <= blank.Item2; b++) writtenExtents.Remove(b);
-            }
+                for(ulong b = blank.Item1; b <= blank.Item2; b++)
+                    writtenExtents.Remove(b);
         }
 
         if(writtenExtents.Count == 0)
         {
             UpdateStatus?.Invoke(Localization.Core.Cannot_dump_empty_media);
-            _dumpLog.WriteLine(Localization.Core.Cannot_dump_empty_media);
 
             return;
         }
@@ -215,7 +212,6 @@ partial class Dump
                 {
                     currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                     UpdateStatus?.Invoke(Localization.Core.Aborted);
-                    _dumpLog.WriteLine(Localization.Core.Aborted);
 
                     break;
                 }
@@ -262,7 +258,7 @@ partial class Dump
                     mhddLog.Write(i, cmdDuration < 500 ? 65535 : cmdDuration, _skip);
 
                     ibgLog.Write(i, 0);
-                    _dumpLog.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, i);
+                    AaruLogging.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, i);
                     i       += _skip - blocksToRead;
                     newTrim =  true;
                 }

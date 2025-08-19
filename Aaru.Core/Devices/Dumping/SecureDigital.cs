@@ -46,6 +46,7 @@ using Aaru.Core.Graphics;
 using Aaru.Core.Logging;
 using Aaru.Decoders.MMC;
 using Aaru.Decoders.SecureDigital;
+using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
 using Humanizer.Localisation;
@@ -86,9 +87,9 @@ public partial class Dump
         byte[]       ecsd              = null;
         byte[]       scr               = null;
         uint         physicalBlockSize = 0;
-        var          byteAddressed     = true;
+        bool         byteAddressed     = true;
         uint[]       response;
-        var          supportsCmd23 = false;
+        bool         supportsCmd23 = false;
         var          outputFormat  = _outputPlugin as IWritableImage;
 
         Dictionary<MediaTagType, byte[]> mediaTags = new();
@@ -98,7 +99,6 @@ public partial class Dump
             case DeviceType.MMC:
             {
                 UpdateStatus?.Invoke(Localization.Core.Reading_CSD);
-                _dumpLog.WriteLine(Localization.Core.Reading_CSD);
                 sense = _dev.ReadCsd(out csd, out response, timeout, out duration);
 
                 if(!sense)
@@ -115,7 +115,6 @@ public partial class Dump
                     if(csdDecoded.Size == 0xFFF)
                     {
                         UpdateStatus?.Invoke(Localization.Core.Reading_Extended_CSD);
-                        _dumpLog.WriteLine(Localization.Core.Reading_Extended_CSD);
                         sense = _dev.ReadExtendedCsd(out ecsd, out response, timeout, out duration);
 
                         if(!sense)
@@ -153,7 +152,6 @@ public partial class Dump
                 }
 
                 UpdateStatus?.Invoke(Localization.Core.Reading_OCR);
-                _dumpLog.WriteLine(Localization.Core.Reading_OCR);
                 sense = _dev.ReadOcr(out ocr, out response, timeout, out duration);
 
                 if(sense)
@@ -170,7 +168,6 @@ public partial class Dump
             case DeviceType.SecureDigital:
             {
                 UpdateStatus?.Invoke(Localization.Core.Reading_CSD);
-                _dumpLog.WriteLine(Localization.Core.Reading_CSD);
                 sense = _dev.ReadCsd(out csd, out response, timeout, out duration);
 
                 if(!sense)
@@ -203,7 +200,6 @@ public partial class Dump
                 }
 
                 UpdateStatus?.Invoke(Localization.Core.Reading_OCR);
-                _dumpLog.WriteLine(Localization.Core.Reading_OCR);
                 sense = _dev.ReadSdocr(out ocr, out response, timeout, out duration);
 
                 if(sense)
@@ -215,7 +211,6 @@ public partial class Dump
                     mediaTags.Add(MediaTagType.SD_OCR, null);
 
                 UpdateStatus?.Invoke(Localization.Core.Reading_SCR);
-                _dumpLog.WriteLine(Localization.Core.Reading_SCR);
                 sense = _dev.ReadScr(out scr, out response, timeout, out duration);
 
                 if(sense)
@@ -237,7 +232,6 @@ public partial class Dump
         }
 
         UpdateStatus?.Invoke(Localization.Core.Reading_CID);
-        _dumpLog.WriteLine(Localization.Core.Reading_CID);
         sense = _dev.ReadCid(out byte[] cid, out response, timeout, out duration);
 
         if(sense)
@@ -255,14 +249,12 @@ public partial class Dump
 
         if(blocks == 0)
         {
-            _dumpLog.WriteLine(Localization.Core.Unable_to_get_device_size);
             StoppingErrorMessage?.Invoke(Localization.Core.Unable_to_get_device_size);
 
             return;
         }
 
         UpdateStatus?.Invoke(string.Format(Localization.Core.Device_reports_0_blocks, blocks));
-        _dumpLog.WriteLine(Localization.Core.Device_reports_0_blocks, blocks);
 
         byte[] cmdBuf;
         bool   error;
@@ -306,8 +298,6 @@ public partial class Dump
 
             if(error)
             {
-                _dumpLog.WriteLine(Localization.Core.ERROR_Cannot_get_blocks_to_read_device_error_0, _dev.LastError);
-
                 StoppingErrorMessage?.Invoke(string.Format(Localization.Core
                                                                        .Device_error_0_trying_to_guess_ideal_transfer_length,
                                                            _dev.LastError));
@@ -333,7 +323,6 @@ public partial class Dump
             if(error)
             {
                 UpdateStatus?.Invoke(Localization.Core.DumBuffered_OS_reads_are_not_working_trying_direct_commands);
-                _dumpLog.WriteLine(Localization.Core.DumBuffered_OS_reads_are_not_working_trying_direct_commands);
                 blocksToRead      = 1;
                 _useBufferedReads = false;
             }
@@ -362,8 +351,6 @@ public partial class Dump
 
             if(error)
             {
-                _dumpLog.WriteLine(Localization.Core.ERROR_Cannot_get_blocks_to_read_device_error_0, _dev.LastError);
-
                 StoppingErrorMessage?.Invoke(string.Format(Localization.Core
                                                                        .Device_error_0_trying_to_guess_ideal_transfer_length,
                                                            _dev.LastError));
@@ -378,8 +365,6 @@ public partial class Dump
 
             if(error)
             {
-                _dumpLog.WriteLine(Localization.Core.ERROR_Could_not_read_from_device_device_error_0, _dev.LastError);
-
                 StoppingErrorMessage?.Invoke(string.Format(Localization.Core.Device_error_0_trying_to_read_from_device,
                                                            _dev.LastError));
 
@@ -388,25 +373,17 @@ public partial class Dump
         }
 
         if(supportsCmd23 || blocksToRead == 1)
-        {
             UpdateStatus?.Invoke(string.Format(Localization.Core.Device_can_read_0_blocks_at_a_time, blocksToRead));
-            _dumpLog.WriteLine(Localization.Core.Device_can_read_0_blocks_at_a_time, blocksToRead);
-        }
         else if(_useBufferedReads)
         {
             UpdateStatus?.Invoke(string.Format(Localization.Core
                                                            .Device_can_read_0_blocks_at_a_time_using_OS_buffered_reads,
                                                blocksToRead));
-
-            _dumpLog.WriteLine(Localization.Core.Device_can_read_0_blocks_at_a_time_using_OS_buffered_reads,
-                               blocksToRead);
         }
         else
         {
             UpdateStatus?.Invoke(string.Format(Localization.Core.Device_can_read_0_blocks_using_sequential_commands,
                                                blocksToRead));
-
-            _dumpLog.WriteLine(Localization.Core.Device_can_read_0_blocks_using_sequential_commands, blocksToRead);
         }
 
         if(_skip < blocksToRead) _skip = blocksToRead;
@@ -435,25 +412,20 @@ public partial class Dump
             return;
         }
 
-        var ret = true;
+        bool ret = true;
 
         foreach(MediaTagType tag in mediaTags.Keys.Where(tag => !outputFormat.SupportedMediaTags.Contains(tag)))
         {
             ret = false;
-            _dumpLog.WriteLine(string.Format(Localization.Core.Output_format_does_not_support_0,   tag));
             ErrorMessage?.Invoke(string.Format(Localization.Core.Output_format_does_not_support_0, tag));
         }
 
         if(!ret)
         {
             if(_force)
-            {
-                _dumpLog.WriteLine(Localization.Core.Several_media_tags_not_supported_continuing);
                 ErrorMessage?.Invoke(Localization.Core.Several_media_tags_not_supported_continuing);
-            }
             else
             {
-                _dumpLog.WriteLine(Localization.Core.Several_media_tags_not_supported_not_continuing);
                 StoppingErrorMessage?.Invoke(Localization.Core.Several_media_tags_not_supported_not_continuing);
 
                 return;
@@ -479,9 +451,6 @@ public partial class Dump
         // Cannot create image
         if(!ret)
         {
-            _dumpLog.WriteLine(Localization.Core.Error_creating_output_image_not_continuing);
-            _dumpLog.WriteLine(outputFormat.ErrorMessage);
-
             StoppingErrorMessage?.Invoke(Localization.Core.Error_creating_output_image_not_continuing +
                                          Environment.NewLine                                          +
                                          outputFormat.ErrorMessage);
@@ -522,8 +491,6 @@ public partial class Dump
             // Cannot write CID to image
             if(!ret && !_force)
             {
-                _dumpLog.WriteLine(Localization.Core.Cannot_write_CID_to_output_image);
-
                 StoppingErrorMessage?.Invoke(Localization.Core.Cannot_write_CID_to_output_image +
                                              Environment.NewLine                                +
                                              outputFormat.ErrorMessage);
@@ -542,8 +509,6 @@ public partial class Dump
             // Cannot write CSD to image
             if(!ret && !_force)
             {
-                _dumpLog.WriteLine(Localization.Core.Cannot_write_CSD_to_output_image);
-
                 StoppingErrorMessage?.Invoke(Localization.Core.Cannot_write_CSD_to_output_image +
                                              Environment.NewLine                                +
                                              outputFormat.ErrorMessage);
@@ -559,8 +524,6 @@ public partial class Dump
             // Cannot write Extended CSD to image
             if(!ret && !_force)
             {
-                _dumpLog.WriteLine(Localization.Core.Cannot_write_Extended_CSD_to_output_image);
-
                 StoppingErrorMessage?.Invoke(Localization.Core.Cannot_write_Extended_CSD_to_output_image +
                                              Environment.NewLine                                         +
                                              outputFormat.ErrorMessage);
@@ -579,8 +542,6 @@ public partial class Dump
             // Cannot write OCR to image
             if(!ret && !_force)
             {
-                _dumpLog.WriteLine(Localization.Core.Cannot_write_OCR_to_output_image);
-
                 StoppingErrorMessage?.Invoke(Localization.Core.Cannot_write_OCR_to_output_image +
                                              Environment.NewLine                                +
                                              outputFormat.ErrorMessage);
@@ -596,8 +557,6 @@ public partial class Dump
             // Cannot write SCR to image
             if(!ret && !_force)
             {
-                _dumpLog.WriteLine(Localization.Core.Cannot_write_SCR_to_output_image);
-
                 StoppingErrorMessage?.Invoke(Localization.Core.Cannot_write_SCR_to_output_image +
                                              Environment.NewLine                                +
                                              outputFormat.ErrorMessage);
@@ -607,10 +566,7 @@ public partial class Dump
         }
 
         if(_resume.NextBlock > 0)
-        {
             UpdateStatus?.Invoke(string.Format(Localization.Core.Resuming_from_block_0, _resume.NextBlock));
-            _dumpLog.WriteLine(Localization.Core.Resuming_from_block_0, _resume.NextBlock);
-        }
 
         if(_createGraph)
         {
@@ -636,7 +592,7 @@ public partial class Dump
         _dumpStopwatch.Restart();
         _speedStopwatch.Reset();
         double imageWriteDuration = 0;
-        var    newTrim            = false;
+        bool   newTrim            = false;
         ulong  sectorSpeedStart   = 0;
 
         InitProgress?.Invoke();
@@ -647,7 +603,6 @@ public partial class Dump
             {
                 currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                 UpdateStatus?.Invoke(Localization.Core.Aborted);
-                _dumpLog.WriteLine(Localization.Core.Aborted);
 
                 break;
             }
@@ -728,7 +683,7 @@ public partial class Dump
                 _writeStopwatch.Restart();
                 outputFormat.WriteSectors(new byte[blockSize * _skip], i, _skip);
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
-                _dumpLog.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, i);
+                AaruLogging.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, i);
                 i       += _skip - blocksToRead;
                 newTrim =  true;
             }
@@ -774,18 +729,6 @@ public partial class Dump
                                                    .Per(imageWriteDuration.Seconds())
                                                    .Humanize()));
 
-        _dumpLog.WriteLine(string.Format(Localization.Core.Dump_finished_in_0,
-                                         _dumpStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
-
-        _dumpLog.WriteLine(string.Format(Localization.Core.Average_dump_speed_0,
-                                         ByteSize.FromBytes(blockSize * (blocks + 1))
-                                                 .Per(totalDuration.Milliseconds())
-                                                 .Humanize()));
-
-        _dumpLog.WriteLine(string.Format(Localization.Core.Average_dump_speed_0,
-                                         ByteSize.FromBytes(blockSize * (blocks + 1))
-                                                 .Per(imageWriteDuration.Seconds())
-                                                 .Humanize()));
 
 #region Trimming
 
@@ -793,7 +736,6 @@ public partial class Dump
         {
             _trimStopwatch.Restart();
             UpdateStatus?.Invoke(Localization.Core.Trimming_skipped_sectors);
-            _dumpLog.WriteLine(Localization.Core.Trimming_skipped_sectors);
 
             ulong[] tmpArray = _resume.BadBlocks.ToArray();
             InitProgress?.Invoke();
@@ -804,7 +746,6 @@ public partial class Dump
                 {
                     currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                     UpdateStatus?.Invoke(Localization.Core.Aborted);
-                    _dumpLog.WriteLine(Localization.Core.Aborted);
 
                     break;
                 }
@@ -839,9 +780,6 @@ public partial class Dump
 
             UpdateStatus?.Invoke(string.Format(Localization.Core.Trimming_finished_in_0,
                                                _trimStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
-
-            _dumpLog.WriteLine(string.Format(Localization.Core.Trimming_finished_in_0,
-                                             _trimStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
         }
 
 #endregion Trimming
@@ -850,8 +788,8 @@ public partial class Dump
 
         if(_resume.BadBlocks.Count > 0 && !_aborted && _retryPasses > 0)
         {
-            var pass    = 1;
-            var forward = true;
+            int  pass    = 1;
+            bool forward = true;
 
             InitProgress?.Invoke();
         repeatRetryLba:
@@ -863,7 +801,6 @@ public partial class Dump
                 {
                     currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                     UpdateStatus?.Invoke(Localization.Core.Aborted);
-                    _dumpLog.WriteLine(Localization.Core.Aborted);
 
                     break;
                 }
@@ -901,8 +838,6 @@ public partial class Dump
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_block_0_in_pass_1,
                                                    badSector,
                                                    pass));
-
-                _dumpLog.WriteLine(Localization.Core.Correctly_retried_block_0_in_pass_1, badSector, pass);
             }
 
             if(pass < _retryPasses && !_aborted && _resume.BadBlocks.Count > 0)
@@ -941,7 +876,6 @@ public partial class Dump
 
         if(_preSidecar != null) outputFormat.SetMetadata(_preSidecar);
 
-        _dumpLog.WriteLine(Localization.Core.Closing_output_file);
         UpdateStatus?.Invoke(Localization.Core.Closing_output_file);
         _imageCloseStopwatch.Restart();
         outputFormat.Close();
@@ -950,13 +884,10 @@ public partial class Dump
         UpdateStatus?.Invoke(string.Format(Localization.Core.Closed_in_0,
                                            _imageCloseStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
 
-        _dumpLog.WriteLine(Localization.Core.Closed_in_0,
-                           _imageCloseStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
 
         if(_aborted)
         {
             UpdateStatus?.Invoke(Localization.Core.Aborted);
-            _dumpLog.WriteLine(Localization.Core.Aborted);
 
             return;
         }
@@ -966,7 +897,6 @@ public partial class Dump
         if(_metadata)
         {
             UpdateStatus?.Invoke(Localization.Core.Creating_sidecar);
-            _dumpLog.WriteLine(Localization.Core.Creating_sidecar);
             IFilter     filter      = PluginRegister.Singleton.GetFilter(_outputPath);
             var         inputPlugin = ImageFormat.Detect(filter) as IMediaImage;
             ErrorNumber opened      = inputPlugin.Open(filter);
@@ -1003,14 +933,6 @@ public partial class Dump
                                                    ByteSize.FromBytes(blockSize * (blocks + 1))
                                                            .Per(totalChkDuration.Milliseconds())
                                                            .Humanize()));
-
-                _dumpLog.WriteLine(Localization.Core.Sidecar_created_in_0,
-                                   _sidecarStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
-
-                _dumpLog.WriteLine(Localization.Core.Average_checksum_speed_0,
-                                   ByteSize.FromBytes(blockSize * (blocks + 1))
-                                           .Per(totalChkDuration.Milliseconds())
-                                           .Humanize());
 
                 (string type, string subType) xmlType = (null, null);
 

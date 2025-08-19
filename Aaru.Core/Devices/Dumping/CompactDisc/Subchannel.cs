@@ -35,7 +35,6 @@
 // ReSharper disable TooWideLocalVariableScope
 
 using Aaru.CommonTypes;
-using Aaru.Core.Logging;
 using Aaru.Devices;
 
 namespace Aaru.Core.Devices.Dumping;
@@ -48,9 +47,8 @@ partial class Dump
     /// <param name="updateStatus">Progress update callback</param>
     /// <param name="lba">LBA to try</param>
     /// <returns><c>true</c> if read correctly, <c>false</c> otherwise</returns>
-    public static bool SupportsRwSubchannel(Device dev, DumpLog dumpLog, UpdateStatusHandler updateStatus, uint lba)
+    public static bool SupportsRwSubchannel(Device dev, UpdateStatusHandler updateStatus, uint lba)
     {
-        dumpLog?.WriteLine(Localization.Core.Checking_if_drive_supports_full_raw_subchannel_reading);
         updateStatus?.Invoke(Localization.Core.Checking_if_drive_supports_full_raw_subchannel_reading);
 
         return !dev.ReadCd(out _,
@@ -77,9 +75,8 @@ partial class Dump
     /// <param name="updateStatus">Progress update callback</param>
     /// <param name="lba">LBA to try</param>
     /// <returns><c>true</c> if read correctly, <c>false</c> otherwise</returns>
-    public static bool SupportsPqSubchannel(Device dev, DumpLog dumpLog, UpdateStatusHandler updateStatus, uint lba)
+    public static bool SupportsPqSubchannel(Device dev, UpdateStatusHandler updateStatus, uint lba)
     {
-        dumpLog?.WriteLine(Localization.Core.Checking_if_drive_supports_PQ_subchannel_reading);
         updateStatus?.Invoke(Localization.Core.Checking_if_drive_supports_PQ_subchannel_reading);
 
         return !dev.ReadCd(out _,

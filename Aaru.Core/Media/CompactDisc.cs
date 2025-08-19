@@ -38,6 +38,7 @@ using Aaru.Core.Logging;
 using Aaru.Decoders.CD;
 using Aaru.Devices;
 using Aaru.Helpers;
+using Aaru.Logging;
 
 namespace Aaru.Core.Media;
 
@@ -60,7 +61,6 @@ public static class CompactDisc
     /// <param name="outputPlugin">Output image</param>
     /// <param name="fixSubchannel">If we want to fix subchannel contents</param>
     /// <param name="fixSubchannelCrc">If we want to fix Q subchannel CRC if the contents look sane</param>
-    /// <param name="dumpLog">Dumping log</param>
     /// <param name="updateStatus">Status update callback</param>
     /// <param name="smallestPregapLbaPerTrack">List of smallest known pregap per track</param>
     /// <param name="dumping">Set if we are dumping, otherwise converting</param>
@@ -74,7 +74,7 @@ public static class CompactDisc
                                               Dictionary<byte, string> isrcs, byte currentTrack, ref string mcn,
                                               Track[] tracks, HashSet<int> subchannelExtents,
                                               bool fixSubchannelPosition, IWritableOpticalImage outputPlugin,
-                                              bool fixSubchannel, bool fixSubchannelCrc, DumpLog dumpLog,
+                                              bool fixSubchannel, bool fixSubchannelCrc,
                                               UpdateStatusHandler updateStatus,
                                               Dictionary<byte, int> smallestPregapLbaPerTrack, bool dumping,
                                               out List<ulong> newPregapSectors)
@@ -95,7 +95,6 @@ public static class CompactDisc
                                                          currentTrack,
                                                          ref mcn,
                                                          tracks,
-                                                         dumpLog,
                                                          updateStatus,
                                                          smallestPregapLbaPerTrack,
                                                          dumping,
@@ -107,15 +106,15 @@ public static class CompactDisc
         int prePos = int.MinValue;
 
         // Check subchannel
-        for(var subPos = 0; subPos < deSub.Length; subPos += 96)
+        for(int subPos = 0; subPos < deSub.Length; subPos += 96)
         {
             // Expected LBA
             long lba = (long)sectorAddress + subPos / 96;
 
             // We fixed the subchannel
-            var @fixed = false;
+            bool @fixed = false;
 
-            var q = new byte[12];
+            byte[] q = new byte[12];
             Array.Copy(deSub, subPos + 12, q, 0, 12);
 
             // Check Q CRC
@@ -123,17 +122,18 @@ public static class CompactDisc
             bool crcOk = crc[0] == q[10] && crc[1] == q[11];
 
             // Start considering P to be OK
-            var pOk     = true;
-            var pWeight = 0;
+            bool pOk     = true;
+            int  pWeight = 0;
 
             // Check P and weight
             for(int p = subPos; p < subPos + 12; p++)
             {
                 if(deSub[p] != 0 && deSub[p] != 255) pOk = false;
 
-                for(var w = 0; w < 8; w++)
-                    if((deSub[p] >> w & 1) > 0)
-                        pWeight++;
+                for(int w = 0; w < 8; w++)
+                {
+                    if((deSub[p] >> w & 1) > 0) pWeight++;
+                }
             }
 
             // This seems to be a somewhat common pattern
@@ -156,13 +156,13 @@ public static class CompactDisc
                        deSub.Skip(subPos + 84).Take(12).All(w => w == 0xFF);
 
             bool rwOk         = rOk && sOk && tOk && uOk && vOk && wOk;
-            var  rwPacket     = false;
-            var  cdtextPacket = false;
+            bool rwPacket     = false;
+            bool cdtextPacket = false;
 
             // Check RW contents
             if(!rwOk)
             {
-                var sectorSub = new byte[96];
+                byte[] sectorSub = new byte[96];
                 Array.Copy(sub, subPos, sectorSub, 0, 96);
 
                 DetectRwPackets(sectorSub, out _, out rwPacket, out cdtextPacket);
@@ -177,11 +177,13 @@ public static class CompactDisc
             if(!pOk && fixSubchannel)
             {
                 if(pWeight >= 48)
-                    for(int p = subPos; p < subPos + 12; p++)
-                        deSub[p] = 255;
+                {
+                    for(int p = subPos; p < subPos + 12; p++) deSub[p] = 255;
+                }
                 else
-                    for(int p = subPos; p < subPos + 12; p++)
-                        deSub[p] = 0;
+                {
+                    for(int p = subPos; p < subPos + 12; p++) deSub[p] = 0;
+                }
 
                 pOk    = true;
                 @fixed = true;
@@ -253,20 +255,20 @@ public static class CompactDisc
 
             if(!pOk || !crcOk || !rwOk) continue;
 
-            var aframe = (byte)(q[9] / 16 * 10 + (q[9] & 0x0F));
+            byte aframe = (byte)(q[9] / 16 * 10 + (q[9] & 0x0F));
 
             if((q[0] & 0x3) == 1)
             {
-                var amin = (byte)(q[7] / 16 * 10 + (q[7] & 0x0F));
-                var asec = (byte)(q[8] / 16 * 10 + (q[8] & 0x0F));
+                byte amin = (byte)(q[7] / 16 * 10 + (q[7] & 0x0F));
+                byte asec = (byte)(q[8] / 16 * 10 + (q[8] & 0x0F));
                 aPos = amin * 60 * 75 + asec * 75 + aframe - 150;
             }
             else
             {
                 ulong expectedSectorAddress = sectorAddress + (ulong)(subPos / 96) + 150;
-                var   smin                  = (byte)(expectedSectorAddress / 60 / 75);
+                byte  smin                  = (byte)(expectedSectorAddress / 60 / 75);
                 expectedSectorAddress -= (ulong)(smin * 60 * 75);
-                var ssec = (byte)(expectedSectorAddress / 75);
+                byte ssec = (byte)(expectedSectorAddress / 75);
 
                 aPos = smin * 60 * 75 + ssec * 75 + aframe - 150;
 
@@ -279,7 +281,7 @@ public static class CompactDisc
 
             prePos = aPos;
 
-            var posSub = new byte[96];
+            byte[] posSub = new byte[96];
             Array.Copy(deSub, subPos, posSub, 0, 96);
             posSub = Subchannel.Interleave(posSub);
             outputPlugin.WriteSectorTag(posSub, (ulong)aPos, SectorTagType.CdSectorSubchannel);
@@ -309,18 +311,17 @@ public static class CompactDisc
     /// <param name="sectorAddress">Sector address the subchannel was read from</param>
     /// <returns><c>true</c> if indexes have changed, <c>false</c> otherwise</returns>
     static bool CheckIndexesFromSubchannel(byte[] deSub, Dictionary<byte, string> isrcs, byte currentTrackNumber,
-                                           ref string mcn, Track[] tracks, DumpLog dumpLog,
-                                           UpdateStatusHandler updateStatus,
+                                           ref string mcn, Track[] tracks, UpdateStatusHandler updateStatus,
                                            Dictionary<byte, int> smallestPregapLbaPerTrack, bool dumping,
                                            out List<ulong> newPregapSectors, ulong sectorAddress)
     {
-        var status = false;
+        bool status = false;
         newPregapSectors = [];
 
         // Check subchannel
-        for(var subPos = 0; subPos < deSub.Length; subPos += 96)
+        for(int subPos = 0; subPos < deSub.Length; subPos += 96)
         {
-            var q = new byte[12];
+            byte[] q = new byte[12];
             Array.Copy(deSub, subPos + 12, q, 0, 12);
 
             CRC16CcittContext.Data(q, 10, out byte[] crc);
@@ -339,10 +340,6 @@ public static class CompactDisc
 
                     if(!isrcs.ContainsKey(currentTrackNumber))
                     {
-                        dumpLog?.WriteLine(string.Format(Localization.Core.Found_new_ISRC_0_for_track_1,
-                                                         isrc,
-                                                         currentTrackNumber));
-
                         updateStatus?.Invoke(string.Format(Localization.Core.Found_new_ISRC_0_for_track_1,
                                                            isrc,
                                                            currentTrackNumber));
@@ -356,11 +353,6 @@ public static class CompactDisc
 
                         if(currentTrack?.Sequence == currentTrackNumber)
                         {
-                            dumpLog?.WriteLine(string.Format(Localization.Core.ISRC_for_track_0_changed_from_1_to_2,
-                                                             currentTrackNumber,
-                                                             isrcs[currentTrackNumber],
-                                                             isrc));
-
                             updateStatus?.Invoke(string.Format(Localization.Core.ISRC_for_track_0_changed_from_1_to_2,
                                                                currentTrackNumber,
                                                                isrcs[currentTrackNumber],
@@ -383,15 +375,9 @@ public static class CompactDisc
                     if(!crcOk) continue;
 
                     if(mcn is null)
-                    {
-                        dumpLog?.WriteLine(string.Format(Localization.Core.Found_new_MCN_0,   newMcn));
                         updateStatus?.Invoke(string.Format(Localization.Core.Found_new_MCN_0, newMcn));
-                    }
                     else if(mcn != newMcn)
-                    {
-                        dumpLog?.WriteLine(string.Format(Localization.Core.MCN_changed_from_0_to_1,   mcn, newMcn));
                         updateStatus?.Invoke(string.Format(Localization.Core.MCN_changed_from_0_to_1, mcn, newMcn));
-                    }
 
                     mcn = newMcn;
 
@@ -403,19 +389,19 @@ public static class CompactDisc
                     continue;
                 case 1:
                 {
-                    var trackNo = (byte)(q[1] / 16 * 10 + (q[1] & 0x0F));
+                    byte trackNo = (byte)(q[1] / 16 * 10 + (q[1] & 0x0F));
 
-                    for(var i = 0; i < tracks.Length; i++)
+                    for(int i = 0; i < tracks.Length; i++)
                     {
                         if(tracks[i].Sequence != trackNo) continue;
 
                         // Pregap
                         if(q[2] == 0 && trackNo > 1)
                         {
-                            var pmin   = (byte)(q[3] / 16 * 10 + (q[3] & 0x0F));
-                            var psec   = (byte)(q[4] / 16 * 10 + (q[4] & 0x0F));
-                            var pframe = (byte)(q[5] / 16 * 10 + (q[5] & 0x0F));
-                            int qPos   = pmin * 60 * 75 + psec * 75 + pframe;
+                            byte pmin   = (byte)(q[3] / 16 * 10 + (q[3] & 0x0F));
+                            byte psec   = (byte)(q[4] / 16 * 10 + (q[4] & 0x0F));
+                            byte pframe = (byte)(q[5] / 16 * 10 + (q[5] & 0x0F));
+                            int  qPos   = pmin * 60 * 75 + psec * 75 + pframe;
 
                             // When we are dumping we calculate the pregap in reverse from index 1 back.
                             // When we are not, we go from index 0.
@@ -436,16 +422,12 @@ public static class CompactDisc
                                 if(i > 0 && tracks[i - 1].EndSector >= tracks[i].StartSector)
                                     tracks[i         - 1].EndSector = tracks[i].StartSector - 1;
 
-                                dumpLog?.WriteLine(string.Format(Localization.Core.Pregap_for_track_0_set_to_1_sectors,
-                                                                 trackNo,
-                                                                 tracks[i].Pregap));
-
                                 updateStatus?.Invoke(string.Format(Localization.Core
                                                                       .Pregap_for_track_0_set_to_1_sectors,
                                                                    trackNo,
                                                                    tracks[i].Pregap));
 
-                                for(var p = 0; p < dif; p++) newPregapSectors.Add(tracks[i].StartSector + (ulong)p);
+                                for(int p = 0; p < dif; p++) newPregapSectors.Add(tracks[i].StartSector + (ulong)p);
 
                                 status = true;
                             }
@@ -460,15 +442,11 @@ public static class CompactDisc
                             if(i > 0 && tracks[i - 1].EndSector >= tracks[i].StartSector)
                                 tracks[i         - 1].EndSector = tracks[i].StartSector - 1;
 
-                            dumpLog?.WriteLine(string.Format(Localization.Core.Pregap_for_track_0_set_to_1_sectors,
-                                                             trackNo,
-                                                             tracks[i].Pregap));
-
                             updateStatus?.Invoke(string.Format(Localization.Core.Pregap_for_track_0_set_to_1_sectors,
                                                                trackNo,
                                                                tracks[i].Pregap));
 
-                            for(var p = 0; p < (int)(tracks[i].Pregap - oldPregap); p++)
+                            for(int p = 0; p < (int)(tracks[i].Pregap - oldPregap); p++)
                                 newPregapSectors.Add(tracks[i].StartSector + (ulong)p);
 
                             status = true;
@@ -478,20 +456,15 @@ public static class CompactDisc
 
                         if(q[2] == 0) continue;
 
-                        var amin   = (byte)(q[7] / 16 * 10 + (q[7] & 0x0F));
-                        var asec   = (byte)(q[8] / 16 * 10 + (q[8] & 0x0F));
-                        var aframe = (byte)(q[9] / 16 * 10 + (q[9] & 0x0F));
-                        int aPos   = amin * 60 * 75 + asec * 75 + aframe - 150;
+                        byte amin   = (byte)(q[7] / 16 * 10 + (q[7] & 0x0F));
+                        byte asec   = (byte)(q[8] / 16 * 10 + (q[8] & 0x0F));
+                        byte aframe = (byte)(q[9] / 16 * 10 + (q[9] & 0x0F));
+                        int  aPos   = amin * 60 * 75 + asec * 75 + aframe - 150;
 
                         // Do not set INDEX 1 to a value higher than what the TOC already said.
                         if(q[2] == 1 && aPos > (int)tracks[i].StartSector) continue;
 
                         if(tracks[i].Indexes.ContainsKey(q[2]) && aPos >= tracks[i].Indexes[q[2]]) continue;
-
-                        dumpLog?.WriteLine(string.Format(Localization.Core.Setting_index_0_for_track_1_to_LBA_2,
-                                                         q[2],
-                                                         trackNo,
-                                                         aPos));
 
                         updateStatus?.Invoke(string.Format(Localization.Core.Setting_index_0_for_track_1_to_LBA_2,
                                                            q[2],
@@ -522,18 +495,18 @@ public static class CompactDisc
         rwPacket     = false;
         cdtextPacket = false;
 
-        var cdTextPack1  = new byte[18];
-        var cdTextPack2  = new byte[18];
-        var cdTextPack3  = new byte[18];
-        var cdTextPack4  = new byte[18];
-        var cdSubRwPack1 = new byte[24];
-        var cdSubRwPack2 = new byte[24];
-        var cdSubRwPack3 = new byte[24];
-        var cdSubRwPack4 = new byte[24];
+        byte[] cdTextPack1  = new byte[18];
+        byte[] cdTextPack2  = new byte[18];
+        byte[] cdTextPack3  = new byte[18];
+        byte[] cdTextPack4  = new byte[18];
+        byte[] cdSubRwPack1 = new byte[24];
+        byte[] cdSubRwPack2 = new byte[24];
+        byte[] cdSubRwPack3 = new byte[24];
+        byte[] cdSubRwPack4 = new byte[24];
 
-        var i = 0;
+        int i = 0;
 
-        for(var j = 0; j < 18; j++)
+        for(int j = 0; j < 18; j++)
         {
             cdTextPack1[j] = (byte)(cdTextPack1[j] | (subchannel[i++] & 0x3F) << 2);
 
@@ -548,7 +521,7 @@ public static class CompactDisc
             if(j < 18) cdTextPack1[j] = (byte)(cdTextPack1[j] | subchannel[i++] & 0x3F);
         }
 
-        for(var j = 0; j < 18; j++)
+        for(int j = 0; j < 18; j++)
         {
             cdTextPack2[j] = (byte)(cdTextPack2[j] | (subchannel[i++] & 0x3F) << 2);
 
@@ -563,7 +536,7 @@ public static class CompactDisc
             if(j < 18) cdTextPack2[j] = (byte)(cdTextPack2[j] | subchannel[i++] & 0x3F);
         }
 
-        for(var j = 0; j < 18; j++)
+        for(int j = 0; j < 18; j++)
         {
             cdTextPack3[j] = (byte)(cdTextPack3[j] | (subchannel[i++] & 0x3F) << 2);
 
@@ -578,7 +551,7 @@ public static class CompactDisc
             if(j < 18) cdTextPack3[j] = (byte)(cdTextPack3[j] | subchannel[i++] & 0x3F);
         }
 
-        for(var j = 0; j < 18; j++)
+        for(int j = 0; j < 18; j++)
         {
             cdTextPack4[j] = (byte)(cdTextPack4[j] | (subchannel[i++] & 0x3F) << 2);
 
@@ -595,13 +568,13 @@ public static class CompactDisc
 
         i = 0;
 
-        for(var j = 0; j < 24; j++) cdSubRwPack1[j] = (byte)(subchannel[i++] & 0x3F);
+        for(int j = 0; j < 24; j++) cdSubRwPack1[j] = (byte)(subchannel[i++] & 0x3F);
 
-        for(var j = 0; j < 24; j++) cdSubRwPack2[j] = (byte)(subchannel[i++] & 0x3F);
+        for(int j = 0; j < 24; j++) cdSubRwPack2[j] = (byte)(subchannel[i++] & 0x3F);
 
-        for(var j = 0; j < 24; j++) cdSubRwPack3[j] = (byte)(subchannel[i++] & 0x3F);
+        for(int j = 0; j < 24; j++) cdSubRwPack3[j] = (byte)(subchannel[i++] & 0x3F);
 
-        for(var j = 0; j < 24; j++) cdSubRwPack4[j] = (byte)(subchannel[i++] & 0x3F);
+        for(int j = 0; j < 24; j++) cdSubRwPack4[j] = (byte)(subchannel[i++] & 0x3F);
 
         switch(cdSubRwPack1[0])
         {
@@ -697,14 +670,14 @@ public static class CompactDisc
     /// <returns><c>true</c> if subchannel contains a TEXT packet, <c>false</c> otherwise</returns>
     static bool CheckCdTextPackets(byte[] subchannel)
     {
-        var cdTextPack1 = new byte[18];
-        var cdTextPack2 = new byte[18];
-        var cdTextPack3 = new byte[18];
-        var cdTextPack4 = new byte[18];
+        byte[] cdTextPack1 = new byte[18];
+        byte[] cdTextPack2 = new byte[18];
+        byte[] cdTextPack3 = new byte[18];
+        byte[] cdTextPack4 = new byte[18];
 
-        var i = 0;
+        int i = 0;
 
-        for(var j = 0; j < 18; j++)
+        for(int j = 0; j < 18; j++)
         {
             cdTextPack1[j] = (byte)(cdTextPack1[j] | (subchannel[i++] & 0x3F) << 2);
 
@@ -719,7 +692,7 @@ public static class CompactDisc
             if(j < 18) cdTextPack1[j] = (byte)(cdTextPack1[j] | subchannel[i++] & 0x3F);
         }
 
-        for(var j = 0; j < 18; j++)
+        for(int j = 0; j < 18; j++)
         {
             cdTextPack2[j] = (byte)(cdTextPack2[j] | (subchannel[i++] & 0x3F) << 2);
 
@@ -734,7 +707,7 @@ public static class CompactDisc
             if(j < 18) cdTextPack2[j] = (byte)(cdTextPack2[j] | subchannel[i++] & 0x3F);
         }
 
-        for(var j = 0; j < 18; j++)
+        for(int j = 0; j < 18; j++)
         {
             cdTextPack3[j] = (byte)(cdTextPack3[j] | (subchannel[i++] & 0x3F) << 2);
 
@@ -749,7 +722,7 @@ public static class CompactDisc
             if(j < 18) cdTextPack3[j] = (byte)(cdTextPack3[j] | subchannel[i++] & 0x3F);
         }
 
-        for(var j = 0; j < 18; j++)
+        for(int j = 0; j < 18; j++)
         {
             cdTextPack4[j] = (byte)(cdTextPack4[j] | (subchannel[i++] & 0x3F) << 2);
 
@@ -764,12 +737,12 @@ public static class CompactDisc
             if(j < 18) cdTextPack4[j] = (byte)(cdTextPack4[j] | subchannel[i++] & 0x3F);
         }
 
-        var status = true;
+        bool status = true;
 
         if((cdTextPack1[0] & 0x80) == 0x80)
         {
-            var cdTextPack1Crc    = BigEndianBitConverter.ToUInt16(cdTextPack1, 16);
-            var cdTextPack1ForCrc = new byte[16];
+            ushort cdTextPack1Crc    = BigEndianBitConverter.ToUInt16(cdTextPack1, 16);
+            byte[] cdTextPack1ForCrc = new byte[16];
             Array.Copy(cdTextPack1, 0, cdTextPack1ForCrc, 0, 16);
             ushort calculatedCdtp1Crc = CRC16CcittContext.Calculate(cdTextPack1ForCrc);
 
@@ -778,8 +751,8 @@ public static class CompactDisc
 
         if((cdTextPack2[0] & 0x80) == 0x80)
         {
-            var cdTextPack2Crc    = BigEndianBitConverter.ToUInt16(cdTextPack2, 16);
-            var cdTextPack2ForCrc = new byte[16];
+            ushort cdTextPack2Crc    = BigEndianBitConverter.ToUInt16(cdTextPack2, 16);
+            byte[] cdTextPack2ForCrc = new byte[16];
             Array.Copy(cdTextPack2, 0, cdTextPack2ForCrc, 0, 16);
             ushort calculatedCdtp2Crc = CRC16CcittContext.Calculate(cdTextPack2ForCrc);
 
@@ -788,8 +761,8 @@ public static class CompactDisc
 
         if((cdTextPack3[0] & 0x80) == 0x80)
         {
-            var cdTextPack3Crc    = BigEndianBitConverter.ToUInt16(cdTextPack3, 16);
-            var cdTextPack3ForCrc = new byte[16];
+            ushort cdTextPack3Crc    = BigEndianBitConverter.ToUInt16(cdTextPack3, 16);
+            byte[] cdTextPack3ForCrc = new byte[16];
             Array.Copy(cdTextPack3, 0, cdTextPack3ForCrc, 0, 16);
             ushort calculatedCdtp3Crc = CRC16CcittContext.Calculate(cdTextPack3ForCrc);
 
@@ -798,8 +771,8 @@ public static class CompactDisc
 
         if((cdTextPack4[0] & 0x80) != 0x80) return status;
 
-        var cdTextPack4Crc    = BigEndianBitConverter.ToUInt16(cdTextPack4, 16);
-        var cdTextPack4ForCrc = new byte[16];
+        ushort cdTextPack4Crc    = BigEndianBitConverter.ToUInt16(cdTextPack4, 16);
+        byte[] cdTextPack4ForCrc = new byte[16];
         Array.Copy(cdTextPack4, 0, cdTextPack4ForCrc, 0, 16);
         ushort calculatedCdtp4Crc = CRC16CcittContext.Calculate(cdTextPack4ForCrc);
 
@@ -843,8 +816,8 @@ public static class CompactDisc
         fixedMcn    = false;
         fixedIsrc   = false;
 
-        var preQ  = new byte[12];
-        var nextQ = new byte[12];
+        byte[] preQ  = new byte[12];
+        byte[] nextQ = new byte[12];
         Array.Copy(deSub, subPos + 12 - 96,      preQ,  0, 12);
         Array.Copy(deSub, subPos      + 12 + 96, nextQ, 0, 12);
 
@@ -998,15 +971,15 @@ public static class CompactDisc
                     }
                 }
 
-                var amin = (byte)(q[7] / 16 * 10 + (q[7] & 0x0F));
-                var asec = (byte)(q[8] / 16 * 10 + (q[8] & 0x0F));
+                byte amin = (byte)(q[7] / 16 * 10 + (q[7] & 0x0F));
+                byte asec = (byte)(q[8] / 16 * 10 + (q[8] & 0x0F));
                 aframe = (byte)(q[9] / 16 * 10                      + (q[9] & 0x0F));
                 int aPos = amin      * 60 * 75 + asec * 75 + aframe - 150;
 
-                var pmin   = (byte)(q[3] / 16 * 10 + (q[3] & 0x0F));
-                var psec   = (byte)(q[4] / 16 * 10 + (q[4] & 0x0F));
-                var pframe = (byte)(q[5] / 16 * 10 + (q[5] & 0x0F));
-                int pPos   = pmin * 60 * 75 + psec * 75 + pframe;
+                byte pmin   = (byte)(q[3] / 16 * 10 + (q[3] & 0x0F));
+                byte psec   = (byte)(q[4] / 16 * 10 + (q[4] & 0x0F));
+                byte pframe = (byte)(q[5] / 16 * 10 + (q[5] & 0x0F));
+                int  pPos   = pmin * 60 * 75 + psec * 75 + pframe;
 
                 // TODO: pregap
                 // Not pregap
@@ -1509,16 +1482,14 @@ public static class CompactDisc
     /// <param name="trackFlags">Flags of tracks</param>
     /// <param name="blocks">Disc size</param>
     /// <param name="subLog">Subchannel log</param>
-    /// <param name="dumpLog">Dump log</param>
     /// <param name="initProgress">Progress initialization callback</param>
     /// <param name="updateProgress">Progress update callback</param>
     /// <param name="endProgress">Progress finalization callback</param>
     /// <param name="outputPlugin">Output image</param>
     public static void GenerateSubchannels(HashSet<int>           subchannelExtents, Track[] tracks,
-                                           Dictionary<byte, byte> trackFlags,        ulong blocks, SubchannelLog subLog,
-                                           DumpLog                dumpLog,           InitProgressHandler initProgress,
-                                           UpdateProgressHandler  updateProgress,    EndProgressHandler endProgress,
-                                           IWritableImage         outputPlugin)
+                                           Dictionary<byte, byte> trackFlags, ulong blocks, SubchannelLog subLog,
+                                           InitProgressHandler    initProgress, UpdateProgressHandler updateProgress,
+                                           EndProgressHandler     endProgress, IWritableImage outputPlugin)
     {
         initProgress?.Invoke();
 
@@ -1561,7 +1532,7 @@ public static class CompactDisc
                                    sector,
                                    (long)blocks);
 
-            dumpLog?.WriteLine($"Generating subchannel for sector {sector}.");
+            AaruLogging.WriteLine($"Generating subchannel for sector {sector}.");
 
             byte[] sub = Subchannel.Generate(sector, track?.Sequence ?? 0, (int)pregap, (int)trackStart, flags, index);
 

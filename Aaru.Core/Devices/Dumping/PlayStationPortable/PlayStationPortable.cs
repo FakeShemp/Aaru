@@ -37,6 +37,7 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
 using Aaru.Decoders.SCSI;
 using Aaru.Devices;
+using Aaru.Logging;
 
 namespace Aaru.Core.Devices.Dumping;
 
@@ -52,9 +53,6 @@ public partial class Dump
            !_outputPlugin.SupportedMediaTypes.Contains(MediaType.MemoryStickProDuo) &&
            !_outputPlugin.SupportedMediaTypes.Contains(MediaType.UMD))
         {
-            _dumpLog.WriteLine(Localization.Core
-                                           .Selected_output_format_does_not_support_MemoryStick_Duo_or_UMD_cannot_dump);
-
             StoppingErrorMessage?.Invoke(Localization.Core
                                                      .Selected_output_format_does_not_support_MemoryStick_Duo_or_UMD_cannot_dump);
 
@@ -62,7 +60,6 @@ public partial class Dump
         }
 
         UpdateStatus?.Invoke(Localization.Core.Checking_if_media_is_UMD_or_MemoryStick);
-        _dumpLog.WriteLine(Localization.Core.Checking_if_media_is_UMD_or_MemoryStick);
 
         bool sense = _dev.ModeSense6(out byte[] buffer,
                                      out _,
@@ -74,7 +71,6 @@ public partial class Dump
 
         if(sense)
         {
-            _dumpLog.WriteLine(Localization.Core.Could_not_get_MODE_SENSE);
             StoppingErrorMessage?.Invoke(Localization.Core.Could_not_get_MODE_SENSE);
 
             return;
@@ -84,7 +80,6 @@ public partial class Dump
 
         if(!decoded.HasValue)
         {
-            _dumpLog.WriteLine(Localization.Core.Could_not_decode_MODE_SENSE);
             StoppingErrorMessage?.Invoke(Localization.Core.Could_not_decode_MODE_SENSE);
 
             return;
@@ -102,13 +97,12 @@ public partial class Dump
 
         if(sense)
         {
-            _dumpLog.WriteLine(Localization.Core.Could_not_read);
             StoppingErrorMessage?.Invoke(Localization.Core.Could_not_read);
 
             return;
         }
 
-        var tmp = new byte[8];
+        byte[] tmp = new byte[8];
 
         Array.Copy(buffer, 0x36, tmp, 0, 8);
 
@@ -120,12 +114,11 @@ public partial class Dump
             return;
         }
 
-        var fatStart      = (ushort)((buffer[0x0F] << 8) + buffer[0x0E]);
-        var sectorsPerFat = (ushort)((buffer[0x17] << 8) + buffer[0x16]);
-        var rootStart     = (ushort)(sectorsPerFat * 2   + fatStart);
+        ushort fatStart      = (ushort)((buffer[0x0F] << 8) + buffer[0x0E]);
+        ushort sectorsPerFat = (ushort)((buffer[0x17] << 8) + buffer[0x16]);
+        ushort rootStart     = (ushort)(sectorsPerFat * 2   + fatStart);
 
         UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_root_directory_in_sector_0, rootStart));
-        _dumpLog.WriteLine(Localization.Core.Reading_root_directory_in_sector_0, rootStart);
 
         sense = _dev.Read12(out buffer,
                             out _,
@@ -145,7 +138,6 @@ public partial class Dump
         if(sense)
         {
             StoppingErrorMessage?.Invoke(Localization.Core.Could_not_read);
-            _dumpLog.WriteLine(Localization.Core.Could_not_read);
 
             return;
         }
@@ -164,12 +156,11 @@ public partial class Dump
                                            fatStart,
                                            sectorsPerFat));
 
-        _dumpLog.WriteLine(Localization.Core.FAT_starts_at_sector_0_and_runs_for_1_sectors, fatStart, sectorsPerFat);
+        AaruLogging.WriteLine(Localization.Core.FAT_starts_at_sector_0_and_runs_for_1_sectors, fatStart, sectorsPerFat);
 
         UpdateStatus?.Invoke(Localization.Core.Reading_FAT);
-        _dumpLog.WriteLine(Localization.Core.Reading_FAT);
 
-        var fat = new byte[sectorsPerFat * 512];
+        byte[] fat = new byte[sectorsPerFat * 512];
 
         uint position = 0;
 
@@ -197,7 +188,6 @@ public partial class Dump
             if(sense)
             {
                 StoppingErrorMessage?.Invoke(Localization.Core.Could_not_read);
-                _dumpLog.WriteLine(Localization.Core.Could_not_read);
 
                 return;
             }
@@ -208,13 +198,12 @@ public partial class Dump
         }
 
         UpdateStatus?.Invoke(Localization.Core.Traversing_FAT);
-        _dumpLog.WriteLine(Localization.Core.Traversing_FAT);
 
-        var previousCluster = BitConverter.ToUInt16(fat, 4);
+        ushort previousCluster = BitConverter.ToUInt16(fat, 4);
 
-        for(var i = 3; i < fat.Length / 2; i++)
+        for(int i = 3; i < fat.Length / 2; i++)
         {
-            var nextCluster = BitConverter.ToUInt16(fat, i * 2);
+            ushort nextCluster = BitConverter.ToUInt16(fat, i * 2);
 
             if(nextCluster == previousCluster + 1)
             {

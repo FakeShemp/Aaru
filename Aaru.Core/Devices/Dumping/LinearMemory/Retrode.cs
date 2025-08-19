@@ -36,6 +36,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Core.Graphics;
+using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
 using Humanizer.Localisation;
@@ -72,52 +73,48 @@ public partial class Dump
 
         if(sense)
         {
-            _dumpLog.WriteLine(Localization.Core.Could_not_read);
             StoppingErrorMessage?.Invoke(Localization.Core.Could_not_read);
 
             return;
         }
 
-        var tmp = new byte[8];
+        byte[] tmp = new byte[8];
 
         Array.Copy(buffer, 0x36, tmp, 0, 8);
 
         // UMDs are stored inside a FAT16 volume
         if(!tmp.SequenceEqual(_fatSignature))
         {
-            _dumpLog.WriteLine(Localization.Core.Retrode_partition_not_recognized_not_dumping);
             StoppingErrorMessage?.Invoke(Localization.Core.Retrode_partition_not_recognized_not_dumping);
 
             return;
         }
 
-        var  fatStart          = (ushort)((buffer[0x0F] << 8)                      + buffer[0x0E]);
-        var  sectorsPerFat     = (ushort)((buffer[0x17] << 8)                      + buffer[0x16]);
-        var  rootStart         = (ushort)(sectorsPerFat                        * 2 + fatStart);
-        var  rootSize          = (ushort)(((buffer[0x12] << 8) + buffer[0x11]) * 32 / 512);
-        byte sectorsPerCluster = buffer[0x0D];
+        ushort fatStart          = (ushort)((buffer[0x0F] << 8)                      + buffer[0x0E]);
+        ushort sectorsPerFat     = (ushort)((buffer[0x17] << 8)                      + buffer[0x16]);
+        ushort rootStart         = (ushort)(sectorsPerFat                        * 2 + fatStart);
+        ushort rootSize          = (ushort)(((buffer[0x12] << 8) + buffer[0x11]) * 32 / 512);
+        byte   sectorsPerCluster = buffer[0x0D];
 
         UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_root_directory_in_sector_0, rootStart));
-        _dumpLog.WriteLine(Localization.Core.Reading_root_directory_in_sector_0, rootStart);
 
         sense = _dev.Read10(out buffer, out _, 0, false, true, false, false, rootStart, 512, 0, 1, _dev.Timeout, out _);
 
         if(sense)
         {
             StoppingErrorMessage?.Invoke(Localization.Core.Could_not_read);
-            _dumpLog.WriteLine(Localization.Core.Could_not_read);
 
             return;
         }
 
-        int romPos;
-        var sfcFound     = false;
-        var genesisFound = false;
-        var smsFound     = false;
-        var n64Found     = false;
-        var gbFound      = false;
-        var gbcFound     = false;
-        var gbaFound     = false;
+        int  romPos;
+        bool sfcFound     = false;
+        bool genesisFound = false;
+        bool smsFound     = false;
+        bool n64Found     = false;
+        bool gbFound      = false;
+        bool gbcFound     = false;
+        bool gbaFound     = false;
         tmp = new byte[3];
 
         for(romPos = 0; romPos < buffer.Length; romPos += 0x20)
@@ -176,13 +173,12 @@ public partial class Dump
         if(!sfcFound && !genesisFound && !smsFound && !n64Found && !gbaFound && !gbFound && !gbcFound)
         {
             StoppingErrorMessage?.Invoke(Localization.Core.No_cartridge_found_not_dumping);
-            _dumpLog.WriteLine(Localization.Core.No_cartridge_found_not_dumping);
 
             return;
         }
 
-        var cluster = BitConverter.ToUInt16(buffer, romPos + 0x1A);
-        var romSize = BitConverter.ToUInt32(buffer, romPos + 0x1C);
+        ushort cluster = BitConverter.ToUInt16(buffer, romPos + 0x1A);
+        uint   romSize = BitConverter.ToUInt32(buffer, romPos + 0x1C);
 
         MediaType mediaType = gbaFound
                                   ? MediaType.GameBoyAdvanceGamePak
@@ -205,8 +201,6 @@ public partial class Dump
 
         if(_outputPlugin is not IByteAddressableImage outputBai || !outputBai.SupportedMediaTypes.Contains(mediaType))
         {
-            _dumpLog.WriteLine(Localization.Core.The_specified_format_does_not_support_the_inserted_cartridge);
-
             StoppingErrorMessage?.Invoke(Localization.Core
                                                      .The_specified_format_does_not_support_the_inserted_cartridge);
 
@@ -229,13 +223,12 @@ public partial class Dump
 
         if(sense)
         {
-            _dumpLog.WriteLine(Localization.Core.Could_not_read);
             StoppingErrorMessage?.Invoke(Localization.Core.Could_not_read);
 
             return;
         }
 
-        var  startSector  = (uint)(rootStart + rootSize + (cluster - 2) * sectorsPerCluster);
+        uint startSector  = (uint)(rootStart + rootSize + (cluster - 2) * sectorsPerCluster);
         uint romSectors   = romSize / 512;
         uint romRemaining = romSize % 512;
 
@@ -266,16 +259,12 @@ public partial class Dump
         }
 
         UpdateStatus?.Invoke(string.Format(Localization.Core.Media_identified_as_0, mediaType));
-        _dumpLog.WriteLine(Localization.Core.Media_identified_as_0, mediaType);
 
         ErrorNumber ret = outputBai.Create(_outputPath, mediaType, _formatOptions, romSize);
 
         // Cannot create image
         if(ret != ErrorNumber.NoError)
         {
-            _dumpLog.WriteLine(Localization.Core.Error_0_creating_output_image_not_continuing, ret);
-            _dumpLog.WriteLine(outputBai.ErrorMessage);
-
             StoppingErrorMessage?.Invoke(Localization.Core.Error_creating_output_image_not_continuing +
                                          Environment.NewLine                                          +
                                          outputBai.ErrorMessage);
@@ -297,7 +286,6 @@ public partial class Dump
             if(_aborted)
             {
                 UpdateStatus?.Invoke(Localization.Core.Aborted);
-                _dumpLog.WriteLine(Localization.Core.Aborted);
 
                 break;
             }
@@ -349,7 +337,7 @@ public partial class Dump
                 // TODO: Reset device after X errors
                 if(_stopOnError) return; // TODO: Return more cleanly
 
-                _dumpLog.WriteLine(Localization.Core.Skipping_0_bytes_from_errored_byte_1, _skip * 512, i * 512);
+                AaruLogging.WriteLine(Localization.Core.Skipping_0_bytes_from_errored_byte_1, _skip * 512, i * 512);
                 i += _skip - blocksToRead;
             }
 
@@ -411,9 +399,9 @@ public partial class Dump
                 // TODO: Reset device after X errors
                 if(_stopOnError) return; // TODO: Return more cleanly
 
-                _dumpLog.WriteLine(Localization.Core.Skipping_0_bytes_from_errored_byte_1,
-                                   _skip      * 512,
-                                   romSectors * 512);
+                AaruLogging.WriteLine(Localization.Core.Skipping_0_bytes_from_errored_byte_1,
+                                      _skip      * 512,
+                                      romSectors * 512);
             }
         }
 
@@ -431,19 +419,6 @@ public partial class Dump
                                            ByteSize.FromBytes(512 * (romSectors + 1))
                                                    .Per(imageWriteDuration.Seconds())
                                                    .Humanize()));
-
-        _dumpLog.WriteLine(string.Format(Localization.Core.Dump_finished_in_0,
-                                         _dumpStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
-
-        _dumpLog.WriteLine(string.Format(Localization.Core.Average_dump_speed_0,
-                                         ByteSize.FromBytes(512 * (romSectors + 1))
-                                                 .Per(totalDuration.Milliseconds())
-                                                 .Humanize()));
-
-        _dumpLog.WriteLine(string.Format(Localization.Core.Average_write_speed_0,
-                                         ByteSize.FromBytes(512 * (romSectors + 1))
-                                                 .Per(imageWriteDuration.Seconds())
-                                                 .Humanize()));
 
         var metadata = new CommonTypes.Structs.ImageInfo
         {
@@ -463,19 +438,17 @@ public partial class Dump
 
         if(_preSidecar != null) outputBai.SetMetadata(_preSidecar);
 
-        _dumpLog.WriteLine(Localization.Core.Closing_output_file);
         UpdateStatus?.Invoke(Localization.Core.Closing_output_file);
         _imageCloseStopwatch.Restart();
         outputBai.Close();
         _imageCloseStopwatch.Stop();
 
-        _dumpLog.WriteLine(Localization.Core.Closed_in_0,
-                           _imageCloseStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
+        AaruLogging.WriteLine(Localization.Core.Closed_in_0,
+                              _imageCloseStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
 
         if(_aborted)
         {
             UpdateStatus?.Invoke(Localization.Core.Aborted);
-            _dumpLog.WriteLine(Localization.Core.Aborted);
 
             return;
         }

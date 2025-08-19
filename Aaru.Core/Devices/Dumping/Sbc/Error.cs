@@ -223,7 +223,6 @@ partial class Dump
             }
 
             UpdateStatus?.Invoke(Localization.Core.Sending_MODE_SELECT_to_drive_return_damaged_blocks);
-            _dumpLog.WriteLine(Localization.Core.Sending_MODE_SELECT_to_drive_return_damaged_blocks);
             sense = _dev.ModeSelect(md6, out byte[] senseBuf, true, false, _dev.Timeout, out _);
 
             if(sense) sense = _dev.ModeSelect10(md10, out senseBuf, true, false, _dev.Timeout, out _);
@@ -234,9 +233,6 @@ partial class Dump
                                                  .Drive_did_not_accept_MODE_SELECT_command_for_persistent_error_reading);
 
                 AaruLogging.Debug(Localization.Core.Error_0, Sense.PrettifySense(senseBuf));
-
-                _dumpLog.WriteLine(Localization.Core
-                                               .Drive_did_not_accept_MODE_SELECT_command_for_persistent_error_reading);
             }
             else
                 runningPersistent = true;
@@ -252,7 +248,6 @@ partial class Dump
             {
                 currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                 UpdateStatus?.Invoke(Localization.Core.Aborted);
-                _dumpLog.WriteLine(Localization.Core.Aborted);
 
                 break;
             }
@@ -303,7 +298,6 @@ partial class Dump
                 newBlank = true;
 
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Found_blank_block_0_in_pass_1, badSector, pass));
-                _dumpLog.WriteLine(Localization.Core.Found_blank_block_0_in_pass_1, badSector, pass);
 
                 continue;
             }
@@ -363,8 +357,6 @@ partial class Dump
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_block_0_in_pass_1,
                                                    badSector,
                                                    pass));
-
-                _dumpLog.WriteLine(Localization.Core.Correctly_retried_block_0_in_pass_1, badSector, pass);
             }
             else if(runningPersistent) outputFormat.WriteSector(buffer, badSector);
         }
@@ -392,7 +384,6 @@ partial class Dump
             md10 = Modes.EncodeMode10(md, _dev.ScsiType);
 
             UpdateStatus?.Invoke(Localization.Core.Sending_MODE_SELECT_to_drive_return_device_to_previous_status);
-            _dumpLog.WriteLine(Localization.Core.Sending_MODE_SELECT_to_drive_return_device_to_previous_status);
             sense = _dev.ModeSelect(md6, out _, true, false, _dev.Timeout, out _);
 
             if(sense) _dev.ModeSelect10(md10, out _, true, false, _dev.Timeout, out _);
@@ -422,7 +413,6 @@ partial class Dump
             if(_aborted)
             {
                 UpdateStatus?.Invoke(Localization.Core.Aborted);
-                _dumpLog.WriteLine(Localization.Core.Aborted);
 
                 break;
             }
@@ -465,8 +455,6 @@ partial class Dump
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_title_key_0_in_pass_1,
                                                    missingKey,
                                                    pass));
-
-                _dumpLog.WriteLine(Localization.Core.Correctly_retried_title_key_0_in_pass_1, missingKey, pass);
             }
             else
             {
@@ -482,8 +470,6 @@ partial class Dump
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_title_key_0_in_pass_1,
                                                    missingKey,
                                                    pass));
-
-                _dumpLog.WriteLine(Localization.Core.Correctly_retried_title_key_0_in_pass_1, missingKey, pass);
             }
         }
 

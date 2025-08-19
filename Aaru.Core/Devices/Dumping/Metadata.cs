@@ -38,6 +38,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
 using Humanizer.Localisation;
@@ -59,7 +60,7 @@ partial class Dump
                              Dictionary<MediaTagType, byte[]> mediaTags, int sessions, out double totalChkDuration,
                              int? discOffset)
     {
-        _dumpLog.WriteLine(Localization.Core.Creating_sidecar);
+        AaruLogging.WriteLine(Localization.Core.Creating_sidecar);
         IFilter filter = PluginRegister.Singleton.GetFilter(_outputPath);
         totalChkDuration = 0;
 
@@ -97,13 +98,13 @@ partial class Dump
 
         totalChkDuration = _sidecarStopwatch.Elapsed.TotalMilliseconds;
 
-        _dumpLog.WriteLine(Localization.Core.Sidecar_created_in_0,
-                           _sidecarStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
+        AaruLogging.WriteLine(Localization.Core.Sidecar_created_in_0,
+                              _sidecarStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
 
-        _dumpLog.WriteLine(Localization.Core.Average_checksum_speed_0,
-                           ByteSize.FromBytes(blockSize * (blocks + 1))
-                                   .Per(totalChkDuration.Milliseconds())
-                                   .Humanize());
+        AaruLogging.WriteLine(Localization.Core.Average_checksum_speed_0,
+                              ByteSize.FromBytes(blockSize * (blocks + 1))
+                                      .Per(totalChkDuration.Milliseconds())
+                                      .Humanize());
 
         if(_preSidecar != null)
         {
@@ -131,7 +132,9 @@ partial class Dump
                                                       o.type
                                                   })
                                                  .Distinct())
-                _dumpLog.WriteLine(Localization.Core.Found_filesystem_0_at_sector_1, filesystem.type, filesystem.start);
+                AaruLogging.WriteLine(Localization.Core.Found_filesystem_0_at_sector_1,
+                                      filesystem.type,
+                                      filesystem.start);
         }
 
         sidecar.OpticalDiscs[0].Dimensions = Dimensions.FromMediaType(mediaType);

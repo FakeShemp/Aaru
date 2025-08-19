@@ -63,9 +63,6 @@ partial class Dump
 
         if(runOutSectors.Count == 0) return;
 
-        _dumpLog.WriteLine(string.Format(Localization.Core._0_sectors_at_the_end_of_the_disc_are_unreadable,
-                                         runOutSectors.Count));
-
         UpdateStatus?.Invoke(string.Format(Localization.Core._0_sectors_at_the_end_of_the_disc_are_unreadable,
                                            runOutSectors.Count));
 
@@ -75,7 +72,7 @@ partial class Dump
 
             if(track is null) continue;
 
-            var sector = new byte[2352];
+            byte[] sector = new byte[2352];
 
             switch(track.Type)
             {

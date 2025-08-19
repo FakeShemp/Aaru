@@ -335,7 +335,6 @@ public abstract class OpticalImageConvertIssueTest
                                 true,
                                 true,
                                 null,
-                                null,
                                 smallestPregapLbaPerTrack,
                                 false,
                                 out _);
@@ -375,7 +374,6 @@ public abstract class OpticalImageConvertIssueTest
                                 outputOptical,
                                 true,
                                 true,
-                                null,
                                 null,
                                 smallestPregapLbaPerTrack,
                                 false,

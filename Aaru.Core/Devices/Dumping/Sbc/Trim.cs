@@ -44,14 +44,15 @@ partial class Dump
     /// <param name="extents">Correctly dump extents</param>
     /// <param name="currentTry">Resume information</param>
     /// <param name="blankExtents">Blank extents</param>
-    void TrimSbcData(Reader scsiReader, ExtentsULong extents, DumpHardware currentTry, ExtentsULong blankExtents, byte[] discKey)
+    void TrimSbcData(Reader scsiReader, ExtentsULong extents, DumpHardware currentTry, ExtentsULong blankExtents,
+                     byte[] discKey)
     {
         ulong[] tmpArray = _resume.BadBlocks.ToArray();
         bool    sense;
         bool    recoveredError;
         bool    blankCheck;
         byte[]  buffer;
-        var     newBlank = false;
+        bool    newBlank = false;
 
         if(_outputPlugin is not IWritableImage outputFormat)
         {
@@ -66,7 +67,6 @@ partial class Dump
             {
                 currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                 UpdateStatus?.Invoke(Localization.Core.Aborted);
-                _dumpLog.WriteLine(Localization.Core.Aborted);
 
                 break;
             }
@@ -82,7 +82,6 @@ partial class Dump
                 _resume.BadBlocks.Remove(badSector);
 
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Found_blank_block_0, badSector));
-                _dumpLog.WriteLine(Localization.Core.Found_blank_block_0, badSector);
 
                 continue;
             }

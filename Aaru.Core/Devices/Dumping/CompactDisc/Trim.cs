@@ -84,7 +84,7 @@ partial class Dump
                         Dictionary<byte, string> isrcs, ref string mcn, HashSet<int> subchannelExtents,
                         Dictionary<byte, int> smallestPregapLbaPerTrack)
     {
-        var               sense       = true; // Sense indicator
+        bool              sense       = true; // Sense indicator
         byte[]            cmdBuf      = null; // Data buffer
         double            cmdDuration = 0;    // Command execution time
         const uint        sectorSize  = 2352; // Full sector size
@@ -103,14 +103,13 @@ partial class Dump
         if(_resume.BadBlocks.Count <= 0 || _aborted || !_trim || !newTrim) return;
 
         UpdateStatus?.Invoke(Localization.Core.Trimming_skipped_sectors);
-        _dumpLog.WriteLine(Localization.Core.Trimming_skipped_sectors);
         InitProgress?.Invoke();
         _trimStopwatch.Restart();
 
     trimStart:
         ulong[] tmpArray = _resume.BadBlocks.ToArray();
 
-        for(var b = 0; b < tmpArray.Length; b++)
+        for(int b = 0; b < tmpArray.Length; b++)
         {
             ulong badSector = tmpArray[b];
 
@@ -118,7 +117,6 @@ partial class Dump
             {
                 currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                 UpdateStatus?.Invoke(Localization.Core.Aborted);
-                _dumpLog.WriteLine(Localization.Core.Aborted);
 
                 break;
             }
@@ -128,7 +126,7 @@ partial class Dump
             Track track = tracks.OrderBy(t => t.StartSector).LastOrDefault(t => badSector >= t.StartSector);
 
             byte sectorsToTrim   = 1;
-            var  badSectorToRead = (uint)badSector;
+            uint badSectorToRead = (uint)badSector;
 
             if(_fixOffset && audioExtents.Contains(badSector) && offsetBytes != 0)
             {
@@ -292,7 +290,7 @@ partial class Dump
                                 {
                                     case 0:
 
-                                        for(var c = 16; c < 2352; c++)
+                                        for(int c = 16; c < 2352; c++)
                                         {
                                             if(cmdBuf[c] == 0x00) continue;
 
@@ -419,8 +417,8 @@ partial class Dump
 
             if(supportedSubchannel != MmcSubchannel.None)
             {
-                var data = new byte[sectorSize];
-                var sub  = new byte[subSize];
+                byte[] data = new byte[sectorSize];
+                byte[] sub  = new byte[subSize];
                 Array.Copy(cmdBuf, 0,          data, 0, sectorSize);
                 Array.Copy(cmdBuf, sectorSize, sub,  0, subSize);
 
@@ -446,7 +444,6 @@ partial class Dump
                                                                                outputOptical,
                                                                                _fixSubchannel,
                                                                                _fixSubchannelCrc,
-                                                                               _dumpLog,
                                                                                UpdateStatus,
                                                                                smallestPregapLbaPerTrack,
                                                                                true,
@@ -480,8 +477,5 @@ partial class Dump
 
         UpdateStatus?.Invoke(string.Format(Localization.Core.Trimming_finished_in_0,
                                            _trimStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
-
-        _dumpLog.WriteLine(string.Format(Localization.Core.Trimming_finished_in_0,
-                                         _trimStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
     }
 }

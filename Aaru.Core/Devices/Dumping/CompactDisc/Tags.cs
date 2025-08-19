@@ -61,7 +61,6 @@ partial class Dump
         firstTrackLastSession = 1;
 
         // ATIP exists on blank CDs
-        _dumpLog.WriteLine(Localization.Core.Reading_ATIP);
         UpdateStatus?.Invoke(Localization.Core.Reading_ATIP);
         sense = _dev.ReadAtip(out cmdBuf, out _, _dev.Timeout, out _);
 
@@ -81,7 +80,6 @@ partial class Dump
             }
         }
 
-        _dumpLog.WriteLine(Localization.Core.Reading_Disc_Information);
         UpdateStatus?.Invoke(Localization.Core.Reading_Disc_Information);
 
         sense = _dev.ReadDiscInformation(out cmdBuf,
@@ -105,7 +103,6 @@ partial class Dump
             }
         }
 
-        _dumpLog.WriteLine(Localization.Core.Reading_PMA);
         UpdateStatus?.Invoke(Localization.Core.Reading_PMA);
         sense = _dev.ReadPma(out cmdBuf, out _, _dev.Timeout, out _);
 
@@ -117,7 +114,6 @@ partial class Dump
             _mediaGraph?.PaintRecordableInformationGood();
         }
 
-        _dumpLog.WriteLine(Localization.Core.Reading_Session_Information);
         UpdateStatus?.Invoke(Localization.Core.Reading_Session_Information);
         sense = _dev.ReadSessionInfo(out cmdBuf, out _, _dev.Timeout, out _);
 
@@ -132,7 +128,6 @@ partial class Dump
             }
         }
 
-        _dumpLog.WriteLine(Localization.Core.Reading_CD_Text_from_Lead_In);
         UpdateStatus?.Invoke(Localization.Core.Reading_CD_Text_from_Lead_In);
         sense = _dev.ReadCdText(out cmdBuf, out _, _dev.Timeout, out _);
 

@@ -44,6 +44,7 @@ using Aaru.CommonTypes.Extents;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Core.Logging;
 using Aaru.Devices;
+using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
 using Track = Aaru.CommonTypes.Structs.Track;
@@ -91,12 +92,11 @@ partial class Dump
     {
         byte[]     cmdBuf        = null; // Data buffer
         const uint sectorSize    = 2352; // Full sector size
-        var        sense         = true; // Sense indicator
+        bool       sense         = true; // Sense indicator
         byte[]     senseBuf      = null;
         var        outputOptical = _outputPlugin as IWritableOpticalImage;
 
         UpdateStatus?.Invoke(Localization.Core.Reading_lead_outs);
-        _dumpLog.WriteLine(Localization.Core.Reading_lead_outs);
 
         InitProgress?.Invoke();
 
@@ -107,7 +107,7 @@ partial class Dump
                 if(_aborted)
                 {
                     currentTry.Extents = ExtentsConverter.ToMetadata(extents);
-                    _dumpLog.WriteLine(Localization.Core.Aborted);
+                    AaruLogging.WriteLine(Localization.Core.Aborted);
 
                     break;
                 }
@@ -205,10 +205,10 @@ partial class Dump
 
                     if(supportedSubchannel != MmcSubchannel.None)
                     {
-                        var data = new byte[sectorSize * _maximumReadable];
-                        var sub  = new byte[subSize    * _maximumReadable];
+                        byte[] data = new byte[sectorSize * _maximumReadable];
+                        byte[] sub  = new byte[subSize    * _maximumReadable];
 
-                        for(var b = 0; b < _maximumReadable; b++)
+                        for(int b = 0; b < _maximumReadable; b++)
                         {
                             Array.Copy(cmdBuf, (int)(0 + b * blockSize), data, sectorSize * b, sectorSize);
 
@@ -232,7 +232,6 @@ partial class Dump
                             outputOptical,
                             _fixSubchannel,
                             _fixSubchannelCrc,
-                            _dumpLog,
                             UpdateStatus,
                             smallestPregapLbaPerTrack,
                             true,
@@ -332,11 +331,11 @@ partial class Dump
     {
         byte[]     cmdBuf        = null; // Data buffer
         const uint sectorSize    = 2352; // Full sector size
-        var        sense         = true; // Sense indicator
+        bool       sense         = true; // Sense indicator
         byte[]     senseBuf      = null;
         var        outputOptical = _outputPlugin as IWritableOpticalImage;
 
-        _dumpLog.WriteLine("Retrying lead-outs");
+        AaruLogging.WriteLine("Retrying lead-outs");
 
         InitProgress?.Invoke();
 
@@ -347,7 +346,7 @@ partial class Dump
                 if(_aborted)
                 {
                     currentTry.Extents = ExtentsConverter.ToMetadata(extents);
-                    _dumpLog.WriteLine(Localization.Core.Aborted);
+                    AaruLogging.WriteLine(Localization.Core.Aborted);
 
                     break;
                 }
@@ -445,10 +444,10 @@ partial class Dump
 
                     if(supportedSubchannel != MmcSubchannel.None)
                     {
-                        var data = new byte[sectorSize * _maximumReadable];
-                        var sub  = new byte[subSize    * _maximumReadable];
+                        byte[] data = new byte[sectorSize * _maximumReadable];
+                        byte[] sub  = new byte[subSize    * _maximumReadable];
 
-                        for(var b = 0; b < _maximumReadable; b++)
+                        for(int b = 0; b < _maximumReadable; b++)
                         {
                             Array.Copy(cmdBuf, (int)(0 + b * blockSize), data, sectorSize * b, sectorSize);
 
@@ -472,7 +471,6 @@ partial class Dump
                             outputOptical,
                             _fixSubchannel,
                             _fixSubchannelCrc,
-                            _dumpLog,
                             UpdateStatus,
                             smallestPregapLbaPerTrack,
                             true,

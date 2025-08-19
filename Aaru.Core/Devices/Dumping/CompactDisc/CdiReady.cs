@@ -60,7 +60,7 @@ partial class Dump
 
         byte[] syncMark = [0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00];
 
-        var testMark = new byte[12];
+        byte[] testMark = new byte[12];
         Array.Copy(sector, 0, testMark, 0, 12);
 
         return syncMark.SequenceEqual(testMark) && (sector[0xF] == 0 || sector[0xF] == 1 || sector[0xF] == 2);
@@ -79,9 +79,9 @@ partial class Dump
 
         byte[] syncMark = [0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00];
 
-        var testMark = new byte[12];
+        byte[] testMark = new byte[12];
 
-        for(var i = 0; i <= 2336; i++)
+        for(int i = 0; i <= 2336; i++)
         {
             Array.Copy(sector, i, testMark, 0, 12);
 
@@ -162,7 +162,6 @@ partial class Dump
 
         if(cdiReadyReadAsAudio)
         {
-            _dumpLog.WriteLine(Localization.Core.Setting_speed_to_8x_for_CD_i_Ready_reading_as_audio);
             UpdateStatus?.Invoke(Localization.Core.Setting_speed_to_8x_for_CD_i_Ready_reading_as_audio);
 
             _dev.SetCdSpeed(out _, RotationalControl.ClvAndImpureCav, 1416, 0, _dev.Timeout, out _);
@@ -176,12 +175,11 @@ partial class Dump
             {
                 currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                 UpdateStatus?.Invoke(Localization.Core.Aborted);
-                _dumpLog.WriteLine(Localization.Core.Aborted);
 
                 break;
             }
 
-            var firstSectorToRead = (uint)i;
+            uint firstSectorToRead = (uint)i;
 
             blocksToRead = _maximumReadable;
 
@@ -290,8 +288,8 @@ partial class Dump
 
                         if(supportedSubchannel != MmcSubchannel.None)
                         {
-                            var data = new byte[sectorSize];
-                            var sub  = new byte[subSize];
+                            byte[] data = new byte[sectorSize];
+                            byte[] sub  = new byte[subSize];
 
                             Array.Copy(cmdBuf, 0, data, 0, sectorSize);
 
@@ -316,7 +314,6 @@ partial class Dump
                                 outputOptical,
                                 _fixSubchannel,
                                 _fixSubchannelCrc,
-                                _dumpLog,
                                 UpdateStatus,
                                 smallestPregapLbaPerTrack,
                                 true,
@@ -348,10 +345,6 @@ partial class Dump
                                                                        .Adding_CD_i_Ready_hole_from_LBA_0_to_1_inclusive,
                                                            i + r,
                                                            firstTrack.EndSector));
-
-                        _dumpLog.WriteLine(Localization.Core.Adding_CD_i_Ready_hole_from_LBA_0_to_1_inclusive,
-                                           i + r,
-                                           firstTrack.EndSector);
 
                         break;
                     }
@@ -393,11 +386,11 @@ partial class Dump
 
                 if(supportedSubchannel != MmcSubchannel.None)
                 {
-                    var data    = new byte[sectorSize * blocksToRead];
-                    var sub     = new byte[subSize    * blocksToRead];
-                    var tmpData = new byte[sectorSize];
+                    byte[] data    = new byte[sectorSize * blocksToRead];
+                    byte[] sub     = new byte[subSize    * blocksToRead];
+                    byte[] tmpData = new byte[sectorSize];
 
-                    for(var b = 0; b < blocksToRead; b++)
+                    for(int b = 0; b < blocksToRead; b++)
                     {
                         if(cdiReadyReadAsAudio)
                         {
@@ -428,7 +421,6 @@ partial class Dump
                         outputOptical,
                         _fixSubchannel,
                         _fixSubchannelCrc,
-                        _dumpLog,
                         UpdateStatus,
                         smallestPregapLbaPerTrack,
                         true,
@@ -455,10 +447,10 @@ partial class Dump
                 {
                     if(cdiReadyReadAsAudio)
                     {
-                        var tmpData = new byte[sectorSize];
-                        var data    = new byte[sectorSize * blocksToRead];
+                        byte[] tmpData = new byte[sectorSize];
+                        byte[] data    = new byte[sectorSize * blocksToRead];
 
-                        for(var b = 0; b < blocksToRead; b++)
+                        for(int b = 0; b < blocksToRead; b++)
                         {
                             Array.Copy(cmdBuf, (int)(b * sectorSize), tmpData, 0, sectorSize);
                             tmpData = Sector.Scramble(tmpData);

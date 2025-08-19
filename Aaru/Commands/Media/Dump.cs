@@ -474,18 +474,12 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
 
             IBaseWritableImage outputFormat = candidates[0];
 
-            var dumpLog = new DumpLog(outputPrefix + ".log", dev, settings.Private);
+            DumpLog.StartLog(dev, settings.Private);
 
             if(settings.Verbose)
-            {
-                dumpLog.WriteLine(UI.Output_image_format_0_1, outputFormat.Name, outputFormat.Id);
                 AaruLogging.Verbose(UI.Output_image_format_0_1, outputFormat.Name, outputFormat.Id);
-            }
             else
-            {
-                dumpLog.WriteLine(UI.Output_image_format_0, outputFormat.Name);
                 AaruLogging.WriteLine(UI.Output_image_format_0, outputFormat.Name);
-            }
 
             var errorLog = new ErrorLog(outputPrefix + ".error.log");
 
@@ -499,7 +493,6 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                                   settings.Persistent,
                                   settings.StopOnError,
                                   resumeClass,
-                                  dumpLog,
                                   encodingClass,
                                   outputPrefix,
                                   outputPrefix + extension,
@@ -535,19 +528,16 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                        .Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn())
                        .Start(ctx =>
                         {
-                            dumper.UpdateStatus += text => { AaruLogging.WriteLine(Markup.Escape(text)); };
+                            dumper.UpdateStatus += text => { AaruLogging.WriteLine(text); };
 
-                            dumper.ErrorMessage += text => { AaruLogging.Error($"[red]{Markup.Escape(text)}[/]"); };
+                            dumper.ErrorMessage += text => { AaruLogging.Error(text); };
 
-                            dumper.StoppingErrorMessage += text =>
-                                {
-                                    AaruLogging.Error($"[red]{Markup.Escape(text)}[/]");
-                                };
+                            dumper.StoppingErrorMessage += text => { AaruLogging.Error(text); };
 
                             dumper.UpdateProgress += (text, current, maximum) =>
                             {
                                 _progressTask1             ??= ctx.AddTask("Progress");
-                                _progressTask1.Description =   Markup.Escape(text);
+                                _progressTask1.Description =   text;
                                 _progressTask1.Value       =   current;
                                 _progressTask1.MaxValue    =   maximum;
                             };
@@ -555,10 +545,10 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                             dumper.PulseProgress += text =>
                             {
                                 if(_progressTask1 is null)
-                                    ctx.AddTask(Markup.Escape(text)).IsIndeterminate();
+                                    ctx.AddTask(text).IsIndeterminate();
                                 else
                                 {
-                                    _progressTask1.Description     = Markup.Escape(text);
+                                    _progressTask1.Description     = text;
                                     _progressTask1.IsIndeterminate = true;
                                 }
                             };
@@ -582,7 +572,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                             dumper.UpdateProgress2 += (text, current, maximum) =>
                             {
                                 _progressTask2             ??= ctx.AddTask("Progress");
-                                _progressTask2.Description =   Markup.Escape(text);
+                                _progressTask2.Description =   text;
                                 _progressTask2.Value       =   current;
                                 _progressTask2.MaxValue    =   maximum;
                             };

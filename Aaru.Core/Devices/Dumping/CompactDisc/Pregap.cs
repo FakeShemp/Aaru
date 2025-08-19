@@ -42,7 +42,6 @@ using Aaru.Checksums;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
-using Aaru.Core.Logging;
 using Aaru.Devices;
 using Aaru.Logging;
 using Humanizer;
@@ -70,7 +69,6 @@ partial class Dump
         int    firstTrackPregapSectorsGood = 0;
         var    firstTrackPregapMs          = new MemoryStream();
 
-        _dumpLog.WriteLine(Localization.Core.Reading_first_track_pregap);
         UpdateStatus?.Invoke(Localization.Core.Reading_first_track_pregap);
         InitProgress?.Invoke();
         _speedStopwatch.Restart();
@@ -81,7 +79,6 @@ partial class Dump
         {
             if(_aborted)
             {
-                _dumpLog.WriteLine(Localization.Core.Aborted);
                 UpdateStatus?.Invoke(Localization.Core.Aborted);
 
                 break;
@@ -145,8 +142,6 @@ partial class Dump
         UpdateStatus?.Invoke(string.Format(Localization.Core.Got_0_first_track_pregap_sectors,
                                            firstTrackPregapSectorsGood));
 
-        _dumpLog.WriteLine(Localization.Core.Got_0_first_track_pregap_sectors, firstTrackPregapSectorsGood);
-
         firstTrackPregapMs.Close();
     }
 
@@ -160,8 +155,8 @@ partial class Dump
     /// <param name="dbDev">Database entry for device</param>
     /// <param name="inexactPositioning">Set if we found the drive does not return the exact subchannel we requested</param>
     /// <param name="dumping">Set if dumping, otherwise media info</param>
-    public static void SolveTrackPregaps(Device dev, DumpLog dumpLog, UpdateStatusHandler updateStatus, Track[] tracks,
-                                         bool supportsPqSubchannel, bool supportsRwSubchannel,
+    public static void SolveTrackPregaps(Device                 dev, UpdateStatusHandler updateStatus, Track[] tracks,
+                                         bool                   supportsPqSubchannel, bool supportsRwSubchannel,
                                          Database.Models.Device dbDev, out bool inexactPositioning, bool dumping)
     {
         bool                  sense  = true; // Sense indicator
@@ -190,18 +185,15 @@ partial class Dump
         }
 
         AaruLogging.Debug(PREGAP_MODULE_NAME,
-                                   bcd switch
-                                   {
-                                       true  => Localization.Core.Subchannel_is_BCD,
-                                       false => Localization.Core.Subchannel_is_not_BCD,
-                                       _     => Localization.Core.Could_not_detect_drive_subchannel_BCD
-                                   });
+                          bcd switch
+                          {
+                              true  => Localization.Core.Subchannel_is_BCD,
+                              false => Localization.Core.Subchannel_is_not_BCD,
+                              _     => Localization.Core.Could_not_detect_drive_subchannel_BCD
+                          });
 
         if(bcd is null)
         {
-            dumpLog?.WriteLine(Localization.Core
-                                           .Could_not_detect_if_drive_subchannel_is_BCD_or_not_pregaps_could_not_be_calculated_dump_may_be_incorrect);
-
             updateStatus?.Invoke(Localization.Core
                                              .Could_not_detect_if_drive_subchannel_is_BCD_or_not_pregaps_could_not_be_calculated_dump_may_be_incorrect);
 
@@ -236,8 +228,8 @@ partial class Dump
             if(dumping && dev.Manufacturer.ToLowerInvariant().StartsWith("plextor", StringComparison.Ordinal))
             {
                 AaruLogging.Debug(PREGAP_MODULE_NAME,
-                                           Localization.Core.Skipping_track_0_due_to_Plextor_firmware_bug,
-                                           track.Sequence);
+                                  Localization.Core.Skipping_track_0_due_to_Plextor_firmware_bug,
+                                  track.Sequence);
 
                 continue;
             }
@@ -264,10 +256,10 @@ partial class Dump
                 if(sense)
                 {
                     AaruLogging.Debug(PREGAP_MODULE_NAME,
-                                               Localization.Core.LBA_0_Try_1_Sense_2,
-                                               lba,
-                                               retries + 1,
-                                               sense);
+                                      Localization.Core.LBA_0_Try_1_Sense_2,
+                                      lba,
+                                      retries + 1,
+                                      sense);
 
                     continue;
                 }
@@ -277,25 +269,25 @@ partial class Dump
                 CRC16CcittContext.Data(subBuf, 10, out crc);
 
                 AaruLogging.Debug(PREGAP_MODULE_NAME,
-                                           Localization.Core
-                                                       .LBA_0_Try_1_Sense_2_Q_3_4_5_6_7_8_9_10_11_12_CRC_13_14_Calculated_CRC_15_16,
-                                           lba,
-                                           retries + 1,
-                                           sense,
-                                           subBuf[0],
-                                           subBuf[1],
-                                           subBuf[2],
-                                           subBuf[3],
-                                           subBuf[4],
-                                           subBuf[5],
-                                           subBuf[6],
-                                           subBuf[7],
-                                           subBuf[8],
-                                           subBuf[9],
-                                           subBuf[10],
-                                           subBuf[11],
-                                           crc[0],
-                                           crc[1]);
+                                  Localization.Core
+                                              .LBA_0_Try_1_Sense_2_Q_3_4_5_6_7_8_9_10_11_12_CRC_13_14_Calculated_CRC_15_16,
+                                  lba,
+                                  retries + 1,
+                                  sense,
+                                  subBuf[0],
+                                  subBuf[1],
+                                  subBuf[2],
+                                  subBuf[3],
+                                  subBuf[4],
+                                  subBuf[5],
+                                  subBuf[6],
+                                  subBuf[7],
+                                  subBuf[8],
+                                  subBuf[9],
+                                  subBuf[10],
+                                  subBuf[11],
+                                  crc[0],
+                                  crc[1]);
 
                 crcOk = crc[0] == subBuf[10] && crc[1] == subBuf[11];
 
@@ -330,25 +322,25 @@ partial class Dump
                     if(crcOk)
                     {
                         AaruLogging.Debug(PREGAP_MODULE_NAME,
-                                                   Localization.Core
-                                                               .LBA_0_Try_1_Sense_2_Q_FIXED_3_4_5_6_7_8_9_10_11_12_CRC_13_14_Calculated_CRC_15_16,
-                                                   lba,
-                                                   retries + 1,
-                                                   sense,
-                                                   subBuf[0],
-                                                   subBuf[1],
-                                                   subBuf[2],
-                                                   subBuf[3],
-                                                   subBuf[4],
-                                                   subBuf[5],
-                                                   subBuf[6],
-                                                   subBuf[7],
-                                                   subBuf[8],
-                                                   subBuf[9],
-                                                   subBuf[10],
-                                                   subBuf[11],
-                                                   crc[0],
-                                                   crc[1]);
+                                          Localization.Core
+                                                      .LBA_0_Try_1_Sense_2_Q_FIXED_3_4_5_6_7_8_9_10_11_12_CRC_13_14_Calculated_CRC_15_16,
+                                          lba,
+                                          retries + 1,
+                                          sense,
+                                          subBuf[0],
+                                          subBuf[1],
+                                          subBuf[2],
+                                          subBuf[3],
+                                          subBuf[4],
+                                          subBuf[5],
+                                          subBuf[6],
+                                          subBuf[7],
+                                          subBuf[8],
+                                          subBuf[9],
+                                          subBuf[10],
+                                          subBuf[11],
+                                          crc[0],
+                                          crc[1]);
                     }
                     else
                         continue;
@@ -404,25 +396,25 @@ partial class Dump
                     CRC16CcittContext.Data(subBuf, 10, out crc);
 
                     AaruLogging.Debug(PREGAP_MODULE_NAME,
-                                               Localization.Core
-                                                           .LBA_0_Try_1_Sense_2_Q_3_4_5_6_7_8_9_10_11_12_CRC_13_14_Calculated_CRC_15_16,
-                                               lba,
-                                               retries + 1,
-                                               sense,
-                                               subBuf[0],
-                                               subBuf[1],
-                                               subBuf[2],
-                                               subBuf[3],
-                                               subBuf[4],
-                                               subBuf[5],
-                                               subBuf[6],
-                                               subBuf[7],
-                                               subBuf[8],
-                                               subBuf[9],
-                                               subBuf[10],
-                                               subBuf[11],
-                                               crc[0],
-                                               crc[1]);
+                                      Localization.Core
+                                                  .LBA_0_Try_1_Sense_2_Q_3_4_5_6_7_8_9_10_11_12_CRC_13_14_Calculated_CRC_15_16,
+                                      lba,
+                                      retries + 1,
+                                      sense,
+                                      subBuf[0],
+                                      subBuf[1],
+                                      subBuf[2],
+                                      subBuf[3],
+                                      subBuf[4],
+                                      subBuf[5],
+                                      subBuf[6],
+                                      subBuf[7],
+                                      subBuf[8],
+                                      subBuf[9],
+                                      subBuf[10],
+                                      subBuf[11],
+                                      crc[0],
+                                      crc[1]);
 
                     crcOk = crc[0] == subBuf[10] && crc[1] == subBuf[11];
 
@@ -457,25 +449,25 @@ partial class Dump
                         if(crcOk)
                         {
                             AaruLogging.Debug(PREGAP_MODULE_NAME,
-                                                       Localization.Core
-                                                                   .LBA_0_Try_1_Sense_2_Q_FIXED_3_4_5_6_7_8_9_10_11_12_CRC_13_14_Calculated_CRC_15_16,
-                                                       lba,
-                                                       retries + 1,
-                                                       sense,
-                                                       subBuf[0],
-                                                       subBuf[1],
-                                                       subBuf[2],
-                                                       subBuf[3],
-                                                       subBuf[4],
-                                                       subBuf[5],
-                                                       subBuf[6],
-                                                       subBuf[7],
-                                                       subBuf[8],
-                                                       subBuf[9],
-                                                       subBuf[10],
-                                                       subBuf[11],
-                                                       crc[0],
-                                                       crc[1]);
+                                              Localization.Core
+                                                          .LBA_0_Try_1_Sense_2_Q_FIXED_3_4_5_6_7_8_9_10_11_12_CRC_13_14_Calculated_CRC_15_16,
+                                              lba,
+                                              retries + 1,
+                                              sense,
+                                              subBuf[0],
+                                              subBuf[1],
+                                              subBuf[2],
+                                              subBuf[3],
+                                              subBuf[4],
+                                              subBuf[5],
+                                              subBuf[6],
+                                              subBuf[7],
+                                              subBuf[8],
+                                              subBuf[9],
+                                              subBuf[10],
+                                              subBuf[11],
+                                              crc[0],
+                                              crc[1]);
 
                             break;
                         }
@@ -497,27 +489,17 @@ partial class Dump
                                 if(previousTrack.Type == TrackType.Audio && track.Type != TrackType.Audio ||
                                    previousTrack.Type != TrackType.Audio && track.Type == TrackType.Audio)
                                 {
-                                    dumpLog?.WriteLine(Localization.Core
-                                                                   .Could_not_read_subchannel_for_this_track_supposing_hundred_fifty_sectors);
-
                                     updateStatus?.Invoke(Localization.Core
                                                                      .Could_not_read_subchannel_for_this_track_supposing_hundred_fifty_sectors);
                                 }
                                 else
                                 {
-                                    dumpLog?.WriteLine(Localization.Core
-                                                                   .Could_not_read_subchannel_for_this_track_supposing_zero_sectors);
-
                                     updateStatus?.Invoke(Localization.Core
                                                                      .Could_not_read_subchannel_for_this_track_supposing_zero_sectors);
                                 }
                             }
                             else
                             {
-                                dumpLog?.WriteLine(string.Format(Localization.Core
-                                                                             .Could_not_read_subchannel_for_this_track_supposing_0_sectors,
-                                                                 pregaps[track.Sequence]));
-
                                 updateStatus?.Invoke(string.Format(Localization.Core
                                                                       .Could_not_read_subchannel_for_this_track_supposing_0_sectors,
                                                                    pregaps[track.Sequence]));
@@ -525,9 +507,6 @@ partial class Dump
 
                             break;
                         }
-
-                        dumpLog?.WriteLine(string.Format(Localization.Core.Could_not_read_subchannel_for_sector_0,
-                                                         lba));
 
                         updateStatus?.Invoke(string.Format(Localization.Core.Could_not_read_subchannel_for_sector_0,
                                                            lba));
@@ -537,9 +516,6 @@ partial class Dump
 
                         continue;
                     }
-
-                    dumpLog?.WriteLine(string.Format(Localization.Core.Could_not_get_correct_subchannel_for_sector_0,
-                                                     lba));
 
                     updateStatus?.Invoke(string.Format(Localization.Core.Could_not_get_correct_subchannel_for_sector_0,
                                                        lba));
@@ -612,9 +588,9 @@ partial class Dump
                 if(diff != 0)
                 {
                     AaruLogging.Debug(PREGAP_MODULE_NAME,
-                                               Localization.Core.Invalid_Q_position_for_LBA_0_got_1,
-                                               lba,
-                                               posQ);
+                                      Localization.Core.Invalid_Q_position_for_LBA_0_got_1,
+                                      lba,
+                                      posQ);
 
                     inexactPositioning = true;
                 }
@@ -636,9 +612,9 @@ partial class Dump
                     if(crcOk || pregapQ - pregaps[track.Sequence] < 10)
                     {
                         AaruLogging.Debug(PREGAP_MODULE_NAME,
-                                                   Localization.Core.Pregap_for_track_0_1,
-                                                   track.Sequence,
-                                                   pregapQ);
+                                          Localization.Core.Pregap_for_track_0_1,
+                                          track.Sequence,
+                                          pregapQ);
 
                         pregaps[track.Sequence] = pregapQ;
                     }
@@ -680,8 +656,6 @@ partial class Dump
             trk.StartSector -= trk.Pregap;
 
 #if DEBUG
-            dumpLog?.WriteLine(string.Format(Localization.Core.Track_0_pregap_is_1_sectors, trk.Sequence, trk.Pregap));
-
             updateStatus?.Invoke(string.Format(Localization.Core.Track_0_pregap_is_1_sectors,
                                                trk.Sequence,
                                                trk.Pregap));

@@ -98,7 +98,7 @@ partial class Dump
                           };
         }
 
-        _dumpLog.WriteLine(Localization.Core.Initializing_reader);
+        AaruLogging.WriteLine(Localization.Core.Initializing_reader);
         var   scsiReader = new Reader(_dev, _dev.Timeout, null, _errorLog, _dumpRaw);
         ulong blocks     = scsiReader.GetDeviceBlocks();
         uint  blockSize  = scsiReader.LogicalBlockSize;
@@ -121,7 +121,6 @@ partial class Dump
 
             if(!sense)
             {
-                _dumpLog.WriteLine(Localization.Core.Requesting_MODE_SENSE_10);
                 UpdateStatus?.Invoke(Localization.Core.Requesting_MODE_SENSE_10);
 
                 sense = _dev.ModeSense10(out cmdBuf,
@@ -156,7 +155,6 @@ partial class Dump
                     }
                 }
 
-                _dumpLog.WriteLine(Localization.Core.Requesting_MODE_SENSE_6);
                 UpdateStatus?.Invoke(Localization.Core.Requesting_MODE_SENSE_6);
 
                 sense = _dev.ModeSense6(out cmdBuf,
@@ -229,9 +227,6 @@ partial class Dump
             // SonicStage changes the device mode, so it is no longer a mass storage device, and can only read
             // tracks written by that same application ID (changes between computers).
             case MediaType.MD:
-                _dumpLog.WriteLine(Localization.Core
-                                               .MiniDisc_albums_NetMD_discs_or_user_written_audio_MiniDisc_cannot_be_dumped);
-
                 StoppingErrorMessage?.Invoke(Localization.Core
                                                          .MiniDisc_albums_NetMD_discs_or_user_written_audio_MiniDisc_cannot_be_dumped);
 
@@ -244,7 +239,7 @@ partial class Dump
 
         if(scsiReader.FindReadCommand())
         {
-            _dumpLog.WriteLine(Localization.Core.ERROR_Cannot_find_correct_read_command_0, scsiReader.ErrorMessage);
+            AaruLogging.WriteLine(Localization.Core.ERROR_Cannot_find_correct_read_command_0, scsiReader.ErrorMessage);
             StoppingErrorMessage?.Invoke(Localization.Core.Unable_to_read_medium);
 
             return;
@@ -263,7 +258,7 @@ partial class Dump
         // Check how many blocks to read, if error show and return
         if(scsiReader.GetBlocksToRead(_maximumReadable))
         {
-            _dumpLog.WriteLine(Localization.Core.ERROR_Cannot_get_blocks_to_read_0, scsiReader.ErrorMessage);
+            AaruLogging.WriteLine(Localization.Core.ERROR_Cannot_get_blocks_to_read_0, scsiReader.ErrorMessage);
             StoppingErrorMessage?.Invoke(scsiReader.ErrorMessage);
 
             return;
@@ -275,7 +270,7 @@ partial class Dump
 
         if(blocks == 0)
         {
-            _dumpLog.WriteLine(Localization.Core.ERROR_Unable_to_read_medium_or_empty_medium_present);
+            AaruLogging.WriteLine(Localization.Core.ERROR_Unable_to_read_medium_or_empty_medium_present);
             StoppingErrorMessage?.Invoke(Localization.Core.Unable_to_read_medium_or_empty_medium_present);
 
             return;
@@ -296,16 +291,6 @@ partial class Dump
         UpdateStatus?.Invoke(string.Format(Localization.Core.SCSI_density_type_0,             scsiDensityCode));
         UpdateStatus?.Invoke(string.Format(Localization.Core.SCSI_floppy_mode_page_present_0, containsFloppyPage));
         UpdateStatus?.Invoke(string.Format(Localization.Core.Media_identified_as_0,           dskType));
-
-        _dumpLog.WriteLine(Localization.Core.Device_reports_0_blocks_1_bytes,           blocks, blocks * blockSize);
-        _dumpLog.WriteLine(Localization.Core.Device_can_read_0_blocks_at_a_time,        blocksToRead);
-        _dumpLog.WriteLine(Localization.Core.Device_reports_0_bytes_per_logical_block,  blockSize);
-        _dumpLog.WriteLine(Localization.Core.Device_reports_0_bytes_per_physical_block, scsiReader.LongBlockSize);
-        _dumpLog.WriteLine(Localization.Core.SCSI_device_type_0,                        _dev.ScsiType);
-        _dumpLog.WriteLine(Localization.Core.SCSI_medium_type_0,                        scsiMediumType);
-        _dumpLog.WriteLine(Localization.Core.SCSI_density_type_0,                       scsiDensityCode);
-        _dumpLog.WriteLine(Localization.Core.SCSI_floppy_mode_page_present_0,           containsFloppyPage);
-        _dumpLog.WriteLine(Localization.Core.Media_identified_as_0,                     dskType);
 
         uint longBlockSize = scsiReader.LongBlockSize;
 
@@ -356,20 +341,15 @@ partial class Dump
         foreach(MediaTagType tag in mediaTags.Keys.Where(tag => !outputFormat.SupportedMediaTags.Contains(tag)))
         {
             ret = false;
-            _dumpLog.WriteLine(string.Format(Localization.Core.Output_format_does_not_support_0,   tag));
             ErrorMessage?.Invoke(string.Format(Localization.Core.Output_format_does_not_support_0, tag));
         }
 
         if(!ret)
         {
             if(_force)
-            {
-                _dumpLog.WriteLine(Localization.Core.Several_media_tags_not_supported_continuing);
                 ErrorMessage?.Invoke(Localization.Core.Several_media_tags_not_supported_continuing);
-            }
             else
             {
-                _dumpLog.WriteLine(Localization.Core.Several_media_tags_not_supported_not_continuing);
                 StoppingErrorMessage?.Invoke(Localization.Core.Several_media_tags_not_supported_not_continuing);
 
                 return;
@@ -377,7 +357,6 @@ partial class Dump
         }
 
         UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_0_sectors_at_a_time, blocksToRead));
-        _dumpLog.WriteLine(Localization.Core.Reading_0_sectors_at_a_time, blocksToRead);
 
         var mhddLog = new MhddLog(_outputPrefix + ".mhddlog.bin",
                                   _dev,
@@ -397,9 +376,6 @@ partial class Dump
             // Cannot create image
             if(!ret)
             {
-                _dumpLog.WriteLine(Localization.Core.Error_creating_output_image_not_continuing);
-                _dumpLog.WriteLine(outputFormat.ErrorMessage);
-
                 StoppingErrorMessage?.Invoke(Localization.Core.Error_creating_output_image_not_continuing +
                                              Environment.NewLine                                          +
                                              outputFormat.ErrorMessage);
@@ -444,17 +420,11 @@ partial class Dump
                         {
                             if(_force)
                             {
-                                _dumpLog.WriteLine(Localization.Core
-                                                               .Image_does_not_support_multiple_sessions_in_non_Compact_Disc_dumps_continuing);
-
                                 ErrorMessage?.Invoke(Localization.Core
                                                                  .Image_does_not_support_multiple_sessions_in_non_Compact_Disc_dumps_continuing);
                             }
                             else
                             {
-                                _dumpLog.WriteLine(Localization.Core
-                                                               .Image_does_not_support_multiple_sessions_in_non_Compact_Disc_dumps_not_continuing);
-
                                 StoppingErrorMessage?.Invoke(Localization.Core
                                                                          .Image_does_not_support_multiple_sessions_in_non_Compact_Disc_dumps_not_continuing);
 
@@ -468,17 +438,11 @@ partial class Dump
                         {
                             if(_force)
                             {
-                                _dumpLog.WriteLine(Localization.Core
-                                                               .Image_does_not_support_multiple_tracks_in_non_Compact_Disc_dumps_continuing);
-
                                 ErrorMessage?.Invoke(Localization.Core
                                                                  .Image_does_not_support_multiple_tracks_in_non_Compact_Disc_dumps_continuing);
                             }
                             else
                             {
-                                _dumpLog.WriteLine(Localization.Core
-                                                               .Image_does_not_support_multiple_tracks_in_non_Compact_Disc_dumps_not_continuing);
-
                                 StoppingErrorMessage?.Invoke(Localization.Core
                                                                          .Image_does_not_support_multiple_tracks_in_non_Compact_Disc_dumps_not_continuing);
 
@@ -487,7 +451,6 @@ partial class Dump
                         }
 
                         UpdateStatus?.Invoke(Localization.Core.Building_track_map);
-                        _dumpLog.WriteLine(Localization.Core.Building_track_map);
 
                         List<Track> tracks = [];
 
@@ -557,9 +520,6 @@ partial class Dump
                         // Cannot create image
                         if(!ret)
                         {
-                            _dumpLog.WriteLine(Localization.Core.Error_creating_output_image_not_continuing);
-                            _dumpLog.WriteLine(outputFormat.ErrorMessage);
-
                             StoppingErrorMessage?.Invoke(Localization.Core.Error_creating_output_image_not_continuing +
                                                          Environment.NewLine                                          +
                                                          outputFormat.ErrorMessage);
@@ -586,11 +546,6 @@ partial class Dump
 
                             if(!ret)
                             {
-                                _dumpLog.WriteLine(Localization.Core
-                                                               .Error_sending_tracks_to_output_image_not_continuing);
-
-                                _dumpLog.WriteLine(opticalPlugin.ErrorMessage);
-
                                 StoppingErrorMessage?.Invoke(Localization.Core
                                                                          .Error_sending_tracks_to_output_image_not_continuing +
                                                              Environment.NewLine +
@@ -619,8 +574,6 @@ partial class Dump
             }
             else
             {
-                _dumpLog.WriteLine(Localization.Core.The_specified_image_format_cannot_represent_optical_discs);
-
                 StoppingErrorMessage?.Invoke(Localization.Core
                                                          .The_specified_image_format_cannot_represent_optical_discs);
 
@@ -640,12 +593,6 @@ partial class Dump
                         Modes.ModePage_04? rigidPage = Modes.DecodeModePage_04(page.PageResponse);
 
                         if(!rigidPage.HasValue || setGeometry) continue;
-
-                        _dumpLog.WriteLine(Localization.Core
-                                                       .Setting_geometry_to_0_cylinders_1_heads_2_sectors_per_track,
-                                           rigidPage.Value.Cylinders,
-                                           rigidPage.Value.Heads,
-                                           (uint)(blocks / (rigidPage.Value.Cylinders * rigidPage.Value.Heads)));
 
                         UpdateStatus?.Invoke(string.Format(Localization.Core
                                                                        .Setting_geometry_to_0_cylinders_1_heads_2_sectors_per_track,
@@ -668,12 +615,6 @@ partial class Dump
                         Modes.ModePage_05? flexiblePage = Modes.DecodeModePage_05(page.PageResponse);
 
                         if(!flexiblePage.HasValue) continue;
-
-                        _dumpLog.WriteLine(Localization.Core
-                                                       .Setting_geometry_to_0_cylinders_1_heads_2_sectors_per_track,
-                                           flexiblePage.Value.Cylinders,
-                                           flexiblePage.Value.Heads,
-                                           flexiblePage.Value.SectorsPerTrack);
 
                         UpdateStatus?.Invoke(string.Format(Localization.Core
                                                                        .Setting_geometry_to_0_cylinders_1_heads_2_sectors_per_track,
@@ -700,9 +641,6 @@ partial class Dump
             // Cannot create image
             if(!ret)
             {
-                _dumpLog.WriteLine(Localization.Core.Error_creating_output_image_not_continuing);
-                _dumpLog.WriteLine(outputFormat.ErrorMessage);
-
                 StoppingErrorMessage?.Invoke(Localization.Core.Error_creating_output_image_not_continuing +
                                              Environment.NewLine                                          +
                                              outputFormat.ErrorMessage);
@@ -712,8 +650,6 @@ partial class Dump
 
             if(writeSingleOpticalTrack)
             {
-                _dumpLog.WriteLine(Localization.Core.Creating_single_track_as_could_not_retrieve_track_list_from_drive);
-
                 UpdateStatus?.Invoke(Localization.Core
                                                  .Creating_single_track_as_could_not_retrieve_track_list_from_drive);
 
@@ -781,24 +717,15 @@ partial class Dump
         }
 
         if(_resume.NextBlock > 0)
-        {
             UpdateStatus?.Invoke(string.Format(Localization.Core.Resuming_from_block_0, _resume.NextBlock));
-            _dumpLog.WriteLine(Localization.Core.Resuming_from_block_0, _resume.NextBlock);
-        }
 
         // Set speed
         if(_speedMultiplier >= 0)
         {
             if(_speed == 0)
-            {
-                _dumpLog.WriteLine(Localization.Core.Setting_speed_to_MAX);
                 UpdateStatus?.Invoke(Localization.Core.Setting_speed_to_MAX);
-            }
             else
-            {
-                _dumpLog.WriteLine(string.Format(Localization.Core.Setting_speed_to_0_x,   _speed));
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Setting_speed_to_0_x, _speed));
-            }
 
             _speed *= _speedMultiplier;
 
@@ -906,18 +833,6 @@ partial class Dump
                                                    .Per(imageWriteDuration.Seconds())
                                                    .Humanize()));
 
-        _dumpLog.WriteLine(string.Format(Localization.Core.Dump_finished_in_0,
-                                         _dumpStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
-
-        _dumpLog.WriteLine(string.Format(Localization.Core.Average_dump_speed_0,
-                                         ByteSize.FromBytes(blockSize * (blocks + 1))
-                                                 .Per(totalDuration.Milliseconds())
-                                                 .Humanize()));
-
-        _dumpLog.WriteLine(string.Format(Localization.Core.Average_write_speed_0,
-                                         ByteSize.FromBytes(blockSize * (blocks + 1))
-                                                 .Per(imageWriteDuration.Seconds())
-                                                 .Humanize()));
 
 #region Trimming
 
@@ -927,7 +842,6 @@ partial class Dump
         {
             _trimStopwatch.Restart();
             UpdateStatus?.Invoke(Localization.Core.Trimming_skipped_sectors);
-            _dumpLog.WriteLine(Localization.Core.Trimming_skipped_sectors);
 
             InitProgress?.Invoke();
 
@@ -938,9 +852,6 @@ partial class Dump
 
             UpdateStatus?.Invoke(string.Format(Localization.Core.Trimming_finished_in_0,
                                                _trimStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
-
-            _dumpLog.WriteLine(string.Format(Localization.Core.Trimming_finished_in_0,
-                                             _trimStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
 
             _trimStopwatch.Stop();
         }
@@ -984,10 +895,6 @@ partial class Dump
                 // Cannot write tag to image
                 StoppingErrorMessage?.Invoke(string.Format(Localization.Core.Cannot_write_tag_0, tag.Key));
 
-                _dumpLog.WriteLine(string.Format(Localization.Core.Cannot_write_tag_0, tag.Key) +
-                                   Environment.NewLine                                          +
-                                   outputFormat.ErrorMessage);
-
                 return;
             }
         }
@@ -998,13 +905,10 @@ partial class Dump
                 if(_dev.IsUsb && _dev.UsbDescriptors != null)
                 {
                     UpdateStatus?.Invoke(Localization.Core.Reading_USB_descriptors);
-                    _dumpLog.WriteLine(Localization.Core.Reading_USB_descriptors);
                     ret = outputFormat.WriteMediaTag(_dev.UsbDescriptors, MediaTagType.USB_Descriptors);
 
                     if(!ret && !_force)
                     {
-                        _dumpLog.WriteLine(Localization.Core.Cannot_write_USB_descriptors);
-
                         StoppingErrorMessage?.Invoke(Localization.Core.Cannot_write_USB_descriptors +
                                                      Environment.NewLine                            +
                                                      outputFormat.ErrorMessage);
@@ -1018,7 +922,6 @@ partial class Dump
                 if(_dev.Type == DeviceType.ATAPI)
                 {
                     UpdateStatus?.Invoke(Localization.Core.Requesting_ATAPI_IDENTIFY_PACKET_DEVICE);
-                    _dumpLog.WriteLine(Localization.Core.Requesting_ATAPI_IDENTIFY_PACKET_DEVICE);
                     sense = _dev.AtapiIdentify(out cmdBuf, out _);
 
                     if(!sense)
@@ -1029,8 +932,6 @@ partial class Dump
 
                         if(!ret && !_force)
                         {
-                            _dumpLog.WriteLine(Localization.Core.Cannot_write_ATAPI_IDENTIFY_PACKET_DEVICE);
-
                             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_write_ATAPI_IDENTIFY_PACKET_DEVICE +
                                                          Environment.NewLine                                         +
                                                          outputFormat.ErrorMessage);
@@ -1045,22 +946,16 @@ partial class Dump
                 if(!sense)
                 {
                     UpdateStatus?.Invoke(Localization.Core.Requesting_SCSI_INQUIRY);
-                    _dumpLog.WriteLine(Localization.Core.Requesting_SCSI_INQUIRY);
                     ret = outputFormat.WriteMediaTag(cmdBuf, MediaTagType.SCSI_INQUIRY);
 
                     if(!ret && !_force)
                     {
                         StoppingErrorMessage?.Invoke(Localization.Core.Cannot_write_SCSI_INQUIRY);
 
-                        _dumpLog.WriteLine(Localization.Core.Cannot_write_SCSI_INQUIRY +
-                                           Environment.NewLine                         +
-                                           outputFormat.ErrorMessage);
-
                         return;
                     }
 
                     UpdateStatus?.Invoke(Localization.Core.Requesting_MODE_SENSE_10);
-                    _dumpLog.WriteLine(Localization.Core.Requesting_MODE_SENSE_10);
 
                     sense = _dev.ModeSense10(out cmdBuf,
                                              out _,
@@ -1093,8 +988,6 @@ partial class Dump
 
                             if(!ret && !_force)
                             {
-                                _dumpLog.WriteLine(Localization.Core.Cannot_write_SCSI_MODE_SENSE_10);
-
                                 StoppingErrorMessage?.Invoke(Localization.Core.Cannot_write_SCSI_MODE_SENSE_10 +
                                                              Environment.NewLine                               +
                                                              outputFormat.ErrorMessage);
@@ -1105,7 +998,6 @@ partial class Dump
                     }
 
                     UpdateStatus?.Invoke(Localization.Core.Requesting_MODE_SENSE_6);
-                    _dumpLog.WriteLine(Localization.Core.Requesting_MODE_SENSE_6);
 
                     sense = _dev.ModeSense6(out cmdBuf,
                                             out _,
@@ -1138,8 +1030,6 @@ partial class Dump
 
                             if(!ret && !_force)
                             {
-                                _dumpLog.WriteLine(Localization.Core.Cannot_write_SCSI_MODE_SENSE_6);
-
                                 StoppingErrorMessage?.Invoke(Localization.Core.Cannot_write_SCSI_MODE_SENSE_6 +
                                                              Environment.NewLine                              +
                                                              outputFormat.ErrorMessage);
@@ -1154,7 +1044,8 @@ partial class Dump
 
         _resume.BadBlocks.Sort();
 
-        foreach(ulong bad in _resume.BadBlocks) _dumpLog.WriteLine(Localization.Core.Sector_0_could_not_be_read, bad);
+        foreach(ulong bad in _resume.BadBlocks)
+            AaruLogging.WriteLine(Localization.Core.Sector_0_could_not_be_read, bad);
 
         currentTry.Extents = ExtentsConverter.ToMetadata(extents);
 
@@ -1177,7 +1068,6 @@ partial class Dump
 
         if(_preSidecar != null) outputFormat.SetMetadata(_preSidecar);
 
-        _dumpLog.WriteLine(Localization.Core.Closing_output_file);
         UpdateStatus?.Invoke(Localization.Core.Closing_output_file);
         _imageCloseStopwatch.Restart();
         outputFormat.Close();
@@ -1186,13 +1076,9 @@ partial class Dump
         UpdateStatus?.Invoke(string.Format(Localization.Core.Closed_in_0,
                                            _imageCloseStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
 
-        _dumpLog.WriteLine(Localization.Core.Closed_in_0,
-                           _imageCloseStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
-
         if(_aborted)
         {
             UpdateStatus?.Invoke(Localization.Core.Aborted);
-            _dumpLog.WriteLine(Localization.Core.Aborted);
 
             return;
         }
@@ -1207,7 +1093,6 @@ partial class Dump
             else
             {
                 UpdateStatus?.Invoke(Localization.Core.Creating_sidecar);
-                _dumpLog.WriteLine(Localization.Core.Creating_sidecar);
                 IFilter     filter      = PluginRegister.Singleton.GetFilter(_outputPath);
                 var         inputPlugin = ImageFormat.Detect(filter) as IMediaImage;
                 ErrorNumber opened      = inputPlugin.Open(filter);
@@ -1243,14 +1128,6 @@ partial class Dump
                                                        ByteSize.FromBytes(blockSize * (blocks + 1))
                                                                .Per(totalChkDuration.Milliseconds())
                                                                .Humanize()));
-
-                    _dumpLog.WriteLine(Localization.Core.Sidecar_created_in_0,
-                                       _sidecarStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
-
-                    _dumpLog.WriteLine(Localization.Core.Average_checksum_speed_0,
-                                       ByteSize.FromBytes(blockSize * (blocks + 1))
-                                               .Per(totalChkDuration.Milliseconds())
-                                               .Humanize());
 
                     if(_preSidecar != null)
                     {
@@ -1354,7 +1231,6 @@ partial class Dump
                             */
 
                             UpdateStatus?.Invoke(Localization.Core.Requesting_MODE_SENSE_10);
-                            _dumpLog.WriteLine(Localization.Core.Requesting_MODE_SENSE_10);
 
                             sense = _dev.ModeSense10(out cmdBuf,
                                                      out _,
@@ -1396,7 +1272,6 @@ partial class Dump
                             }
 
                             UpdateStatus?.Invoke(Localization.Core.Requesting_MODE_SENSE_6);
-                            _dumpLog.WriteLine(Localization.Core.Requesting_MODE_SENSE_6);
 
                             sense = _dev.ModeSense6(out cmdBuf,
                                                     out _,
@@ -1461,10 +1336,6 @@ partial class Dump
                             UpdateStatus?.Invoke(string.Format(Localization.Core.Found_filesystem_0_at_sector_1,
                                                                filesystem.type,
                                                                filesystem.start));
-
-                            _dumpLog.WriteLine(Localization.Core.Found_filesystem_0_at_sector_1,
-                                               filesystem.type,
-                                               filesystem.start);
                         }
                     }
 

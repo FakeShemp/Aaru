@@ -32,6 +32,7 @@ using Aaru.CommonTypes.Extents;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Core.Logging;
 using Aaru.Decryption.DVD;
+using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
 
@@ -89,7 +90,6 @@ partial class Dump
             {
                 currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                 UpdateStatus?.Invoke(Localization.Core.Aborted);
-                _dumpLog.WriteLine(Localization.Core.Aborted);
 
                 break;
             }
@@ -118,7 +118,7 @@ partial class Dump
                 _writeStopwatch.Restart();
 
                 byte[] tmpBuf;
-                var    cmi = new byte[blocksToRead];
+                byte[] cmi = new byte[blocksToRead];
 
                 for(uint j = 0; j < blocksToRead; j++)
                 {
@@ -183,7 +183,7 @@ partial class Dump
                 mhddLog.Write(i, cmdDuration < 500 ? 65535 : cmdDuration, _skip);
 
                 ibgLog.Write(i, 0);
-                _dumpLog.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, i);
+                AaruLogging.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, i);
                 i       += _skip - blocksToRead;
                 newTrim =  true;
             }

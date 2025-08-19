@@ -54,6 +54,7 @@ using Aaru.Core.Media.Info;
 using Aaru.Devices;
 using Aaru.Gui.Models;
 using Aaru.Localization;
+using Aaru.Logging;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
@@ -499,7 +500,7 @@ public sealed class MediaDumpViewModel : ViewModelBase
         {
             this.RaiseAndSetIfChanged(ref _existingMetadata, value);
 
-            if(value == false)
+            if(!value)
             {
                 _sidecar = null;
 
@@ -857,9 +858,9 @@ public sealed class MediaDumpViewModel : ViewModelBase
             }
         */
 
-        var dumpLog = new DumpLog(_outputPrefix + ".log", _dev, false);
+        DumpLog.StartLog(_dev, false);
 
-        dumpLog.WriteLine(UI.Output_image_format_0, SelectedPlugin.Name);
+        AaruLogging.WriteLine(UI.Output_image_format_0, SelectedPlugin.Name);
 
         var errorLog = new ErrorLog(_outputPrefix + ".error.log");
 
@@ -873,15 +874,14 @@ public sealed class MediaDumpViewModel : ViewModelBase
                            Persistent,
                            StopOnError,
                            _resume,
-                           dumpLog,
                            encoding,
                            _outputPrefix,
                            Destination,
                            parsedOptions,
                            _sidecar,
                            (uint)Skipped,
-                           ExistingMetadata == false,
-                           Trim             == false,
+                           !ExistingMetadata,
+                           !Trim,
                            Track1Pregap,
                            true,
                            false,

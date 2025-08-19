@@ -429,8 +429,8 @@
     <value>[red]{0} sectors took more than 500 ms.[/]</value>
   </data>
     <data name="_0_sectors_could_not_be_read" xml:space="preserve">
-    <value>[maroon]{0} sectors could not be read.[/]</value>
-  </data>
+        <value>[maroon]{0} sectors could not be read.[/]</value>
+    </data>
     <data name="Testing_0_seeks_longest_seek_took_1_ms_fastest_one_took_2_ms_3_ms_average" xml:space="preserve">
     <value>[slateblue1]Testing [teal]{0}[/] seeks, longest seek took [aqua]{1:F3}[/] ms, fastest one took [aqua]{2:F3}[/] ms. ([aqua]{3:F3}[/] ms average)[/]</value>
   </data>

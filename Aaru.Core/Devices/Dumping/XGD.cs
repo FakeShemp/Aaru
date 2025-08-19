@@ -91,9 +91,8 @@ partial class Dump
             if(!isAdmin)
             {
                 AaruLogging.Error(Localization.Core
-                                                       .Because_of_commands_sent_dumping_XGD_must_be_administrative_Cannot_continue);
+                                              .Because_of_commands_sent_dumping_XGD_must_be_administrative_Cannot_continue);
 
-                _dumpLog.WriteLine(Localization.Core.Cannot_dump_XGD_without_administrative_privileges);
 
                 return;
             }
@@ -108,7 +107,6 @@ partial class Dump
 
         if(sense)
         {
-            _dumpLog.WriteLine(Localization.Core.Cannot_get_disc_capacity);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_get_disc_capacity);
 
             return;
@@ -127,31 +125,26 @@ partial class Dump
 
         if(sense)
         {
-            _dumpLog.WriteLine(Localization.Core.Cannot_get_PFI);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_get_PFI);
 
             return;
         }
 
         UpdateStatus?.Invoke(Localization.Core.Reading_Xbox_Security_Sector);
-        _dumpLog.WriteLine(Localization.Core.Reading_Xbox_Security_Sector);
         sense = _dev.KreonExtractSs(out byte[] ssBuf, out senseBuf, _dev.Timeout, out _);
 
         if(sense)
         {
-            _dumpLog.WriteLine(Localization.Core.Cannot_get_Xbox_Security_Sector_not_continuing);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_get_Xbox_Security_Sector_not_continuing);
 
             return;
         }
 
-        _dumpLog.WriteLine(Localization.Core.Decoding_Xbox_Security_Sector);
         UpdateStatus?.Invoke(Localization.Core.Decoding_Xbox_Security_Sector);
         SS.SecuritySector? xboxSs = SS.Decode(ssBuf);
 
         if(!xboxSs.HasValue)
         {
-            _dumpLog.WriteLine(Localization.Core.Cannot_decode_Xbox_Security_Sector_not_continuing);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_decode_Xbox_Security_Sector_not_continuing);
 
             return;
@@ -164,26 +157,22 @@ partial class Dump
         // Get video partition size
         AaruLogging.Debug(MODULE_NAME, Localization.Core.Getting_video_partition_size);
         UpdateStatus?.Invoke(Localization.Core.Locking_drive);
-        _dumpLog.WriteLine(Localization.Core.Locking_drive);
         sense = _dev.KreonLock(out senseBuf, _dev.Timeout, out _);
 
         if(sense)
         {
             _errorLog?.WriteLine("Kreon lock", _dev.Error, _dev.LastError, senseBuf);
 
-            _dumpLog.WriteLine(Localization.Core.Cannot_lock_drive_not_continuing);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_lock_drive_not_continuing);
 
             return;
         }
 
         UpdateStatus?.Invoke(Localization.Core.Getting_video_partition_size);
-        _dumpLog.WriteLine(Localization.Core.Getting_video_partition_size);
         sense = _dev.ReadCapacity(out byte[] readBuffer, out senseBuf, _dev.Timeout, out _);
 
         if(sense)
         {
-            _dumpLog.WriteLine(Localization.Core.Cannot_get_disc_capacity);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_get_disc_capacity);
 
             return;
@@ -193,7 +182,6 @@ partial class Dump
             (ulong)((readBuffer[0] << 24) + (readBuffer[1] << 16) + (readBuffer[2] << 8) + readBuffer[3]) & 0xFFFFFFFF;
 
         UpdateStatus?.Invoke(Localization.Core.Reading_Physical_Format_Information);
-        _dumpLog.WriteLine(Localization.Core.Reading_Physical_Format_Information);
 
         sense = _dev.ReadDiscStructure(out readBuffer,
                                        out senseBuf,
@@ -207,7 +195,6 @@ partial class Dump
 
         if(sense)
         {
-            _dumpLog.WriteLine(Localization.Core.Cannot_get_PFI);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_get_PFI);
 
             return;
@@ -225,7 +212,6 @@ partial class Dump
 
         ulong l1Video = totalSize - l0Video + 1;
         UpdateStatus?.Invoke(Localization.Core.Reading_Disc_Manufacturing_Information);
-        _dumpLog.WriteLine(Localization.Core.Reading_Disc_Manufacturing_Information);
 
         sense = _dev.ReadDiscStructure(out readBuffer,
                                        out senseBuf,
@@ -239,7 +225,6 @@ partial class Dump
 
         if(sense)
         {
-            _dumpLog.WriteLine(Localization.Core.Cannot_get_DMI);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_get_DMI);
 
             return;
@@ -253,7 +238,6 @@ partial class Dump
         if(totalSize > 300000)
         {
             UpdateStatus?.Invoke(Localization.Core.Video_partition_is_too_big_did_lock_work_Trying_cold_values);
-            _dumpLog.WriteLine(Localization.Core.Video_partition_is_too_big_did_lock_work_Trying_cold_values);
 
             totalSize = (ulong)((coldReadCapacity[0] << 24) +
                                 (coldReadCapacity[1] << 16) +
@@ -276,8 +260,6 @@ partial class Dump
 
             if(totalSize > 300000)
             {
-                _dumpLog.WriteLine(Localization.Core.Cannot_get_video_partition_size_not_continuing);
-
                 StoppingErrorMessage?.Invoke(Localization.Core.Cannot_get_video_partition_size_not_continuing);
 
                 return;
@@ -287,25 +269,21 @@ partial class Dump
         // Get game partition size
         AaruLogging.Debug(MODULE_NAME, Localization.Core.Getting_game_partition_size);
         UpdateStatus?.Invoke(Localization.Core.Unlocking_drive_Xtreme_);
-        _dumpLog.WriteLine(Localization.Core.Unlocking_drive_Xtreme_);
         sense = _dev.KreonUnlockXtreme(out senseBuf, _dev.Timeout, out _);
 
         if(sense)
         {
             _errorLog?.WriteLine("Kreon Xtreme unlock", _dev.Error, _dev.LastError, senseBuf);
-            _dumpLog.WriteLine(Localization.Core.Cannot_unlock_drive_not_continuing);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_unlock_drive_not_continuing);
 
             return;
         }
 
         UpdateStatus?.Invoke(Localization.Core.Getting_game_partition_size);
-        _dumpLog.WriteLine(Localization.Core.Getting_game_partition_size);
         sense = _dev.ReadCapacity(out readBuffer, out senseBuf, _dev.Timeout, out _);
 
         if(sense)
         {
-            _dumpLog.WriteLine(Localization.Core.Cannot_get_disc_capacity);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_get_disc_capacity);
 
             return;
@@ -321,25 +299,21 @@ partial class Dump
         // Get middle zone size
         AaruLogging.Debug(MODULE_NAME, Localization.Core.Getting_middle_zone_size);
         UpdateStatus?.Invoke(Localization.Core.Unlocking_drive_Wxripper);
-        _dumpLog.WriteLine(Localization.Core.Unlocking_drive_Wxripper);
         sense = _dev.KreonUnlockWxripper(out senseBuf, _dev.Timeout, out _);
 
         if(sense)
         {
             _errorLog?.WriteLine("Kreon Wxripper unlock", _dev.Error, _dev.LastError, senseBuf);
-            _dumpLog.WriteLine(Localization.Core.Cannot_unlock_drive_not_continuing);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_unlock_drive_not_continuing);
 
             return;
         }
 
         UpdateStatus?.Invoke(Localization.Core.Getting_disc_size);
-        _dumpLog.WriteLine(Localization.Core.Getting_disc_size);
         sense = _dev.ReadCapacity(out readBuffer, out senseBuf, _dev.Timeout, out _);
 
         if(sense)
         {
-            _dumpLog.WriteLine(Localization.Core.Cannot_get_disc_capacity);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_get_disc_capacity);
 
             return;
@@ -349,7 +323,6 @@ partial class Dump
                     0xFFFFFFFF;
 
         UpdateStatus?.Invoke(Localization.Core.Reading_Physical_Format_Information);
-        _dumpLog.WriteLine(Localization.Core.Reading_Physical_Format_Information);
 
         sense = _dev.ReadDiscStructure(out readBuffer,
                                        out senseBuf,
@@ -363,7 +336,6 @@ partial class Dump
 
         if(sense)
         {
-            _dumpLog.WriteLine(Localization.Core.Cannot_get_PFI);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_get_PFI);
 
             return;
@@ -376,7 +348,6 @@ partial class Dump
 
         if(wxRipperPfiNullable == null)
         {
-            _dumpLog.WriteLine(Localization.Core.Cannot_decode_PFI);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_decode_PFI);
 
             return;
@@ -391,11 +362,6 @@ partial class Dump
         UpdateStatus?.Invoke(string.Format(Localization.Core.WxRipper_PFI_Layer_0_End_PSN_0_sectors,
                                            wxRipperPfi.Layer0EndPSN));
 
-        _dumpLog.WriteLine(string.Format(Localization.Core.WxRipper_PFI_Data_Area_Start_PSN_0_sectors,
-                                         wxRipperPfi.DataAreaStartPSN));
-
-        _dumpLog.WriteLine(string.Format(Localization.Core.WxRipper_PFI_Layer_0_End_PSN_0_sectors,
-                                         wxRipperPfi.Layer0EndPSN));
 
         ulong middleZone = totalSize - (wxRipperPfi.Layer0EndPSN - wxRipperPfi.DataAreaStartPSN + 1) - gameSize + 1;
 
@@ -404,7 +370,6 @@ partial class Dump
         mediaTags.Add(MediaTagType.Xbox_PFI, tmpBuf);
 
         UpdateStatus?.Invoke(Localization.Core.Reading_Disc_Manufacturing_Information);
-        _dumpLog.WriteLine(Localization.Core.Reading_Disc_Manufacturing_Information);
 
         sense = _dev.ReadDiscStructure(out readBuffer,
                                        out senseBuf,
@@ -418,7 +383,6 @@ partial class Dump
 
         if(sense)
         {
-            _dumpLog.WriteLine(Localization.Core.Cannot_get_DMI);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_get_DMI);
 
             return;
@@ -439,13 +403,6 @@ partial class Dump
         UpdateStatus?.Invoke(string.Format(Localization.Core.Real_layer_break_0,           layerBreak));
         UpdateStatus?.Invoke("");
 
-        _dumpLog.WriteLine(Localization.Core.Video_layer_0_size_0_sectors, l0Video);
-        _dumpLog.WriteLine(Localization.Core.Video_layer_1_size_0_sectors, l1Video);
-        _dumpLog.WriteLine(Localization.Core.Middle_zone_size_0_sectors,   middleZone);
-        _dumpLog.WriteLine(Localization.Core.Game_data_size_0_sectors,     gameSize);
-        _dumpLog.WriteLine(Localization.Core.Total_size_0_sectors,         totalSize);
-        _dumpLog.WriteLine(Localization.Core.Real_layer_break_0,           layerBreak);
-
         bool read12 = !_dev.Read12(out readBuffer,
                                    out senseBuf,
                                    0,
@@ -463,28 +420,20 @@ partial class Dump
 
         if(!read12)
         {
-            _dumpLog.WriteLine(Localization.Core.Cannot_read_medium_aborting_scan);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_read_medium_aborting_scan);
 
             return;
         }
 
-        _dumpLog.WriteLine(Localization.Core.Using_SCSI_READ_12_command);
         UpdateStatus?.Invoke(Localization.Core.Using_SCSI_READ_12_command);
 
         // Set speed
         if(_speedMultiplier >= 0)
         {
             if(_speed == 0)
-            {
-                _dumpLog.WriteLine(Localization.Core.Setting_speed_to_MAX);
                 UpdateStatus?.Invoke(Localization.Core.Setting_speed_to_MAX);
-            }
             else
-            {
-                _dumpLog.WriteLine(string.Format(Localization.Core.Setting_speed_to_0_x,   _speed));
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Setting_speed_to_0_x, _speed));
-            }
 
             _speed *= _speedMultiplier;
 
@@ -517,8 +466,6 @@ partial class Dump
 
         if(_dev.Error)
         {
-            _dumpLog.WriteLine(Localization.Core.Device_error_0_trying_to_guess_ideal_transfer_length, _dev.LastError);
-
             StoppingErrorMessage?.Invoke(string.Format(Localization.Core
                                                                    .Device_error_0_trying_to_guess_ideal_transfer_length,
                                                        _dev.LastError));
@@ -533,27 +480,21 @@ partial class Dump
         foreach(MediaTagType tag in mediaTags.Keys.Where(tag => !outputFormat.SupportedMediaTags.Contains(tag)))
         {
             ret = false;
-            _dumpLog.WriteLine(string.Format(Localization.Core.Output_format_does_not_support_0,   tag));
             ErrorMessage?.Invoke(string.Format(Localization.Core.Output_format_does_not_support_0, tag));
         }
 
         if(!ret)
         {
             if(_force)
-            {
-                _dumpLog.WriteLine(Localization.Core.Several_media_tags_not_supported_continuing);
                 ErrorMessage?.Invoke(Localization.Core.Several_media_tags_not_supported_continuing);
-            }
             else
             {
-                _dumpLog.WriteLine(Localization.Core.Several_media_tags_not_supported_not_continuing);
                 StoppingErrorMessage?.Invoke(Localization.Core.Several_media_tags_not_supported_not_continuing);
 
                 return;
             }
         }
 
-        _dumpLog.WriteLine(Localization.Core.Reading_0_sectors_at_a_time, blocksToRead);
         UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_0_sectors_at_a_time, blocksToRead));
 
         var mhddLog = new MhddLog(_outputPrefix + ".mhddlog.bin",
@@ -570,9 +511,6 @@ partial class Dump
         // Cannot create image
         if(!ret)
         {
-            _dumpLog.WriteLine(Localization.Core.Error_creating_output_image_not_continuing);
-            _dumpLog.WriteLine(outputFormat.ErrorMessage);
-
             StoppingErrorMessage?.Invoke(Localization.Core.Error_creating_output_image_not_continuing +
                                          Environment.NewLine                                          +
                                          outputFormat.ErrorMessage);
@@ -639,14 +577,10 @@ partial class Dump
         ulong currentSector = _resume.NextBlock;
 
         if(_resume.NextBlock > 0)
-        {
             UpdateStatus?.Invoke(string.Format(Localization.Core.Resuming_from_block_0, _resume.NextBlock));
-            _dumpLog.WriteLine(Localization.Core.Resuming_from_block_0, _resume.NextBlock);
-        }
 
         bool newTrim = false;
 
-        _dumpLog.WriteLine(Localization.Core.Reading_game_partition);
         UpdateStatus?.Invoke(Localization.Core.Reading_game_partition);
         _speedStopwatch.Reset();
         ulong sectorSpeedStart = 0;
@@ -659,7 +593,6 @@ partial class Dump
                 _resume.NextBlock  = currentSector;
                 currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                 UpdateStatus?.Invoke(Localization.Core.Aborted);
-                _dumpLog.WriteLine(Localization.Core.Aborted);
 
                 break;
             }
@@ -707,7 +640,6 @@ partial class Dump
                 {
                     currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                     UpdateStatus?.Invoke(Localization.Core.Aborted);
-                    _dumpLog.WriteLine(Localization.Core.Aborted);
 
                     break;
                 }
@@ -772,21 +704,19 @@ partial class Dump
 
                     for(ulong b = i; b < i + _skip; b++) _resume.BadBlocks.Add(b);
 
-                    AaruLogging.Debug(MODULE_NAME,
-                                               Localization.Core.READ_error_0,
-                                               Sense.PrettifySense(senseBuf));
+                    AaruLogging.Debug(MODULE_NAME, Localization.Core.READ_error_0, Sense.PrettifySense(senseBuf));
 
                     mhddLog.Write(i, cmdDuration < 500 ? 65535 : cmdDuration, _skip);
 
                     ibgLog.Write(i, 0);
 
-                    _dumpLog.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, i);
+                    AaruLogging.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, i);
                     i += _skip - blocksToRead;
 
                     string[] senseLines = Sense.PrettifySense(senseBuf)
                                                .Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries);
 
-                    foreach(string senseLine in senseLines) _dumpLog.WriteLine(senseLine);
+                    foreach(string senseLine in senseLines) AaruLogging.WriteLine(senseLine);
 
                     newTrim = true;
                 }
@@ -816,7 +746,6 @@ partial class Dump
                 {
                     currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                     UpdateStatus?.Invoke(Localization.Core.Aborted);
-                    _dumpLog.WriteLine(Localization.Core.Aborted);
 
                     break;
                 }
@@ -847,7 +776,6 @@ partial class Dump
 
         // Middle Zone D
         UpdateStatus?.Invoke(Localization.Core.Writing_Middle_Zone_D_empty);
-        _dumpLog.WriteLine(Localization.Core.Writing_Middle_Zone_D_empty);
         InitProgress?.Invoke();
 
         for(ulong middle = currentSector - blocks - 1; middle < middleZone - 1; middle += blocksToRead)
@@ -856,7 +784,6 @@ partial class Dump
             {
                 currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                 UpdateStatus?.Invoke(Localization.Core.Aborted);
-                _dumpLog.WriteLine(Localization.Core.Aborted);
 
                 break;
             }
@@ -889,12 +816,10 @@ partial class Dump
         blocksToRead = saveBlocksToRead;
 
         UpdateStatus?.Invoke(Localization.Core.Locking_drive);
-        _dumpLog.WriteLine(Localization.Core.Locking_drive);
         sense = _dev.KreonLock(out senseBuf, _dev.Timeout, out _);
 
         if(sense)
         {
-            _dumpLog.WriteLine(Localization.Core.Cannot_lock_drive_not_continuing);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_lock_drive_not_continuing);
 
             return;
@@ -910,7 +835,6 @@ partial class Dump
         }
 
         // Video Layer 1
-        _dumpLog.WriteLine(Localization.Core.Reading_Video_Layer_1);
         UpdateStatus?.Invoke(Localization.Core.Reading_Video_Layer_1);
         InitProgress?.Invoke();
 
@@ -920,7 +844,6 @@ partial class Dump
             {
                 currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                 UpdateStatus?.Invoke(Localization.Core.Aborted);
-                _dumpLog.WriteLine(Localization.Core.Aborted);
 
                 break;
             }
@@ -988,13 +911,13 @@ partial class Dump
                 mhddLog.Write(l1, cmdDuration < 500 ? 65535 : cmdDuration, _skip);
 
                 ibgLog.Write(l1, 0);
-                _dumpLog.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, l1);
+                AaruLogging.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, l1);
                 l1 += _skip - blocksToRead;
 
                 string[] senseLines = Sense.PrettifySense(senseBuf)
                                            .Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries);
 
-                foreach(string senseLine in senseLines) _dumpLog.WriteLine(senseLine);
+                foreach(string senseLine in senseLines) AaruLogging.WriteLine(senseLine);
             }
 
             _writeStopwatch.Stop();
@@ -1015,13 +938,11 @@ partial class Dump
         EndProgress?.Invoke();
 
         UpdateStatus?.Invoke(Localization.Core.Unlocking_drive_Wxripper);
-        _dumpLog.WriteLine(Localization.Core.Unlocking_drive_Wxripper);
         sense = _dev.KreonUnlockWxripper(out senseBuf, _dev.Timeout, out _);
 
         if(sense)
         {
             _errorLog?.WriteLine("Kreon Wxripper unlock", _dev.Error, _dev.LastError, senseBuf);
-            _dumpLog.WriteLine(Localization.Core.Cannot_unlock_drive_not_continuing);
             StoppingErrorMessage?.Invoke(Localization.Core.Cannot_unlock_drive_not_continuing);
 
             return;
@@ -1061,26 +982,12 @@ partial class Dump
                                                    .Per(imageWriteDuration.Seconds())
                                                    .Humanize()));
 
-        _dumpLog.WriteLine(string.Format(Localization.Core.Dump_finished_in_0,
-                                         _dumpStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
-
-        _dumpLog.WriteLine(string.Format(Localization.Core.Average_dump_speed_0,
-                                         ByteSize.FromBytes(blockSize * (blocks + 1))
-                                                 .Per(totalDuration.Milliseconds())
-                                                 .Humanize()));
-
-        _dumpLog.WriteLine(string.Format(Localization.Core.Average_write_speed_0,
-                                         ByteSize.FromBytes(blockSize * (blocks + 1))
-                                                 .Per(imageWriteDuration.Seconds())
-                                                 .Humanize()));
-
 #region Trimming
 
         if(_resume.BadBlocks.Count > 0 && !_aborted && _trim && newTrim)
         {
             _trimStopwatch.Restart();
             UpdateStatus?.Invoke(Localization.Core.Trimming_skipped_sectors);
-            _dumpLog.WriteLine(Localization.Core.Trimming_skipped_sectors);
 
             ulong[] tmpArray = _resume.BadBlocks.ToArray();
             InitProgress?.Invoke();
@@ -1090,7 +997,7 @@ partial class Dump
                 if(_aborted)
                 {
                     currentTry.Extents = ExtentsConverter.ToMetadata(extents);
-                    _dumpLog.WriteLine(Localization.Core.Aborted);
+                    UpdateStatus?.Invoke(Localization.Core.Aborted);
 
                     break;
                 }
@@ -1132,9 +1039,6 @@ partial class Dump
 
             UpdateStatus?.Invoke(string.Format(Localization.Core.Trimming_finished_in_0,
                                                _trimStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
-
-            _dumpLog.WriteLine(string.Format(Localization.Core.Trimming_finished_in_0,
-                                             _trimStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
         }
 
 #endregion Trimming
@@ -1146,9 +1050,8 @@ partial class Dump
             List<ulong> tmpList = [];
 
             foreach(ulong ur in _resume.BadBlocks)
-            {
-                for(ulong i = ur; i < ur + blocksToRead; i++) tmpList.Add(i);
-            }
+                for(ulong i = ur; i < ur + blocksToRead; i++)
+                    tmpList.Add(i);
 
             tmpList.Sort();
 
@@ -1251,7 +1154,6 @@ partial class Dump
                 md10 = Modes.EncodeMode10(md, _dev.ScsiType);
 
                 UpdateStatus?.Invoke(Localization.Core.Sending_MODE_SELECT_to_drive_return_damaged_blocks);
-                _dumpLog.WriteLine(Localization.Core.Sending_MODE_SELECT_to_drive_return_damaged_blocks);
                 sense = _dev.ModeSelect(md6, out senseBuf, true, false, _dev.Timeout, out _);
 
                 if(sense) sense = _dev.ModeSelect10(md10, out senseBuf, true, false, _dev.Timeout, out _);
@@ -1262,9 +1164,6 @@ partial class Dump
                                                      .Drive_did_not_accept_MODE_SELECT_command_for_persistent_error_reading);
 
                     AaruLogging.Debug(Localization.Core.Error_0, Sense.PrettifySense(senseBuf));
-
-                    _dumpLog.WriteLine(Localization.Core
-                                                   .Drive_did_not_accept_MODE_SELECT_command_for_persistent_error_reading);
                 }
                 else
                     runningPersistent = true;
@@ -1280,7 +1179,6 @@ partial class Dump
                 {
                     currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                     UpdateStatus?.Invoke(Localization.Core.Aborted);
-                    _dumpLog.WriteLine(Localization.Core.Aborted);
 
                     break;
                 }
@@ -1337,8 +1235,6 @@ partial class Dump
                     UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_block_0_in_pass_1,
                                                        badSector,
                                                        pass));
-
-                    _dumpLog.WriteLine(Localization.Core.Correctly_retried_block_0_in_pass_1, badSector, pass);
                 }
                 else if(runningPersistent) outputFormat.WriteSector(readBuffer, badSector);
             }
@@ -1366,7 +1262,6 @@ partial class Dump
                 md10 = Modes.EncodeMode10(md, _dev.ScsiType);
 
                 UpdateStatus?.Invoke(Localization.Core.Sending_MODE_SELECT_to_drive_return_device_to_previous_status);
-                _dumpLog.WriteLine(Localization.Core.Sending_MODE_SELECT_to_drive_return_device_to_previous_status);
                 sense = _dev.ModeSelect(md6, out senseBuf, true, false, _dev.Timeout, out _);
 
                 if(sense) _dev.ModeSelect10(md10, out senseBuf, true, false, _dev.Timeout, out _);
@@ -1394,8 +1289,6 @@ partial class Dump
             if(ret || _force) continue;
 
             // Cannot write tag to image
-            _dumpLog.WriteLine(string.Format(Localization.Core.Cannot_write_tag_0, tag.Key));
-
             StoppingErrorMessage?.Invoke(string.Format(Localization.Core.Cannot_write_tag_0, tag.Key) +
                                          Environment.NewLine                                          +
                                          outputFormat.ErrorMessage);
@@ -1405,7 +1298,8 @@ partial class Dump
 
         _resume.BadBlocks.Sort();
 
-        foreach(ulong bad in _resume.BadBlocks) _dumpLog.WriteLine(Localization.Core.Sector_0_could_not_be_read, bad);
+        foreach(ulong bad in _resume.BadBlocks)
+            AaruLogging.WriteLine(Localization.Core.Sector_0_could_not_be_read, bad);
 
         currentTry.Extents = ExtentsConverter.ToMetadata(extents);
 
@@ -1426,7 +1320,6 @@ partial class Dump
 
         if(_preSidecar != null) outputFormat.SetMetadata(_preSidecar);
 
-        _dumpLog.WriteLine(Localization.Core.Closing_output_file);
         UpdateStatus?.Invoke(Localization.Core.Closing_output_file);
         _imageCloseStopwatch.Restart();
         outputFormat.Close();
@@ -1435,13 +1328,10 @@ partial class Dump
         UpdateStatus?.Invoke(string.Format(Localization.Core.Closed_in_0,
                                            _imageCloseStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
 
-        _dumpLog.WriteLine(Localization.Core.Closed_in_0,
-                           _imageCloseStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
 
         if(_aborted)
         {
             UpdateStatus?.Invoke(Localization.Core.Aborted);
-            _dumpLog.WriteLine(Localization.Core.Aborted);
 
             return;
         }

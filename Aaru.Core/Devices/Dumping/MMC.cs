@@ -44,6 +44,7 @@ using Aaru.Decoders.SCSI.MMC;
 using Aaru.Decryption;
 using Aaru.Decryption.DVD;
 using Aaru.Devices;
+using Aaru.Logging;
 using DDS = Aaru.Decoders.DVD.DDS;
 using DMI = Aaru.Decoders.Xbox.DMI;
 using DVDDecryption = Aaru.Decryption.DVD.Dump;
@@ -63,9 +64,9 @@ partial class Dump
         MediaType     dskType = MediaType.Unknown;
         bool          sense;
         byte[]        tmpBuf;
-        var           compactDisc      = true;
-        var           gotConfiguration = false;
-        var           isXbox           = false;
+        bool          compactDisc      = true;
+        bool          gotConfiguration = false;
+        bool          isXbox           = false;
         DVDDecryption dvdDecrypt       = null;
         _speedMultiplier = 1;
 
@@ -76,7 +77,7 @@ partial class Dump
         {
             gotConfiguration = true;
             Features.SeparatedFeatures ftr = Features.Separate(cmdBuf);
-            _dumpLog.WriteLine(Localization.Core.Device_reports_current_profile_is_0, ftr.CurrentProfile);
+            AaruLogging.WriteLine(Localization.Core.Device_reports_current_profile_is_0, ftr.CurrentProfile);
 
             switch(ftr.CurrentProfile)
             {
@@ -308,7 +309,7 @@ partial class Dump
 
         var   scsiReader = new Reader(_dev, _dev.Timeout, null, _errorLog, _dumpRaw);
         ulong blocks     = scsiReader.GetDeviceBlocks();
-        _dumpLog.WriteLine(Localization.Core.Device_reports_disc_has_0_blocks, blocks);
+        AaruLogging.WriteLine(Localization.Core.Device_reports_disc_has_0_blocks, blocks);
         Dictionary<MediaTagType, byte[]> mediaTags = new();
 
         if(dskType == MediaType.PD650)
@@ -328,7 +329,7 @@ partial class Dump
         switch(dskType)
         {
             case MediaType.Unknown when blocks > 0:
-                _dumpLog.WriteLine(Localization.Core.Reading_Physical_Format_Information);
+                AaruLogging.WriteLine(Localization.Core.Reading_Physical_Format_Information);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
                                                out _,
@@ -346,9 +347,6 @@ partial class Dump
 
                     if(nintendoPfi is { DiskCategory: DiskCategory.Nintendo, PartVersion: 15 })
                     {
-                        _dumpLog.WriteLine(Localization.Core
-                                                       .Dumping_Nintendo_GameCube_or_Wii_discs_is_not_yet_implemented);
-
                         StoppingErrorMessage?.Invoke(Localization.Core
                                                                  .Dumping_Nintendo_GameCube_or_Wii_discs_is_not_yet_implemented);
 
@@ -374,7 +372,8 @@ partial class Dump
             case MediaType.HDDVDROM:
             case MediaType.HDDVDRW:
             case MediaType.HDDVDRWDL:
-                _dumpLog.WriteLine(Localization.Core.Reading_Physical_Format_Information);
+
+                AaruLogging.WriteLine(Localization.Core.Reading_Physical_Format_Information);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
                                                out _,
@@ -424,7 +423,7 @@ partial class Dump
                     }
                 }
 
-                _dumpLog.WriteLine(Localization.Core.Reading_Disc_Manufacturing_Information);
+                AaruLogging.WriteLine(Localization.Core.Reading_Disc_Manufacturing_Information);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
                                                out _,
@@ -459,9 +458,6 @@ partial class Dump
 
                         if(sense || Inquiry.Decode(inqBuf)?.KreonPresent != true)
                         {
-                            _dumpLog.WriteLine(Localization.Core
-                                                           .Dumping_Xbox_Game_Discs_requires_a_drive_with_Kreon_firmware);
-
                             StoppingErrorMessage?.Invoke(Localization.Core
                                                                      .Dumping_Xbox_Game_Discs_requires_a_drive_with_Kreon_firmware);
 
@@ -493,15 +489,11 @@ partial class Dump
 
 #endregion Nintendo
 
-#region All DVD and HD DVD types
-
-#endregion All DVD and HD DVD types
-
 #region DVD-ROM
 
         if(dskType is MediaType.DVDDownload or MediaType.DVDROM)
         {
-            _dumpLog.WriteLine(Localization.Core.Reading_Lead_in_Copyright_Information);
+            AaruLogging.WriteLine(Localization.Core.Reading_Lead_in_Copyright_Information);
 
             sense = _dev.ReadDiscStructure(out cmdBuf,
                                            out _,
@@ -641,7 +633,7 @@ partial class Dump
             case MediaType.DVDDownload:
             case MediaType.DVDROM:
             case MediaType.HDDVDROM:
-                _dumpLog.WriteLine(Localization.Core.Reading_Burst_Cutting_Area);
+                AaruLogging.WriteLine(Localization.Core.Reading_Burst_Cutting_Area);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
                                                out _,
@@ -668,7 +660,7 @@ partial class Dump
 
             case MediaType.DVDRAM:
             case MediaType.HDDVDRAM:
-                _dumpLog.WriteLine(Localization.Core.Reading_Disc_Description_Structure);
+                AaruLogging.WriteLine(Localization.Core.Reading_Disc_Description_Structure);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
                                                out _,
@@ -690,7 +682,7 @@ partial class Dump
                     }
                 }
 
-                _dumpLog.WriteLine(Localization.Core.Reading_Spare_Area_Information);
+                AaruLogging.WriteLine(Localization.Core.Reading_Spare_Area_Information);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
                                                out _,
@@ -720,7 +712,7 @@ partial class Dump
 
             case MediaType.DVDR:
             case MediaType.DVDRW:
-                _dumpLog.WriteLine(Localization.Core.Reading_Pre_Recorded_Information);
+                AaruLogging.WriteLine(Localization.Core.Reading_Pre_Recorded_Information);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
                                                out _,
@@ -751,7 +743,7 @@ partial class Dump
             case MediaType.DVDR:
             case MediaType.DVDRW:
             case MediaType.HDDVDR:
-                _dumpLog.WriteLine(Localization.Core.Reading_Media_Identifier);
+                AaruLogging.WriteLine(Localization.Core.Reading_Media_Identifier);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
                                                out _,
@@ -770,7 +762,7 @@ partial class Dump
                     mediaTags.Add(MediaTagType.DVDR_MediaIdentifier, tmpBuf);
                 }
 
-                _dumpLog.WriteLine(Localization.Core.Reading_Recordable_Physical_Information);
+                AaruLogging.WriteLine(Localization.Core.Reading_Recordable_Physical_Information);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
                                                out _,
@@ -799,7 +791,7 @@ partial class Dump
             case MediaType.DVDPRDL:
             case MediaType.DVDPRW:
             case MediaType.DVDPRWDL:
-                _dumpLog.WriteLine(Localization.Core.Reading_ADdress_In_Pregroove);
+                AaruLogging.WriteLine(Localization.Core.Reading_ADdress_In_Pregroove);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
                                                out _,
@@ -818,7 +810,7 @@ partial class Dump
                     mediaTags.Add(MediaTagType.DVD_ADIP, tmpBuf);
                 }
 
-                _dumpLog.WriteLine(Localization.Core.Reading_Disc_Control_Blocks);
+                AaruLogging.WriteLine(Localization.Core.Reading_Disc_Control_Blocks);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
                                                out _,
@@ -844,7 +836,7 @@ partial class Dump
 #region HD DVD-ROM
 
             case MediaType.HDDVDROM:
-                _dumpLog.WriteLine(Localization.Core.Reading_Lead_in_Copyright_Information);
+                AaruLogging.WriteLine(Localization.Core.Reading_Lead_in_Copyright_Information);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
                                                out _,
@@ -875,7 +867,7 @@ partial class Dump
             case MediaType.BDRXL:
             case MediaType.BDREXL:
             case MediaType.UHDBD:
-                _dumpLog.WriteLine(Localization.Core.Reading_Disc_Information);
+                AaruLogging.WriteLine(Localization.Core.Reading_Disc_Information);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
                                                out _,
@@ -919,7 +911,7 @@ partial class Dump
 
             case MediaType.BDROM:
             case MediaType.UHDBD:
-                _dumpLog.WriteLine(Localization.Core.Reading_Burst_Cutting_Area);
+                AaruLogging.WriteLine(Localization.Core.Reading_Burst_Cutting_Area);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
                                                out _,
@@ -948,7 +940,7 @@ partial class Dump
             case MediaType.BDRE:
             case MediaType.BDRXL:
             case MediaType.BDREXL:
-                _dumpLog.WriteLine(Localization.Core.Reading_Disc_Definition_Structure);
+                AaruLogging.WriteLine(Localization.Core.Reading_Disc_Definition_Structure);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
                                                out _,
@@ -967,7 +959,7 @@ partial class Dump
                     mediaTags.Add(MediaTagType.BD_DDS, tmpBuf);
                 }
 
-                _dumpLog.WriteLine(Localization.Core.Reading_Spare_Area_Information);
+                AaruLogging.WriteLine(Localization.Core.Reading_Spare_Area_Information);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
                                                out _,
@@ -1033,7 +1025,7 @@ partial class Dump
                     Checksums = Checksum.GetChecksums(tag)
                 };
 
-                var tmp = new byte[tag.Length + 4];
+                byte[] tmp = new byte[tag.Length + 4];
                 Array.Copy(tag, 0, tmp, 4, tag.Length);
                 tmp[0] = (byte)((tag.Length & 0xFF00) >> 8);
                 tmp[1] = (byte)(tag.Length & 0xFF);

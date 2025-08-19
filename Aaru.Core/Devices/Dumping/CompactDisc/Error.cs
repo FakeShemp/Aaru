@@ -197,7 +197,6 @@ partial class Dump
             md10 = Modes.EncodeMode10(md, _dev.ScsiType);
 
             UpdateStatus?.Invoke(Localization.Core.Sending_MODE_SELECT_to_drive_return_damaged_blocks);
-            _dumpLog.WriteLine(Localization.Core.Sending_MODE_SELECT_to_drive_return_damaged_blocks);
             sense = _dev.ModeSelect(md6, out senseBuf, true, false, _dev.Timeout, out _);
 
             if(sense) sense = _dev.ModeSelect10(md10, out senseBuf, true, false, _dev.Timeout, out _);
@@ -208,9 +207,6 @@ partial class Dump
                                                  .Drive_did_not_accept_MODE_SELECT_command_for_persistent_error_reading);
 
                 AaruLogging.Debug(Localization.Core.Error_0, Sense.PrettifySense(senseBuf));
-
-                _dumpLog.WriteLine(Localization.Core
-                                               .Drive_did_not_accept_MODE_SELECT_command_for_persistent_error_reading);
             }
             else
                 runningPersistent = true;
@@ -228,7 +224,7 @@ partial class Dump
             if(_aborted)
             {
                 currentTry.Extents = ExtentsConverter.ToMetadata(extents);
-                _dumpLog.WriteLine(Localization.Core.Aborted);
+                AaruLogging.WriteLine(Localization.Core.Aborted);
 
                 break;
             }
@@ -469,8 +465,9 @@ partial class Dump
 
                 // MEDIUM ERROR, retry with ignore error below
                 if(decSense is { ASC: 0x11 })
-                    if(!sectorsNotEvenPartial.Contains(badSector))
-                        sectorsNotEvenPartial.Add(badSector);
+                {
+                    if(!sectorsNotEvenPartial.Contains(badSector)) sectorsNotEvenPartial.Add(badSector);
+                }
             }
 
             // Because one block has been partially used to fix the offset
@@ -499,7 +496,6 @@ partial class Dump
                                                    badSector,
                                                    pass));
 
-                _dumpLog.WriteLine(Localization.Core.Correctly_retried_sector_0_in_pass_1, badSector, pass);
                 sectorsNotEvenPartial.Remove(badSector);
             }
             else
@@ -532,7 +528,6 @@ partial class Dump
                                                                                outputOptical,
                                                                                _fixSubchannel,
                                                                                _fixSubchannelCrc,
-                                                                               _dumpLog,
                                                                                UpdateStatus,
                                                                                smallestPregapLbaPerTrack,
                                                                                true,
@@ -600,7 +595,7 @@ partial class Dump
             md6  = Modes.EncodeMode6(md, _dev.ScsiType);
             md10 = Modes.EncodeMode10(md, _dev.ScsiType);
 
-            _dumpLog.WriteLine(Localization.Core.Sending_MODE_SELECT_to_drive_ignore_error_correction);
+            AaruLogging.WriteLine(Localization.Core.Sending_MODE_SELECT_to_drive_ignore_error_correction);
             sense = _dev.ModeSelect(md6, out senseBuf, true, false, _dev.Timeout, out _);
 
             if(sense) sense = _dev.ModeSelect10(md10, out senseBuf, true, false, _dev.Timeout, out _);
@@ -618,7 +613,7 @@ partial class Dump
                     if(_aborted)
                     {
                         currentTry.Extents = ExtentsConverter.ToMetadata(extents);
-                        _dumpLog.WriteLine(Localization.Core.Aborted);
+                        AaruLogging.WriteLine(Localization.Core.Aborted);
 
                         break;
                     }
@@ -657,7 +652,7 @@ partial class Dump
                         continue;
                     }
 
-                    _dumpLog.WriteLine(Localization.Core.Got_partial_data_for_sector_0_in_pass_1, badSector, pass);
+                    AaruLogging.WriteLine(Localization.Core.Got_partial_data_for_sector_0_in_pass_1, badSector, pass);
 
                     if(supportedSubchannel != MmcSubchannel.None)
                     {
@@ -686,7 +681,6 @@ partial class Dump
                             outputOptical,
                             _fixSubchannel,
                             _fixSubchannelCrc,
-                            _dumpLog,
                             UpdateStatus,
                             smallestPregapLbaPerTrack,
                             true,
@@ -722,7 +716,7 @@ partial class Dump
             md6  = Modes.EncodeMode6(md, _dev.ScsiType);
             md10 = Modes.EncodeMode10(md, _dev.ScsiType);
 
-            _dumpLog.WriteLine(Localization.Core.Sending_MODE_SELECT_to_drive_return_device_to_previous_status);
+            AaruLogging.WriteLine(Localization.Core.Sending_MODE_SELECT_to_drive_return_device_to_previous_status);
             sense = _dev.ModeSelect(md6, out senseBuf, true, false, _dev.Timeout, out _);
 
             if(sense) _dev.ModeSelect10(md10, out senseBuf, true, false, _dev.Timeout, out _);
@@ -790,7 +784,7 @@ partial class Dump
 
             if(_aborted)
             {
-                _dumpLog.WriteLine(Localization.Core.Aborted);
+                AaruLogging.WriteLine(Localization.Core.Aborted);
 
                 break;
             }
@@ -862,7 +856,6 @@ partial class Dump
                                                      outputOptical,
                                                      _fixSubchannel,
                                                      _fixSubchannelCrc,
-                                                     _dumpLog,
                                                      UpdateStatus,
                                                      smallestPregapLbaPerTrack,
                                                      true,
@@ -873,8 +866,6 @@ partial class Dump
             UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_sector_0_subchannel_in_pass_1,
                                                badSector,
                                                pass));
-
-            _dumpLog.WriteLine(Localization.Core.Correctly_retried_sector_0_subchannel_in_pass_1, badSector, pass);
         }
 
         if(pass < _retryPasses && !_aborted && subchannelExtents.Count > 0)

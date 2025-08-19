@@ -45,6 +45,7 @@ using Aaru.Core.Graphics;
 using Aaru.Core.Logging;
 using Aaru.Decoders.ATA;
 using Aaru.Decoders.PCMCIA;
+using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
 using Humanizer.Localisation;
@@ -85,7 +86,6 @@ public partial class Dump
         MediaType    mediaType          = MediaType.Unknown;
 
         UpdateStatus?.Invoke(Localization.Core.Requesting_ATA_IDENTIFY_DEVICE);
-        _dumpLog.WriteLine(Localization.Core.Requesting_ATA_IDENTIFY_DEVICE);
         bool sense = _dev.AtaIdentify(out byte[] cmdBuf, out AtaErrorRegistersChs errorChs);
 
         if(sense)
@@ -107,7 +107,6 @@ public partial class Dump
 
                 // Initialize reader
                 UpdateStatus?.Invoke(Localization.Core.Initializing_reader);
-                _dumpLog.WriteLine(Localization.Core.Initializing_reader);
                 var ataReader = new Reader(_dev, timeout, ataIdentify, _errorLog);
 
                 // Fill reader blocks
@@ -116,7 +115,7 @@ public partial class Dump
                 // Check block sizes
                 if(ataReader.GetBlockSize())
                 {
-                    _dumpLog.WriteLine(Localization.Core.ERROR_Cannot_get_block_size_0, ataReader.ErrorMessage);
+                    AaruLogging.Error(Localization.Core.ERROR_Cannot_get_block_size_0, ataReader.ErrorMessage);
                     ErrorMessage(ataReader.ErrorMessage);
 
                     return;
@@ -127,8 +126,8 @@ public partial class Dump
 
                 if(ataReader.FindReadCommand())
                 {
-                    _dumpLog.WriteLine(Localization.Core.ERROR_Cannot_find_correct_read_command_0,
-                                       ataReader.ErrorMessage);
+                    AaruLogging.Error(Localization.Core.ERROR_Cannot_find_correct_read_command_0,
+                                      ataReader.ErrorMessage);
 
                     ErrorMessage(ataReader.ErrorMessage);
 
@@ -138,7 +137,7 @@ public partial class Dump
                 // Check how many blocks to read, if error show and return
                 if(ataReader.GetBlocksToRead(_maximumReadable))
                 {
-                    _dumpLog.WriteLine(Localization.Core.ERROR_Cannot_get_blocks_to_read_0, ataReader.ErrorMessage);
+                    AaruLogging.Error(Localization.Core.ERROR_Cannot_get_blocks_to_read_0, ataReader.ErrorMessage);
                     ErrorMessage(ataReader.ErrorMessage);
 
                     return;
@@ -166,17 +165,6 @@ public partial class Dump
 
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Device_reports_0_bytes_per_physical_block,
                                                    physicalSectorSize));
-
-                _dumpLog.WriteLine(Localization.Core.Device_reports_0_blocks_1_bytes, blocks, blocks * blockSize);
-
-                _dumpLog.WriteLine(Localization.Core.Device_reports_0_cylinders_1_heads_2_sectors_per_track,
-                                   cylinders,
-                                   heads,
-                                   sectors);
-
-                _dumpLog.WriteLine(Localization.Core.Device_can_read_0_blocks_at_a_time,        blocksToRead);
-                _dumpLog.WriteLine(Localization.Core.Device_reports_0_bytes_per_logical_block,  blockSize);
-                _dumpLog.WriteLine(Localization.Core.Device_reports_0_bytes_per_physical_block, physicalSectorSize);
 
                 bool removable = !_dev.IsCompactFlash &&
                                  ataId.GeneralConfiguration.HasFlag(Identify.GeneralConfigurationBit.Removable);
@@ -209,14 +197,13 @@ public partial class Dump
                 IbgLog  ibgLog;
                 double  duration;
 
-                var ret = true;
+                bool ret = true;
 
                 if(_dev.IsUsb                  &&
                    _dev.UsbDescriptors != null &&
                    !outputFormat.SupportedMediaTags.Contains(MediaTagType.USB_Descriptors))
                 {
                     ret = false;
-                    _dumpLog.WriteLine(Localization.Core.Output_format_does_not_support_USB_descriptors);
                     ErrorMessage(Localization.Core.Output_format_does_not_support_USB_descriptors);
                 }
 
@@ -225,27 +212,21 @@ public partial class Dump
                    !outputFormat.SupportedMediaTags.Contains(MediaTagType.PCMCIA_CIS))
                 {
                     ret = false;
-                    _dumpLog.WriteLine(Localization.Core.Output_format_does_not_support_PCMCIA_CIS_descriptors);
                     ErrorMessage(Localization.Core.Output_format_does_not_support_PCMCIA_CIS_descriptors);
                 }
 
                 if(!outputFormat.SupportedMediaTags.Contains(MediaTagType.ATA_IDENTIFY))
                 {
                     ret = false;
-                    _dumpLog.WriteLine(Localization.Core.Dump_Ata_Output_format_does_not_support_ATA_IDENTIFY_);
                     ErrorMessage(Localization.Core.Dump_Ata_Output_format_does_not_support_ATA_IDENTIFY_);
                 }
 
                 if(!ret)
                 {
                     if(_force)
-                    {
-                        _dumpLog.WriteLine(Localization.Core.Several_media_tags_not_supported_continuing);
                         ErrorMessage(Localization.Core.Several_media_tags_not_supported_continuing);
-                    }
                     else
                     {
-                        _dumpLog.WriteLine(Localization.Core.Several_media_tags_not_supported_not_continuing);
                         StoppingErrorMessage?.Invoke(Localization.Core.Several_media_tags_not_supported_not_continuing);
 
                         return;
@@ -264,9 +245,6 @@ public partial class Dump
                 // Cannot create image
                 if(!ret)
                 {
-                    _dumpLog.WriteLine(Localization.Core.Error_creating_output_image_not_continuing);
-                    _dumpLog.WriteLine(outputFormat.ErrorMessage);
-
                     StoppingErrorMessage?.Invoke(Localization.Core.Error_creating_output_image_not_continuing +
                                                  Environment.NewLine                                          +
                                                  outputFormat.ErrorMessage);
@@ -296,10 +274,7 @@ public partial class Dump
                     ibgLog = new IbgLog(_outputPrefix + ".ibg", ataProfile);
 
                     if(_resume.NextBlock > 0)
-                    {
                         UpdateStatus?.Invoke(string.Format(Localization.Core.Resuming_from_block_0, _resume.NextBlock));
-                        _dumpLog.WriteLine(Localization.Core.Resuming_from_block_0, _resume.NextBlock);
-                    }
 
                     if(_createGraph)
                     {
@@ -319,7 +294,7 @@ public partial class Dump
                         _mediaGraph?.PaintSectorsBad(_resume.BadBlocks);
                     }
 
-                    var newTrim = false;
+                    bool newTrim = false;
 
                     _dumpStopwatch.Restart();
                     _speedStopwatch.Reset();
@@ -332,7 +307,6 @@ public partial class Dump
                         {
                             currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                             UpdateStatus?.Invoke(Localization.Core.Aborted);
-                            _dumpLog.WriteLine(Localization.Core.Aborted);
 
                             break;
                         }
@@ -378,7 +352,11 @@ public partial class Dump
                             ibgLog.Write(i, 0);
                             outputFormat.WriteSectors(new byte[blockSize * _skip], i, _skip);
                             imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
-                            _dumpLog.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, i);
+
+                            UpdateProgress?.Invoke(Localization.Core.Skipping_0_blocks_from_errored_block_1,
+                                                   _skip,
+                                                   (long)i);
+
                             i       += _skip - blocksToRead;
                             newTrim =  true;
                         }
@@ -426,18 +404,6 @@ public partial class Dump
                                                                .Per(imageWriteDuration.Seconds())
                                                                .Humanize()));
 
-                    _dumpLog.WriteLine(string.Format(Localization.Core.Dump_finished_in_0,
-                                                     _dumpStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
-
-                    _dumpLog.WriteLine(Localization.Core.Average_dump_speed_0,
-                                       ByteSize.FromBytes(blockSize * (blocks + 1))
-                                               .Per(totalDuration.Milliseconds())
-                                               .Humanize());
-
-                    _dumpLog.WriteLine(string.Format(Localization.Core.Average_write_speed_0,
-                                                     ByteSize.FromBytes(blockSize * (blocks + 1))
-                                                             .Per(imageWriteDuration.Seconds())
-                                                             .Humanize()));
 
 #region Trimming
 
@@ -445,7 +411,6 @@ public partial class Dump
                     {
                         _trimStopwatch.Restart();
                         UpdateStatus?.Invoke(Localization.Core.Trimming_skipped_sectors);
-                        _dumpLog.WriteLine(Localization.Core.Trimming_skipped_sectors);
 
                         ulong[] tmpArray = _resume.BadBlocks.ToArray();
                         InitProgress?.Invoke();
@@ -456,7 +421,6 @@ public partial class Dump
                             {
                                 currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                                 UpdateStatus?.Invoke(Localization.Core.Aborted);
-                                _dumpLog.WriteLine(Localization.Core.Aborted);
 
                                 break;
                             }
@@ -481,9 +445,6 @@ public partial class Dump
 
                         UpdateStatus?.Invoke(string.Format(Localization.Core.Trimming_finished_in_0,
                                                            _trimStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
-
-                        _dumpLog.WriteLine(string.Format(Localization.Core.Trimming_finished_in_0,
-                                                         _trimStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
                     }
 
 #endregion Trimming
@@ -492,8 +453,8 @@ public partial class Dump
 
                     if(_resume.BadBlocks.Count > 0 && !_aborted && _retryPasses > 0)
                     {
-                        var pass    = 1;
-                        var forward = true;
+                        int  pass    = 1;
+                        bool forward = true;
 
                         InitProgress?.Invoke();
                     repeatRetryLba:
@@ -505,7 +466,6 @@ public partial class Dump
                             {
                                 currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                                 UpdateStatus?.Invoke(Localization.Core.Aborted);
-                                _dumpLog.WriteLine(Localization.Core.Aborted);
 
                                 break;
                             }
@@ -551,10 +511,6 @@ public partial class Dump
                                                                       .Correctly_retried_block_0_in_pass_1,
                                                                    badSector,
                                                                    pass));
-
-                                _dumpLog.WriteLine(Localization.Core.Correctly_retried_block_0_in_pass_1,
-                                                   badSector,
-                                                   pass);
                             }
                             else if(_persistent) outputFormat.WriteSector(cmdBuf, badSector);
                         }
@@ -624,7 +580,6 @@ public partial class Dump
                                 {
                                     currentTry.Extents = ExtentsConverter.ToMetadata(extents);
                                     UpdateStatus?.Invoke(Localization.Core.Aborted);
-                                    _dumpLog.WriteLine(Localization.Core.Aborted);
 
                                     break;
                                 }
@@ -663,11 +618,6 @@ public partial class Dump
                                     imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
                                     extents.Add(currentBlock);
                                     _mediaGraph?.PaintSectorGood((ulong)((cy * heads + hd) * sectors + (sc - 1)));
-
-                                    _dumpLog.WriteLine(Localization.Core.Error_reading_cylinder_0_head_1_sector_2,
-                                                       cy,
-                                                       hd,
-                                                       sc);
                                 }
                                 else
                                 {
@@ -725,23 +675,10 @@ public partial class Dump
                                                        ByteSize.FromBytes(blockSize * (blocks + 1))
                                                                .Per(imageWriteDuration.Seconds())
                                                                .Humanize()));
-
-                    _dumpLog.WriteLine(string.Format(Localization.Core.Dump_finished_in_0,
-                                                     _dumpStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
-
-                    _dumpLog.WriteLine(Localization.Core.Average_dump_speed_0,
-                                       ByteSize.FromBytes(blockSize * (blocks + 1))
-                                               .Per(totalDuration.Milliseconds())
-                                               .Humanize());
-
-                    _dumpLog.WriteLine(Localization.Core.Average_write_speed_0,
-                                       ByteSize.FromBytes(blockSize * (blocks + 1))
-                                               .Per(imageWriteDuration.Seconds())
-                                               .Humanize());
                 }
 
                 foreach(ulong bad in _resume.BadBlocks)
-                    _dumpLog.WriteLine(Localization.Core.Sector_0_could_not_be_read, bad);
+                    AaruLogging.Information(Localization.Core.Sector_0_could_not_be_read, bad);
 
                 outputFormat.SetDumpHardware(_resume.Tries);
 
@@ -761,7 +698,6 @@ public partial class Dump
 
                 if(_preSidecar != null) outputFormat.SetMetadata(_preSidecar);
 
-                _dumpLog.WriteLine(Localization.Core.Closing_output_file);
                 UpdateStatus?.Invoke(Localization.Core.Closing_output_file);
                 _imageCloseStopwatch.Restart();
                 outputFormat.Close();
@@ -770,12 +706,9 @@ public partial class Dump
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Closed_in_0,
                                                    _imageCloseStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second)));
 
-                _dumpLog.WriteLine(Localization.Core.Closed_in_0,
-                                   _imageCloseStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
 
                 if(_aborted)
                 {
-                    _dumpLog.WriteLine(Localization.Core.Aborted);
                     UpdateStatus?.Invoke(Localization.Core.Aborted);
 
                     return;
@@ -792,7 +725,6 @@ public partial class Dump
 
                 if(_metadata)
                 {
-                    _dumpLog.WriteLine(Localization.Core.Creating_sidecar);
                     UpdateStatus?.Invoke(Localization.Core.Creating_sidecar);
                     IFilter     filter      = PluginRegister.Singleton.GetFilter(_outputPath);
                     var         inputPlugin = ImageFormat.Detect(filter) as IMediaImage;
@@ -829,7 +761,6 @@ public partial class Dump
 
                         if(_dev.IsUsb && _dev.UsbDescriptors != null)
                         {
-                            _dumpLog.WriteLine(Localization.Core.Reading_USB_descriptors);
                             UpdateStatus?.Invoke(Localization.Core.Reading_USB_descriptors);
 
                             sidecar.BlockMedias[0].Usb = new Usb
@@ -847,7 +778,6 @@ public partial class Dump
 
                         if(_dev.IsPcmcia && _dev.Cis != null)
                         {
-                            _dumpLog.WriteLine(Localization.Core.Reading_PCMCIA_CIS);
                             UpdateStatus?.Invoke(Localization.Core.Reading_PCMCIA_CIS);
 
                             sidecar.BlockMedias[0].Pcmcia = new Pcmcia
@@ -860,7 +790,6 @@ public partial class Dump
                                 }
                             };
 
-                            _dumpLog.WriteLine(Localization.Core.Decoding_PCMCIA_CIS);
                             UpdateStatus?.Invoke(Localization.Core.Decoding_PCMCIA_CIS);
                             Tuple[] tuples = CIS.GetTuples(_dev.Cis);
 
@@ -931,14 +860,6 @@ public partial class Dump
                                                                    .Per(totalChkDuration.Milliseconds())
                                                                    .Humanize()));
 
-                        _dumpLog.WriteLine(Localization.Core.Sidecar_created_in_0,
-                                           _sidecarStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
-
-                        _dumpLog.WriteLine(Localization.Core.Average_checksum_speed_0,
-                                           ByteSize.FromBytes(blockSize * (blocks + 1))
-                                                   .Per(totalChkDuration.Milliseconds())
-                                                   .Humanize());
-
                         List<(ulong start, string type)> filesystems = [];
 
                         if(sidecar.BlockMedias[0].FileSystemInformation != null)
@@ -961,10 +882,6 @@ public partial class Dump
                                 UpdateStatus?.Invoke(string.Format(Localization.Core.Found_filesystem_0_at_sector_1,
                                                                    filesystem.type,
                                                                    filesystem.start));
-
-                                _dumpLog.WriteLine(Localization.Core.Found_filesystem_0_at_sector_1,
-                                                   filesystem.type,
-                                                   filesystem.start);
                             }
                         }
 
