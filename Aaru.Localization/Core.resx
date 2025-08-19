@@ -303,8 +303,8 @@
     <value>Medium Status</value>
   </data>
     <data name="DVD_RW_Pre_Recorded_Information" xml:space="preserve">
-    <value>DVD-R(W) Pre-Recorded Information</value>
-  </data>
+        <value>[bold][blue]DVD-R(W) Pre-Recorded Information:[/][/]</value>
+    </data>
     <data name="DVD_RW_PFI" xml:space="preserve">
         <value>[bold][blue]DVD-R(W) PFI:[/][/]</value>
     </data>

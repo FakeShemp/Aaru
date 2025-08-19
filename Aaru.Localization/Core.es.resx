@@ -965,8 +965,8 @@
         <value>[bold][blue]PFI de DVD-R(W)[/][/]</value>
     </data>
     <data name="DVD_RW_Pre_Recorded_Information" xml:space="preserve">
-    <value>Información pre-grabada de DVD-R(W)</value>
-  </data>
+        <value>[bold][blue]Información pre-grabada de DVD-R(W):[/][/]</value>
+    </data>
     <data name="DVD_RW_Pre_Recorded_Information_WithMarkup" xml:space="preserve">
         <value>[bold][blue]Información pre-grabada de DVD-R(W):[/][/]</value>
     </data>
@@ -1548,7 +1548,7 @@
     <value>El MCN cambió de {0} a {1}.</value>
   </data>
     <data name="Media_barcode_0_WithMarkup" xml:space="preserve">
-        <value>[bold][slateblue]Código de barras del medio:[/][/] [italic]{0}[/]</value>
+        <value>[bold][slateblue1]Código de barras del medio:[/][/] [italic]{0}[/]</value>
     </data>
     <data name="Media_card_is_write_protected" xml:space="preserve">
     <value>La tarjeta de memoria está protegida contra escritura</value>

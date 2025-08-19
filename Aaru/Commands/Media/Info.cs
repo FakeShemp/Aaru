@@ -424,8 +424,8 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 
                 if(scsiInfo.DecodedDvdPrePitInformation.HasValue)
                 {
-                    AaruLogging.WriteLine($"[bold]{Localization.Core.DVD_RW_Pre_Recorded_Information}:[/]" +
-                                          $"\n{Markup.Escape(PRI.Prettify(scsiInfo.DecodedDvdPrePitInformation))}");
+                    AaruLogging.WriteLine(Localization.Core.DVD_RW_Pre_Recorded_Information);
+                    AaruLogging.WriteLine(PRI.Prettify(scsiInfo.DecodedDvdPrePitInformation));
                 }
             }
 

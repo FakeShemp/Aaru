@@ -2426,8 +2426,8 @@
         <value>[slateblue1]Layers are in parallel track path[/]</value>
     </data>
     <data name="Layers_are_in_opposite_track_path" xml:space="preserve">
-    <value>Layers are in opposite track path</value>
-  </data>
+        <value>[slateblue1]Layers are in opposite track path[/]</value>
+    </data>
     <data name="Pitch_size_is_0_267_μm_bit" xml:space="preserve">
         <value>[slateblue1]Pitch size is [teal]0.267[/] μm/bit[/]</value>
     </data>
@@ -2531,83 +2531,83 @@
         <value>[slateblue1]Lead-Out is pre-recorded[/]</value>
     </data>
     <data name="Disc_for_unrestricted_use" xml:space="preserve">
-    <value>Disc for unrestricted use.</value>
-  </data>
+        <value>[slateblue1]Disc for unrestricted use.[/]</value>
+    </data>
     <data name="Invalid_purpose_field_with_value_0" xml:space="preserve">
-    <value>Invalid purpose field with value {0}</value>
-  </data>
+        <value>[red]Invalid purpose field with value [teal]{0}[/][/]</value>
+    </data>
     <data name="Consumer_purpose_disc_for_use_in_consumer_purpose_drives" xml:space="preserve">
-    <value>Consumer purpose disc for use in consumer purpose drives</value>
-  </data>
+        <value>[slateblue1]Consumer purpose disc for use in consumer purpose drives[/]</value>
+    </data>
     <data name="Disc_for_restricted_use" xml:space="preserve">
-    <value>Disc for restricted use.</value>
-  </data>
+        <value>[slateblue1]Disc for restricted use.[/]</value>
+    </data>
     <data name="Disc_for_use_in_special_drives_according_with_purpose_value_0" xml:space="preserve">
-    <value>Disc for use in special drives according with purpose value {0}</value>
-  </data>
+        <value>[slateblue1]Disc for use in special drives according with purpose value [teal]{0}[/][/]</value>
+    </data>
     <data name="General_purpose_disc_for_use_in_general_purpose_drives" xml:space="preserve">
-    <value>General purpose disc for use in general purpose drives</value>
-  </data>
+        <value>[slateblue1]General purpose disc for use in general purpose drives[/]</value>
+    </data>
     <data name="Disc_track_pitch_is_0_74_μm" xml:space="preserve">
-    <value>Disc track pitch is 0.74 μm</value>
-  </data>
+        <value>[slateblue1]Disc track pitch is [teal]0.74[/] μm[/]</value>
+    </data>
     <data name="Unknown_track_pitch" xml:space="preserve">
-    <value>Unknown track pitch</value>
-  </data>
+        <value>[slateblue1]Unknown track pitch[/]</value>
+    </data>
     <data name="Reference_velocity_is_3_49_m_s" xml:space="preserve">
-    <value>Reference velocity is 3.49 m/s</value>
-  </data>
+        <value>[slateblue1]Reference velocity is [teal]3.49[/] m/s[/]</value>
+    </data>
     <data name="Unknown_reference_velocity" xml:space="preserve">
-    <value>Unknown reference velocity</value>
-  </data>
+        <value>[slateblue1]Unknown reference velocity[/]</value>
+    </data>
     <data name="Disc_has_80mm_diameter" xml:space="preserve">
-    <value>Disc has 80mm diameter</value>
-  </data>
+        <value>[slateblue1]Disc has [teal]80mm[/] diameter[/]</value>
+    </data>
     <data name="Disc_has_120mm_diameter" xml:space="preserve">
-    <value>Disc has 120mm diameter</value>
-  </data>
+        <value>[slateblue1]Disc has [teal]120mm[/] diameter[/]</value>
+    </data>
     <data name="Disc_reflectivity_is_between_18_and_30" xml:space="preserve">
-    <value>Disc reflectivity is between 18% and 30%</value>
-  </data>
+        <value>[slateblue1]Disc reflectivity is between [teal]18%[/] and [teal]30%[/][/]</value>
+    </data>
     <data name="Disc_reflectivity_is_between_45_and_85" xml:space="preserve">
-    <value>Disc reflectivity is between 45% and 85%</value>
-  </data>
+        <value>[slateblue1]Disc reflectivity is between [teal]45%[/] and [teal]85%[/][/]</value>
+    </data>
     <data name="Dye_is_organic" xml:space="preserve">
-    <value>Dye is organic</value>
-  </data>
+        <value>[slateblue1]Dye is organic[/]</value>
+    </data>
     <data name="Dye_is_phase_change" xml:space="preserve">
-    <value>Dye is phase change</value>
-  </data>
+        <value>[slateblue1]Dye is phase change[/]</value>
+    </data>
     <data name="Disc_is_RW_rewritable" xml:space="preserve">
-    <value>Disc is RW (rewritable)</value>
-  </data>
+        <value>[slateblue1]Disc is [italic]RW (rewritable)[/][/]</value>
+    </data>
     <data name="Disc_is_R_recordable" xml:space="preserve">
-    <value>Disc is R (recordable)</value>
-  </data>
+        <value>[slateblue1]Disc is [italic]R (recordable)[/][/]</value>
+    </data>
     <data name="Wavelength_is_650nm" xml:space="preserve">
-    <value>Wavelength is 650nm</value>
-  </data>
+        <value>[slateblue1]Wavelength is [teal]650nm[/][/]</value>
+    </data>
     <data name="Unknown_wavelength" xml:space="preserve">
     <value>Unknown wavelength</value>
   </data>
     <data name="Last_writable_ECC_block_address_0_X6_" xml:space="preserve">
-    <value>Last writable ECC block address: 0x{0:X6}</value>
-  </data>
+        <value>[slateblue1]Last writable ECC block address:[/] [lime]0x{0:X6}[/]</value>
+    </data>
     <data name="Part_version_0" xml:space="preserve">
-    <value>Part version {0}</value>
-  </data>
+        <value>[slateblue1]Part version[/] [green]{0}[/]</value>
+    </data>
     <data name="Recommended_recording_power_is_0_mW" xml:space="preserve">
-    <value>Recommended recording power is {0} mW</value>
-  </data>
+        <value>[slateblue1]Recommended recording power is [teal]{0}[/] mW[/]</value>
+    </data>
     <data name="Recording_power_is_not_specified" xml:space="preserve">
-    <value>Recording power is not specified</value>
-  </data>
+        <value>[slateblue1]Recording power is not specified[/]</value>
+    </data>
     <data name="Recommended_erasing_power_ratio_is_0" xml:space="preserve">
-    <value>Recommended erasing power ratio is {0} ε</value>
-  </data>
+        <value>[slateblue1]Recommended erasing power ratio is [teal]{0}[/] ε[/]</value>
+    </data>
     <data name="Erasing_power_ratio_is_not_specified" xml:space="preserve">
-    <value>Erasing power ratio is not specified</value>
-  </data>
+        <value>[slateblue1]Erasing power ratio is not specified[/]</value>
+    </data>
     <data name="_0_unused_primary_spare_blocks" xml:space="preserve">
     <value>{0} unused primary spare blocks</value>
   </data>
@@ -9792,5 +9792,8 @@
     </data>
     <data name="Lead_In_Copyright_Information" xml:space="preserve">
         <value>Lead-In Copyright Information:</value>
+    </data>
+    <data name="Recommended_recording_wavelength_is_0_nm" xml:space="preserve">
+        <value>[slateblue1]Recommended recording wavelength is [teal]{0}[/]nm[/]</value>
     </data>
 </root>

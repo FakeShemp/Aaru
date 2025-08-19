@@ -103,7 +103,7 @@ public static class PRI
         Array.Copy(response, 37, pri.ManufacturerId3, 0, 6);
         Array.Copy(response, 44, pri.Reserved8,       0, pri.Reserved8.Length);
 
-        var tmp = new byte[18];
+        byte[] tmp = new byte[18];
 
         Array.Copy(response, 21, tmp, 0, 6);
         Array.Copy(response, 29, tmp, 6, 6);
@@ -294,7 +294,7 @@ public static class PRI
                                      _  => 0
                                  };
 
-                sb.AppendFormat(Localization.Recommended_recording_power_is_0_mW, wavelength).AppendLine();
+                sb.AppendFormat(Localization.Recommended_recording_wavelength_is_0_nm, wavelength).AppendLine();
             }
         }
 
@@ -309,7 +309,7 @@ public static class PRI
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public static string ManufacturerFromPrePit(string manufacturerId)
     {
-        var manufacturer = "";
+        string manufacturer = "";
 
         // Bad thing is that it also includes a media code...
         if(manufacturerId.StartsWith("RITEK", StringComparison.Ordinal))

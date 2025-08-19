@@ -19471,5 +19471,11 @@ namespace Aaru.Decoders {
                 return ResourceManager.GetString("Lead_In_Copyright_Information", resourceCulture);
             }
         }
+        
+        internal static string Recommended_recording_wavelength_is_0_nm {
+            get {
+                return ResourceManager.GetString("Recommended_recording_wavelength_is_0_nm", resourceCulture);
+            }
+        }
     }
 }

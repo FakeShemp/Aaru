@@ -919,8 +919,8 @@
     <value>Condicionalmente generar errores recuperables en excepciones informativas</value>
   </data>
     <data name="Consumer_purpose_disc_for_use_in_consumer_purpose_drives" xml:space="preserve">
-    <value>Disco de uso de consumidor para uso en unidades de consumidor</value>
-  </data>
+        <value>[slateblue1]Disco de uso de consumidor para uso en unidades de consumidor[/]</value>
+    </data>
     <data name="Controller_firmware_version_0" xml:space="preserve">
     <value>Versión de firmware del controlador: {0}</value>
   </data>
@@ -3875,14 +3875,14 @@
         <value>[slateblue1]El disco no especifica una velocidad de transferencia máxima.[/]</value>
     </data>
     <data name="Disc_for_restricted_use" xml:space="preserve">
-    <value>Disco para uso restringido.</value>
-  </data>
+        <value>[slateblue1]Disco para uso restringido.[/]</value>
+    </data>
     <data name="Disc_for_unrestricted_use" xml:space="preserve">
-    <value>Disco para uso no restringido.</value>
-  </data>
+        <value>[slateblue1]Disco para uso no restringido.[/]</value>
+    </data>
     <data name="Disc_for_use_in_special_drives_according_with_purpose_value_0" xml:space="preserve">
-    <value>Disco para uso en unidades especiales según el valor de intención {0}</value>
-  </data>
+        <value>[slateblue1]Disco para uso en unidades especiales según el valor de intención [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_has_0_layers" xml:space="preserve">
         <value>[slateblue1]El disco tiene [teal]{0}[/] capas[/]</value>
     </data>
@@ -3893,11 +3893,11 @@
     <value>El disco tiene {0} zonas</value>
   </data>
     <data name="Disc_has_120mm_diameter" xml:space="preserve">
-    <value>El disco tiene un diámetro de 120mm</value>
-  </data>
+        <value>[slateblue1]El disco tiene un diámetro de [teal]120mm[/][/]</value>
+    </data>
     <data name="Disc_has_80mm_diameter" xml:space="preserve">
-    <value>El disco tiene un diámetro de 80mm</value>
-  </data>
+        <value>[slateblue1]El disco tiene un diámetro de [teal]80mm[/][/]</value>
+    </data>
     <data name="Disc_has_a_BCA" xml:space="preserve">
         <value>[slateblue1]El disco tiene una BCA.[/]</value>
     </data>
@@ -4013,11 +4013,11 @@
         <value>[slateblue1]El disco es un [orange3]CD-R[/] de velocidad normal (CLV)[/]</value>
     </data>
     <data name="Disc_is_RW_rewritable" xml:space="preserve">
-    <value>El disco es RW (regrabable)</value>
-  </data>
+        <value>[slateblue1]El disco es [italic]RW (regrabable)[/][/]</value>
+    </data>
     <data name="Disc_is_R_recordable" xml:space="preserve">
-    <value>El disco es R (grabable)</value>
-  </data>
+        <value>[slateblue1]El disco es [italic]R (grabable)[/][/]</value>
+    </data>
     <data name="Disc_is_Ultra_Speed_CD_RW" xml:space="preserve">
         <value>[slateblue1]El disco es un [darkorange]CD-RW Ultra-Speed[/][/]</value>
     </data>
@@ -4043,7 +4043,7 @@
         <value>[slateblue1]La información suplementaria del fabricante del disco es [teal]{0}[/][/]</value>
     </data>
     <data name="Disc_maximum_transfer_rate_is_10_08_Mbit_sec" xml:space="preserve">
-        <value>[slateblue1]La velocidad de transferencia máxima del disco es [teal]10,08 Mbit/seg.[/]</value>
+        <value>[slateblue1]La velocidad de transferencia máxima del disco es [teal]10,08[/] Mbit/seg.[/]</value>
     </data>
     <data name="Disc_maximum_transfer_rate_is_20_16_Mbit_sec" xml:space="preserve">
         <value>[slateblue1]La velocidad de transferencia máxima del disco es [teal]20,16[/] Mbit/seg.[/]</value>
@@ -4085,11 +4085,11 @@
         <value>[slateblue1]Número de revisión de producto del disco:[/] [teal]{0}[/]</value>
     </data>
     <data name="Disc_reflectivity_is_between_18_and_30" xml:space="preserve">
-    <value>La reflectividad del disco está entre el 18% y el 30%</value>
-  </data>
+        <value>[slateblue1]La reflectividad del disco está entre el [teal]18%[/] y el [teal]30%[/][/]</value>
+    </data>
     <data name="Disc_reflectivity_is_between_45_and_85" xml:space="preserve">
-    <value>La reflectividad del disco está entre el 45% y el 85%</value>
-  </data>
+        <value>[slateblue1]La reflectividad del disco está entre el [teal]45%[/] y el [teal]85%[/][/]</value>
+    </data>
     <data name="Disc_shall_be_recorded_with_a_case" xml:space="preserve">
         <value>[slateblue1]El disco debería escribirse con carcasa[/]</value>
     </data>
@@ -4112,8 +4112,8 @@
         <value>[slateblue1]Fechado del disco:[/] [yellow3]0x{0:X2}[/]</value>
     </data>
     <data name="Disc_track_pitch_is_0_74_μm" xml:space="preserve">
-    <value>La pendiente de pista es de 0,74µm</value>
-  </data>
+        <value>[slateblue1]La pendiente de pista es de [teal]0,74[/]µm[/]</value>
+    </data>
     <data name="Disc_type_0" xml:space="preserve">
         <value>[slateblue1]Tipo de disco: [teal]{0}[/][/]</value>
     </data>
@@ -5457,11 +5457,11 @@
     <value>DT1825 está soportado y activado</value>
   </data>
     <data name="Dye_is_organic" xml:space="preserve">
-    <value>El colorante es orgánico</value>
-  </data>
+        <value>[slateblue1]El colorante es orgánico[/]</value>
+    </data>
     <data name="Dye_is_phase_change" xml:space="preserve">
-    <value>El colorante es de cambio de fase</value>
-  </data>
+        <value>[slateblue1]El colorante es de cambio de fase[/]</value>
+    </data>
     <data name="Each_channel_can_be_muted_independently" xml:space="preserve">
     <value>Cada canal puede silenciarse independientemente</value>
   </data>
@@ -5526,8 +5526,8 @@
     <value>Bloque de borrado: {0} bytes</value>
   </data>
     <data name="Erasing_power_ratio_is_not_specified" xml:space="preserve">
-    <value>El ratio de energía de borrado no está especificado</value>
-  </data>
+        <value>[slateblue1]El ratio de energía de borrado no está especificado[/]</value>
+    </data>
     <data name="Error_class_0_type_1" xml:space="preserve">
     <value>Error de clase {0} tipo {1}</value>
   </data>
@@ -5882,8 +5882,8 @@
     <value>El juego usa Windows CE.</value>
   </data>
     <data name="General_purpose_disc_for_use_in_general_purpose_drives" xml:space="preserve">
-    <value>Disco de propósito general para uso en unidades de propósito general</value>
-  </data>
+        <value>[slateblue1]Disco de propósito general para uso en unidades de propósito general[/]</value>
+    </data>
     <data name="General_Purpose_Logging_is_supported" xml:space="preserve">
     <value>Las Anotaciones de Propósito General están soportadas</value>
   </data>
@@ -6245,8 +6245,8 @@
     <value>Modo 3 inválido</value>
   </data>
     <data name="Invalid_purpose_field_with_value_0" xml:space="preserve">
-    <value>Campo de propósito inválido con valor {0}</value>
-  </data>
+        <value>[red]Campo de propósito inválido con valor [teal]{0}[/][/]</value>
+    </data>
     <data name="invalid_size" xml:space="preserve">
     <value>tamaño inválido</value>
   </data>
@@ -6347,14 +6347,14 @@
         <value>[slateblue1]Número de la última pista de video: [teal]{0}[/][/]</value>
     </data>
     <data name="Last_writable_ECC_block_address_0_X6_" xml:space="preserve">
-    <value>Dirección del último bloque ECC escribible: 0x{0:X6}</value>
-  </data>
+        <value>[slateblue1]Dirección del último bloque ECC escribible:[/] [lime]0x{0:X6}[/]</value>
+    </data>
     <data name="Last_WRITE_MULTIPLE_command_correctly_programmed_0_sectors" xml:space="preserve">
     <value>El último comando WRITE MULTIPLE programó {0} sectores correctamente</value>
   </data>
     <data name="Layers_are_in_opposite_track_path" xml:space="preserve">
-    <value>Las capas están en el camino de pista opuesto</value>
-  </data>
+        <value>[slateblue1]Las capas están en el camino de pista opuesto[/]</value>
+    </data>
     <data name="Layers_are_in_parallel_track_path" xml:space="preserve">
         <value>[slateblue1]Las capas están en el camino de pista paralelo[/]</value>
     </data>
@@ -7289,8 +7289,8 @@
     <value>Los parámetros de partición no se aplicarán hasta que se reciba un comando FORMAT MEDIUM</value>
   </data>
     <data name="Part_version_0" xml:space="preserve">
-    <value>Parte versión {0}</value>
-  </data>
+        <value>[slateblue1]Parte versión[/] [green]{0}[/]</value>
+    </data>
     <data name="PCI_Express" xml:space="preserve">
     <value>PCI Express</value>
   </data>
@@ -7726,11 +7726,11 @@
     <value>RECEIVE FPDMA QUEUED y SEND FPDMA QUEUED están soportados</value>
   </data>
     <data name="Recommended_erasing_power_ratio_is_0" xml:space="preserve">
-    <value>El ratio recomendado de energía de borrado es {0} ε</value>
-  </data>
+        <value>[slateblue1]El ratio recomendado de energía de borrado es [teal]{0}[/] ε[/]</value>
+    </data>
     <data name="Recommended_recording_power_is_0_mW" xml:space="preserve">
-    <value>La energía de grabación recomendada es de {0} mW</value>
-  </data>
+        <value>[slateblue1]La energía de grabación recomendada es de [teal]{0}[/] mW[/]</value>
+    </data>
     <data name="Recorded_marks_have_a_higher_reflectivity_than_unrecorded_ones_LTH_disc" xml:space="preserve">
         <value>[slateblue1]Las marcas grabadas tienen una reflectividad superior que las no grabadas (disco LTH).[/]</value>
     </data>
@@ -7738,8 +7738,8 @@
         <value>[slateblue1]Las marcas grabadas tienen una reflectividad inferior que las no grabadas (disco HTL).[/]</value>
     </data>
     <data name="Recording_power_is_not_specified" xml:space="preserve">
-    <value>La potencia de grabación no está especificada</value>
-  </data>
+        <value>[slateblue1]La potencia de grabación no está especificada[/]</value>
+    </data>
     <data name="Recovered_buffer_data_comes_in_FIFO_order" xml:space="preserve">
     <value>Los datos recuperados del búfer llegan en orden FIFO</value>
   </data>
@@ -7768,8 +7768,8 @@
         <value>[slateblue1]La velocidad de referencia establecida es desconocida:[/] [teal]{0}[/]</value>
     </data>
     <data name="Reference_velocity_is_3_49_m_s" xml:space="preserve">
-    <value>La velocidad de referencia es 3,49 m/s</value>
-  </data>
+        <value>[slateblue1]La velocidad de referencia es [teal]3,49[/] m/s[/]</value>
+    </data>
     <data name="Regions_supported" xml:space="preserve">
     <value>Regiones soportadas:</value>
   </data>
@@ -9084,8 +9084,8 @@
     <value>Parámetro de recuperación 0x{0:X2} desconocida</value>
   </data>
     <data name="Unknown_reference_velocity" xml:space="preserve">
-    <value>Velocidad de referencia desconocida</value>
-  </data>
+        <value>[slateblue1]Velocidad de referencia desconocida[/]</value>
+    </data>
     <data name="Unknown_register_version_0" xml:space="preserve">
     <value>Versión del registro {0} desconocida</value>
   </data>
@@ -9102,8 +9102,8 @@
         <value>[slateblue1]Formato de entrada de la TOC desconocido, mostrando los valores tal cual[/]</value>
     </data>
     <data name="Unknown_track_pitch" xml:space="preserve">
-    <value>Pendiente pista desconocida</value>
-  </data>
+        <value>[slateblue1]Pendiente de pista desconocida[/]</value>
+    </data>
     <data name="Unknown_track_size_key__0_" xml:space="preserve">
         <value>[slateblue1]Código de tamaño de pista desconocido ([teal]{0}[/])[/]</value>
     </data>
@@ -9266,8 +9266,8 @@
     <value>El reporte de advertencias está activado</value>
   </data>
     <data name="Wavelength_is_650nm" xml:space="preserve">
-    <value>La longitud de onda es 650nm</value>
-  </data>
+        <value>[slateblue1]La longitud de onda es [teal]650nm[/][/]</value>
+    </data>
     <data name="Well_known_logical_unit" xml:space="preserve">
     <value>Unidad lógica bien conocida</value>
   </data>
@@ -9784,5 +9784,8 @@
     </data>
     <data name="Idle_timer_B_is_set_to_0_ms" xml:space="preserve">
         <value>Temporizador de reposo B establecido en {0} ms</value>
+    </data>
+    <data name="Recommended_recording_wavelength_is_0_nm" xml:space="preserve">
+        <value>[slateblue1]La longitud de onda de grabación recomendadda es [teal]{0}[/]nm[/]</value>
     </data>
 </root>
