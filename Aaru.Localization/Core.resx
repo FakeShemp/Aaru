@@ -642,8 +642,8 @@
     <value>Setting speed to 8x for CD-i Ready reading as audio.</value>
   </data>
     <data name="Aborted" xml:space="preserve">
-    <value>Aborted!</value>
-  </data>
+        <value>[red]Aborted![/]</value>
+    </data>
     <data name="Reading_sector_0_of_1_2" xml:space="preserve">
     <value>[slateblue1]Reading sector [lime]{0}[/] of [violet]{1}[/] ([aqua]{2}[/])[/]</value>
   </data>
@@ -1193,8 +1193,8 @@
     <value>The specified image format cannot represent optical discs.</value>
   </data>
     <data name="Device_reports_0_bytes_per_physical_block" xml:space="preserve">
-    <value>Device reports {0} bytes per physical block.</value>
-  </data>
+        <value>[slateblue1]Device reports [lime]{0}[/] bytes per physical block.[/]</value>
+    </data>
     <data name="Media_part_number_is_0" xml:space="preserve">
     <value>Media part number is {0}.</value>
   </data>
@@ -1208,14 +1208,14 @@
     <value>INSITE floptical drives get crazy on the SCSI bus when an error is found, stopping so you can reboot the computer or reset the SCSI bus appropriately.</value>
   </data>
     <data name="Initializing_reader" xml:space="preserve">
-    <value>Initializing reader.</value>
-  </data>
+        <value>[slateblue1]Initializing reader.[/]</value>
+    </data>
     <data name="Requesting_MODE_SENSE_10" xml:space="preserve">
-    <value>Requesting MODE SENSE (10).</value>
-  </data>
+        <value>[slateblue1]Requesting [fuchsia]MODE SENSE (10)[/].[/]</value>
+    </data>
     <data name="Requesting_MODE_SENSE_6" xml:space="preserve">
-    <value>Requesting MODE SENSE (6).</value>
-  </data>
+        <value>[slateblue1]Requesting [fuchsia]MODE SENSE (6)[/].[/]</value>
+    </data>
     <data name="MiniDisc_albums_NetMD_discs_or_user_written_audio_MiniDisc_cannot_be_dumped" xml:space="preserve">
     <value>MiniDisc albums, NetMD discs or user-written audio MiniDisc cannot be dumped.</value>
   </data>
@@ -1229,14 +1229,14 @@
     <value>ERROR: Cannot get blocks to read: {0}.</value>
   </data>
     <data name="SCSI_medium_type_0" xml:space="preserve">
-    <value>SCSI medium type: {0}.</value>
-  </data>
+        <value>[slateblue1]SCSI medium type: [teal]{0}[/].[/]</value>
+    </data>
     <data name="SCSI_density_type_0" xml:space="preserve">
-    <value>SCSI density type: {0}.</value>
-  </data>
+        <value>[slateblue1]SCSI density type: [teal]{0}[/].[/]</value>
+    </data>
     <data name="SCSI_floppy_mode_page_present_0" xml:space="preserve">
-    <value>SCSI floppy mode page present: {0}.</value>
-  </data>
+        <value>[slateblue1]SCSI floppy mode page present: [rosybrown]{0}[/].[/]</value>
+    </data>
     <data name="Device_doesnt_seem_capable_of_reading_raw_data_from_media" xml:space="preserve">
     <value>Device doesn't seem capable of reading raw data from media.</value>
   </data>
@@ -1276,8 +1276,8 @@
     <value>Image does not support multiple tracks in non Compact Disc dumps, not continuing...</value>
   </data>
     <data name="Setting_geometry_to_0_cylinders_1_heads_2_sectors_per_track" xml:space="preserve">
-    <value>Setting geometry to {0} cylinders, {1} heads, {2} sectors per track</value>
-  </data>
+        <value>[slateblue1]Setting geometry to [lime]{0}[/] cylinders, [lime]{1}[/] heads, [lime]{2}[/] sectors per track[/]</value>
+    </data>
     <data name="Creating_single_track_as_could_not_retrieve_track_list_from_drive" xml:space="preserve">
     <value>Creating single track as could not retrieve track list from drive.</value>
   </data>
@@ -1291,20 +1291,20 @@
     <value>Title keys dumping is enabled. This will be very slow.</value>
   </data>
     <data name="Reading_USB_descriptors" xml:space="preserve">
-    <value>Reading USB descriptors.</value>
-  </data>
+        <value>[slateblue1]Reading USB descriptors.[/]</value>
+    </data>
     <data name="Cannot_write_USB_descriptors" xml:space="preserve">
     <value>Cannot write USB descriptors.</value>
   </data>
     <data name="Requesting_ATAPI_IDENTIFY_PACKET_DEVICE" xml:space="preserve">
-    <value>Requesting ATAPI IDENTIFY PACKET DEVICE.</value>
-  </data>
+        <value>[slateblue1]Requesting [fuchsia]ATAPI IDENTIFY PACKET DEVICE[/].[/]</value>
+    </data>
     <data name="Cannot_write_ATAPI_IDENTIFY_PACKET_DEVICE" xml:space="preserve">
     <value>Cannot write ATAPI IDENTIFY PACKET DEVICE.</value>
   </data>
     <data name="Requesting_SCSI_INQUIRY" xml:space="preserve">
-    <value>Requesting SCSI INQUIRY.</value>
-  </data>
+        <value>[slateblue1]Requesting [fuchsia]SCSI INQUIRY[/].[/]</value>
+    </data>
     <data name="Cannot_write_SCSI_INQUIRY" xml:space="preserve">
     <value>Cannot write SCSI INQUIRY.</value>
   </data>
@@ -1351,8 +1351,8 @@
     <value>Raw dumping not yet supported in ATA devices, aborting...</value>
   </data>
     <data name="Requesting_ATA_IDENTIFY_DEVICE" xml:space="preserve">
-    <value>Requesting ATA IDENTIFY DEVICE.</value>
-  </data>
+        <value>[slateblue1]Requesting [fuchsia]ATA IDENTIFY DEVICE[/].[/]</value>
+    </data>
     <data name="ERROR_Cannot_get_block_size_0" xml:space="preserve">
     <value>ERROR: Cannot get block size: {0}.</value>
   </data>
@@ -2982,8 +2982,8 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Mounting {0}</value>
   </data>
     <data name="Saving_metadata" xml:space="preserve">
-    <value>Saving metadata...</value>
-  </data>
+        <value>[slateblue1]Saving metadata...[/]</value>
+    </data>
     <data name="Hashing_SuperCardPro_image" xml:space="preserve">
     <value>Hashing SuperCardPro image...</value>
   </data>
@@ -3442,8 +3442,8 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Command line: {0}</value>
   </data>
     <data name="Hashing_sectors" xml:space="preserve">
-    <value>Hashing sectors...</value>
-  </data>
+        <value>[slateblue1]Hashing sectors...[/]</value>
+    </data>
     <data name="Hashing_files" xml:space="preserve">
     <value>Hashing files...</value>
   </data>

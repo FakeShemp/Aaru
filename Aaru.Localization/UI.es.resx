@@ -932,8 +932,8 @@
     <value>Error {0} enviando lista de pistas a la imagen de salida.</value>
   </data>
     <data name="Error_0_setting_geometry_image_may_be_incorrect_continuing" xml:space="preserve">
-    <value>Error {0} estableciendo geometría. La imagen puede ser incorrecta, continuando...</value>
-  </data>
+        <value>[olive]Error [red]{0}[/] estableciendo geometría. La imagen puede ser incorrecta, continuando...[/]</value>
+    </data>
     <data name="Error_0_setting_metadata_not_continuing" xml:space="preserve">
     <value>Error {0} estableciendo metadatos, no se continuará...</value>
   </data>

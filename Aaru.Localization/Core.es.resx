@@ -17,8 +17,8 @@
         </value>
     </resheader>
     <data name="Aborted" xml:space="preserve">
-    <value>¡Abortado!</value>
-  </data>
+        <value>[red]¡Abortado![/]</value>
+    </data>
     <data name="Aborting" xml:space="preserve">
     <value>Abortando...</value>
   </data>
@@ -676,8 +676,8 @@
         <value>[slateblue1]El dispositivo reporta [lime]{0}[/] bytes por bloque lógico.[/]</value>
     </data>
     <data name="Device_reports_0_bytes_per_physical_block" xml:space="preserve">
-    <value>El dispositivo reporta {0} bytes por bloque físico.</value>
-  </data>
+        <value>[slateblue1]El dispositivo reporta [lime]{0}[/] bytes por bloque físico.[/]</value>
+    </data>
     <data name="Device_reports_0_cylinders_1_heads_2_sectors_per_track" xml:space="preserve">
     <value>El dispositivo reporta {0} cilindros {1} cabezas y {2} sectores por pista.</value>
   </data>
@@ -1418,8 +1418,8 @@
     <value>Calculando el hash de la partición {0}...</value>
   </data>
     <data name="Hashing_sectors" xml:space="preserve">
-    <value>Calculando el hash de los sectores...</value>
-  </data>
+        <value>[slateblue1]Calculando el hash de los sectores...[/]</value>
+    </data>
     <data name="Hashing_sector_0_of_1" xml:space="preserve">
         <value>[slateblue1]Calculando el hash del sector [lime]{0}[/] de [violet]{1}[/]</value>
     </data>
@@ -1470,8 +1470,8 @@
         <value>[slateblue1]La imagen sin cabeceras ocupa [lime]{0}[/] bytes[/]</value>
     </data>
     <data name="Initializing_reader" xml:space="preserve">
-    <value>Inicializando el lector.</value>
-  </data>
+        <value>[slateblue1]Inicializando el lector.[/]</value>
+    </data>
     <data name="INSITE_floptical_drives_get_crazy_on_the_SCSI_bus_when_an_error_is_found" xml:space="preserve">
     <value>Las unidades floptical INSITE se vuelven locas en el bus SCSI cuando encuentran un error, parando para que pueda reiniciar el ordenador o el bus SCSI de forma apropiada.</value>
   </data>
@@ -2217,8 +2217,8 @@
         <value>[slateblue1]Leyendo sector [lime]{0}[/] de [violet]{1}[/] ([aqua]{2}[/])[/]</value>
     </data>
     <data name="Reading_USB_descriptors" xml:space="preserve">
-    <value>Leyendo descriptores USB.</value>
-  </data>
+        <value>[slateblue1]Leyendo descriptores USB.[/]</value>
+    </data>
     <data name="Reading_Video_Layer_1" xml:space="preserve">
     <value>Leyendo capa 1 de video.</value>
   </data>
@@ -2416,20 +2416,20 @@
     <value>Dispositivo extraíble: {0}</value>
   </data>
     <data name="Requesting_ATAPI_IDENTIFY_PACKET_DEVICE" xml:space="preserve">
-    <value>Solicitando ATAPI IDENTIFY PACKET DEVICE.</value>
-  </data>
+        <value>[slateblue1]Solicitando [fuchsia]ATAPI IDENTIFY PACKET DEVICE[/].[/]</value>
+    </data>
     <data name="Requesting_ATA_IDENTIFY_DEVICE" xml:space="preserve">
-    <value>Solicitando ATA IDENTIFY DEVICE.</value>
-  </data>
+        <value>[slateblue1]Solicitando [fuchsia]ATA IDENTIFY DEVICE[/].[/]</value>
+    </data>
     <data name="Requesting_MODE_SENSE_10" xml:space="preserve">
-    <value>Solicitando MODE SENSE (10).</value>
-  </data>
+        <value>[slateblue1]Solicitando [fuchsia]MODE SENSE (10)[/].[/]</value>
+    </data>
     <data name="Requesting_MODE_SENSE_6" xml:space="preserve">
-    <value>Solicitando MODE SENSE (8).</value>
-  </data>
+        <value>[slateblue1]Solicitando [fuchsia]MODE SENSE (8)[/].[/]</value>
+    </data>
     <data name="Requesting_SCSI_INQUIRY" xml:space="preserve">
-    <value>Solicitando SCSI INQUIRY.</value>
-  </data>
+        <value>[slateblue1]Solicitando [fuchsia]SCSI INQUIRY[/].[/]</value>
+    </data>
     <data name="Resume_file_different_firmware_revision_not_continuing" xml:space="preserve">
     <value>El fichero de resumen especifica un dispositivo con versión {0} del firmware pero está intentando volcar uno con versión {1}, no se continuará...</value>
   </data>
@@ -2506,8 +2506,8 @@
     <value>Guardando cambios...</value>
   </data>
     <data name="Saving_metadata" xml:space="preserve">
-    <value>Guardando metadatos...</value>
-  </data>
+        <value>[slateblue1]Guardando metadatos...[/]</value>
+    </data>
     <data name="Scanning_for_0_blank_blocks_starting_in_block_1" xml:space="preserve">
     <value>Escaneando {0} bloques en blanco comenzando en el bloque {1}</value>
   </data>
@@ -2540,8 +2540,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>Comando SCSI {0} dió error del sistema operativo: {1}.</value>
   </data>
     <data name="SCSI_density_type_0" xml:space="preserve">
-    <value>Tipo de densidad SCSI: {0}.</value>
-  </data>
+        <value>[slateblue1]Tipo de densidad SCSI: [teal]{0}[/].[/]</value>
+    </data>
     <data name="SCSI_device_type_0" xml:space="preserve">
         <value>[slateblue1]Tipo de dispositivo SCSI: [italic][rosybrown]{0}[/][/].[/]</value>
     </data>
@@ -2549,14 +2549,14 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>Error SCSI: {0}</value>
   </data>
     <data name="SCSI_floppy_mode_page_present_0" xml:space="preserve">
-    <value>Página de modo SCSI de disquetera presente: {0}.</value>
-  </data>
+        <value>[slateblue1]Página de modo SCSI de disquetera presente: [rosybrown]{0}[/].[/]</value>
+    </data>
     <data name="SCSI_INQUIRY_contained_in_image_WithMarkup" xml:space="preserve">
         <value>[bold][blue]SCSI INQUIRY contenido en la imagen:[/][/]</value>
     </data>
     <data name="SCSI_medium_type_0" xml:space="preserve">
-    <value>Tipo de medio SCSI: {0}.</value>
-  </data>
+        <value>[slateblue1]Tipo de medio SCSI: [teal]{0}[/].[/]</value>
+    </data>
     <data name="SCSI_MODE_SENSE_10_contained_in_image_WithMarkup" xml:space="preserve">
         <value>[bold][blue]SCSI MODE SENSE (10) contenido en la imagen:[/][/]</value>
     </data>
@@ -2666,8 +2666,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
         <value>[slateblue1]Estableciendo banderas para la pista [teal]{0}[/]...[/]</value>
     </data>
     <data name="Setting_geometry_to_0_cylinders_1_heads_2_sectors_per_track" xml:space="preserve">
-    <value>Estableciendo geometría en {0} cilindros, {1} cabezas y {2} sectores por pista</value>
-  </data>
+        <value>[slateblue1]Estableciendo geometría en [lime]{0}[/] cilindros, [lime]{1}[/] cabezas y [lime]{2}[/] sectores por pista[/]</value>
+    </data>
     <data name="Setting_index_0_for_track_1_to_LBA_2" xml:space="preserve">
         <value>[slateblue1]Estableciendo índice [green]{0}[/] para la pista [teal]{1}[/] en el LBA [lime]{2}[/].[/]</value>
     </data>

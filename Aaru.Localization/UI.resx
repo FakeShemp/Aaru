@@ -1119,8 +1119,8 @@ In you are unsure, please press N to not continue.</value>
     <value>Setting geometry to {0} cylinders, {1} heads and {2} sectors per track</value>
   </data>
     <data name="Error_0_setting_geometry_image_may_be_incorrect_continuing" xml:space="preserve">
-    <value>Error {0} setting geometry, image may be incorrect, continuing...</value>
-  </data>
+        <value>[olive]Error [red]{0}[/] setting geometry, image may be incorrect, continuing...[/]</value>
+    </data>
     <data name="Converting_media" xml:space="preserve">
     <value>Converting media</value>
   </data>
