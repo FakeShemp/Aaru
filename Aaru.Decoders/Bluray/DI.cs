@@ -425,8 +425,13 @@ public static class DI
                 sb.AppendFormat(Localization.Disc_product_revision_number_0, unit.ProductRevisionNumber).AppendLine();
             }
 
-            sb.AppendLine(Localization.Blu_ray_DI_Unit_format_dependent_contents_as_hex_follows);
-            sb.AppendLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(unit.FormatDependentContents, color: true)));
+            if(unit.FormatDependentContents is not null)
+            {
+                sb.AppendLine(Localization.Blu_ray_DI_Unit_format_dependent_contents_as_hex_follows);
+
+                sb.AppendLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(unit.FormatDependentContents,
+                                                                               color: true)));
+            }
         }
 
         return sb.ToString();
