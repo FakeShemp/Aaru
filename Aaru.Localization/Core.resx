@@ -297,8 +297,8 @@
     <value>Xbox 360 DMI</value>
   </data>
     <data name="Lead_In_CMI" xml:space="preserve">
-    <value>Lead-In CMI</value>
-  </data>
+        <value>[bold][blue]Lead-In CMI:[/][/]</value>
+    </data>
     <data name="Medium_Status" xml:space="preserve">
     <value>Medium Status</value>
   </data>

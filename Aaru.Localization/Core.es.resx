@@ -1512,8 +1512,8 @@
     <value>Lead-In</value>
   </data>
     <data name="Lead_In_CMI" xml:space="preserve">
-    <value>CMI del Lead-In</value>
-  </data>
+        <value>[bold][blue]CMI del Lead-In:[/][/]</value>
+    </data>
     <data name="Lead_out_has_changed_this_drive_does_not_support_hot_swapping_discs" xml:space="preserve">
     <value>El Lead-Out ha cambiado, esta unidad no soporta cambiar discos en caliente...</value>
   </data>

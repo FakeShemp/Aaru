@@ -329,8 +329,8 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
                                  "SCSI READ DISC STRUCTURE",
                                  scsiInfo.DvdCmi);
 
-                AaruLogging.WriteLine($"[bold]{Localization.Core.Lead_In_CMI}:[/]" +
-                                      $"\n{Markup.Escape(CSS_CPRM.PrettifyLeadInCopyright(scsiInfo.DvdCmi))}");
+                AaruLogging.WriteLine(Localization.Core.Lead_In_CMI);
+                AaruLogging.WriteLine(CSS_CPRM.PrettifyLeadInCopyright(scsiInfo.DvdCmi));
             }
 
             if(scsiInfo.DvdDiscKey != null)
