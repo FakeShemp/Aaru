@@ -127,19 +127,19 @@ public static class FullTOC
                descriptor.TNO != 0)
             {
                 sb.AppendLine(Localization.Unknown_TOC_entry_format_printing_values_as_is);
-                sb.AppendLine($"[slateblue1]SessionNumber = [teal]{descriptor.SessionNumber}[/][/]");
-                sb.AppendLine($"[slateblue1]ADR = [teal]{descriptor.ADR}[/][/]");
-                sb.AppendLine($"[slateblue1]CONTROL = [teal]{descriptor.CONTROL}[/][/]");
-                sb.AppendLine($"[slateblue1]TNO = [teal]{descriptor.TNO}[/][/]");
-                sb.AppendLine($"[slateblue1]POINT = [teal]{descriptor.POINT}[/][/]");
-                sb.AppendLine($"[slateblue1]Min = [teal]{descriptor.Min}[/][/]");
-                sb.AppendLine($"[slateblue1]Sec = [teal]{descriptor.Sec}[/][/]");
-                sb.AppendLine($"[slateblue1]Frame = [teal]{descriptor.Frame}[/][/]");
-                sb.AppendLine($"[slateblue1]HOUR = [teal]{descriptor.HOUR}[/][/]");
-                sb.AppendLine($"[slateblue1]PHOUR = [teal]{descriptor.PHOUR}[/][/]");
-                sb.AppendLine($"[slateblue1]PMIN = [teal]{descriptor.PMIN}[/][/]");
-                sb.AppendLine($"[slateblue1]PSEC = [teal]{descriptor.PSEC}[/][/]");
-                sb.AppendLine($"[slateblue1]PFRAME = [teal]{descriptor.PFRAME}[/][/]");
+                sb.AppendLine($"[rosybrown]SessionNumber = [teal]{descriptor.SessionNumber}[/][/]");
+                sb.AppendLine($"          [rosybrown]ADR = [teal]{descriptor.ADR}[/][/]");
+                sb.AppendLine($"      [rosybrown]CONTROL = [teal]{descriptor.CONTROL}[/][/]");
+                sb.AppendLine($"          [rosybrown]TNO = [teal]{descriptor.TNO}[/][/]");
+                sb.AppendLine($"        [rosybrown]POINT = [teal]{descriptor.POINT}[/][/]");
+                sb.AppendLine($"          [rosybrown]Min = [teal]{descriptor.Min}[/][/]");
+                sb.AppendLine($"          [rosybrown]Sec = [teal]{descriptor.Sec}[/][/]");
+                sb.AppendLine($"        [rosybrown]Frame = [teal]{descriptor.Frame}[/][/]");
+                sb.AppendLine($"         [rosybrown]HOUR = [teal]{descriptor.HOUR}[/][/]");
+                sb.AppendLine($"        [rosybrown]PHOUR = [teal]{descriptor.PHOUR}[/][/]");
+                sb.AppendLine($"         [rosybrown]PMIN = [teal]{descriptor.PMIN}[/][/]");
+                sb.AppendLine($"         [rosybrown]PSEC = [teal]{descriptor.PSEC}[/][/]");
+                sb.AppendLine($"       [rosybrown]PFRAME = [teal]{descriptor.PFRAME}[/][/]");
             }
             else
             {
@@ -433,18 +433,18 @@ public static class FullTOC
                                 }
                                 else
                                 {
-                                    sb.Append($"ADR = {descriptor.ADR}").AppendLine();
-                                    sb.Append($"CONTROL = {descriptor.CONTROL}").AppendLine();
-                                    sb.Append($"TNO = {descriptor.TNO}").AppendLine();
-                                    sb.Append($"POINT = {descriptor.POINT}").AppendLine();
-                                    sb.Append($"Min = {descriptor.Min}").AppendLine();
-                                    sb.Append($"Sec = {descriptor.Sec}").AppendLine();
-                                    sb.Append($"Frame = {descriptor.Frame}").AppendLine();
-                                    sb.Append($"HOUR = {descriptor.HOUR}").AppendLine();
-                                    sb.Append($"PHOUR = {descriptor.PHOUR}").AppendLine();
-                                    sb.Append($"PMIN = {descriptor.PMIN}").AppendLine();
-                                    sb.Append($"PSEC = {descriptor.PSEC}").AppendLine();
-                                    sb.Append($"PFRAME = {descriptor.PFRAME}").AppendLine();
+                                    sb.AppendLine($"    [rosybrown]ADR[/] = [teal]{descriptor.ADR}[/]");
+                                    sb.AppendLine($"[rosybrown]CONTROL[/] = [teal]{descriptor.CONTROL}[/]");
+                                    sb.AppendLine($"    [rosybrown]TNO[/] = [teal]{descriptor.TNO}[/]");
+                                    sb.AppendLine($"  [rosybrown]POINT[/] = [teal]{descriptor.POINT}[/]");
+                                    sb.AppendLine($"    [rosybrown]Min[/] = [teal]{descriptor.Min}[/]");
+                                    sb.AppendLine($"    [rosybrown]Sec[/] = [teal]{descriptor.Sec}[/]");
+                                    sb.AppendLine($"  [rosybrown]Frame[/] = [teal]{descriptor.Frame}[/]");
+                                    sb.AppendLine($"   [rosybrown]HOUR[/] = [teal]{descriptor.HOUR}[/]");
+                                    sb.AppendLine($"  [rosybrown]PHOUR[/] = [teal]{descriptor.PHOUR}[/]");
+                                    sb.AppendLine($"   [rosybrown]PMIN[/] = [teal]{descriptor.PMIN}[/]");
+                                    sb.AppendLine($"   [rosybrown]PSEC[/] = [teal]{descriptor.PSEC}[/]");
+                                    sb.AppendLine($" [rosybrown]PFRAME[/] = [teal]{descriptor.PFRAME}[/]");
                                 }
 
                                 break;
@@ -552,14 +552,14 @@ public static class FullTOC
 
                             case 0xC1:
                             {
-                                sb.AppendFormat(Localization.Copy_of_information_of_A1_from_ATIP_found);
-                                sb.Append($"Min = {descriptor.Min}").AppendLine();
-                                sb.Append($"Sec = {descriptor.Sec}").AppendLine();
-                                sb.Append($"Frame = {descriptor.Frame}").AppendLine();
-                                sb.Append($"Zero = {descriptor.Zero}").AppendLine();
-                                sb.Append($"PMIN = {descriptor.PMIN}").AppendLine();
-                                sb.Append($"PSEC = {descriptor.PSEC}").AppendLine();
-                                sb.Append($"PFRAME = {descriptor.PFRAME}").AppendLine();
+                                sb.AppendLine(Localization.Copy_of_information_of_A1_from_ATIP_found);
+                                sb.AppendLine($"   [rosybrown]Min[/] = [teal]{descriptor.Min}[/]");
+                                sb.AppendLine($"   [rosybrown]Sec[/] = [teal]{descriptor.Sec}[/]");
+                                sb.AppendLine($" [rosybrown]Frame[/] = [teal]{descriptor.Frame}[/]");
+                                sb.AppendLine($"  [rosybrown]Zero[/] = [teal]{descriptor.Zero}[/]");
+                                sb.AppendLine($"  [rosybrown]PMIN[/] = [teal]{descriptor.PMIN}[/]");
+                                sb.AppendLine($"  [rosybrown]PSEC[/] = [teal]{descriptor.PSEC}[/]");
+                                sb.AppendLine($"[rosybrown]PFRAME[/] = [teal]{descriptor.PFRAME}[/]");
 
                                 break;
                             }
@@ -618,18 +618,18 @@ public static class FullTOC
                                 }
                                 else
                                 {
-                                    sb.Append($"ADR = {descriptor.ADR}").AppendLine();
-                                    sb.Append($"CONTROL = {descriptor.CONTROL}").AppendLine();
-                                    sb.Append($"TNO = {descriptor.TNO}").AppendLine();
-                                    sb.Append($"POINT = {descriptor.POINT}").AppendLine();
-                                    sb.Append($"Min = {descriptor.Min}").AppendLine();
-                                    sb.Append($"Sec = {descriptor.Sec}").AppendLine();
-                                    sb.Append($"Frame = {descriptor.Frame}").AppendLine();
-                                    sb.Append($"HOUR = {descriptor.HOUR}").AppendLine();
-                                    sb.Append($"PHOUR = {descriptor.PHOUR}").AppendLine();
-                                    sb.Append($"PMIN = {descriptor.PMIN}").AppendLine();
-                                    sb.Append($"PSEC = {descriptor.PSEC}").AppendLine();
-                                    sb.Append($"PFRAME = {descriptor.PFRAME}").AppendLine();
+                                    sb.AppendLine($"    [rosybrown]ADR[/] = [teal]{descriptor.ADR}[/]");
+                                    sb.AppendLine($"[rosybrown]CONTROL[/] = [teal]{descriptor.CONTROL}[/]");
+                                    sb.AppendLine($"    [rosybrown]TNO[/] = [teal]{descriptor.TNO}[/]");
+                                    sb.AppendLine($"  [rosybrown]POINT[/] = [teal]{descriptor.POINT}[/]");
+                                    sb.AppendLine($"    [rosybrown]Min[/] = [teal]{descriptor.Min}[/]");
+                                    sb.AppendLine($"    [rosybrown]Sec[/] = [teal]{descriptor.Sec}[/]");
+                                    sb.AppendLine($"  [rosybrown]Frame[/] = [teal]{descriptor.Frame}[/]");
+                                    sb.AppendLine($"   [rosybrown]HOUR[/] = [teal]{descriptor.HOUR}[/]");
+                                    sb.AppendLine($"  [rosybrown]PHOUR[/] = [teal]{descriptor.PHOUR}[/]");
+                                    sb.AppendLine($"   [rosybrown]PMIN[/] = [teal]{descriptor.PMIN}[/]");
+                                    sb.AppendLine($"   [rosybrown]PSEC[/] = [teal]{descriptor.PSEC}[/]");
+                                    sb.AppendLine($" [rosybrown]PFRAME[/] = [teal]{descriptor.PFRAME}[/]");
                                 }
 
                                 break;
