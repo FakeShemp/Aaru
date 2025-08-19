@@ -928,8 +928,8 @@
     <value>Versión de hardware del controlador: {0}</value>
   </data>
     <data name="Control_Data_Zone_is_pre_recorded" xml:space="preserve">
-    <value>La zona de control de datos está pre-grabada</value>
-  </data>
+        <value>[slateblue1]La zona de control de datos está pre-grabada[/]</value>
+    </data>
     <data name="Copyright_0" xml:space="preserve">
     <value>Copyright: {0}</value>
   </data>
@@ -979,8 +979,8 @@
     <value> (actual)</value>
   </data>
     <data name="Current_Border_Out_first_sector_is_PSN_0" xml:space="preserve">
-    <value>El primer sector actual del Border-Out es el PSN {0:X}h</value>
-  </data>
+        <value>[slateblue1]El primer sector actual del Border-Out es el PSN[/] [lime]{0:X}h[/]</value>
+    </data>
     <data name="Current_media_has_a_0_bytes_link_available" xml:space="preserve">
     <value>El medio actual tiene disponibles {0} bytes de enlace</value>
   </data>
@@ -991,8 +991,8 @@
     <value>Definición de operación actual: {0}</value>
   </data>
     <data name="Current_RMD_in_extra_Border_zone_starts_at_PSN_0" xml:space="preserve">
-    <value>El RMD en la zona borde extra comienza en el PSN {0:X}h</value>
-  </data>
+        <value>[slateblue1]El RMD en la zona borde extra comienza en el PSN[/] [lime]{0:X}h[/]</value>
+    </data>
     <data name="Current_Write_Read_Verify_mode_0" xml:space="preserve">
     <value>Modo Escritura/Lectura/Verificación actual: {0}</value>
   </data>
@@ -1009,11 +1009,11 @@
     <value>disco óptico de 89 mm de lectura/escritura y doble cara con 12500 pistas</value>
   </data>
     <data name="Data_area_ends_at_PSN_0" xml:space="preserve">
-    <value>El área de datos comienzo en el PSN {0:X}h</value>
-  </data>
+        <value>[slateblue1]El área de datos comienza en el PSN[/] [lime]{0:X}h[/]</value>
+    </data>
     <data name="Data_area_starts_at_PSN_0" xml:space="preserve">
-    <value>El área de datos finaliza en el PSN {0:X}h</value>
-  </data>
+        <value>[slateblue1]El área de datos comienza en el PSN[/] [lime]{0:X}h[/]</value>
+    </data>
     <data name="Data_block" xml:space="preserve">
     <value>Bloque de datos.</value>
   </data>
@@ -3803,8 +3803,8 @@
     <value>El disco no puede ser jugado en ninguna región.</value>
   </data>
     <data name="Disc_can_be_recorded_with_or_without_a_case" xml:space="preserve">
-    <value>El disco puede ser grabado con o sin carcasa</value>
-  </data>
+        <value>[slateblue1]El disco puede ser grabado con o sin carcasa[/]</value>
+    </data>
     <data name="Disc_can_be_played_in_the_following_regions" xml:space="preserve">
     <value>El disco puede ser jugado en las siguientes regiones:</value>
   </data>
@@ -3812,53 +3812,53 @@
     <value>El disco puede ser jugando en cualquier región.</value>
   </data>
     <data name="Disc_claims_conformation_to_ECMA_267" xml:space="preserve">
-    <value>El disco es conforme a ECMA-267</value>
-  </data>
+        <value>[slateblue1]El disco es conforme a [green]ECMA-267[/][/]</value>
+    </data>
     <data name="Disc_claims_conformation_to_ECMA_268" xml:space="preserve">
-    <value>El disco es conforme a ECMA-268</value>
-  </data>
+        <value>[slateblue1]El disco es conforme a [green]ECMA-268[/][/]</value>
+    </data>
     <data name="Disc_claims_conformation_to_ECMA_272" xml:space="preserve">
-    <value>El disco es conforme a ECMA-272</value>
-  </data>
+        <value>[slateblue1]El disco es conforme a [green]ECMA-272[/][/]</value>
+    </data>
     <data name="Disc_claims_conformation_to_ECMA_274" xml:space="preserve">
-    <value>El disco es conforme a ECMA-274</value>
-  </data>
+        <value>[slateblue1]El disco es conforme a [green]ECMA-274[/][/]</value>
+    </data>
     <data name="Disc_claims_conformation_to_ECMA_279" xml:space="preserve">
-    <value>El disco es conforme a ECMA-279</value>
-  </data>
+        <value>[slateblue1]El disco es conforme a [green]ECMA-279[/][/]</value>
+    </data>
     <data name="Disc_claims_conformation_to_ECMA_330" xml:space="preserve">
-    <value>El disco es conforme a ECMA-330</value>
-  </data>
+        <value>[slateblue1]El disco es conforme a [green]ECMA-330[/][/]</value>
+    </data>
     <data name="Disc_claims_conformation_to_ECMA_337" xml:space="preserve">
-    <value>El disco es conforme a ECMA-337</value>
-  </data>
+        <value>[slateblue1]El disco es conforme a [green]ECMA-337[/][/]</value>
+    </data>
     <data name="Disc_claims_conformation_to_ECMA_338" xml:space="preserve">
-    <value>El disco es conforme a ECMA-338</value>
-  </data>
+        <value>[slateblue1]El disco es conforme a [green]ECMA-338[/][/]</value>
+    </data>
     <data name="Disc_claims_conformation_to_ECMA_349" xml:space="preserve">
-    <value>El disco es conforme a ECMA-349</value>
-  </data>
+        <value>[slateblue1]El disco es conforme a [green]ECMA-349[/][/]</value>
+    </data>
     <data name="Disc_claims_conformation_to_ECMA_359" xml:space="preserve">
-    <value>El disco es conforme a ECMA-359</value>
-  </data>
+        <value>[slateblue1]El disco es conforme a [green]ECMA-359[/][/]</value>
+    </data>
     <data name="Disc_claims_conformation_to_ECMA_364" xml:space="preserve">
-    <value>El disco es conforme a ECMA-364</value>
-  </data>
+        <value>[slateblue1]El disco es conforme a [green]ECMA-364[/][/]</value>
+    </data>
     <data name="Disc_claims_conformation_to_ECMA_365" xml:space="preserve">
-    <value>El disco es conforme a ECMA-365</value>
-  </data>
+        <value>[slateblue1]El disco es conforme a [green]ECMA-365[/][/]</value>
+    </data>
     <data name="Disc_claims_conformation_to_ECMA_371" xml:space="preserve">
-    <value>El disco es conforme a ECMA-371</value>
-  </data>
+        <value>[slateblue1]El disco es conforme a [green]ECMA-371[/][/]</value>
+    </data>
     <data name="Disc_claims_conformation_to_ECMA_374" xml:space="preserve">
-    <value>El disco es conforme a ECMA-374</value>
-  </data>
+        <value>[slateblue1]El disco es conforme a [green]ECMA-374[/][/]</value>
+    </data>
     <data name="Disc_claims_conformation_to_ECMA_382" xml:space="preserve">
-    <value>El disco es conforme a ECMA-382</value>
-  </data>
+        <value>[slateblue1]El disco es conforme a [green]ECMA-382[/][/]</value>
+    </data>
     <data name="Disc_claims_conformation_to_ECMA_384" xml:space="preserve">
-    <value>El disco es conforme a ECMA-384</value>
-  </data>
+        <value>[slateblue1]El disco es conforme a [green]ECMA-384[/][/]</value>
+    </data>
     <data name="Disc_class_0" xml:space="preserve">
         <value>[slateblue1]Clase del disco: [teal]{0}[/][/]</value>
     </data>
@@ -3866,8 +3866,8 @@
     <value>El disco viene en un cartucho</value>
   </data>
     <data name="Disc_contains_extended_information_for_VCPS" xml:space="preserve">
-    <value>El disco contiene información extendida para VCPS</value>
-  </data>
+        <value>[slateblue1]El disco contiene información extendida para VCPS[/]</value>
+    </data>
     <data name="Disc_doesn_t_have_a_BCA" xml:space="preserve">
         <value>[slateblue1]El disco no tiene una BCA.[/]</value>
     </data>
@@ -3884,8 +3884,8 @@
     <value>Disco para uso en unidades especiales según el valor de intención {0}</value>
   </data>
     <data name="Disc_has_0_layers" xml:space="preserve">
-    <value>El disco tiene {0} capas</value>
-  </data>
+        <value>[slateblue1]El disco tiene [teal]{0}[/] capas[/]</value>
+    </data>
     <data name="Disc_has_0_sessions" xml:space="preserve">
         <value>[slateblue1]El disco tiene [teal]{0}[/] sesiones[/]</value>
     </data>
@@ -3923,14 +3923,14 @@
         <value>[slateblue1]ID del disco: [teal]{0:X6}[/][/]</value>
     </data>
     <data name="Disc_is_a_0_1_version_2" xml:space="preserve">
-    <value>El disco es un {0} {1} versión {2}</value>
-  </data>
+        <value>[slateblue1]El disco es un [teal]{0}[/] [fuchsia]{1}[/] versión [green]{2}[/][/]</value>
+    </data>
     <data name="Disc_is_a_Nintendo_Gamecube_Optical_Disc_GOD" xml:space="preserve">
-    <value>El disco es un disco óptico de Nintendo Gamecube (GOD)</value>
-  </data>
+        <value>[slateblue1]El disco es un disco óptico de Nintendo Gamecube (GOD)[/]</value>
+    </data>
     <data name="Disc_is_a_Nintendo_Wii_Optical_Disc_WOD" xml:space="preserve">
-    <value>El disco es un disco óptico de Nintendo Wii (WOD)</value>
-  </data>
+        <value>[slateblue1]El disco es un disco óptico de Nintendo Wii (WOD)[/]</value>
+    </data>
     <data name="Disc_is_CD_R" xml:space="preserve">
         <value>[slateblue1]El disco es un [orange3]CD-R[/][/]</value>
     </data>
@@ -4037,32 +4037,32 @@
         <value>[slateblue1]ID del fabricante del disco:[/] [green]"{0}"[/]</value>
     </data>
     <data name="Disc_manufacturer_is_0" xml:space="preserve">
-    <value>El fabricante del disco es {0}</value>
-  </data>
+        <value>[slateblue1]El fabricante del disco es [green]{0}[/][/]</value>
+    </data>
     <data name="Disc_manufacturer_supplementary_information_is_0" xml:space="preserve">
-    <value>La información suplementaria del fabricante del disco es {0}</value>
-  </data>
+        <value>[slateblue1]La información suplementaria del fabricante del disco es [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_maximum_transfer_rate_is_10_08_Mbit_sec" xml:space="preserve">
-    <value>La velocidad de transferencia máxima del disco es 10,08 Mbit/seg.</value>
-  </data>
+        <value>[slateblue1]La velocidad de transferencia máxima del disco es [teal]10,08 Mbit/seg.[/]</value>
+    </data>
     <data name="Disc_maximum_transfer_rate_is_20_16_Mbit_sec" xml:space="preserve">
-    <value>La velocidad de transferencia máxima del disco es 20,16 Mbit/seg.</value>
-  </data>
+        <value>[slateblue1]La velocidad de transferencia máxima del disco es [teal]20,16[/] Mbit/seg.[/]</value>
+    </data>
     <data name="Disc_maximum_transfer_rate_is_2_52_Mbit_sec" xml:space="preserve">
-    <value>La velocidad de transferencia máxima del disco es 2,52 Mbit/seg.</value>
-  </data>
+        <value>[slateblue1]La velocidad de transferencia máxima del disco es [teal]2,52[/] Mbit/seg.[/]</value>
+    </data>
     <data name="Disc_maximum_transfer_rate_is_30_24_Mbit_sec" xml:space="preserve">
-    <value>La velocidad de transferencia máxima del disco es 30,24 Mbit/seg.</value>
-  </data>
+        <value>[slateblue1]La velocidad de transferencia máxima del disco es [teal]30,24[/] Mbit/seg.[/]</value>
+    </data>
     <data name="Disc_maximum_transfer_rate_is_5_04_Mbit_sec" xml:space="preserve">
-    <value>La velocidad de transferencia máxima del disco es 5,04 Mbit/seg.</value>
-  </data>
+        <value>[slateblue1]La velocidad de transferencia máxima del disco es [teal]5,04[/] Mbit/seg.[/]</value>
+    </data>
     <data name="Disc_maximum_transfer_rate_is_specified_by_unknown_key_0" xml:space="preserve">
-    <value>La velocidad de transferencia máxima del disco está especificada por el código desconocido {0}</value>
-  </data>
+        <value>[slateblue1]La velocidad de transferencia máxima del disco está especificada por el código desconocido [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_maximum_transfer_rate_is_unspecified" xml:space="preserve">
-    <value>La velocidad de transferencia máxima del disco no está especificada</value>
-  </data>
+        <value>[slateblue1]La velocidad de transferencia máxima del disco no está especificada[/]</value>
+    </data>
     <data name="Disc_may_be_written_without_a_cartridge" xml:space="preserve">
     <value>El disco se puede escribir sin un cartucho</value>
   </data>
@@ -4073,14 +4073,14 @@
         <value>[slateblue1]El ID del tipo de medio del disco es:[/] [green]"{0}"[/]</value>
     </data>
     <data name="Disc_media_type_is_0" xml:space="preserve">
-    <value>El tipo de medio del disco es {0}</value>
-  </data>
+        <value>[slateblue1]El tipo de medio del disco es [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_number_0_of_1" xml:space="preserve">
     <value>Disco número {0} de {1}</value>
   </data>
     <data name="Disc_product_revision_is_0" xml:space="preserve">
-    <value>La revisión de producto del disco es {0}</value>
-  </data>
+        <value>[slateblue1]La revisión de producto del disco es [teal]{0}[/][/]</value>
+    </data>
     <data name="Disc_product_revision_number_0" xml:space="preserve">
         <value>[slateblue1]Número de revisión de producto del disco:[/] [teal]{0}[/]</value>
     </data>
@@ -4091,8 +4091,8 @@
     <value>La reflectividad del disco está entre el 45% y el 85%</value>
   </data>
     <data name="Disc_shall_be_recorded_with_a_case" xml:space="preserve">
-    <value>El disco debería escribirse sin carcasa</value>
-  </data>
+        <value>[slateblue1]El disco debería escribirse con carcasa[/]</value>
+    </data>
     <data name="Disc_shall_not_be_written_without_a_cartridge" xml:space="preserve">
     <value>El disco no debería escribirse sin un cartucho</value>
   </data>
@@ -6356,8 +6356,8 @@
     <value>Las capas están en el camino de pista opuesto</value>
   </data>
     <data name="Layers_are_in_parallel_track_path" xml:space="preserve">
-    <value>Las capas están en el camino de pista paralelo</value>
-  </data>
+        <value>[slateblue1]Las capas están en el camino de pista paralelo[/]</value>
+    </data>
     <data name="Layer_0_is_of_type_Blu_ray" xml:space="preserve">
     <value>La capa {0} es de tipo Blu-ray</value>
   </data>
@@ -6374,14 +6374,14 @@
     <value>La capa {0} es de tipo desconocido 0x{1:X4}</value>
   </data>
     <data name="Layer_zero_ends_at_PSN_0" xml:space="preserve">
-    <value>La capa 0 termina en el PSN {0:X}h</value>
-  </data>
+        <value>[slateblue1]La capa [teal]0[/] termina en el PSN[/] [lime]{0:X}h[/]</value>
+    </data>
     <data name="LBA_Extent_0_starts_at_LBA_1_and_goes_for_2_sectors" xml:space="preserve">
     <value>El extent de LBA {0} comienza en el LBA {1} y dura {2} sectores</value>
   </data>
     <data name="Lead_In_is_pre_recorded" xml:space="preserve">
-    <value>El Lead-In está pre-grabado</value>
-  </data>
+        <value>[slateblue1]El Lead-In está pre-grabado[/]</value>
+    </data>
     <data name="Lead_out_is_audio_type" xml:space="preserve">
         <value>[slateblue1]El Lead-Out es de tipo audio[/]</value>
     </data>
@@ -6389,8 +6389,8 @@
         <value>[slateblue1]El Lead-Out es de tipo datos[/]</value>
     </data>
     <data name="Lead_Out_is_pre_recorded" xml:space="preserve">
-    <value>El Lead-Out está pre-grabado</value>
-  </data>
+        <value>[slateblue1]El Lead-Out está pre-grabado[/]</value>
+    </data>
     <data name="Lead_out_start_position_0_1_2" xml:space="preserve">
         <value>[slateblue1]Posición de comienzo del Lead-Out: [lime]{0:D2}:{1:D2}:{2:D2}[/][/]</value>
     </data>
@@ -6601,8 +6601,8 @@
     <value>MD5 del identificador de la unidad lógica: {0:X2}</value>
   </data>
     <data name="Media_attribute_is_0" xml:space="preserve">
-    <value>El atributo del medio es {0}</value>
-  </data>
+        <value>[slateblue1]El atributo del medio es [teal]{0}[/][/]</value>
+    </data>
     <data name="Media_background_formatting_has_completed" xml:space="preserve">
         <value>[slateblue1]El formateo del medio en segundo plano ha terminado[/]</value>
     </data>
@@ -7084,8 +7084,8 @@
     <value>Nunca aplicar la operación de verificación</value>
   </data>
     <data name="Next_Border_In_first_sector_is_PSN_0" xml:space="preserve">
-    <value>El primer sector del siguiente Border-In es el PSN {0:X}h</value>
-  </data>
+        <value>[slateblue1]El primer sector del siguiente Border-In es el PSN[/] [lime]{0:X}h[/]</value>
+    </data>
     <data name="Non_Volatile_Cache" xml:space="preserve">
     <value>Caché no volátil:</value>
   </data>
@@ -7325,8 +7325,8 @@
     <value>La protección contra escritura persistente está activada.</value>
   </data>
     <data name="PFI_in_extra_Border_zone_starts_at_PSN_0" xml:space="preserve">
-    <value>El PFI de la zona borde extra comienza en el PSN {0:X}h</value>
-  </data>
+        <value>[slateblue1]El PFI de la zona borde extra comienza en el PSN[/] [lime]{0:X}h[/]</value>
+    </data>
     <data name="Physical_sector_size_0_bytes" xml:space="preserve">
     <value>Tamaño del sector físico: {0} bytes</value>
   </data>
@@ -7409,26 +7409,26 @@
     <value>Modo de reloj PIO: {0}</value>
   </data>
     <data name="Pitch_size_is_0_147_μm_bit" xml:space="preserve">
-    <value>La pendiente de pista es 0,147 µm/bit</value>
-  </data>
+        <value>[slateblue1]La pendiente de pista es [teal]0,147[/] µm/bit[/]</value>
+    </data>
     <data name="Pitch_size_is_0_153_μm_bit" xml:space="preserve">
-    <value>La pendiente de pista es 0,153 µm/bit</value>
-  </data>
+        <value>[slateblue1]La pendiente de pista es [teal]0,153[/] µm/bit[/]</value>
+    </data>
     <data name="Pitch_size_is_0_267_μm_bit" xml:space="preserve">
-    <value>La pendiente de pista es 0,267 µm/bit</value>
-  </data>
+        <value>[slateblue1]La pendiente de pista es [teal]0,267[/] µm/bit[/]</value>
+    </data>
     <data name="Pitch_size_is_0_353_μm_bit" xml:space="preserve">
-    <value>La pendiente de pista es 0,353 µm/bit</value>
-  </data>
+        <value>[slateblue1]La pendiente de pista es [teal]0,353[/] µm/bit[/]</value>
+    </data>
     <data name="Pitch_size_is_between_0_130_μm_bit_and_0_140_μm_bit" xml:space="preserve">
-    <value>La pendiente de pista está entre 0,130 µm/bit y 0.140 µm/bit</value>
-  </data>
+        <value>[slateblue1]La pendiente de pista está entre [teal]0,130[/] µm/bit y [teal]0,140[/] µm/bit[/]</value>
+    </data>
     <data name="Pitch_size_is_between_0_140_μm_bit_and_0_148_μm_bit" xml:space="preserve">
-    <value>La pendiente de pista está entre 0,140 µm/bit y 0.148 µm/bit</value>
-  </data>
+        <value>[slateblue1]La pendiente de pista está entre [teal]0,140[/] µm/bit y [teal]0,148[/] µm/bit[/]</value>
+    </data>
     <data name="Pitch_size_is_between_0_409_μm_bit_and_0_435_μm_bit" xml:space="preserve">
-    <value>La pendiente de pista está entre 0,409 µm/bit y 0.435 µm/bit</value>
-  </data>
+        <value>[slateblue1]La pendiente de pista está entre [teal]0,409[/] µm/bit y [teal]0,435[/] µm/bit[/]</value>
+    </data>
     <data name="POP_device" xml:space="preserve">
     <value>Dispositivo POP</value>
   </data>
@@ -8868,20 +8868,20 @@
     <value>La opción de compensación de pista está disponible</value>
   </data>
     <data name="Track_size_is_0_34_μm" xml:space="preserve">
-    <value>El tamaño de la pista es 0,34 µm</value>
-  </data>
+        <value>[slateblue1]El tamaño de la pista es [teal]0,34[/] µm[/]</value>
+    </data>
     <data name="Track_size_is_0_40_μm" xml:space="preserve">
-    <value>El tamaño de la pista es 0,40 µm</value>
-  </data>
+        <value>[slateblue1]El tamaño de la pista es [teal]0,40[/] µm[/]</value>
+    </data>
     <data name="Track_size_is_0_615_μm" xml:space="preserve">
-    <value>El tamaño de la pista es 0,615 µm</value>
-  </data>
+        <value>[slateblue1]El tamaño de la pista es [teal]0,615[/] µm[/]</value>
+    </data>
     <data name="Track_size_is_0_74_μm" xml:space="preserve">
-    <value>El tamaño de la pista es 0,74 µm</value>
-  </data>
+        <value>[slateblue1]El tamaño de la pista es [teal]0,74[/] µm[/]</value>
+    </data>
     <data name="Track_size_is_0_80_μm" xml:space="preserve">
-    <value>El tamaño de la pista es 0,80 µm</value>
-  </data>
+        <value>[slateblue1]El tamaño de la pista es [teal]0,80[/] µm[/]</value>
+    </data>
     <data name="Track_starts_at_LBA_0_or_MSF_2_3" xml:space="preserve">
         <value>[slateblue1]La pista comienza en el LBA [lime]{0}[/], o el MSF [lime]{1:X2}:{2:X2}:{3:X2}[/][/]</value>
     </data>
@@ -9030,8 +9030,8 @@
     <value>ID de tipo de disco desconocida ({0})</value>
   </data>
     <data name="Unknown_DVD_RAM_case_type_key_0" xml:space="preserve">
-    <value>Código de tipo de carcasa de DVD-RAM desconocido ({0})</value>
-  </data>
+        <value>[slateblue1]Código de tipo de carcasa de DVD-RAM desconocido ([teal]{0}[/])</value>
+    </data>
     <data name="Unknown_enabled_boot_partition_code_0" xml:space="preserve">
     <value>Código desconocido ({0}) de activación de la partición de arranque</value>
   </data>
@@ -9069,8 +9069,8 @@
     <value>Código de unidad de tamaño de la partición desconocido ({0})</value>
   </data>
     <data name="Unknown_pitch_size_key_0" xml:space="preserve">
-    <value>Código de tamaño de pendiente de pista desconocido ({0})</value>
-  </data>
+        <value>[slateblue1]Código de tamaño de pendiente de pista desconocido ([teal]{0}[/])[/]</value>
+    </data>
     <data name="Unknown_port_A_transport_type_code_0" xml:space="preserve">
     <value>Código de tipo del transporte del puerto A desconocido ({0})</value>
   </data>
@@ -9105,8 +9105,8 @@
     <value>Pendiente pista desconocida</value>
   </data>
     <data name="Unknown_track_size_key__0_" xml:space="preserve">
-    <value>Código de tamaño de pista desconocido ({0})</value>
-  </data>
+        <value>[slateblue1]Código de tamaño de pista desconocido ([teal]{0}[/])[/]</value>
+    </data>
     <data name="Unknown_transport_type_0" xml:space="preserve">
     <value>Tipo de transporte 0x{0:X1} desconocido</value>
   </data>

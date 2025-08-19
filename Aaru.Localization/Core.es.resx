@@ -962,8 +962,8 @@
         <value>[slateblue1]Velocidad de lectura de DVD limitada a [teal]{0}x[/][/]</value>
     </data>
     <data name="DVD_RW_PFI" xml:space="preserve">
-    <value>PFI de DVD-R(W)</value>
-  </data>
+        <value>[bold][blue]PFI de DVD-R(W)[/][/]</value>
+    </data>
     <data name="DVD_RW_Pre_Recorded_Information" xml:space="preserve">
     <value>Información pre-grabada de DVD-R(W)</value>
   </data>

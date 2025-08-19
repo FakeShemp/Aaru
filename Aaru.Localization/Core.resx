@@ -306,8 +306,8 @@
     <value>DVD-R(W) Pre-Recorded Information</value>
   </data>
     <data name="DVD_RW_PFI" xml:space="preserve">
-    <value>DVD-R(W) PFI</value>
-  </data>
+        <value>[bold][blue]DVD-R(W) PFI:[/][/]</value>
+    </data>
     <data name="Bluray_Disc_Information" xml:space="preserve">
         <value>[bold][blue]Blu-ray Disc Information:[/][/]</value>
     </data>

@@ -294,7 +294,11 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
                                  "SCSI READ DISC STRUCTURE",
                                  scsiInfo.DvdPfi);
 
-                if(scsiInfo.DecodedPfi.HasValue) AaruLogging.WriteLine("PFI:\n{0}", PFI.Prettify(scsiInfo.DecodedPfi));
+                if(scsiInfo.DecodedPfi.HasValue)
+                {
+                    AaruLogging.WriteLine("[bold][blue]PFI:[/][/]");
+                    AaruLogging.WriteLine(PFI.Prettify(scsiInfo.DecodedPfi));
+                }
             }
 
             if(scsiInfo.DvdDmi != null)
@@ -444,8 +448,8 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 
                 if(scsiInfo.DecodedDvdrPfi.HasValue)
                 {
-                    AaruLogging.WriteLine($"[bold]{Localization.Core.DVD_RW_PFI}:[/]" +
-                                          $"\n{Markup.Escape(PFI.Prettify(scsiInfo.DecodedDvdrPfi))}");
+                    AaruLogging.WriteLine(Localization.Core.DVD_RW_PFI);
+                    AaruLogging.WriteLine(PFI.Prettify(scsiInfo.DecodedDvdrPfi));
                 }
             }
 
