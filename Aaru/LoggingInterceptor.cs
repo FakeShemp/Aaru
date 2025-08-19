@@ -3,6 +3,7 @@ using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Sinks.Spectre;
+using Spectre.Console;
 using Spectre.Console.Cli;
 
 public class LoggingInterceptor : ICommandInterceptor
@@ -39,14 +40,39 @@ public class LoggingInterceptor : ICommandInterceptor
         if(!string.IsNullOrWhiteSpace(global.LogFile))
         {
             loggerConfig = loggerConfig.Enrich.FromLogContext()
-                                       .WriteTo.File(global.LogFile,
-                                                     outputTemplate:
-                                                     "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}");
+                                       .WriteTo.Logger(lc => lc.Enrich.With<StripMarkupEnricher>()
+                                                               .WriteTo.File(global.LogFile,
+                                                                             outputTemplate:
+                                                                             "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {CleanMessage:lj}{NewLine}{Exception}"));
         }
 
         Log.Logger = loggerConfig.CreateLogger();
         Log.Information("Log level set to {Level}", _levelSwitch.MinimumLevel);
         if(global.LogFile != null) Log.Information("Logging to file: {Path}", global.LogFile);
+    }
+
+#endregion
+
+#region Nested type: StripMarkupEnricher
+
+    public class StripMarkupEnricher : ILogEventEnricher
+    {
+#region ILogEventEnricher Members
+
+        public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
+        {
+            // Render the full message (with all tokens applied)
+            string rendered = logEvent.RenderMessage();
+
+            // Remove HTML tags
+            string cleaned = Markup.Remove(rendered);
+
+            // Attach a new property CleanMessage
+            LogEventProperty prop = propertyFactory.CreateProperty("CleanMessage", cleaned);
+            logEvent.AddOrUpdateProperty(prop);
+        }
+
+#endregion
     }
 
 #endregion
