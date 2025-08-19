@@ -658,8 +658,8 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 
                 if(scsiInfo.DecodedAtip != null)
                 {
-                    AaruLogging.WriteLine($"[bold]{UI.Title_ATIP}:[/]" +
-                                          $"\n{Markup.Escape(ATIP.Prettify(scsiInfo.DecodedAtip))}");
+                    AaruLogging.WriteLine(UI.Title_ATIP);
+                    AaruLogging.WriteLine(ATIP.Prettify(scsiInfo.DecodedAtip));
                 }
             }
 

@@ -20,14 +20,14 @@
     <value>DEVICE RESET está soportado</value>
   </data>
     <data name="A1_value_0" xml:space="preserve">
-    <value>Valor A1: 0x{0:X6}</value>
-  </data>
+        <value>[slateblue1]Valor A1:[/] [teal]0x{0:X6}[/]</value>
+    </data>
     <data name="A2_value_0" xml:space="preserve">
-    <value>Valor A2: 0x{0:X6}</value>
-  </data>
+        <value>[slateblue1]Valor A2:[/] [teal]0x{0:X6}[/]</value>
+    </data>
     <data name="A3_value_0" xml:space="preserve">
-    <value>Valor A3: 0x{0:X6}</value>
-  </data>
+        <value>[slateblue1]Valor A3:[/] [teal]0x{0:X6}[/]</value>
+    </data>
     <data name="AACS_Data_Keys_in_hex_follows" xml:space="preserve">
     <value>AACS Data Keys en hexadecimal a continuación:</value>
   </data>
@@ -456,17 +456,17 @@
     <value>Información de ATA IDENTIFY a continuación:</value>
   </data>
     <data name="ATIP_Last_possible_start_time_of_Lead_out_0" xml:space="preserve">
-    <value>Último tiempo de comienzo posible del Lead-out según ATIP: 0x{0:X6}</value>
-  </data>
+        <value>[slateblue1]Último tiempo de comienzo posible del Lead-out según ATIP:[/] [lime]0x{0:X6}[/]</value>
+    </data>
     <data name="ATIP_Last_possible_start_time_of_Lead_out_0_1_2" xml:space="preserve">
-    <value>Último tiempo de comienzo posible del Lead-out según ATIP: {0}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Último tiempo de comienzo posible del Lead-out según ATIP:[/] [lime]{0}:{1:D2}:{2:D2}[/]</value>
+    </data>
     <data name="ATIP_Start_time_of_Lead_in_0" xml:space="preserve">
-    <value>Tiempo de comienzo del Lead-in según ATIP: 0x{0:X6}</value>
-  </data>
+        <value>[slateblue1]Tiempo de comienzo del Lead-in según ATIP:[/] [lime]0x{0:X6}[/]</value>
+    </data>
     <data name="ATIP_Start_time_of_Lead_in_0_1_2" xml:space="preserve">
-    <value>Tiempo de comienzo del Lead-in según ATIP: {0}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]Tiempo de comienzo del Lead-in según ATIP:[/] [lime]{0}:{1:D2}:{2:D2}[/]</value>
+    </data>
     <data name="AT_Attachment_Interface__ATA_ATAPI_" xml:space="preserve">
     <value>Interfaz de conexión AT (ATA/ATAPI)</value>
   </data>
@@ -3932,17 +3932,17 @@
     <value>El disco es un disco óptico de Nintendo Wii (WOD)</value>
   </data>
     <data name="Disc_is_CD_R" xml:space="preserve">
-    <value>El disco es un CD-R</value>
-  </data>
+        <value>[slateblue1]El disco es un [orange3]CD-R[/][/]</value>
+    </data>
     <data name="Disc_is_CD_RW" xml:space="preserve">
-    <value>El disco es un CD-RW</value>
-  </data>
+        <value>[slateblue1]El disco es un [darkorange]CD-RW[/][/]</value>
+    </data>
     <data name="Disc_is_DDCD_R" xml:space="preserve">
-    <value>El disco es un DDCD-R</value>
-  </data>
+        <value>[slateblue1]El disco es un [purple]DDCD-R[/][/]</value>
+    </data>
     <data name="Disc_is_DDCD_RW" xml:space="preserve">
-    <value>El disco es un DDCD-RW</value>
-  </data>
+        <value>[slateblue1]El disco es un [purple]DDCD-RW[/][/]</value>
+    </data>
     <data name="Disc_is_defined_for_restricted_use" xml:space="preserve">
         <value>[slateblue1]El disco está definido para el uso restringido[/]</value>
     </data>
@@ -3971,47 +3971,47 @@
         <value>[slateblue1]El disco está finalizado[/]</value>
     </data>
     <data name="Disc_is_high_speed_CAV_CD_R" xml:space="preserve">
-    <value>El disco es un CD-R de alta velocidad (CAV)</value>
-  </data>
+        <value>[slateblue1]El disco es un [orange3]CD-R[/] de alta velocidad (CAV)[/]</value>
+    </data>
     <data name="Disc_is_High_Speed_CD_RW" xml:space="preserve">
-    <value>El disco es un CD-RW High-Speed</value>
-  </data>
+        <value>[slateblue1]El disco es un [darkorange]CD-RW High-Speed[/][/]</value>
+    </data>
     <data name="Disc_is_incomplete" xml:space="preserve">
         <value>[slateblue1]El disco está incompleto[/]</value>
     </data>
     <data name="Disc_is_medium_type_A_high_beta_category_CD_R" xml:space="preserve">
-    <value>El disco es un medio de tipo A, CD-R de categoría beta alta (A+)</value>
-  </data>
+        <value>[slateblue1]El disco es un medio de tipo A, [orange3]CD-R[/] de categoría beta alta (A+)[/]</value>
+    </data>
     <data name="Disc_is_medium_type_B_high_beta_category_CD_RW" xml:space="preserve">
-    <value>El disco es un medio de tipo B, CD-RW de categoría beta alta (B+)</value>
-  </data>
+        <value>[slateblue1]El disco es un medio de tipo B, [darkorange]CD-RW[/] de categoría beta alta (B+)[/]</value>
+    </data>
     <data name="Disc_is_medium_type_B_high_beta_category__CD_R" xml:space="preserve">
-    <value>El disco es un medio de tipo B, CD-R de categoría beta alta (B+)</value>
-  </data>
+        <value>[slateblue1]El disco es un medio de tipo B, [orange3]CD-R[/] de categoría beta alta (B+)[/]</value>
+    </data>
     <data name="Disc_is_medium_type_C_high_beta_category_CD_RW" xml:space="preserve">
-    <value>El disco es un medio de tipo C, CD-RW de categoría beta alta (C+)</value>
-  </data>
+        <value>[slateblue1]El disco es un medio de tipo C, [darkorange]CD-RW[/] de categoría beta alta (C+)[/]</value>
+    </data>
     <data name="Disc_is_medium_type_C_high_beta_category__CD_R" xml:space="preserve">
-    <value>El disco es un medio de tipo C, CD-R de categoría beta alta (C+)</value>
-  </data>
+        <value>[slateblue1]El disco es un medio de tipo C, [orange3]CD-R[/] de categoría beta alta (C+)[/]</value>
+    </data>
     <data name="Disc_is_medium_type_A_low_beta_category_CD_R" xml:space="preserve">
-    <value>El disco es un medio de tipo A, CD-R de categoría beta baja (A-)</value>
-  </data>
+        <value>[slateblue1]El disco es un medio de tipo A, [orange3]CD-R[/] de categoría beta baja (A-)[/]</value>
+    </data>
     <data name="Disc_is_medium_type_B_low_beta_category_CD_R" xml:space="preserve">
-    <value>El disco es un medio de tipo B, CD-R de categoría beta baja (B-)</value>
-  </data>
+        <value>[slateblue1]El disco es un medio de tipo B, [orange3]CD-R[/] de categoría beta baja (B-)[/]</value>
+    </data>
     <data name="Disc_is_medium_type_B_low_beta_category_CD_RW" xml:space="preserve">
-    <value>El disco es un medio de tipo B, CD-RW de categoría beta baja (B-)</value>
-  </data>
+        <value>[slateblue1]El disco es un medio de tipo B, [darkorange]CD-RW[/] de categoría beta baja (B-)[/]</value>
+    </data>
     <data name="Disc_is_medium_type_C_low_beta_category_CD_RW" xml:space="preserve">
-    <value>El disco es un medio de tipo C, CD-RW de categoría beta baja (C-)</value>
-  </data>
+        <value>[slateblue1]El disco es un medio de tipo C, [darkorange]CD-RW[/] de categoría beta baja (C-)[/]</value>
+    </data>
     <data name="Disc_is_medium_type_C_low_beta_category__CD_R" xml:space="preserve">
-    <value>El disco es un medio de tipo C, CD-R de categoría beta baja (C-)</value>
-  </data>
+        <value>[slateblue1]El disco es un medio de tipo C, [orange3]CD-R[/] de categoría beta baja (C-)[/]</value>
+    </data>
     <data name="Disc_is_normal_speed_CLV_CD_R" xml:space="preserve">
-    <value>El disco es un CD-R de velocidad normal (CLV)</value>
-  </data>
+        <value>[slateblue1]El disco es un [orange3]CD-R[/] de velocidad normal (CLV)[/]</value>
+    </data>
     <data name="Disc_is_RW_rewritable" xml:space="preserve">
     <value>El disco es RW (regrabable)</value>
   </data>
@@ -4019,11 +4019,11 @@
     <value>El disco es R (grabable)</value>
   </data>
     <data name="Disc_is_Ultra_Speed_CD_RW" xml:space="preserve">
-    <value>El disco es un CD-RW Ultra-Speed</value>
-  </data>
+        <value>[slateblue1]El disco es un [darkorange]CD-RW Ultra-Speed[/][/]</value>
+    </data>
     <data name="Disc_is_Ultra_Speed_Plus_CD_RW" xml:space="preserve">
-    <value>El disco es un CD-RW Ultra-Speed+</value>
-  </data>
+        <value>[slateblue1]El disco es un [darkorange]CD-RW Ultra-Speed+[/][/]</value>
+    </data>
     <data name="Disc_is_write_inhibited_because_it_has_been_extracted_from_the_cartridge" xml:space="preserve">
     <value>El disco tiene inhibida la escritura por haber sido extraído del cartucho</value>
   </data>
@@ -4031,8 +4031,8 @@
     <value>El disco tiene inhibida la escritura por una razón desconocida</value>
   </data>
     <data name="Disc_manufactured_by_0" xml:space="preserve">
-    <value>Disco fabricado por: {0}</value>
-  </data>
+        <value>[slateblue1]Disco fabricado por:[/] [green]{0}[/]</value>
+    </data>
     <data name="Disc_manufacturer_ID_0" xml:space="preserve">
         <value>[slateblue1]ID del fabricante del disco:[/] [green]"{0}"[/]</value>
     </data>
@@ -4145,20 +4145,20 @@
         <value>[slateblue1]El disco usa un canal de [teal]74,5nm[/] dando [green]25[/]Gb por capa.[/]</value>
     </data>
     <data name="Disc_uses_long_strategy_type_dye_Cyanine_AZO_etc" xml:space="preserve">
-    <value>El disco usa un tipo de colorante de larga estrategia (Cianina, AZO, etc...)</value>
-  </data>
+        <value>[slateblue1]El disco usa un tipo de colorante de larga estrategia (Cianina, AZO, etc...)[/]</value>
+    </data>
     <data name="Disc_uses_negative_polarity" xml:space="preserve">
         <value>[slateblue1]El disco usa polaridad negativa.[/]</value>
     </data>
     <data name="Disc_uses_phase_change" xml:space="preserve">
-    <value>El disco usa cambio de fase</value>
-  </data>
+        <value>[slateblue1]El disco usa cambio de fase[/]</value>
+    </data>
     <data name="Disc_uses_positive_polarity" xml:space="preserve">
         <value>[slateblue1]El disco usa polaridad positiva.[/]</value>
     </data>
     <data name="Disc_uses_short_strategy_type_dye_Phthalocyanine_etc" xml:space="preserve">
-    <value>El disco usa un tipo de colorante de corta estrategia (Ftalocianina, etc...)</value>
-  </data>
+        <value>[slateblue1]El disco usa un tipo de colorante de corta estrategia (Ftalocianina, etc...)[/]</value>
+    </data>
     <data name="Disc_uses_unknown_BCA_code_0" xml:space="preserve">
         <value>[slateblue1]El disco tiene un código de BCA desconocido: [teal]{0}[/][/]</value>
     </data>
@@ -4172,11 +4172,11 @@
         <value>[slateblue1]El disco usa una polaridad de reflectividad grabada desconocida con código [teal]{0}[/][/]</value>
     </data>
     <data name="Disc_use_is_restricted" xml:space="preserve">
-    <value>El uso del disco es restringido</value>
-  </data>
+        <value>[slateblue1]El uso del disco es restringido[/]</value>
+    </data>
     <data name="Disc_use_is_unrestricted" xml:space="preserve">
-    <value>El uso del disco no es restringido</value>
-  </data>
+        <value>[slateblue1]El uso del disco no es restringido[/]</value>
+    </data>
     <data name="Disc_version_0" xml:space="preserve">
         <value>[slateblue1]Versión del disco: [teal]{0}[/][/]</value>
     </data>
@@ -6182,8 +6182,8 @@
     <value>Relleno de ceros incorrecto.</value>
   </data>
     <data name="Indicative_Target_Writing_Power_0" xml:space="preserve">
-    <value>Potencia Indicativa de Escritura Objetivo: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]Potencia Indicativa de Escritura Objetivo:[/] [teal]0x{0:X2}[/]</value>
+    </data>
     <data name="Informational_exceptions_are_disabled" xml:space="preserve">
     <value>Las excepciones informativas están desactivadas</value>
   </data>
@@ -7756,17 +7756,17 @@
     <value>No se reportarán los errores corregidos.</value>
   </data>
     <data name="Reference_speed_is_2x" xml:space="preserve">
-    <value>La velocidad de referencia es 2x</value>
-  </data>
+        <value>[slateblue1]La velocidad de referencia es [teal]2x[/][/]</value>
+    </data>
     <data name="Reference_speed_is_4x" xml:space="preserve">
-    <value>La velocidad de referencia es 4x</value>
-  </data>
+        <value>[slateblue1]La velocidad de referencia es [teal]4x[/][/]</value>
+    </data>
     <data name="Reference_speed_is_8x" xml:space="preserve">
-    <value>La velocidad de referencia es 8x</value>
-  </data>
+        <value>[slateblue1]La velocidad de referencia es [teal]8x[/][/]</value>
+    </data>
     <data name="Reference_speed_set_is_unknown_0" xml:space="preserve">
-    <value>La velocidad de referencia establecida es desconocida: {0}</value>
-  </data>
+        <value>[slateblue1]La velocidad de referencia establecida es desconocida:[/] [teal]{0}[/]</value>
+    </data>
     <data name="Reference_velocity_is_3_49_m_s" xml:space="preserve">
     <value>La velocidad de referencia es 3,49 m/s</value>
   </data>
@@ -7923,8 +7923,8 @@
     <value>El fechado puede inicializerse por métodos externos a los estándares SCSI, pero SET TIMESTAMP deberá tener preferencia sobre ellos</value>
   </data>
     <data name="S4_value_0" xml:space="preserve">
-    <value>Valor S4: 0x{0:X6}</value>
-  </data>
+        <value>[slateblue1]Valor S4:[/] [teal]0x{0:X6}[/]</value>
+    </data>
     <data name="SANITIZE_ANTIFREEZE_LOCK_EXT_is_supported" xml:space="preserve">
     <value>SANITIZE ANTIFREEZE LOCK EXT está soportado</value>
   </data>
@@ -8976,11 +8976,11 @@
     <value>Código de tipo del cartucho desconocido ({0})</value>
   </data>
     <data name="Unknown_CD_RW_disc_subtype_0" xml:space="preserve">
-    <value>Subtipo de disco CD-RW desconocido: {0}</value>
-  </data>
+        <value>[slateblue1]Subtipo de disco [darkorange]CD-RW[/] desconocido:[/] [teal]{0}[/]</value>
+    </data>
     <data name="Unknown_CD_R_disc_subtype_0" xml:space="preserve">
-    <value>Subtipo de disco CD-R desconocido: {0}</value>
-  </data>
+        <value>[slateblue1]Subtipo de disco [orange3]CD-R[/] desconocido:[/] [teal]{0}[/]</value>
+    </data>
     <data name="Unknown_cleaning_behaviour_code_0" xml:space="preserve">
     <value>Código de comportamiento de limpieza desconocido ({0})</value>
   </data>

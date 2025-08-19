@@ -2379,8 +2379,8 @@ Do you want to continue?</value>
     <value>Save Lead-In CD-TEXT</value>
   </data>
     <data name="Title_ATIP" xml:space="preserve">
-    <value>ATIP</value>
-  </data>
+        <value>[bold][blue]ATIP:[/][/]</value>
+    </data>
     <data name="ButtonLabel_Save_READ_ATIP_response" xml:space="preserve">
     <value>Save READ ATIP response</value>
   </data>

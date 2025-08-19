@@ -1447,125 +1447,125 @@
     <value>Expected CD ATIP size (32 bytes) is not received size ({0} bytes), not decoding</value>
   </data>
     <data name="Indicative_Target_Writing_Power_0" xml:space="preserve">
-    <value>Indicative Target Writing Power: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]Indicative Target Writing Power:[/] [teal]0x{0:X2}[/]</value>
+    </data>
     <data name="Disc_is_DDCD_RW" xml:space="preserve">
-    <value>Disc is DDCD-RW</value>
-  </data>
+        <value>[slateblue1]Disc is [purple]DDCD-RW[/][/]</value>
+    </data>
     <data name="Disc_is_DDCD_R" xml:space="preserve">
-    <value>Disc is DDCD-R</value>
-  </data>
+        <value>[slateblue1]Disc is [purple]DDCD-R[/][/]</value>
+    </data>
     <data name="Reference_speed_is_4x" xml:space="preserve">
-    <value>Reference speed is 4x</value>
-  </data>
+        <value>[slateblue1]Reference speed is [teal]4x[/][/]</value>
+    </data>
     <data name="Reference_speed_is_8x" xml:space="preserve">
-    <value>Reference speed is 8x</value>
-  </data>
+        <value>[slateblue1]Reference speed is [teal]8x[/][/]</value>
+    </data>
     <data name="Reference_speed_set_is_unknown_0" xml:space="preserve">
-    <value>Reference speed set is unknown: {0}</value>
-  </data>
+        <value>[slateblue1]Reference speed set is unknown:[/] [teal]{0}[/]</value>
+    </data>
     <data name="ATIP_Start_time_of_Lead_in_0" xml:space="preserve">
-    <value>ATIP Start time of Lead-in: 0x{0:X6}</value>
-  </data>
+        <value>[slateblue1]ATIP Start time of Lead-in:[/] [lime]0x{0:X6}[/]</value>
+    </data>
     <data name="ATIP_Last_possible_start_time_of_Lead_out_0" xml:space="preserve">
-    <value>ATIP Last possible start time of Lead-out: 0x{0:X6}</value>
-  </data>
+        <value>[slateblue1]ATIP Last possible start time of Lead-out:[/] [lime]0x{0:X6}[/]</value>
+    </data>
     <data name="S4_value_0" xml:space="preserve">
-    <value>S4 value: 0x{0:X6}</value>
-  </data>
+        <value>[slateblue1]S4 value:[/] [teal]0x{0:X6}[/]</value>
+    </data>
     <data name="Disc_is_CD_RW" xml:space="preserve">
-    <value>Disc is CD-RW</value>
-  </data>
+        <value>[slateblue1]Disc is [darkorange]CD-RW[/][/]</value>
+    </data>
     <data name="Disc_is_High_Speed_CD_RW" xml:space="preserve">
-    <value>Disc is High-Speed CD-RW</value>
-  </data>
+        <value>[slateblue1]Disc is [darkorange]High-Speed CD-RW[/][/]</value>
+    </data>
     <data name="Disc_is_Ultra_Speed_CD_RW" xml:space="preserve">
-    <value>Disc is Ultra-Speed CD-RW</value>
-  </data>
+        <value>[slateblue1]Disc is [darkorange]Ultra-Speed CD-RW[/][/]</value>
+    </data>
     <data name="Disc_is_Ultra_Speed_Plus_CD_RW" xml:space="preserve">
-    <value>Disc is Ultra-Speed+ CD-RW</value>
-  </data>
+        <value>[slateblue1]Disc is [darkorange]Ultra-Speed+ CD-RW[/][/]</value>
+    </data>
     <data name="Disc_is_medium_type_B_low_beta_category_CD_RW" xml:space="preserve">
-    <value>Disc is medium type B, low beta category (B-) CD-RW</value>
-  </data>
+        <value>[slateblue1]Disc is medium type B, low beta category (B-) [darkorange]CD-RW[/][/]</value>
+    </data>
     <data name="Disc_is_medium_type_B_high_beta_category_CD_RW" xml:space="preserve">
-    <value>Disc is medium type B, high beta category (B+) CD-RW</value>
-  </data>
+        <value>[slateblue1]Disc is medium type B, high beta category (B+) [darkorange]CD-RW[/][/]</value>
+    </data>
     <data name="Disc_is_medium_type_C_low_beta_category_CD_RW" xml:space="preserve">
-    <value>Disc is medium type C, low beta category (C-) CD-RW</value>
-  </data>
+        <value>[slateblue1]Disc is medium type C, low beta category (C-) [darkorange]CD-RW[/][/]</value>
+    </data>
     <data name="Disc_is_medium_type_C_high_beta_category_CD_RW" xml:space="preserve">
-    <value>Disc is medium type C, high beta category (C+) CD-RW</value>
-  </data>
+        <value>[slateblue1]Disc is medium type C, high beta category (C+) [darkorange]CD-RW[/][/]</value>
+    </data>
     <data name="Unknown_CD_RW_disc_subtype_0" xml:space="preserve">
-    <value>Unknown CD-RW disc subtype: {0}</value>
-  </data>
+        <value>[slateblue1]Unknown [darkorange]CD-RW[/] disc subtype:[/] [teal]{0}[/]</value>
+    </data>
     <data name="Reference_speed_is_2x" xml:space="preserve">
-    <value>Reference speed is 2x</value>
-  </data>
+        <value>[slateblue1]Reference speed is [teal]2x[/][/]</value>
+    </data>
     <data name="Disc_is_CD_R" xml:space="preserve">
-    <value>Disc is CD-R</value>
-  </data>
+        <value>[slateblue1]Disc is [orange3]CD-R[/][/]</value>
+    </data>
     <data name="Disc_is_normal_speed_CLV_CD_R" xml:space="preserve">
-    <value>Disc is normal speed (CLV) CD-R</value>
-  </data>
+        <value>[slateblue1]Disc is normal speed (CLV) [orange3]CD-R[/][/]</value>
+    </data>
     <data name="Disc_is_high_speed_CAV_CD_R" xml:space="preserve">
-    <value>Disc is high speed (CAV) CD-R</value>
-  </data>
+        <value>[slateblue1]Disc is high speed (CAV) CD-R</value>
+    </data>
     <data name="Disc_is_medium_type_A_low_beta_category_CD_R" xml:space="preserve">
-    <value>Disc is medium type A, low beta category (A-) CD-R</value>
-  </data>
+        <value>[slateblue1]Disc is medium type A, low beta category (A-) CD-R</value>
+    </data>
     <data name="Disc_is_medium_type_A_high_beta_category_CD_R" xml:space="preserve">
-    <value>Disc is medium type A, high beta category (A+) CD-R</value>
-  </data>
+        <value>[slateblue1]Disc is medium type A, high beta category (A+) CD-R</value>
+    </data>
     <data name="Disc_is_medium_type_B_low_beta_category_CD_R" xml:space="preserve">
-    <value>Disc is medium type B, low beta category (B-) CD-R</value>
-  </data>
+        <value>[slateblue1]Disc is medium type B, low beta category (B-) CD-R</value>
+    </data>
     <data name="Disc_is_medium_type_B_high_beta_category__CD_R" xml:space="preserve">
-    <value>Disc is medium type B, high beta category (B+) CD-R</value>
-  </data>
+        <value>[slateblue1]Disc is medium type B, high beta category (B+) CD-R</value>
+    </data>
     <data name="Disc_is_medium_type_C_low_beta_category__CD_R" xml:space="preserve">
-    <value>Disc is medium type C, low beta category (C-) CD-R</value>
-  </data>
+        <value>[slateblue1]Disc is medium type C, low beta category (C-) CD-R</value>
+    </data>
     <data name="Disc_is_medium_type_C_high_beta_category__CD_R" xml:space="preserve">
-    <value>Disc is medium type C, high beta category (C+) CD-R</value>
-  </data>
+        <value>[slateblue1]Disc is medium type C, high beta category (C+) CD-R</value>
+    </data>
     <data name="Unknown_CD_R_disc_subtype_0" xml:space="preserve">
-    <value>Unknown CD-R disc subtype: {0}</value>
-  </data>
+        <value>[slateblue1]Unknown [orange3]CD-R[/] disc subtype:[/] [teal]{0}[/]</value>
+    </data>
     <data name="ATIP_Start_time_of_Lead_in_0_1_2" xml:space="preserve">
-    <value>ATIP Start time of Lead-in: {0}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]ATIP Start time of Lead-in:[/] [lime]{0}:{1:D2}:{2:D2}[/]</value>
+    </data>
     <data name="ATIP_Last_possible_start_time_of_Lead_out_0_1_2" xml:space="preserve">
-    <value>ATIP Last possible start time of Lead-out: {0}:{1:D2}:{2:D2}</value>
-  </data>
+        <value>[slateblue1]ATIP Last possible start time of Lead-out:[/] [lime]{0}:{1:D2}:{2:D2}[/]</value>
+    </data>
     <data name="Disc_use_is_unrestricted" xml:space="preserve">
-    <value>Disc use is unrestricted</value>
-  </data>
+        <value>[slateblue1]Disc use is unrestricted[/]</value>
+    </data>
     <data name="Disc_use_is_restricted" xml:space="preserve">
-    <value>Disc use is restricted</value>
-  </data>
+        <value>[slateblue1]Disc use is restricted[/]</value>
+    </data>
     <data name="A1_value_0" xml:space="preserve">
-    <value>A1 value: 0x{0:X6}</value>
-  </data>
+        <value>[slateblue1]A1 value:[/] [teal]0x{0:X6}[/]</value>
+    </data>
     <data name="A2_value_0" xml:space="preserve">
-    <value>A2 value: 0x{0:X6}</value>
-  </data>
+        <value>[slateblue1]A2 value:[/] [teal]0x{0:X6}[/]</value>
+    </data>
     <data name="A3_value_0" xml:space="preserve">
-    <value>A3 value: 0x{0:X6}</value>
-  </data>
+        <value>[slateblue1]A3 value:[/] [teal]0x{0:X6}[/]</value>
+    </data>
     <data name="Disc_uses_phase_change" xml:space="preserve">
-    <value>Disc uses phase change</value>
-  </data>
+        <value>[slateblue1]Disc uses phase change[/]</value>
+    </data>
     <data name="Disc_uses_long_strategy_type_dye_Cyanine_AZO_etc" xml:space="preserve">
-    <value>Disc uses long strategy type dye (Cyanine, AZO, etc...)</value>
-  </data>
+        <value>[slateblue1]Disc uses long strategy type dye (Cyanine, AZO, etc...)[/]</value>
+    </data>
     <data name="Disc_uses_short_strategy_type_dye_Phthalocyanine_etc" xml:space="preserve">
-    <value>Disc uses short strategy type dye (Phthalocyanine, etc...)</value>
-  </data>
+        <value>[slateblue1]Disc uses short strategy type dye (Phthalocyanine, etc...)[/]</value>
+    </data>
     <data name="Disc_manufactured_by_0" xml:space="preserve">
-    <value>Disc manufactured by: {0}</value>
-  </data>
+        <value>[slateblue1]Disc manufactured by:[/] [green]{0}[/]</value>
+    </data>
     <data name="Expected_CD_TEXT_size_0_bytes_is_not_received_size_1_bytes_not_decoding" xml:space="preserve">
     <value>Expected CD-TEXT size ({0} bytes) is not received size ({1} bytes), not decoding</value>
   </data>

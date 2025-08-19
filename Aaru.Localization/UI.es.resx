@@ -2151,8 +2151,8 @@ Probadores:
     <value>ATA / ATAPI</value>
   </data>
     <data name="Title_ATIP" xml:space="preserve">
-    <value>ATIP</value>
-  </data>
+        <value>[bold][blue]ATIP:[/][/]</value>
+    </data>
     <data name="Title_Attributes" xml:space="preserve">
     <value>Atributos</value>
   </data>
