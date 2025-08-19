@@ -78,11 +78,11 @@ public static class Inquiry
         switch((PeripheralQualifiers)response.PeripheralQualifier)
         {
             case PeripheralQualifiers.Supported:
-                sb.AppendLine($"[Italic][Green]{Localization.Device_is_connected_and_supported}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Device_is_connected_and_supported}[/][/]");
 
                 break;
             case PeripheralQualifiers.Unconnected:
-                sb.AppendLine($"[Italic][Green]{Localization.Device_is_supported_but_not_connected}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Device_is_supported_but_not_connected}[/][/]");
 
                 break;
             case PeripheralQualifiers.Reserved:
@@ -104,91 +104,91 @@ public static class Inquiry
         switch((PeripheralDeviceTypes)response.PeripheralDeviceType)
         {
             case PeripheralDeviceTypes.DirectAccess: //0x00,
-                sb.AppendLine($"[Italic][Green]{Localization.Direct_access_device}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Direct_access_device}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.SequentialAccess: //0x01,
-                sb.AppendLine($"[Italic][Green]{Localization.Sequential_access_device}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Sequential_access_device}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.PrinterDevice: //0x02,
-                sb.AppendLine($"[Italic][Green]{Localization.Printer_device}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Printer_device}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.ProcessorDevice: //0x03,
-                sb.AppendLine($"[Italic][Green]{Localization.Processor_device}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Processor_device}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.WriteOnceDevice: //0x04,
-                sb.AppendLine($"[Italic][Green]{Localization.Write_once_device}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Write_once_device}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.MultiMediaDevice: //0x05,
-                sb.AppendLine($"[Italic][Green]{Localization.CD_ROM_DVD_etc_device}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.CD_ROM_DVD_etc_device}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.ScannerDevice: //0x06,
-                sb.AppendLine($"[Italic][Green]{Localization.Scanner_device}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Scanner_device}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.OpticalDevice: //0x07,
-                sb.AppendLine($"[Italic][Green]{Localization.Optical_memory_device}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Optical_memory_device}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.MediumChangerDevice: //0x08,
-                sb.AppendLine($"[Italic][Green]{Localization.Medium_change_device}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Medium_change_device}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.CommsDevice: //0x09,
-                sb.AppendLine($"[Italic][Green]{Localization.Communications_device}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Communications_device}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.PrePressDevice1: //0x0A,
-                sb.AppendLine($"[Italic][Green]{Localization.Graphics_arts_pre_press_device_defined_in_ASC_IT8}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Graphics_arts_pre_press_device_defined_in_ASC_IT8}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.PrePressDevice2: //0x0B,
-                sb.AppendLine($"[Italic][Green]{Localization.Graphics_arts_pre_press_device_defined_in_ASC_IT8}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Graphics_arts_pre_press_device_defined_in_ASC_IT8}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.ArrayControllerDevice: //0x0C,
-                sb.AppendLine($"[Italic][Green]{Localization.Array_controller_device}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Array_controller_device}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.EnclosureServiceDevice: //0x0D,
-                sb.AppendLine($"[Italic][Green]{Localization.Enclosure_services_device}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Enclosure_services_device}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.SimplifiedDevice: //0x0E,
-                sb.AppendLine($"[Italic][Green]{Localization.Simplified_direct_access_device}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Simplified_direct_access_device}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.OCRWDevice: //0x0F,
-                sb.AppendLine($"[Italic][Green]{Localization.Optical_card_reader_writer_device}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Optical_card_reader_writer_device}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.BridgingExpander: //0x10,
-                sb.AppendLine($"[Italic][Green]{Localization.Bridging_Expanders}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Bridging_Expanders}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.ObjectDevice: //0x11,
-                sb.AppendLine($"[Italic][Green]{Localization.Object_based_Storage_Device}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Object_based_Storage_Device}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.ADCDevice: //0x12,
-                sb.AppendLine($"[Italic][Green]{Localization.Automation_Drive_Interface}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Automation_Drive_Interface}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.SCSISecurityManagerDevice: //0x13,
-                sb.AppendLine($"[Italic][Green]{Localization.Security_Manager_Device}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Security_Manager_Device}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.SCSIZonedBlockDevice: //0x14
-                sb.AppendLine($"[Italic][Green]{Localization.Host_managed_zoned_block_device}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Host_managed_zoned_block_device}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.WellKnownDevice: //0x1E,
-                sb.AppendLine($"[Italic][Green]{Localization.Well_known_logical_unit}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Well_known_logical_unit}[/][/]");
 
                 break;
             case PeripheralDeviceTypes.UnknownDevice: //0x1F
@@ -209,27 +209,27 @@ public static class Inquiry
 
                 break;
             case ANSIVersions.ANSI1986Version:
-                sb.AppendLine($"[Italic][Green]{Localization.Device_claims_to_comply_with_ANSI_X3_131_1986_SCSI_1}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Device_claims_to_comply_with_ANSI_X3_131_1986_SCSI_1}[/][/]");
 
                 break;
             case ANSIVersions.ANSI1994Version:
-                sb.AppendLine($"[Italic][Green]{Localization.Device_claims_to_comply_with_ANSI_X3_131_1994_SCSI_2}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Device_claims_to_comply_with_ANSI_X3_131_1994_SCSI_2}[/][/]");
 
                 break;
             case ANSIVersions.ANSI1997Version:
-                sb.AppendLine($"[Italic][Green]{Localization.Device_claims_to_comply_with_ANSI_X3_301_1997_SPC_1}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Device_claims_to_comply_with_ANSI_X3_301_1997_SPC_1}[/][/]");
 
                 break;
             case ANSIVersions.ANSI2001Version:
-                sb.AppendLine($"[Italic][Green]{Localization.Device_claims_to_comply_with_ANSI_X3_351_2001_SPC_2}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Device_claims_to_comply_with_ANSI_X3_351_2001_SPC_2}[/][/]");
 
                 break;
             case ANSIVersions.ANSI2005Version:
-                sb.AppendLine($"[Italic][Green]{Localization.Device_claims_to_comply_with_ANSI_X3_408_2005_SPC_3}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Device_claims_to_comply_with_ANSI_X3_408_2005_SPC_3}[/][/]");
 
                 break;
             case ANSIVersions.ANSI2008Version:
-                sb.AppendLine($"[Italic][Green]{Localization.Device_claims_to_comply_with_ANSI_X3_408_2005_SPC_4}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Device_claims_to_comply_with_ANSI_X3_408_2005_SPC_4}[/][/]");
 
                 break;
             default:
@@ -248,7 +248,7 @@ public static class Inquiry
 
                 break;
             case ECMAVersions.ECMA111:
-                sb.AppendLine($"[Italic][Green]{Localization.Device_claims_to_comply_ECMA_111_Small_Computer_System_Interface_SCSI}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Device_claims_to_comply_ECMA_111_Small_Computer_System_Interface_SCSI}[/][/]");
 
                 break;
             default:
@@ -267,7 +267,7 @@ public static class Inquiry
 
                 break;
             case ISOVersions.ISO1995Version:
-                sb.AppendLine($"[Italic][Green]{Localization.Device_claims_to_comply_with_ISO_IEC_9316_1995}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Device_claims_to_comply_with_ISO_IEC_9316_1995}[/][/]");
 
                 break;
             default:
@@ -279,79 +279,79 @@ public static class Inquiry
                 break;
         }
 
-        if(response.RMB) sb.AppendLine($"[Italic][Green]{Localization.Device_is_removable}[/][/]");
+        if(response.RMB) sb.AppendLine($"[Italic][green]{Localization.Device_is_removable}[/][/]");
 
         if(response.AERC)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_supports_Asynchronous_Event_Reporting_Capability}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_supports_Asynchronous_Event_Reporting_Capability}[/][/]");
 
         if(response.TrmTsk)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_supports_TERMINATE_TASK_command}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_supports_TERMINATE_TASK_command}[/][/]");
 
-        if(response.NormACA) sb.AppendLine($"[Italic][Green]{Localization.Device_supports_setting_Normal_ACA}[/][/]");
+        if(response.NormACA) sb.AppendLine($"[Italic][green]{Localization.Device_supports_setting_Normal_ACA}[/][/]");
 
         if(response.HiSup)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_supports_LUN_hierarchical_addressing}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_supports_LUN_hierarchical_addressing}[/][/]");
 
         if(response.SCCS)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_contains_an_embedded_storage_array_controller}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_contains_an_embedded_storage_array_controller}[/][/]");
 
         if(response.ACC)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_contains_an_Access_Control_Coordinator}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_contains_an_Access_Control_Coordinator}[/][/]");
 
         if(response.ThreePC)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_supports_third_party_copy_commands}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_supports_third_party_copy_commands}[/][/]");
 
         if(response.Protect)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_supports_protection_information}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_supports_protection_information}[/][/]");
 
-        if(response.BQue) sb.AppendLine($"[Italic][Green]{Localization.Device_supports_basic_queueing}[/][/]");
+        if(response.BQue) sb.AppendLine($"[Italic][green]{Localization.Device_supports_basic_queueing}[/][/]");
 
         if(response.EncServ)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_contains_an_embedded_enclosure_services_component}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_contains_an_embedded_enclosure_services_component}[/][/]");
 
-        if(response.MultiP) sb.AppendLine($"[Italic][Green]{Localization.Multi_port_device}[/][/]");
+        if(response.MultiP) sb.AppendLine($"[Italic][green]{Localization.Multi_port_device}[/][/]");
 
         if(response.MChngr)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_contains_or_is_attached_to_a_medium_changer}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_contains_or_is_attached_to_a_medium_changer}[/][/]");
 
         if(response.ACKREQQ)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_supports_request_and_acknowledge_handshakes}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_supports_request_and_acknowledge_handshakes}[/][/]");
 
         if(response.Addr32)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_supports_32_bit_wide_SCSI_addresses}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_supports_32_bit_wide_SCSI_addresses}[/][/]");
 
         if(response.Addr16)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_supports_16_bit_wide_SCSI_addresses}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_supports_16_bit_wide_SCSI_addresses}[/][/]");
 
-        if(response.RelAddr) sb.AppendLine($"[Italic][Green]{Localization.Device_supports_relative_addressing}[/][/]");
+        if(response.RelAddr) sb.AppendLine($"[Italic][green]{Localization.Device_supports_relative_addressing}[/][/]");
 
         if(response.WBus32)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_supports_32_bit_wide_data_transfers}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_supports_32_bit_wide_data_transfers}[/][/]");
 
         if(response.WBus16)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_supports_16_bit_wide_data_transfers}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_supports_16_bit_wide_data_transfers}[/][/]");
 
         if(response.Sync)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_supports_synchronous_data_transfer}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_supports_synchronous_data_transfer}[/][/]");
 
-        if(response.Linked) sb.AppendLine($"[Italic][Green]{Localization.Device_supports_linked_commands}[/][/]");
+        if(response.Linked) sb.AppendLine($"[Italic][green]{Localization.Device_supports_linked_commands}[/][/]");
 
         if(response.TranDis)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_supports_CONTINUE_TASK_and_TARGET_TRANSFER_DISABLE_commands}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_supports_CONTINUE_TASK_and_TARGET_TRANSFER_DISABLE_commands}[/][/]");
 
         if(response.QAS)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_supports_Quick_Arbitration_and_Selection}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_supports_Quick_Arbitration_and_Selection}[/][/]");
 
-        if(response.CmdQue) sb.AppendLine($"[Italic][Green]{Localization.Device_supports_TCQ_queue}[/][/]");
+        if(response.CmdQue) sb.AppendLine($"[Italic][green]{Localization.Device_supports_TCQ_queue}[/][/]");
 
         if(response.IUS)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_supports_information_unit_transfers}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_supports_information_unit_transfers}[/][/]");
 
         if(response.SftRe)
-            sb.AppendLine($"[Italic][Green]{Localization.Device_implements_RESET_as_a_soft_reset}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Device_implements_RESET_as_a_soft_reset}[/][/]");
 #if DEBUG
         if(response.VS1)
-            sb.AppendLine($"[Italic][Green]{Localization.Vendor_specific_bit_5_on_byte_6_of_INQUIRY_response_is_set}[/][/]");
+            sb.AppendLine($"[Italic][green]{Localization.Vendor_specific_bit_5_on_byte_6_of_INQUIRY_response_is_set}[/][/]");
 #endif
 
         switch((TGPSValues)response.TPGS)
@@ -369,7 +369,7 @@ public static class Inquiry
 
                 break;
             case TGPSValues.Both:
-                sb.AppendLine($"[Italic][Green]{Localization.Device_supports_implicit_and_explicit_asymmetrical_access}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Device_supports_implicit_and_explicit_asymmetrical_access}[/][/]");
 
                 break;
             default:
@@ -395,7 +395,7 @@ public static class Inquiry
 
                 break;
             case SPIClocking.STandDT:
-                sb.AppendLine($"[Italic][Green]{Localization.Device_supports_ST_and_DT_clocking}[/][/]");
+                sb.AppendLine($"[Italic][green]{Localization.Device_supports_ST_and_DT_clocking}[/][/]");
 
                 break;
             default:
@@ -416,11 +416,11 @@ public static class Inquiry
                     case 0x0000:
                         break;
                     case 0x0020:
-                        sb.AppendLine($"[Italic][Green]{Localization.Device_complies_with_SAM_no_version_claimed}[/][/]");
+                        sb.AppendLine($"[Italic][green]{Localization.Device_complies_with_SAM_no_version_claimed}[/][/]");
 
                         break;
                     case 0x003B:
-                        sb.AppendLine($"[Italic][Green]{Localization.Device_complies_with_SAM_T10_0994_D_revision_18}[/][/]");
+                        sb.AppendLine($"[Italic][green]{Localization.Device_complies_with_SAM_T10_0994_D_revision_18}[/][/]");
 
                         break;
                     case 0x003C:
@@ -2452,7 +2452,8 @@ public static class Inquiry
             if(response.Seagate3Present)
             {
                 sb.AppendFormat(Localization.Drive_servo_part_number_0,
-                                PrintHex.ByteArrayToHexArrayString(response.Seagate_ServoPROMPartNo, 40))
+                                Markup.Escape(PrintHex.ByteArrayToHexArrayString(response.Seagate_ServoPROMPartNo,
+                                                  color: true)))
                   .AppendLine();
             }
         }
@@ -2472,30 +2473,38 @@ public static class Inquiry
 
 #if DEBUG
         if(response.DeviceTypeModifier != 0)
+        {
             sb.AppendFormat($"[bold][blue]{Localization.Vendor_device_type_modifier_0}[/][/]",
                             $"[italic][aqua]{response.DeviceTypeModifier}[/][/]")
               .AppendLine();
+        }
 
         if(response.Reserved2 != 0)
+        {
             sb.AppendFormat($"[bold][blue]{Localization.Reserved_byte_five_bits_two_to_one_0}[/][/]",
                             $"[italic][aqua]{response.Reserved2}[/][/]")
               .AppendLine();
+        }
 
         if(response.Reserved3 != 0)
+        {
             sb.AppendFormat($"[bold][blue]{Localization.Reserved_byte_56_bits_seven_to_four_0}[/][/]",
                             $"[italic][aqua]{response.Reserved3}[/][/]")
               .AppendLine();
+        }
 
         if(response.Reserved4 != 0)
+        {
             sb.AppendFormat($"[bold][blue]{Localization.Reserved_byte_57}[/][/]",
                             $"[italic][aqua]{response.Reserved4}[/][/]")
               .AppendLine();
+        }
 
         if(response.Reserved5 != null)
         {
             sb.AppendLine($"[bold][blue]{Localization.Reserved_bytes_74_to_95}[/][/]");
             sb.AppendLine("============================================================");
-            sb.AppendLine(PrintHex.ByteArrayToHexArrayString(response.Reserved5, 60));
+            sb.AppendLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(response.Reserved5, color: true)));
             sb.AppendLine("============================================================");
         }
 
@@ -2507,14 +2516,14 @@ public static class Inquiry
                 Array.Copy(response.VendorSpecific, 11, vendor, 0, 7);
                 sb.AppendLine($"[bold][blue]{Localization.Vendor_specific_bytes_47_to_55}[/][/]");
                 sb.AppendLine("============================================================");
-                sb.AppendLine(PrintHex.ByteArrayToHexArrayString(vendor, 60));
+                sb.AppendLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(vendor, color: true)));
                 sb.AppendLine("============================================================");
             }
             else
             {
                 sb.AppendLine($"[bold][blue]{Localization.Vendor_specific_bytes_36_to_55}[/][/]");
                 sb.AppendLine("============================================================");
-                sb.AppendLine(PrintHex.ByteArrayToHexArrayString(response.VendorSpecific, 60));
+                sb.AppendLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(response.VendorSpecific, color: true)));
                 sb.AppendLine("============================================================");
             }
         }
@@ -2527,7 +2536,7 @@ public static class Inquiry
             {
                 sb.AppendLine($"[bold][blue]{Localization.Hi_MD_specific_bytes_44_to_55}[/][/]");
                 sb.AppendLine("============================================================");
-                sb.AppendLine(PrintHex.ByteArrayToHexArrayString(response.HiMDSpecific, 60));
+                sb.AppendLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(response.HiMDSpecific, color: true)));
                 sb.AppendLine("============================================================");
             }
         }
@@ -2539,7 +2548,7 @@ public static class Inquiry
           .AppendLine();
 
         sb.AppendLine("============================================================");
-        sb.AppendLine(PrintHex.ByteArrayToHexArrayString(response.VendorSpecific2, 60));
+        sb.AppendLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(response.VendorSpecific2, color: true)));
         sb.AppendLine("============================================================");
 #endif
 
