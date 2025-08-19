@@ -927,11 +927,11 @@
         <value>[maroon][teal]{0}[/] subchannels could not be read.[/]</value>
     </data>
     <data name="Sending_MODE_SELECT_to_drive_return_damaged_blocks" xml:space="preserve">
-    <value>Sending MODE SELECT to drive (return damaged blocks).</value>
-  </data>
+        <value>[slateblue1]Sending [fuchsia]MODE SELECT[/] to drive (return damaged blocks).[/]</value>
+    </data>
     <data name="Drive_did_not_accept_MODE_SELECT_command_for_persistent_error_reading" xml:space="preserve">
-    <value>Drive did not accept MODE SELECT command for persistent error reading, try another drive.</value>
-  </data>
+        <value>[olive]Drive did not accept [fuchsia]MODE SELECT[/] command for persistent error reading, try another drive.[/]</value>
+    </data>
     <data name="Retrying_sector_0_pass_1_recovering_partial_data_forward" xml:space="preserve">
         <value>[slateblue1]Retrying sector [lime]{0}[/], pass [teal]{1}[/], recovering partial data, [italic]forward[/][/]</value>
     </data>
@@ -957,8 +957,8 @@
     <value>Got partial data for sector {0} in pass {1}.</value>
   </data>
     <data name="Sending_MODE_SELECT_to_drive_return_device_to_previous_status" xml:space="preserve">
-    <value>Sending MODE SELECT to drive (return device to previous status).</value>
-  </data>
+        <value>[slateblue1]Sending [fuchsia]MODE SELECT[/] to drive (return device to previous status).[/]</value>
+    </data>
     <data name="Retrying_sector_0_subchannel_pass_1_forward" xml:space="preserve">
         <value>[slateblue1]Retrying sector [lime]{0}[/] subchannel, pass [teal]{1}[/], [italic]forward[/][/]</value>
     </data>
@@ -1110,18 +1110,6 @@
     </data>
     <data name="The_specified_format_does_not_support_the_inserted_cartridge" xml:space="preserve">
         <value>[red]The specified format does not support the inserted cartridge...[/]</value>
-    </data>
-    <data name="Cartridge_has_0_bytes_1_GiB" xml:space="preserve">
-        <value>[slateblue1]Cartridge has [lime]{0}[/] bytes ([lime]{1:F3}[/] GiB)[/]</value>
-    </data>
-    <data name="Cartridge_has_0_bytes_1_MiB" xml:space="preserve">
-        <value>[slateblue1]Cartridge has [lime]{0}[/] bytes ([lime]{1:F3}[/] MiB)[/]</value>
-    </data>
-    <data name="Cartridge_has_0_bytes_1_KiB" xml:space="preserve">
-        <value>[slateblue1]Cartridge has [lime]{0}[/] bytes ([lime]{1:F3}[/] KiB)[/]</value>
-    </data>
-    <data name="Cartridge_has_0_bytes" xml:space="preserve">
-        <value>[slateblue1]Cartridge has [lime]{0}[/] bytes</value>
     </data>
     <data name="Error_0_creating_output_image_not_continuing" xml:space="preserve">
     <value>Error {0} creating output image, not continuing.</value>
@@ -1701,101 +1689,101 @@
     <value>Block {0} could not be read.</value>
   </data>
     <data name="Because_of_commands_sent_dumping_XGD_must_be_administrative_Cannot_continue" xml:space="preserve">
-    <value>Because of the commands sent to a device, dumping XGD must be done with administrative privileges. Cannot continue.</value>
-  </data>
+        <value>[red]Because of the commands sent to a device, dumping XGD must be done with administrative privileges. Cannot continue.[/]</value>
+    </data>
     <data name="Cannot_dump_XGD_without_administrative_privileges" xml:space="preserve">
     <value>Cannot dump XGD without administrative privileges.</value>
   </data>
     <data name="Cannot_get_disc_capacity" xml:space="preserve">
-    <value>Cannot get disc capacity.</value>
-  </data>
+        <value>[red]Cannot get disc capacity.[/]</value>
+    </data>
     <data name="Cannot_get_PFI" xml:space="preserve">
-    <value>Cannot get PFI.</value>
-  </data>
+        <value>[red]Cannot get PFI.[/]</value>
+    </data>
     <data name="Reading_Xbox_Security_Sector" xml:space="preserve">
-    <value>Reading Xbox Security Sector.</value>
-  </data>
+        <value>[slateblue1]Reading Xbox Security Sector.[/]</value>
+    </data>
     <data name="Cannot_get_Xbox_Security_Sector_not_continuing" xml:space="preserve">
-    <value>Cannot get Xbox Security Sector, not continuing.</value>
-  </data>
+        <value>[red]Cannot get Xbox Security Sector, not continuing.[/]</value>
+    </data>
     <data name="Decoding_Xbox_Security_Sector" xml:space="preserve">
-    <value>Decoding Xbox Security Sector.</value>
-  </data>
+        <value>[slateblue1]Decoding Xbox Security Sector.[/]</value>
+    </data>
     <data name="Cannot_decode_Xbox_Security_Sector_not_continuing" xml:space="preserve">
-    <value>Cannot decode Xbox Security Sector, not continuing.</value>
-  </data>
+        <value>[red]Cannot decode Xbox Security Sector, not continuing.[/]</value>
+    </data>
     <data name="Getting_video_partition_size" xml:space="preserve">
-    <value>Getting video partition size</value>
-  </data>
+        <value>[slateblue1]Getting video partition size[/]</value>
+    </data>
     <data name="Locking_drive" xml:space="preserve">
     <value>Locking drive.</value>
   </data>
     <data name="Cannot_lock_drive_not_continuing" xml:space="preserve">
-    <value>Cannot lock drive, not continuing.</value>
-  </data>
+        <value>[red]Cannot lock drive, not continuing.[/]</value>
+    </data>
     <data name="Video_partition_total_size_0_sectors" xml:space="preserve">
-    <value>Video partition total size: {0} sectors</value>
-  </data>
+        <value>[slateblue1]Video partition total size: [violet]{0}[/] sectors[/]</value>
+    </data>
     <data name="Cannot_get_DMI" xml:space="preserve">
-    <value>Cannot get DMI.</value>
-  </data>
+        <value>[red]Cannot get DMI.[/]</value>
+    </data>
     <data name="Video_partition_is_too_big_did_lock_work_Trying_cold_values" xml:space="preserve">
-    <value>Video partition is too big, did lock work? Trying cold values.</value>
-  </data>
+        <value>[red]Video partition is too big, did lock work? Trying cold values.[/]</value>
+    </data>
     <data name="Cannot_get_video_partition_size_not_continuing" xml:space="preserve">
-    <value>Cannot get video partition size, not continuing. Try to eject and reinsert the disc, if it keeps happening, contact support.</value>
-  </data>
+        <value>[red]Cannot get video partition size, not continuing. Try to eject and reinsert the disc, if it keeps happening, contact support.[/]</value>
+    </data>
     <data name="Getting_game_partition_size" xml:space="preserve">
-    <value>Getting game partition size.</value>
-  </data>
+        <value>[slateblue1]Getting game partition size.[/]</value>
+    </data>
     <data name="Unlocking_drive_Xtreme_" xml:space="preserve">
-    <value>Unlocking drive (Xtreme).</value>
-  </data>
+        <value>[slateblue1]Unlocking drive (Xtreme).[/]</value>
+    </data>
     <data name="Cannot_unlock_drive_not_continuing" xml:space="preserve">
-    <value>Cannot unlock drive, not continuing.</value>
-  </data>
+        <value>[red]Cannot unlock drive, not continuing.[/]</value>
+    </data>
     <data name="Game_partition_total_size_0_sectors" xml:space="preserve">
-    <value>Game partition total size: {0} sectors</value>
-  </data>
+        <value>[slateblue1]Game partition total size: [violet]{0}[/] sectors[/]</value>
+    </data>
     <data name="Getting_middle_zone_size" xml:space="preserve">
-    <value>Getting middle zone size</value>
-  </data>
+        <value>[slateblue1]Getting middle zone size[/]</value>
+    </data>
     <data name="Unlocking_drive_Wxripper" xml:space="preserve">
-    <value>Unlocking drive (Wxripper).</value>
-  </data>
+        <value>[slateblue1]Unlocking drive (Wxripper).[/]</value>
+    </data>
     <data name="Getting_disc_size" xml:space="preserve">
-    <value>Getting disc size.</value>
-  </data>
+        <value>[slateblue1]Getting disc size.[/]</value>
+    </data>
     <data name="Unlocked_total_size_0_sectors" xml:space="preserve">
-    <value>Unlocked total size: {0} sectors</value>
-  </data>
+        <value>[slateblue1]Unlocked total size: [violet]{0}[/] sectors[/]</value>
+    </data>
     <data name="Cannot_decode_PFI" xml:space="preserve">
-    <value>Cannot decode PFI.</value>
-  </data>
+        <value>[red]Cannot decode PFI.[/]</value>
+    </data>
     <data name="WxRipper_PFI_Data_Area_Start_PSN_0_sectors" xml:space="preserve">
-    <value>WxRipper PFI's Data Area Start PSN: {0} sectors</value>
-  </data>
+        <value>[slateblue1][italic]WxRipper[/] PFI's Data Area Start PSN: [lime]{0}[/lime] sectors[/]</value>
+    </data>
     <data name="WxRipper_PFI_Layer_0_End_PSN_0_sectors" xml:space="preserve">
-    <value>WxRipper PFI's Layer 0 End PSN: {0} sectors</value>
-  </data>
+        <value>[slateblue1][italic]WxRipper[/] PFI's Layer [teal]0[/] End PSN: [lime]{0}[/] sectors[/]</value>
+    </data>
     <data name="Video_layer_0_size_0_sectors" xml:space="preserve">
-    <value>Video layer 0 size: {0} sectors</value>
-  </data>
+        <value>[slateblue1]Video layer [teal]0[/] size: [violet]{0}[/] sectors[/]</value>
+    </data>
     <data name="Video_layer_1_size_0_sectors" xml:space="preserve">
-    <value>Video layer 1 size: {0} sectors</value>
-  </data>
+        <value>[slateblue1]Video layer [teal]1[/] size: [violet]{0}[/] sectors[/]</value>
+    </data>
     <data name="Middle_zone_size_0_sectors" xml:space="preserve">
-    <value>Middle zone size: {0} sectors</value>
-  </data>
+        <value>[slateblue1]Middle zone size: [violet]{0}[/] sectors[/]</value>
+    </data>
     <data name="Game_data_size_0_sectors" xml:space="preserve">
-    <value>Game data size: {0} sectors</value>
-  </data>
+        <value>[slateblue1]Game data size: [violet]{0}[/] sectors[/]</value>
+    </data>
     <data name="Total_size_0_sectors" xml:space="preserve">
-    <value>Total size: {0} sectors</value>
-  </data>
+        <value>[slateblue1]Total size: [violet]{0}[/] sectors[/]</value>
+    </data>
     <data name="Real_layer_break_0" xml:space="preserve">
-    <value>Real layer break: {0}</value>
-  </data>
+        <value>[slateblue1]Real layer break: [lime]{0}[/][/]</value>
+    </data>
     <data name="Cannot_read_medium_aborting_scan" xml:space="preserve">
     <value>Cannot read medium, aborting scan...</value>
   </data>
@@ -1803,14 +1791,14 @@
         <value>[slateblue1]Using [fuchsia]SCSI READ (12)[/] command.[/]</value>
     </data>
     <data name="Reading_game_partition" xml:space="preserve">
-    <value>Reading game partition.</value>
-  </data>
+        <value>[slateblue1]Reading game partition.[/]</value>
+    </data>
     <data name="Writing_Middle_Zone_D_empty" xml:space="preserve">
-    <value>Writing Middle Zone D (empty).</value>
-  </data>
+        <value>[slateblue1]Writing Middle Zone D (empty).[/]</value>
+    </data>
     <data name="Reading_Video_Layer_1" xml:space="preserve">
-    <value>Reading Video Layer 1.</value>
-  </data>
+        <value>[slateblue1]Reading Video Layer 1.[/]</value>
+    </data>
     <data name="Error_code_equals_0" xml:space="preserve">
     <value>Error code = {0}</value>
   </data>

@@ -2191,30 +2191,6 @@ namespace Aaru.Localization {
             }
         }
         
-        public static string Cartridge_has_0_bytes_1_GiB {
-            get {
-                return ResourceManager.GetString("Cartridge_has_0_bytes_1_GiB", resourceCulture);
-            }
-        }
-        
-        public static string Cartridge_has_0_bytes_1_MiB {
-            get {
-                return ResourceManager.GetString("Cartridge_has_0_bytes_1_MiB", resourceCulture);
-            }
-        }
-        
-        public static string Cartridge_has_0_bytes_1_KiB {
-            get {
-                return ResourceManager.GetString("Cartridge_has_0_bytes_1_KiB", resourceCulture);
-            }
-        }
-        
-        public static string Cartridge_has_0_bytes {
-            get {
-                return ResourceManager.GetString("Cartridge_has_0_bytes", resourceCulture);
-            }
-        }
-        
         public static string Error_0_creating_output_image_not_continuing {
             get {
                 return ResourceManager.GetString("Error_0_creating_output_image_not_continuing", resourceCulture);

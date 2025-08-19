@@ -119,8 +119,8 @@
         <value>[slateblue1]Velocidad media de escritura: [aqua]{0}[/][/]</value>
     </data>
     <data name="Because_of_commands_sent_dumping_XGD_must_be_administrative_Cannot_continue" xml:space="preserve">
-    <value>Debido a los comandos que se envían a la unidad, volcar XGD debe hacerse con privilegios administrativos. No se puede continuar.</value>
-  </data>
+        <value>[red]Debido a los comandos que se envían a la unidad, volcar XGD debe hacerse con privilegios administrativos. No se puede continuar.[/]</value>
+    </data>
     <data name="Blank_block_found_end_of_tape" xml:space="preserve">
         <value>[olive]Se encontró un bloque vacío, ¿fin de la cinta?...[/]</value>
     </data>
@@ -170,11 +170,11 @@
     <value>No se puede crear un sidecar de un directorio.</value>
   </data>
     <data name="Cannot_decode_PFI" xml:space="preserve">
-    <value>No se pudo descodificar el PFI.</value>
-  </data>
+        <value>[red]No se pudo descodificar el PFI.[/]</value>
+    </data>
     <data name="Cannot_decode_Xbox_Security_Sector_not_continuing" xml:space="preserve">
-    <value>No se pudo descodificar el Sector de Seguridad de Xbox, no se continuará.</value>
-  </data>
+        <value>[red]No se pudo descodificar el Sector de Seguridad de Xbox, no se continuará.[/]</value>
+    </data>
     <data name="Cannot_dump_a_blank_tape" xml:space="preserve">
         <value>[red]No se puede volcar una cinta vacía...[/]</value>
     </data>
@@ -191,23 +191,23 @@
     <value>No se pudo encontrar el lead-out.</value>
   </data>
     <data name="Cannot_get_disc_capacity" xml:space="preserve">
-    <value>No se pudo obtener la capacidad del disco.</value>
-  </data>
+        <value>[red]No se pudo obtener la capacidad del disco.[/]</value>
+    </data>
     <data name="Cannot_get_DMI" xml:space="preserve">
-    <value>No se pudo obtener el DMI.</value>
-  </data>
+        <value>[red]No se pudo obtener el DMI.[/]</value>
+    </data>
     <data name="Cannot_get_PFI" xml:space="preserve">
-    <value>No se pudo obtener el PFI.</value>
-  </data>
+        <value>[red]No se pudo obtener el PFI.[/]</value>
+    </data>
     <data name="Cannot_get_video_partition_size_not_continuing" xml:space="preserve">
-    <value>No se pudo obtener el tamaño de la partición de video, no se continuará. Intente expulsar y reinssentar el disco, si sigue ocurriendo, contacte con soporte.</value>
-  </data>
+        <value>[red]No se pudo obtener el tamaño de la partición de video, no se continuará. Intente expulsar y reinssentar el disco, si sigue ocurriendo, contacte con soporte.[/]</value>
+    </data>
     <data name="Cannot_get_Xbox_Security_Sector_not_continuing" xml:space="preserve">
-    <value>No se pudo obtener el Sector de Seguridad de Xbox, no se continuará.</value>
-  </data>
+        <value>[red]No se pudo obtener el Sector de Seguridad de Xbox, no se continuará.[/]</value>
+    </data>
     <data name="Cannot_lock_drive_not_continuing" xml:space="preserve">
-    <value>No se pudo bloquear la unidad, no se continuará.</value>
-  </data>
+        <value>[red]No se pudo bloquear la unidad, no se continuará.[/]</value>
+    </data>
     <data name="Cannot_open_the_device_in_writable_mode_as_needed_by_some_commands" xml:space="preserve">
     <value>No se pudo abrir el dispositivo en modo de escritura, necesario por algunos comandos.</value>
   </data>
@@ -236,8 +236,8 @@
     <value>No se pudo preguntar sobre {0}</value>
   </data>
     <data name="Cannot_unlock_drive_not_continuing" xml:space="preserve">
-    <value>No se pudo desbloquear la unidad, no se continuará.</value>
-  </data>
+        <value>[red]No se pudo desbloquear la unidad, no se continuará.[/]</value>
+    </data>
     <data name="Cannot_write_ATAPI_IDENTIFY_PACKET_DEVICE" xml:space="preserve">
     <value>No se pudo escribir ATAPI IDENTIFY PACKET DEVICE.</value>
   </data>
@@ -558,8 +558,8 @@
         <value>[slateblue1]Descodificando el CIS de PCMCIA.[/]</value>
     </data>
     <data name="Decoding_Xbox_Security_Sector" xml:space="preserve">
-    <value>Descodificando el Sector de Seguridad de Xbox.</value>
-  </data>
+        <value>[slateblue1]Descodificando el Sector de Seguridad de Xbox.[/]</value>
+    </data>
     <data name="Decrypting_disc_key" xml:space="preserve">
     <value>Desencriptando llave del disco.</value>
   </data>
@@ -787,8 +787,8 @@
         <value>[green]La unidad oculta los CD-R[/]</value>
     </data>
     <data name="Drive_did_not_accept_MODE_SELECT_command_for_persistent_error_reading" xml:space="preserve">
-    <value>La unidad no aceptó el comando MODE SELECT para activar la lectura con persistencia en errores, por favor intente otra unidad.</value>
-  </data>
+        <value>[olive]La unidad no aceptó el comando [fuchsia]MODE SELECT[/] para activar la lectura con persistencia en errores, por favor intente otra unidad.[/]</value>
+    </data>
     <data name="Drive_does_not_returns_subchannel_in_BCD" xml:space="preserve">
         <value>[slateblue1]La unidad no devuelve el subcanal en [rosybrown]BCD[/]...[/]</value>
     </data>
@@ -1316,11 +1316,11 @@
     <value>Tamaño de los datos de juego</value>
   </data>
     <data name="Game_data_size_0_sectors" xml:space="preserve">
-    <value>Tamaño de los datos de juego: {0} sectores</value>
-  </data>
+        <value>[slateblue1]Tamaño de los datos de juego: [violet]{0}[/] sectores[/]</value>
+    </data>
     <data name="Game_partition_total_size_0_sectors" xml:space="preserve">
-    <value>Tamaño total de la partición del juego: {0} sectores</value>
-  </data>
+        <value>[slateblue1]Tamaño total de la partición del juego: [violet]{0}[/] sectores[/]</value>
+    </data>
     <data name="GD_ROM_dump_support_is_not_yet_implemented" xml:space="preserve">
     <value>El volcado de GD-ROM no está implementado todavía.</value>
   </data>
@@ -1334,17 +1334,17 @@
     <value>Generando subcanal del sector {0}...</value>
   </data>
     <data name="Getting_disc_size" xml:space="preserve">
-    <value>Obteniendo tamaño del disco.</value>
-  </data>
+        <value>[slateblue1]Obteniendo tamaño del disco.[/]</value>
+    </data>
     <data name="Getting_game_partition_size" xml:space="preserve">
-    <value>Obteniendo tamaño de la partición del juego.</value>
-  </data>
+        <value>[slateblue1]Obteniendo tamaño de la partición del juego.[/]</value>
+    </data>
     <data name="Getting_middle_zone_size" xml:space="preserve">
-    <value>Obteniendo tamaño de la zona intermedia</value>
-  </data>
+        <value>[slateblue1]Obteniendo tamaño de la zona intermedia[/]</value>
+    </data>
     <data name="Getting_video_partition_size" xml:space="preserve">
-    <value>Obteniendo tamaño de la partición de video</value>
-  </data>
+        <value>[slateblue1]Obteniendo tamaño de la partición de video[/]</value>
+    </data>
     <data name="GET_CONFIGURATION_current_profile_is_0" xml:space="preserve">
     <value>El perfil actual de GET CONFIGURATION es {0:X4}h</value>
   </data>
@@ -1614,8 +1614,8 @@
     <value>Tamaño de la zona intermedia</value>
   </data>
     <data name="Middle_zone_size_0_sectors" xml:space="preserve">
-    <value>Tamaño de la zona intermedia: {0} sectores</value>
-  </data>
+        <value>[slateblue1]Tamaño de la zona intermedia: [violet]{0}[/] sectores[/]</value>
+    </data>
     <data name="MiniDisc_albums_NetMD_discs_or_user_written_audio_MiniDisc_cannot_be_dumped" xml:space="preserve">
         <value>[red]Los álbumes MiniDisc, discos NetMD o discos de audio MiniDisc escritos por un usuario no pueden ser volcados.[/]</value>
     </data>
@@ -2178,8 +2178,8 @@
     <value>Leyendo el hueco anterior a la primera pista</value>
   </data>
     <data name="Reading_game_partition" xml:space="preserve">
-    <value>Leyendo partición del juego.</value>
-  </data>
+        <value>[slateblue1]Leyendo partición del juego.[/]</value>
+    </data>
     <data name="Reading_LBA_0_of_1" xml:space="preserve">
     <value>Leyendo LBA {0} de {1}</value>
   </data>
@@ -2208,11 +2208,11 @@
         <value>[slateblue1]Leyendo descriptores USB.[/]</value>
     </data>
     <data name="Reading_Video_Layer_1" xml:space="preserve">
-    <value>Leyendo capa 1 de video.</value>
-  </data>
+        <value>[slateblue1]Leyendo capa 1 de video.[/]</value>
+    </data>
     <data name="Reading_Xbox_Security_Sector" xml:space="preserve">
-    <value>Leyendo Sector de Seguridad de Xbox.</value>
-  </data>
+        <value>[slateblue1]Leyendo Sector de Seguridad de Xbox.[/]</value>
+    </data>
     <data name="READ_CD_command_is_not_supported_disabling_offset_fix_Dump_may_not_be_correct" xml:space="preserve">
         <value>[olive]El comando READ CD no está soportado, desactivando correción de desplazamientos. El volcado podría ser incorrecto.[/]</value>
     </data>
@@ -2395,8 +2395,8 @@
     <value>Salto de capa real</value>
   </data>
     <data name="Real_layer_break_0" xml:space="preserve">
-    <value>Salto de capa real: {0}</value>
-  </data>
+        <value>[slateblue1]Salto de capa real: [lime]{0}[/][/]</value>
+    </data>
     <data name="Remote_information" xml:space="preserve">
     <value>####################### Información remota #########################</value>
   </data>
@@ -2624,11 +2624,11 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>Enviando MODE SELECT a la unidad (ignorar correciones de errores).</value>
   </data>
     <data name="Sending_MODE_SELECT_to_drive_return_damaged_blocks" xml:space="preserve">
-    <value>Enviando MODE SELECT a la unidad (devolver bloques dañados).</value>
-  </data>
+        <value>[slateblue1]Enviando [fuchsia]MODE SELECT[/] a la unidad (devolver bloques dañados).[/]</value>
+    </data>
     <data name="Sending_MODE_SELECT_to_drive_return_device_to_previous_status" xml:space="preserve">
-    <value>Enviando MODE SELECT a la unidad (devolver dispositivo al estado anterior).</value>
-  </data>
+        <value>[slateblue1]Enviando [fuchsia]MODE SELECT[/] a la unidad (devolver dispositivo al estado anterior).[/]</value>
+    </data>
     <data name="Sending_READ_FULL_TOC_to_the_device" xml:space="preserve">
     <value>Enviando READ FULL TOC al dispositivo...</value>
   </data>
@@ -2912,8 +2912,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>Tamaño total</value>
   </data>
     <data name="Total_size_0_sectors" xml:space="preserve">
-    <value>Tamaño total: {0} sectores</value>
-  </data>
+        <value>[slateblue1]Tamaño total: [violet]{0}[/] sectores[/]</value>
+    </data>
     <data name="Tracks_0_ISRC" xml:space="preserve">
     <value>ISRC de la pista {0}</value>
   </data>
@@ -3182,14 +3182,14 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>Sense desconocido comprobando si la unidad estaba lista.</value>
   </data>
     <data name="Unlocked_total_size_0_sectors" xml:space="preserve">
-    <value>Tamaño total desbloqueada: {0} sectores</value>
-  </data>
+        <value>[slateblue1]Tamaño total desbloqueada: [violet]{0}[/] sectores[/]</value>
+    </data>
     <data name="Unlocking_drive_Wxripper" xml:space="preserve">
-    <value>Desbloqueando la unidad (Wxripper).</value>
-  </data>
+        <value>[slateblue1]Desbloqueando la unidad (Wxripper).[/]</value>
+    </data>
     <data name="Unlocking_drive_Xtreme_" xml:space="preserve">
-    <value>Desbloqueando la unidad (Xtreme).</value>
-  </data>
+        <value>[slateblue1]Desbloqueando la unidad (Xtreme).[/]</value>
+    </data>
     <data name="Updating_CompactDisc_read_offsets" xml:space="preserve">
     <value>Actualizando los desplazamientos de lectura de CompactDisc</value>
   </data>
@@ -3305,11 +3305,11 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>El fotograma de VideoNow Color está desplazado {0} bytes.</value>
   </data>
     <data name="Video_layer_0_size_0_sectors" xml:space="preserve">
-    <value>Tamaño de la capa 0 de video: {0} sectores</value>
-  </data>
+        <value>[slateblue1]Tamaño de la capa [teal]0[/] de video: [violet]{0}[/] sectores[/]</value>
+    </data>
     <data name="Video_layer_1_size_0_sectors" xml:space="preserve">
-    <value>Tamaño de la capa 1 de video: {0} sectores</value>
-  </data>
+        <value>[slateblue1]Tamaño de la capa [teal]1[/] de video: [violet]{0}[/] sectores[/]</value>
+    </data>
     <data name="Video_layer_one_size" xml:space="preserve">
     <value>Tamaño de la capa 0 de video</value>
   </data>
@@ -3317,11 +3317,11 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>Tamaño de la capa 1 de video</value>
   </data>
     <data name="Video_partition_is_too_big_did_lock_work_Trying_cold_values" xml:space="preserve">
-    <value>La partición de video es demasiado grande, ¿se bloqueó correctamente? Intentando valores conocidos.</value>
-  </data>
+        <value>[red]La partición de video es demasiado grande, ¿se bloqueó correctamente? Intentando valores conocidos.[/]</value>
+    </data>
     <data name="Video_partition_total_size_0_sectors" xml:space="preserve">
-    <value>Tamaño total de la partición de video: {0} sectores</value>
-  </data>
+        <value>[slateblue1]Tamaño total de la partición de video: [violet]{0}[/] sectores[/]</value>
+    </data>
     <data name="Volume_contains_0_files" xml:space="preserve">
     <value>El volumen contiene {0} ficheros</value>
   </data>
@@ -3389,14 +3389,14 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
         <value>[slateblue1]Escribiendo sidecar de metadatos[/]</value>
     </data>
     <data name="Writing_Middle_Zone_D_empty" xml:space="preserve">
-    <value>Escribiendo zona intermedia D (vacía).</value>
-  </data>
+        <value>[slateblue1]Escribiendo zona intermedia D (vacía).[/]</value>
+    </data>
     <data name="WxRipper_PFI_Data_Area_Start_PSN_0_sectors" xml:space="preserve">
-    <value>PSN de comienzo del área de datos según el PFI de WxRipper: {0} sectores</value>
-  </data>
+        <value>[slateblue1]PSN de comienzo del área de datos según el PFI de [italic]WxRipper[/]: [lime]{0}[/] sectores[/]</value>
+    </data>
     <data name="WxRipper_PFI_Layer_0_End_PSN_0_sectors" xml:space="preserve">
-    <value>PSN de final de la capa 0 según el PFI de WxRipper: {0} sectores</value>
-  </data>
+        <value>[slateblue1]PSN de final de la capa [teal]0[/] según el PFI de [italic]WxRipper[/]: [lime]{0}[/] sectores[/]</value>
+    </data>
     <data name="Xbox_360_DMI" xml:space="preserve">
     <value>DMI de Xbox 360</value>
   </data>
