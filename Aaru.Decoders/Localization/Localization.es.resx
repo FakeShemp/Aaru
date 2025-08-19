@@ -6613,8 +6613,8 @@
     <value>El set de comandos de tarjetas de memoria está soportado y activado</value>
   </data>
     <data name="Media_has_been_taken_out_or_inserted_in_the_cartridge" xml:space="preserve">
-    <value>El medio ha sido extraído, o insertado en, el cartucho</value>
-  </data>
+        <value>[slateblue1]El medio ha sido extraído, o insertado en, el cartucho[/]</value>
+    </data>
     <data name="Media_has_out_bit_marked_shouldnt" xml:space="preserve">
     <value>El medio tiene el bit de salida marcado, no debería</value>
   </data>
@@ -6628,14 +6628,14 @@
         <value>[slateblue1]El medio está siendo formateado actualmente en segundo plano[/]</value>
     </data>
     <data name="Media_is_inserted_in_a_cartridge" xml:space="preserve">
-    <value>El medio está insertado en un cartucho</value>
-  </data>
+        <value>[slateblue1]El medio está insertado en un cartucho[/]</value>
+    </data>
     <data name="Media_is_not_in_a_cartridge" xml:space="preserve">
-    <value>El medio no está en un cartucho</value>
-  </data>
+        <value>[slateblue1]El medio no está en un cartucho[/]</value>
+    </data>
     <data name="Media_is_write_protected" xml:space="preserve">
-    <value>El medio está protegido contra escritura</value>
-  </data>
+        <value>[slateblue1]El medio está protegido contra escritura[/]</value>
+    </data>
     <data name="Media_loader_firmware_version_0" xml:space="preserve">
     <value>Versión del firmware del cargador de medios: {0}</value>
   </data>

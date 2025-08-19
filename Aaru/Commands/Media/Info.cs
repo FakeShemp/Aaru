@@ -592,9 +592,8 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
                                  "SCSI READ DISC STRUCTURE",
                                  scsiInfo.BlurayCartridgeStatus);
 
-                AaruLogging.WriteLine($"[bold]{Localization.Core.Bluray_Cartridge_Status}:[/]" +
-                                      $"\n{Markup.Escape(Decoders.Bluray.Cartridge.Prettify(scsiInfo.
-                                                             BlurayCartridgeStatus))}");
+                AaruLogging.WriteLine(Localization.Core.Bluray_Cartridge_Status);
+                AaruLogging.WriteLine(Decoders.Bluray.Cartridge.Prettify(scsiInfo.BlurayCartridgeStatus));
             }
 
             if(scsiInfo.BluraySpareAreaInformation != null)

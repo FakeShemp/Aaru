@@ -318,8 +318,8 @@
         <value>[bold][blue]Blu-ray Disc Definition Structure:[/][/]</value>
     </data>
     <data name="Bluray_Cartridge_Status" xml:space="preserve">
-    <value>Blu-ray Cartridge Status</value>
-  </data>
+        <value>[bold][blue]Blu-ray Cartridge Status:[/][/]</value>
+    </data>
     <data name="Bluray_Spare_Area_Information" xml:space="preserve">
     <value>Blu-ray Spare Area Information</value>
   </data>

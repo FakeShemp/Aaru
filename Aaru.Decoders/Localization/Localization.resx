@@ -1219,17 +1219,17 @@
     <value>Reserved7 = 0x{0:X8}</value>
   </data>
     <data name="Media_is_inserted_in_a_cartridge" xml:space="preserve">
-    <value>Media is inserted in a cartridge</value>
-  </data>
+        <value>[slateblue1]Media is inserted in a cartridge[/]</value>
+    </data>
     <data name="Media_has_been_taken_out_or_inserted_in_the_cartridge" xml:space="preserve">
-    <value>Media has been taken out, or inserted in, the cartridge</value>
-  </data>
+        <value>[slateblue1]Media has been taken out, or inserted in, the cartridge[/]</value>
+    </data>
     <data name="Media_is_write_protected" xml:space="preserve">
-    <value>Media is write protected</value>
-  </data>
+        <value>[slateblue1]Media is write protected[/]</value>
+    </data>
     <data name="Media_is_not_in_a_cartridge" xml:space="preserve">
-    <value>Media is not in a cartridge</value>
-  </data>
+        <value>[slateblue1]Media is not in a cartridge[/]</value>
+    </data>
     <data name="Media_has_out_bit_marked_shouldnt" xml:space="preserve">
     <value>Media has out bit marked, shouldn't</value>
   </data>
