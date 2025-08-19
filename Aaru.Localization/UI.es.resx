@@ -434,8 +434,8 @@
     <value>Limpiar la base de datos principal.</value>
   </data>
     <data name="Closing_output_image" xml:space="preserve">
-    <value>Cerrando imagen de salida...</value>
-  </data>
+        <value>[slateblue1]Cerrando imagen de salida...[/]</value>
+    </data>
     <data name="Commands_statistics" xml:space="preserve">
         <value>[bold][blue]Estadísticas de comandos[/][/]</value>
     </data>
@@ -821,8 +821,8 @@
     <value>Velocidad de lectura del DVD limitada a</value>
   </data>
     <data name="Ejecting_media" xml:space="preserve">
-    <value>Expulsando medio...</value>
-  </data>
+        <value>[slateblue1]Expulsando medio...[/]</value>
+    </data>
     <data name="Eject_media_after_dump_finishes" xml:space="preserve">
     <value>Expulsar el medio al terminar el volcado.</value>
   </data>
@@ -1148,7 +1148,7 @@
         <value>[slateblue1]Calculando hash de los bloques [lime]{0}[/] a [violet]{2}[/] del fichero [teal]{1}[/][/]</value>
     </data>
     <data name="Hashing_bytes_0_to_1" xml:space="preserve">
-        <value>[slateblue1]Calculando hash de los bytes [lime]{0}[/] a [violet]{1}[/]</value>
+        <value>[slateblue1]Calculando hash de los bytes [lime]{0}[/] a [violet]{1}[/][/]</value>
     </data>
     <data name="Hashing_file_0_of_1" xml:space="preserve">
         <value>[slateblue1]Calculando hash del fichero [lime]{0}[/] de [violet]{1}[/]</value>
@@ -1518,8 +1518,8 @@
     <value>Velocidad máxima PoweRec para el medio actualmente insertado:</value>
   </data>
     <data name="Media_already_dumped_correctly_not_continuing" xml:space="preserve">
-    <value>El medio ya se volcó correctamente, no se continuará...</value>
-  </data>
+        <value>[green]El medio ya se volcó correctamente, no se continuará...[/]</value>
+    </data>
     <data name="Media_already_dumped_correctly_please_choose_another_destination" xml:space="preserve">
     <value>El medio ya se volcó correctamente, por favor elija otro destino...</value>
   </data>
@@ -1713,11 +1713,11 @@
     <value>El formato de salida no soporta el tipo de medio, no se puede continuar...</value>
   </data>
     <data name="Output_image_format_0" xml:space="preserve">
-    <value>Formato de la imagen de salida: {0}.</value>
-  </data>
+        <value>[slateblue1]Formato de la imagen de salida: [green]{0}[/].[/]</value>
+    </data>
     <data name="Output_image_format_0_1" xml:space="preserve">
-    <value>Formato de la imagen de salida: {0} ({1}).</value>
-  </data>
+        <value>[slateblue1]Formato de la imagen de salida: [green]{0}[/] ([red]{1}[/]).[/]</value>
+    </data>
     <data name="Output_image_path" xml:space="preserve">
     <value>Ruta de la imagen de salida</value>
   </data>
@@ -1764,8 +1764,8 @@
     <value>Por favor insértelo en la unidad y pulse cualquier tecla cuando esté listo.</value>
   </data>
     <data name="Please_insert_media_with_title_0_and_press_any_key_to_continue_" xml:space="preserve">
-    <value>Por favor inserte el medio titulado {0} y pulse cualquier tecla para continuar...</value>
-  </data>
+        <value>[slateblue1]Por favor inserte el medio titulado [green]{0}[/] y pulse cualquier tecla para continuar...[/]</value>
+    </data>
     <data name="Please_manually_remove_file_at_0" xml:space="preserve">
     <value>Por favor elimine el fichero en {0} manualmente</value>
   </data>
@@ -2841,8 +2841,8 @@ Probadores:
     <value>Escribiendo imagen a:</value>
   </data>
     <data name="Writing_metadata" xml:space="preserve">
-    <value>Escribiendo metadatos...</value>
-  </data>
+        <value>[slateblue1]Escribiendo metadatos...[/]</value>
+    </data>
     <data name="Written_0_bytes_of_file_1_to_2" xml:space="preserve">
     <value>Escritos {0} bytes del fichero {1} en {2}</value>
   </data>

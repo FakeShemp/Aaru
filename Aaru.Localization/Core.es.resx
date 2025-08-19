@@ -107,17 +107,17 @@
         <value>[bold][blue]Número de serie del dispositivo de automatización:[/][/] [italic][teal]{0}[/][/]</value>
     </data>
     <data name="Average_checksum_speed_0" xml:space="preserve">
-    <value>Velocidad media de checksum: {0}</value>
-  </data>
+        <value>[slateblue1]Velocidad media de checksum: [aqua]{0}[/][/]</value>
+    </data>
     <data name="Average_dump_speed_0" xml:space="preserve">
-    <value>Velocidad media de volcado: {0}</value>
-  </data>
+        <value>[slateblue1]Velocidad media de volcado: [aqua]{0}[/][/]</value>
+    </data>
     <data name="Average_speed_0" xml:space="preserve">
         <value>[slateblue1]Velocidad media: [aqua]{0}[/].[/]</value>
     </data>
     <data name="Average_write_speed_0" xml:space="preserve">
-    <value>Velocidad media de escritura: {0}</value>
-  </data>
+        <value>[slateblue1]Velocidad media de escritura: [aqua]{0}[/][/]</value>
+    </data>
     <data name="Because_of_commands_sent_dumping_XGD_must_be_administrative_Cannot_continue" xml:space="preserve">
     <value>Debido a los comandos que se envían a la unidad, volcar XGD debe hacerse con privilegios administrativos. No se puede continuar.</value>
   </data>
@@ -161,11 +161,11 @@
     <value>El tipo de Blu-ray es "XG4", estableciendo el tipo de disco como disco de Xbox One (XGD4).</value>
   </data>
     <data name="Building_track_map" xml:space="preserve">
-    <value>Construyendo mapa de pistas...</value>
-  </data>
+        <value>[slateblue1]Construyendo mapa de pistas...[/]</value>
+    </data>
     <data name="Calculating_pregaps__can_take_some_time" xml:space="preserve">
-    <value>Calculando huecos anteriores, puede tomar algún tiempo...</value>
-  </data>
+        <value>[slateblue1]Calculando [italic]huecos anteriores[/], puede tomar [italic]algún tiempo[/]...[/]</value>
+    </data>
     <data name="Cannot_create_a_sidecar_from_a_directory" xml:space="preserve">
     <value>No se puede crear un sidecar de un directorio.</value>
   </data>
@@ -224,8 +224,8 @@
     <value>No se pudo leer el medio, abortando escaneo...</value>
   </data>
     <data name="Cannot_read_RAW_TOC_requesting_processed_one" xml:space="preserve">
-    <value>No se pudo leer la TOC sin procesar, solicitando una procesada...</value>
-  </data>
+        <value>[red]No se pudo leer la [italic]TOC sin procesar[/], solicitando una procesada...[/]</value>
+    </data>
     <data name="Cannot_reposition_tape_unable_to_resume_Dumping_from_the_start" xml:space="preserve">
     <value>No se pudo reposicionar la cinta, no se puede resumir. Volcando desde el principio.</value>
   </data>
@@ -326,44 +326,44 @@
     <value>Cambió al fichero {0} en el bloque {1}</value>
   </data>
     <data name="Checking_filesystems" xml:space="preserve">
-    <value>Comprobando sistemas de ficheros...</value>
-  </data>
+        <value>[slateblue1]Comprobando sistemas de ficheros...[/]</value>
+    </data>
     <data name="Checking_if_drive_supports_full_raw_subchannel_reading" xml:space="preserve">
-    <value>Comprobando si la unidad soporta leer el subcanal completo sin procesar...</value>
-  </data>
+        <value>[slateblue1]Comprobando si la unidad soporta leer el subcanal completo sin procesar...[/]</value>
+    </data>
     <data name="Checking_if_drive_supports_PQ_subchannel_reading" xml:space="preserve">
-    <value>Comprobando si la unidad soporta leer el subcanal PQ...</value>
-  </data>
+        <value>[slateblue1]Comprobando si la unidad soporta leer el subcanal PQ...[/]</value>
+    </data>
     <data name="Checking_if_drive_supports_reading_without_subchannel" xml:space="preserve">
-    <value>Comprobando si la unidad soporta leer sin el subcanal...</value>
-  </data>
+        <value>[slateblue1]Comprobando si la unidad soporta leer sin el subcanal...[/]</value>
+    </data>
     <data name="Checking_if_drive_supports_READ_10" xml:space="preserve">
-    <value>Comprobando si la unidad soporta READ(10)...</value>
-  </data>
+        <value>[slateblue1]Comprobando si la unidad soporta [fuchsia]READ(10)[/]...[/]</value>
+    </data>
     <data name="Checking_if_drive_supports_READ_12" xml:space="preserve">
-    <value>Comprobando si la unidad soporta READ(12)...</value>
-  </data>
+        <value>[slateblue1]Comprobando si la unidad soporta [fuchsia]READ(12)[/]...[/]</value>
+    </data>
     <data name="Checking_if_drive_supports_READ_16" xml:space="preserve">
-    <value>Comprobando si la unidad soporta READ(16)...</value>
-  </data>
+        <value>[slateblue1]Comprobando si la unidad soporta [fuchsia]READ(16)[/]...[/]</value>
+    </data>
     <data name="Checking_if_drive_supports_READ_6" xml:space="preserve">
-    <value>Comprobando si la unidad soporta READ(6)...</value>
-  </data>
+        <value>[slateblue1]Comprobando si la unidad soporta [fuchsia]READ(6)[/]...[/]</value>
+    </data>
     <data name="Checking_if_media_is_UMD_or_MemoryStick" xml:space="preserve">
     <value>Comprobando si el medio es un UMD o una MemoryStick...</value>
   </data>
     <data name="Checking_mode_for_track_0" xml:space="preserve">
-    <value>Comprobando el modo de la pista {0}...</value>
-  </data>
+        <value>[slateblue1]Comprobando el modo de la pista [teal]{0}[/]...[/]</value>
+    </data>
     <data name="CID_obtained_correctly" xml:space="preserve">
     <value>CID obtenido correctamente...</value>
   </data>
     <data name="Closed_in_0" xml:space="preserve">
-    <value>Cerrado en {0}.</value>
-  </data>
+        <value>[slateblue1]Cerrado en [aqua]{0}[/].[/]</value>
+    </data>
     <data name="Closing_output_file" xml:space="preserve">
-    <value>Cerrando fichero de salida.</value>
-  </data>
+        <value>[slateblue1]Cerrando fichero de salida.[/]</value>
+    </data>
     <data name="Combined_disc_and_drive_offset_are_0_bytes_1_samples" xml:space="preserve">
         <value>[slateblue1]El desplazamiento combinado del disco y la unidad es de [lime]{0}[/] bytes ([teal]{1}[/] muestras).[/]</value>
     </data>
@@ -413,17 +413,17 @@
     <value>Continuando volcando datos procesados.</value>
   </data>
     <data name="Correctly_retried_block_0_in_pass_1" xml:space="preserve">
-    <value>Se reintentó con éxito el bloque {0} en el paso {1}.</value>
-  </data>
+        <value>[slateblue1]Se reintentó con éxito el bloque [lime]{0}[/] en el paso [teal]{1}[/].[/]</value>
+    </data>
     <data name="Correctly_retried_sector_0_in_pass_1" xml:space="preserve">
-    <value>Se reintentó con éxito el sector {0} en el paso {1}.</value>
-  </data>
+        <value>[slateblue1]Se reintentó con éxito el sector [lime]{0}[/] en el paso [teal]{1}[/].[/]</value>
+    </data>
     <data name="Correctly_retried_sector_0_subchannel_in_pass_1" xml:space="preserve">
-    <value>Se reintentó con éxito el subcanal del sector {0} en el paso {1}.</value>
-  </data>
+        <value>[slateblue1]Se reintentó con éxito el subcanal del sector [lime]{0}[/] en el paso [teal]{1}[/].[/]</value>
+    </data>
     <data name="Correctly_retried_title_key_0_in_pass_1" xml:space="preserve">
-    <value>Se reintentó con éxito la llave de título {0} en el paso {1}.</value>
-  </data>
+        <value>[slateblue1]Se reintentó con éxito la llave de título [lime]{0}[/] en el paso [teal]{1}[/].[/]</value>
+    </data>
     <data name="Could_not_check_current_position_continuing" xml:space="preserve">
     <value>No se pudo detectar la posición actual, continuando.</value>
   </data>
@@ -475,8 +475,8 @@
     <value>No se pudo obtener la posición. Sense a continuación...</value>
   </data>
     <data name="Could_not_get_tracks" xml:space="preserve">
-    <value>¡No se pudieron obtener las pistas!</value>
-  </data>
+        <value>[red]¡No se pudieron obtener las pistas![/]</value>
+    </data>
     <data name="Could_not_get_tracks_because_0" xml:space="preserve">
     <value>No se pudieron obtener las pistas porque {0}</value>
   </data>
@@ -533,14 +533,14 @@
     <value>Creando base de datos principal.</value>
   </data>
     <data name="Creating_sidecar" xml:space="preserve">
-    <value>Creando sidecar.</value>
-  </data>
+        <value>[slateblue1]Creando sidecar.[/]</value>
+    </data>
     <data name="Creating_single_track_as_could_not_retrieve_track_list_from_drive" xml:space="preserve">
     <value>Creando una única pista ya que no se pudo obtener la lista de pistas de la unidad.</value>
   </data>
     <data name="Creating_subchannel_log_in_0" xml:space="preserve">
-    <value>Creando registro del subcanal en {0}</value>
-  </data>
+        <value>[slateblue1]Creando registro del subcanal en[/] [green]{0}[/]</value>
+    </data>
     <data name="CSD_obtained_correctly" xml:space="preserve">
     <value>CSD obtenido correctamente...</value>
   </data>
@@ -576,23 +576,23 @@
     <value>Desencriptando llave del disco.</value>
   </data>
     <data name="Decryption_of_disc_key_failed" xml:space="preserve">
-    <value>Falló la desencriptación de la llave del disco.</value>
-  </data>
+        <value>[red]Falló la desencriptación de la llave del disco.[/red]</value>
+    </data>
     <data name="Decryption_of_disc_key_succeeded" xml:space="preserve">
-    <value>Llave del disco desencriptada con éxito.</value>
-  </data>
+        <value>[green]Llave del disco desencriptada con éxito.[/]</value>
+    </data>
     <data name="Detecting_disc_type" xml:space="preserve">
-    <value>Detectando tipo del disco...</value>
-  </data>
+        <value>[slateblue1]Detectando tipo del disco...[/]</value>
+    </data>
     <data name="Device_block_size_is_fixed_at_0_bytes" xml:space="preserve">
     <value>El tamaño de bloque del dispositivo está fijado en {0} bytes</value>
   </data>
     <data name="Device_can_read_0_blocks_at_a_time" xml:space="preserve">
-    <value>El dispositivo puede leer {0} bloques a la vez.</value>
-  </data>
+        <value>[slateblue1]El dispositivo puede leer [violet]{0}[/] bloques a la vez.[/]</value>
+    </data>
     <data name="Device_can_read_0_blocks_at_a_time_using_OS_buffered_reads" xml:space="preserve">
-    <value>El dispositivo puede leer {0} bloques a la vez usando lecturas a través del búfer del SO.</value>
-  </data>
+        <value>[slateblue1]El dispositivo puede leer [violet]{0}[/] bloques a la vez usando lecturas a través del búfer del SO.[/]</value>
+    </data>
     <data name="Device_can_read_0_blocks_using_sequential_commands" xml:space="preserve">
     <value>El dispositivo puede leer {0} bloques usando comandos secuenciales.</value>
   </data>
@@ -670,11 +670,11 @@
     <value>El dispositivo reporta {0} bloques.</value>
   </data>
     <data name="Device_reports_0_blocks_1_bytes" xml:space="preserve">
-    <value>El dispositivo reporta {0} bloques ({1} bytes).</value>
-  </data>
+        <value>[slateblue1]El dispositivo reporta [violet]{0}[/] bloques ([lime]{1}[/] bytes).[/]</value>
+    </data>
     <data name="Device_reports_0_bytes_per_logical_block" xml:space="preserve">
-    <value>El dispositivo reporta {0} bytes por bloque lógico.</value>
-  </data>
+        <value>[slateblue1]El dispositivo reporta [lime]{0}[/] bytes por bloque lógico.[/]</value>
+    </data>
     <data name="Device_reports_0_bytes_per_physical_block" xml:space="preserve">
     <value>El dispositivo reporta {0} bytes por bloque físico.</value>
   </data>
@@ -682,11 +682,11 @@
     <value>El dispositivo reporta {0} cilindros {1} cabezas y {2} sectores por pista.</value>
   </data>
     <data name="Device_reports_current_profile_is_0" xml:space="preserve">
-    <value>El dispositivo reporta que el perfil actual es 0x{0:X4}</value>
-  </data>
+        <value>[slateblue1]El dispositivo reporta que el perfil actual es [teal]0x{0:X4}[/][/]</value>
+    </data>
     <data name="Device_reports_disc_has_0_blocks" xml:space="preserve">
-    <value>El dispositivo reporta que el disco tiene {0} bloques</value>
-  </data>
+        <value>[slateblue1]El dispositivo reporta que el disco tiene [violet]{0}[/] bloques[/]</value>
+    </data>
     <data name="Device_reports_incorrect_media_card_type" xml:space="preserve">
     <value>El dispositivo reporta un tipo de tarjeta de memoria incorrect</value>
   </data>
@@ -715,17 +715,17 @@
     <value>La imagen SuperCardPro no tiene el mismo número de pistas ({0}) que la imagen de disco ({1}), ignorándola...</value>
   </data>
     <data name="Disc_and_drive_authentication_succeeded" xml:space="preserve">
-    <value>Autentificacón entre el disco y la unidad exitosa.</value>
-  </data>
+        <value>[green]Autentificación entre el disco y la unidad realizada con éxito.[/]</value>
+    </data>
     <data name="Disc_and_drive_regions_do_not_match_The_dump_will_be_incorrect" xml:space="preserve">
-    <value>Las regiones del disco y la unidad no coinciden. El volcado será incorrecto.</value>
-  </data>
+        <value>[red]Las regiones del disco y la unidad no coinciden. El volcado será incorrecto.[/red]</value>
+    </data>
     <data name="Disc_and_drive_regions_match" xml:space="preserve">
-    <value>Las regiones del disco y la unidad coinciden.</value>
-  </data>
+        <value>[green]Las regiones del disco y la unidad coinciden.[/]</value>
+    </data>
     <data name="Disc_contains_a_hidden_track" xml:space="preserve">
-    <value>El disco contiene una pista oculta...</value>
-  </data>
+        <value>[olive]El disco contiene una pista oculta...[/]</value>
+    </data>
     <data name="Disc_has_audio_and_data_two_sessions_all_data_second_CD_Plus" xml:space="preserve">
     <value>El disco tiene pistas de audio y datos, dos sesiones, y todas las pistas de datos están en la segunda sesión, estableciendo su tipo como CD+.</value>
   </data>
@@ -754,8 +754,8 @@
         <value>[olive]El desplazamiento de escritura del disco es desconocido.[/]</value>
     </data>
     <data name="Disc_write_offset_is_unknown_dump_may_not_be_correct" xml:space="preserve">
-    <value>El desplazamiento de escritura del disco es desconocido, el volcado puede no ser correcto.</value>
-  </data>
+        <value>[olive]El desplazamiento de escritura del disco es desconocido, el volcado puede no ser correcto.[/]</value>
+    </data>
     <data name="Doesnt_have_partitions" xml:space="preserve">
         <value>[red]No tiene particiones[/]</value>
     </data>
@@ -763,8 +763,8 @@
         <value>[red]No tiene sesiones[/]</value>
     </data>
     <data name="Drive_can_read_without_subchannel" xml:space="preserve">
-    <value>La unidad puede leer sin el subcanal...</value>
-  </data>
+        <value>[slateblue1]La unidad puede leer sin el subcanal...[/]</value>
+    </data>
     <data name="Drive_could_not_go_back_one_block_Sense_follows" xml:space="preserve">
     <value>La unidad no pudo retroceder un bloque. Sense a continuación...</value>
   </data>
@@ -802,11 +802,11 @@
     <value>La unidad no aceptó el comando MODE SELECT para activar la lectura con persistencia en errores, por favor intente otra unidad.</value>
   </data>
     <data name="Drive_does_not_returns_subchannel_in_BCD" xml:space="preserve">
-    <value>La unidad no devuelve el subcanal en BCD...</value>
-  </data>
+        <value>[slateblue1]La unidad no devuelve el subcanal en [rosybrown]BCD[/]...[/]</value>
+    </data>
     <data name="Drive_does_not_support_READ_CD_trying_SCSI_READ_commands" xml:space="preserve">
-    <value>La unidad no soporta READ CD, intentando comandos SCSI READ...</value>
-  </data>
+        <value>[slateblue1]La unidad no soporta [fuchsia]READ CD[/], intentando comandos [fuchsia]SCSI READ[/]...[/]</value>
+    </data>
     <data name="Drive_does_not_support_the_requested_subchannel_format_not_continuing" xml:space="preserve">
     <value>La unidad no soporta el format de subcanal solicitado, no se continuará...</value>
   </data>
@@ -850,21 +850,21 @@
         <value>[red]El desplazamiento de lectura de la unidad no se encontró en la base de datos.[/]</value>
     </data>
     <data name="Drive_reports_0_copy_protection_not_yet_supported_dump_incorrect" xml:space="preserve">
-    <value>La unidad reporta que el disco usa la protección anticopia {0}. Aún no está soportada y el volcado será incorrecto.</value>
-  </data>
+        <value>[red]La unidad reporta que el disco usa la protección anticopia [darkorange]{0}[/]. Aún no está soportada y el volcado será incorrecto.[/]</value>
+    </data>
     <data name="Drive_reports_disc_uses_CSS_copy_protection" xml:space="preserve">
-    <value>La unidad reporta que el disco usa la protección anticopia CSS.</value>
-  </data>
+        <value>[olive]La unidad reporta que el disco usa la protección anticopia CSS.[/]</value>
+    </data>
     <data name="Drive_reports_no_copy_protection_on_disc" xml:space="preserve">
-    <value>La unidad reporta que el disco no usa protección anticopia.</value>
-  </data>
+        <value>[green]La unidad reporta que el disco no usa protección anticopia.[/]</value>
+    </data>
     <data name="Drive_reports_the_disc_uses_copy_protection_The_dump_will_be_incorrect_unless_decryption_is_enabled"
           xml:space="preserve">
-    <value>La unidad reporta que el disco usa protección anticopia. El volcado será incorrecto a no ser que se active la desencriptación.</value>
-  </data>
+        <value>[olive]La unidad reporta que el disco usa protección anticopia. El volcado será incorrecto a no ser que se active la desencriptación.[/]</value>
+    </data>
     <data name="Drive_returns_subchannel_in_BCD" xml:space="preserve">
-    <value>La unidad devuelve el subcanal en BCD...</value>
-  </data>
+        <value>[slateblue1]La unidad devuelve el subcanal en [rosybrown]BCD[/]...[/]</value>
+    </data>
     <data name="Drive_serial_number_0" xml:space="preserve">
     <value>Número de serie de la unidad: {0}</value>
   </data>
@@ -911,17 +911,17 @@
         <value>[slateblue1]La unidad soporta PoweRec, está activado y recomienda [lime]{0}[/] Kb/seg.[/]</value>
     </data>
     <data name="Drive_supports_READ_10" xml:space="preserve">
-    <value>La unidad soporta READ(10)...</value>
-  </data>
+        <value>[slateblue1]La unidad soporta [fuchsia]READ(10)[/]...[/]</value>
+    </data>
     <data name="Drive_supports_READ_12" xml:space="preserve">
-    <value>La unidad soporta READ(12)...</value>
-  </data>
+        <value>[slateblue1]La unidad soporta [fuchsia]READ(12)[/]...[/]</value>
+    </data>
     <data name="Drive_supports_READ_16" xml:space="preserve">
-    <value>La unidad soporta READ(16)...</value>
-  </data>
+        <value>[slateblue1]La unidad soporta [fuchsia]READ(16)[/]...[/]</value>
+    </data>
     <data name="Drive_supports_READ_6" xml:space="preserve">
-    <value>La unidad soporta READ(6)...</value>
-  </data>
+        <value>[slateblue1]La unidad soporta [fuchsia]READ(6)[/]...[/]</value>
+    </data>
     <data name="Drive_supports_test_writing_DVD_Plus" xml:space="preserve">
         <value>[slateblue1]La unidad soporta la escritura de prueba en DVD+[/]</value>
     </data>
@@ -947,11 +947,11 @@
     <value>El formato de salida no soporta ATA IDENTIFY.</value>
   </data>
     <data name="Dump_finished_in_0" xml:space="preserve">
-    <value>Volcado terminado en {0}.</value>
-  </data>
+        <value>[slateblue1]Volcado terminado en [aqua]{0}[/].[/]</value>
+    </data>
     <data name="Dump_may_not_be_correct" xml:space="preserve">
-    <value>El volcado puede no ser correcto.</value>
-  </data>
+        <value>[olive]El volcado puede no ser correcto.[/]</value>
+    </data>
     <data name="DVD_Physical_Format_Information_contained_in_image_WithMarkup" xml:space="preserve">
         <value>[bold][blue]Información del formato físico del DVD contenida en la imagen:[/][/]</value>
     </data>
@@ -977,8 +977,8 @@
     <value>Expulsando disco...</value>
   </data>
     <data name="Enabling_skipping_CD_i_Ready_hole_because_drive_returns_data_as_audio" xml:space="preserve">
-    <value>Activando la omisión del agujero de CD-i Ready porque la unidad devuelve los datos como audio.</value>
-  </data>
+        <value>[olive]Activando la omisión del agujero de CD-i Ready porque la unidad devuelve los datos como audio.[/]</value>
+    </data>
     <data name="End_logging_on_0" xml:space="preserve">
     <value>Registro finalizado el {0}</value>
   </data>
@@ -1232,11 +1232,11 @@
     <value>Encontrado paquete RW de gráficos, estableciendo el tipo como CD+G.</value>
   </data>
     <data name="Found_ISRC_for_track_0_1" xml:space="preserve">
-    <value>Encontrado ISRC para la pista {0}: {1}</value>
-  </data>
+        <value>[slateblue1]Encontrado ISRC para la pista [teal]{0}[/]:[/] [italic][navy]{1}[/][/]</value>
+    </data>
     <data name="Found_Media_Catalogue_Number_0" xml:space="preserve">
-    <value>Encontrado número de catálogo del medio: {0}</value>
-  </data>
+        <value>[slateblue1]Encontrado número de catálogo del medio:[/] [italic][teal]{0}[/][/]</value>
+    </data>
     <data name="Found_Mega_Sega_CD_IP_BIN" xml:space="preserve">
     <value>Encontrado IP.BIN de Mega CD, estableciendo el tipo como Mega CD.</value>
   </data>
@@ -1322,8 +1322,8 @@
     <value>Encontrado fichero de descripción de Video CD, estableciendo tipo como Video CD.</value>
   </data>
     <data name="Full_raw_subchannel_reading_supported" xml:space="preserve">
-    <value>Lectura del subcanal completo sin procesar soportada...</value>
-  </data>
+        <value>[slateblue1]Lectura del subcanal completo sin procesar soportada...[/]</value>
+    </data>
     <data name="Game_data_size" xml:space="preserve">
     <value>Tamaño de los datos de juego</value>
   </data>
@@ -1385,8 +1385,8 @@
     <value>Obtenido estado sense pero sin búfer</value>
   </data>
     <data name="Hashing_blocks_0_of_1" xml:space="preserve">
-    <value>Calculando el hash de los bloques {0} de {1}</value>
-  </data>
+        <value>[slateblue1]Calculando el hash de los bloques [lime]{0}[/] de [violet]{1}[/][/]</value>
+    </data>
     <data name="Hashing_DiscFerret_image" xml:space="preserve">
     <value>Calculando el hash de la imagen de DiscFerret...</value>
   </data>
@@ -1403,17 +1403,17 @@
     <value>Calculando el hash del byte {0} de {1} del fichero</value>
   </data>
     <data name="Hashing_image_file" xml:space="preserve">
-    <value>Calculando el hash del fichero de imagen...</value>
-  </data>
+        <value>[slateblue1]Calculando el hash del fichero de imagen...[/]</value>
+    </data>
     <data name="Hashing_image_file_byte_0_of_1" xml:space="preserve">
-    <value>Calculando el hash del byte {0} de {1} del fichero de imagen</value>
-  </data>
+        <value>[slateblue1]Calculando el hash del byte [lime]{0}[/] de [green]{1}[/] del fichero de imagen[/]</value>
+    </data>
     <data name="Hashing_KryoFlux_images" xml:space="preserve">
     <value>Calculando el hash de las imágenes de KryoFlux...</value>
   </data>
     <data name="Hashing_media_tags" xml:space="preserve">
-    <value>Calculando el hash de las etiquetas del medio...</value>
-  </data>
+        <value>[slateblue1]Calculando el hash de las etiquetas del medio...[/]</value>
+    </data>
     <data name="Hashing_partition_0" xml:space="preserve">
     <value>Calculando el hash de la partición {0}...</value>
   </data>
@@ -1421,17 +1421,17 @@
     <value>Calculando el hash de los sectores...</value>
   </data>
     <data name="Hashing_sector_0_of_1" xml:space="preserve">
-    <value>Calculando el hash del sector {0} de {1}</value>
-  </data>
+        <value>[slateblue1]Calculando el hash del sector [lime]{0}[/] de [violet]{1}[/]</value>
+    </data>
     <data name="Hashing_subchannel_sector_0_of_1" xml:space="preserve">
-    <value>Calculando el hash del subcanal del sector {0} de {1}</value>
-  </data>
+        <value>[slateblue1]Calculando el hash del subcanal del sector [lime]{0}[/] de [violet]{1}[/][/]</value>
+    </data>
     <data name="Hashing_SuperCardPro_image" xml:space="preserve">
     <value>Calculando el hash de la imagen de SuperCardPro...</value>
   </data>
     <data name="Hashing_tracks" xml:space="preserve">
-    <value>Calculando el hash de las pistas...</value>
-  </data>
+        <value>[slateblue1]Calculando el hash de las pistas...[/]</value>
+    </data>
     <data name="Has_partitions" xml:space="preserve">
         <value>[green]Tiene particiones[/]</value>
     </data>
@@ -1671,14 +1671,14 @@
     <value>No se sobreescribirá el fichero {0}</value>
   </data>
     <data name="No_audio_tracks_disabling_offset_fix" xml:space="preserve">
-    <value>No hay pistas de audio, desactivando correción de desplazamiento.</value>
-  </data>
+        <value>[green]No hay pistas de audio, desactivando correción de desplazamiento.[/]</value>
+    </data>
     <data name="No_cartridge_found_not_dumping" xml:space="preserve">
     <value>No se encontró ningún cartucho, no se volcará</value>
   </data>
     <data name="No_tracks_found_adding_a_single_track_from_zero_to_Lead_Out" xml:space="preserve">
-    <value>No se encontraron pistas, añadiendo una pista desde 0 hasta el Lead-Out</value>
-  </data>
+        <value>[red]No se encontraron pistas, añadiendo una pista desde [lime]0[/] hasta el [italic]Lead-Out[/][/]</value>
+    </data>
     <data name="NVMe_devices_not_yet_supported" xml:space="preserve">
     <value>Los dispositivos NVMe no están soportados todavía.</value>
   </data>
@@ -1695,8 +1695,8 @@
     <value>El formato de salida no soporta {0}.</value>
   </data>
     <data name="Output_format_does_not_support_0_continuing" xml:space="preserve">
-    <value>El formato de salida no soporta {0}, continuando...</value>
-  </data>
+        <value>[red]El formato de salida no soporta [orange3]{0}[/], continuando...[/]</value>
+    </data>
     <data name="Output_format_does_not_support_0_not_continuing" xml:space="preserve">
     <value>El formato de salida no soporta {0}, no se continuará...</value>
   </data>
@@ -1722,8 +1722,8 @@
     <value>El formato de salida no soporta los descriptores CIS de PCMCIA.</value>
   </data>
     <data name="Output_format_does_not_support_pregaps_continuing" xml:space="preserve">
-    <value>El formato de salida no soporta huecos anteriores, esto podría generar una pérdida de datos, continuando...</value>
-  </data>
+        <value>[red]El formato de salida no soporta huecos anteriores, esto podría generar una pérdida de datos, continuando...[/]</value>
+    </data>
     <data name="Output_format_does_not_support_pregaps_not_continuing" xml:space="preserve">
     <value>El formato de salida no soporta huecos anteriores, esto podría generar una pérdida de datos, no se continuará...</value>
   </data>
@@ -1737,8 +1737,8 @@
     <value>El formato de salida no soporta guardar los datos sin procesar, esto podría generar una pérdida de datos, no se continuará...</value>
   </data>
     <data name="Output_format_does_not_support_subchannels_continuing" xml:space="preserve">
-    <value>El formato de salida no soporta los subcanales, continuando...</value>
-  </data>
+        <value>[red]El formato de salida no soporta los subcanales, continuando...[/]</value>
+    </data>
     <data name="Output_format_does_not_support_subchannels_not_continuing" xml:space="preserve">
     <value>El formato de salida no soporta los subcanales, no se continuará...</value>
   </data>
@@ -1809,8 +1809,8 @@
     <value>Información de recursos POW</value>
   </data>
     <data name="PQ_subchannel_reading_supported" xml:space="preserve">
-    <value>La lectura del subcanal PQ está soportada...</value>
-  </data>
+        <value>[slateblue1]La lectura del subcanal PQ está soportada...[/]</value>
+    </data>
     <data name="Pregap_for_track_0_1" xml:space="preserve">
     <value>Hueco anterior de la pista {0}: {1}</value>
   </data>
@@ -1995,50 +1995,50 @@
         <value>[slateblue1]Leyendo [violet]{0}[/] sectores usando secuencias de comandos singulares.[/]</value>
     </data>
     <data name="Reading_Burst_Cutting_Area" xml:space="preserve">
-    <value>Leyendo Burst Cutting Area.</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]Burst Cutting Area[/].[/]</value>
+    </data>
     <data name="Reading_Disc_Description_Structure" xml:space="preserve">
-    <value>Leyendo estructura de descripción del disco.</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]estructura de descripción del disco[/].[/]</value>
+    </data>
     <data name="Reading_Spare_Area_Information" xml:space="preserve">
-    <value>Leyendo información del área de reserva.</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]información del área de reserva[/].[/]</value>
+    </data>
     <data name="Reading_Pre_Recorded_Information" xml:space="preserve">
-    <value>Leyendo información pre-grabada.</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]información pre-grabada[/].[/]</value>
+    </data>
     <data name="Reading_Media_Identifier" xml:space="preserve">
-    <value>Leyendo identificador del medio.</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]identificador del medio[/].[/]</value>
+    </data>
     <data name="Reading_Recordable_Physical_Information" xml:space="preserve">
-    <value>Leyendo información física grabable.</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]información física grabable[/].[/]</value>
+    </data>
     <data name="Reading_ADdress_In_Pregroove" xml:space="preserve">
-    <value>Leyendo ADIP.</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]ADIP[/].[/]</value>
+    </data>
     <data name="Reading_Disc_Control_Blocks" xml:space="preserve">
-    <value>Leyendo bloques de control del disco.</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]bloques de control del disco[/].[/]</value>
+    </data>
     <data name="Reading_Disc_Definition_Structure" xml:space="preserve">
-    <value>Leyendo estructura de definición del disco.</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]estructura de definición del disco[/].[/]</value>
+    </data>
     <data name="Reading_ATIP" xml:space="preserve">
-    <value>Leyendo ATIP</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]ATIP[/][/]</value>
+    </data>
     <data name="Reading_Disc_Information" xml:space="preserve">
-    <value>Leyendo información del disco</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]información del disco[/].[/]</value>
+    </data>
     <data name="Reading_PMA" xml:space="preserve">
-    <value>Leyendo PMA</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]PMA[/][/]</value>
+    </data>
     <data name="Reading_Session_Information" xml:space="preserve">
-    <value>Leyendo información de sesiones</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]información de sesiones[/][/]</value>
+    </data>
     <data name="Reading_CD_Text_from_Lead_In" xml:space="preserve">
-    <value>Leyendo CD-Text del Lead-In</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]CD-Text del Lead-In[/][/]</value>
+    </data>
     <data name="Reading_full_TOC" xml:space="preserve">
-    <value>Leyendo tabla de contenidos completa</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]tabla de contenidos completa[/][/]</value>
+    </data>
     <data name="Reading_block_0_1" xml:space="preserve">
     <value>Leyendo bloque {0} ({1})</value>
   </data>
@@ -2058,11 +2058,11 @@
     <value>Leyendo CID</value>
   </data>
     <data name="Reading_Disc_Manufacturing_Information" xml:space="preserve">
-    <value>Leyendo información de fabricación del disco</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]información de fabricación del disco[/][/]</value>
+    </data>
     <data name="Reading_Lead_in_Copyright_Information" xml:space="preserve">
-    <value>Leyendo información del copyright del Lead-In</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]información del copyright del Lead-In[/].[/]</value>
+    </data>
     <data name="Reading_LBA_zero_as_audio_scrambled" xml:space="preserve">
     <value>Leyendo LBA 0 como audio (revuelto)... </value>
   </data>
@@ -2205,8 +2205,8 @@
     <value>Leyendo CIS de PCMCIA</value>
   </data>
     <data name="Reading_Physical_Format_Information" xml:space="preserve">
-    <value>Leyendo información del formato físico</value>
-  </data>
+        <value>[slateblue1]Leyendo [italic]información del formato físico[/][/]</value>
+    </data>
     <data name="Reading_root_directory_in_sector_0" xml:space="preserve">
     <value>Leyendo directorio raíz en el sector {0}...</value>
   </data>
@@ -2226,8 +2226,8 @@
     <value>Leyendo Sector de Seguridad de Xbox.</value>
   </data>
     <data name="READ_CD_command_is_not_supported_disabling_offset_fix_Dump_may_not_be_correct" xml:space="preserve">
-    <value>El comando READ CD no está soportado, desactivando correción de desplazamientos. El volcado podría ser incorrecto.</value>
-  </data>
+        <value>[olive]El comando READ CD no está soportado, desactivando correción de desplazamientos. El volcado podría ser incorrecto.[/]</value>
+    </data>
     <data name="READ_CD_error_0" xml:space="preserve">
     <value>Error de READ CD:
 {0}</value>
@@ -2461,35 +2461,35 @@
     <value>Resumir los dispositivo CHS no está soportado actualmente.</value>
   </data>
     <data name="Resuming_from_block_0" xml:space="preserve">
-    <value>Resumiendo desde el bloque {0}.</value>
-  </data>
+        <value>[slateblue1]Resumiendo desde el bloque [lime]{0}[/].[/]</value>
+    </data>
     <data name="Retrode_partition_not_recognized_not_dumping" xml:space="preserve">
     <value>Partición de Retrode no reconocida, no se volcará...</value>
   </data>
     <data name="Retrying_sector_0_pass_1_forward" xml:space="preserve">
-    <value>Reintentando sector {0}, paso {1}, hacia adelante</value>
-  </data>
+        <value>[slateblue1]Reintentando sector [lime]{0}[/], paso [teal]{1}[/], [italic]hacia adelante[/][/]</value>
+    </data>
     <data name="Retrying_sector_0_pass_1_recovering_partial_data_forward" xml:space="preserve">
-    <value>Reintentando sector {0}, paso {1}, recuperando datos parciales, hacia adelante</value>
-  </data>
+        <value>[slateblue1]Reintentando sector [lime]{0}[/], paso [teal]{1}[/], recuperando datos parciales, [italic]hacia adelante[/][/]</value>
+    </data>
     <data name="Retrying_sector_0_pass_1_recovering_partial_data_reverse" xml:space="preserve">
-    <value>Reintentando sector {0}, paso {1}, recuperando datos parciales, hacia atrás</value>
-  </data>
+        <value>[slateblue1]Reintentando sector [lime]{0}, paso [teal]{1}, recuperando datos parciales, [italic]hacia atrás</value>
+    </data>
     <data name="Retrying_sector_0_pass_1_reverse" xml:space="preserve">
-    <value>Reintentando sector {0}, paso {1}, hacia atrás</value>
-  </data>
+        <value>[slateblue1]Reintentando sector [lime]{0}[/], paso [teal]{1}[/], [italic]hacia atrás[/][/]</value>
+    </data>
     <data name="Retrying_sector_0_subchannel_pass_1_forward" xml:space="preserve">
-    <value>Reintentando subcanal del sector {0}, paso {1}, hacia adelante</value>
-  </data>
+        <value>[slateblue1]Reintentando subcanal del sector [lime]{0}[/], paso [teal]{1}[/], [italic]hacia adelante[/][/]</value>
+    </data>
     <data name="Retrying_sector_0_subchannel_pass_1_reverse" xml:space="preserve">
-    <value>Reintentando subcanal del sector {0}, paso {1}, hacia atrás</value>
-  </data>
+        <value>[slateblue1]Reintentando subcanal del sector [lime]{0}[/], paso [teal]{1}[/], [italic]hacia atrás[/][/]</value>
+    </data>
     <data name="Retrying_title_key_0_pass_1_forward" xml:space="preserve">
-    <value>Reintentando llave de título {0}, paso {1}, hacia adelante</value>
-  </data>
+        <value>[slateblue1]Reintentando llave de título [lime]{0}[/], paso [teal]{1}[/], [italic]hacia adelante[/][/]</value>
+    </data>
     <data name="Retrying_title_key_0_pass_1_reverse" xml:space="preserve">
-    <value>Reintentando llave de título {0}, paso {1}, hacia atrás</value>
-  </data>
+        <value>[slateblue1]Reintentando llave de título [lime]{0}[/], paso [teal]{1}[/], [italic]hacia atrás[/][/]</value>
+    </data>
     <data name="Rewinding_please_wait" xml:space="preserve">
     <value>Rebobinando, por favor espere...</value>
   </data>
@@ -2543,8 +2543,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>Tipo de densidad SCSI: {0}.</value>
   </data>
     <data name="SCSI_device_type_0" xml:space="preserve">
-    <value>Tipo de dispositivo SCSI: {0}.</value>
-  </data>
+        <value>[slateblue1]Tipo de dispositivo SCSI: [italic][rosybrown]{0}[/][/].[/]</value>
+    </data>
     <data name="SCSI_error_0" xml:space="preserve">
     <value>Error SCSI: {0}</value>
   </data>
@@ -2660,26 +2660,26 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
         <value>[bold][blue]Información de sesión:[/][/]</value>
     </data>
     <data name="Setting_disc_Media_Catalogue_Number_to_0" xml:space="preserve">
-    <value>Estableciendo el número de catálogo del medio a {0}</value>
-  </data>
+        <value>[slateblue1]Estableciendo el número de catálogo del medio a [teal]{0}[/][/]</value>
+    </data>
     <data name="Setting_flags_for_track_0" xml:space="preserve">
-    <value>Estableciendo banderas para la pista {0}...</value>
-  </data>
+        <value>[slateblue1]Estableciendo banderas para la pista [teal]{0}[/]...[/]</value>
+    </data>
     <data name="Setting_geometry_to_0_cylinders_1_heads_2_sectors_per_track" xml:space="preserve">
     <value>Estableciendo geometría en {0} cilindros, {1} cabezas y {2} sectores por pista</value>
   </data>
     <data name="Setting_index_0_for_track_1_to_LBA_2" xml:space="preserve">
-    <value>Estableciendo índice {0} para la pista {1} en el LBA {2}.</value>
-  </data>
+        <value>[slateblue1]Estableciendo índice [green]{0}[/] para la pista [teal]{1}[/] en el LBA [lime]{2}[/].[/]</value>
+    </data>
     <data name="Setting_ISRC_for_track_0_to_1" xml:space="preserve">
-    <value>Estableciendo ISRC para la pista {0} como {1}</value>
-  </data>
+        <value>[slateblue1]Estableciendo ISRC para la pista [teal]{0}[/] como [italic][navy]{1}[/][/][/]</value>
+    </data>
     <data name="Setting_speed_to_0_x" xml:space="preserve">
     <value>Estableciendo la velocidad a {0}x</value>
   </data>
     <data name="Setting_speed_to_0_x_for_data_reading" xml:space="preserve">
-    <value>Estableciendo la velocidad a {0}x para la lectura de datos</value>
-  </data>
+        <value>[slateblue1]Estableciendo la velocidad a [teal]{0}x[/] para la lectura de datos[/]</value>
+    </data>
     <data name="Setting_speed_to_8x_for_audio_reading" xml:space="preserve">
     <value>Estableciendo la velocidad a 8x para la lectura de audio</value>
   </data>
@@ -2690,8 +2690,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>Estableciendo la velocidad al máximo</value>
   </data>
     <data name="Setting_speed_to_MAX_for_data_reading" xml:space="preserve">
-    <value>Estableciendo la velocidad al máximo para la lectura de datos</value>
-  </data>
+        <value>[slateblue1]Estableciendo la velocidad al [teal]máximo[/] para la lectura de datos[/]</value>
+    </data>
     <data name="Several_media_tags_not_supported_continuing" xml:space="preserve">
     <value>Varias etiquetas de medio no están soportadas, continuando...</value>
   </data>
@@ -2699,8 +2699,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>Varias etiquetas de medio no están soportadas, no se continuará...</value>
   </data>
     <data name="Sidecar_created_in_0" xml:space="preserve">
-    <value>Sidecar creado en {0}.</value>
-  </data>
+        <value>[slateblue1]Sidecar creado en [aqua]{0}[/].[/]</value>
+    </data>
     <data name="Skipping_0_blocks_from_errored_block_1" xml:space="preserve">
     <value>Omitiendo {0} bloques desde el bloque erróneo {1}.</value>
   </data>
@@ -2717,8 +2717,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
         <value>[slateblue1]Ráfaga de velocidad más lenta: [aqua]{0}[/].[/]</value>
     </data>
     <data name="Solving_lead_outs" xml:space="preserve">
-    <value>Resolviendo Lead-Outs...</value>
-  </data>
+        <value>[slateblue1]Resolviendo [italic]Lead-Outs[/]...[/]</value>
+    </data>
     <data name="Stack_trace_0" xml:space="preserve">
     <value>Traza de pila: {0}</value>
   </data>
@@ -2768,12 +2768,12 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>La siguiente parte del test leerá el área de alta densidad del GD-ROM entera desde el primer sector que sabemos legible hasta que ocurra el primer error. ¿Desea continuar? (S/N):</value>
   </data>
     <data name="There_are_audio_tracks_and_offset_fixing_is_disabled_dump_may_not_be_correct" xml:space="preserve">
-    <value>Hay pistas de audio y la correción de desplazamientos está desactivada, el volcado podría ser incorrecto.</value>
-  </data>
+        <value>[olive]Hay pistas de audio y la correción de desplazamientos está desactivada, el volcado podría ser incorrecto.[/]</value>
+    </data>
     <data name="There_will_be_thousand_of_errors_between_track_0_and_track_1_that_is_normal_and_you_can_ignore_them"
           xml:space="preserve">
-    <value>Habrá miles de errores entre las pistas 0 y 1, esto es normal y puede ignorarlos.</value>
-  </data>
+        <value>[olive]Habrá miles de errores entre las pistas 0 y 1, esto es normal y puede ignorarlos.[/]</value>
+    </data>
     <data name="The_current_environment_doesn_t_support_the_medium_scan_command" xml:space="preserve">
     <value>El entorno actual no soporta el comando MEDIUM SCAN, el volcado tardará mucho más de lo normal.</value>
   </data>
@@ -2918,8 +2918,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
         <value>[slateblue1]Tomó un total de [teal]{0}[/] ([teal]{1}[/] procesando comandos).[/]</value>
     </data>
     <data name="Took_a_total_of_0_1_processing_commands_2_checksumming_3_writing_4_closing" xml:space="preserve">
-    <value>Tomó un total de {0} ({1} procesando comandos, {2} calculando checksums, {3} escribiendo, {4} cerrando).</value>
-  </data>
+        <value>[slateblue1]Tomó un total de [aqua]{0}[/] ([aqua]{1}[/] procesando comandos, [aqua]{2}[/] calculando checksums, [aqua]{3}[/] escribiendo, [aqua]{4}[/] cerrando).[/]</value>
+    </data>
     <data name="Total_size" xml:space="preserve">
     <value>Tamaño total</value>
   </data>
@@ -2936,20 +2936,20 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>La pista {0} tiene {1} sectores</value>
   </data>
     <data name="Track_0_is_MODE1" xml:space="preserve">
-    <value>La pista {0} es modo 1</value>
-  </data>
+        <value>[slateblue1]La pista [teal]{0}[/] es [green]modo 1[/][/]</value>
+    </data>
     <data name="Track_0_is_MODE2" xml:space="preserve">
-    <value>La pista {0} es modo 2</value>
-  </data>
+        <value>[slateblue1]La pista [teal]{0}[/] es [green]modo 2[/][/]</value>
+    </data>
     <data name="Track_0_is_MODE2_FORM_1" xml:space="preserve">
-    <value>La pista {0} es modo 2 forma 1</value>
-  </data>
+        <value>[slateblue1]La pista [teal]{0}[/] es [green]modo 2 forma 1[/][/]</value>
+    </data>
     <data name="Track_0_is_MODE2_FORM_2" xml:space="preserve">
-    <value>La pista {0} es modo 2 forma 2</value>
-  </data>
+        <value>[slateblue1]La pista [teal]{0}[/] es [green]modo 2 forma 2[/][/]</value>
+    </data>
     <data name="Track_0_is_unknown_mode_1" xml:space="preserve">
-    <value>La pista {0} es modo desconocido {1}</value>
-  </data>
+        <value>[slateblue1]La pista [teal]{0}[/] es modo desconocido [teal]{1}[/][/]</value>
+    </data>
     <data name="Track_0_of_1" xml:space="preserve">
     <value>Pista {0} de {1}</value>
   </data>
@@ -2957,8 +2957,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>El hueco anterior de la pista {0} tiene {1} sectores</value>
   </data>
     <data name="Track_0_starts_at_LBA_1_and_ends_at_LBA_2" xml:space="preserve">
-    <value>La pista {0} empieza en el LBA {1} y termina en el {2}</value>
-  </data>
+        <value>[slateblue1]La pista [teal]{0}[/] empieza en el LBA [lime]{1}[/] y termina en el [lime]{2}[/][/]</value>
+    </data>
     <data name="Track_calculations" xml:space="preserve">
         <value>[bold][blue]Cálculos de pista[/][/]</value>
     </data>
@@ -3167,8 +3167,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>No se pudieron obtener las pistas por separado, no se calculará su entropía</value>
   </data>
     <data name="Unable_to_guess_mode_for_track_0_continuing" xml:space="preserve">
-    <value>No se pudo adivinar el modo de la pista {0}, continuando...</value>
-  </data>
+        <value>[olive]No se pudo adivinar el modo de la pista [teal]{0}[/], continuando...[/]</value>
+    </data>
     <data name="Unable_to_read_medium" xml:space="preserve">
     <value>No se pudo leer el medio.</value>
   </data>
@@ -3374,11 +3374,11 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
         <value>[olive]Esperando que la unidad esté lista[/]</value>
     </data>
     <data name="WARNING_Could_not_find_Lead_Out_start_will_try_to_read_up_to" xml:space="preserve">
-    <value>ATENCIÓN: No se pudo encontrar el comienzo del Lead-Out, se intentarán leer hasta 360000 sectores, probablemente falle antes...</value>
-  </data>
+        <value>[olive][bold]ATENCIÓN:[/] No se pudo encontrar el comienzo del [italic]Lead-Out[/], se intentarán leer hasta [violet]360000[/] sectores, probablemente falle antes...[/]</value>
+    </data>
     <data name="WARNING_If_disc_says_CDG_CDEG_CDMIDI_dump_will_be_incorrect" xml:space="preserve">
-    <value>ATENCIÓN: Si el disco dice CD+G, CD+EG, CD-MIDI, CD Graphics o CD Enhanced Graphics, ¡el volcado será incorrecto!</value>
-  </data>
+        <value>[olive][bold]ATENCIÓN:[/] Si el disco dice [red]CD+G[/], [red]CD+EG[/], [red]CD-MIDI[/], [red]CD Graphics[/] o [red]CD Enhanced Graphics[/], ¡el volcado será incorrecto![/]</value>
+    </data>
     <data name="Was_created_with_0" xml:space="preserve">
     <value>Creado con {0}</value>
   </data>
@@ -3398,8 +3398,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>Escribiendo {0} en {1}</value>
   </data>
     <data name="Writing_metadata_sidecar" xml:space="preserve">
-    <value>Escribiendo sidecar de metadatos</value>
-  </data>
+        <value>[slateblue1]Escribiendo sidecar de metadatos[/]</value>
+    </data>
     <data name="Writing_Middle_Zone_D_empty" xml:space="preserve">
     <value>Escribiendo zona intermedia D (vacía).</value>
   </data>
@@ -3464,8 +3464,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
         <value>[red]{0} sectores tomaron más de 500 ms.[/]</value>
     </data>
     <data name="_0_subchannels_could_not_be_read" xml:space="preserve">
-    <value>No se pudieron leer {0} subcanales.</value>
-  </data>
+        <value>[maroon]No se pudieron leer [teal]{0}[/] subcanales.[/]</value>
+    </data>
     <data name="_FIXED" xml:space="preserve">
     <value> (CORREGIDO)</value>
   </data>

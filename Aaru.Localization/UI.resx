@@ -1010,11 +1010,11 @@ In you are unsure, please press N to not continue.</value>
     <value>More than one plugin supports requested extension.</value>
   </data>
     <data name="Output_image_format_0_1" xml:space="preserve">
-    <value>Output image format: {0} ({1}).</value>
-  </data>
+        <value>[slateblue1]Output image format: [green]{0}[/] ([red]{1}[/]).[/]</value>
+    </data>
     <data name="Output_image_format_0" xml:space="preserve">
-    <value>Output image format: {0}.</value>
-  </data>
+        <value>[slateblue1]Output image format: [green]{0}[/].[/]</value>
+    </data>
     <data name="Output_format_does_not_support_media_type" xml:space="preserve">
     <value>Output format does not support media type, cannot continue...</value>
   </data>
@@ -1149,14 +1149,14 @@ In you are unsure, please press N to not continue.</value>
     <value>Written dump hardware list to output image.</value>
   </data>
     <data name="Writing_metadata" xml:space="preserve">
-    <value>Writing metadata...</value>
-  </data>
+        <value>[slateblue1]Writing metadata...[/]</value>
+    </data>
     <data name="Written_Aaru_Metadata_to_output_image" xml:space="preserve">
     <value>Written Aaru Metadata to output image.</value>
   </data>
     <data name="Closing_output_image" xml:space="preserve">
-    <value>Closing output image...</value>
-  </data>
+        <value>[slateblue1]Closing output image...[/]</value>
+    </data>
     <data name="Error_0_closing_output_image_Contents_are_not_correct" xml:space="preserve">
     <value>Error {0} closing output image... Contents are not correct.</value>
   </data>
@@ -1502,8 +1502,8 @@ In you are unsure, please press N to not continue.</value>
     <value>Invalid characters found in list of files, exiting...</value>
   </data>
     <data name="Please_insert_media_with_title_0_and_press_any_key_to_continue_" xml:space="preserve">
-    <value>Please insert media with title {0} and press any key to continue...</value>
-  </data>
+        <value>[slateblue1]Please insert media with title [green]{0}[/] and press any key to continue...[/]</value>
+    </data>
     <data name="Opening_device" xml:space="preserve">
         <value>[slateblue1]Opening device...[/]</value>
     </data>
@@ -1511,11 +1511,11 @@ In you are unsure, please press N to not continue.</value>
     <value>Incorrect resume file, not continuing...</value>
   </data>
     <data name="Media_already_dumped_correctly_not_continuing" xml:space="preserve">
-    <value>Media already dumped correctly, not continuing...</value>
-  </data>
+        <value>[green]Media already dumped correctly, not continuing...[/]</value>
+    </data>
     <data name="Ejecting_media" xml:space="preserve">
-    <value>Ejecting media...</value>
-  </data>
+        <value>[slateblue1]Ejecting media...[/]</value>
+    </data>
     <data name="Please_use_device_info_command_for_ATA_devices" xml:space="preserve">
     <value>Please use device-info command for ATA devices.</value>
   </data>
