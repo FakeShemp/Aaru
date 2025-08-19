@@ -6868,5 +6868,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Blu_ray_type_BDR_setting_disc_type_BDR", resourceCulture);
             }
         }
+        
+        public static string Running_in_0_architecture {
+            get {
+                return ResourceManager.GetString("Running_in_0_architecture", resourceCulture);
+            }
+        }
     }
 }

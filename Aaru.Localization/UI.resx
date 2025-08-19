@@ -3129,4 +3129,7 @@ Do you want to continue?</value>
     <data name="Unable_to_get_separate_tracks_not_checksumming_them" xml:space="preserve">
         <value>[yellow]Unable to get separate tracks, not checksumming them[/]</value>
     </data>
+    <data name="Running_in_0_architecture" xml:space="preserve">
+        <value>Running in {0} architecture</value>
+    </data>
 </root>

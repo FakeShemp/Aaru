@@ -32,13 +32,9 @@
 
 using System;
 using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Interop;
 using Aaru.Devices;
 using Aaru.Logging;
-using PlatformID = Aaru.CommonTypes.Interop.PlatformID;
-using Version = Aaru.CommonTypes.Interop.Version;
 
 namespace Aaru.Core.Logging;
 
@@ -50,39 +46,6 @@ public static class DumpLog
     /// <param name="private">Disable saving paths or serial numbers in log</param>
     public static void StartLog(Device dev, bool @private)
     {
-        AaruLogging.Information(Localization.Core.Start_logging_at_0, DateTime.Now);
-
-        PlatformID platId  = DetectOS.GetRealPlatformID();
-        string     platVer = DetectOS.GetVersion();
-
-        var assemblyVersion =
-            Attribute.GetCustomAttribute(typeof(DumpLog).Assembly, typeof(AssemblyInformationalVersionAttribute)) as
-                AssemblyInformationalVersionAttribute;
-
-        AaruLogging.Information(Localization.Core.System_information);
-
-        AaruLogging.Information("{0} {1} ({2}-bit)",
-                                DetectOS.GetPlatformName(platId, platVer),
-                                platVer,
-                                Environment.Is64BitOperatingSystem ? 64 : 32);
-
-        if(DetectOS.IsMono)
-            AaruLogging.Information("Mono {0}", Version.GetMonoVersion());
-        else if(DetectOS.IsNetCore)
-            AaruLogging.Information(".NET Core {0}", Version.GetNetCoreVersion());
-        else
-            AaruLogging.Information(RuntimeInformation.FrameworkDescription);
-
-        AaruLogging.Information(Localization.Core.Program_information);
-        AaruLogging.Information("Aaru {0}",                         assemblyVersion?.InformationalVersion);
-        AaruLogging.Information(Localization.Core.Running_in_0_bit, Environment.Is64BitProcess ? 64 : 32);
-
-        AaruLogging.Information(DetectOS.IsAdmin
-                                    ? Localization.Core.Running_as_superuser_Yes
-                                    : Localization.Core.Running_as_superuser_No);
-#if DEBUG
-        AaruLogging.Information(Localization.Core.DEBUG_version);
-#endif
         if(@private)
         {
             string[] args = Environment.GetCommandLineArgs();

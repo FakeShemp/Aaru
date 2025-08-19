@@ -1,10 +1,16 @@
+using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using Aaru.Commands;
+using Aaru.CommonTypes.Interop;
+using Aaru.Localization;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Sinks.Spectre;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using PlatformID = Aaru.CommonTypes.Interop.PlatformID;
 
 public class LoggingInterceptor : ICommandInterceptor
 {
@@ -47,8 +53,43 @@ public class LoggingInterceptor : ICommandInterceptor
         }
 
         Log.Logger = loggerConfig.CreateLogger();
-        Log.Information("Log level set to {Level}", _levelSwitch.MinimumLevel);
-        if(global.LogFile != null) Log.Information("Logging to file: {Path}", global.LogFile);
+
+        if(global.LogFile == null) return;
+
+        Log.Information(Core.Start_logging_at_0, DateTime.Now);
+
+        PlatformID platId  = DetectOS.GetRealPlatformID();
+        string     platVer = DetectOS.GetVersion();
+
+        var assemblyVersion =
+            Attribute.GetCustomAttribute(typeof(LoggingInterceptor).Assembly,
+                                         typeof(AssemblyInformationalVersionAttribute)) as
+                AssemblyInformationalVersionAttribute;
+
+        Log.Information(Core.Program_information);
+        Log.Information("Aaru Data Preservation Suite {InformationalVersion}", assemblyVersion?.InformationalVersion);
+        Log.Information(Core.Running_in_0_architecture,                        RuntimeInformation.ProcessArchitecture);
+        Log.Information(Core.Running_in_0_bit,                                 Environment.Is64BitProcess ? 64 : 32);
+
+        Log.Information(DetectOS.IsAdmin ? Core.Running_as_superuser_Yes : Core.Running_as_superuser_No);
+#if DEBUG
+        Log.Information(Core.DEBUG_version);
+#endif
+        Log.Information(Core.Log_section_separator);
+        Log.Information("");
+
+        Log.Information(Core.System_information);
+
+        Log.Information("{PlatformName} {PlatformVersion} ({ProcessorArchitecture} {Bittage}-bit)",
+                        DetectOS.GetPlatformName(platId, platVer),
+                        platVer,
+                        RuntimeInformation.OSArchitecture,
+                        Environment.Is64BitOperatingSystem ? 64 : 32);
+
+        Log.Information(RuntimeInformation.FrameworkDescription);
+        Log.Information(Core.Log_section_separator);
+
+        Log.Information("");
     }
 
 #endregion

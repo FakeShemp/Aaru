@@ -6105,5 +6105,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Unable_to_get_separate_tracks_not_checksumming_them", resourceCulture);
             }
         }
+        
+        public static string Running_in_0_architecture {
+            get {
+                return ResourceManager.GetString("Running_in_0_architecture", resourceCulture);
+            }
+        }
     }
 }

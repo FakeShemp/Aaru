@@ -49,7 +49,6 @@
     <ProjectReference Include="..\Aaru.Helpers\Aaru.Helpers.csproj"/>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Logging\"/>
     <Folder Include="Devices\"/>
     <Folder Include="Devices\Scanning\"/>
     <Folder Include="Devices\Dumping\"/>

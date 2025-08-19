@@ -424,11 +424,5 @@ class MainClass
 
         AnsiConsole.MarkupLine("[bold][blue]{0}[/][/]", _assemblyCopyright);
         AnsiConsole.WriteLine();
-
-        AaruLogging.Information("Aaru Data Preservation Suite {InformationalVersion}",
-                                _assemblyVersion?.InformationalVersion);
-
-        AaruLogging.Information("{AssemblyCopyright}", _assemblyCopyright);
-        AaruLogging.Information("Logging started");
     }
 }

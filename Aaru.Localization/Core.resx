@@ -3505,4 +3505,7 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <data name="Blu_ray_type_BDR_setting_disc_type_BDR" xml:space="preserve">
         <value>Blu-ray type set to "BDR", setting disc type to BD-R.</value>
     </data>
+    <data name="Running_in_0_architecture" xml:space="preserve">
+        <value>Running in {0} architecture</value>
+    </data>
 </root>
