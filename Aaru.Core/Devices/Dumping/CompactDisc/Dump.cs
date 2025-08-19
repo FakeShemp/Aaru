@@ -1078,8 +1078,9 @@ sealed partial class Dump
             foreach(int sub in _resume.BadSubchannels) subchannelExtents.Add(sub);
 
             if(_resume.NextBlock < blocks)
-                for(ulong i = _resume.NextBlock; i < blocks; i++)
-                    subchannelExtents.Add((int)i);
+            {
+                for(ulong i = _resume.NextBlock; i < blocks; i++) subchannelExtents.Add((int)i);
+            }
         }
 
         if(_resume.NextBlock > 0)
@@ -1237,7 +1238,7 @@ sealed partial class Dump
         // Set speed
         if(_speedMultiplier >= 0)
         {
-            UpdateStatus?.Invoke(_speed == 0xFFFF
+            UpdateStatus?.Invoke(_speed is 0xFFFF or 0
                                      ? Localization.Core.Setting_speed_to_MAX_for_data_reading
                                      : string.Format(Localization.Core.Setting_speed_to_0_x_for_data_reading, _speed));
 
@@ -1494,8 +1495,9 @@ sealed partial class Dump
                         supportsLongSectors);
 
         foreach(Tuple<ulong, ulong> leadoutExtent in leadOutExtents.ToArray())
-            for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++)
-                subchannelExtents.Remove((int)e);
+        {
+            for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++) subchannelExtents.Remove((int)e);
+        }
 
         if(subchannelExtents.Count > 0 && _retryPasses > 0 && _retrySubchannel)
         {
