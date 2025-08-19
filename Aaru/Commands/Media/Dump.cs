@@ -216,11 +216,11 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         switch(candidates.Count)
         {
             case 0:
-                AaruLogging.WriteLine(UI.No_plugin_supports_requested_extension);
+                AaruLogging.Error(UI.No_plugin_supports_requested_extension);
 
                 return (int)ErrorNumber.FormatNotFound;
             case > 1:
-                AaruLogging.WriteLine(UI.More_than_one_plugin_supports_requested_extension);
+                AaruLogging.Error(UI.More_than_one_plugin_supports_requested_extension);
 
                 return (int)ErrorNumber.TooManyFormats;
         }
