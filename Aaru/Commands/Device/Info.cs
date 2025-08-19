@@ -110,7 +110,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
 
         Statistics.AddDevice(dev);
 
-        DumpLog.StartLog(dev, false);
+        DeviceLog.StartLog(dev, false);
 
         Table table;
 

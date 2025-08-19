@@ -474,7 +474,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
 
             IBaseWritableImage outputFormat = candidates[0];
 
-            DumpLog.StartLog(dev, settings.Private);
+            DeviceLog.StartLog(dev, settings.Private);
 
             if(settings.Verbose)
                 AaruLogging.Verbose(UI.Output_image_format_0_1, outputFormat.Name, outputFormat.Id);

@@ -858,7 +858,7 @@ public sealed class MediaDumpViewModel : ViewModelBase
             }
         */
 
-        DumpLog.StartLog(_dev, false);
+        DeviceLog.StartLog(_dev, false);
 
         AaruLogging.WriteLine(UI.Output_image_format_0, SelectedPlugin.Name);
 

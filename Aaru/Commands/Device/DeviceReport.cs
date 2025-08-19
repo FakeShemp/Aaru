@@ -101,7 +101,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
             return (int)ErrorNumber.CannotOpenDevice;
         }
 
-        DumpLog.StartLog(dev, false);
+        DeviceLog.StartLog(dev, false);
 
         Statistics.AddDevice(dev);
 

@@ -116,7 +116,7 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
             return (int)ErrorNumber.CannotOpenDevice;
         }
 
-        DumpLog.StartLog(dev, false);
+        DeviceLog.StartLog(dev, false);
 
         Statistics.AddDevice(dev);
 

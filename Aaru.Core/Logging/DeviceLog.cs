@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : DumpLog.cs
+// Filename       : DeviceLog.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Core algorithms.
@@ -39,7 +39,7 @@ using Aaru.Logging;
 namespace Aaru.Core.Logging;
 
 /// <summary>Creates a dump log</summary>
-public static class DumpLog
+public static class DeviceLog
 {
     /// <summary>Initializes the dump log</summary>
     /// <param name="dev">Device</param>
