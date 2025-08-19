@@ -42,8 +42,8 @@
     <value>[olive]Waiting for drive to become ready[/]</value>
   </data>
     <data name="Device_not_ready_Sense" xml:space="preserve">
-    <value>Device not ready. Sense {0} ASC {1:X2}h ASCQ {2:X2}h</value>
-  </data>
+        <value>[red]Device not ready. Sense [green]{0}[/] ASC [teal]{1:X2}h[/] ASCQ [aqua]{2:X2}h[/][/]</value>
+    </data>
     <data name="Got_sense_status_but_no_sense_buffer" xml:space="preserve">
     <value>Got sense status but no sense buffer</value>
   </data>
@@ -639,8 +639,8 @@
     <value>Aborting...</value>
   </data>
     <data name="Setting_speed_to_8x_for_CD_i_Ready_reading_as_audio" xml:space="preserve">
-    <value>Setting speed to 8x for CD-i Ready reading as audio.</value>
-  </data>
+        <value>[slateblue1]Setting speed to [teal]8x[/] for [green]CD-i Ready[/] reading as audio.[/]</value>
+    </data>
     <data name="Aborted" xml:space="preserve">
         <value>[red]Aborted![/]</value>
     </data>
@@ -651,21 +651,21 @@
     <value>Adding CD-i Ready hole from LBA {0} to {1} inclusive.</value>
   </data>
     <data name="Setting_speed_to_8x_for_audio_reading" xml:space="preserve">
-    <value>Setting speed to 8x for audio reading.</value>
-  </data>
+        <value>[slateblue1]Setting speed to [teal]8x[/] for audio reading.[/]</value>
+    </data>
     <data name="Setting_speed_to_MAX_for_data_reading" xml:space="preserve">
         <value>[slateblue1]Setting speed to [teal]MAX[/] for data reading[/]</value>
     </data>
     <data name="Setting_speed_to_0_x_for_data_reading" xml:space="preserve">
-        <value>[slateblue1]Setting speed to [teal]{0}x[/] for data reading[/]</value>
+        <value>[slateblue1]Setting speed to [teal]{0}x[/] for data reading.[/]</value>
     </data>
     <data name="READ_error_0" xml:space="preserve">
     <value>READ error:
 {0}</value>
   </data>
     <data name="Skipping_0_blocks_from_errored_block_1" xml:space="preserve">
-    <value>Skipping {0} blocks from errored block {1}.</value>
-  </data>
+        <value>[slateblue1]Skipping [violet]{0}[/] blocks from errored block [lime]{1}[/].[/]</value>
+    </data>
     <data name="Failed_crossing_into_Lead_Out" xml:space="preserve">
     <value>Failed crossing into Lead-Out, dump may not be correct.</value>
   </data>
@@ -676,14 +676,14 @@
         <value>[red]Could not get tracks![/]</value>
     </data>
     <data name="Drive_does_not_support_the_requested_subchannel_format_not_continuing" xml:space="preserve">
-    <value>Drive does not support the requested subchannel format, not continuing...</value>
-  </data>
+        <value>[red]Drive does not support the requested subchannel format, not continuing...[/]</value>
+    </data>
     <data name="Output_format_does_not_support_subchannels_continuing" xml:space="preserve">
-        <value>[red]Output format does not support subchannels, continuing...[/]</value>
+        <value>[olive]Output format does not support subchannels, continuing...[/]</value>
     </data>
     <data name="Output_format_does_not_support_subchannels_not_continuing" xml:space="preserve">
-    <value>Output format does not support subchannels, not continuing...</value>
-  </data>
+        <value>[red]Output format does not support subchannels, not continuing...[/]</value>
+    </data>
     <data name="Checking_if_drive_supports_reading_without_subchannel" xml:space="preserve">
         <value>[slateblue1]Checking if drive supports reading without subchannel...[/]</value>
     </data>
@@ -703,8 +703,8 @@
         <value>[slateblue1]Checking if drive supports [fuchsia]READ(16)[/]...[/]</value>
     </data>
     <data name="Cannot_read_from_disc_not_continuing" xml:space="preserve">
-    <value>Cannot read from disc, not continuing...</value>
-  </data>
+        <value>[red]Cannot read from disc, not continuing...[/]</value>
+    </data>
     <data name="Drive_supports_READ_6" xml:space="preserve">
         <value>[slateblue1]Drive supports [fuchsia]READ(6)[/]...[/]</value>
     </data>
@@ -739,33 +739,33 @@
         <value>[slateblue1]Calculating [italic]pregaps[/], can take [italic]some time[/]...[/]</value>
     </data>
     <data name="Output_format_does_not_support_storing_raw_data_not_continuing" xml:space="preserve">
-    <value>Output format does not support storing raw data, this may end in a loss of data, not continuing...</value>
-  </data>
+        <value>[red]Output format does not support storing raw data, this may end in a loss of data, not continuing...[/]</value>
+    </data>
     <data name="Output_format_does_not_support_storing_raw_data_continuing" xml:space="preserve">
-    <value>Output format does not support storing raw data, this may end in a loss of data, continuing...</value>
-  </data>
+        <value>[olive]Output format does not support storing raw data, this may end in a loss of data, continuing...[/]</value>
+    </data>
     <data name="Output_format_does_not_support_audio_tracks_cannot_continue" xml:space="preserve">
-    <value>Output format does not support audio tracks, cannot continue...</value>
-  </data>
+        <value>[red]Output format does not support audio tracks, cannot continue...[/]</value>
+    </data>
     <data name="Output_format_does_not_support_pregaps_not_continuing" xml:space="preserve">
-    <value>Output format does not support pregaps, this may end in a loss of data, not continuing...</value>
-  </data>
+        <value>[red]Output format does not support pregaps, this may end in a loss of data, not continuing...</value>
+    </data>
     <data name="Output_format_does_not_support_pregaps_continuing" xml:space="preserve">
-        <value>[red]Output format does not support pregaps, this may end in a loss of data, continuing...[/]</value>
+        <value>[olive]Output format does not support pregaps, this may end in a loss of data, continuing...[/]</value>
     </data>
     <data name="Cannot_dump_blank_media" xml:space="preserve">
     <value>Cannot dump blank media.</value>
   </data>
     <data name="Could_not_process_resume_file_not_continuing" xml:space="preserve">
-    <value>Could not process resume file, not continuing...</value>
-  </data>
+        <value>[red]Could not process resume file, not continuing...[/]</value>
+    </data>
     <data name="Output_format_does_not_support_0_continuing" xml:space="preserve">
         <value>[red]Output format does not support [orange3]{0}[/], continuing...[/]</value>
         <comment>{0} is media tag name</comment>
     </data>
     <data name="Output_format_does_not_support_0_not_continuing" xml:space="preserve">
-    <value>Output format does not support {0}, not continuing...</value>
-  </data>
+        <value>[red]Output format does not support [orange3]{0}[/], not continuing...[/]</value>
+    </data>
     <data name="Solving_lead_outs" xml:space="preserve">
         <value>[slateblue1]Solving [italic]lead-outs[/]...[/]</value>
     </data>
@@ -797,20 +797,20 @@
         <value>[slateblue1]Track [teal]{0}[/] is unknown mode [teal]{1}[/][/]</value>
     </data>
     <data name="Output_format_does_not_support_more_than_1_track_not_continuing" xml:space="preserve">
-    <value>Output format does not support more than 1 track, not continuing...</value>
-  </data>
+        <value>[red]Output format does not support more than 1 track, not continuing..[/]</value>
+    </data>
     <data name="Output_format_does_not_support_audio_tracks_not_continuing" xml:space="preserve">
-    <value>Output format does not support audio tracks, not continuing...</value>
-  </data>
+        <value>[red]Output format does not support audio tracks, not continuing...[/]</value>
+    </data>
     <data name="Output_format_only_supports_MODE_1_tracks_not_continuing" xml:space="preserve">
-    <value>Output format only supports MODE 1 tracks, not continuing...</value>
-  </data>
+        <value>[red]Output format only supports MODE 1 tracks, not continuing...[/]</value>
+    </data>
     <data name="Output_format_does_not_support_CD_first_track_pregap_continuing" xml:space="preserve">
-    <value>Output format does not support CD first track pregap, continuing...</value>
-  </data>
+        <value>[olive]Output format does not support CD first track pregap, continuing...[/]</value>
+    </data>
     <data name="Output_format_does_not_support_CD_first_track_pregap_not_continuing" xml:space="preserve">
-    <value>Output format does not support CD first track pregap, not continuing...</value>
-  </data>
+        <value>[red]Output format does not support CD first track pregap, not continuing..[/]</value>
+    </data>
     <data name="Device_error_0_trying_to_guess_ideal_transfer_length" xml:space="preserve">
     <value>Device error {0} trying to guess ideal transfer length.</value>
   </data>
@@ -833,11 +833,11 @@
         <value>[slateblue1]Media identified as [fuchsia]{0}[/].[/]</value>
     </data>
     <data name="Error_creating_output_image_not_continuing" xml:space="preserve">
-    <value>Error creating output image, not continuing.</value>
-  </data>
+        <value>[red]Error creating output image, not continuing.[/]</value>
+    </data>
     <data name="Error_sending_tracks_to_output_image_not_continuing" xml:space="preserve">
-    <value>Error sending tracks to output image, not continuing.</value>
-  </data>
+        <value>[red]Error sending tracks to output image, not continuing.[/]</value>
+    </data>
     <data name="Creating_subchannel_log_in_0" xml:space="preserve">
         <value>[slateblue1]Creating subchannel log in[/] [green]{0}[/]</value>
     </data>
@@ -878,11 +878,11 @@
         <value>[slateblue1]Disc offset is [lime]{0}[/] bytes ([teal]{1}[/] samples)[/]</value>
     </data>
     <data name="Dumping_CD_i_Ready_requires_the_output_image_format_to_support_long_sectors" xml:space="preserve">
-    <value>Dumping CD-i Ready requires the output image format to support long sectors.</value>
-  </data>
+        <value>[red]Dumping [green]CD-i Ready[/] requires the output image format to support long sectors.[/]</value>
+    </data>
     <data name="Dumping_CD_i_Ready_requires_the_drive_to_support_the_READ_CD_command" xml:space="preserve">
-    <value>Dumping CD-i Ready requires the drive to support the READ CD command.</value>
-  </data>
+        <value>[red]Dumping [green]CD-i Ready[/] requires the drive to support the [fuchsia]READ CD[/] command.[/]</value>
+    </data>
     <data name="Enabling_skipping_CD_i_Ready_hole_because_drive_returns_data_as_audio" xml:space="preserve">
         <value>[olive]Enabling skipping CD-i Ready hole because drive returns data as audio.[/]</value>
     </data>
@@ -1076,80 +1076,80 @@
     </data>
     <data name="Could_not_read_TOC_if_you_want_to_continue_use_force_and_will_try_from_LBA_0_to_360000"
           xml:space="preserve">
-    <value>Could not read TOC, if you want to continue, use force, and will try from LBA 0 to 360000...</value>
-  </data>
+        <value>[red]Could not read TOC, if you want to continue, use force, and will try from LBA [lime]0[/] to [lime]360000[/]...[/]</value>
+    </data>
     <data name="No_tracks_found_adding_a_single_track_from_zero_to_Lead_Out" xml:space="preserve">
         <value>[red]No tracks found, adding a single track from [lime]0[/] to [italic]Lead-Out[/][/]</value>
     </data>
     <data name="Could_not_find_Lead_Out_if_you_want_to_continue_use_force_option" xml:space="preserve">
-    <value>Could not find Lead-Out, if you want to continue use force option and will continue until 360000 sectors...</value>
-  </data>
+        <value>[red]Could not find [italic]Lead-Out[/], if you want to continue use force option and will continue until [lime]360000[/] sectors...[/]</value>
+    </data>
     <data name="WARNING_Could_not_find_Lead_Out_start_will_try_to_read_up_to" xml:space="preserve">
         <value>[olive][bold]WARNING:[/] Could not find [italic]Lead-Out[/] start, will try to read up to [violet]360000[/] sectors, probably will fail before...[/]</value>
     </data>
     <data name="Trimming_skipped_sectors" xml:space="preserve">
-    <value>Trimming skipped sectors</value>
-  </data>
+        <value>[slateblue1]Trimming skipped sectors[/]</value>
+    </data>
     <data name="Trimming_sector_0" xml:space="preserve">
-    <value>Trimming sector {0}</value>
-  </data>
+        <value>[slateblue1]Trimming sector [lime]{0}[/][/]</value>
+    </data>
     <data name="Trimming_finished_in_0" xml:space="preserve">
-    <value>Trimming finished in {0}.</value>
-  </data>
+        <value>[slateblue1]Trimming finished in [aqua]{0}[/].[/]</value>
+    </data>
     <data name="Could_not_read" xml:space="preserve">
-    <value>Could not read...</value>
-  </data>
+        <value>[red]Could not read..[/].</value>
+    </data>
     <data name="Retrode_partition_not_recognized_not_dumping" xml:space="preserve">
-    <value>Retrode partition not recognized, not dumping...</value>
-  </data>
+        <value>[red]Retrode partition not recognized, not dumping...[/]</value>
+    </data>
     <data name="Reading_root_directory_in_sector_0" xml:space="preserve">
-    <value>Reading root directory in sector {0}...</value>
-  </data>
+        <value>[slateblue1]Reading root directory in sector [lime]{0}[/]...[/]</value>
+    </data>
     <data name="No_cartridge_found_not_dumping" xml:space="preserve">
-    <value>No cartridge found, not dumping...</value>
-  </data>
+        <value>[red]No cartridge found, not dumping...[/]</value>
+    </data>
     <data name="The_specified_format_does_not_support_the_inserted_cartridge" xml:space="preserve">
-    <value>The specified format does not support the inserted cartridge...</value>
-  </data>
+        <value>[red]The specified format does not support the inserted cartridge...[/]</value>
+    </data>
     <data name="Cartridge_has_0_bytes_1_GiB" xml:space="preserve">
-    <value>Cartridge has {0} bytes ({1:F3} GiB)</value>
-  </data>
+        <value>[slateblue1]Cartridge has [lime]{0}[/] bytes ([lime]{1:F3}[/] GiB)[/]</value>
+    </data>
     <data name="Cartridge_has_0_bytes_1_MiB" xml:space="preserve">
-    <value>Cartridge has {0} bytes ({1:F3} MiB)</value>
-  </data>
+        <value>[slateblue1]Cartridge has [lime]{0}[/] bytes ([lime]{1:F3}[/] MiB)[/]</value>
+    </data>
     <data name="Cartridge_has_0_bytes_1_KiB" xml:space="preserve">
-    <value>Cartridge has {0} bytes ({1:F3} KiB)</value>
-  </data>
+        <value>[slateblue1]Cartridge has [lime]{0}[/] bytes ([lime]{1:F3}[/] KiB)[/]</value>
+    </data>
     <data name="Cartridge_has_0_bytes" xml:space="preserve">
-    <value>Cartridge has {0} bytes</value>
-  </data>
+        <value>[slateblue1]Cartridge has [lime]{0}[/] bytes</value>
+    </data>
     <data name="Error_0_creating_output_image_not_continuing" xml:space="preserve">
     <value>Error {0} creating output image, not continuing.</value>
   </data>
     <data name="Reading_byte_0_of_1_2" xml:space="preserve">
-    <value>Reading byte {0} of {1} ({2})</value>
-  </data>
+        <value>[slateblue1]Reading byte [lime]{0}[/] of [violet]{1}[/] ([aqua]{2}[/])[/]</value>
+    </data>
     <data name="Skipping_0_bytes_from_errored_byte_1" xml:space="preserve">
-    <value>Skipping {0} bytes from errored byte {1}.</value>
-  </data>
+        <value>[slateblue1]Skipping [violet]{0}[/] bytes from errored byte [lime]{1}[/].[/]</value>
+    </data>
     <data name="Image_is_not_writable_aborting" xml:space="preserve">
-    <value>Image is not writable, aborting...</value>
-  </data>
+        <value>[red]Image is not writable, aborting...[/]</value>
+    </data>
     <data name="Could_not_detect_capacity" xml:space="preserve">
-    <value>Could not detect capacity...</value>
-  </data>
+        <value>[red]Could not detect capacity...[/]</value>
+    </data>
     <data name="ERROR_Unable_to_read_medium_or_empty_medium_present" xml:space="preserve">
-    <value>ERROR: Unable to read medium or empty medium present...</value>
-  </data>
+        <value>[red]ERROR: Unable to read medium or empty medium present...[/]</value>
+    </data>
     <data name="Unable_to_read_medium_or_empty_medium_present" xml:space="preserve">
-    <value>Unable to read medium or empty medium present...</value>
-  </data>
+        <value>[red]Unable to read medium or empty medium present...[/]</value>
+    </data>
     <data name="Media_detected_as_MemoryStick_Pro_Duo" xml:space="preserve">
-    <value>Media detected as MemoryStick Pro Duo...</value>
-  </data>
+        <value>[slateblue1]Media detected as [fuchsia]MemoryStick Pro Duo[/]...[/]</value>
+    </data>
     <data name="Media_detected_as_MemoryStick_Duo" xml:space="preserve">
-    <value>Media detected as MemoryStick Duo...</value>
-  </data>
+        <value>[slateblue1]Media detected as [fuchsia]MemoryStick Duo[/]...[/]</value>
+    </data>
     <data name="Correctly_retried_block_0_in_pass_1" xml:space="preserve">
         <value>[slateblue1]Correctly retried block [lime]{0}[/] in pass [teal]{1}[/].[/]</value>
     </data>
@@ -1157,8 +1157,8 @@
         <value>[slateblue1]Creating sidecar.[/]</value>
     </data>
     <data name="Error_0_opening_created_image" xml:space="preserve">
-    <value>Error {0} opening created image.</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] opening created image.[/]</value>
+    </data>
     <data name="Sidecar_created_in_0" xml:space="preserve">
         <value>[slateblue1]Sidecar created in [aqua]{0}[/].[/]</value>
     </data>
@@ -1166,38 +1166,38 @@
         <value>[slateblue1]Average checksum speed: [aqua]{0}[/][/]</value>
     </data>
     <data name="Found_filesystem_0_at_sector_1" xml:space="preserve">
-    <value>Found filesystem {0} at sector {1}</value>
-  </data>
+        <value>[slateblue1]Found filesystem [green]{0}[/] at sector [lime]{1}[/][/]</value>
+    </data>
     <data name="Selected_output_format_does_not_support_MemoryStick_Duo_or_UMD_cannot_dump" xml:space="preserve">
-    <value>Selected output format does not support MemoryStick Duo or UMD, cannot dump...</value>
-  </data>
+        <value>[red]Selected output format does not support MemoryStick Duo or UMD, cannot dump...[/]</value>
+    </data>
     <data name="Checking_if_media_is_UMD_or_MemoryStick" xml:space="preserve">
-    <value>Checking if media is UMD or MemoryStick...</value>
-  </data>
+        <value>[slateblue1]Checking if media is UMD or MemoryStick...[/]</value>
+    </data>
     <data name="Could_not_get_MODE_SENSE" xml:space="preserve">
-    <value>Could not get MODE SENSE...</value>
-  </data>
+        <value>[red]Could not get MODE SENSE...[/]</value>
+    </data>
     <data name="Could_not_decode_MODE_SENSE" xml:space="preserve">
-    <value>Could not decode MODE SENSE...</value>
-  </data>
+        <value>[red]Could not decode MODE SENSE...[/]</value>
+    </data>
     <data name="FAT_starts_at_sector_0_and_runs_for_1_sectors" xml:space="preserve">
-    <value>FAT starts at sector {0} and runs for {1} sectors...</value>
-  </data>
+        <value>[slateblue1]FAT starts at sector [lime]{0}[/] and runs for [violet]{1}[/] sectors...[/]</value>
+    </data>
     <data name="Reading_FAT" xml:space="preserve">
-    <value>Reading FAT...</value>
-  </data>
+        <value>[slateblue1]Reading FAT...[/]</value>
+    </data>
     <data name="Traversing_FAT" xml:space="preserve">
-    <value>Traversing FAT...</value>
-  </data>
+        <value>[slateblue1]Traversing FAT...[/]</value>
+    </data>
     <data name="The_specified_image_format_cannot_represent_optical_discs" xml:space="preserve">
-    <value>The specified image format cannot represent optical discs.</value>
-  </data>
+        <value>[red]The specified image format cannot represent optical discs.[/]</value>
+    </data>
     <data name="Device_reports_0_bytes_per_physical_block" xml:space="preserve">
         <value>[slateblue1]Device reports [lime]{0}[/] bytes per physical block.[/]</value>
     </data>
     <data name="Media_part_number_is_0" xml:space="preserve">
-    <value>Media part number is {0}.</value>
-  </data>
+        <value>[slateblue1]Media part number is [green]{0}[/].[/]</value>
+    </data>
     <data name="Error_retrieving_CMI_for_sector_0" xml:space="preserve">
     <value>Error retrieving CMI for sector {0}</value>
   </data>
@@ -1217,17 +1217,17 @@
         <value>[slateblue1]Requesting [fuchsia]MODE SENSE (6)[/].[/]</value>
     </data>
     <data name="MiniDisc_albums_NetMD_discs_or_user_written_audio_MiniDisc_cannot_be_dumped" xml:space="preserve">
-    <value>MiniDisc albums, NetMD discs or user-written audio MiniDisc cannot be dumped.</value>
-  </data>
+        <value>[red]MiniDisc albums, NetMD discs or user-written audio MiniDisc cannot be dumped.[/]</value>
+    </data>
     <data name="ERROR_Cannot_find_correct_read_command_0" xml:space="preserve">
-    <value>ERROR: Cannot find correct read command: {0}.</value>
-  </data>
+        <value>[red]ERROR: Cannot find correct read command: {0}.[/]</value>
+    </data>
     <data name="Unable_to_read_medium" xml:space="preserve">
     <value>Unable to read medium.</value>
   </data>
     <data name="ERROR_Cannot_get_blocks_to_read_0" xml:space="preserve">
-    <value>ERROR: Cannot get blocks to read: {0}.</value>
-  </data>
+        <value>[red]ERROR: Cannot get blocks to read: {0}.[/]</value>
+    </data>
     <data name="SCSI_medium_type_0" xml:space="preserve">
         <value>[slateblue1]SCSI medium type: [teal]{0}[/].[/]</value>
     </data>
@@ -1238,8 +1238,8 @@
         <value>[slateblue1]SCSI floppy mode page present: [rosybrown]{0}[/].[/]</value>
     </data>
     <data name="Device_doesnt_seem_capable_of_reading_raw_data_from_media" xml:space="preserve">
-    <value>Device doesn't seem capable of reading raw data from media.</value>
-  </data>
+        <value>[red]Device doesn't seem capable of reading raw data from media.[/]</value>
+    </data>
     <data name="Device_is_capable_of_reading_raw_data_but_Ive_been_unable_to_guess_correct_sector_size"
           xml:space="preserve">
     <value>Device is capable of reading raw data but I've been unable to guess correct sector size.</value>
@@ -1252,44 +1252,44 @@
     <value>Continuing dumping cooked data.</value>
   </data>
     <data name="Reading_0_raw_bytes_1_cooked_bytes_per_sector" xml:space="preserve">
-    <value>Reading {0} raw bytes ({1} cooked bytes) per sector.</value>
-  </data>
+        <value>[slateblue1]Reading [lime]{0}[/] raw bytes ([lime]{1}[/] cooked bytes) per sector.[/]</value>
+    </data>
     <data name="Output_format_does_not_support_0" xml:space="preserve">
-    <value>Output format does not support {0}.</value>
-  </data>
+        <value>[red]Output format does not support [orange3]{0}[/].[/]</value>
+    </data>
     <data name="Several_media_tags_not_supported_continuing" xml:space="preserve">
-    <value>Several media tags not supported, continuing...</value>
-  </data>
+        <value>[olive]Several media tags not supported, continuing...[/]</value>
+    </data>
     <data name="Several_media_tags_not_supported_not_continuing" xml:space="preserve">
-    <value>Several media tags not supported, not continuing...</value>
-  </data>
+        <value>[red]Several media tags not supported, not continuing...[/]</value>
+    </data>
     <data name="Image_does_not_support_multiple_sessions_in_non_Compact_Disc_dumps_continuing" xml:space="preserve">
-    <value>Image does not support multiple sessions in non Compact Disc dumps, continuing...</value>
-  </data>
+        <value>[olive]Image does not support multiple sessions in non Compact Disc dumps, continuing...[/]</value>
+    </data>
     <data name="Image_does_not_support_multiple_sessions_in_non_Compact_Disc_dumps_not_continuing" xml:space="preserve">
-    <value>Image does not support multiple sessions in non Compact Disc dumps, not continuing...</value>
-  </data>
+        <value>[red]Image does not support multiple sessions in non Compact Disc dumps, not continuing...[/]</value>
+    </data>
     <data name="Image_does_not_support_multiple_tracks_in_non_Compact_Disc_dumps_continuing" xml:space="preserve">
-    <value>Image does not support multiple tracks in non Compact Disc dumps, continuing...</value>
-  </data>
+        <value>[olive]Image does not support multiple tracks in non Compact Disc dumps, continuing...[/]</value>
+    </data>
     <data name="Image_does_not_support_multiple_tracks_in_non_Compact_Disc_dumps_not_continuing" xml:space="preserve">
-    <value>Image does not support multiple tracks in non Compact Disc dumps, not continuing...</value>
-  </data>
+        <value>[red]Image does not support multiple tracks in non Compact Disc dumps, not continuing...[/]</value>
+    </data>
     <data name="Setting_geometry_to_0_cylinders_1_heads_2_sectors_per_track" xml:space="preserve">
         <value>[slateblue1]Setting geometry to [lime]{0}[/] cylinders, [lime]{1}[/] heads, [lime]{2}[/] sectors per track[/]</value>
     </data>
     <data name="Creating_single_track_as_could_not_retrieve_track_list_from_drive" xml:space="preserve">
-    <value>Creating single track as could not retrieve track list from drive.</value>
-  </data>
+        <value>[olive]Creating single track as could not retrieve track list from drive.[/]</value>
+    </data>
     <data name="Setting_speed_to_MAX" xml:space="preserve">
-    <value>Setting speed to MAX.</value>
-  </data>
+        <value>[slateblue1]Setting speed to [teal]MAX[/].[/]</value>
+    </data>
     <data name="Setting_speed_to_0_x" xml:space="preserve">
-    <value>Setting speed to {0}x.</value>
-  </data>
+        <value>[slateblue1]Setting speed to [teal]{0}x[/].[/]</value>
+    </data>
     <data name="Title_keys_dumping_is_enabled_This_will_be_very_slow" xml:space="preserve">
-    <value>Title keys dumping is enabled. This will be very slow.</value>
-  </data>
+        <value>[olive]Title keys dumping is enabled. This will be very slow.[/]</value>
+    </data>
     <data name="Reading_USB_descriptors" xml:space="preserve">
         <value>[slateblue1]Reading USB descriptors.[/]</value>
     </data>
@@ -1357,8 +1357,8 @@
     <value>ERROR: Cannot get block size: {0}.</value>
   </data>
     <data name="Device_reports_0_cylinders_1_heads_2_sectors_per_track" xml:space="preserve">
-    <value>Device reports {0} cylinders {1} heads {2} sectors per track.</value>
-  </data>
+        <value>[slateblue1]Device reports [lime]{0}[/] cylinders [lime]{1}[/] heads [lime]{2}[/] sectors per track.[/]</value>
+    </data>
     <data name="Output_format_does_not_support_USB_descriptors" xml:space="preserve">
     <value>Output format does not support USB descriptors.</value>
   </data>
@@ -1375,11 +1375,11 @@
     <value>Error reading cylinder {0} head {1} sector {2}.</value>
   </data>
     <data name="Reading_PCMCIA_CIS" xml:space="preserve">
-    <value>Reading PCMCIA CIS.</value>
-  </data>
+        <value>[slateblue1]Reading PCMCIA CIS.[/]</value>
+    </data>
     <data name="Decoding_PCMCIA_CIS" xml:space="preserve">
-    <value>Decoding PCMCIA CIS.</value>
-  </data>
+        <value>[slateblue1]Decoding PCMCIA CIS.[/]</value>
+    </data>
     <data name="Unable_to_communicate_with_ATA_device" xml:space="preserve">
     <value>Unable to communicate with ATA device.</value>
   </data>
@@ -1508,8 +1508,8 @@
     <value>Found corrupt resume file, cannot continue...</value>
   </data>
     <data name="Please_insert_media_in_drive" xml:space="preserve">
-    <value>Please insert media in drive</value>
-  </data>
+        <value>[bold][red]Please insert media in drive[/][/]</value>
+    </data>
     <data name="Error_testing_unit_was_ready_0" xml:space="preserve">
     <value>Error testing unit was ready:
 {0}</value>
@@ -1530,26 +1530,26 @@
     <value>Raw dumping is not supported in MultiMediaCard or SecureDigital devices. Aborting...</value>
   </data>
     <data name="Reading_CSD" xml:space="preserve">
-    <value>Reading CSD</value>
-  </data>
+        <value>[slateblue1]Reading CSD[/]</value>
+    </data>
     <data name="Reading_Extended_CSD" xml:space="preserve">
-    <value>Reading Extended CSD</value>
-  </data>
+        <value>[slateblue1]Reading Extended CSD[/]</value>
+    </data>
     <data name="Reading_OCR" xml:space="preserve">
-    <value>Reading OCR</value>
-  </data>
+        <value>[slateblue1]Reading OCR[/]</value>
+    </data>
     <data name="Reading_SCR" xml:space="preserve">
-    <value>Reading SCR</value>
-  </data>
+        <value>[slateblue1]Reading SCR[/]</value>
+    </data>
     <data name="Reading_CID" xml:space="preserve">
-    <value>Reading CID</value>
-  </data>
+        <value>[slateblue1]Reading CID[/]</value>
+    </data>
     <data name="Unable_to_get_device_size" xml:space="preserve">
     <value>Unable to get device size.</value>
   </data>
     <data name="Device_reports_0_blocks" xml:space="preserve">
-    <value>Device reports {0} blocks.</value>
-  </data>
+        <value>[slateblue1]Device reports [violet]{0}[/] blocks.[/]</value>
+    </data>
     <data name="Error_0_reopening_device" xml:space="preserve">
     <value>Error {0} reopening device.</value>
   </data>
@@ -1557,8 +1557,8 @@
     <value>ERROR: Cannot get blocks to read, device error {0}.</value>
   </data>
     <data name="DumBuffered_OS_reads_are_not_working_trying_direct_commands" xml:space="preserve">
-    <value>Buffered OS reads are not working, trying direct commands.</value>
-  </data>
+        <value>[olive]Buffered OS reads are not working, trying direct commands.[/]</value>
+    </data>
     <data name="ERROR_Could_not_read_from_device_device_error_0" xml:space="preserve">
     <value>ERROR: Could not read from device, device error {0}.</value>
   </data>
@@ -1569,8 +1569,8 @@
         <value>[slateblue1]Device can read [violet]{0}[/] blocks at a time using OS buffered reads.[/]</value>
     </data>
     <data name="Device_can_read_0_blocks_using_sequential_commands" xml:space="preserve">
-    <value>Device can read {0} blocks using sequential commands.</value>
-  </data>
+        <value>[slateblue1]Device can read [violet]{0}[/] blocks using sequential commands.[/]</value>
+    </data>
     <data name="Cannot_write_CID_to_output_image" xml:space="preserve">
     <value>Cannot write CID to output image.</value>
   </data>
@@ -1587,107 +1587,107 @@
     <value>Cannot write SCR to output image.</value>
   </data>
     <data name="Drive_has_status_error_please_correct_Sense_follows" xml:space="preserve">
-    <value>Drive has status error, please correct. Sense follows...</value>
-  </data>
+        <value>[red]Drive has status error, please correct. Sense follows...[/]</value>
+    </data>
     <data name="Rewinding_please_wait" xml:space="preserve">
-    <value>Rewinding, please wait...</value>
-  </data>
+        <value>[blue]Rewinding, [italic]please wait[/]...[/]</value>
+    </data>
     <data name="Drive_could_not_rewind_please_correct_Sense_follows" xml:space="preserve">
-    <value>Drive could not rewind, please correct. Sense follows...</value>
-  </data>
+        <value>[red]Drive could not rewind, please correct. Sense follows...[/]</value>
+    </data>
     <data name="Could_not_get_position_Sense_follows" xml:space="preserve">
-    <value>Could not get position. Sense follows...</value>
-  </data>
+        <value>[red]Could not get position. Sense follows...[/]</value>
+    </data>
     <data name="Drive_not_in_partition_0_Rewinding_please_wait" xml:space="preserve">
-    <value>Drive not in partition 0. Rewinding, please wait...</value>
-  </data>
+        <value>[blue]Drive not in partition [teal]0[/]. Rewinding, [italic]please wait[/]...[/]</value>
+    </data>
     <data name="Drive_could_not_rewind_to_partition_0_but_no_error_occurred" xml:space="preserve">
     <value>Drive could not rewind to partition 0 but no error occurred...</value>
   </data>
     <data name="Drive_could_not_return_back_Sense_follows" xml:space="preserve">
-    <value>Drive could not return back. Sense follows...</value>
-  </data>
+        <value>[red]Drive could not return back. Sense follows...[/]</value>
+    </data>
     <data name="Drive_could_not_read_Sense_follows" xml:space="preserve">
-    <value>Drive could not read. Sense follows...</value>
-  </data>
+        <value>[red]Drive could not read. Sense follows...[/]</value>
+    </data>
     <data name="Blocksize_changed_to_0_bytes_at_block_1" xml:space="preserve">
-    <value>Blocksize changed to {0} bytes at block {1}</value>
-  </data>
+        <value>[slateblue1]Blocksize changed to [green]{0}[/] bytes at block [lime]{1}[/][/]</value>
+    </data>
     <data name="Drive_could_not_go_back_one_block_Sense_follows" xml:space="preserve">
-    <value>Drive could not go back one block. Sense follows...</value>
-  </data>
+        <value>[red]Drive could not go back one block. Sense follows...[/]</value>
+    </data>
     <data name="Cannot_read_device_dont_know_why_exiting" xml:space="preserve">
     <value>Cannot read device, don't know why, exiting...</value>
   </data>
     <data name="Positioning_tape_to_block_1" xml:space="preserve">
-    <value>Positioning tape to block 1.</value>
-  </data>
+        <value>[slateblue1]Positioning tape to block [lime]1[/].[/]</value>
+    </data>
     <data name="LOCATE_LONG_works" xml:space="preserve">
-    <value>LOCATE LONG works.</value>
-  </data>
+        <value>[fuchsia]LOCATE LONG[/] [slateblue1]works.[/]</value>
+    </data>
     <data name="LOCATE_works" xml:space="preserve">
-    <value>LOCATE works.</value>
-  </data>
+        <value>[fuchsia]LOCATE[/] [slateblue1]works.[/]</value>
+    </data>
     <data name="Positioning_tape_to_block_0" xml:space="preserve">
-    <value>Positioning tape to block {0}.</value>
-  </data>
+        <value>[slateblue1]Positioning tape to block [lime]{0}[/].[/]</value>
+    </data>
     <data name="Could_not_check_current_position_unable_to_resume_If_you_want_to_continue_use_force"
           xml:space="preserve">
-    <value>Could not check current position, unable to resume. If you want to continue use force.</value>
-  </data>
+        <value>[red]Could not check current position, unable to resume. If you want to continue use force.[/]</value>
+    </data>
     <data name="Could_not_check_current_position_unable_to_resume_Dumping_from_the_start" xml:space="preserve">
-    <value>Could not check current position, unable to resume. Dumping from the start.</value>
-  </data>
+        <value>[olive]Could not check current position, unable to resume. Dumping from the start.[/]</value>
+    </data>
     <data name="Current_position_is_not_as_expected_unable_to_resume_If_you_want_to_continue_use_force"
           xml:space="preserve">
-    <value>Current position is not as expected, unable to resume. If you want to continue use force.</value>
-  </data>
+        <value>[red]Current position is not as expected, unable to resume. If you want to continue use force.[/]</value>
+    </data>
     <data name="Current_position_is_not_as_expected_unable_to_resume_Dumping_from_the_start" xml:space="preserve">
-    <value>Current position is not as expected, unable to resume. Dumping from the start.</value>
-  </data>
+        <value>[olive]Current position is not as expected, unable to resume. Dumping from the start.[/]</value>
+    </data>
     <data name="Cannot_reposition_tape_unable_to_resume_If_you_want_to_continue_use_force" xml:space="preserve">
-    <value>Cannot reposition tape, unable to resume. If you want to continue use force.</value>
-  </data>
+        <value>[red]Cannot reposition tape, unable to resume. If you want to continue use force.[/]</value>
+    </data>
     <data name="Cannot_reposition_tape_unable_to_resume_Dumping_from_the_start" xml:space="preserve">
-    <value>Cannot reposition tape, unable to resume. Dumping from the start.</value>
-  </data>
+        <value>[olive]Cannot reposition tape, unable to resume. Dumping from the start.[/]</value>
+    </data>
     <data name="Error_setting_output_image_in_tape_mode_not_continuing" xml:space="preserve">
     <value>Error setting output image in tape mode, not continuing.</value>
   </data>
     <data name="Finished_partition_0" xml:space="preserve">
-    <value>Finished partition {0}</value>
-  </data>
+        <value>[slateblue1]Finished partition [teal]{0}[/][/]</value>
+    </data>
     <data name="Seeking_to_partition_0" xml:space="preserve">
-    <value>Seeking to partition {0}</value>
-  </data>
+        <value>[slateblue1]Seeking to partition [teal]{0}[/][/]</value>
+    </data>
     <data name="Reading_block_0_1" xml:space="preserve">
     <value>Reading block {0} ({1})</value>
   </data>
     <data name="Cannot_dump_a_blank_tape" xml:space="preserve">
-    <value>Cannot dump a blank tape...</value>
-  </data>
+        <value>[red]Cannot dump a blank tape...[/]</value>
+    </data>
     <data name="Found_end_of_tape_partition" xml:space="preserve">
-    <value>Found end-of-tape/partition...</value>
-  </data>
+        <value>[olive]Found end-of-tape/partition...[/]</value>
+    </data>
     <data name="Blank_block_found_end_of_tape" xml:space="preserve">
-    <value>Blank block found, end of tape?...</value>
-  </data>
+        <value>[olive]Blank block found, end of tape?...[/]</value>
+    </data>
     <data name="Changed_to_file_0_at_block_1" xml:space="preserve">
     <value>Changed to file {0} at block {1}</value>
   </data>
     <data name="Drive_could_not_read_block_0_Sense_cannot_be_decoded_look_at_log_for_dump" xml:space="preserve">
-    <value>Drive could not read block {0}. Sense cannot be decoded, look at log for dump...</value>
-  </data>
+        <value>[red]Drive could not read block [lime]{0}[/]. Sense cannot be decoded, look at log for dump...[/]</value>
+    </data>
     <data name="Drive_could_not_read_block_0_Sense_bytes_follow" xml:space="preserve">
-    <value>Drive could not read block {0}. Sense bytes follow...</value>
-  </data>
+        <value>[red]Drive could not read block [lime]{0}[/]. Sense bytes follow...[/]</value>
+    </data>
     <data name="Drive_could_not_read_block_0_Sense_follow_1_2" xml:space="preserve">
-    <value>Drive could not read block {0}. Sense follows...
-{1} {2}</value>
-  </data>
+        <value>[red]Drive could not read block [lime]{0}[/]. Sense follows...
+[green]{1}[/] [navy]{2}[/][/]</value>
+    </data>
     <data name="Drive_could_not_read_block_0_Sense_follows" xml:space="preserve">
-    <value>Drive could not read block {0}. Sense follows...</value>
-  </data>
+        <value>[red]Drive could not read block [lime]{0}[/]. Sense follows...[/]</value>
+    </data>
     <data name="Could_not_check_current_position_continuing" xml:space="preserve">
     <value>Could not check current position, continuing.</value>
   </data>
@@ -1800,8 +1800,8 @@
     <value>Cannot read medium, aborting scan...</value>
   </data>
     <data name="Using_SCSI_READ_12_command" xml:space="preserve">
-    <value>Using SCSI READ (12) command.</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]SCSI READ (12)[/] command.[/]</value>
+    </data>
     <data name="Reading_game_partition" xml:space="preserve">
     <value>Reading game partition.</value>
   </data>
@@ -2344,41 +2344,41 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Device needs 28-bit LBA commands but I can't issue them... Aborting.</value>
   </data>
     <data name="Device_needs_CHS_commands_but_I_cant_issue_them_Aborting" xml:space="preserve">
-    <value>Device needs CHS commands but I can't issue them... Aborting.</value>
-  </data>
+        <value>[red]Device needs CHS commands but I can't issue them... Aborting.[/]</value>
+    </data>
     <data name="Using_ATA_READ_DMA_EXT_command" xml:space="preserve">
-    <value>Using [fuchsia]ATA READ DMA EXT[/] command.</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]ATA READ DMA EXT[/] command.[/]</value>
+    </data>
     <data name="Using_ATA_READ_EXT_command" xml:space="preserve">
-    <value>Using [fuchsia]ATA READ EXT[/] command.</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]ATA READ EXT[/] command.[/]</value>
+    </data>
     <data name="Using_ATA_READ_DMA_command_with_retries_LBA" xml:space="preserve">
-    <value>Using [fuchsia]ATA READ DMA[/] command with retries (LBA).</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]ATA READ DMA[/] command with retries (LBA).[/]</value>
+    </data>
     <data name="Using_ATA_READ_DMA_command_LBA" xml:space="preserve">
-    <value>Using [fuchsia]ATA READ DMA[/] command (LBA).</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]ATA READ DMA[/] command (LBA).[/]</value>
+    </data>
     <data name="Using_ATA_READ_command_with_retries_LBA" xml:space="preserve">
-    <value>Using [fuchsia]ATA READ[/] command with retries (LBA).</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]ATA READ[/] command with retries (LBA).[/]</value>
+    </data>
     <data name="Using_ATA_READ_command_LBA" xml:space="preserve">
-    <value>Using [fuchsia]ATA READ[/] command (LBA).</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]ATA READ[/] command (LBA).[/]</value>
+    </data>
     <data name="Using_ATA_READ_DMA_command_with_retries_CHS" xml:space="preserve">
-    <value>Using [fuchsia]ATA READ DMA[/] command with retries (CHS).</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]ATA READ DMA[/] command with retries (CHS).[/]</value>
+    </data>
     <data name="Using_ATA_READ_DMA_command_CHS" xml:space="preserve">
-    <value>Using [fuchsia]ATA READ DMA[/] command (CHS).</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]ATA READ DMA[/] command (CHS).[/]</value>
+    </data>
     <data name="Using_ATA_READ_command_with_retries_CHS" xml:space="preserve">
-    <value>Using [fuchsia]ATA READ[/] command with retries (CHS).</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]ATA READ[/] command with retries (CHS).[/]</value>
+    </data>
     <data name="Using_ATA_READ_command_CHS" xml:space="preserve">
-    <value>Using [fuchsia]ATA READ[/] command (CHS).</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]ATA READ[/] command (CHS).[/]</value>
+    </data>
     <data name="Could_not_get_a_working_read_command" xml:space="preserve">
-    <value>Could not get a working read command!</value>
-  </data>
+        <value>[red]Could not get a working read command![/]</value>
+    </data>
     <data name="ATA_ERROR_0_STATUS_1" xml:space="preserve">
     <value>ATA ERROR: {0} STATUS: {1}</value>
   </data>
@@ -2389,32 +2389,32 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Device only supports SCSI READ (10) but has more than {0} blocks ({1} blocks total)</value>
   </data>
     <data name="Using_SCSI_READ_LONG_16_command" xml:space="preserve">
-    <value>Using [fuchsia]SCSI READ LONG (16)[/] command.</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]SCSI READ LONG (16)[/] command.[/]</value>
+    </data>
     <data name="Using_SCSI_READ_LONG_10_command" xml:space="preserve">
-    <value>Using [fuchsia]SCSI READ LONG (10)[/] command.</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]SCSI READ LONG (10)[/] command.[/]</value>
+    </data>
     <data name="Using_SyQuest_READ_LONG_10_command" xml:space="preserve">
-    <value>Using [fuchsia]SyQuest READ LONG (10)[/] command.</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]SyQuest READ LONG (10)[/] command.[/]</value>
+    </data>
     <data name="Using_SyQuest_READ_LONG_6_command" xml:space="preserve">
-    <value>Using [fuchsia]SyQuest READ LONG (6)[/] command.</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]SyQuest READ LONG (6)[/] command[/]</value>
+    </data>
     <data name="Using_HL_DT_ST_raw_DVD_reading" xml:space="preserve">
-    <value>Using [fuchsia]HL-DT-ST raw DVD[/] reading.</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]HL-DT-ST raw DVD[/] reading.[/]</value>
+    </data>
     <data name="Using_Plextor_raw_DVD_reading" xml:space="preserve">
-    <value>Using [fuchsia]Plextor raw DVD[/] reading.</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]Plextor raw DVD[/] reading.[/]</value>
+    </data>
     <data name="Using_SCSI_READ_6_command" xml:space="preserve">
-    <value>Using [fuchsia]SCSI READ (6)[/] command.</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]SCSI READ (6)[/] command.[/]</value>
+    </data>
     <data name="Using_SCSI_READ_10_command" xml:space="preserve">
-    <value>Using [fuchsia]SCSI READ (10)[/] command.</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]SCSI READ (10)[/] command.[/]</value>
+    </data>
     <data name="Using_SCSI_READ_16_command" xml:space="preserve">
-    <value>Using [fuchsia]SCSI READ (16)[/] command.</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]SCSI READ (16)[/] command.[/]</value>
+    </data>
     <data name="Unable_to_get_media_capacity" xml:space="preserve">
     <value>Unable to get media capacity
 {0}</value>
@@ -3418,11 +3418,11 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
         <value>[olive][bold]WARNING:[/] The drive has returned incorrect Q positioning when calculating pregaps. A best effort has been tried but they may be incorrect.[/]</value>
     </data>
     <data name="Output_format_does_not_support_sessions" xml:space="preserve">
-    <value>Output format does not support sessions, this will end in a loss of data, not continuing...</value>
-  </data>
+        <value>[red]Output format does not support sessions, this will end in a loss of data, not continuing...[/]</value>
+    </data>
     <data name="Error_0_setting_metadata" xml:space="preserve">
-    <value>Error {0} setting metadata, continuing...</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] setting metadata, continuing...[/]</value>
+    </data>
     <data name="Could_not_read_subchannel_for_this_track_supposing_zero_sectors" xml:space="preserve">
     <value>Could not read subchannel for this track, supposing 0 sectors.</value>
   </data>
@@ -3488,8 +3488,8 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
         <value>[bold][blue]CompactDisc Power Management Area contained in image:[/][/]</value>
     </data>
     <data name="Output_format_does_not_support_hidden_tracks" xml:space="preserve">
-    <value>Output format does not properly support storing hidden tracks, this will end in a loss of data, not continuing...</value>
-  </data>
+        <value>[red]Output format does not properly support storing hidden tracks, this will end in a loss of data, not continuing...[/]</value>
+    </data>
     <data name="Image_flux_captures" xml:space="preserve">
     <value>This image contains low-level flux captures.</value>
   </data>
@@ -3497,8 +3497,8 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>[bold]Archive information:[/]</value>
   </data>
     <data name="Using_Lite-On_raw_DVD_reading" xml:space="preserve">
-    <value>Using Lite-On raw DVD reading.</value>
-  </data>
+        <value>[slateblue1]Using [fuchsia]Lite-On raw DVD[/] reading[/]</value>
+    </data>
     <data name="Filesystems_Identify_Error" xml:space="preserve">
         <value>Error identifying filesystem {0}. Please open a report with the following line in a Github issue.</value>
     </data>

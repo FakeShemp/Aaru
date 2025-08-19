@@ -232,6 +232,7 @@ public partial class Dump
         uint romSectors   = romSize / 512;
         uint romRemaining = romSize % 512;
 
+        // TODO: Humanizer
         switch(romSize)
         {
             case > 1073741824:

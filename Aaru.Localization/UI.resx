@@ -1016,8 +1016,8 @@ In you are unsure, please press N to not continue.</value>
         <value>[slateblue1]Output image format: [green]{0}[/].[/]</value>
     </data>
     <data name="Output_format_does_not_support_media_type" xml:space="preserve">
-    <value>Output format does not support media type, cannot continue...</value>
-  </data>
+        <value>[red]Output format does not support media type, cannot continue...[/]</value>
+    </data>
     <data name="Converting_image_will_lose_media_tag_0" xml:space="preserve">
     <value>Converting image will lose media tag {0}, not continuing...</value>
   </data>
@@ -1041,8 +1041,8 @@ In you are unsure, please press N to not continue.</value>
     <value>Error {0} creating output image.</value>
   </data>
     <data name="Error_0_setting_metadata_not_continuing" xml:space="preserve">
-    <value>Error {0} setting metadata, not continuing...</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] setting metadata, not continuing...[/]</value>
+    </data>
     <data name="Converting_media_tag_0" xml:space="preserve">
     <value>Converting media tag {0}</value>
   </data>

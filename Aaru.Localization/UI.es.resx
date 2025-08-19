@@ -935,8 +935,8 @@
         <value>[olive]Error [red]{0}[/] estableciendo geometría. La imagen puede ser incorrecta, continuando...[/]</value>
     </data>
     <data name="Error_0_setting_metadata_not_continuing" xml:space="preserve">
-    <value>Error {0} estableciendo metadatos, no se continuará...</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] estableciendo metadatos, no se continuará...[/]</value>
+    </data>
     <data name="Error_0_trying_to_get_information_about_filesystem_entry_named_1" xml:space="preserve">
     <value>Error {0} intentendo obtener información sobre la entrada del sistema de ficheros llamada {1}</value>
   </data>
@@ -1710,8 +1710,8 @@
     <value>Formato de salida</value>
   </data>
     <data name="Output_format_does_not_support_media_type" xml:space="preserve">
-    <value>El formato de salida no soporta el tipo de medio, no se puede continuar...</value>
-  </data>
+        <value>[red]El formato de salida no soporta el tipo de medio, no se puede continuar..[/]</value>
+    </data>
     <data name="Output_image_format_0" xml:space="preserve">
         <value>[slateblue1]Formato de la imagen de salida: [green]{0}[/].[/]</value>
     </data>
