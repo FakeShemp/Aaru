@@ -1092,11 +1092,11 @@
     <value>DDS-4</value>
   </data>
     <data name="DDS_Format_0" xml:space="preserve">
-    <value>Formato DDS: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]Formato DDS: [teal]0x{0:X2}[/][/]</value>
+    </data>
     <data name="DDS_has_been_updated_0_times" xml:space="preserve">
-    <value>El DDS se ha actualizado {0} veces</value>
-  </data>
+        <value>[slateblue1]El DDS se ha actualizado [teal]{0}[/] veces[/]</value>
+    </data>
     <data name="Default_operating_definition_0" xml:space="preserve">
     <value>Definición de operación por defecto: {0}</value>
   </data>
@@ -4133,11 +4133,11 @@
         <value>[slateblue1]El tipo de disco no está definido[/]</value>
     </data>
     <data name="Disc_Type_Specific_Field_1_0" xml:space="preserve">
-    <value>1er campo específico del tipo de disco: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1][teal]1er[/] campo específico del tipo de disco:[/] [teal]0x{0:X2}[/]</value>
+    </data>
     <data name="Disc_Type_Specific_Field_2_0" xml:space="preserve">
-    <value>2º campo específico del tipo de disco: 0x{0:X8}</value>
-  </data>
+        <value>[slateblue1][teal]2º[/] campo específico del tipo de disco:[/] [teal]0x{0:X8}[/]</value>
+    </data>
     <data name="Disc_uses_a_69_0nm_channel_giving_27_Gb_per_layer" xml:space="preserve">
         <value>[slateblue1]El disco usa un canal de [teal]69,0nm[/] dando [green]27[/]Gb por capa.[/]</value>
     </data>
@@ -5684,11 +5684,11 @@
         <value>[slateblue1]Número de la primera sesión completa:[/] [teal]{0}[/]</value>
     </data>
     <data name="First_PSN_of_Defect_List_0" xml:space="preserve">
-    <value>Primer PSN de la Lista de Defectos: 0x{0:X8}</value>
-  </data>
+        <value>[slateblue1]Primer PSN de la Lista de Defectos:[/] [lime]0x{0:X8}[/]</value>
+    </data>
     <data name="First_PSN_of_Drive_Area_0" xml:space="preserve">
-    <value>Primer PSN del Área de la Unidad: 0x{0:X8}</value>
-  </data>
+        <value>[slateblue1]Primer PSN del Área de la Unidad:[/] [lime]0x{0:X8}[/]</value>
+    </data>
     <data name="First_run_in_block" xml:space="preserve">
     <value>Primer bloque de entrada</value>
   </data>
@@ -6269,11 +6269,11 @@
     <value>IORDY está soportado y puede ser desactivado</value>
   </data>
     <data name="ISA0_size_0" xml:space="preserve">
-    <value>Tamaño ISA0: {0}</value>
-  </data>
+        <value>[slateblue1]Tamaño ISA0:[/] [teal]{0}[/]</value>
+    </data>
     <data name="ISA1_size_0" xml:space="preserve">
-    <value>Tamaño ISA1: {0}</value>
-  </data>
+        <value>[slateblue1]Tamaño ISA1:[/] [teal]{0}[/]</value>
+    </data>
     <data name="ISO10090" xml:space="preserve">
     <value>ISO/IEC 10090: Disco óptico de 86 mm de lectura/escritura y una cara con 12500 pistas</value>
   </data>
@@ -6338,8 +6338,8 @@
         <value>[slateblue1]Número de la última pista en la última sesión completa: [teal]{0}[/][/]</value>
     </data>
     <data name="Last_User_Data_Areas_LSN_0_0" xml:space="preserve">
-    <value>LSN 0 del último área de datos de usuario: 0x{0:X8}</value>
-  </data>
+        <value>[slateblue1]LSN [lime]0[/] del último área de datos de usuario:[/] [lime]0x{0:X8}[/]</value>
+    </data>
     <data name="Last_user_data_PSN_for_disc_0" xml:space="preserve">
         <value>[slateblue1]Último PSN de datos de usuario para el disco:[/] [lime]{0}[/]</value>
     </data>
@@ -7219,8 +7219,8 @@
         <value>[slateblue1]Potencia óptima de grabación: [teal]0x{0:X2}[/][/]</value>
     </data>
     <data name="OSA_size_0" xml:space="preserve">
-    <value>Tamaño OSA: {0}</value>
-  </data>
+        <value>[slateblue1]Tamaño OSA:[/] [teal]{0}[/]</value>
+    </data>
     <data name="Output_port_0_has_channels" xml:space="preserve">
     <value>El puerto de salida 0 tiene canales</value>
   </data>
@@ -7594,8 +7594,8 @@
     <value>Descriptor específico del protocolo (desconocido) con formato desconocido (hexadecimal): {0}</value>
   </data>
     <data name="PSN_of_User_Data_Areas_LSN_0_0" xml:space="preserve">
-    <value>PSN del LSN 0 del área de datos de usuario: 0x{0:X8}</value>
-  </data>
+        <value>[slateblue1]PSN del LSN [lime]0[/] del área de datos de usuario:[/] [lime]0x{0:X8}[/]</value>
+    </data>
     <data name="QIC11" xml:space="preserve">
     <value>QIC-11</value>
   </data>
@@ -8331,8 +8331,8 @@
     <value>La protección contra escritura está activada</value>
   </data>
     <data name="Spare_Area_Full_Flags_0" xml:space="preserve">
-    <value>Valores completos del área de reserva: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]Valores completos del área de reserva:[/] [teal]0x{0:X2}[/]</value>
+    </data>
     <data name="Spare_Decode_Found_incorrect_Blu_ray_Spare_Area_Information_size_0_bytes" xml:space="preserve">
     <value>Encontrado tamaño incorrecto de la información sobre el área de reserva de Blu-ray ({0} bytes)</value>
   </data>

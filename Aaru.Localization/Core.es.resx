@@ -140,8 +140,8 @@
     <value>Estado de cartucho de Blu-ray</value>
   </data>
     <data name="Bluray_Disc_Definition_Structure" xml:space="preserve">
-    <value>Estructura de definición del disco Blu-ray</value>
-  </data>
+        <value>[bold][blue]Estructura de definición del disco Blu-ray:[/][/]</value>
+    </data>
     <data name="Bluray_Disc_Definition_Structure_contained_in_image_WithMarkup" xml:space="preserve">
         <value>[bold][blue]Estructura de definición del disco Blu-ray contenida en la imagen:[/][/]</value>
     </data>

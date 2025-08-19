@@ -1240,38 +1240,38 @@
     <value>Found incorrect DDS signature (0x{0:X4})</value>
   </data>
     <data name="DDS_Format_0" xml:space="preserve">
-    <value>DDS Format: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]DDS Format: [teal]0x{0:X2}[/][/]</value>
+    </data>
     <data name="First_PSN_of_Drive_Area_0" xml:space="preserve">
-    <value>First PSN of Drive Area: 0x{0:X8}</value>
-  </data>
+        <value>[slateblue1]First PSN of Drive Area:[/] [lime]0x{0:X8}[/]</value>
+    </data>
     <data name="First_PSN_of_Defect_List_0" xml:space="preserve">
-    <value>First PSN of Defect List: 0x{0:X8}</value>
-  </data>
+        <value>[slateblue1]First PSN of Defect List:[/] [lime]0x{0:X8}[/]</value>
+    </data>
     <data name="PSN_of_User_Data_Areas_LSN_0_0" xml:space="preserve">
-    <value>PSN of User Data Area's LSN 0: 0x{0:X8}</value>
-  </data>
+        <value>[slateblue1]PSN of User Data Area's LSN [lime]0[/]:[/] [lime]0x{0:X8}[/]</value>
+    </data>
     <data name="Last_User_Data_Areas_LSN_0_0" xml:space="preserve">
-    <value>Last User Data Area's LSN 0: 0x{0:X8}</value>
-  </data>
+        <value>[slateblue1]Last User Data Area's LSN [lime]0[/]:[/] [lime]0x{0:X8}[/]</value>
+    </data>
     <data name="ISA0_size_0" xml:space="preserve">
-    <value>ISA0 size: {0}</value>
-  </data>
+        <value>[slateblue1]ISA0 size:[/] [teal]{0}[/]</value>
+    </data>
     <data name="OSA_size_0" xml:space="preserve">
-    <value>OSA size: {0}</value>
-  </data>
+        <value>[slateblue1]OSA size:[/] [teal]{0}[/]</value>
+    </data>
     <data name="ISA1_size_0" xml:space="preserve">
-    <value>ISA1 size: {0}</value>
-  </data>
+        <value>[slateblue1]ISA1 size:[/] [teal]{0}[/]</value>
+    </data>
     <data name="Spare_Area_Full_Flags_0" xml:space="preserve">
-    <value>Spare Area Full Flags: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]Spare Area Full Flags:[/] [teal]0x{0:X2}[/]</value>
+    </data>
     <data name="Disc_Type_Specific_Field_1_0" xml:space="preserve">
-    <value>Disc Type Specific Field 1: 0x{0:X2}</value>
-  </data>
+        <value>[slateblue1]Disc Type Specific Field [teal]1[/]:[/] [teal]0x{0:X2}[/]</value>
+    </data>
     <data name="Disc_Type_Specific_Field_2_0" xml:space="preserve">
-    <value>Disc Type Specific Field 2: 0x{0:X8}</value>
-  </data>
+        <value>[slateblue1]Disc Type Specific Field [teal]2[/]:[/] [teal]0x{0:X8}[/]</value>
+    </data>
     <data name="Blu_ray_DDS_Status_Bits_in_hex_follows" xml:space="preserve">
     <value>Blu-ray DDS Status Bits in hex follows:</value>
   </data>
@@ -2297,8 +2297,8 @@
     <value>Disc has been certified by a manufacturer</value>
   </data>
     <data name="DDS_has_been_updated_0_times" xml:space="preserve">
-    <value>DDS has been updated {0} times</value>
-  </data>
+        <value>[slateblue1]DDS has been updated [teal]{0}[/] times[/]</value>
+    </data>
     <data name="Group_0_is_being_formatted" xml:space="preserve">
     <value>Group {0} is being formatted</value>
   </data>
