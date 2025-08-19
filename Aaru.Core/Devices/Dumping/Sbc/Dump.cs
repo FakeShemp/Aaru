@@ -1400,8 +1400,8 @@ partial class Dump
 
         UpdateStatus?.Invoke(string.Format(Localization.Core.Average_speed_0,
                                            ByteSize.FromBytes(blockSize * (blocks + 1))
-                                                   .Per(totalDuration.Milliseconds()))
-                                   .Humanize());
+                                                   .Per(totalDuration.Milliseconds())
+                                                   .Humanize()));
 
         if(maxSpeed > 0)
         {
