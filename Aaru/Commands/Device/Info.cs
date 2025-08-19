@@ -40,6 +40,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs.Devices.ATA;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
 using Aaru.Core;
+using Aaru.Core.Logging;
 using Aaru.Database;
 using Aaru.Database.Models;
 using Aaru.Decoders.DVD;
@@ -108,6 +109,8 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
         }
 
         Statistics.AddDevice(dev);
+
+        DumpLog.StartLog(dev, false);
 
         Table table;
 

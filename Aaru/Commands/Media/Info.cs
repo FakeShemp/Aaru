@@ -39,6 +39,7 @@ using Aaru.CommonTypes.Structs;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
 using Aaru.Core;
 using Aaru.Core.Devices.Dumping;
+using Aaru.Core.Logging;
 using Aaru.Core.Media.Info;
 using Aaru.Database;
 using Aaru.Database.Models;
@@ -114,6 +115,8 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 
             return (int)ErrorNumber.CannotOpenDevice;
         }
+
+        DumpLog.StartLog(dev, false);
 
         Statistics.AddDevice(dev);
 

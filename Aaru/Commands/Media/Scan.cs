@@ -35,6 +35,7 @@ using System.ComponentModel;
 using Aaru.CommonTypes.Enums;
 using Aaru.Core;
 using Aaru.Core.Devices.Scanning;
+using Aaru.Core.Logging;
 using Aaru.Localization;
 using Aaru.Logging;
 using Humanizer;
@@ -99,6 +100,8 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
 
             return (int)ErrorNumber.CannotOpenDevice;
         }
+
+        DumpLog.StartLog(dev, false);
 
         Statistics.AddDevice(dev);
 

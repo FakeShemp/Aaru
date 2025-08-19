@@ -43,6 +43,7 @@ using Aaru.CommonTypes.Metadata;
 using Aaru.CommonTypes.Structs.Devices.ATA;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
 using Aaru.Core;
+using Aaru.Core.Logging;
 using Aaru.Database;
 using Aaru.Database.Models;
 using Aaru.Decoders.SCSI;
@@ -99,6 +100,8 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
             return (int)ErrorNumber.CannotOpenDevice;
         }
+
+        DumpLog.StartLog(dev, false);
 
         Statistics.AddDevice(dev);
 
