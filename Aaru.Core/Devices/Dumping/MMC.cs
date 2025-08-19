@@ -867,6 +867,9 @@ partial class Dump
             case MediaType.BDRXL:
             case MediaType.BDREXL:
             case MediaType.UHDBD:
+            case MediaType.PS3BD:
+            case MediaType.PS4BD:
+            case MediaType.XGD4:
                 AaruLogging.WriteLine(Localization.Core.Reading_Disc_Information);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
@@ -889,28 +892,6 @@ partial class Dump
                     }
                 }
 
-                // TODO: PAC
-                /*
-                dumpLog.WriteLine("Reading PAC.");
-                sense = dev.ReadDiscStructure(out cmdBuf, out _, MmcDiscStructureMediaType.Bd, 0, 0,
-                                              MmcDiscStructureFormat.Pac, 0, dev.Timeout, out _);
-                if(!sense)
-                {
-                    tmpBuf = new byte[cmdBuf.Length - 4];
-                    Array.Copy(cmdBuf, 4, tmpBuf, 0, cmdBuf.Length - 4);
-                    mediaTags.Add(MediaTagType.PAC, tmpBuf);
-                }*/
-                break;
-
-#endregion All Blu-ray
-        }
-
-        switch(dskType)
-        {
-#region BD-ROM only
-
-            case MediaType.BDROM:
-            case MediaType.UHDBD:
                 AaruLogging.WriteLine(Localization.Core.Reading_Burst_Cutting_Area);
 
                 sense = _dev.ReadDiscStructure(out cmdBuf,
@@ -930,10 +911,24 @@ partial class Dump
                     mediaTags.Add(MediaTagType.BD_BCA, tmpBuf);
                 }
 
+                // TODO: PAC
+                /*
+                dumpLog.WriteLine("Reading PAC.");
+                sense = dev.ReadDiscStructure(out cmdBuf, out _, MmcDiscStructureMediaType.Bd, 0, 0,
+                                              MmcDiscStructureFormat.Pac, 0, dev.Timeout, out _);
+                if(!sense)
+                {
+                    tmpBuf = new byte[cmdBuf.Length - 4];
+                    Array.Copy(cmdBuf, 4, tmpBuf, 0, cmdBuf.Length - 4);
+                    mediaTags.Add(MediaTagType.PAC, tmpBuf);
+                }*/
                 break;
 
-#endregion BD-ROM only
+#endregion All Blu-ray
+        }
 
+        switch(dskType)
+        {
 #region Writable Blu-ray only
 
             case MediaType.BDR:
