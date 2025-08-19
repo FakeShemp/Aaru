@@ -2396,8 +2396,8 @@
     <value>120mm</value>
   </data>
     <data name="Disc_book_type_is_0" xml:space="preserve">
-    <value>Disc book type is {0}</value>
-  </data>
+        <value>[slateblue1]Disc book type is [green]{0}[/][/]</value>
+    </data>
     <data name="Disc_maximum_transfer_rate_is_2_52_Mbit_sec" xml:space="preserve">
         <value>[slateblue1]Disc maximum transfer rate is [teal]2.52[/] Mbit/sec.[/]</value>
     </data>
@@ -2588,8 +2588,8 @@
         <value>[slateblue1]Wavelength is [teal]650nm[/][/]</value>
     </data>
     <data name="Unknown_wavelength" xml:space="preserve">
-    <value>Unknown wavelength</value>
-  </data>
+        <value>[slateblue1]Unknown wavelength[/]</value>
+    </data>
     <data name="Last_writable_ECC_block_address_0_X6_" xml:space="preserve">
         <value>[slateblue1]Last writable ECC block address:[/] [lime]0x{0:X6}[/]</value>
     </data>

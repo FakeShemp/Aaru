@@ -3788,8 +3788,8 @@
         <value>[slateblue1]Código de barras del disco:[/] [teal]{0:X16}[/]</value>
     </data>
     <data name="Disc_book_type_is_0" xml:space="preserve">
-    <value>El tipo de libro del disco es {0}</value>
-  </data>
+        <value>[slateblue1]El tipo de libro del disco es [green]{0}[/][/]</value>
+    </data>
     <data name="Disc_boots_natively" xml:space="preserve">
     <value>El disco arranca nativamente.</value>
   </data>
@@ -9120,8 +9120,8 @@
     <value>ID de fabricante 0x{0:X4} desconocido</value>
   </data>
     <data name="Unknown_wavelength" xml:space="preserve">
-    <value>Longitud de onda desconocida</value>
-  </data>
+        <value>[slateblue1]Longitud de onda desconocida[/]</value>
+    </data>
     <data name="Unknown_WORM_emulation_code_0" xml:space="preserve">
     <value>Código de emulación WORM desconocido ({0})</value>
   </data>
