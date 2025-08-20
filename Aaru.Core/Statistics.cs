@@ -213,7 +213,7 @@ public static class Statistics
 #if DEBUG
             Console.WriteLine(Localization.Core.Uploading_statistics);
 #else
-                Aaru.Logging.AaruLogging.DebugWriteLine(MODULE_NAME, Localization.Core.Uploading_statistics);
+            Aaru.Logging.AaruLogging.Debug(MODULE_NAME, Localization.Core.Uploading_statistics);
 #endif
             using StringContent jsonContent =
                 new(JsonSerializer.Serialize(dto, typeof(StatsDto), StatsDtoContext.Default),
