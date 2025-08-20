@@ -46,6 +46,7 @@ using Aaru.Database.Models;
 using Aaru.Dto;
 using Aaru.Logging;
 using Microsoft.EntityFrameworkCore;
+using Sentry;
 using Spectre.Console;
 using CdOffset = Aaru.Database.Models.CdOffset;
 using Version = Aaru.CommonTypes.Metadata.Version;
@@ -91,14 +92,16 @@ public static class Remote
                                               await reader.ReadToEndAsync();
                                               data.Close();
                                           }
-                                          catch(WebException)
+                                          catch(WebException ex)
                                           {
                                               // Can't connect to the server, do nothing
+                                              SentrySdk.CaptureException(ex);
                                           }
 
-                                          // ReSharper disable once RedundantCatchClause
-                                          catch
+                                          catch(Exception ex)
                                           {
+                                              SentrySdk.CaptureException(ex);
+
 #if DEBUG
                                               if(Debugger.IsAttached) throw;
 #endif
@@ -179,8 +182,7 @@ public static class Remote
 
             if(!response.IsSuccessStatusCode)
             {
-                AaruLogging.Error(Localization.Core.Error_0_when_trying_to_get_updated_entities,
-                                           response.StatusCode);
+                AaruLogging.Error(Localization.Core.Error_0_when_trying_to_get_updated_entities, response.StatusCode);
 
                 return;
             }

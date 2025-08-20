@@ -30,9 +30,11 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Logging;
+using Sentry;
 
 namespace Aaru.Core;
 
@@ -67,18 +69,19 @@ public static class ArchiveFormat
 
                     break;
                 }
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
-                catch
+                catch(Exception ex)
                 {
-                    // ignored
+                    SentrySdk.CaptureException(ex);
                 }
             }
 
             // Not recognized
             return format;
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             return null;
         }
     }

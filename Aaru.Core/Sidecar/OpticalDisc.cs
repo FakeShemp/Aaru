@@ -41,6 +41,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Decoders.CD;
 using Aaru.Decoders.DVD;
+using Sentry;
 using DMI = Aaru.Decoders.Xbox.DMI;
 using Dump = Aaru.Core.Devices.Dumping.Dump;
 using Partition = Aaru.CommonTypes.Partition;
@@ -222,8 +223,10 @@ public sealed partial class Sidecar
             List<Session> sessions = image.Sessions;
             sidecar.OpticalDiscs[0].Sessions = (uint)(sessions?.Count ?? 1);
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             sidecar.OpticalDiscs[0].Sessions = 1;
         }
 
@@ -568,11 +571,9 @@ public sealed partial class Sidecar
                                           _                              => dskType
                                       };
                         }
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
-                        catch
-#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
+                        catch(Exception ex)
                         {
-                            //AaruLogging.DebugWriteLine(MODULE_NAME, "Plugin {0} crashed", _plugin.Name);
+                            SentrySdk.CaptureException(ex);
                         }
                     }
 
@@ -646,11 +647,9 @@ public sealed partial class Sidecar
                                       _                              => dskType
                                   };
                     }
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
-                    catch
-#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
+                    catch(Exception ex)
                     {
-                        //AaruLogging.DebugWriteLine(MODULE_NAME, "Plugin {0} crashed", _plugin.Name);
+                        SentrySdk.CaptureException(ex);
                     }
                 }
 

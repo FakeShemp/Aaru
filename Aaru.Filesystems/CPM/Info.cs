@@ -40,6 +40,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Sentry;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -971,8 +972,8 @@ public sealed partial class CPM
                                     0)
                             {
                                 AaruLogging.Debug(MODULE_NAME,
-                                                           Localization
-                                                              .Dont_know_how_to_handle_COLUMBIA_ordering_not_proceeding_with_this_definition);
+                                                  Localization
+                                                     .Dont_know_how_to_handle_COLUMBIA_ordering_not_proceeding_with_this_definition);
 
                                 continue;
                             }
@@ -982,17 +983,16 @@ public sealed partial class CPM
                                     0)
                             {
                                 AaruLogging.Debug(MODULE_NAME,
-                                                           Localization
-                                                              .Don_know_how_to_handle_EAGLE_ordering_not_proceeding_with_this_definition);
+                                                  Localization
+                                                     .Don_know_how_to_handle_EAGLE_ordering_not_proceeding_with_this_definition);
 
                                 continue;
                             }
                             else
                             {
                                 AaruLogging.Debug(MODULE_NAME,
-                                                           Localization
-                                                              .Unknown_order_type_0_not_proceeding_with_this_definition,
-                                                           def.order);
+                                                  Localization.Unknown_order_type_0_not_proceeding_with_this_definition,
+                                                  def.order);
 
                                 continue;
                             }
@@ -1019,8 +1019,8 @@ public sealed partial class CPM
                         if(def.evenOdd)
                         {
                             AaruLogging.Debug(MODULE_NAME,
-                                                       Localization
-                                                          .Definition_contains_EVEN_ODD_field_with_unknown_meaning_detection_may_be_wrong);
+                                              Localization
+                                                 .Definition_contains_EVEN_ODD_field_with_unknown_meaning_detection_may_be_wrong);
                         }
 
                         // Complement of the directory bytes if needed
@@ -1033,8 +1033,8 @@ public sealed partial class CPM
                         if(CheckDir(directory))
                         {
                             AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.Definition_0_has_a_correct_directory,
-                                                       def.comment);
+                                              Localization.Definition_0_has_a_correct_directory,
+                                              def.comment);
 
                             // Build a Disc Parameter Block
                             _workingDefinition = def;
@@ -1127,8 +1127,10 @@ public sealed partial class CPM
 
             return false;
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             //throw ex;
             return false;
         }

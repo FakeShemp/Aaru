@@ -37,6 +37,7 @@ using System.IO;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Sentry;
 
 namespace Aaru.Filesystems;
 
@@ -68,7 +69,7 @@ public sealed partial class CPM
                         sectorIds = new int[def.sectorsPerTrack]
                     };
 
-                    for(var i = 0; i < def.sectorsPerTrack; i++) def.side1.sectorIds[i] = i + 1;
+                    for(int i = 0; i < def.sectorsPerTrack; i++) def.side1.sectorIds[i] = i + 1;
                 }
 
                 if(def.sides != 2 || def.side2 != null) continue;
@@ -80,14 +81,16 @@ public sealed partial class CPM
                         sectorIds = new int[def.sectorsPerTrack]
                     };
 
-                    for(var i = 0; i < def.sectorsPerTrack; i++) def.side2.sectorIds[i] = i + 1;
+                    for(int i = 0; i < def.sectorsPerTrack; i++) def.side2.sectorIds[i] = i + 1;
                 }
             }
 
             return true;
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             return false;
         }
     }

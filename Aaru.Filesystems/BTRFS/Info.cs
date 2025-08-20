@@ -30,12 +30,14 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Sentry;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -66,8 +68,10 @@ public sealed partial class BTRFS
         {
             btrfsSb = Marshal.ByteArrayToStructureLittleEndian<SuperBlock>(sector);
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             return false;
         }
 

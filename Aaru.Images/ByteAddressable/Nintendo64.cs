@@ -43,6 +43,7 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Sentry;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Images;
@@ -212,8 +213,9 @@ public class Nintendo64 : IByteAddressableImage
         {
             encoding = Encoding.GetEncoding("shift_jis");
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
             encoding = Encoding.ASCII;
         }
 

@@ -40,6 +40,7 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.Decoders.Sega;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Sentry;
 using FileSystemInfo = Aaru.CommonTypes.Structs.FileSystemInfo;
 using Partition = Aaru.CommonTypes.Partition;
 
@@ -208,7 +209,7 @@ public sealed partial class ISO9660
                             else
                             {
                                 AaruLogging.Debug(MODULE_NAME,
-                                                           Localization.Found_unknown_supplementary_volume_descriptor);
+                                                  Localization.Found_unknown_supplementary_volume_descriptor);
                             }
                         }
 
@@ -352,8 +353,8 @@ public sealed partial class ISO9660
             if(_pathTable?.Length > 1 && rootLocation != _pathTable[0].Extent)
             {
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization
-                                              .Path_table_and_PVD_do_not_point_to_the_same_location_for_the_root_directory);
+                                  Localization
+                                     .Path_table_and_PVD_do_not_point_to_the_same_location_for_the_root_directory);
 
                 errno = ReadSector(rootLocation, out byte[] firstRootSector);
 
@@ -379,8 +380,7 @@ public sealed partial class ISO9660
                 if(pvdWrongRoot)
                 {
                     AaruLogging.Debug(MODULE_NAME,
-                                               Localization
-                                                  .PVD_does_not_point_to_correct_root_directory_checking_path_table);
+                                      Localization.PVD_does_not_point_to_correct_root_directory_checking_path_table);
 
                     bool pathTableWrongRoot = false;
 
@@ -462,8 +462,10 @@ public sealed partial class ISO9660
         {
             ReadSingleExtent(rootSize, rootLocation, out byte[] _);
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             return ErrorNumber.InvalidArgument;
         }
 

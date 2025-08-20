@@ -39,6 +39,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Logging;
+using Sentry;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Partitions;
@@ -111,8 +112,10 @@ public sealed class GuidPartitionTable : IPartition
         {
             hdr = Marshal.ByteArrayToStructureLittleEndian<Header>(hdrBytes);
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             return false;
         }
 
@@ -169,12 +172,10 @@ public sealed class GuidPartitionTable : IPartition
                 Array.Copy(entriesBytes, hdr.entriesSize * i, entryBytes, 0, hdr.entriesSize);
                 entries.Add(Marshal.ByteArrayToStructureLittleEndian<Entry>(entryBytes));
             }
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
-            catch
+            catch(Exception ex)
             {
-                // ignored
+                SentrySdk.CaptureException(ex);
             }
-#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
         }
 
         if(entries.Count == 0) return false;

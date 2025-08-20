@@ -43,6 +43,7 @@ using Aaru.Core;
 using Aaru.Helpers;
 using Aaru.Localization;
 using Aaru.Logging;
+using Sentry;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using ImageInfo = Aaru.CommonTypes.Structs.ImageInfo;
@@ -116,9 +117,7 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
         }
 
         if(settings.Verbose)
-        {
             AaruLogging.Verbose(UI.First_input_file_format_identified_by_0_1, input1Format.Name, input1Format.Id);
-        }
         else
             AaruLogging.WriteLine(UI.First_input_file_format_identified_by_0, input1Format.Name);
 
@@ -130,9 +129,7 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
         }
 
         if(settings.Verbose)
-        {
             AaruLogging.Verbose(UI.Second_input_file_format_identified_by_0_1, input2Format.Name, input2Format.Id);
-        }
         else
             AaruLogging.WriteLine(UI.Second_input_file_format_identified_by_0, input2Format.Name);
 
@@ -473,12 +470,10 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
                                            AppendFormat("Sector {0} has different sizes ({1} bytes in image 1, {2} in image 2) but are otherwise identical",
                                                         sector, image1Sector.LongLength, image2Sector.LongLength).AppendLine();*/
                                 }
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
-                                catch
+                                catch(Exception ex)
                                 {
-                                    // ignored
+                                    SentrySdk.CaptureException(ex);
                                 }
-#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
                             }
                         });
         }

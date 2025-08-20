@@ -35,12 +35,25 @@ public class LoggingInterceptor : ICommandInterceptor
                                                                     .Enrich.FromLogContext()
                                                                     .WriteTo.Logger(lc => lc.Filter
                                                                         .ByIncludingOnly(e =>
-                                                                             e.Level is LogEventLevel
-                                                                                    .Debug
+                                                                             e.Level is LogEventLevel.Debug
                                                                               or LogEventLevel.Verbose
                                                                               or LogEventLevel.Error)
-                                                                        .WriteTo
-                                                                        .Spectre(renderTextAsMarkup: true));
+                                                                        .WriteTo.Spectre(renderTextAsMarkup: true)
+                                                                        .WriteTo.Sentry(o =>
+                                                                         {
+                                                                             o.Dsn =
+                                                                                 "https://153a04fb97b78bb57a8013b8b30db04f@sentry.claunia.com/8";
+
+                                                                             // What to record as Sentry Breadcrumbs
+                                                                             o.MinimumBreadcrumbLevel =
+                                                                                 LogEventLevel.Debug;
+
+                                                                             // What to send to Sentry as Events
+                                                                             o.MinimumEventLevel = LogEventLevel.Error;
+
+                                                                             // If you already call SentrySdk.Init elsewhere:
+                                                                             // o.InitializeSdk = false;
+                                                                         }));
 
         // If logfile is present, add file sink and redirect Spectre.Console output
         if(!string.IsNullOrWhiteSpace(global.LogFile))

@@ -48,6 +48,7 @@ using Aaru.Decoders.SCSI;
 using Aaru.Helpers;
 using Aaru.Logging;
 using Schemas;
+using Sentry;
 using DMI = Aaru.Decoders.Xbox.DMI;
 using File = System.IO.File;
 using Inquiry = Aaru.CommonTypes.Structs.Devices.SCSI.Inquiry;
@@ -422,7 +423,10 @@ public sealed partial class ZZZRawImage
                 filter.GetDataForkStream().EnsureRead(data, 0, data.Length);
                 _mediaTags.Add(sidecar.tag, data);
             }
-            catch(IOException) {}
+            catch(IOException ex)
+            {
+                SentrySdk.CaptureException(ex);
+            }
         }
 
         // If there are INQUIRY and IDENTIFY tags, it's ATAPI
@@ -1202,9 +1206,10 @@ public sealed partial class ZZZRawImage
                 sr.Close();
             }
         }
-        catch
+        catch(Exception ex)
         {
             // Do nothing.
+            SentrySdk.CaptureException(ex);
         }
 
         _imageInfo.ReadableMediaTags = [.._mediaTags.Keys];

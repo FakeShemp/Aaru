@@ -63,6 +63,9 @@
     <PackageReference Include="System.ComponentModel.Annotations"/>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Sentry">
+      <HintPath>..\..\..\..\.nuget\packages\sentry\5.14.1\lib\net9.0\Sentry.dll</HintPath>
+    </Reference>
     <Reference Include="Spectre.Console">
       <HintPath>..\..\..\..\.nuget\packages\spectre.console\0.50.0\lib\net9.0\Spectre.Console.dll</HintPath>
     </Reference>

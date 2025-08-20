@@ -45,6 +45,7 @@ using Aaru.Logging;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using ReactiveUI;
+using Sentry;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
@@ -123,9 +124,10 @@ public sealed class ImageChecksumViewModel : ViewModelBase
         {
             ChecksumTracksVisible = (inputFormat as IOpticalMediaImage)?.Tracks?.Count > 0;
         }
-        catch
+        catch(Exception ex)
         {
             ChecksumTracksVisible = false;
+            SentrySdk.CaptureException(ex);
         }
     }
 
@@ -404,8 +406,10 @@ public sealed class ImageChecksumViewModel : ViewModelBase
             {
                 formatHasTracks = opticalMediaImage.Tracks?.Count > 0;
             }
-            catch
+            catch(Exception ex)
             {
+                SentrySdk.CaptureException(ex);
+
                 formatHasTracks = false;
             }
         }
@@ -494,9 +498,7 @@ public sealed class ImageChecksumViewModel : ViewModelBase
 
                             if(errno != ErrorNumber.NoError)
                             {
-                                AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
-                                                                         errno,
-                                                                         i));
+                                AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1, errno, i));
 
                                 _cancel = true;
 
@@ -508,10 +510,10 @@ public sealed class ImageChecksumViewModel : ViewModelBase
                     }
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               UI.Track_0_starts_at_sector_1_and_ends_at_sector_2,
-                                               currentTrack.Sequence,
-                                               currentTrack.StartSector,
-                                               currentTrack.EndSector);
+                                      UI.Track_0_starts_at_sector_1_and_ends_at_sector_2,
+                                      currentTrack.Sequence,
+                                      currentTrack.StartSector,
+                                      currentTrack.EndSector);
 
                     if(ChecksumTracksChecked) trackChecksum = new Checksum(enabledChecksums);
 
@@ -544,8 +546,8 @@ public sealed class ImageChecksumViewModel : ViewModelBase
                             if(errno != ErrorNumber.NoError)
                             {
                                 AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
-                                                                         errno,
-                                                                         doneSectors));
+                                                                errno,
+                                                                doneSectors));
 
                                 _cancel = true;
 
@@ -574,8 +576,8 @@ public sealed class ImageChecksumViewModel : ViewModelBase
                             if(errno != ErrorNumber.NoError)
                             {
                                 AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
-                                                                         errno,
-                                                                         doneSectors));
+                                                                errno,
+                                                                doneSectors));
 
                                 _cancel = true;
 
@@ -637,9 +639,7 @@ public sealed class ImageChecksumViewModel : ViewModelBase
 
                         if(errno != ErrorNumber.NoError)
                         {
-                            AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
-                                                                     errno,
-                                                                     i));
+                            AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1, errno, i));
 
                             _cancel = true;
 
@@ -702,8 +702,8 @@ public sealed class ImageChecksumViewModel : ViewModelBase
                     if(errno != ErrorNumber.NoError)
                     {
                         AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
-                                                                 errno,
-                                                                 doneSectors));
+                                                        errno,
+                                                        doneSectors));
 
                         _cancel = true;
 
@@ -732,8 +732,8 @@ public sealed class ImageChecksumViewModel : ViewModelBase
                     if(errno != ErrorNumber.NoError)
                     {
                         AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
-                                                                 errno,
-                                                                 doneSectors));
+                                                        errno,
+                                                        doneSectors));
 
                         _cancel = true;
 

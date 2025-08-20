@@ -39,6 +39,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Sentry;
 
 namespace Aaru.Images;
 
@@ -117,8 +118,8 @@ public sealed partial class Vhdx
             else if((_vRegs[i].flags & REGION_FLAGS_REQUIRED) == REGION_FLAGS_REQUIRED)
             {
                 AaruLogging.Error(string.Format(Localization
-                                                            .Found_unsupported_and_required_region_Guid_0_not_proceeding_with_image,
-                                                         _vRegs[i].guid));
+                                                   .Found_unsupported_and_required_region_Guid_0_not_proceeding_with_image,
+                                                _vRegs[i].guid));
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -168,8 +169,8 @@ public sealed partial class Vhdx
             else if((_vMets[i].flags & METADATA_FLAGS_REQUIRED) == METADATA_FLAGS_REQUIRED)
             {
                 AaruLogging.Error(string.Format(Localization
-                                                            .Found_unsupported_and_required_metadata_Guid_0_not_proceeding_with_image,
-                                                         _vMets[i].itemId));
+                                                   .Found_unsupported_and_required_metadata_Guid_0_not_proceeding_with_image,
+                                                _vMets[i].itemId));
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -256,8 +257,8 @@ public sealed partial class Vhdx
             if(_vParHdr.locatorType != _parentTypeVhdxGuid)
             {
                 AaruLogging.Error(string.Format(Localization
-                                                            .Found_unsupported_and_required_parent_locator_type_0_not_proceeding_with_image,
-                                                         _vParHdr.locatorType));
+                                                   .Found_unsupported_and_required_parent_locator_type_0_not_proceeding_with_image,
+                                                _vParHdr.locatorType));
 
                 return ErrorNumber.NotSupported;
             }
@@ -312,8 +313,9 @@ public sealed partial class Vhdx
                             break;
                         }
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        SentrySdk.CaptureException(ex);
                         parentWorks = false;
                     }
 
@@ -330,9 +332,10 @@ public sealed partial class Vhdx
 
                         break;
                     }
-                    catch
+                    catch(Exception ex)
                     {
                         // ignored
+                        SentrySdk.CaptureException(ex);
                     }
                 }
                 else if(string.Compare(entryType, VOLUME_PATH_KEY,         StringComparison.OrdinalIgnoreCase) == 0 ||
@@ -354,9 +357,10 @@ public sealed partial class Vhdx
 
                         break;
                     }
-                    catch
+                    catch(Exception ex)
                     {
                         // ignored
+                        SentrySdk.CaptureException(ex);
                     }
                 }
             }
@@ -443,8 +447,8 @@ public sealed partial class Vhdx
                         if((pt & BAT_FLAGS_MASK) != 0)
                         {
                             AaruLogging.Error(string.Format(Localization
-                                                                        .Unsupported_sector_bitmap_block_flags_0_found_not_proceeding,
-                                                                     pt & BAT_FLAGS_MASK));
+                                                               .Unsupported_sector_bitmap_block_flags_0_found_not_proceeding,
+                                                            pt & BAT_FLAGS_MASK));
 
                             return ErrorNumber.InvalidArgument;
                         }

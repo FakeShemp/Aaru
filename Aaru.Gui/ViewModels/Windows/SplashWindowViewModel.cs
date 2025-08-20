@@ -47,6 +47,7 @@ using Aaru.Settings;
 using Avalonia.Threading;
 using Microsoft.EntityFrameworkCore;
 using ReactiveUI;
+using Sentry;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
@@ -134,9 +135,10 @@ public sealed class SplashWindowViewModel(SplashWindow view) : ViewModelBase
                     ctx?.Database.CloseConnection();
                     ctx?.Dispose();
                 }
-                catch(Exception)
+                catch(Exception ex)
                 {
                     // Should not ever arrive here, but if it does, keep trying to replace it anyway
+                    SentrySdk.CaptureException(ex);
                 }
 
                 File.Delete(Settings.Settings.LocalDbPath);
@@ -212,11 +214,13 @@ public sealed class SplashWindowViewModel(SplashWindow view) : ViewModelBase
                 {
                     File.Delete(Settings.Settings.MainDbPath);
                 }
-                catch(Exception)
+                catch(Exception ex)
                 {
                     AaruLogging.Error(UI.Exception_trying_to_remove_old_database_version);
 
                     AaruLogging.Error(UI.Please_manually_remove_file_at_0, Settings.Settings.MainDbPath);
+
+                    SentrySdk.CaptureException(ex);
 
                     return;
                 }

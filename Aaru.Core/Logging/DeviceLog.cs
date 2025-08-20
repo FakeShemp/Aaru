@@ -35,6 +35,7 @@ using System.IO;
 using Aaru.CommonTypes.Interop;
 using Aaru.Devices;
 using Aaru.Logging;
+using Sentry;
 
 namespace Aaru.Core.Logging;
 
@@ -60,9 +61,10 @@ public static class DeviceLog
                 {
                     args[i] = Path.GetFileName(args[i]);
                 }
-                catch
+                catch(Exception ex)
                 {
                     // Do nothing
+                    SentrySdk.CaptureException(ex);
                 }
             }
 

@@ -30,6 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -47,6 +48,7 @@ using Avalonia.Threading;
 using Humanizer;
 using Humanizer.Localisation;
 using ReactiveUI;
+using Sentry;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
@@ -365,8 +367,10 @@ public sealed class ImageVerifyViewModel : ViewModelBase
         {
             formatHasTracks = inputOptical?.Tracks?.Count > 0;
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             formatHasTracks = false;
         }
 
@@ -440,7 +444,7 @@ public sealed class ImageVerifyViewModel : ViewModelBase
                 });
 
                 AaruLogging.Verbose(UI.Checking_disc_image_checksums_took_0,
-                                             chkStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
+                                    chkStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
             }
         }
 
@@ -612,7 +616,7 @@ public sealed class ImageVerifyViewModel : ViewModelBase
             }
 
             AaruLogging.Verbose(UI.Checking_sector_checksums_took_0,
-                                         chkStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
+                                chkStopwatch.Elapsed.Humanize(minUnit: TimeUnit.Second));
 
             await Dispatcher.UIThread.InvokeAsync(() =>
             {

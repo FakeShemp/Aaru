@@ -37,6 +37,7 @@ using System.ComponentModel;
 using Aaru.CommonTypes.Enums;
 using Aaru.Core;
 using Aaru.Logging;
+using Sentry;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Remote = Aaru.Devices.Remote.Remote;
@@ -87,8 +88,9 @@ sealed class RemoteCommand : Command<RemoteCommand.Settings>
             AnsiConsole.Write(table);
             remote.Disconnect();
         }
-        catch(Exception)
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
             AaruLogging.Error("Error connecting to host.");
 
             return (int)ErrorNumber.CannotOpenDevice;

@@ -36,6 +36,7 @@ using System.IO;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Sentry;
 
 namespace Aaru.CommonTypes;
 
@@ -273,9 +274,10 @@ public class PluginRegister
                 else
                     noFilter = filter;
             }
-            catch(IOException)
+            catch(IOException ex)
             {
                 // Ignore and continue
+                SentrySdk.CaptureException(ex);
             }
         }
 

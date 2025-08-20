@@ -37,6 +37,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Aaru.Localization;
 using Aaru.Logging;
+using Sentry;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Decoders.Sega;
@@ -61,12 +62,12 @@ public static class CD
         IPBin ipbin = Marshal.ByteArrayToStructureLittleEndian<IPBin>(ipbin_sector);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "segacd_ipbin.volume_name = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.volume_name));
+                          "segacd_ipbin.volume_name = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.volume_name));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "segacd_ipbin.system_name = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.system_name));
+                          "segacd_ipbin.system_name = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.system_name));
 
         AaruLogging.Debug(MODULE_NAME, "segacd_ipbin.volume_version = \"{0:X}\"", ipbin.volume_version);
 
@@ -89,36 +90,36 @@ public static class CD
         AaruLogging.Debug(MODULE_NAME, "segacd_ipbin.sp_work_ram_size = {0}", ipbin.sp_work_ram_size);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "segacd_ipbin.release_date = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.release_date));
+                          "segacd_ipbin.release_date = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.release_date));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "segacd_ipbin.release_date2 = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.release_date2));
+                          "segacd_ipbin.release_date2 = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.release_date2));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "segacd_ipbin.developer_code = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.developer_code));
+                          "segacd_ipbin.developer_code = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.developer_code));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "segacd_ipbin.domestic_title = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.domestic_title));
+                          "segacd_ipbin.domestic_title = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.domestic_title));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "segacd_ipbin.overseas_title = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.overseas_title));
+                          "segacd_ipbin.overseas_title = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.overseas_title));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "segacd_ipbin.product_code = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.product_code));
+                          "segacd_ipbin.product_code = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.product_code));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "segacd_ipbin.peripherals = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.peripherals));
+                          "segacd_ipbin.peripherals = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.peripherals));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "segacd_ipbin.region_codes = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.region_codes));
+                          "segacd_ipbin.region_codes = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.region_codes));
 
         string id = Encoding.ASCII.GetString(ipbin.SegaHardwareID);
 
@@ -154,12 +155,10 @@ public static class CD
             {
                 ipbindate = DateTime.ParseExact(Encoding.ASCII.GetString(ipbin.release_date2), "yyyy.MMM", provider);
             }
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
-            catch
+            catch(Exception ex)
             {
-                // ignored
+                SentrySdk.CaptureException(ex);
             }
-#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
         }
 
         /*

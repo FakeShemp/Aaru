@@ -44,6 +44,7 @@ using Aaru.Core;
 using Aaru.Helpers;
 using Aaru.Localization;
 using Aaru.Logging;
+using Sentry;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -266,34 +267,34 @@ sealed class ArchiveExtractCommand : Command<ArchiveExtractCommand.Settings>
                                 });
 
                     var fi = new FileInfo(outputPath);
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
+
                     try
                     {
                         if(stat.CreationTimeUtc.HasValue) fi.CreationTimeUtc = stat.CreationTimeUtc.Value;
                     }
-                    catch
+                    catch(Exception ex)
                     {
-                        // ignored
+                        SentrySdk.CaptureException(ex);
                     }
 
                     try
                     {
                         if(stat.LastWriteTimeUtc.HasValue) fi.LastWriteTimeUtc = stat.LastWriteTimeUtc.Value;
                     }
-                    catch
+                    catch(Exception ex)
                     {
-                        // ignored
+                        SentrySdk.CaptureException(ex);
                     }
 
                     try
                     {
                         if(stat.AccessTimeUtc.HasValue) fi.LastAccessTimeUtc = stat.AccessTimeUtc.Value;
                     }
-                    catch
+                    catch(Exception ex)
                     {
-                        // ignored
+                        SentrySdk.CaptureException(ex);
                     }
-#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
+
                     AaruLogging.WriteLine(UI.Written_0_bytes_of_file_1_to_2,
                                           uncompressedSize,
                                           Markup.Escape(fileName),
@@ -326,10 +327,10 @@ sealed class ArchiveExtractCommand : Command<ArchiveExtractCommand.Settings>
                     if(errno != ErrorNumber.NoError)
                     {
                         AaruLogging.Debug(MODULE_NAME,
-                                                   UI.Error_0_reading_extended_attribute_1_for_archive_entry_2,
-                                                   errno,
-                                                   xattrName,
-                                                   i);
+                                          UI.Error_0_reading_extended_attribute_1_for_archive_entry_2,
+                                          errno,
+                                          xattrName,
+                                          i);
 
                         continue;
                     }
@@ -365,34 +366,34 @@ sealed class ArchiveExtractCommand : Command<ArchiveExtractCommand.Settings>
                             outputFile.Close();
 
                             var fi = new FileInfo(outputPath);
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
+
                             try
                             {
                                 if(stat.CreationTimeUtc.HasValue) fi.CreationTimeUtc = stat.CreationTimeUtc.Value;
                             }
-                            catch
+                            catch(Exception ex)
                             {
-                                // ignored
+                                SentrySdk.CaptureException(ex);
                             }
 
                             try
                             {
                                 if(stat.LastWriteTimeUtc.HasValue) fi.LastWriteTimeUtc = stat.LastWriteTimeUtc.Value;
                             }
-                            catch
+                            catch(Exception ex)
                             {
-                                // ignored
+                                SentrySdk.CaptureException(ex);
                             }
 
                             try
                             {
                                 if(stat.AccessTimeUtc.HasValue) fi.LastAccessTimeUtc = stat.AccessTimeUtc.Value;
                             }
-                            catch
+                            catch(Exception ex)
                             {
-                                // ignored
+                                SentrySdk.CaptureException(ex);
                             }
-#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
+
                             AaruLogging.WriteLine(UI.Written_0_bytes_of_file_1_to_2,
                                                   uncompressedSize,
                                                   Markup.Escape(fileName),

@@ -56,6 +56,7 @@ using Avalonia.Platform;
 using Humanizer;
 using Humanizer.Bytes;
 using ReactiveUI;
+using Sentry;
 using Inquiry = Aaru.CommonTypes.Structs.Devices.SCSI.Inquiry;
 using Session = Aaru.CommonTypes.Structs.Session;
 using Track = Aaru.CommonTypes.Structs.Track;
@@ -313,7 +314,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
 
                 if(dataLen + 2 != toc.Length)
                 {
-                    var tmp = new byte[toc.Length + 2];
+                    byte[] tmp = new byte[toc.Length + 2];
                     Array.Copy(toc, 0, tmp, 2, toc.Length);
                     tmp[0] = (byte)((toc.Length & 0xFF00) >> 8);
                     tmp[1] = (byte)(toc.Length & 0xFF);
@@ -334,7 +335,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
 
                 if(dataLen + 2 != fullToc.Length)
                 {
-                    var tmp = new byte[fullToc.Length + 2];
+                    byte[] tmp = new byte[fullToc.Length + 2];
                     Array.Copy(fullToc, 0, tmp, 2, fullToc.Length);
                     tmp[0]  = (byte)((fullToc.Length & 0xFF00) >> 8);
                     tmp[1]  = (byte)(fullToc.Length & 0xFF);
@@ -355,7 +356,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
 
                 if(dataLen + 2 != pma.Length)
                 {
-                    var tmp = new byte[pma.Length + 2];
+                    byte[] tmp = new byte[pma.Length + 2];
                     Array.Copy(pma, 0, tmp, 2, pma.Length);
                     tmp[0] = (byte)((pma.Length & 0xFF00) >> 8);
                     tmp[1] = (byte)(pma.Length & 0xFF);
@@ -374,7 +375,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
 
                 if(dataLen + 4 != atip.Length)
                 {
-                    var tmp = new byte[atip.Length + 4];
+                    byte[] tmp = new byte[atip.Length + 4];
                     Array.Copy(atip, 0, tmp, 4, atip.Length);
                     tmp[0] = (byte)((atip.Length & 0xFF000000) >> 24);
                     tmp[1] = (byte)((atip.Length & 0xFF0000)   >> 16);
@@ -397,7 +398,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
 
                 if(dataLen + 4 != cdtext.Length)
                 {
-                    var tmp = new byte[cdtext.Length + 4];
+                    byte[] tmp = new byte[cdtext.Length + 4];
                     Array.Copy(cdtext, 0, tmp, 4, cdtext.Length);
                     tmp[0] = (byte)((cdtext.Length & 0xFF000000) >> 24);
                     tmp[1] = (byte)((cdtext.Length & 0xFF0000)   >> 16);
@@ -697,9 +698,9 @@ public sealed class ImageInfoViewModel : ViewModelBase
                     foreach(Session session in opticalMediaImage.Sessions)
                         Sessions.Add(session);
             }
-            catch
+            catch(Exception ex)
             {
-                // ignored
+                SentrySdk.CaptureException(ex);
             }
 
             try
@@ -708,9 +709,10 @@ public sealed class ImageInfoViewModel : ViewModelBase
                     foreach(Track track in opticalMediaImage.Tracks)
                         Tracks.Add(track);
             }
-            catch
+            catch(Exception ex)
             {
                 // ignored
+                SentrySdk.CaptureException(ex);
             }
         }
 

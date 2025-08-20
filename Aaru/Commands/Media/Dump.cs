@@ -54,6 +54,7 @@ using Aaru.Core.Logging;
 using Aaru.Localization;
 using Aaru.Logging;
 using Schemas;
+using Sentry;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Dump = Aaru.Core.Devices.Dumping.Dump;
@@ -344,8 +345,9 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                         sr.Close();
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
+                    SentrySdk.CaptureException(ex);
                     AaruLogging.Error(UI.Incorrect_resume_file_not_continuing);
 
                     if(isResponse) continue;
@@ -384,8 +386,9 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
 
                         fs.Close();
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        SentrySdk.CaptureException(ex);
                         AaruLogging.Error(UI.Incorrect_metadata_sidecar_file_not_continuing);
 
                         if(isResponse) continue;
@@ -422,8 +425,9 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
 
                         sr.Close();
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        SentrySdk.CaptureException(ex);
                         AaruLogging.Error(UI.Incorrect_metadata_sidecar_file_not_continuing);
 
                         if(isResponse) continue;

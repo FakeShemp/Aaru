@@ -36,6 +36,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interop;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
 using Aaru.Decoders.SecureDigital;
+using Sentry;
 
 namespace Aaru.Devices.Remote;
 
@@ -113,6 +114,8 @@ public sealed partial class Device : Devices.Device
         }
         catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             if(ex is SocketException sockEx)
                 errno = (ErrorNumber)(-1 * sockEx.ErrorCode);
             else

@@ -45,6 +45,7 @@ using Aaru.Filters;
 using Aaru.Helpers;
 using Aaru.Images;
 using Aaru.Logging;
+using Sentry;
 using Directory = System.IO.Directory;
 using File = System.IO.File;
 using MediaType = Aaru.CommonTypes.Metadata.MediaType;
@@ -506,8 +507,8 @@ public sealed partial class Sidecar
                             if(errno != ErrorNumber.NoError)
                             {
                                 AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
-                                                                         errno,
-                                                                         tapePartition.FirstBlock + doneSectors));
+                                                                errno,
+                                                                tapePartition.FirstBlock + doneSectors));
 
                                 EndProgress2();
 
@@ -526,8 +527,8 @@ public sealed partial class Sidecar
                             if(errno != ErrorNumber.NoError)
                             {
                                 AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
-                                                                         errno,
-                                                                         tapePartition.FirstBlock + doneSectors));
+                                                                errno,
+                                                                tapePartition.FirstBlock + doneSectors));
 
                                 EndProgress2();
 
@@ -606,8 +607,8 @@ public sealed partial class Sidecar
                                 if(errno != ErrorNumber.NoError)
                                 {
                                     AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
-                                                                             errno,
-                                                                             tapeFile.FirstBlock + doneSectors));
+                                                                    errno,
+                                                                    tapeFile.FirstBlock + doneSectors));
 
                                     EndProgress2();
 
@@ -629,8 +630,8 @@ public sealed partial class Sidecar
                                 if(errno != ErrorNumber.NoError)
                                 {
                                     AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
-                                                                             errno,
-                                                                             tapeFile.FirstBlock + doneSectors));
+                                                                    errno,
+                                                                    tapeFile.FirstBlock + doneSectors));
 
                                     EndProgress2();
 
@@ -727,11 +728,9 @@ public sealed partial class Sidecar
                             Statistics.AddFilesystem(fsMetadata.Type);
                         }
                     }
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
-                    catch
-#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
+                    catch(Exception ex)
                     {
-                        //AaruLogging.DebugWriteLine(MODULE_NAME, "Plugin {0} crashed", _plugin.Name);
+                        SentrySdk.CaptureException(ex);
                     }
                 }
 
@@ -789,11 +788,9 @@ public sealed partial class Sidecar
                         Statistics.AddFilesystem(fsMetadata.Type);
                     }
                 }
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
-                catch
-#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
+                catch(Exception ex)
                 {
-                    //AaruLogging.DebugWriteLine(MODULE_NAME, "Plugin {0} crashed", _plugin.Name);
+                    SentrySdk.CaptureException(ex);
                 }
             }
 
@@ -1046,18 +1043,16 @@ public sealed partial class Sidecar
                     }
                     else
                     {
-                        AaruLogging.Error(Localization.Core
-                                                               .SCP_image_do_not_same_number_tracks_0_disk_image_1_ignoring,
-                                                   scpImage.Header.end + 1,
-                                                   image.Info.Cylinders);
+                        AaruLogging.Error(Localization.Core.SCP_image_do_not_same_number_tracks_0_disk_image_1_ignoring,
+                                          scpImage.Header.end + 1,
+                                          image.Info.Cylinders);
                     }
                 }
                 else
                 {
-                    AaruLogging.Error(Localization.Core
-                                                           .SCP_image_do_not_same_number_heads_0_disk_image_1_ignoring,
-                                               2,
-                                               image.Info.Heads);
+                    AaruLogging.Error(Localization.Core.SCP_image_do_not_same_number_heads_0_disk_image_1_ignoring,
+                                      2,
+                                      image.Info.Heads);
                 }
             }
         }
@@ -1158,17 +1153,16 @@ public sealed partial class Sidecar
                     else
                     {
                         AaruLogging.Error(Localization.Core
-                                                               .KryoFlux_image_do_not_same_number_tracks_0_disk_image_1_ignoring,
-                                                   kfImage.Info.Cylinders,
-                                                   image.Info.Cylinders);
+                                                      .KryoFlux_image_do_not_same_number_tracks_0_disk_image_1_ignoring,
+                                          kfImage.Info.Cylinders,
+                                          image.Info.Cylinders);
                     }
                 }
                 else
                 {
-                    AaruLogging.Error(Localization.Core
-                                                           .KryoFlux_image_do_not_same_number_heads_0_disk_image_1_ignoring,
-                                               kfImage.Info.Heads,
-                                               image.Info.Heads);
+                    AaruLogging.Error(Localization.Core.KryoFlux_image_do_not_same_number_heads_0_disk_image_1_ignoring,
+                                      kfImage.Info.Heads,
+                                      image.Info.Heads);
                 }
             }
         }
@@ -1249,18 +1243,16 @@ public sealed partial class Sidecar
             }
             else
             {
-                AaruLogging.Error(Localization.Core
-                                                       .DiscFerret_image_do_not_same_number_tracks_0_disk_image_1_ignoring,
-                                           dfiImage.Info.Cylinders,
-                                           image.Info.Cylinders);
+                AaruLogging.Error(Localization.Core.DiscFerret_image_do_not_same_number_tracks_0_disk_image_1_ignoring,
+                                  dfiImage.Info.Cylinders,
+                                  image.Info.Cylinders);
             }
         }
         else
         {
-            AaruLogging.Error(Localization.Core
-                                                   .DiscFerret_image_do_not_same_number_heads_0_disk_image_1_ignoring,
-                                       dfiImage.Info.Heads,
-                                       image.Info.Heads);
+            AaruLogging.Error(Localization.Core.DiscFerret_image_do_not_same_number_heads_0_disk_image_1_ignoring,
+                              dfiImage.Info.Heads,
+                              image.Info.Heads);
         }
 
 #endregion

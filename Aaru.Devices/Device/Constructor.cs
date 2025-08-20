@@ -39,6 +39,7 @@ using Aaru.CommonTypes.Structs.Devices.SCSI;
 using Aaru.Decoders.SCSI;
 using Aaru.Decoders.SCSI.MMC;
 using Aaru.Helpers;
+using Sentry;
 using Inquiry = Aaru.CommonTypes.Structs.Devices.SCSI.Inquiry;
 
 namespace Aaru.Devices;
@@ -65,8 +66,10 @@ public partial class Device
         {
             aaruUri = new Uri(devicePath);
         }
-        catch(Exception)
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             aaruUri = null;
         }
 

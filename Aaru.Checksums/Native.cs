@@ -30,7 +30,9 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Runtime.InteropServices;
+using Sentry;
 
 namespace Aaru.Checksums;
 
@@ -62,9 +64,11 @@ public static partial class Native
             {
                 version = get_acn_version();
             }
-            catch
+            catch(Exception ex)
             {
                 _supported = false;
+
+                SentrySdk.CaptureException(ex);
 
                 return false;
             }

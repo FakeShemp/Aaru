@@ -30,10 +30,12 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Sentry;
 
 namespace Aaru.Core;
 
@@ -150,8 +152,10 @@ public sealed class DataFile
             outputFs.Write(data, 0, data.Length);
             outputFs.Close();
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+            AaruLogging.Exception(ex, Localization.Core.Unable_to_write_file_0, filename);
             AaruLogging.Error(Localization.Core.Unable_to_write_file_0, filename);
         }
     }

@@ -40,6 +40,7 @@ using System.Xml.Serialization;
 using Aaru.CommonTypes.Interop;
 using Claunia.PropertyList;
 using Microsoft.Win32;
+using Sentry;
 using PlatformID = Aaru.CommonTypes.Interop.PlatformID;
 
 namespace Aaru.Settings;
@@ -129,7 +130,7 @@ public static class Settings
         PlatformID ptId     = DetectOS.GetRealPlatformID();
         string     homePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         LocalDbPath = "local.db";
-        var oldMainDbPath = "master.db";
+        string oldMainDbPath = "master.db";
         MainDbPath = "main.db";
 
         try
@@ -244,8 +245,10 @@ public static class Settings
 
             if(File.Exists(oldMainDbPath)) File.Move(oldMainDbPath, MainDbPath);
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             ReportsPath = null;
         }
 
@@ -497,8 +500,10 @@ public static class Settings
                     break;
             }
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             prefsFs?.Close();
             prefsSr?.Close();
             SetDefaultSettings();
@@ -662,12 +667,10 @@ public static class Settings
                     break;
             }
         }
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
-        catch
+        catch(Exception ex)
         {
-            // ignored
+            SentrySdk.CaptureException(ex);
         }
-#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
     }
 
     /// <summary>Sets default settings as all statistics, share everything</summary>

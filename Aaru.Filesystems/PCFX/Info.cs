@@ -36,6 +36,7 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
+using Sentry;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -83,13 +84,15 @@ public sealed partial class PCFX
         try
         {
             date = encoding.GetString(header.date);
-            var year  = int.Parse(date[..4]);
-            var month = int.Parse(date.Substring(4, 2));
-            var day   = int.Parse(date.Substring(6, 2));
+            int year  = int.Parse(date[..4]);
+            int month = int.Parse(date.Substring(4, 2));
+            int day   = int.Parse(date.Substring(6, 2));
             dateTime = new DateTime(year, month, day);
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             date = null;
         }
 

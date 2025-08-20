@@ -35,6 +35,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Sentry;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -90,8 +91,10 @@ public sealed partial class FFSPlugin
 
             return false;
         }
-        catch(Exception)
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             return false;
         }
     }

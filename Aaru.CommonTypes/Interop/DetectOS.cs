@@ -42,6 +42,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 using System.Security.Principal;
+using Sentry;
 
 namespace Aaru.CommonTypes.Interop;
 
@@ -86,8 +87,10 @@ public static partial class DetectOS
             {
                 isAdmin = false;
             }
-            catch(Exception)
+            catch(Exception ex)
             {
+                SentrySdk.CaptureException(ex);
+
                 isAdmin = false;
             }
             finally
@@ -237,7 +240,7 @@ public static partial class DetectOS
     /// <returns>Current operating system version</returns>
     public static string GetVersion()
     {
-        var environ = Environment.OSVersion.Version.ToString();
+        string environ = Environment.OSVersion.Version.ToString();
 
         switch(GetRealPlatformID())
         {

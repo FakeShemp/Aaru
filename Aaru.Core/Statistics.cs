@@ -46,6 +46,7 @@ using Aaru.Database.Models;
 using Aaru.Logging;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Sentry;
 using Device = Aaru.Devices.Device;
 using MediaType = Aaru.CommonTypes.MediaType;
 using OperatingSystem = Aaru.Database.Models.OperatingSystem;
@@ -300,18 +301,21 @@ public static class Statistics
 
             await ctx.SaveChangesAsync();
         }
-        catch(WebException)
+        catch(WebException ex)
         {
             // Can't connect to the server, do nothing
+            SentrySdk.CaptureException(ex);
         }
-        catch(DbUpdateConcurrencyException)
+        catch(DbUpdateConcurrencyException ex)
         {
             // Ignore db concurrency errors
+            SentrySdk.CaptureException(ex);
         }
 
-        // ReSharper disable once RedundantCatchClause
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
 #if DEBUG
             _submitStatsLock = false;
 

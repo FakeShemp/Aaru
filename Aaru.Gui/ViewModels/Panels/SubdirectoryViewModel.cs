@@ -51,6 +51,7 @@ using JetBrains.Annotations;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using ReactiveUI;
+using Sentry;
 using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
 namespace Aaru.Gui.ViewModels.Panels;
@@ -89,10 +90,9 @@ public sealed class SubdirectoryViewModel
 
             if(errno != ErrorNumber.NoError)
             {
-                AaruLogging
-                   .Error(string.Format(UI.Error_0_trying_to_get_information_about_filesystem_entry_named_1,
-                                                 errno,
-                                                 dirent));
+                AaruLogging.Error(string.Format(UI.Error_0_trying_to_get_information_about_filesystem_entry_named_1,
+                                                errno,
+                                                dirent));
 
                 continue;
             }
@@ -359,34 +359,33 @@ public sealed class SubdirectoryViewModel
                 fs.Write(outBuf, 0, outBuf.Length);
                 fs.Close();
                 var fi = new FileInfo(outputPath);
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
+
                 try
                 {
                     if(file.Stat.CreationTimeUtc.HasValue) fi.CreationTimeUtc = file.Stat.CreationTimeUtc.Value;
                 }
-                catch
+                catch(Exception ex)
                 {
-                    // ignored
+                    SentrySdk.CaptureException(ex);
                 }
 
                 try
                 {
                     if(file.Stat.LastWriteTimeUtc.HasValue) fi.LastWriteTimeUtc = file.Stat.LastWriteTimeUtc.Value;
                 }
-                catch
+                catch(Exception ex)
                 {
-                    // ignored
+                    SentrySdk.CaptureException(ex);
                 }
 
                 try
                 {
                     if(file.Stat.AccessTimeUtc.HasValue) fi.LastAccessTimeUtc = file.Stat.AccessTimeUtc.Value;
                 }
-                catch
+                catch(Exception ex)
                 {
-                    // ignored
+                    SentrySdk.CaptureException(ex);
                 }
-#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
             }
             catch(IOException)
             {

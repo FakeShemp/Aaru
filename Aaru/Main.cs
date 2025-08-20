@@ -52,6 +52,7 @@ using Aaru.Logging;
 using Aaru.Settings;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
+using Sentry;
 using Serilog;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -68,11 +69,6 @@ class MainClass
 
     public static async Task<int> Main([NotNull] string[] args)
     {
-        IAnsiConsole stderrConsole = AnsiConsole.Create(new AnsiConsoleSettings
-        {
-            Out = new AnsiConsoleOutput(Console.Error)
-        });
-
         object[] attributes = typeof(MainClass).Assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
         _assemblyTitle = ((AssemblyTitleAttribute)attributes[0]).Title;
         attributes     = typeof(MainClass).Assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
@@ -86,334 +82,374 @@ class MainClass
         if(args.Length == 1 && args[0].Equals("gui", StringComparison.InvariantCultureIgnoreCase))
             return Gui.Main.Start(args);
 
-        AaruLogging.WriteLineEvent += (format, objects) =>
+        SentrySdk.Init(options =>
         {
-            if(objects is null)
-                AnsiConsole.MarkupLine(format);
-            else
-                AnsiConsole.MarkupLine(format, objects);
+            // A Sentry Data Source Name (DSN) is required.
+            // See https://docs.sentry.io/product/sentry-basics/dsn-explainer/
+            // You can set it in the SENTRY_DSN environment variable, or you can set it in code here.
+            options.Dsn = "https://153a04fb97b78bb57a8013b8b30db04f@sentry.claunia.com/8";
 
-            // Format the string so we can remove the markup
-            if(format is null) return;
+            // When debug is enabled, the Sentry client will emit detailed debugging information to the console.
+            // This might be helpful, or might interfere with the normal operation of your application.
+            // We enable it here for demonstration purposes when first trying Sentry.
+            // You shouldn't do this in your applications unless you're troubleshooting issues with Sentry.
+            //options.Debug = true;
 
-            string formatted = objects is null ? format : string.Format(format, objects);
-            formatted = Markup.Remove(formatted);
-            Log.Information(formatted);
-        };
+            // This option is recommended. It enables Sentry's "Release Health" feature.
+            options.AutoSessionTracking = true;
 
-        AaruLogging.WriteEvent += (format, objects) =>
-        {
-            if(objects is null)
-                AnsiConsole.Markup(format);
-            else
-                AnsiConsole.Markup(format, objects);
+            // Set TracesSampleRate to 1.0 to capture 100%
+            // of transactions for tracing.
+            // We recommend adjusting this value in production.
+            options.TracesSampleRate = 1.0;
 
-            // Format the string so we can remove the markup
-            if(format is null) return;
-
-            string formatted = objects is null ? format : string.Format(format, objects);
-            formatted = Markup.Remove(formatted);
-            Log.Information(formatted);
-        };
-
-        AaruLogging.ErrorEvent += Log.Error;
-        AaruLogging.VerboseEvent += Log.Verbose;
-        AaruLogging.DebugEvent += (module, format, objects) => Log.Debug($"[blue]{module}[/] {format}", objects);
-        AaruLogging.WriteExceptionEvent += Log.Error;
-        AaruLogging.InformationEvent += Log.Information;
-
-        Settings.Settings.LoadSettings();
-
-        AaruContext ctx = null;
+            options.IsGlobalModeEnabled = true;
+        });
 
         try
         {
-            ctx = AaruContext.Create(Settings.Settings.LocalDbPath, false);
-            await ctx.Database.MigrateAsync();
-        }
-        catch(NotSupportedException)
-        {
+            AaruLogging.WriteLineEvent += (format, objects) =>
+            {
+                if(objects is null)
+                    AnsiConsole.MarkupLine(format);
+                else
+                    AnsiConsole.MarkupLine(format, objects);
+
+                // Format the string so we can remove the markup
+                if(format is null) return;
+
+                string formatted = objects is null ? format : string.Format(format, objects);
+                formatted = Markup.Remove(formatted);
+                Log.Information(formatted);
+            };
+
+            AaruLogging.WriteEvent += (format, objects) =>
+            {
+                if(objects is null)
+                    AnsiConsole.Markup(format);
+                else
+                    AnsiConsole.Markup(format, objects);
+
+                // Format the string so we can remove the markup
+                if(format is null) return;
+
+                string formatted = objects is null ? format : string.Format(format, objects);
+                formatted = Markup.Remove(formatted);
+                Log.Information(formatted);
+            };
+
+            AaruLogging.ErrorEvent += Log.Error;
+            AaruLogging.VerboseEvent += Log.Verbose;
+            AaruLogging.DebugEvent += (module, format, objects) => Log.Debug($"[blue]{module}[/] {format}", objects);
+            AaruLogging.WriteExceptionEvent += Log.Error;
+            AaruLogging.InformationEvent += Log.Information;
+
+            Settings.Settings.LoadSettings();
+
+            AaruContext ctx = null;
+
             try
             {
-                if(ctx is not null)
+                ctx = AaruContext.Create(Settings.Settings.LocalDbPath, false);
+                await ctx.Database.MigrateAsync();
+            }
+            catch(NotSupportedException)
+            {
+                try
                 {
-                    await ctx.Database.CloseConnectionAsync();
-                    await ctx.DisposeAsync();
+                    if(ctx is not null)
+                    {
+                        await ctx.Database.CloseConnectionAsync();
+                        await ctx.DisposeAsync();
+                    }
                 }
-            }
-            catch(Exception)
-            {
-                // Should not ever arrive here, but if it does, keep trying to replace it anyway
-            }
+                catch(Exception ex)
+                {
+                    // Should not ever arrive here, but if it does, keep trying to replace it anyway
+                    SentrySdk.CaptureException(ex);
+                }
 
-            File.Delete(Settings.Settings.LocalDbPath);
-            ctx = AaruContext.Create(Settings.Settings.LocalDbPath);
-            await ctx.Database.EnsureCreatedAsync();
+                File.Delete(Settings.Settings.LocalDbPath);
+                ctx = AaruContext.Create(Settings.Settings.LocalDbPath);
+                await ctx.Database.EnsureCreatedAsync();
 
-            await ctx.Database
-                     .ExecuteSqlRawAsync("CREATE TABLE IF NOT EXISTS \"__EFMigrationsHistory\" (\"MigrationId\" TEXT PRIMARY KEY, \"ProductVersion\" TEXT)");
-
-            foreach(string migration in await ctx.Database.GetPendingMigrationsAsync())
-            {
-#pragma warning disable EF1002
                 await ctx.Database
-                         .ExecuteSqlRawAsync($"INSERT INTO \"__EFMigrationsHistory\" (MigrationId, ProductVersion) VALUES ('{
-                             migration}', '0.0.0')");
+                         .ExecuteSqlRawAsync("CREATE TABLE IF NOT EXISTS \"__EFMigrationsHistory\" (\"MigrationId\" TEXT PRIMARY KEY, \"ProductVersion\" TEXT)");
+
+                foreach(string migration in await ctx.Database.GetPendingMigrationsAsync())
+                {
+#pragma warning disable EF1002
+                    await ctx.Database
+                             .ExecuteSqlRawAsync($"INSERT INTO \"__EFMigrationsHistory\" (MigrationId, ProductVersion) VALUES ('{
+                                 migration}', '0.0.0')");
 #pragma warning restore EF1002
+                }
+
+                await ctx.SaveChangesAsync();
             }
+
+            // Remove duplicates
+            foreach(var duplicate in ctx.SeenDevices.AsEnumerable()
+                                        .GroupBy(a => new
+                                         {
+                                             a.Manufacturer,
+                                             a.Model,
+                                             a.Revision,
+                                             a.Bus
+                                         })
+                                        .Where(a => a.Count() > 1)
+                                        .Distinct()
+                                        .Select(a => a.Key))
+            {
+                ctx.RemoveRange(ctx.SeenDevices
+                                   .Where(d => d.Manufacturer == duplicate.Manufacturer &&
+                                               d.Model        == duplicate.Model        &&
+                                               d.Revision     == duplicate.Revision     &&
+                                               d.Bus          == duplicate.Bus)
+                                   .Skip(1));
+            }
+
+            // Remove nulls
+            ctx.RemoveRange(ctx.SeenDevices.Where(d => d.Manufacturer == null &&
+                                                       d.Model        == null &&
+                                                       d.Revision     == null));
 
             await ctx.SaveChangesAsync();
-        }
 
-        // Remove duplicates
-        foreach(var duplicate in ctx.SeenDevices.AsEnumerable()
-                                    .GroupBy(a => new
-                                     {
-                                         a.Manufacturer,
-                                         a.Model,
-                                         a.Revision,
-                                         a.Bus
-                                     })
-                                    .Where(a => a.Count() > 1)
-                                    .Distinct()
-                                    .Select(a => a.Key))
-        {
-            ctx.RemoveRange(ctx.SeenDevices
-                               .Where(d => d.Manufacturer == duplicate.Manufacturer &&
-                                           d.Model        == duplicate.Model        &&
-                                           d.Revision     == duplicate.Revision     &&
-                                           d.Bus          == duplicate.Bus)
-                               .Skip(1));
-        }
+            bool mainDbUpdate = false;
 
-        // Remove nulls
-        ctx.RemoveRange(ctx.SeenDevices.Where(d => d.Manufacturer == null && d.Model == null && d.Revision == null));
-
-        await ctx.SaveChangesAsync();
-
-        bool mainDbUpdate = false;
-
-        if(!File.Exists(Settings.Settings.MainDbPath))
-        {
-            mainDbUpdate = true;
-            await UpdateCommand.DoUpdateAsync(true);
-        }
-
-        var mainContext = AaruContext.Create(Settings.Settings.MainDbPath, false);
-
-        if((await mainContext.Database.GetPendingMigrationsAsync()).Any())
-        {
-            AaruLogging.WriteLine(UI.New_database_version_updating);
-
-            try
+            if(!File.Exists(Settings.Settings.MainDbPath))
             {
-                File.Delete(Settings.Settings.MainDbPath);
-            }
-            catch(Exception)
-            {
-                AaruLogging.Error(UI.Exception_trying_to_remove_old_database_version);
-                AaruLogging.Error(UI.Please_manually_remove_file_at_0, Settings.Settings.MainDbPath);
-
-                return (int)ErrorNumber.CannotRemoveDatabase;
+                mainDbUpdate = true;
+                await UpdateCommand.DoUpdateAsync(true);
             }
 
-            await mainContext.Database.CloseConnectionAsync();
-            await mainContext.DisposeAsync();
-            await UpdateCommand.DoUpdateAsync(true);
-        }
+            var mainContext = AaruContext.Create(Settings.Settings.MainDbPath, false);
 
-        // GDPR level compliance does not match and there are no arguments or the arguments are neither GUI neither configure.
-        if(Settings.Settings.Current.GdprCompliance < DicSettings.GDPR_LEVEL &&
-           (args.Length < 1 ||
-            args.Length >= 1                                                          &&
-            !args[0].Equals("gui",       StringComparison.InvariantCultureIgnoreCase) &&
-            !args[0].Equals("configure", StringComparison.InvariantCultureIgnoreCase)))
-            new ConfigureCommand().DoConfigure(true);
+            if((await mainContext.Database.GetPendingMigrationsAsync()).Any())
+            {
+                AaruLogging.WriteLine(UI.New_database_version_updating);
 
-        Statistics.LoadStats();
+                try
+                {
+                    File.Delete(Settings.Settings.MainDbPath);
+                }
+                catch(Exception ex)
+                {
+                    SentrySdk.CaptureException(ex);
+                    AaruLogging.Error(UI.Exception_trying_to_remove_old_database_version);
+                    AaruLogging.Error(UI.Please_manually_remove_file_at_0, Settings.Settings.MainDbPath);
 
-        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                    return (int)ErrorNumber.CannotRemoveDatabase;
+                }
 
-        // There are too many places that depend on this being inited to be sure all are covered, so init it here.
-        PluginBase.Init();
+                await mainContext.Database.CloseConnectionAsync();
+                await mainContext.DisposeAsync();
+                await UpdateCommand.DoUpdateAsync(true);
+            }
 
-        var app = new CommandApp();
+            // GDPR level compliance does not match and there are no arguments or the arguments are neither GUI neither configure.
+            if(Settings.Settings.Current.GdprCompliance < DicSettings.GDPR_LEVEL &&
+               (args.Length < 1 ||
+                args.Length >= 1                                                          &&
+                !args[0].Equals("gui",       StringComparison.InvariantCultureIgnoreCase) &&
+                !args[0].Equals("configure", StringComparison.InvariantCultureIgnoreCase)))
+                new ConfigureCommand().DoConfigure(true);
 
-        app.Configure(config =>
-        {
-            config.UseAssemblyInformationalVersion();
+            Statistics.LoadStats();
 
-            config.AddBranch<ArchiveFamily>("archive",
-                                            archive =>
-                                            {
-                                                archive.SetDescription(UI.Archive_Command_Family_Description);
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-                                                archive.AddCommand<ArchiveListCommand>("list")
-                                                       .WithAlias("l")
-                                                       .WithAlias("ls")
-                                                       .WithDescription(UI.Archive_List_Command_Description);
+            // There are too many places that depend on this being inited to be sure all are covered, so init it here.
+            PluginBase.Init();
 
-                                                archive.AddCommand<ArchiveExtractCommand>("extract")
-                                                       .WithAlias("x")
-                                                       .WithDescription(UI.Archive_Extract_Command_Description);
+            var app = new CommandApp();
 
-                                                archive.AddCommand<ArchiveInfoCommand>("info")
-                                                       .WithAlias("i")
-                                                       .WithDescription(UI.Archive_Info_Command_Description);
-                                            })
-                  .WithAlias("arc");
+            app.Configure(config =>
+            {
+                config.UseAssemblyInformationalVersion();
 
-            config.AddBranch<DeviceFamily>("device",
-                                           device =>
-                                           {
-                                               device.SetDescription(UI.Device_Command_Family_Description);
+                config.AddBranch<ArchiveFamily>("archive",
+                                                archive =>
+                                                {
+                                                    archive.SetDescription(UI.Archive_Command_Family_Description);
 
-                                               device.AddCommand<DeviceReportCommand>("report")
-                                                     .WithDescription(UI.Device_Report_Command_Description);
+                                                    archive.AddCommand<ArchiveListCommand>("list")
+                                                           .WithAlias("l")
+                                                           .WithAlias("ls")
+                                                           .WithDescription(UI.Archive_List_Command_Description);
 
-                                               device.AddCommand<DeviceInfoCommand>("info")
-                                                     .WithAlias("i")
-                                                     .WithDescription(UI.Device_Info_Command_Description);
+                                                    archive.AddCommand<ArchiveExtractCommand>("extract")
+                                                           .WithAlias("x")
+                                                           .WithDescription(UI.Archive_Extract_Command_Description);
 
-                                               device.AddCommand<ListDevicesCommand>("list")
-                                                     .WithAlias("l")
-                                                     .WithAlias("ls")
-                                                     .WithDescription(UI.Device_List_Command_Description);
-                                           })
-                  .WithAlias("dev");
+                                                    archive.AddCommand<ArchiveInfoCommand>("info")
+                                                           .WithAlias("i")
+                                                           .WithDescription(UI.Archive_Info_Command_Description);
+                                                })
+                      .WithAlias("arc");
 
-            config.AddBranch<FilesystemFamily>("filesystem",
-                                               fs =>
+                config.AddBranch<DeviceFamily>("device",
+                                               device =>
                                                {
-                                                   fs.SetDescription(UI.Filesystem_Command_Family_Description);
+                                                   device.SetDescription(UI.Device_Command_Family_Description);
 
-                                                   fs.AddCommand<ExtractFilesCommand>("extract")
-                                                     .WithAlias("x")
-                                                     .WithDescription(UI.Filesystem_Extract_Command_Description);
+                                                   device.AddCommand<DeviceReportCommand>("report")
+                                                         .WithDescription(UI.Device_Report_Command_Description);
 
-                                                   fs.AddCommand<FilesystemInfoCommand>("info")
-                                                     .WithAlias("i")
-                                                     .WithDescription(UI.Filesystem_Info_Command_Description);
+                                                   device.AddCommand<DeviceInfoCommand>("info")
+                                                         .WithAlias("i")
+                                                         .WithDescription(UI.Device_Info_Command_Description);
 
-                                                   fs.AddCommand<LsCommand>("list")
-                                                     .WithAlias("ls")
-                                                     .WithDescription(UI.Filesystem_List_Command_Description);
-
-                                                   fs.AddCommand<ListOptionsCommand>("options")
-                                                     .WithDescription(UI.Filesystem_Options_Command_Description);
+                                                   device.AddCommand<ListDevicesCommand>("list")
+                                                         .WithAlias("l")
+                                                         .WithAlias("ls")
+                                                         .WithDescription(UI.Device_List_Command_Description);
                                                })
-                  .WithAlias("fs")
-                  .WithAlias("fi");
+                      .WithAlias("dev");
 
-            config.AddBranch<ImageFamily>("image",
-                                          image =>
-                                          {
-                                              image.SetDescription(UI.Image_Command_Family_Description);
+                config.AddBranch<FilesystemFamily>("filesystem",
+                                                   fs =>
+                                                   {
+                                                       fs.SetDescription(UI.Filesystem_Command_Family_Description);
 
-                                              image.AddCommand<ChecksumCommand>("checksum")
-                                                   .WithAlias("chk")
-                                                   .WithDescription(UI.Image_Checksum_Command_Description);
+                                                       fs.AddCommand<ExtractFilesCommand>("extract")
+                                                         .WithAlias("x")
+                                                         .WithDescription(UI.Filesystem_Extract_Command_Description);
 
-                                              image.AddCommand<CompareCommand>("compare")
-                                                   .WithAlias("cmp")
-                                                   .WithDescription(UI.Image_Compare_Command_Description);
+                                                       fs.AddCommand<FilesystemInfoCommand>("info")
+                                                         .WithAlias("i")
+                                                         .WithDescription(UI.Filesystem_Info_Command_Description);
 
-                                              image.AddCommand<ConvertImageCommand>("convert")
-                                                   .WithAlias("cvt")
-                                                   .WithDescription(UI.Image_Convert_Command_Description);
+                                                       fs.AddCommand<LsCommand>("list")
+                                                         .WithAlias("ls")
+                                                         .WithDescription(UI.Filesystem_List_Command_Description);
 
-                                              image.AddCommand<CreateSidecarCommand>("create-sidecar")
-                                                   .WithAlias("cs")
-                                                   .WithDescription(UI.Image_Create_Sidecar_Command_Description);
+                                                       fs.AddCommand<ListOptionsCommand>("options")
+                                                         .WithDescription(UI.Filesystem_Options_Command_Description);
+                                                   })
+                      .WithAlias("fs")
+                      .WithAlias("fi");
 
-                                              image.AddCommand<DecodeCommand>("decode")
-                                                   .WithDescription(UI.Image_Decode_Command_Description);
+                config.AddBranch<ImageFamily>("image",
+                                              image =>
+                                              {
+                                                  image.SetDescription(UI.Image_Command_Family_Description);
 
-                                              image.AddCommand<EntropyCommand>("entropy")
-                                                   .WithDescription(UI.Image_Entropy_Command_Description);
+                                                  image.AddCommand<ChecksumCommand>("checksum")
+                                                       .WithAlias("chk")
+                                                       .WithDescription(UI.Image_Checksum_Command_Description);
 
-                                              image.AddCommand<ImageInfoCommand>("info")
-                                                   .WithAlias("i")
-                                                   .WithDescription(UI.Image_Info_Command_Description);
+                                                  image.AddCommand<CompareCommand>("compare")
+                                                       .WithAlias("cmp")
+                                                       .WithDescription(UI.Image_Compare_Command_Description);
 
-                                              image.AddCommand<Commands.Image.ListOptionsCommand>("options")
-                                                   .WithDescription(UI.Image_Options_Command_Description);
+                                                  image.AddCommand<ConvertImageCommand>("convert")
+                                                       .WithAlias("cvt")
+                                                       .WithDescription(UI.Image_Convert_Command_Description);
 
-                                              image.AddCommand<PrintHexCommand>("print-hex")
-                                                   .WithAlias("ph")
-                                                   .WithDescription(UI.Image_Print_Command_Description);
+                                                  image.AddCommand<CreateSidecarCommand>("create-sidecar")
+                                                       .WithAlias("cs")
+                                                       .WithDescription(UI.Image_Create_Sidecar_Command_Description);
 
-                                              image.AddCommand<VerifyCommand>("verify")
-                                                   .WithAlias("v")
-                                                   .WithDescription(UI.Image_Verify_Command_Description);
-                                          })
-                  .WithAlias("i")
-                  .WithAlias("img");
+                                                  image.AddCommand<DecodeCommand>("decode")
+                                                       .WithDescription(UI.Image_Decode_Command_Description);
 
-            config.AddBranch<MediaFamily>("media",
-                                          media =>
-                                          {
-                                              media.SetDescription(UI.Media_Command_Family_Description);
+                                                  image.AddCommand<EntropyCommand>("entropy")
+                                                       .WithDescription(UI.Image_Entropy_Command_Description);
 
-                                              media.AddCommand<MediaInfoCommand>("info")
-                                                   .WithAlias("i")
-                                                   .WithDescription(UI.Media_Info_Command_Description);
+                                                  image.AddCommand<ImageInfoCommand>("info")
+                                                       .WithAlias("i")
+                                                       .WithDescription(UI.Image_Info_Command_Description);
 
-                                              media.AddCommand<MediaScanCommand>("scan")
-                                                   .WithAlias("s")
-                                                   .WithDescription(UI.Media_Scan_Command_Description);
+                                                  image.AddCommand<Commands.Image.ListOptionsCommand>("options")
+                                                       .WithDescription(UI.Image_Options_Command_Description);
 
-                                              media.AddCommand<DumpMediaCommand>("dump")
-                                                   .WithAlias("d")
-                                                   .WithDescription(UI.Media_Dump_Command_Description);
-                                          })
-                  .WithAlias("m");
+                                                  image.AddCommand<PrintHexCommand>("print-hex")
+                                                       .WithAlias("ph")
+                                                       .WithDescription(UI.Image_Print_Command_Description);
 
-            config.AddBranch<DatabaseFamily>("database",
-                                             db =>
-                                             {
-                                                 db.SetDescription(UI.Database_Command_Family_Description);
+                                                  image.AddCommand<VerifyCommand>("verify")
+                                                       .WithAlias("v")
+                                                       .WithDescription(UI.Image_Verify_Command_Description);
+                                              })
+                      .WithAlias("i")
+                      .WithAlias("img");
 
-                                                 db.AddCommand<StatisticsCommand>("stats")
-                                                   .WithDescription(UI.Database_Stats_Command_Description);
+                config.AddBranch<MediaFamily>("media",
+                                              media =>
+                                              {
+                                                  media.SetDescription(UI.Media_Command_Family_Description);
 
-                                                 db.AddCommand<UpdateCommand>("update")
-                                                   .WithDescription(UI.Database_Update_Command_Description);
-                                             })
-                  .WithAlias("db");
+                                                  media.AddCommand<MediaInfoCommand>("info")
+                                                       .WithAlias("i")
+                                                       .WithDescription(UI.Media_Info_Command_Description);
 
-            config.AddCommand<ConfigureCommand>("configure")
-                  .WithAlias("cfg")
-                  .WithDescription(UI.Configure_Command_Description);
+                                                  media.AddCommand<MediaScanCommand>("scan")
+                                                       .WithAlias("s")
+                                                       .WithDescription(UI.Media_Scan_Command_Description);
 
-            config.AddCommand<FormatsCommand>("formats")
-                  .WithAlias("fmt")
-                  .WithDescription(UI.List_Formats_Command_Description);
+                                                  media.AddCommand<DumpMediaCommand>("dump")
+                                                       .WithAlias("d")
+                                                       .WithDescription(UI.Media_Dump_Command_Description);
+                                              })
+                      .WithAlias("m");
 
-            config.AddCommand<ListEncodingsCommand>("list-encodings")
-                  .WithAlias("le")
-                  .WithDescription(UI.List_Encodings_Command_Description);
+                config.AddBranch<DatabaseFamily>("database",
+                                                 db =>
+                                                 {
+                                                     db.SetDescription(UI.Database_Command_Family_Description);
 
-            config.AddCommand<ListNamespacesCommand>("list-namespaces")
-                  .WithAlias("ln")
-                  .WithDescription(UI.List_Namespaces_Command_Description);
+                                                     db.AddCommand<StatisticsCommand>("stats")
+                                                       .WithDescription(UI.Database_Stats_Command_Description);
 
-            config.AddCommand<RemoteCommand>("remote").WithAlias("rem").WithDescription(UI.Remote_Command_Description);
+                                                     db.AddCommand<UpdateCommand>("update")
+                                                       .WithDescription(UI.Database_Update_Command_Description);
+                                                 })
+                      .WithAlias("db");
 
-            config.SetInterceptor(new LoggingInterceptor());
-            config.SetInterceptor(new PausingInterceptor());
-        });
+                config.AddCommand<ConfigureCommand>("configure")
+                      .WithAlias("cfg")
+                      .WithDescription(UI.Configure_Command_Description);
 
-        int ret = await app.RunAsync(args);
+                config.AddCommand<FormatsCommand>("formats")
+                      .WithAlias("fmt")
+                      .WithDescription(UI.List_Formats_Command_Description);
 
-        await Statistics.SaveStatsAsync();
+                config.AddCommand<ListEncodingsCommand>("list-encodings")
+                      .WithAlias("le")
+                      .WithDescription(UI.List_Encodings_Command_Description);
 
-        if(!PauseBeforeExiting) return ret;
+                config.AddCommand<ListNamespacesCommand>("list-namespaces")
+                      .WithAlias("ln")
+                      .WithDescription(UI.List_Namespaces_Command_Description);
 
-        AaruLogging.WriteLine(UI.Press_any_key_to_exit);
-        Console.ReadKey();
+                config.AddCommand<RemoteCommand>("remote")
+                      .WithAlias("rem")
+                      .WithDescription(UI.Remote_Command_Description);
 
-        return ret;
+                config.SetInterceptor(new LoggingInterceptor());
+                config.SetInterceptor(new PausingInterceptor());
+            });
+
+            int ret = await app.RunAsync(args);
+
+            await Statistics.SaveStatsAsync();
+
+            if(!PauseBeforeExiting) return ret;
+
+            AaruLogging.WriteLine(UI.Press_any_key_to_exit);
+            Console.ReadKey();
+
+            return ret;
+        }
+        catch(Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            AnsiConsole.WriteException(ex);
+
+            return (int)ErrorNumber.UnexpectedException;
+        }
     }
 
     internal static void PrintCopyright()

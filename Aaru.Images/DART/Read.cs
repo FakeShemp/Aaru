@@ -41,6 +41,7 @@ using Aaru.Helpers;
 using Aaru.Logging;
 using Claunia.Encoding;
 using Claunia.RsrcFork;
+using Sentry;
 using Version = Resources.Version;
 
 namespace Aaru.Images;
@@ -247,12 +248,15 @@ public sealed partial class Dart
                 }
             }
         }
-        catch(InvalidCastException) {}
+        catch(InvalidCastException ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
 
         AaruLogging.Debug(MODULE_NAME,
-                                   Localization.Image_application_0_version_1,
-                                   _imageInfo.Application,
-                                   _imageInfo.ApplicationVersion);
+                          Localization.Image_application_0_version_1,
+                          _imageInfo.Application,
+                          _imageInfo.ApplicationVersion);
 
         _imageInfo.Sectors              = (ulong)(header.srcSize * 2);
         _imageInfo.CreationTime         = imageFilter.CreationTime;

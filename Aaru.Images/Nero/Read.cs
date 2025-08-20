@@ -42,6 +42,7 @@ using Aaru.CommonTypes.Structs;
 using Aaru.Decoders.CD;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Sentry;
 
 namespace Aaru.Images;
 
@@ -74,16 +75,16 @@ public sealed partial class Nero
             AaruLogging.Debug(MODULE_NAME, "imageStream.Length = {0}", _imageStream.Length);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "footerV1.ChunkID = 0x{0:X8} (\"{1}\")",
-                                       footerV1.ChunkId,
-                                       Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(footerV1.ChunkId)));
+                              "footerV1.ChunkID = 0x{0:X8} (\"{1}\")",
+                              footerV1.ChunkId,
+                              Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(footerV1.ChunkId)));
 
             AaruLogging.Debug(MODULE_NAME, "footerV1.FirstChunkOffset = {0}", footerV1.FirstChunkOffset);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "footerV2.ChunkID = 0x{0:X8} (\"{1}\")",
-                                       footerV2.ChunkId,
-                                       Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(footerV2.ChunkId)));
+                              "footerV2.ChunkID = 0x{0:X8} (\"{1}\")",
+                              footerV2.ChunkId,
+                              Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(footerV2.ChunkId)));
 
             AaruLogging.Debug(MODULE_NAME, "footerV2.FirstChunkOffset = {0}", footerV2.FirstChunkOffset);
 
@@ -129,9 +130,9 @@ public sealed partial class Nero
                 uint chunkLength = BigEndianBitConverter.ToUInt32(chunkHeaderBuffer, 4);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "ChunkID = 0x{0:X8} (\"{1}\")",
-                                           chunkId,
-                                           Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(chunkId)));
+                                  "ChunkID = 0x{0:X8} (\"{1}\")",
+                                  chunkId,
+                                  Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(chunkId)));
 
                 AaruLogging.Debug(MODULE_NAME, "ChunkLength = {0}", chunkLength);
 
@@ -139,9 +140,7 @@ public sealed partial class Nero
                 {
                     case NERO_CUE_V1:
                     {
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Found_CUES_chunk_parsing_0_bytes,
-                                                   chunkLength);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Found_CUES_chunk_parsing_0_bytes, chunkLength);
 
                         var newCuesheetV1 = new CuesheetV1
                         {
@@ -167,40 +166,25 @@ public sealed partial class Nero
 
                             AaruLogging.Debug(MODULE_NAME, Localization.Cuesheet_entry_0, i / 8 + 1);
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Mode = {1:X2}",
-                                                       i / 8 + 1,
-                                                       entry.Mode);
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].Mode = {1:X2}", i / 8 + 1, entry.Mode);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].TrackNumber = {1:X2}",
-                                                       i / 8 + 1,
-                                                       entry.TrackNumber);
+                                              "\t _entry[{0}].TrackNumber = {1:X2}",
+                                              i / 8 + 1,
+                                              entry.TrackNumber);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].IndexNumber = {1:X2}",
-                                                       i / 8 + 1,
-                                                       entry.IndexNumber);
+                                              "\t _entry[{0}].IndexNumber = {1:X2}",
+                                              i / 8 + 1,
+                                              entry.IndexNumber);
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Dummy = {1:X4}",
-                                                       i / 8 + 1,
-                                                       entry.Dummy);
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].Dummy = {1:X4}", i / 8 + 1, entry.Dummy);
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Minute = {1:X2}",
-                                                       i / 8 + 1,
-                                                       entry.Minute);
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].Minute = {1:X2}", i / 8 + 1, entry.Minute);
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Second = {1:X2}",
-                                                       i / 8 + 1,
-                                                       entry.Second);
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].Second = {1:X2}", i / 8 + 1, entry.Second);
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Frame = {1:X2}",
-                                                       i / 8 + 1,
-                                                       entry.Frame);
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].Frame = {1:X2}", i / 8 + 1, entry.Frame);
 
                             newCuesheetV1.Entries.Add(entry);
                         }
@@ -215,9 +199,7 @@ public sealed partial class Nero
 
                     case NERO_CUE_V2:
                     {
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Found_CUEX_chunk_parsing_0_bytes,
-                                                   chunkLength);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Found_CUEX_chunk_parsing_0_bytes, chunkLength);
 
                         var newCuesheetV2 = new CuesheetV2
                         {
@@ -240,30 +222,21 @@ public sealed partial class Nero
 
                             AaruLogging.Debug(MODULE_NAME, Localization.Cuesheet_entry_0, i / 8 + 1);
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Mode = 0x{1:X2}",
-                                                       i / 8 + 1,
-                                                       entry.Mode);
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].Mode = 0x{1:X2}", i / 8 + 1, entry.Mode);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].TrackNumber = {1:X2}",
-                                                       i / 8 + 1,
-                                                       entry.TrackNumber);
+                                              "\t _entry[{0}].TrackNumber = {1:X2}",
+                                              i / 8 + 1,
+                                              entry.TrackNumber);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].IndexNumber = {1:X2}",
-                                                       i / 8 + 1,
-                                                       entry.IndexNumber);
+                                              "\t _entry[{0}].IndexNumber = {1:X2}",
+                                              i / 8 + 1,
+                                              entry.IndexNumber);
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Dummy = {1:X2}",
-                                                       i / 8 + 1,
-                                                       entry.Dummy);
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].Dummy = {1:X2}", i / 8 + 1, entry.Dummy);
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].LBAStart = {1}",
-                                                       i / 8 + 1,
-                                                       entry.LbaStart);
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].LBAStart = {1}", i / 8 + 1, entry.LbaStart);
 
                             newCuesheetV2.Entries.Add(entry);
                         }
@@ -278,9 +251,7 @@ public sealed partial class Nero
 
                     case NERO_DAO_V1:
                     {
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Found_DAOI_chunk_parsing_0_bytes,
-                                                   chunkLength);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Found_DAOI_chunk_parsing_0_bytes, chunkLength);
 
                         _neroDaov1 = new DaoV1
                         {
@@ -298,13 +269,11 @@ public sealed partial class Nero
                         _neroDaov1.LastTrack  = tmpBuffer[21];
                         _neroDaov1.Tracks     = [];
 
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   "neroDAOV1.ChunkSizeLe = {0} bytes",
-                                                   _neroDaov1.ChunkSizeLe);
+                        AaruLogging.Debug(MODULE_NAME, "neroDAOV1.ChunkSizeLe = {0} bytes", _neroDaov1.ChunkSizeLe);
 
                         AaruLogging.Debug(MODULE_NAME,
-                                                   "neroDAOV1.UPC = \"{0}\"",
-                                                   StringHandlers.CToString(_neroDaov1.Upc));
+                                          "neroDAOV1.UPC = \"{0}\"",
+                                          StringHandlers.CToString(_neroDaov1.Upc));
 
                         AaruLogging.Debug(MODULE_NAME, "neroDAOV1.TocType = 0x{0:X4}", _neroDaov1.TocType);
 
@@ -350,40 +319,34 @@ public sealed partial class Nero
                             AaruLogging.Debug(MODULE_NAME, Localization.Disc_At_Once_entry_0, i / 32 + 1);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].ISRC = \"{1}\"",
-                                                       i / 32 + 1,
-                                                       StringHandlers.CToString(entry.Isrc));
+                                              "\t _entry[{0}].ISRC = \"{1}\"",
+                                              i / 32 + 1,
+                                              StringHandlers.CToString(entry.Isrc));
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].SectorSize = {1}",
-                                                       i / 32 + 1,
-                                                       entry.SectorSize);
+                                              "\t _entry[{0}].SectorSize = {1}",
+                                              i / 32 + 1,
+                                              entry.SectorSize);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Mode = {1} (0x{2:X4})",
-                                                       i / 32 + 1,
-                                                       (DaoMode)entry.Mode,
-                                                       entry.Mode);
+                                              "\t _entry[{0}].Mode = {1} (0x{2:X4})",
+                                              i / 32 + 1,
+                                              (DaoMode)entry.Mode,
+                                              entry.Mode);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Unknown = 0x{1:X4}",
-                                                       i / 32 + 1,
-                                                       entry.Unknown);
+                                              "\t _entry[{0}].Unknown = 0x{1:X4}",
+                                              i / 32 + 1,
+                                              entry.Unknown);
+
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].Index0 = {1}", i / 32 + 1, entry.Index0);
+
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].Index1 = {1}", i / 32 + 1, entry.Index1);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Index0 = {1}",
-                                                       i / 32 + 1,
-                                                       entry.Index0);
-
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Index1 = {1}",
-                                                       i / 32 + 1,
-                                                       entry.Index1);
-
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].EndOfTrack = {1}",
-                                                       i / 32 + 1,
-                                                       entry.EndOfTrack);
+                                              "\t _entry[{0}].EndOfTrack = {1}",
+                                              i / 32 + 1,
+                                              entry.EndOfTrack);
 
                             _neroDaov1.Tracks.Add(entry);
 
@@ -413,9 +376,7 @@ public sealed partial class Nero
 
                     case NERO_DAO_V2:
                     {
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Found_DAOX_chunk_parsing_0_bytes,
-                                                   chunkLength);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Found_DAOX_chunk_parsing_0_bytes, chunkLength);
 
                         _neroDaov2 = new DaoV2
                         {
@@ -435,13 +396,11 @@ public sealed partial class Nero
 
                         _upc = _neroDaov2.Upc;
 
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   "neroDAOV2.ChunkSizeLe = {0} bytes",
-                                                   _neroDaov2.ChunkSizeLe);
+                        AaruLogging.Debug(MODULE_NAME, "neroDAOV2.ChunkSizeLe = {0} bytes", _neroDaov2.ChunkSizeLe);
 
                         AaruLogging.Debug(MODULE_NAME,
-                                                   "neroDAOV2.UPC = \"{0}\"",
-                                                   StringHandlers.CToString(_neroDaov2.Upc));
+                                          "neroDAOV2.UPC = \"{0}\"",
+                                          StringHandlers.CToString(_neroDaov2.Upc));
 
                         AaruLogging.Debug(MODULE_NAME, "neroDAOV2.TocType = 0x{0:X4}", _neroDaov2.TocType);
 
@@ -485,40 +444,34 @@ public sealed partial class Nero
                             AaruLogging.Debug(MODULE_NAME, Localization.Disc_At_Once_entry_0, i / 32 + 1);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].ISRC = \"{1}\"",
-                                                       i / 32 + 1,
-                                                       StringHandlers.CToString(entry.Isrc));
+                                              "\t _entry[{0}].ISRC = \"{1}\"",
+                                              i / 32 + 1,
+                                              StringHandlers.CToString(entry.Isrc));
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].SectorSize = {1}",
-                                                       i / 32 + 1,
-                                                       entry.SectorSize);
+                                              "\t _entry[{0}].SectorSize = {1}",
+                                              i / 32 + 1,
+                                              entry.SectorSize);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Mode = {1} (0x{2:X4})",
-                                                       i / 32 + 1,
-                                                       (DaoMode)entry.Mode,
-                                                       entry.Mode);
+                                              "\t _entry[{0}].Mode = {1} (0x{2:X4})",
+                                              i / 32 + 1,
+                                              (DaoMode)entry.Mode,
+                                              entry.Mode);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Unknown = {1:X2}",
-                                                       i / 32 + 1,
-                                                       entry.Unknown);
+                                              "\t _entry[{0}].Unknown = {1:X2}",
+                                              i / 32 + 1,
+                                              entry.Unknown);
+
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].Index0 = {1}", i / 32 + 1, entry.Index0);
+
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].Index1 = {1}", i / 32 + 1, entry.Index1);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Index0 = {1}",
-                                                       i / 32 + 1,
-                                                       entry.Index0);
-
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Index1 = {1}",
-                                                       i / 32 + 1,
-                                                       entry.Index1);
-
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].EndOfTrack = {1}",
-                                                       i / 32 + 1,
-                                                       entry.EndOfTrack);
+                                              "\t _entry[{0}].EndOfTrack = {1}",
+                                              i / 32 + 1,
+                                              entry.EndOfTrack);
 
                             _neroDaov2.Tracks.Add(entry);
 
@@ -549,9 +502,7 @@ public sealed partial class Nero
 
                     case NERO_CDTEXT:
                     {
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Found_CDTX_chunk_parsing_0_bytes,
-                                                   chunkLength);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Found_CDTX_chunk_parsing_0_bytes, chunkLength);
 
                         _cdtxt = new CdText
                         {
@@ -578,34 +529,31 @@ public sealed partial class Nero
                             AaruLogging.Debug(MODULE_NAME, Localization.CD_TEXT_entry_0, i / 18 + 1);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].PackType = 0x{1:X2}",
-                                                       i / 18 + 1,
-                                                       entry.PackType);
+                                              "\t _entry[{0}].PackType = 0x{1:X2}",
+                                              i / 18 + 1,
+                                              entry.PackType);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].TrackNumber = 0x{1:X2}",
-                                                       i / 18 + 1,
-                                                       entry.TrackNumber);
+                                              "\t _entry[{0}].TrackNumber = 0x{1:X2}",
+                                              i / 18 + 1,
+                                              entry.TrackNumber);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].PackNumber = 0x{1:X2}",
-                                                       i / 18 + 1,
-                                                       entry.PackNumber);
+                                              "\t _entry[{0}].PackNumber = 0x{1:X2}",
+                                              i / 18 + 1,
+                                              entry.PackNumber);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].BlockNumber = 0x{1:X2}",
-                                                       i / 18 + 1,
-                                                       entry.BlockNumber);
+                                              "\t _entry[{0}].BlockNumber = 0x{1:X2}",
+                                              i / 18 + 1,
+                                              entry.BlockNumber);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Text = \"{1}\"",
-                                                       i / 18 + 1,
-                                                       StringHandlers.CToString(entry.Text));
+                                              "\t _entry[{0}].Text = \"{1}\"",
+                                              i / 18 + 1,
+                                              StringHandlers.CToString(entry.Text));
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].CRC = 0x{1:X4}",
-                                                       i / 18 + 1,
-                                                       entry.Crc);
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].CRC = 0x{1:X4}", i / 18 + 1, entry.Crc);
 
                             _cdtxt.Packs.Add(entry);
                         }
@@ -615,9 +563,7 @@ public sealed partial class Nero
 
                     case NERO_TAO_V0:
                     {
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Found_TINF_chunk_parsing_0_bytes,
-                                                   chunkLength);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Found_TINF_chunk_parsing_0_bytes, chunkLength);
 
                         oldFormat = true;
 
@@ -641,21 +587,18 @@ public sealed partial class Nero
 
                             AaruLogging.Debug(MODULE_NAME, Localization.Track_at_Once_entry_0, i / 20 + 1);
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Offset = {1}",
-                                                       i / 20 + 1,
-                                                       entry.Offset);
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].Offset = {1}", i / 20 + 1, entry.Offset);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Length = {1} bytes",
-                                                       i / 20 + 1,
-                                                       entry.Length);
+                                              "\t _entry[{0}].Length = {1} bytes",
+                                              i / 20 + 1,
+                                              entry.Length);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Mode = {1} (0x{2:X4})",
-                                                       i / 20 + 1,
-                                                       (DaoMode)entry.Mode,
-                                                       entry.Mode);
+                                              "\t _entry[{0}].Mode = {1} (0x{2:X4})",
+                                              i / 20 + 1,
+                                              (DaoMode)entry.Mode,
+                                              entry.Mode);
 
                             _taoV0.Tracks.Add(entry);
 
@@ -688,9 +631,7 @@ public sealed partial class Nero
 
                     case NERO_TAO_V1:
                     {
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Found_ETNF_chunk_parsing_0_bytes,
-                                                   chunkLength);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Found_ETNF_chunk_parsing_0_bytes, chunkLength);
 
                         _taoV1 = new TaoV1
                         {
@@ -714,31 +655,25 @@ public sealed partial class Nero
 
                             AaruLogging.Debug(MODULE_NAME, Localization.Track_at_Once_entry_0, i / 20 + 1);
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Offset = {1}",
-                                                       i / 20 + 1,
-                                                       entry.Offset);
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].Offset = {1}", i / 20 + 1, entry.Offset);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Length = {1} bytes",
-                                                       i / 20 + 1,
-                                                       entry.Length);
+                                              "\t _entry[{0}].Length = {1} bytes",
+                                              i / 20 + 1,
+                                              entry.Length);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Mode = {1} (0x{2:X4})",
-                                                       i / 20 + 1,
-                                                       (DaoMode)entry.Mode,
-                                                       entry.Mode);
+                                              "\t _entry[{0}].Mode = {1} (0x{2:X4})",
+                                              i / 20 + 1,
+                                              (DaoMode)entry.Mode,
+                                              entry.Mode);
+
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].StartLBA = {1}", i / 20 + 1, entry.StartLba);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].StartLBA = {1}",
-                                                       i / 20 + 1,
-                                                       entry.StartLba);
-
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Unknown = 0x{1:X4}",
-                                                       i / 20 + 1,
-                                                       entry.Unknown);
+                                              "\t _entry[{0}].Unknown = 0x{1:X4}",
+                                              i / 20 + 1,
+                                              entry.Unknown);
 
                             _taoV1.Tracks.Add(entry);
 
@@ -770,9 +705,7 @@ public sealed partial class Nero
 
                     case NERO_TAO_V2:
                     {
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Found_ETN2_chunk_parsing_0_bytes,
-                                                   chunkLength);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Found_ETN2_chunk_parsing_0_bytes, chunkLength);
 
                         _taoV2 = new TaoV2
                         {
@@ -797,36 +730,27 @@ public sealed partial class Nero
 
                             AaruLogging.Debug(MODULE_NAME, Localization.Track_at_Once_entry_0, i / 32 + 1);
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Offset = {1}",
-                                                       i / 32 + 1,
-                                                       entry.Offset);
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].Offset = {1}", i / 32 + 1, entry.Offset);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Length = {1} bytes",
-                                                       i / 32 + 1,
-                                                       entry.Length);
+                                              "\t _entry[{0}].Length = {1} bytes",
+                                              i / 32 + 1,
+                                              entry.Length);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Mode = {1} (0x{2:X4})",
-                                                       i / 32 + 1,
-                                                       (DaoMode)entry.Mode,
-                                                       entry.Mode);
+                                              "\t _entry[{0}].Mode = {1} (0x{2:X4})",
+                                              i / 32 + 1,
+                                              (DaoMode)entry.Mode,
+                                              entry.Mode);
+
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].StartLBA = {1}", i / 32 + 1, entry.StartLba);
 
                             AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].StartLBA = {1}",
-                                                       i / 32 + 1,
-                                                       entry.StartLba);
+                                              "\t _entry[{0}].Unknown = 0x{1:X4}",
+                                              i / 32 + 1,
+                                              entry.Unknown);
 
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Unknown = 0x{1:X4}",
-                                                       i / 32 + 1,
-                                                       entry.Unknown);
-
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       "\t _entry[{0}].Sectors = {1}",
-                                                       i / 32 + 1,
-                                                       entry.Sectors);
+                            AaruLogging.Debug(MODULE_NAME, "\t _entry[{0}].Sectors = {1}", i / 32 + 1, entry.Sectors);
 
                             _taoV2.Tracks.Add(entry);
 
@@ -867,9 +791,7 @@ public sealed partial class Nero
 
                     case NERO_SESSION:
                     {
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Found_SINF_chunk_parsing_0_bytes,
-                                                   chunkLength);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Found_SINF_chunk_parsing_0_bytes, chunkLength);
 
                         byte[] tmpBuffer = new byte[4];
                         _imageStream.EnsureRead(tmpBuffer, 0, 4);
@@ -877,9 +799,9 @@ public sealed partial class Nero
                         _neroSessions.Add(currentSession, sessionTracks);
 
                         AaruLogging.Debug(MODULE_NAME,
-                                                   "\t" + Localization.Session_0_has_1_tracks,
-                                                   currentSession,
-                                                   sessionTracks);
+                                          "\t" + Localization.Session_0_has_1_tracks,
+                                          currentSession,
+                                          sessionTracks);
 
                         currentSession++;
 
@@ -888,9 +810,7 @@ public sealed partial class Nero
 
                     case NERO_DISC_TYPE:
                     {
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Found_MTYP_chunk_parsing_0_bytes,
-                                                   chunkLength);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Found_MTYP_chunk_parsing_0_bytes, chunkLength);
 
                         _mediaType = new MediaType
                         {
@@ -903,9 +823,9 @@ public sealed partial class Nero
                         _mediaType.Type = BigEndianBitConverter.ToUInt32(tmpBuffer, 0);
 
                         AaruLogging.Debug(MODULE_NAME,
-                                                   "\t" + Localization.Media_type_is_0_1,
-                                                   (NeroMediaTypes)_mediaType.Type,
-                                                   _mediaType.Type);
+                                          "\t" + Localization.Media_type_is_0_1,
+                                          (NeroMediaTypes)_mediaType.Type,
+                                          _mediaType.Type);
 
                         _imageInfo.MediaType = NeroMediaTypeToMediaType((NeroMediaTypes)_mediaType.Type);
 
@@ -914,9 +834,7 @@ public sealed partial class Nero
 
                     case NERO_DISC_INFO:
                     {
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Found_DINF_chunk_parsing_0_bytes,
-                                                   chunkLength);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Found_DINF_chunk_parsing_0_bytes, chunkLength);
 
                         _discInfo = new DiscInformation
                         {
@@ -928,18 +846,14 @@ public sealed partial class Nero
                         _imageStream.EnsureRead(tmpBuffer, 0, 4);
                         _discInfo.Unknown = BigEndianBitConverter.ToUInt32(tmpBuffer, 0);
 
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   "\tneroDiscInfo.Unknown = 0x{0:X4} ({0})",
-                                                   _discInfo.Unknown);
+                        AaruLogging.Debug(MODULE_NAME, "\tneroDiscInfo.Unknown = 0x{0:X4} ({0})", _discInfo.Unknown);
 
                         break;
                     }
 
                     case NERO_RELOCATION:
                     {
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Found_RELO_chunk_parsing_0_bytes,
-                                                   chunkLength);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Found_RELO_chunk_parsing_0_bytes, chunkLength);
 
                         _relo = new ReloChunk
                         {
@@ -958,9 +872,7 @@ public sealed partial class Nero
 
                     case NERO_TOC:
                     {
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Found_TOCT_chunk_parsing_0_bytes,
-                                                   chunkLength);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Found_TOCT_chunk_parsing_0_bytes, chunkLength);
 
                         _toc = new TocChunk
                         {
@@ -996,8 +908,8 @@ public sealed partial class Nero
                     default:
                     {
                         AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Unknown_chunk_ID_0_skipping,
-                                                   Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(chunkId)));
+                                          Localization.Unknown_chunk_ID_0_skipping,
+                                          Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(chunkId)));
 
                         _imageStream.Seek(chunkLength, SeekOrigin.Current);
 
@@ -1006,8 +918,7 @@ public sealed partial class Nero
                 }
             }
 
-            if(corruptedTrackMode)
-                AaruLogging.Error(Localization.Inconsistent_track_mode_and_track_sector_size_found);
+            if(corruptedTrackMode) AaruLogging.Error(Localization.Inconsistent_track_mode_and_track_sector_size_found);
 
             _imageInfo.HasPartitions         = true;
             _imageInfo.HasSessions           = true;
@@ -1072,11 +983,9 @@ public sealed partial class Nero
             {
                 if(neroTrack.Offset >= (_imageNewFormat ? footerV2.FirstChunkOffset : footerV1.FirstChunkOffset))
                 {
-                    AaruLogging.Error(Localization
-                                                  .This_image_contains_a_track_that_is_set_to_start_outside_the_file);
+                    AaruLogging.Error(Localization.This_image_contains_a_track_that_is_set_to_start_outside_the_file);
 
-                    AaruLogging.Error(Localization
-                                                  .Breaking_track_processing_and_trying_recovery_of_information);
+                    AaruLogging.Error(Localization.Breaking_track_processing_and_trying_recovery_of_information);
 
                     break;
                 }
@@ -1084,9 +993,7 @@ public sealed partial class Nero
                 AaruLogging.Debug(MODULE_NAME, "\tcurrentSession = {0}",         currentSession);
                 AaruLogging.Debug(MODULE_NAME, "\tcurrentSessionMaxTrack = {0}", currentSessionMaxTrack);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "\tcurrentSessionCurrentTrack = {0}",
-                                           currentSessionCurrentTrack);
+                AaruLogging.Debug(MODULE_NAME, "\tcurrentSessionCurrentTrack = {0}", currentSessionCurrentTrack);
 
                 var track = new Track();
 
@@ -1663,8 +1570,10 @@ public sealed partial class Nero
 
             return ErrorNumber.NoError;
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+            AaruLogging.Exception(ex, Localization.Exception_occurred_opening_file);
             AaruLogging.Debug(MODULE_NAME, Localization.Exception_occurred_opening_file);
 
             return ErrorNumber.UnexpectedException;

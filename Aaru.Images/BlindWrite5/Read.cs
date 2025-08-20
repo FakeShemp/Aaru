@@ -49,6 +49,7 @@ using Aaru.Filters;
 using Aaru.Helpers;
 using Aaru.Helpers.IO;
 using Aaru.Logging;
+using Sentry;
 using DMI = Aaru.Decoders.Xbox.DMI;
 using Sector = Aaru.Decoders.CD.Sector;
 using Session = Aaru.CommonTypes.Structs.Session;
@@ -104,9 +105,7 @@ public sealed partial class BlindWrite5
         for(int i = 0; i < _header.unknown6.Length; i++)
             AaruLogging.Debug(MODULE_NAME, "header.unknown6[{1}] = 0x{0:X2}", _header.unknown6[i], i);
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "header.manufacturer = {0}",
-                                   StringHandlers.CToString(_header.manufacturer));
+        AaruLogging.Debug(MODULE_NAME, "header.manufacturer = {0}", StringHandlers.CToString(_header.manufacturer));
 
         AaruLogging.Debug(MODULE_NAME, "header.product = {0}", StringHandlers.CToString(_header.product));
 
@@ -131,11 +130,7 @@ public sealed partial class BlindWrite5
             var decoded2A = ModePage_2A.Decode(_mode2A);
 
             if(decoded2A is not null)
-            {
-                AaruLogging.Debug(MODULE_NAME,
-                                           Localization.mode_page_2A_0,
-                                           Modes.PrettifyModePage_2A(decoded2A));
-            }
+                AaruLogging.Debug(MODULE_NAME, Localization.mode_page_2A_0, Modes.PrettifyModePage_2A(decoded2A));
             else
                 _mode2A = null;
         }
@@ -231,8 +226,8 @@ public sealed partial class BlindWrite5
             stream.EnsureRead(_discInformation, 0, _discInformation.Length);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization.Disc_information_0,
-                                       PrintHex.ByteArrayToHexArrayString(_discInformation, 40));
+                              Localization.Disc_information_0,
+                              PrintHex.ByteArrayToHexArrayString(_discInformation, 40));
         }
         else
             _discInformation = null;
@@ -345,160 +340,160 @@ public sealed partial class BlindWrite5
                 }
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].type = {2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].type);
+                                  "session[{0}].track[{1}].type = {2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].type);
 
                 for(int i = 0; i < session.Tracks[tSeq].unknown1.Length; i++)
                 {
                     AaruLogging.Debug(MODULE_NAME,
-                                               "session[{0}].track[{1}].unknown1[{2}] = 0x{3:X2}",
-                                               ses,
-                                               tSeq,
-                                               i,
-                                               session.Tracks[tSeq].unknown1[i]);
+                                      "session[{0}].track[{1}].unknown1[{2}] = 0x{3:X2}",
+                                      ses,
+                                      tSeq,
+                                      i,
+                                      session.Tracks[tSeq].unknown1[i]);
                 }
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].unknown2 = 0x{2:X8}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].unknown2);
+                                  "session[{0}].track[{1}].unknown2 = 0x{2:X8}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].unknown2);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].subchannel = {2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].subchannel);
+                                  "session[{0}].track[{1}].subchannel = {2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].subchannel);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].unknown3 = 0x{2:X2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].unknown3);
+                                  "session[{0}].track[{1}].unknown3 = 0x{2:X2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].unknown3);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].ctl = {2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].ctl);
+                                  "session[{0}].track[{1}].ctl = {2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].ctl);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].adr = {2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].adr);
+                                  "session[{0}].track[{1}].adr = {2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].adr);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].point = {2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].point);
+                                  "session[{0}].track[{1}].point = {2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].point);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].unknown4 = 0x{2:X2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].tno);
+                                  "session[{0}].track[{1}].unknown4 = 0x{2:X2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].tno);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].min = {2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].min);
+                                  "session[{0}].track[{1}].min = {2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].min);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].sec = {2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].sec);
+                                  "session[{0}].track[{1}].sec = {2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].sec);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].frame = {2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].frame);
+                                  "session[{0}].track[{1}].frame = {2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].frame);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].zero = {2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].zero);
+                                  "session[{0}].track[{1}].zero = {2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].zero);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].pmin = {2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].pmin);
+                                  "session[{0}].track[{1}].pmin = {2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].pmin);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].psec = {2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].psec);
+                                  "session[{0}].track[{1}].psec = {2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].psec);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].pframe = {2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].pframe);
+                                  "session[{0}].track[{1}].pframe = {2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].pframe);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].unknown5 = 0x{2:X2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].unknown5);
+                                  "session[{0}].track[{1}].unknown5 = 0x{2:X2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].unknown5);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].pregap = {2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].pregap);
+                                  "session[{0}].track[{1}].pregap = {2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].pregap);
 
                 for(int i = 0; i < session.Tracks[tSeq].unknown6.Length; i++)
                 {
                     AaruLogging.Debug(MODULE_NAME,
-                                               "session[{0}].track[{1}].unknown6[{2}] = 0x{3:X8}",
-                                               ses,
-                                               tSeq,
-                                               i,
-                                               session.Tracks[tSeq].unknown6[i]);
+                                      "session[{0}].track[{1}].unknown6[{2}] = 0x{3:X8}",
+                                      ses,
+                                      tSeq,
+                                      i,
+                                      session.Tracks[tSeq].unknown6[i]);
                 }
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].startLba = {2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].startLba);
+                                  "session[{0}].track[{1}].startLba = {2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].startLba);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].sectors = {2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].sectors);
+                                  "session[{0}].track[{1}].sectors = {2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].sectors);
 
                 for(int i = 0; i < session.Tracks[tSeq].unknown7.Length; i++)
                 {
                     AaruLogging.Debug(MODULE_NAME,
-                                               "session[{0}].track[{1}].unknown7[{2}] = 0x{3:X8}",
-                                               ses,
-                                               tSeq,
-                                               i,
-                                               session.Tracks[tSeq].unknown7[i]);
+                                      "session[{0}].track[{1}].unknown7[{2}] = 0x{3:X8}",
+                                      ses,
+                                      tSeq,
+                                      i,
+                                      session.Tracks[tSeq].unknown7[i]);
                 }
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].session = {2}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].session);
+                                  "session[{0}].track[{1}].session = {2}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].session);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{0}].track[{1}].unknown8 = 0x{2:X4}",
-                                           ses,
-                                           tSeq,
-                                           session.Tracks[tSeq].unknown8);
+                                  "session[{0}].track[{1}].unknown8 = 0x{2:X4}",
+                                  ses,
+                                  tSeq,
+                                  session.Tracks[tSeq].unknown8);
 
                 if(session.Tracks[tSeq].type is TrackType.Dvd or TrackType.NotData) continue;
 
@@ -506,11 +501,11 @@ public sealed partial class BlindWrite5
                     for(int i = 0; i < session.Tracks[tSeq].unknown9.Length; i++)
                     {
                         AaruLogging.Debug(MODULE_NAME,
-                                                   "session[{0}].track[{1}].unknown9[{2}] = 0x{3:X8}",
-                                                   ses,
-                                                   tSeq,
-                                                   i,
-                                                   session.Tracks[tSeq].unknown9[i]);
+                                          "session[{0}].track[{1}].unknown9[{2}] = 0x{3:X8}",
+                                          ses,
+                                          tSeq,
+                                          i,
+                                          session.Tracks[tSeq].unknown9[i]);
                     }
                 }
             }
@@ -533,7 +528,7 @@ public sealed partial class BlindWrite5
         else
         {
             AaruLogging.Error(Localization
-                                          .BlindWrite5_image_ends_after_expected_position_Probably_new_version_with_different_data_Errors_may_occur);
+                                 .BlindWrite5_image_ends_after_expected_position_Probably_new_version_with_different_data_Errors_may_occur);
         }
 
         _filePaths = [];
@@ -683,8 +678,7 @@ public sealed partial class BlindWrite5
 
                         break;
                     default:
-                        AaruLogging.Error(Localization.BlindWrite5_found_unknown_subchannel_size_0,
-                                                   sectorSize - 2352);
+                        AaruLogging.Error(Localization.BlindWrite5_found_unknown_subchannel_size_0, sectorSize - 2352);
 
                         return ErrorNumber.NotSupported;
                 }
@@ -1044,8 +1038,10 @@ public sealed partial class BlindWrite5
 
                         splitStream.AddRange(basePath, $"{filename}.{extension}");
                     }
-                    catch(Exception)
+                    catch(Exception ex)
                     {
+                        SentrySdk.CaptureException(ex);
+                        AaruLogging.Exception(ex, Localization.Could_not_find_image_for_track_0, trk.point);
                         AaruLogging.Error(Localization.Could_not_find_image_for_track_0, trk.point);
 
                         return ErrorNumber.NoSuchFile;

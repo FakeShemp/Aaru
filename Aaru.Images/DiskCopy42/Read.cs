@@ -40,6 +40,7 @@ using Aaru.Helpers;
 using Aaru.Logging;
 using Claunia.Encoding;
 using Claunia.RsrcFork;
+using Sentry;
 using Version = Resources.Version;
 
 namespace Aaru.Images;
@@ -121,9 +122,7 @@ public sealed partial class DiskCopy42
            header.FmtByte != kFmtNotStandard           &&
            header.FmtByte != kMacOSXFmtByte)
         {
-            AaruLogging.Debug(MODULE_NAME,
-                                       Localization.Unknown_tmp_header_fmtByte_equals_0_value,
-                                       header.FmtByte);
+            AaruLogging.Debug(MODULE_NAME, Localization.Unknown_tmp_header_fmtByte_equals_0_value, header.FmtByte);
 
             return ErrorNumber.NotSupported;
         }
@@ -215,8 +214,7 @@ public sealed partial class DiskCopy42
             }
             else
             {
-                AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Lisa_Twiggy_detected_reversing_second_half_of_disk);
+                AaruLogging.Debug(MODULE_NAME, Localization.Lisa_Twiggy_detected_reversing_second_half_of_disk);
 
                 Array.Copy(data, 0, twiggyCache,     0, header.DataSize / 2);
                 Array.Copy(tags, 0, twiggyCacheTags, 0, header.TagSize  / 2);
@@ -318,12 +316,15 @@ public sealed partial class DiskCopy42
                 }
             }
         }
-        catch(InvalidCastException) {}
+        catch(InvalidCastException ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
 
         AaruLogging.Debug(MODULE_NAME,
-                                   Localization.Image_application_0_version_1,
-                                   imageInfo.Application,
-                                   imageInfo.ApplicationVersion);
+                          Localization.Image_application_0_version_1,
+                          imageInfo.Application,
+                          imageInfo.ApplicationVersion);
 
         imageInfo.MetadataMediaType = MetadataMediaType.BlockMedia;
         AaruLogging.Verbose(Localization.DiskCopy_4_2_image_contains_a_disk_of_type_0, imageInfo.MediaType);

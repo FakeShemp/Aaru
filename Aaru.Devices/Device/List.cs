@@ -34,6 +34,7 @@ using System;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Interop;
 using Aaru.Logging;
+using Sentry;
 
 namespace Aaru.Devices;
 
@@ -132,8 +133,11 @@ public partial class Device
 
             return remote.ListDevices();
         }
-        catch(Exception)
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
+            AaruLogging.Exception(ex, Localization.Error_connecting_to_host);
             AaruLogging.Error(Localization.Error_connecting_to_host);
 
             return [];

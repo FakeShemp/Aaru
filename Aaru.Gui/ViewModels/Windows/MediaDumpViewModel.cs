@@ -63,6 +63,7 @@ using JetBrains.Annotations;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using ReactiveUI;
+using Sentry;
 using DeviceInfo = Aaru.Core.Devices.Info.DeviceInfo;
 using Dump = Aaru.Core.Devices.Dumping.Dump;
 using File = System.IO.File;
@@ -535,8 +536,10 @@ public sealed class MediaDumpViewModel : ViewModelBase
 
                 fs.Close();
             }
-            catch
+            catch(Exception ex)
             {
+                SentrySdk.CaptureException(ex);
+
                 // ReSharper disable AssignmentIsFullyDiscarded
                 _ = MessageBoxManager.
 
@@ -728,8 +731,10 @@ public sealed class MediaDumpViewModel : ViewModelBase
                 sr.Close();
             }
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             await MessageBoxManager
                  .GetMessageBoxStandard(UI.Title_Error,
                                         UI.Incorrect_resume_file_cannot_use_it,

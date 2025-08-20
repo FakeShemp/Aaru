@@ -11,6 +11,7 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Sentry;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Images;
@@ -162,8 +163,9 @@ public class SuperNintendo : IByteAddressableImage
         {
             encoding = Encoding.GetEncoding("shift_jis");
         }
-        catch(Exception)
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
             encoding = Encoding.ASCII;
         }
 

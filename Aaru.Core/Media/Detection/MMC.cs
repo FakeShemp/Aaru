@@ -47,6 +47,7 @@ using Aaru.Decoders.Sega;
 using Aaru.Devices;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Sentry;
 using DMI = Aaru.Decoders.Xbox.DMI;
 using Sector = Aaru.Decoders.CD.Sector;
 
@@ -1636,8 +1637,10 @@ public static class MMC
 
                     isoSector = rootMs.ToArray();
                 }
-                catch
+                catch(Exception ex)
                 {
+                    SentrySdk.CaptureException(ex);
+
                     return;
                 }
 
@@ -1697,8 +1700,10 @@ public static class MMC
 
                         isoSector = pcdMs.ToArray();
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        SentrySdk.CaptureException(ex);
+
                         return;
                     }
 
@@ -2151,8 +2156,10 @@ public static class MMC
 
                     isoSector = rootMs.ToArray();
                 }
-                catch
+                catch(Exception ex)
                 {
+                    SentrySdk.CaptureException(ex);
+
                     return;
                 }
 
@@ -2275,8 +2282,10 @@ public static class MMC
                         isoSector = ngcdMs.ToArray();
                         iplTxt    = Encoding.ASCII.GetString(isoSector);
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        SentrySdk.CaptureException(ex);
+
                         iplTxt = null;
                     }
 
@@ -2363,8 +2372,10 @@ public static class MMC
                             {
                                 _ = Convert.ToUInt32(split[2], 16);
                             }
-                            catch
+                            catch(Exception ex)
                             {
+                                SentrySdk.CaptureException(ex);
+
                                 correctNeoGeoCd = false;
 
                                 break;
@@ -2414,8 +2425,10 @@ public static class MMC
 
                         isoSector = vcdMs.ToArray();
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        SentrySdk.CaptureException(ex);
+
                         return;
                     }
 
@@ -2528,8 +2541,10 @@ public static class MMC
 
                         isoSector = pcdMs.ToArray();
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        SentrySdk.CaptureException(ex);
+
                         return;
                     }
 
@@ -2638,8 +2653,10 @@ public static class MMC
                         isoSector = ps1Ms.ToArray();
                         ps1Txt    = Encoding.ASCII.GetString(isoSector);
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        SentrySdk.CaptureException(ex);
+
                         ps1Txt = null;
                     }
 

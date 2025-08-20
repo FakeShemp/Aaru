@@ -58,6 +58,7 @@ using Avalonia.Threading;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using ReactiveUI;
+using Sentry;
 using ImageInfo = Aaru.CommonTypes.Structs.ImageInfo;
 using Track = Aaru.CommonTypes.Structs.Track;
 using Version = Aaru.CommonTypes.Interop.Version;
@@ -630,8 +631,10 @@ public sealed class ImageConvertViewModel : ViewModelBase
         {
             tracks = inputOptical?.Tracks;
         }
-        catch(Exception)
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             tracks = null;
         }
 
@@ -2125,8 +2128,10 @@ public sealed class ImageConvertViewModel : ViewModelBase
             fs.Close();
             MetadataJsonText = result[0].Path.AbsolutePath;
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             await MessageBoxManager
                  .GetMessageBoxStandard(UI.Title_Error, UI.Incorrect_metadata_sidecar_file, icon: Icon.Error)
                  .ShowWindowDialogAsync(_view);
@@ -2181,8 +2186,10 @@ public sealed class ImageConvertViewModel : ViewModelBase
                      .ShowWindowDialogAsync(_view);
             }
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             await MessageBoxManager.GetMessageBoxStandard(UI.Title_Error, UI.Incorrect_resume_file, icon: Icon.Error)
                                    .ShowWindowDialogAsync(_view);
         }

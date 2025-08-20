@@ -29,6 +29,7 @@
 
 using System;
 using Aaru.Helpers;
+using Sentry;
 
 namespace Aaru.Filesystems;
 
@@ -59,8 +60,10 @@ public sealed partial class ISO9660
 
             return TimeZoneInfo.ConvertTimeToUtc(date, TimeZoneInfo.FindSystemTimeZoneById("GMT"));
         }
-        catch(Exception)
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             // ISO says timestamp can be unspecified
             return null;
         }
@@ -80,8 +83,10 @@ public sealed partial class ISO9660
 
             return TimeZoneInfo.ConvertTimeToUtc(date, TimeZoneInfo.FindSystemTimeZoneById("GMT"));
         }
-        catch(Exception)
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             // ISO says timestamp can be unspecified, suppose same for High Sierra
             return null;
         }

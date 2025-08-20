@@ -34,6 +34,7 @@ using System;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Logging;
+using Sentry;
 
 namespace Aaru.Core;
 
@@ -70,10 +71,9 @@ public static class ImageFormat
 
                     break;
                 }
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
-                catch
+                catch(Exception ex)
                 {
-                    // ignored
+                    SentrySdk.CaptureException(ex);
                 }
             }
 
@@ -96,10 +96,9 @@ public static class ImageFormat
 
                     break;
                 }
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
-                catch
+                catch(Exception ex)
                 {
-                    // ignored
+                    SentrySdk.CaptureException(ex);
                 }
             }
 
@@ -122,18 +121,19 @@ public static class ImageFormat
 
                     break;
                 }
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
-                catch
+                catch(Exception ex)
                 {
-                    // ignored
+                    SentrySdk.CaptureException(ex);
                 }
             }
 
             // Still not recognized
             return imageFormat;
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             return null;
         }
     }

@@ -34,6 +34,7 @@ using System;
 using System.IO;
 using System.Runtime.Versioning;
 using System.Text;
+using Sentry;
 
 namespace Aaru.Devices.Linux;
 
@@ -58,12 +59,14 @@ static class ListDevices
             udev    = Extern.udev_new();
             hasUdev = udev != IntPtr.Zero;
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             hasUdev = false;
         }
 
-        for(var i = 0; i < sysdevs.Length; i++)
+        for(int i = 0; i < sysdevs.Length; i++)
         {
             devices[i] = new DeviceInfo
             {

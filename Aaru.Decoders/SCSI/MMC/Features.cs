@@ -37,6 +37,7 @@ using System.Text;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
 using Aaru.Helpers;
 using Aaru.Localization;
+using Sentry;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedType.Global
@@ -4209,12 +4210,10 @@ public static class Features
             sb.AppendFormat($"[slateblue1]{Localization.Drive_firmware_is_dated_0}[/]", $"[yellow3]{fwDate}[/]")
               .AppendLine();
         }
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
-        catch
+        catch(Exception ex)
         {
-            // ignored
+            SentrySdk.CaptureException(ex);
         }
-#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
 
         return sb.ToString();
     }

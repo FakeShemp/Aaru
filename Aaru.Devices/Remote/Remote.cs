@@ -43,6 +43,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interop;
 using Aaru.Decoders.ATA;
 using Aaru.Logging;
+using Sentry;
 using Marshal = Aaru.Helpers.Marshal;
 using Version = Aaru.CommonTypes.Interop.Version;
 
@@ -259,9 +260,8 @@ public class Remote : IDisposable
 
             if(hdr.packetType != AaruPacketType.ResponseAmIRoot)
             {
-                AaruLogging.Error(Localization
-                                              .Remote_IsRoot_Expected_Am_I_Root_Response_Packet_got_packet_type_0,
-                                           hdr.packetType);
+                AaruLogging.Error(Localization.Remote_IsRoot_Expected_Am_I_Root_Response_Packet_got_packet_type_0,
+                                  hdr.packetType);
 
                 return false;
             }
@@ -297,9 +297,10 @@ public class Remote : IDisposable
             _socket.Shutdown(SocketShutdown.Both);
             _socket.Close();
         }
-        catch(ObjectDisposedException)
+        catch(ObjectDisposedException ex)
         {
             // Ignore if already disposed
+            SentrySdk.CaptureException(ex);
         }
     }
 
@@ -355,8 +356,8 @@ public class Remote : IDisposable
             if(hdr.packetType != AaruPacketType.Nop)
             {
                 AaruLogging.Error(Localization
-                                              .Remote_ListDevices_Expected_List_Devices_Response_Packet_got_packet_type_0,
-                                           hdr.packetType);
+                                     .Remote_ListDevices_Expected_List_Devices_Response_Packet_got_packet_type_0,
+                                  hdr.packetType);
 
                 return [];
             }
@@ -474,9 +475,8 @@ public class Remote : IDisposable
 
         if(hdr.packetType != AaruPacketType.Nop)
         {
-            AaruLogging.Error(Localization
-                                          .Remote_ListDevices_Expected_List_Devices_Response_Packet_got_packet_type_0,
-                                       hdr.packetType);
+            AaruLogging.Error(Localization.Remote_ListDevices_Expected_List_Devices_Response_Packet_got_packet_type_0,
+                              hdr.packetType);
 
             lastError = -1;
 
@@ -802,8 +802,7 @@ public class Remote : IDisposable
 
         if(hdr.packetType != AaruPacketType.ResponseAtaLba28)
         {
-            AaruLogging.Error(Localization.Expected_ATA_LBA28_Response_Packet_got_packet_type_0,
-                                       hdr.packetType);
+            AaruLogging.Error(Localization.Expected_ATA_LBA28_Response_Packet_got_packet_type_0, hdr.packetType);
 
             return -1;
         }
@@ -909,8 +908,7 @@ public class Remote : IDisposable
 
         if(hdr.packetType != AaruPacketType.ResponseAtaLba48)
         {
-            AaruLogging.Error(Localization.Expected_ATA_LBA48_Response_Packet_got_packet_type_0,
-                                       hdr.packetType);
+            AaruLogging.Error(Localization.Expected_ATA_LBA48_Response_Packet_got_packet_type_0, hdr.packetType);
 
             return -1;
         }
@@ -1103,8 +1101,7 @@ public class Remote : IDisposable
 
         if(hdr.packetType != AaruPacketType.ResponseGetType)
         {
-            AaruLogging.Error(Localization.Expected_Device_Type_Response_Packet_got_packet_type_0,
-                                       hdr.packetType);
+            AaruLogging.Error(Localization.Expected_Device_Type_Response_Packet_got_packet_type_0, hdr.packetType);
 
             return DeviceType.Unknown;
         }
@@ -1182,8 +1179,7 @@ public class Remote : IDisposable
 
         if(hdr.packetType != AaruPacketType.ResponseGetSdhciRegisters)
         {
-            AaruLogging.Error(Localization.Expected_Device_Type_Response_Packet_got_packet_type_0,
-                                       hdr.packetType);
+            AaruLogging.Error(Localization.Expected_Device_Type_Response_Packet_got_packet_type_0, hdr.packetType);
 
             return false;
         }
@@ -1308,8 +1304,7 @@ public class Remote : IDisposable
 
         if(hdr.packetType != AaruPacketType.ResponseGetUsbData)
         {
-            AaruLogging.Error(Localization.Expected_USB_Data_Response_Packet_got_packet_type_0,
-                                       hdr.packetType);
+            AaruLogging.Error(Localization.Expected_USB_Data_Response_Packet_got_packet_type_0, hdr.packetType);
 
             return false;
         }
@@ -1400,8 +1395,7 @@ public class Remote : IDisposable
 
         if(hdr.packetType != AaruPacketType.ResponseGetFireWireData)
         {
-            AaruLogging.Error(Localization.Expected_FireWire_Data_Response_Packet_got_packet_type_0,
-                                       hdr.packetType);
+            AaruLogging.Error(Localization.Expected_FireWire_Data_Response_Packet_got_packet_type_0, hdr.packetType);
 
             return false;
         }
@@ -1481,8 +1475,7 @@ public class Remote : IDisposable
 
         if(hdr.packetType != AaruPacketType.ResponseGetPcmciaData)
         {
-            AaruLogging.Error(Localization.Expected_PCMCIA_Data_Response_Packet_got_packet_type_0,
-                                       hdr.packetType);
+            AaruLogging.Error(Localization.Expected_PCMCIA_Data_Response_Packet_got_packet_type_0, hdr.packetType);
 
             return false;
         }
@@ -1550,9 +1543,10 @@ public class Remote : IDisposable
         {
             _socket.Send(buf, SocketFlags.None);
         }
-        catch(ObjectDisposedException)
+        catch(ObjectDisposedException ex)
         {
             // Ignore if already disposed
+            SentrySdk.CaptureException(ex);
         }
     }
 
@@ -1657,7 +1651,7 @@ public class Remote : IDisposable
         if(hdr.packetType != AaruPacketType.ResponseMultiSdhci)
         {
             AaruLogging.Error(Localization.Expected_multi_MMC_SD_command_Response_Packet_got_packet_type_0,
-                                       hdr.packetType);
+                              hdr.packetType);
 
             return -1;
         }
@@ -1677,8 +1671,8 @@ public class Remote : IDisposable
         if(res.cmd_count != (ulong)commands.Length)
         {
             AaruLogging.Error(Localization.Expected_the_response_to_0_SD_MMC_commands_but_got_1_responses,
-                                       commands.Length,
-                                       res.cmd_count);
+                              commands.Length,
+                              res.cmd_count);
 
             return -1;
         }

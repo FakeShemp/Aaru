@@ -52,6 +52,7 @@ using Aaru.Helpers;
 using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
+using Sentry;
 using Spectre.Console;
 using Spectre.Console.Json;
 using DDS = Aaru.Decoders.DVD.DDS;
@@ -905,9 +906,9 @@ public static class ImageInfo
                 AaruLogging.WriteLine();
             }
         }
-        catch
+        catch(Exception ex)
         {
-            // ignored
+            SentrySdk.CaptureException(ex);
         }
 
         try
@@ -989,9 +990,9 @@ public static class ImageInfo
 
             AnsiConsole.Write(table);
         }
-        catch
+        catch(Exception ex)
         {
-            // ignored
+            SentrySdk.CaptureException(ex);
         }
         finally
         {

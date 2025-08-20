@@ -30,7 +30,9 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Runtime.InteropServices;
+using Sentry;
 
 namespace Aaru.Compression;
 
@@ -62,8 +64,10 @@ public static partial class Native
             {
                 version = AARU_get_acn_version();
             }
-            catch
+            catch(Exception ex)
             {
+                SentrySdk.CaptureException(ex);
+
                 _supported = false;
 
                 return false;

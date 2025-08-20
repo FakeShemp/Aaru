@@ -26,12 +26,14 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
+using Sentry;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Filesystems;
@@ -58,8 +60,10 @@ public sealed partial class APFS
         {
             nxSb = Marshal.ByteArrayToStructureLittleEndian<ContainerSuperBlock>(sector);
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             return false;
         }
 
@@ -86,8 +90,10 @@ public sealed partial class APFS
         {
             nxSb = Marshal.ByteArrayToStructureLittleEndian<ContainerSuperBlock>(sector);
         }
-        catch
+        catch(Exception ex)
         {
+            SentrySdk.CaptureException(ex);
+
             return;
         }
 
