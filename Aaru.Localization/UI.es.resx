@@ -2154,8 +2154,8 @@ Probadores:
         <value>[bold][blue]ATIP:[/][/]</value>
     </data>
     <data name="Title_Attributes" xml:space="preserve">
-    <value>Atributos</value>
-  </data>
+        <value>[bold][gold3]Atributos[/][/]</value>
+    </data>
     <data name="Title_Author" xml:space="preserve">
     <value>Autor</value>
   </data>
@@ -3052,5 +3052,8 @@ Probadores:
     </data>
     <data name="Unable_to_get_separate_tracks_not_checksumming_them" xml:space="preserve">
         <value>[yellow]No se pudieron separar las pistas, no se harán checksum de ellas[/]</value>
+    </data>
+    <data name="Title_Date_modified" xml:space="preserve">
+        <value>[bold][dodgerblue1]Fecha modificación[/][/]</value>
     </data>
 </root>

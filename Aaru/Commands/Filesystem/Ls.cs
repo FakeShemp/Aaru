@@ -249,7 +249,7 @@ sealed class LsCommand : Command<LsCommand.Settings>
 
                             if(error == ErrorNumber.NoError)
                             {
-                                ListFilesInDir("/", fs, settings.LongFormat);
+                                ListFilesInDir("/", fs);
 
                                 Statistics.AddFilesystem(fs.Metadata.Type);
                             }
@@ -278,7 +278,7 @@ sealed class LsCommand : Command<LsCommand.Settings>
 
                         if(error == ErrorNumber.NoError)
                         {
-                            ListFilesInDir("/", fs, settings.LongFormat);
+                            ListFilesInDir("/", fs);
 
                             Statistics.AddFilesystem(fs.Metadata.Type);
                         }
@@ -299,7 +299,7 @@ sealed class LsCommand : Command<LsCommand.Settings>
         return (int)ErrorNumber.NoError;
     }
 
-    static void ListFilesInDir(string path, [NotNull] IReadOnlyFilesystem fs, bool longFormat)
+    static void ListFilesInDir(string path, [NotNull] IReadOnlyFilesystem fs)
     {
         ErrorNumber error = ErrorNumber.InvalidArgument;
         IDirNode    node  = null;
@@ -339,61 +339,95 @@ sealed class LsCommand : Command<LsCommand.Settings>
             fs.CloseDir(node);
         });
 
+        var table = new Table();
+
+        table.Border(TableBorder.None);
+
+        table.AddColumn(new TableColumn($"[underline]{UI.Title_Attributes}[/]")
+        {
+            NoWrap    = true,
+            Alignment = Justify.Right
+        });
+
+        table.AddColumn(new TableColumn($"[underline]{UI.Title_Size}[/]")
+        {
+            NoWrap    = true,
+            Alignment = Justify.Right,
+            Width     = 12
+        });
+
+        table.AddColumn(new TableColumn($"[underline]{UI.Title_Date_modified}[/]")
+        {
+            NoWrap    = true,
+            Alignment = Justify.Center,
+            Width     = 20
+        });
+
+        table.AddColumn(new TableColumn($"[underline]{UI.Title_Name}[/]")
+        {
+            NoWrap    = true,
+            Alignment = Justify.Left
+        });
+
         foreach(KeyValuePair<string, FileEntryInfo> entry in
                 stats.OrderBy(e => e.Value?.Attributes.HasFlag(FileAttributes.Directory) == false))
         {
-            if(longFormat)
+            if(entry.Value != null)
             {
-                if(entry.Value != null)
+                if(entry.Value.Attributes.HasFlag(FileAttributes.Directory))
                 {
-                    if(entry.Value.Attributes.HasFlag(FileAttributes.Directory))
+                    table.AddRow($"[gold3]{entry.Value.Attributes.ToAttributeChars()}[/]",
+                                 "",
+                                 "",
+                                 $"[green]{Markup.Escape(entry.Key)}[/]");
+
+                    AaruLogging.Information($"{entry.Value.Attributes.ToAttributeChars()} {entry.Key}");
+                }
+
+                else
+                {
+                    table.AddRow($"[gold3]{entry.Value.Attributes.ToAttributeChars()}[/]",
+                                 $"[lime]{entry.Value.Length}[/]",
+                                 $"[dodgerblue1]{entry.Value.LastWriteTimeUtc:s}[/]",
+                                 $"[green]{Markup.Escape(entry.Key)}[/]");
+
+                    AaruLogging
+                       .Information($"{entry.Value.Attributes.ToAttributeChars()} {entry.Value.Length} {entry.Value.LastWriteTimeUtc:s} {entry.Key}");
+                }
+
+
+                error = fs.ListXAttr(path + "/" + entry.Key, out List<string> xattrs);
+
+                if(error != ErrorNumber.NoError) continue;
+
+                foreach(string xattr in xattrs)
+                {
+                    byte[] xattrBuf = [];
+                    error = fs.GetXattr(path + "/" + entry.Key, xattr, ref xattrBuf);
+
+                    if(error == ErrorNumber.NoError)
                     {
-                        AaruLogging.WriteLine("{0, 10:d} {0, 12:T}  {1, -20}  {2}",
-                                              $"[dodgerblue1]{entry.Value.CreationTimeUtc}[/]",
-                                              UI.Directory_abbreviation,
-                                              $"[teal]{Markup.Escape(entry.Key)}[/]");
-                    }
-                    else
-                    {
-                        AaruLogging.WriteLine("{0, 10:d} {0, 12:T}  {1, 6}{2, 14:N0}  {3}",
-                                              $"[dodgerblue1]{entry.Value.CreationTimeUtc}[/]",
-                                              $"[fuchsia]{entry.Value.Inode}[/]",
-                                              $"[lime]{entry.Value.Length}[/]",
-                                              $"[teal]{Markup.Escape(entry.Key)}[/]");
-                    }
+                        table.AddRow("", $"[lime]{xattrBuf.Length}[/]", "", $"[fuchsia]{Markup.Escape(xattr)}[/]");
 
-                    error = fs.ListXAttr(path + "/" + entry.Key, out List<string> xattrs);
-
-                    if(error != ErrorNumber.NoError) continue;
-
-                    foreach(string xattr in xattrs)
-                    {
-                        byte[] xattrBuf = [];
-                        error = fs.GetXattr(path + "/" + entry.Key, xattr, ref xattrBuf);
-
-                        if(error == ErrorNumber.NoError)
-                            AaruLogging.WriteLine("\t\t[orange3]{0}[/]\t{1:##,#}",
-                                                  Markup.Escape(xattr),
-                                                  xattrBuf.Length);
+                        AaruLogging.Information($"{xattrBuf.Length} {xattr}");
                     }
                 }
-                else
-                    AaruLogging.WriteLine("{0, 47}{1}", string.Empty, Markup.Escape(entry.Key));
             }
             else
             {
-                AaruLogging.WriteLine(entry.Value?.Attributes.HasFlag(FileAttributes.Directory) == true
-                                          ? "[green]{0}/[/]"
-                                          : "[teal]{0}[/]",
-                                      Markup.Escape(entry.Key));
+                table.AddRow("", "", "", $"[green]{Markup.Escape(entry.Key)}[/]");
+
+                AaruLogging.Information(entry.Key);
             }
         }
 
+        AnsiConsole.Write(table);
         AaruLogging.WriteLine();
+
 
         foreach(KeyValuePair<string, FileEntryInfo> subdirectory in
                 stats.Where(e => e.Value?.Attributes.HasFlag(FileAttributes.Directory) == true))
-            ListFilesInDir(path + "/" + subdirectory.Key, fs, longFormat);
+            ListFilesInDir(path + "/" + subdirectory.Key, fs);
     }
 
 #region Nested type: Settings
@@ -404,10 +438,6 @@ sealed class LsCommand : Command<LsCommand.Settings>
         [CommandOption("-e|--encoding")]
         [DefaultValue(null)]
         public string Encoding { get; init; }
-        [Description("Use long format.")]
-        [CommandOption("-l|--long-format")]
-        [DefaultValue(true)]
-        public bool LongFormat { get; init; }
         [Description("Comma separated name=value pairs of options to pass to filesystem plugin.")]
         [CommandOption("-O|--options")]
         [DefaultValue(null)]

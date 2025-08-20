@@ -2239,8 +2239,8 @@ Testers:
     <value>Last write</value>
   </data>
     <data name="Title_Attributes" xml:space="preserve">
-    <value>Attributes</value>
-  </data>
+        <value>[bold][gold3]Attributes[/][/]</value>
+    </data>
     <data name="Title_GID" xml:space="preserve">
     <value>GID</value>
   </data>
@@ -3131,5 +3131,8 @@ Do you want to continue?</value>
     </data>
     <data name="Running_in_0_architecture" xml:space="preserve">
         <value>Running in {0} architecture</value>
+    </data>
+    <data name="Title_Date_modified" xml:space="preserve">
+        <value>[bold][dodgerblue1]Date modified[/][/]</value>
     </data>
 </root>

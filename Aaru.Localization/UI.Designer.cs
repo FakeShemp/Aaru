@@ -6111,5 +6111,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Running_in_0_architecture", resourceCulture);
             }
         }
+        
+        public static string Title_Date_modified {
+            get {
+                return ResourceManager.GetString("Title_Date_modified", resourceCulture);
+            }
+        }
     }
 }
