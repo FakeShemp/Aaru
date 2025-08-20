@@ -157,15 +157,11 @@ sealed class LsCommand : Command<LsCommand.Settings>
 
                 AaruLogging.Debug(MODULE_NAME, UI.Correctly_opened_image_file);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           UI.Image_without_headers_is_0_bytes,
-                                           imageFormat.Info.ImageSize);
+                AaruLogging.Debug(MODULE_NAME, UI.Image_without_headers_is_0_bytes, imageFormat.Info.ImageSize);
 
                 AaruLogging.Debug(MODULE_NAME, UI.Image_has_0_sectors, imageFormat.Info.Sectors);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           UI.Image_identifies_media_type_as_0,
-                                           imageFormat.Info.MediaType);
+                AaruLogging.Debug(MODULE_NAME, UI.Image_identifies_media_type_as_0, imageFormat.Info.MediaType);
 
                 Statistics.AddMediaFormat(imageFormat.Format);
                 Statistics.AddMedia(imageFormat.Info.MediaType, false);
@@ -353,17 +349,17 @@ sealed class LsCommand : Command<LsCommand.Settings>
                     if(entry.Value.Attributes.HasFlag(FileAttributes.Directory))
                     {
                         AaruLogging.WriteLine("{0, 10:d} {0, 12:T}  {1, -20}  {2}",
-                                              entry.Value.CreationTimeUtc,
+                                              $"[dodgerblue1]{entry.Value.CreationTimeUtc}[/]",
                                               UI.Directory_abbreviation,
-                                              Markup.Escape(entry.Key));
+                                              $"[teal]{Markup.Escape(entry.Key)}[/]");
                     }
                     else
                     {
                         AaruLogging.WriteLine("{0, 10:d} {0, 12:T}  {1, 6}{2, 14:N0}  {3}",
-                                              entry.Value.CreationTimeUtc,
-                                              entry.Value.Inode,
-                                              entry.Value.Length,
-                                              Markup.Escape(entry.Key));
+                                              $"[dodgerblue1]{entry.Value.CreationTimeUtc}[/]",
+                                              $"[fuchsia]{entry.Value.Inode}[/]",
+                                              $"[lime]{entry.Value.Length}[/]",
+                                              $"[teal]{Markup.Escape(entry.Key)}[/]");
                     }
 
                     error = fs.ListXAttr(path + "/" + entry.Key, out List<string> xattrs);
@@ -376,7 +372,9 @@ sealed class LsCommand : Command<LsCommand.Settings>
                         error = fs.GetXattr(path + "/" + entry.Key, xattr, ref xattrBuf);
 
                         if(error == ErrorNumber.NoError)
-                            AaruLogging.WriteLine("\t\t{0}\t{1:##,#}", Markup.Escape(xattr), xattrBuf.Length);
+                            AaruLogging.WriteLine("\t\t[orange3]{0}[/]\t{1:##,#}",
+                                                  Markup.Escape(xattr),
+                                                  xattrBuf.Length);
                     }
                 }
                 else
@@ -385,9 +383,9 @@ sealed class LsCommand : Command<LsCommand.Settings>
             else
             {
                 AaruLogging.WriteLine(entry.Value?.Attributes.HasFlag(FileAttributes.Directory) == true
-                                          ? "{0}/"
-                                          : "{0}",
-                                      entry.Key);
+                                          ? "[green]{0}/[/]"
+                                          : "[teal]{0}[/]",
+                                      Markup.Escape(entry.Key));
             }
         }
 

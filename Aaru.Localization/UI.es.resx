@@ -695,11 +695,11 @@
     <value>Texto</value>
   </data>
     <data name="Directory_0" xml:space="preserve">
-    <value>Directorio: {0}</value>
-  </data>
+        <value>[slateblue1]Directorio: [green]{0}[/]</value>
+    </data>
     <data name="Directory_abbreviation" xml:space="preserve">
-    <value>&lt;DIR&gt;</value>
-  </data>
+        <value>[green]&lt;DIR&gt;[/]</value>
+    </data>
     <data name="Directory_where_extracted_files_will_be_created" xml:space="preserve">
     <value>Se creará el directorio donde se extraerán los ficheros. Se abortará si existe</value>
   </data>
@@ -902,8 +902,8 @@
         <value>[red]Error [orange3]{0}[/] leyendo etiqueta del medio, no se continuará...[/]</value>
     </data>
     <data name="Error_0_reading_root_directory" xml:space="preserve">
-    <value>Error {0} leyendo directorio raíz.</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] leyendo directorio raíz.[red]</value>
+    </data>
     <data name="Error_0_reading_SCSI_INQUIRY_response_from_disc_image" xml:space="preserve">
     <value>Error {0} leyendo la respuesta de SCSI INQUIRY de la imagen</value>
   </data>
@@ -1320,8 +1320,8 @@
         <value>[red]Formato de imagen no identificado, no se procede con la extracción de ficheros.[/]</value>
     </data>
     <data name="Image_format_not_identified_not_proceeding_with_listing" xml:space="preserve">
-    <value>Format de imagen no identificado, no se procede con el listado.</value>
-  </data>
+        <value>[red]Format de imagen no identificado, no se procede con el listado.[/]</value>
+    </data>
     <data name="Image_format_not_identified_not_proceeding_with_sidecar_creation" xml:space="preserve">
     <value>Format de imagen no identificado, no se procede con la creación del sidecar.</value>
   </data>
@@ -1635,8 +1635,8 @@
         <value>[red]Más de un plugin soporta la extensión solicitada.[/]</value>
     </data>
     <data name="Mounting_filesystem" xml:space="preserve">
-    <value>Montando sistema de ficheros...</value>
-  </data>
+        <value>[slateblue1]Montando sistema de ficheros...[/]</value>
+    </data>
     <data name="Namespaces_for_0" xml:space="preserve">
     <value>Espacios de nombre para {0}:</value>
   </data>
@@ -1800,8 +1800,8 @@
     <value>Leyendo datos...</value>
   </data>
     <data name="Reading_directory" xml:space="preserve">
-    <value>Leyendo directorio...</value>
-  </data>
+        <value>[slateblue1]Leyendo directorio...[/]</value>
+    </data>
     <data name="Reading_extended_attribute" xml:space="preserve">
         <value>[slateblue1]Leyendo atributo extendido...[/]</value>
     </data>
@@ -1848,8 +1848,8 @@
     <value>El fichero de resumen no contiene información del hardware de volcado...</value>
   </data>
     <data name="Retrieving_file_information" xml:space="preserve">
-    <value>Obteniendo información del fichero...</value>
-  </data>
+        <value>[slateblue1]Obteniendo información del fichero...[/]</value>
+    </data>
     <data name="Retrieving_SCSI_information" xml:space="preserve">
         <value>[slateblue1]Obteniendo información SCSI...[/]</value>
     </data>
@@ -1860,8 +1860,8 @@
     <value>Reintentar el subcanal. Implica corregir su posición.</value>
   </data>
     <data name="Root_directory" xml:space="preserve">
-    <value>Directorio raíz</value>
-  </data>
+        <value>[slateblue1]Directorio raíz[/]</value>
+    </data>
     <data name="Save_descriptors_to_file" xml:space="preserve">
     <value>Guardar descriptores a fichero</value>
   </data>

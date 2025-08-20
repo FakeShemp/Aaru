@@ -453,8 +453,8 @@ In you are unsure, please press N to not continue.</value>
         <value>[slateblue1]As identified by [fuchsia]{0}[/].[/]</value>
     </data>
     <data name="Mounting_filesystem" xml:space="preserve">
-    <value>Mounting filesystem...</value>
-  </data>
+        <value>[slateblue1]Mounting filesystem...[/]</value>
+    </data>
     <data name="Unable_to_mount_volume_error_0" xml:space="preserve">
         <value>[red]Unable to mount volume, error [orange3]{0}[/][/]</value>
     </data>
@@ -465,11 +465,11 @@ In you are unsure, please press N to not continue.</value>
         <value>[red]Error reading file:[/] [orange3]{0}[/]</value>
     </data>
     <data name="Error_0_reading_root_directory" xml:space="preserve">
-    <value>Error {0} reading root directory.</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] reading root directory.[red]</value>
+    </data>
     <data name="Retrieving_file_information" xml:space="preserve">
-    <value>Retrieving file information...</value>
-  </data>
+        <value>[slateblue1]Retrieving file information...[/]</value>
+    </data>
     <data name="Created_subdirectory_at_0" xml:space="preserve">
         <value>[slateblue1]Created subdirectory at [blue]{0}[/][/]</value>
     </data>
@@ -537,24 +537,24 @@ In you are unsure, please press N to not continue.</value>
     <value>Use long format.</value>
   </data>
     <data name="Image_format_not_identified_not_proceeding_with_listing" xml:space="preserve">
-    <value>Image format not identified, not proceeding with listing.</value>
-  </data>
+        <value>[red]Image format not identified, not proceeding with listing.[/]</value>
+    </data>
     <data name="Root_directory" xml:space="preserve">
-    <value>Root directory</value>
-  </data>
+        <value>[slateblue1]Root directory[/]</value>
+    </data>
     <data name="Directory_0" xml:space="preserve">
-    <value>Directory: {0}</value>
-  </data>
+        <value>[slateblue1]Directory:[/] [green]{0}[/]</value>
+    </data>
     <data name="Reading_directory" xml:space="preserve">
-    <value>Reading directory...</value>
-  </data>
+        <value>[slateblue1]Reading directory...[/]</value>
+    </data>
     <data name="Error_0_reading_directory_1" xml:space="preserve">
         <value>[red]Error [orange3]{0}[/] reading directory [green]{1}[/][/]</value>
     </data>
     <data name="Directory_abbreviation" xml:space="preserve">
-    <value>&lt;DIR&gt;</value>
+        <value>[green]&lt;DIR&gt;[/]</value>
         <comment>Directory abbreviation as shown in CLI filesystem listing, like old DOS showed</comment>
-  </data>
+    </data>
     <data name="Read_only_filesystems_options" xml:space="preserve">
     <value>Read-only filesystems options:</value>
   </data>
