@@ -33,27 +33,29 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Reactive;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.Decoders.PCMCIA;
 using Aaru.Gui.Models;
 using Aaru.Localization;
 using Aaru.Logging;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
-using ReactiveUI;
 using Tuple = Aaru.Decoders.PCMCIA.Tuple;
 
 namespace Aaru.Gui.ViewModels.Tabs;
 
-public class PcmciaInfoViewModel : ViewModelBase
+public sealed partial class PcmciaInfoViewModel : ViewModelBase
 {
     const    string MODULE_NAME = "PCMCIA Information ViewModel";
     readonly byte[] _cis;
     readonly Window _view;
-    string          _pcmciaCisText;
-    PcmciaCisModel  _selectedCis;
+    [ObservableProperty]
+    string _pcmciaCisText;
+    PcmciaCisModel _selectedCis;
 
     internal PcmciaInfoViewModel([CanBeNull] byte[] pcmciaCis, Window view)
     {
@@ -61,7 +63,7 @@ public class PcmciaInfoViewModel : ViewModelBase
 
         _cis                 = pcmciaCis;
         CisList              = [];
-        SavePcmciaCisCommand = ReactiveCommand.Create(ExecuteSavePcmciaCisCommand);
+        SavePcmciaCisCommand = new AsyncRelayCommand(SavePcmciaCisAsync);
 
         _view = view;
 
@@ -156,12 +158,6 @@ public class PcmciaInfoViewModel : ViewModelBase
 
     public ObservableCollection<PcmciaCisModel> CisList { get; }
 
-    public string PcmciaCisText
-    {
-        get => _pcmciaCisText;
-        set => this.RaiseAndSetIfChanged(ref _pcmciaCisText, value);
-    }
-
     public PcmciaCisModel SelectedCis
     {
         get => _selectedCis;
@@ -170,13 +166,13 @@ public class PcmciaInfoViewModel : ViewModelBase
             if(_selectedCis == value) return;
 
             PcmciaCisText = value?.Description;
-            this.RaiseAndSetIfChanged(ref _selectedCis, value);
+            SetProperty(ref _selectedCis, value);
         }
     }
 
-    public ReactiveCommand<Unit, Task> SavePcmciaCisCommand { get; }
+    public ICommand SavePcmciaCisCommand { get; }
 
-    async Task ExecuteSavePcmciaCisCommand()
+    async Task SavePcmciaCisAsync()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {

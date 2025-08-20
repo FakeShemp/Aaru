@@ -33,9 +33,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.Gui.ViewModels.Tabs;
 using Aaru.Gui.ViewModels.Windows;
 using Aaru.Gui.Views.Tabs;
@@ -45,55 +45,78 @@ using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Humanizer.Bytes;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
-using ReactiveUI;
 using ScsiInfo = Aaru.Core.Media.Info.ScsiInfo;
 
 namespace Aaru.Gui.ViewModels.Panels;
 
-public sealed class MediaInfoViewModel : ViewModelBase
+public sealed partial class MediaInfoViewModel : ViewModelBase
 {
     readonly string   _devicePath;
     readonly ScsiInfo _scsiInfo;
     readonly Window   _view;
-    BlurayInfo        _blurayInfo;
-    CompactDiscInfo   _compactDiscInfo;
-    string            _densitySupport;
-    DvdInfo           _dvdInfo;
-    DvdWritableInfo   _dvdWritableInfo;
-    string            _generalVisible;
-    Bitmap            _mediaLogo;
-    string            _mediaSerial;
-    string            _mediaSize;
-    string            _mediaType;
-    string            _mediumSupport;
-    bool              _mmcVisible;
-    bool              _saveDensitySupportVisible;
-    bool              _saveGetConfigurationVisible;
-    bool              _saveMediumSupportVisible;
-    bool              _saveReadCapacity16Visible;
-    bool              _saveReadCapacityVisible;
-    bool              _saveReadMediaSerialVisible;
-    bool              _saveRecognizedFormatLayersVisible;
-    bool              _saveWriteProtectionStatusVisible;
-    bool              _sscVisible;
-    XboxInfo          _xboxInfo;
+    [ObservableProperty]
+    BlurayInfo _blurayInfo;
+    [ObservableProperty]
+    CompactDiscInfo _compactDiscInfo;
+    [ObservableProperty]
+    string _densitySupport;
+    [ObservableProperty]
+    DvdInfo _dvdInfo;
+    [ObservableProperty]
+    DvdWritableInfo _dvdWritableInfo;
+    [ObservableProperty]
+    string _generalVisible;
+    [ObservableProperty]
+    Bitmap _mediaLogo;
+    [ObservableProperty]
+    string _mediaSerial;
+    [ObservableProperty]
+    string _mediaSize;
+    [ObservableProperty]
+    string _mediaType;
+    [ObservableProperty]
+    string _mediumSupport;
+    [ObservableProperty]
+    bool _mmcVisible;
+    [ObservableProperty]
+    bool _saveDensitySupportVisible;
+    [ObservableProperty]
+    bool _saveGetConfigurationVisible;
+    [ObservableProperty]
+    bool _saveMediumSupportVisible;
+    [ObservableProperty]
+    bool _saveReadCapacity16Visible;
+    [ObservableProperty]
+    bool _saveReadCapacityVisible;
+    [ObservableProperty]
+    bool _saveReadMediaSerialVisible;
+    [ObservableProperty]
+    bool _saveRecognizedFormatLayersVisible;
+    [ObservableProperty]
+    bool _saveWriteProtectionStatusVisible;
+    [ObservableProperty]
+    bool _sscVisible;
+    [ObservableProperty]
+    XboxInfo _xboxInfo;
 
     public MediaInfoViewModel(ScsiInfo scsiInfo, string devicePath, Window view)
     {
         _view                             = view;
-        SaveReadMediaSerialCommand        = ReactiveCommand.Create(ExecuteSaveReadMediaSerialCommand);
-        SaveReadCapacityCommand           = ReactiveCommand.Create(ExecuteSaveReadCapacityCommand);
-        SaveReadCapacity16Command         = ReactiveCommand.Create(ExecuteSaveReadCapacity16Command);
-        SaveGetConfigurationCommand       = ReactiveCommand.Create(ExecuteSaveGetConfigurationCommand);
-        SaveRecognizedFormatLayersCommand = ReactiveCommand.Create(ExecuteSaveRecognizedFormatLayersCommand);
-        SaveWriteProtectionStatusCommand  = ReactiveCommand.Create(ExecuteSaveWriteProtectionStatusCommand);
-        SaveDensitySupportCommand         = ReactiveCommand.Create(ExecuteSaveDensitySupportCommand);
-        SaveMediumSupportCommand          = ReactiveCommand.Create(ExecuteSaveMediumSupportCommand);
-        DumpCommand                       = ReactiveCommand.Create(ExecuteDumpCommand);
-        ScanCommand                       = ReactiveCommand.Create(ExecuteScanCommand);
+        SaveReadMediaSerialCommand        = new AsyncRelayCommand(SaveReadMediaSerial);
+        SaveReadCapacityCommand           = new AsyncRelayCommand(SaveReadCapacity);
+        SaveReadCapacity16Command         = new AsyncRelayCommand(SaveReadCapacity16);
+        SaveGetConfigurationCommand       = new AsyncRelayCommand(SaveGetConfiguration);
+        SaveRecognizedFormatLayersCommand = new AsyncRelayCommand(SaveRecognizedFormatLayers);
+        SaveWriteProtectionStatusCommand  = new AsyncRelayCommand(SaveWriteProtectionStatus);
+        SaveDensitySupportCommand         = new AsyncRelayCommand(SaveDensitySupport);
+        SaveMediumSupportCommand          = new AsyncRelayCommand(SaveMediumSupport);
+        DumpCommand                       = new AsyncRelayCommand(DumpAsync);
+        ScanCommand                       = new AsyncRelayCommand(ScanAsync);
         _devicePath                       = devicePath;
         _scsiInfo                         = scsiInfo;
 
@@ -115,7 +138,7 @@ public sealed class MediaInfoViewModel : ViewModelBase
         {
             var sbSerial = new StringBuilder();
 
-            for(var i = 4; i < scsiInfo.MediaSerialNumber.Length; i++)
+            for(int i = 4; i < scsiInfo.MediaSerialNumber.Length; i++)
                 sbSerial.Append($"{scsiInfo.MediaSerialNumber[i]:X2}");
 
             MediaSerial = sbSerial.ToString();
@@ -221,148 +244,16 @@ public sealed class MediaInfoViewModel : ViewModelBase
         };
     }
 
-    public ReactiveCommand<Unit, Task> SaveReadMediaSerialCommand        { get; }
-    public ReactiveCommand<Unit, Task> SaveReadCapacityCommand           { get; }
-    public ReactiveCommand<Unit, Task> SaveReadCapacity16Command         { get; }
-    public ReactiveCommand<Unit, Task> SaveGetConfigurationCommand       { get; }
-    public ReactiveCommand<Unit, Task> SaveRecognizedFormatLayersCommand { get; }
-    public ReactiveCommand<Unit, Task> SaveWriteProtectionStatusCommand  { get; }
-    public ReactiveCommand<Unit, Task> SaveDensitySupportCommand         { get; }
-    public ReactiveCommand<Unit, Task> SaveMediumSupportCommand          { get; }
-    public ReactiveCommand<Unit, Task> DumpCommand                       { get; }
-    public ReactiveCommand<Unit, Task> ScanCommand                       { get; }
-
-    public Bitmap MediaLogo
-    {
-        get => _mediaLogo;
-        set => this.RaiseAndSetIfChanged(ref _mediaLogo, value);
-    }
-
-    public string GeneralVisible
-    {
-        get => _generalVisible;
-        set => this.RaiseAndSetIfChanged(ref _generalVisible, value);
-    }
-
-    public string MediaType
-    {
-        get => _mediaType;
-        set => this.RaiseAndSetIfChanged(ref _mediaType, value);
-    }
-
-    public string MediaSize
-    {
-        get => _mediaSize;
-        set => this.RaiseAndSetIfChanged(ref _mediaSize, value);
-    }
-
-    public string MediaSerial
-    {
-        get => _mediaSerial;
-        set => this.RaiseAndSetIfChanged(ref _mediaSerial, value);
-    }
-
-    public bool SaveReadMediaSerialVisible
-    {
-        get => _saveReadMediaSerialVisible;
-        set => this.RaiseAndSetIfChanged(ref _saveReadMediaSerialVisible, value);
-    }
-
-    public bool SaveReadCapacityVisible
-    {
-        get => _saveReadCapacityVisible;
-        set => this.RaiseAndSetIfChanged(ref _saveReadCapacityVisible, value);
-    }
-
-    public bool SaveReadCapacity16Visible
-    {
-        get => _saveReadCapacity16Visible;
-        set => this.RaiseAndSetIfChanged(ref _saveReadCapacity16Visible, value);
-    }
-
-    public bool MmcVisible
-    {
-        get => _mmcVisible;
-        set => this.RaiseAndSetIfChanged(ref _mmcVisible, value);
-    }
-
-    public bool SaveGetConfigurationVisible
-    {
-        get => _saveGetConfigurationVisible;
-        set => this.RaiseAndSetIfChanged(ref _saveGetConfigurationVisible, value);
-    }
-
-    public bool SaveRecognizedFormatLayersVisible
-    {
-        get => _saveRecognizedFormatLayersVisible;
-        set => this.RaiseAndSetIfChanged(ref _saveRecognizedFormatLayersVisible, value);
-    }
-
-    public bool SaveWriteProtectionStatusVisible
-    {
-        get => _saveWriteProtectionStatusVisible;
-        set => this.RaiseAndSetIfChanged(ref _saveWriteProtectionStatusVisible, value);
-    }
-
-    public bool SscVisible
-    {
-        get => _sscVisible;
-        set => this.RaiseAndSetIfChanged(ref _sscVisible, value);
-    }
-
-    public string DensitySupport
-    {
-        get => _densitySupport;
-        set => this.RaiseAndSetIfChanged(ref _densitySupport, value);
-    }
-
-    public string MediumSupport
-    {
-        get => _mediumSupport;
-        set => this.RaiseAndSetIfChanged(ref _mediumSupport, value);
-    }
-
-    public bool SaveDensitySupportVisible
-    {
-        get => _saveDensitySupportVisible;
-        set => this.RaiseAndSetIfChanged(ref _saveDensitySupportVisible, value);
-    }
-
-    public bool SaveMediumSupportVisible
-    {
-        get => _saveMediumSupportVisible;
-        set => this.RaiseAndSetIfChanged(ref _saveMediumSupportVisible, value);
-    }
-
-    public CompactDiscInfo CompactDiscInfo
-    {
-        get => _compactDiscInfo;
-        set => this.RaiseAndSetIfChanged(ref _compactDiscInfo, value);
-    }
-
-    public DvdInfo DvdInfo
-    {
-        get => _dvdInfo;
-        set => this.RaiseAndSetIfChanged(ref _dvdInfo, value);
-    }
-
-    public DvdWritableInfo DvdWritableInfo
-    {
-        get => _dvdWritableInfo;
-        set => this.RaiseAndSetIfChanged(ref _dvdWritableInfo, value);
-    }
-
-    public XboxInfo XboxInfo
-    {
-        get => _xboxInfo;
-        set => this.RaiseAndSetIfChanged(ref _xboxInfo, value);
-    }
-
-    public BlurayInfo BlurayInfo
-    {
-        get => _blurayInfo;
-        set => this.RaiseAndSetIfChanged(ref _blurayInfo, value);
-    }
+    public ICommand SaveReadMediaSerialCommand        { get; }
+    public ICommand SaveReadCapacityCommand           { get; }
+    public ICommand SaveReadCapacity16Command         { get; }
+    public ICommand SaveGetConfigurationCommand       { get; }
+    public ICommand SaveRecognizedFormatLayersCommand { get; }
+    public ICommand SaveWriteProtectionStatusCommand  { get; }
+    public ICommand SaveDensitySupportCommand         { get; }
+    public ICommand SaveMediumSupportCommand          { get; }
+    public ICommand DumpCommand                       { get; }
+    public ICommand ScanCommand                       { get; }
 
     public string MediaInformationLabel           => UI.Title_Media_information;
     public string GeneralLabel                    => UI.Title_General;
@@ -388,7 +279,7 @@ public sealed class MediaInfoViewModel : ViewModelBase
     public string DumpLabel                       => UI.ButtonLabel_Dump_media_to_image;
     public string ScanLabel                       => UI.ButtonLabel_Scan_media_surface;
 
-    async Task SaveElement(byte[] data)
+    async Task SaveElementAsync(byte[] data)
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
@@ -406,23 +297,23 @@ public sealed class MediaInfoViewModel : ViewModelBase
         saveFs.Close();
     }
 
-    async Task ExecuteSaveReadMediaSerialCommand() => await SaveElement(_scsiInfo.MediaSerialNumber);
+    Task SaveReadMediaSerial() => SaveElementAsync(_scsiInfo.MediaSerialNumber);
 
-    async Task ExecuteSaveReadCapacityCommand() => await SaveElement(_scsiInfo.ReadCapacity);
+    Task SaveReadCapacity() => SaveElementAsync(_scsiInfo.ReadCapacity);
 
-    async Task ExecuteSaveReadCapacity16Command() => await SaveElement(_scsiInfo.ReadCapacity16);
+    Task SaveReadCapacity16() => SaveElementAsync(_scsiInfo.ReadCapacity16);
 
-    async Task ExecuteSaveGetConfigurationCommand() => await SaveElement(_scsiInfo.MmcConfiguration);
+    Task SaveGetConfiguration() => SaveElementAsync(_scsiInfo.MmcConfiguration);
 
-    async Task ExecuteSaveRecognizedFormatLayersCommand() => await SaveElement(_scsiInfo.RecognizedFormatLayers);
+    Task SaveRecognizedFormatLayers() => SaveElementAsync(_scsiInfo.RecognizedFormatLayers);
 
-    async Task ExecuteSaveWriteProtectionStatusCommand() => await SaveElement(_scsiInfo.WriteProtectionStatus);
+    Task SaveWriteProtectionStatus() => SaveElementAsync(_scsiInfo.WriteProtectionStatus);
 
-    async Task ExecuteSaveDensitySupportCommand() => await SaveElement(_scsiInfo.DensitySupport);
+    Task SaveDensitySupport() => SaveElementAsync(_scsiInfo.DensitySupport);
 
-    async Task ExecuteSaveMediumSupportCommand() => await SaveElement(_scsiInfo.MediaTypeSupport);
+    Task SaveMediumSupport() => SaveElementAsync(_scsiInfo.MediaTypeSupport);
 
-    async Task ExecuteDumpCommand()
+    async Task DumpAsync()
     {
         switch(_scsiInfo.MediaType)
         {
@@ -456,7 +347,7 @@ public sealed class MediaInfoViewModel : ViewModelBase
         mediaDumpWindow.Show();
     }
 
-    async Task ExecuteScanCommand()
+    async Task ScanAsync()
     {
         switch(_scsiInfo.MediaType)
         {

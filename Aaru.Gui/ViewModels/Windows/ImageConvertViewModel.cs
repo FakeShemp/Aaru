@@ -36,11 +36,11 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Reactive;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
@@ -55,9 +55,10 @@ using Aaru.Logging;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
-using ReactiveUI;
 using Sentry;
 using ImageInfo = Aaru.CommonTypes.Structs.ImageInfo;
 using Track = Aaru.CommonTypes.Structs.Track;
@@ -66,70 +67,130 @@ using Version = Aaru.CommonTypes.Interop.Version;
 namespace Aaru.Gui.ViewModels.Windows;
 
 [SuppressMessage("ReSharper", "AsyncVoidLambda")]
-public sealed class ImageConvertViewModel : ViewModelBase
+public sealed partial class ImageConvertViewModel : ViewModelBase
 {
     readonly IMediaImage _inputFormat;
     readonly Window      _view;
-    Metadata             _aaruMetadata;
-    bool                 _aaruMetadataFromImageVisible;
-    bool                 _cancel;
-    bool                 _closeVisible;
-    string               _commentsText;
-    bool                 _commentsVisible;
-    string               _creatorText;
-    bool                 _creatorVisible;
-    bool                 _destinationEnabled;
-    string               _destinationText;
-    bool                 _destinationVisible;
-    string               _driveFirmwareRevisionText;
-    bool                 _driveFirmwareRevisionVisible;
-    string               _driveManufacturerText;
-    bool                 _driveManufacturerVisible;
-    string               _driveModelText;
-    bool                 _driveModelVisible;
-    string               _driveSerialNumberText;
-    bool                 _driveSerialNumberVisible;
-    List<DumpHardware>   _dumpHardware;
-    bool                 _forceChecked;
-    bool                 _formatReadOnly;
-    double               _lastMediaSequenceValue;
-    bool                 _lastMediaSequenceVisible;
-    string               _mediaBarcodeText;
-    bool                 _mediaBarcodeVisible;
-    string               _mediaManufacturerText;
-    bool                 _mediaManufacturerVisible;
-    string               _mediaModelText;
-    bool                 _mediaModelVisible;
-    string               _mediaPartNumberText;
-    bool                 _mediaPartNumberVisible;
-    double               _mediaSequenceValue;
-    bool                 _mediaSequenceVisible;
-    string               _mediaSerialNumberText;
-    bool                 _mediaSerialNumberVisible;
-    string               _mediaTitleText;
-    bool                 _mediaTitleVisible;
-    string               _metadataJsonText;
-    bool                 _optionsVisible;
-    bool                 _progress1Visible;
-    bool                 _progress2Indeterminate;
-    double               _progress2MaxValue;
-    string               _progress2Text;
-    double               _progress2Value;
-    bool                 _progress2Visible;
-    bool                 _progressIndeterminate;
-    double               _progressMaxValue;
-    string               _progressText;
-    double               _progressValue;
-    bool                 _progressVisible;
-    bool                 _resumeFileFromImageVisible;
-    string               _resumeFileText;
-    double               _sectorsValue;
-    ImagePluginModel     _selectedPlugin;
-    string               _sourceText;
-    bool                 _startVisible;
-    bool                 _stopEnabled;
-    bool                 _stopVisible;
-    string               _title;
+    [ObservableProperty]
+    Metadata _aaruMetadata;
+    [ObservableProperty]
+    bool _aaruMetadataFromImageVisible;
+    [ObservableProperty]
+    bool _cancel;
+    [ObservableProperty]
+    bool _closeVisible;
+    [ObservableProperty]
+    string _commentsText;
+    [ObservableProperty]
+    bool _commentsVisible;
+    [ObservableProperty]
+    string _creatorText;
+    [ObservableProperty]
+    bool _creatorVisible;
+    [ObservableProperty]
+    bool _destinationEnabled;
+    [ObservableProperty]
+    string _destinationText;
+    [ObservableProperty]
+    bool _destinationVisible;
+    [ObservableProperty]
+    string _driveFirmwareRevisionText;
+    [ObservableProperty]
+    bool _driveFirmwareRevisionVisible;
+    [ObservableProperty]
+    string _driveManufacturerText;
+    [ObservableProperty]
+    bool _driveManufacturerVisible;
+    [ObservableProperty]
+    string _driveModelText;
+    [ObservableProperty]
+    bool _driveModelVisible;
+    [ObservableProperty]
+    string _driveSerialNumberText;
+    [ObservableProperty]
+    bool _driveSerialNumberVisible;
+    [ObservableProperty]
+    List<DumpHardware> _dumpHardware;
+    [ObservableProperty]
+    bool _forceChecked;
+    [ObservableProperty]
+    bool _formatReadOnly;
+    [ObservableProperty]
+    double _lastMediaSequenceValue;
+    [ObservableProperty]
+    bool _lastMediaSequenceVisible;
+    [ObservableProperty]
+    string _mediaBarcodeText;
+    [ObservableProperty]
+    bool _mediaBarcodeVisible;
+    [ObservableProperty]
+    string _mediaManufacturerText;
+    [ObservableProperty]
+    bool _mediaManufacturerVisible;
+    [ObservableProperty]
+    string _mediaModelText;
+    [ObservableProperty]
+    bool _mediaModelVisible;
+    [ObservableProperty]
+    string _mediaPartNumberText;
+    [ObservableProperty]
+    bool _mediaPartNumberVisible;
+    [ObservableProperty]
+    double _mediaSequenceValue;
+    [ObservableProperty]
+    bool _mediaSequenceVisible;
+    [ObservableProperty]
+    string _mediaSerialNumberText;
+    [ObservableProperty]
+    bool _mediaSerialNumberVisible;
+    [ObservableProperty]
+    string _mediaTitleText;
+    [ObservableProperty]
+    bool _mediaTitleVisible;
+    [ObservableProperty]
+    string _metadataJsonText;
+    [ObservableProperty]
+    bool _optionsVisible;
+    [ObservableProperty]
+    bool _progress1Visible;
+    [ObservableProperty]
+    bool _progress2Indeterminate;
+    [ObservableProperty]
+    double _progress2MaxValue;
+    [ObservableProperty]
+    string _progress2Text;
+    [ObservableProperty]
+    double _progress2Value;
+    [ObservableProperty]
+    bool _progress2Visible;
+    [ObservableProperty]
+    bool _progressIndeterminate;
+    [ObservableProperty]
+    double _progressMaxValue;
+    [ObservableProperty]
+    string _progressText;
+    [ObservableProperty]
+    double _progressValue;
+    [ObservableProperty]
+    bool _progressVisible;
+    [ObservableProperty]
+    bool _resumeFileFromImageVisible;
+    [ObservableProperty]
+    string _resumeFileText;
+    [ObservableProperty]
+    double _sectorsValue;
+    [ObservableProperty]
+    ImagePluginModel _selectedPlugin;
+    [ObservableProperty]
+    string _sourceText;
+    [ObservableProperty]
+    bool _startVisible;
+    [ObservableProperty]
+    bool _stopEnabled;
+    [ObservableProperty]
+    bool _stopVisible;
+    [ObservableProperty]
+    string _title;
 
     public ImageConvertViewModel([JetBrains.Annotations.NotNull] IMediaImage inputFormat, string imageSource,
                                  Window                                      view)
@@ -137,28 +198,28 @@ public sealed class ImageConvertViewModel : ViewModelBase
         _view                        = view;
         _inputFormat                 = inputFormat;
         _cancel                      = false;
-        DestinationCommand           = ReactiveCommand.Create(ExecuteDestinationCommand);
-        CreatorCommand               = ReactiveCommand.Create(ExecuteCreatorCommand);
-        MediaTitleCommand            = ReactiveCommand.Create(ExecuteMediaTitleCommand);
-        MediaManufacturerCommand     = ReactiveCommand.Create(ExecuteMediaManufacturerCommand);
-        MediaModelCommand            = ReactiveCommand.Create(ExecuteMediaModelCommand);
-        MediaSerialNumberCommand     = ReactiveCommand.Create(ExecuteMediaSerialNumberCommand);
-        MediaBarcodeCommand          = ReactiveCommand.Create(ExecuteMediaBarcodeCommand);
-        MediaPartNumberCommand       = ReactiveCommand.Create(ExecuteMediaPartNumberCommand);
-        MediaSequenceCommand         = ReactiveCommand.Create(ExecuteMediaSequenceCommand);
-        LastMediaSequenceCommand     = ReactiveCommand.Create(ExecuteLastMediaSequenceCommand);
-        DriveManufacturerCommand     = ReactiveCommand.Create(ExecuteDriveManufacturerCommand);
-        DriveModelCommand            = ReactiveCommand.Create(ExecuteDriveModelCommand);
-        DriveSerialNumberCommand     = ReactiveCommand.Create(ExecuteDriveSerialNumberCommand);
-        DriveFirmwareRevisionCommand = ReactiveCommand.Create(ExecuteDriveFirmwareRevisionCommand);
-        CommentsCommand              = ReactiveCommand.Create(ExecuteCommentsCommand);
-        AaruMetadataFromImageCommand = ReactiveCommand.Create(ExecuteAaruMetadataFromImageCommand);
-        AaruMetadataCommand          = ReactiveCommand.Create(ExecuteAaruMetadataCommand);
-        ResumeFileFromImageCommand   = ReactiveCommand.Create(ExecuteResumeFileFromImageCommand);
-        ResumeFileCommand            = ReactiveCommand.Create(ExecuteResumeFileCommand);
-        StartCommand                 = ReactiveCommand.Create(ExecuteStartCommand);
-        CloseCommand                 = ReactiveCommand.Create(ExecuteCloseCommand);
-        StopCommand                  = ReactiveCommand.Create(ExecuteStopCommand);
+        DestinationCommand           = new AsyncRelayCommand(DestinationAsync);
+        CreatorCommand               = new RelayCommand(Creator);
+        MediaTitleCommand            = new RelayCommand(MediaTitle);
+        MediaManufacturerCommand     = new RelayCommand(MediaManufacturer);
+        MediaModelCommand            = new RelayCommand(MediaModel);
+        MediaSerialNumberCommand     = new RelayCommand(MediaSerialNumber);
+        MediaBarcodeCommand          = new RelayCommand(MediaBarcode);
+        MediaPartNumberCommand       = new RelayCommand(MediaPartNumber);
+        MediaSequenceCommand         = new RelayCommand(MediaSequence);
+        LastMediaSequenceCommand     = new RelayCommand(LastMediaSequence);
+        DriveManufacturerCommand     = new RelayCommand(DriveManufacturer);
+        DriveModelCommand            = new RelayCommand(DriveModel);
+        DriveSerialNumberCommand     = new RelayCommand(DriveSerialNumber);
+        DriveFirmwareRevisionCommand = new RelayCommand(DriveFirmwareRevision);
+        CommentsCommand              = new RelayCommand(Comments);
+        AaruMetadataFromImageCommand = new RelayCommand(AaruMetadataFromImage);
+        AaruMetadataCommand          = new AsyncRelayCommand(AaruMetadataAsync);
+        ResumeFileFromImageCommand   = new RelayCommand(ResumeFileFromImage);
+        ResumeFileCommand            = new AsyncRelayCommand(ResumeFileAsync);
+        StartCommand                 = new AsyncRelayCommand(StartAsync);
+        CloseCommand                 = new RelayCommand(Close);
+        StopCommand                  = new RelayCommand(Stop);
         SourceText                   = imageSource;
         CreatorVisible               = !string.IsNullOrWhiteSpace(inputFormat.Info.Creator);
         MediaTitleVisible            = !string.IsNullOrWhiteSpace(inputFormat.Info.MediaTitle);
@@ -200,401 +261,58 @@ public sealed class ImageConvertViewModel : ViewModelBase
         ResumeFileText   = _dumpHardware == null ? "" : UI._From_image_;
     }
 
-    public string SourceImageLabel            => UI.Source_image;
-    public string OutputFormatLabel           => UI.Output_format;
-    public string ChooseLabel                 => UI.ButtonLabel_Choose;
-    public string SectorsLabel                => UI.How_many_sectors_to_convert_at_once;
-    public string ForceLabel                  => UI.Continue_conversion_even_if_data_lost;
-    public string CreatorLabel                => UI.Who_person_created_the_image;
-    public string GetFromSourceImageLabel     => UI.ButtonLabel_Get_from_source_image;
-    public string MetadataLabel               => UI.Title_Metadata;
-    public string MediaLabel                  => UI.Title_Media;
-    public string TitleLabel                  => UI.Title_Title;
-    public string ManufacturerLabel           => UI.Title_Manufacturer;
-    public string ModelLabel                  => UI.Title_Model;
-    public string SerialNumberLabel           => UI.Title_Serial_number;
-    public string BarcodeLabel                => UI.Title_Barcode;
-    public string PartNumberLabel             => UI.Title_Part_number;
-    public string NumberInSequenceLabel       => UI.Title_Number_in_sequence;
-    public string LastMediaOfTheSequenceLabel => UI.Title_Last_media_of_the_sequence;
-    public string DriveLabel                  => UI.Title_Drive;
-    public string FirmwareRevisionLabel       => UI.Title_Firmware_revision;
-    public string CommentsLabel               => UI.Title_Comments;
-    public string AaruMetadataLabel           => UI.Title_Existing_Aaru_Metadata_sidecar;
-    public string FromImageLabel              => UI.Title_From_image;
-    public string ResumeFileLabel             => UI.Title_Existing_resume_file;
-    public string StartLabel                  => UI.ButtonLabel_Start;
-    public string CloseLabel                  => UI.ButtonLabel_Close;
-    public string StopLabel                   => UI.ButtonLabel_Stop;
-
-    public string Title
-    {
-        get => _title;
-        set => this.RaiseAndSetIfChanged(ref _title, value);
-    }
-
-    public string SourceText
-    {
-        get => _sourceText;
-        set => this.RaiseAndSetIfChanged(ref _sourceText, value);
-    }
-
+    public string                                 SourceImageLabel => UI.Source_image;
+    public string                                 OutputFormatLabel => UI.Output_format;
+    public string                                 ChooseLabel => UI.ButtonLabel_Choose;
+    public string                                 SectorsLabel => UI.How_many_sectors_to_convert_at_once;
+    public string                                 ForceLabel => UI.Continue_conversion_even_if_data_lost;
+    public string                                 CreatorLabel => UI.Who_person_created_the_image;
+    public string                                 GetFromSourceImageLabel => UI.ButtonLabel_Get_from_source_image;
+    public string                                 MetadataLabel => UI.Title_Metadata;
+    public string                                 MediaLabel => UI.Title_Media;
+    public string                                 TitleLabel => UI.Title_Title;
+    public string                                 ManufacturerLabel => UI.Title_Manufacturer;
+    public string                                 ModelLabel => UI.Title_Model;
+    public string                                 SerialNumberLabel => UI.Title_Serial_number;
+    public string                                 BarcodeLabel => UI.Title_Barcode;
+    public string                                 PartNumberLabel => UI.Title_Part_number;
+    public string                                 NumberInSequenceLabel => UI.Title_Number_in_sequence;
+    public string                                 LastMediaOfTheSequenceLabel => UI.Title_Last_media_of_the_sequence;
+    public string                                 DriveLabel => UI.Title_Drive;
+    public string                                 FirmwareRevisionLabel => UI.Title_Firmware_revision;
+    public string                                 CommentsLabel => UI.Title_Comments;
+    public string                                 AaruMetadataLabel => UI.Title_Existing_Aaru_Metadata_sidecar;
+    public string                                 FromImageLabel => UI.Title_From_image;
+    public string                                 ResumeFileLabel => UI.Title_Existing_resume_file;
+    public string                                 StartLabel => UI.ButtonLabel_Start;
+    public string                                 CloseLabel => UI.ButtonLabel_Close;
+    public string                                 StopLabel => UI.ButtonLabel_Stop;
     public ObservableCollection<ImagePluginModel> PluginsList { get; }
 
-    public ImagePluginModel SelectedPlugin
-    {
-        get => _selectedPlugin;
-        set => this.RaiseAndSetIfChanged(ref _selectedPlugin, value);
-    }
+    public ICommand DestinationCommand           { get; }
+    public ICommand CreatorCommand               { get; }
+    public ICommand MediaTitleCommand            { get; }
+    public ICommand MediaManufacturerCommand     { get; }
+    public ICommand MediaModelCommand            { get; }
+    public ICommand MediaSerialNumberCommand     { get; }
+    public ICommand MediaBarcodeCommand          { get; }
+    public ICommand MediaPartNumberCommand       { get; }
+    public ICommand MediaSequenceCommand         { get; }
+    public ICommand LastMediaSequenceCommand     { get; }
+    public ICommand DriveManufacturerCommand     { get; }
+    public ICommand DriveModelCommand            { get; }
+    public ICommand DriveSerialNumberCommand     { get; }
+    public ICommand DriveFirmwareRevisionCommand { get; }
+    public ICommand CommentsCommand              { get; }
+    public ICommand AaruMetadataFromImageCommand { get; }
+    public ICommand AaruMetadataCommand          { get; }
+    public ICommand ResumeFileFromImageCommand   { get; }
+    public ICommand ResumeFileCommand            { get; }
+    public ICommand StartCommand                 { get; }
+    public ICommand CloseCommand                 { get; }
+    public ICommand StopCommand                  { get; }
 
-    public string DestinationText
-    {
-        get => _destinationText;
-        set => this.RaiseAndSetIfChanged(ref _destinationText, value);
-    }
-
-    public bool OptionsVisible
-    {
-        get => _optionsVisible;
-        set => this.RaiseAndSetIfChanged(ref _optionsVisible, value);
-    }
-
-    public double SectorsValue
-    {
-        get => _sectorsValue;
-        set => this.RaiseAndSetIfChanged(ref _sectorsValue, value);
-    }
-
-    public bool ForceChecked
-    {
-        get => _forceChecked;
-        set => this.RaiseAndSetIfChanged(ref _forceChecked, value);
-    }
-
-    public string CreatorText
-    {
-        get => _creatorText;
-        set => this.RaiseAndSetIfChanged(ref _creatorText, value);
-    }
-
-    public string MediaTitleText
-    {
-        get => _mediaTitleText;
-        set => this.RaiseAndSetIfChanged(ref _mediaTitleText, value);
-    }
-
-    public string MediaManufacturerText
-    {
-        get => _mediaManufacturerText;
-        set => this.RaiseAndSetIfChanged(ref _mediaManufacturerText, value);
-    }
-
-    public string MediaModelText
-    {
-        get => _mediaModelText;
-        set => this.RaiseAndSetIfChanged(ref _mediaModelText, value);
-    }
-
-    public string MediaSerialNumberText
-    {
-        get => _mediaSerialNumberText;
-        set => this.RaiseAndSetIfChanged(ref _mediaSerialNumberText, value);
-    }
-
-    public string MediaBarcodeText
-    {
-        get => _mediaBarcodeText;
-        set => this.RaiseAndSetIfChanged(ref _mediaBarcodeText, value);
-    }
-
-    public string MediaPartNumberText
-    {
-        get => _mediaPartNumberText;
-        set => this.RaiseAndSetIfChanged(ref _mediaPartNumberText, value);
-    }
-
-    public double MediaSequenceValue
-    {
-        get => _mediaSequenceValue;
-        set => this.RaiseAndSetIfChanged(ref _mediaSequenceValue, value);
-    }
-
-    public double LastMediaSequenceValue
-    {
-        get => _lastMediaSequenceValue;
-        set => this.RaiseAndSetIfChanged(ref _lastMediaSequenceValue, value);
-    }
-
-    public string DriveManufacturerText
-    {
-        get => _driveManufacturerText;
-        set => this.RaiseAndSetIfChanged(ref _driveManufacturerText, value);
-    }
-
-    public string DriveModelText
-    {
-        get => _driveModelText;
-        set => this.RaiseAndSetIfChanged(ref _driveModelText, value);
-    }
-
-    public string DriveSerialNumberText
-    {
-        get => _driveSerialNumberText;
-        set => this.RaiseAndSetIfChanged(ref _driveSerialNumberText, value);
-    }
-
-    public string DriveFirmwareRevisionText
-    {
-        get => _driveFirmwareRevisionText;
-        set => this.RaiseAndSetIfChanged(ref _driveFirmwareRevisionText, value);
-    }
-
-    public string CommentsText
-    {
-        get => _commentsText;
-        set => this.RaiseAndSetIfChanged(ref _commentsText, value);
-    }
-
-    public string MetadataJsonText
-    {
-        get => _metadataJsonText;
-        set => this.RaiseAndSetIfChanged(ref _metadataJsonText, value);
-    }
-
-    public string ResumeFileText
-    {
-        get => _resumeFileText;
-        set => this.RaiseAndSetIfChanged(ref _resumeFileText, value);
-    }
-
-    public bool ProgressVisible
-    {
-        get => _progressVisible;
-        set => this.RaiseAndSetIfChanged(ref _progressVisible, value);
-    }
-
-    public bool Progress1Visible
-    {
-        get => _progress1Visible;
-        set => this.RaiseAndSetIfChanged(ref _progress1Visible, value);
-    }
-
-    public string ProgressText
-    {
-        get => _progressText;
-        set => this.RaiseAndSetIfChanged(ref _progressText, value);
-    }
-
-    public double ProgressValue
-    {
-        get => _progressValue;
-        set => this.RaiseAndSetIfChanged(ref _progressValue, value);
-    }
-
-    public double ProgressMaxValue
-    {
-        get => _progressMaxValue;
-        set => this.RaiseAndSetIfChanged(ref _progressMaxValue, value);
-    }
-
-    public bool ProgressIndeterminate
-    {
-        get => _progressIndeterminate;
-        set => this.RaiseAndSetIfChanged(ref _progressIndeterminate, value);
-    }
-
-    public bool Progress2Visible
-    {
-        get => _progress2Visible;
-        set => this.RaiseAndSetIfChanged(ref _progress2Visible, value);
-    }
-
-    public string Progress2Text
-    {
-        get => _progress2Text;
-        set => this.RaiseAndSetIfChanged(ref _progress2Text, value);
-    }
-
-    public double Progress2Value
-    {
-        get => _progress2Value;
-        set => this.RaiseAndSetIfChanged(ref _progress2Value, value);
-    }
-
-    public double Progress2MaxValue
-    {
-        get => _progress2MaxValue;
-        set => this.RaiseAndSetIfChanged(ref _progress2MaxValue, value);
-    }
-
-    public bool Progress2Indeterminate
-    {
-        get => _progress2Indeterminate;
-        set => this.RaiseAndSetIfChanged(ref _progress2Indeterminate, value);
-    }
-
-    public bool StartVisible
-    {
-        get => _startVisible;
-        set => this.RaiseAndSetIfChanged(ref _startVisible, value);
-    }
-
-    public bool CloseVisible
-    {
-        get => _closeVisible;
-        set => this.RaiseAndSetIfChanged(ref _closeVisible, value);
-    }
-
-    public bool StopVisible
-    {
-        get => _stopVisible;
-        set => this.RaiseAndSetIfChanged(ref _stopVisible, value);
-    }
-
-    public bool StopEnabled
-    {
-        get => _stopEnabled;
-        set => this.RaiseAndSetIfChanged(ref _stopEnabled, value);
-    }
-
-    public bool CreatorVisible
-    {
-        get => _creatorVisible;
-        set => this.RaiseAndSetIfChanged(ref _creatorVisible, value);
-    }
-
-    public bool MediaTitleVisible
-    {
-        get => _mediaTitleVisible;
-        set => this.RaiseAndSetIfChanged(ref _mediaTitleVisible, value);
-    }
-
-    public bool CommentsVisible
-    {
-        get => _commentsVisible;
-        set => this.RaiseAndSetIfChanged(ref _commentsVisible, value);
-    }
-
-    public bool MediaManufacturerVisible
-    {
-        get => _mediaManufacturerVisible;
-        set => this.RaiseAndSetIfChanged(ref _mediaManufacturerVisible, value);
-    }
-
-    public bool MediaModelVisible
-    {
-        get => _mediaModelVisible;
-        set => this.RaiseAndSetIfChanged(ref _mediaModelVisible, value);
-    }
-
-    public bool MediaSerialNumberVisible
-    {
-        get => _mediaSerialNumberVisible;
-        set => this.RaiseAndSetIfChanged(ref _mediaSerialNumberVisible, value);
-    }
-
-    public bool MediaBarcodeVisible
-    {
-        get => _mediaBarcodeVisible;
-        set => this.RaiseAndSetIfChanged(ref _mediaBarcodeVisible, value);
-    }
-
-    public bool MediaPartNumberVisible
-    {
-        get => _mediaPartNumberVisible;
-        set => this.RaiseAndSetIfChanged(ref _mediaPartNumberVisible, value);
-    }
-
-    public bool MediaSequenceVisible
-    {
-        get => _mediaSequenceVisible;
-        set => this.RaiseAndSetIfChanged(ref _mediaSequenceVisible, value);
-    }
-
-    public bool LastMediaSequenceVisible
-    {
-        get => _lastMediaSequenceVisible;
-        set => this.RaiseAndSetIfChanged(ref _lastMediaSequenceVisible, value);
-    }
-
-    public bool DriveManufacturerVisible
-    {
-        get => _driveManufacturerVisible;
-        set => this.RaiseAndSetIfChanged(ref _driveManufacturerVisible, value);
-    }
-
-    public bool DriveModelVisible
-    {
-        get => _driveModelVisible;
-        set => this.RaiseAndSetIfChanged(ref _driveModelVisible, value);
-    }
-
-    public bool DriveSerialNumberVisible
-    {
-        get => _driveSerialNumberVisible;
-        set => this.RaiseAndSetIfChanged(ref _driveSerialNumberVisible, value);
-    }
-
-    public bool DriveFirmwareRevisionVisible
-    {
-        get => _driveFirmwareRevisionVisible;
-        set => this.RaiseAndSetIfChanged(ref _driveFirmwareRevisionVisible, value);
-    }
-
-    public bool AaruMetadataFromImageVisible
-    {
-        get => _aaruMetadataFromImageVisible;
-        set => this.RaiseAndSetIfChanged(ref _aaruMetadataFromImageVisible, value);
-    }
-
-    public bool ResumeFileFromImageVisible
-    {
-        get => _resumeFileFromImageVisible;
-        set => this.RaiseAndSetIfChanged(ref _resumeFileFromImageVisible, value);
-    }
-
-    public bool DestinationEnabled
-    {
-        get => _destinationEnabled;
-        set => this.RaiseAndSetIfChanged(ref _destinationEnabled, value);
-    }
-
-    public ReactiveCommand<Unit, Task> DestinationCommand           { get; }
-    public ReactiveCommand<Unit, Unit> CreatorCommand               { get; }
-    public ReactiveCommand<Unit, Unit> MediaTitleCommand            { get; }
-    public ReactiveCommand<Unit, Unit> MediaManufacturerCommand     { get; }
-    public ReactiveCommand<Unit, Unit> MediaModelCommand            { get; }
-    public ReactiveCommand<Unit, Unit> MediaSerialNumberCommand     { get; }
-    public ReactiveCommand<Unit, Unit> MediaBarcodeCommand          { get; }
-    public ReactiveCommand<Unit, Unit> MediaPartNumberCommand       { get; }
-    public ReactiveCommand<Unit, Unit> MediaSequenceCommand         { get; }
-    public ReactiveCommand<Unit, Unit> LastMediaSequenceCommand     { get; }
-    public ReactiveCommand<Unit, Unit> DriveManufacturerCommand     { get; }
-    public ReactiveCommand<Unit, Unit> DriveModelCommand            { get; }
-    public ReactiveCommand<Unit, Unit> DriveSerialNumberCommand     { get; }
-    public ReactiveCommand<Unit, Unit> DriveFirmwareRevisionCommand { get; }
-    public ReactiveCommand<Unit, Unit> CommentsCommand              { get; }
-    public ReactiveCommand<Unit, Unit> AaruMetadataFromImageCommand { get; }
-    public ReactiveCommand<Unit, Task> AaruMetadataCommand          { get; }
-    public ReactiveCommand<Unit, Unit> ResumeFileFromImageCommand   { get; }
-    public ReactiveCommand<Unit, Task> ResumeFileCommand            { get; }
-    public ReactiveCommand<Unit, Task> StartCommand                 { get; }
-    public ReactiveCommand<Unit, Unit> CloseCommand                 { get; }
-    public ReactiveCommand<Unit, Unit> StopCommand                  { get; }
-
-    public bool FormatReadOnly
-    {
-        get => _formatReadOnly;
-        set => this.RaiseAndSetIfChanged(ref _formatReadOnly, value);
-    }
-
-    public bool DestinationVisible
-    {
-        get => _destinationVisible;
-        set => this.RaiseAndSetIfChanged(ref _destinationVisible, value);
-    }
-
-    async Task ExecuteStartCommand()
+    async Task StartAsync()
     {
         if(SelectedPlugin is null)
         {
@@ -1894,9 +1612,9 @@ public sealed class ImageConvertViewModel : ViewModelBase
         Statistics.AddCommand("convert-image");
     }
 
-    void ExecuteCloseCommand() => _view.Close();
+    void Close() => _view.Close();
 
-    internal void ExecuteStopCommand()
+    internal void Stop()
     {
         _cancel     = true;
         StopEnabled = false;
@@ -2036,7 +1754,7 @@ public sealed class ImageConvertViewModel : ViewModelBase
                 grpOptions.Content = stkImageOptions;
             }
     */
-    async Task ExecuteDestinationCommand()
+    async Task DestinationAsync()
     {
         if(SelectedPlugin is null) return;
 
@@ -2065,41 +1783,41 @@ public sealed class ImageConvertViewModel : ViewModelBase
             DestinationText += SelectedPlugin.Plugin.KnownExtensions.First();
     }
 
-    void ExecuteCreatorCommand() => CreatorText = _inputFormat.Info.Creator;
+    void Creator() => CreatorText = _inputFormat.Info.Creator;
 
-    void ExecuteMediaTitleCommand() => MediaTitleText = _inputFormat.Info.MediaTitle;
+    void MediaTitle() => MediaTitleText = _inputFormat.Info.MediaTitle;
 
-    void ExecuteCommentsCommand() => CommentsText = _inputFormat.Info.Comments;
+    void Comments() => CommentsText = _inputFormat.Info.Comments;
 
-    void ExecuteMediaManufacturerCommand() => MediaManufacturerText = _inputFormat.Info.MediaManufacturer;
+    void MediaManufacturer() => MediaManufacturerText = _inputFormat.Info.MediaManufacturer;
 
-    void ExecuteMediaModelCommand() => MediaModelText = _inputFormat.Info.MediaModel;
+    void MediaModel() => MediaModelText = _inputFormat.Info.MediaModel;
 
-    void ExecuteMediaSerialNumberCommand() => MediaSerialNumberText = _inputFormat.Info.MediaSerialNumber;
+    void MediaSerialNumber() => MediaSerialNumberText = _inputFormat.Info.MediaSerialNumber;
 
-    void ExecuteMediaBarcodeCommand() => MediaBarcodeText = _inputFormat.Info.MediaBarcode;
+    void MediaBarcode() => MediaBarcodeText = _inputFormat.Info.MediaBarcode;
 
-    void ExecuteMediaPartNumberCommand() => MediaPartNumberText = _inputFormat.Info.MediaPartNumber;
+    void MediaPartNumber() => MediaPartNumberText = _inputFormat.Info.MediaPartNumber;
 
-    void ExecuteMediaSequenceCommand() => MediaSequenceValue = _inputFormat.Info.MediaSequence;
+    void MediaSequence() => MediaSequenceValue = _inputFormat.Info.MediaSequence;
 
-    void ExecuteLastMediaSequenceCommand() => LastMediaSequenceValue = _inputFormat.Info.LastMediaSequence;
+    void LastMediaSequence() => LastMediaSequenceValue = _inputFormat.Info.LastMediaSequence;
 
-    void ExecuteDriveManufacturerCommand() => DriveManufacturerText = _inputFormat.Info.DriveManufacturer;
+    void DriveManufacturer() => DriveManufacturerText = _inputFormat.Info.DriveManufacturer;
 
-    void ExecuteDriveModelCommand() => DriveModelText = _inputFormat.Info.DriveModel;
+    void DriveModel() => DriveModelText = _inputFormat.Info.DriveModel;
 
-    void ExecuteDriveSerialNumberCommand() => DriveSerialNumberText = _inputFormat.Info.DriveSerialNumber;
+    void DriveSerialNumber() => DriveSerialNumberText = _inputFormat.Info.DriveSerialNumber;
 
-    void ExecuteDriveFirmwareRevisionCommand() => DriveFirmwareRevisionText = _inputFormat.Info.DriveFirmwareRevision;
+    void DriveFirmwareRevision() => DriveFirmwareRevisionText = _inputFormat.Info.DriveFirmwareRevision;
 
-    void ExecuteAaruMetadataFromImageCommand()
+    void AaruMetadataFromImage()
     {
         MetadataJsonText = UI._From_image_;
         _aaruMetadata    = _inputFormat.AaruMetadata;
     }
 
-    async Task ExecuteAaruMetadataCommand()
+    async Task AaruMetadataAsync()
     {
         _aaruMetadata    = null;
         MetadataJsonText = "";
@@ -2138,13 +1856,13 @@ public sealed class ImageConvertViewModel : ViewModelBase
         }
     }
 
-    void ExecuteResumeFileFromImageCommand()
+    void ResumeFileFromImage()
     {
         ResumeFileText = UI._From_image_;
         _dumpHardware  = _inputFormat.DumpHardware;
     }
 
-    async Task ExecuteResumeFileCommand()
+    async Task ResumeFileAsync()
     {
         _dumpHardware  = null;
         ResumeFileText = "";

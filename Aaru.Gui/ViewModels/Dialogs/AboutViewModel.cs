@@ -34,22 +34,24 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Reactive;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.Gui.Models;
 using Aaru.Gui.Views.Dialogs;
 using Aaru.Localization;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
-using ReactiveUI;
 
 namespace Aaru.Gui.ViewModels.Dialogs;
 
-public sealed class AboutViewModel : ViewModelBase
+public sealed partial class AboutViewModel : ViewModelBase
 {
     readonly About _view;
-    string         _versionText;
+    [ObservableProperty]
+    string _versionText;
 
     public AboutViewModel(About view)
     {
@@ -59,13 +61,13 @@ public sealed class AboutViewModel : ViewModelBase
             (Attribute.GetCustomAttribute(typeof(App).Assembly, typeof(AssemblyInformationalVersionAttribute)) as
                  AssemblyInformationalVersionAttribute)?.InformationalVersion;
 
-        WebsiteCommand = ReactiveCommand.Create(ExecuteWebsiteCommand);
-        LicenseCommand = ReactiveCommand.Create(ExecuteLicenseCommand);
-        CloseCommand   = ReactiveCommand.Create(ExecuteCloseCommand);
+        WebsiteCommand = new RelayCommand(OpenWebsite);
+        LicenseCommand = new AsyncRelayCommand(LicenseAsync);
+        CloseCommand   = new RelayCommand(Close);
 
         Assemblies = [];
 
-        Task.Run(() =>
+        _ = Task.Run(() =>
         {
             foreach(Assembly assembly in AppDomain.CurrentDomain.GetAssemblies().OrderBy(a => a.FullName))
             {
@@ -125,18 +127,12 @@ public sealed class AboutViewModel : ViewModelBase
     [NotNull]
     public string Authors => UI.Text_Authors;
 
-    public ReactiveCommand<Unit, Unit>         WebsiteCommand { get; }
-    public ReactiveCommand<Unit, Unit>         LicenseCommand { get; }
-    public ReactiveCommand<Unit, Unit>         CloseCommand   { get; }
+    public ICommand                            WebsiteCommand { get; }
+    public ICommand                            LicenseCommand { get; }
+    public ICommand                            CloseCommand   { get; }
     public ObservableCollection<AssemblyModel> Assemblies     { get; }
 
-    public string VersionText
-    {
-        get => _versionText;
-        set => this.RaiseAndSetIfChanged(ref _versionText, value);
-    }
-
-    static void ExecuteWebsiteCommand()
+    static void OpenWebsite()
     {
         var process = new Process
         {
@@ -163,12 +159,13 @@ public sealed class AboutViewModel : ViewModelBase
         process.Start();
     }
 
-    void ExecuteLicenseCommand()
+    Task LicenseAsync()
     {
         var dialog = new LicenseDialog();
         dialog.DataContext = new LicenseViewModel(dialog);
-        dialog.ShowDialog(_view);
+
+        return dialog.ShowDialog(_view);
     }
 
-    void ExecuteCloseCommand() => _view.Close();
+    void Close() => _view.Close();
 }

@@ -35,8 +35,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
 using System.Threading;
+using System.Windows.Input;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Core;
@@ -45,61 +45,99 @@ using Aaru.Localization;
 using Aaru.Logging;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Humanizer;
 using Humanizer.Localisation;
-using ReactiveUI;
 using Sentry;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
-public sealed class ImageVerifyViewModel : ViewModelBase
+public sealed partial class ImageVerifyViewModel : ViewModelBase
 {
     readonly IMediaImage _inputFormat;
     readonly Window      _view;
-    bool                 _cancel;
-    bool                 _closeVisible;
-    string               _imageResultText;
-    bool                 _imageResultVisible;
-    bool                 _optionsVisible;
-    bool                 _progress2Indeterminate;
-    double               _progress2MaxValue;
-    string               _progress2Text;
-    double               _progress2Value;
-    bool                 _progress2Visible;
-    bool                 _progressIndeterminate;
-    double               _progressMaxValue;
-    string               _progressText;
-    double               _progressValue;
-    bool                 _progressVisible;
-    bool                 _resultsVisible;
-    string               _sectorErrorsText;
-    bool                 _sectorErrorsVisible;
-    string               _sectorsErrorsAllText;
-    bool                 _sectorsErrorsAllVisible;
-    bool                 _sectorSummaryVisible;
-    string               _sectorsUnknownAllText;
-    bool                 _sectorsUnknownAllVisible;
-    string               _sectorsUnknownsText;
-    bool                 _sectorsUnknownsVisible;
-    bool                 _startVisible;
-    bool                 _stopEnabled;
-    bool                 _stopVisible;
-    string               _totalSectorErrorsText;
-    string               _totalSectorErrorsUnknownsText;
-    string               _totalSectorsText;
-    string               _totalSectorUnknownsText;
-    bool                 _verifyImageChecked;
-    bool                 _verifyImageEnabled;
-    bool                 _verifySectorsChecked;
-    bool                 _verifySectorsEnabled;
-    bool                 _verifySectorsVisible;
+    [ObservableProperty]
+    bool _cancel;
+    [ObservableProperty]
+    bool _closeVisible;
+    [ObservableProperty]
+    string _imageResultText;
+    [ObservableProperty]
+    bool _imageResultVisible;
+    [ObservableProperty]
+    bool _optionsVisible;
+    [ObservableProperty]
+    bool _progress2Indeterminate;
+    [ObservableProperty]
+    double _progress2MaxValue;
+    [ObservableProperty]
+    string _progress2Text;
+    [ObservableProperty]
+    double _progress2Value;
+    [ObservableProperty]
+    bool _progress2Visible;
+    [ObservableProperty]
+    bool _progressIndeterminate;
+    [ObservableProperty]
+    double _progressMaxValue;
+    [ObservableProperty]
+    string _progressText;
+    [ObservableProperty]
+    double _progressValue;
+    [ObservableProperty]
+    bool _progressVisible;
+    [ObservableProperty]
+    bool _resultsVisible;
+    [ObservableProperty]
+    string _sectorErrorsText;
+    [ObservableProperty]
+    bool _sectorErrorsVisible;
+    [ObservableProperty]
+    string _sectorsErrorsAllText;
+    [ObservableProperty]
+    bool _sectorsErrorsAllVisible;
+    [ObservableProperty]
+    bool _sectorSummaryVisible;
+    [ObservableProperty]
+    string _sectorsUnknownAllText;
+    [ObservableProperty]
+    bool _sectorsUnknownAllVisible;
+    [ObservableProperty]
+    string _sectorsUnknownsText;
+    [ObservableProperty]
+    bool _sectorsUnknownsVisible;
+    [ObservableProperty]
+    bool _startVisible;
+    [ObservableProperty]
+    bool _stopEnabled;
+    [ObservableProperty]
+    bool _stopVisible;
+    [ObservableProperty]
+    string _totalSectorErrorsText;
+    [ObservableProperty]
+    string _totalSectorErrorsUnknownsText;
+    [ObservableProperty]
+    string _totalSectorsText;
+    [ObservableProperty]
+    string _totalSectorUnknownsText;
+    [ObservableProperty]
+    bool _verifyImageChecked;
+    [ObservableProperty]
+    bool _verifyImageEnabled;
+    [ObservableProperty]
+    bool _verifySectorsChecked;
+    [ObservableProperty]
+    bool _verifySectorsEnabled;
+    [ObservableProperty]
+    bool _verifySectorsVisible;
 
     public ImageVerifyViewModel(IMediaImage inputFormat, Window view)
     {
         _view                = view;
-        StartCommand         = ReactiveCommand.Create(ExecuteStartCommand);
-        CloseCommand         = ReactiveCommand.Create(ExecuteCloseCommand);
-        StopCommand          = ReactiveCommand.Create(ExecuteStopCommand);
+        StartCommand         = new RelayCommand(Start);
+        CloseCommand         = new RelayCommand(Close);
+        StopCommand          = new RelayCommand(Stop);
         _inputFormat         = inputFormat;
         _cancel              = false;
         ErrorList            = [];
@@ -120,227 +158,12 @@ public sealed class ImageVerifyViewModel : ViewModelBase
 
     public ObservableCollection<LbaModel> ErrorList    { get; }
     public ObservableCollection<LbaModel> UnknownList  { get; }
-    public ReactiveCommand<Unit, Unit>    StartCommand { get; }
-    public ReactiveCommand<Unit, Unit>    CloseCommand { get; }
-    public ReactiveCommand<Unit, Unit>    StopCommand  { get; }
+    public ICommand                       StartCommand { get; }
+    public ICommand                       CloseCommand { get; }
+    public ICommand                       StopCommand  { get; }
 
-    public bool VerifyImageEnabled
-    {
-        get => _verifyImageEnabled;
-        set => this.RaiseAndSetIfChanged(ref _verifyImageEnabled, value);
-    }
 
-    public bool VerifySectorsEnabled
-    {
-        get => _verifySectorsEnabled;
-        set => this.RaiseAndSetIfChanged(ref _verifySectorsEnabled, value);
-    }
-
-    public bool VerifySectorsVisible
-    {
-        get => _verifySectorsVisible;
-        set => this.RaiseAndSetIfChanged(ref _verifySectorsVisible, value);
-    }
-
-    public double ProgressMaxValue
-    {
-        get => _progressMaxValue;
-        set => this.RaiseAndSetIfChanged(ref _progressMaxValue, value);
-    }
-
-    public bool VerifyImageChecked
-    {
-        get => _verifyImageChecked;
-        set => this.RaiseAndSetIfChanged(ref _verifyImageChecked, value);
-    }
-
-    public bool ProgressIndeterminate
-    {
-        get => _progressIndeterminate;
-        set => this.RaiseAndSetIfChanged(ref _progressIndeterminate, value);
-    }
-
-    public bool ImageResultVisible
-    {
-        get => _imageResultVisible;
-        set => this.RaiseAndSetIfChanged(ref _imageResultVisible, value);
-    }
-
-    public string ImageResultText
-    {
-        get => _imageResultText;
-        set => this.RaiseAndSetIfChanged(ref _imageResultText, value);
-    }
-
-    public bool VerifySectorsChecked
-    {
-        get => _verifySectorsChecked;
-        set => this.RaiseAndSetIfChanged(ref _verifySectorsChecked, value);
-    }
-
-    public bool Progress2Visible
-    {
-        get => _progress2Visible;
-        set => this.RaiseAndSetIfChanged(ref _progress2Visible, value);
-    }
-
-    public bool Progress2Indeterminate
-    {
-        get => _progress2Indeterminate;
-        set => this.RaiseAndSetIfChanged(ref _progress2Indeterminate, value);
-    }
-
-    public double Progress2MaxValue
-    {
-        get => _progress2MaxValue;
-        set => this.RaiseAndSetIfChanged(ref _progress2MaxValue, value);
-    }
-
-    public string ProgressText
-    {
-        get => _progressText;
-        set => this.RaiseAndSetIfChanged(ref _progressText, value);
-    }
-
-    public double ProgressValue
-    {
-        get => _progressValue;
-        set => this.RaiseAndSetIfChanged(ref _progressValue, value);
-    }
-
-    public double Progress2Value
-    {
-        get => _progress2Value;
-        set => this.RaiseAndSetIfChanged(ref _progress2Value, value);
-    }
-
-    public string Progress2Text
-    {
-        get => _progress2Text;
-        set => this.RaiseAndSetIfChanged(ref _progress2Text, value);
-    }
-
-    public bool SectorsErrorsAllVisible
-    {
-        get => _sectorsErrorsAllVisible;
-        set => this.RaiseAndSetIfChanged(ref _sectorsErrorsAllVisible, value);
-    }
-
-    public string SectorsErrorsAllText
-    {
-        get => _sectorsErrorsAllText;
-        set => this.RaiseAndSetIfChanged(ref _sectorsErrorsAllText, value);
-    }
-
-    public bool SectorsUnknownAllVisible
-    {
-        get => _sectorsUnknownAllVisible;
-        set => this.RaiseAndSetIfChanged(ref _sectorsUnknownAllVisible, value);
-    }
-
-    public string SectorsUnknownAllText
-    {
-        get => _sectorsUnknownAllText;
-        set => this.RaiseAndSetIfChanged(ref _sectorsUnknownAllText, value);
-    }
-
-    public string SectorErrorsText
-    {
-        get => _sectorErrorsText;
-        set => this.RaiseAndSetIfChanged(ref _sectorErrorsText, value);
-    }
-
-    public bool SectorErrorsVisible
-    {
-        get => _sectorErrorsVisible;
-        set => this.RaiseAndSetIfChanged(ref _sectorErrorsVisible, value);
-    }
-
-    public bool SectorsUnknownsVisible
-    {
-        get => _sectorsUnknownsVisible;
-        set => this.RaiseAndSetIfChanged(ref _sectorsUnknownsVisible, value);
-    }
-
-    public string SectorsUnknownsText
-    {
-        get => _sectorsUnknownsText;
-        set => this.RaiseAndSetIfChanged(ref _sectorsUnknownsText, value);
-    }
-
-    public bool SectorSummaryVisible
-    {
-        get => _sectorSummaryVisible;
-        set => this.RaiseAndSetIfChanged(ref _sectorSummaryVisible, value);
-    }
-
-    public string TotalSectorsText
-    {
-        get => _totalSectorsText;
-        set => this.RaiseAndSetIfChanged(ref _totalSectorsText, value);
-    }
-
-    public string TotalSectorErrorsText
-    {
-        get => _totalSectorErrorsText;
-        set => this.RaiseAndSetIfChanged(ref _totalSectorErrorsText, value);
-    }
-
-    public string TotalSectorUnknownsText
-    {
-        get => _totalSectorUnknownsText;
-        set => this.RaiseAndSetIfChanged(ref _totalSectorUnknownsText, value);
-    }
-
-    public string TotalSectorErrorsUnknownsText
-    {
-        get => _totalSectorErrorsUnknownsText;
-        set => this.RaiseAndSetIfChanged(ref _totalSectorErrorsUnknownsText, value);
-    }
-
-    public bool OptionsVisible
-    {
-        get => _optionsVisible;
-        set => this.RaiseAndSetIfChanged(ref _optionsVisible, value);
-    }
-
-    public bool ResultsVisible
-    {
-        get => _resultsVisible;
-        set => this.RaiseAndSetIfChanged(ref _resultsVisible, value);
-    }
-
-    public bool ProgressVisible
-    {
-        get => _progressVisible;
-        set => this.RaiseAndSetIfChanged(ref _progressVisible, value);
-    }
-
-    public bool StartVisible
-    {
-        get => _startVisible;
-        set => this.RaiseAndSetIfChanged(ref _startVisible, value);
-    }
-
-    public bool StopVisible
-    {
-        get => _stopVisible;
-        set => this.RaiseAndSetIfChanged(ref _stopVisible, value);
-    }
-
-    public bool CloseVisible
-    {
-        get => _closeVisible;
-        set => this.RaiseAndSetIfChanged(ref _closeVisible, value);
-    }
-
-    public bool StopEnabled
-    {
-        get => _stopEnabled;
-        set => this.RaiseAndSetIfChanged(ref _stopEnabled, value);
-    }
-
-    void ExecuteStartCommand()
+    void Start()
     {
         VerifyImageEnabled   = false;
         VerifySectorsEnabled = false;
@@ -687,9 +510,9 @@ public sealed class ImageVerifyViewModel : ViewModelBase
         });
     }
 
-    void ExecuteCloseCommand() => _view.Close();
+    void Close() => _view.Close();
 
-    internal void ExecuteStopCommand()
+    internal void Stop()
     {
         _cancel     = true;
         StopEnabled = false;

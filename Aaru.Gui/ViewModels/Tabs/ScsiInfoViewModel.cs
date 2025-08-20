@@ -34,8 +34,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reactive;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
 using Aaru.Decoders.SCSI;
 using Aaru.Decoders.SCSI.MMC;
@@ -45,24 +45,28 @@ using Aaru.Localization;
 using Aaru.Logging;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
-using ReactiveUI;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Inquiry = Aaru.CommonTypes.Structs.Devices.SCSI.Inquiry;
 
 namespace Aaru.Gui.ViewModels.Tabs;
 
-public sealed class ScsiInfoViewModel : ViewModelBase
+public sealed partial class ScsiInfoViewModel : ViewModelBase
 {
     const    string MODULE_NAME = "SCSI Information ViewModel";
     readonly byte[] _configuration;
     readonly byte[] _scsiModeSense10;
     readonly byte[] _scsiModeSense6;
     readonly Window _view;
-    string          _evpdPageText;
-    string          _mmcFeatureText;
-    string          _scsiModeSensePageText;
-    object          _selectedEvpdPage;
-    object          _selectedMmcFeature;
-    object          _selectedModeSensePage;
+    [ObservableProperty]
+    string _evpdPageText;
+    [ObservableProperty]
+    string _mmcFeatureText;
+    [ObservableProperty]
+    string _modeSensePageText;
+    object _selectedEvpdPage;
+    object _selectedMmcFeature;
+    object _selectedModeSensePage;
 
     public ScsiInfoViewModel(byte[] scsiInquiryData, Inquiry? scsiInquiry, Dictionary<byte, byte[]> scsiEvpdPages,
                              Modes.DecodedMode? scsiMode, PeripheralDeviceTypes scsiType, byte[] scsiModeSense6,
@@ -76,12 +80,12 @@ public sealed class ScsiInfoViewModel : ViewModelBase
         ModeSensePages           = [];
         EvpdPages                = [];
         MmcFeatures              = [];
-        SaveInquiryBinaryCommand = ReactiveCommand.Create(ExecuteSaveInquiryBinaryCommand);
-        SaveInquiryTextCommand   = ReactiveCommand.Create(ExecuteSaveInquiryTextCommand);
-        SaveModeSense6Command    = ReactiveCommand.Create(ExecuteSaveModeSense6Command);
-        SaveModeSense10Command   = ReactiveCommand.Create(ExecuteSaveModeSense10Command);
-        SaveEvpdPageCommand      = ReactiveCommand.Create(ExecuteSaveEvpdPageCommand);
-        SaveMmcFeaturesCommand   = ReactiveCommand.Create(ExecuteSaveMmcFeaturesCommand);
+        SaveInquiryBinaryCommand = new AsyncRelayCommand(SaveInquiryBinaryAsync);
+        SaveInquiryTextCommand   = new AsyncRelayCommand(SaveInquiryTextAsync);
+        SaveModeSense6Command    = new AsyncRelayCommand(SaveModeSense6Async);
+        SaveModeSense10Command   = new AsyncRelayCommand(SaveModeSense10Async);
+        SaveEvpdPageCommand      = new AsyncRelayCommand(SaveEvpdPageAsync);
+        SaveMmcFeaturesCommand   = new AsyncRelayCommand(SaveMmcFeaturesAsync);
 
         if(InquiryData == null || !scsiInquiry.HasValue) return;
 
@@ -606,9 +610,7 @@ public sealed class ScsiInfoViewModel : ViewModelBase
                         evpdPageTitle   = string.Format(UI.Page_0_h, page.Key);
                         evpdDecodedPage = UI.Undecoded;
 
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Core.Found_undecoded_SCSI_VPD_page_0,
-                                                   page.Key);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_undecoded_SCSI_VPD_page_0, page.Key);
 
                         break;
                     }
@@ -629,9 +631,7 @@ public sealed class ScsiInfoViewModel : ViewModelBase
 
         AaruLogging.Debug(MODULE_NAME, Localization.Core.GET_CONFIGURATION_length_is_0, ftr.DataLength);
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   Localization.Core.GET_CONFIGURATION_current_profile_is_0,
-                                   ftr.CurrentProfile);
+        AaruLogging.Debug(MODULE_NAME, Localization.Core.GET_CONFIGURATION_current_profile_is_0, ftr.CurrentProfile);
 
         if(ftr.Descriptors != null)
         {
@@ -711,10 +711,7 @@ public sealed class ScsiInfoViewModel : ViewModelBase
             }
         }
         else
-        {
-            AaruLogging.Debug(MODULE_NAME,
-                                       Localization.Core.GET_CONFIGURATION_returned_no_feature_descriptors);
-        }
+            AaruLogging.Debug(MODULE_NAME, Localization.Core.GET_CONFIGURATION_returned_no_feature_descriptors);
     }
 
     public byte[]                              InquiryData              { get; }
@@ -722,12 +719,12 @@ public sealed class ScsiInfoViewModel : ViewModelBase
     public ObservableCollection<ScsiPageModel> ModeSensePages           { get; }
     public ObservableCollection<ScsiPageModel> EvpdPages                { get; }
     public ObservableCollection<ScsiPageModel> MmcFeatures              { get; }
-    public ReactiveCommand<Unit, Task>         SaveInquiryBinaryCommand { get; }
-    public ReactiveCommand<Unit, Task>         SaveInquiryTextCommand   { get; }
-    public ReactiveCommand<Unit, Task>         SaveModeSense6Command    { get; }
-    public ReactiveCommand<Unit, Task>         SaveModeSense10Command   { get; }
-    public ReactiveCommand<Unit, Task>         SaveEvpdPageCommand      { get; }
-    public ReactiveCommand<Unit, Task>         SaveMmcFeaturesCommand   { get; }
+    public ICommand                            SaveInquiryBinaryCommand { get; }
+    public ICommand                            SaveInquiryTextCommand   { get; }
+    public ICommand                            SaveModeSense6Command    { get; }
+    public ICommand                            SaveModeSense10Command   { get; }
+    public ICommand                            SaveEvpdPageCommand      { get; }
+    public ICommand                            SaveMmcFeaturesCommand   { get; }
 
     public object SelectedModeSensePage
     {
@@ -738,14 +735,8 @@ public sealed class ScsiInfoViewModel : ViewModelBase
 
             if(value is ScsiPageModel pageModel) ModeSensePageText = pageModel.Description;
 
-            this.RaiseAndSetIfChanged(ref _selectedModeSensePage, value);
+            SetProperty(ref _selectedModeSensePage, value);
         }
-    }
-
-    public string ModeSensePageText
-    {
-        get => _scsiModeSensePageText;
-        set => this.RaiseAndSetIfChanged(ref _scsiModeSensePageText, value);
     }
 
     public object SelectedEvpdPage
@@ -757,14 +748,8 @@ public sealed class ScsiInfoViewModel : ViewModelBase
 
             if(value is ScsiPageModel pageModel) EvpdPageText = pageModel.Description;
 
-            this.RaiseAndSetIfChanged(ref _selectedEvpdPage, value);
+            SetProperty(ref _selectedEvpdPage, value);
         }
-    }
-
-    public string EvpdPageText
-    {
-        get => _evpdPageText;
-        set => this.RaiseAndSetIfChanged(ref _evpdPageText, value);
     }
 
     public object SelectedMmcFeature
@@ -776,14 +761,8 @@ public sealed class ScsiInfoViewModel : ViewModelBase
 
             if(value is ScsiPageModel pageModel) MmcFeatureText = pageModel.Description;
 
-            this.RaiseAndSetIfChanged(ref _selectedMmcFeature, value);
+            SetProperty(ref _selectedMmcFeature, value);
         }
-    }
-
-    public string MmcFeatureText
-    {
-        get => _mmcFeatureText;
-        set => this.RaiseAndSetIfChanged(ref _mmcFeatureText, value);
     }
 
     public string InquiryLabel           => UI.Title_INQUIRY;
@@ -800,7 +779,7 @@ public sealed class ScsiInfoViewModel : ViewModelBase
     public string FeatureLabel           => UI.Title_Feature;
     public string SaveMmcFeaturesLabel   => UI.ButtonLabel_Save_MMC_GET_CONFIGURATION_response_to_file;
 
-    async Task ExecuteSaveInquiryBinaryCommand()
+    async Task SaveInquiryBinaryAsync()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
@@ -818,7 +797,7 @@ public sealed class ScsiInfoViewModel : ViewModelBase
         saveFs.Close();
     }
 
-    async Task ExecuteSaveInquiryTextCommand()
+    async Task SaveInquiryTextAsync()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
@@ -836,7 +815,7 @@ public sealed class ScsiInfoViewModel : ViewModelBase
         saveFs.Close();
     }
 
-    async Task ExecuteSaveModeSense6Command()
+    async Task SaveModeSense6Async()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
@@ -854,7 +833,7 @@ public sealed class ScsiInfoViewModel : ViewModelBase
         saveFs.Close();
     }
 
-    async Task ExecuteSaveModeSense10Command()
+    async Task SaveModeSense10Async()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
@@ -872,7 +851,7 @@ public sealed class ScsiInfoViewModel : ViewModelBase
         saveFs.Close();
     }
 
-    async Task ExecuteSaveEvpdPageCommand()
+    async Task SaveEvpdPageAsync()
     {
         if(SelectedEvpdPage is not ScsiPageModel pageModel) return;
 
@@ -892,7 +871,7 @@ public sealed class ScsiInfoViewModel : ViewModelBase
         saveFs.Close();
     }
 
-    async Task ExecuteSaveMmcFeaturesCommand()
+    async Task SaveMmcFeaturesAsync()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {

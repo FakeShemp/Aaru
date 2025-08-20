@@ -32,9 +32,9 @@
 
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.CommonTypes.Enums;
 using Aaru.Core;
 using Aaru.Core.Devices.Scanning;
@@ -43,69 +43,110 @@ using Aaru.Localization;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Humanizer;
 using Humanizer.Bytes;
 using Humanizer.Localisation;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
-using ReactiveUI;
 
 //using OxyPlot;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
-public sealed class MediaScanViewModel : ViewModelBase
+public sealed partial class MediaScanViewModel : ViewModelBase
 {
     readonly Window _view;
-    string          _a;
-    string          _avgSpeed;
-    Color           _axesColor;
-    string          _b;
-    ulong           _blocks;
-    ulong           _blocksToRead;
-    string          _c;
-    bool            _closeVisible;
-    string          _d;
-    string          _devicePath;
-    string          _e;
-    string          _f;
-    Color           _lineColor;
-    ScanResults     _localResults;
-    string          _maxSpeed;
-    double          _maxX;
-    double          _maxY;
-    string          _minSpeed;
-    double          _minX;
-    double          _minY;
-    bool            _progress1Visible;
-    string          _progress2Indeterminate;
-    string          _progress2MaxValue;
-    string          _progress2Text;
-    string          _progress2Value;
-    string          _progress2Visible;
-    bool            _progressIndeterminate;
-    double          _progressMaxValue;
-    string          _progressText;
-    double          _progressValue;
-    bool            _progressVisible;
-    bool            _resultsVisible;
-    MediaScan       _scanner;
-    bool            _startVisible;
-    double          _stepsX;
-    double          _stepsY;
-    string          _stopEnabled;
-    bool            _stopVisible;
-    string          _totalTime;
-    string          _unreadableSectors;
+    [ObservableProperty]
+    string _a;
+    [ObservableProperty]
+    string _avgSpeed;
+    [ObservableProperty]
+    Color _axesColor;
+    [ObservableProperty]
+    string _b;
+    [ObservableProperty]
+    ulong _blocks;
+    [ObservableProperty]
+    ulong _blocksToRead;
+    [ObservableProperty]
+    string _c;
+    [ObservableProperty]
+    bool _closeVisible;
+    [ObservableProperty]
+    string _d;
+    [ObservableProperty]
+    string _devicePath;
+    [ObservableProperty]
+    string _e;
+    [ObservableProperty]
+    string _f;
+    [ObservableProperty]
+    Color _lineColor;
+    [ObservableProperty]
+    ScanResults _localResults;
+    [ObservableProperty]
+    string _maxSpeed;
+    [ObservableProperty]
+    double _maxX;
+    [ObservableProperty]
+    double _maxY;
+    [ObservableProperty]
+    string _minSpeed;
+    [ObservableProperty]
+    double _minX;
+    [ObservableProperty]
+    double _minY;
+    [ObservableProperty]
+    bool _progress1Visible;
+    [ObservableProperty]
+    string _progress2Indeterminate;
+    [ObservableProperty]
+    string _progress2MaxValue;
+    [ObservableProperty]
+    string _progress2Text;
+    [ObservableProperty]
+    string _progress2Value;
+    [ObservableProperty]
+    string _progress2Visible;
+    [ObservableProperty]
+    bool _progressIndeterminate;
+    [ObservableProperty]
+    double _progressMaxValue;
+    [ObservableProperty]
+    string _progressText;
+    [ObservableProperty]
+    double _progressValue;
+    [ObservableProperty]
+    bool _progressVisible;
+    [ObservableProperty]
+    bool _resultsVisible;
+    [ObservableProperty]
+    MediaScan _scanner;
+    [ObservableProperty]
+    bool _startVisible;
+    [ObservableProperty]
+    double _stepsX;
+    [ObservableProperty]
+    double _stepsY;
+    [ObservableProperty]
+    string _stopEnabled;
+    [ObservableProperty]
+    bool _stopVisible;
+    [ObservableProperty]
+    string _totalTime;
+    [ObservableProperty]
+    string _unreadableSectors;
 
     public MediaScanViewModel(string devicePath, Window view)
     {
         _devicePath  = devicePath;
         _view        = view;
         StopVisible  = false;
-        StartCommand = ReactiveCommand.Create(ExecuteStartCommand);
-        CloseCommand = ReactiveCommand.Create(ExecuteCloseCommand);
-        StopCommand  = ReactiveCommand.Create(ExecuteStopCommand);
+        StartCommand = new RelayCommand(Start);
+        CloseCommand = new RelayCommand(Close);
+        StopCommand  = new RelayCommand(Stop);
         StartVisible = true;
         CloseVisible = true;
         BlockMapList = [];
@@ -124,207 +165,21 @@ public sealed class MediaScanViewModel : ViewModelBase
     public string CloseLabel => UI.ButtonLabel_Close;
     public string StopLabel  => UI.ButtonLabel_Stop;
 
-    public Color AxesColor
-    {
-        get => _axesColor;
-        set => this.RaiseAndSetIfChanged(ref _axesColor, value);
-    }
-
-    public Color LineColor
-    {
-        get => _lineColor;
-        set => this.RaiseAndSetIfChanged(ref _lineColor, value);
-    }
-
     public ObservableCollection<(ulong block, double duration)> BlockMapList { get; }
 
 //    public ObservableCollection<DataPoint>                      ChartPoints  { get; }
 
-    public ulong Blocks
-    {
-        get => _blocks;
-        set => this.RaiseAndSetIfChanged(ref _blocks, value);
-    }
-
-    public string A
-    {
-        get => _a;
-        set => this.RaiseAndSetIfChanged(ref _a, value);
-    }
-
-    public string B
-    {
-        get => _b;
-        set => this.RaiseAndSetIfChanged(ref _b, value);
-    }
-
-    public string C
-    {
-        get => _c;
-        set => this.RaiseAndSetIfChanged(ref _c, value);
-    }
-
-    public string D
-    {
-        get => _d;
-        set => this.RaiseAndSetIfChanged(ref _d, value);
-    }
-
-    public string E
-    {
-        get => _e;
-        set => this.RaiseAndSetIfChanged(ref _e, value);
-    }
-
-    public string F
-    {
-        get => _f;
-        set => this.RaiseAndSetIfChanged(ref _f, value);
-    }
-
-    public string UnreadableSectors
-    {
-        get => _unreadableSectors;
-        set => this.RaiseAndSetIfChanged(ref _unreadableSectors, value);
-    }
-
-    public string TotalTime
-    {
-        get => _totalTime;
-        set => this.RaiseAndSetIfChanged(ref _totalTime, value);
-    }
-
-    public string AvgSpeed
-    {
-        get => _avgSpeed;
-        set => this.RaiseAndSetIfChanged(ref _avgSpeed, value);
-    }
-
-    public string MaxSpeed
-    {
-        get => _maxSpeed;
-        set => this.RaiseAndSetIfChanged(ref _maxSpeed, value);
-    }
-
-    public string MinSpeed
-    {
-        get => _minSpeed;
-        set => this.RaiseAndSetIfChanged(ref _minSpeed, value);
-    }
-
-    public bool ProgressVisible
-    {
-        get => _progressVisible;
-        set => this.RaiseAndSetIfChanged(ref _progressVisible, value);
-    }
-
-    public bool Progress1Visible
-    {
-        get => _progress1Visible;
-        set => this.RaiseAndSetIfChanged(ref _progress1Visible, value);
-    }
-
-    public string ProgressText
-    {
-        get => _progressText;
-        set => this.RaiseAndSetIfChanged(ref _progressText, value);
-    }
-
-    public double ProgressMaxValue
-    {
-        get => _progressMaxValue;
-        set => this.RaiseAndSetIfChanged(ref _progressMaxValue, value);
-    }
-
-    public bool ProgressIndeterminate
-    {
-        get => _progressIndeterminate;
-        set => this.RaiseAndSetIfChanged(ref _progressIndeterminate, value);
-    }
-
-    public double ProgressValue
-    {
-        get => _progressValue;
-        set => this.RaiseAndSetIfChanged(ref _progressValue, value);
-    }
-
-    public bool StartVisible
-    {
-        get => _startVisible;
-        set => this.RaiseAndSetIfChanged(ref _startVisible, value);
-    }
-
-    public bool CloseVisible
-    {
-        get => _closeVisible;
-        set => this.RaiseAndSetIfChanged(ref _closeVisible, value);
-    }
-
-    public bool StopVisible
-    {
-        get => _stopVisible;
-        set => this.RaiseAndSetIfChanged(ref _stopVisible, value);
-    }
-
-    public string StopEnabled
-    {
-        get => _stopEnabled;
-        set => this.RaiseAndSetIfChanged(ref _stopEnabled, value);
-    }
-
-    public bool ResultsVisible
-    {
-        get => _resultsVisible;
-        set => this.RaiseAndSetIfChanged(ref _resultsVisible, value);
-    }
-
-    public double MaxY
-    {
-        get => _maxY;
-        set => this.RaiseAndSetIfChanged(ref _maxY, value);
-    }
-
-    public double MaxX
-    {
-        get => _maxX;
-        set => this.RaiseAndSetIfChanged(ref _maxX, value);
-    }
-
-    public double MinY
-    {
-        get => _minY;
-        set => this.RaiseAndSetIfChanged(ref _minY, value);
-    }
-
-    public double MinX
-    {
-        get => _minX;
-        set => this.RaiseAndSetIfChanged(ref _minX, value);
-    }
-
-    public double StepsY
-    {
-        get => _stepsY;
-        set => this.RaiseAndSetIfChanged(ref _stepsY, value);
-    }
-
-    public double StepsX
-    {
-        get => _stepsX;
-        set => this.RaiseAndSetIfChanged(ref _stepsX, value);
-    }
-
     public string Title { get; }
 
-    public ReactiveCommand<Unit, Unit> StartCommand { get; }
-    public ReactiveCommand<Unit, Unit> CloseCommand { get; }
-    public ReactiveCommand<Unit, Unit> StopCommand  { get; }
+    public ICommand StartCommand { get; }
+    public ICommand CloseCommand { get; }
+    public ICommand StopCommand  { get; }
 
-    void ExecuteCloseCommand() => _view.Close();
+    void Close() => _view.Close();
 
-    internal void ExecuteStopCommand() => _scanner?.Abort();
+    internal void Stop() => _scanner?.Abort();
 
-    void ExecuteStartCommand()
+    void Start()
     {
         StopVisible     = true;
         StartVisible    = false;

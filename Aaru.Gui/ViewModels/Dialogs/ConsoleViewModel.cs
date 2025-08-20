@@ -34,17 +34,17 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Reactive;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.CommonTypes.Interop;
 using Aaru.Localization;
 using Aaru.Logging;
 using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
-using ReactiveUI;
 using Console = Aaru.Gui.Views.Dialogs.Console;
 using PlatformID = Aaru.CommonTypes.Interop.PlatformID;
 using Version = Aaru.CommonTypes.Interop.Version;
@@ -59,15 +59,15 @@ public sealed class ConsoleViewModel : ViewModelBase
     public ConsoleViewModel(Console view)
     {
         _view        = view;
-        SaveCommand  = ReactiveCommand.Create(ExecuteSaveCommand);
-        ClearCommand = ReactiveCommand.Create(ExecuteClearCommand);
+        SaveCommand  = new AsyncRelayCommand(SaveAsync);
+        ClearCommand = new RelayCommand(Clear);
     }
 
     [NotNull]
     public string Title => UI.Title_Console;
 
-    public ReactiveCommand<Unit, Unit>    ClearCommand { get; }
-    public ReactiveCommand<Unit, Task>    SaveCommand  { get; }
+    public ICommand                       ClearCommand { get; }
+    public ICommand                       SaveCommand  { get; }
     public ObservableCollection<LogEntry> Entries      => ConsoleHandler.Entries;
 
     [NotNull]
@@ -90,11 +90,11 @@ public sealed class ConsoleViewModel : ViewModelBase
         set
         {
             ConsoleHandler.Debug = value;
-            this.RaiseAndSetIfChanged(ref _debugChecked, value);
+            SetProperty(ref _debugChecked, value);
         }
     }
 
-    async Task ExecuteSaveCommand()
+    async Task SaveAsync()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
@@ -165,11 +165,11 @@ public sealed class ConsoleViewModel : ViewModelBase
                                                           Icon.Error)
                                    .ShowWindowDialogAsync(_view);
 
-            AaruLogging.Exception(exception, UI
-                                     .Exception_0_trying_to_save_logfile_details_has_been_sent_to_console,
+            AaruLogging.Exception(exception,
+                                  UI.Exception_0_trying_to_save_logfile_details_has_been_sent_to_console,
                                   exception.Message);
         }
     }
 
-    static void ExecuteClearCommand() => ConsoleHandler.Entries.Clear();
+    static void Clear() => ConsoleHandler.Entries.Clear();
 }

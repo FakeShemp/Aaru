@@ -35,8 +35,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reactive;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Interop;
@@ -47,10 +47,10 @@ using Aaru.Localization;
 using Aaru.Logging;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
-using ReactiveUI;
 using Sentry;
 using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
@@ -65,7 +65,7 @@ public sealed class SubdirectoryViewModel
     {
         Entries             = [];
         SelectedEntries     = [];
-        ExtractFilesCommand = ReactiveCommand.Create(ExecuteExtractFilesCommand);
+        ExtractFilesCommand = new AsyncRelayCommand(ExtractFiles);
         _model              = model;
         _view               = view;
 
@@ -73,13 +73,13 @@ public sealed class SubdirectoryViewModel
 
         if(errno != ErrorNumber.NoError)
         {
-            MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
-                                                    string.Format(UI.Error_0_trying_to_read_1_of_chosen_filesystem,
-                                                                  errno,
-                                                                  model.Path),
-                                                    ButtonEnum.Ok,
-                                                    Icon.Error)
-                             .ShowWindowDialogAsync(view);
+            _ = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
+                                                        string.Format(UI.Error_0_trying_to_read_1_of_chosen_filesystem,
+                                                                      errno,
+                                                                      model.Path),
+                                                        ButtonEnum.Ok,
+                                                        Icon.Error)
+                                 .ShowWindowDialogAsync(view);
 
             return;
         }
@@ -121,7 +121,7 @@ public sealed class SubdirectoryViewModel
 
     public ObservableCollection<FileModel> Entries             { get; }
     public List<FileModel>                 SelectedEntries     { get; }
-    public ReactiveCommand<Unit, Task>     ExtractFilesCommand { get; }
+    public ICommand                        ExtractFilesCommand { get; }
 
     public string ExtractFilesLabel => UI.ButtonLabel_Extract_to;
     public string NameLabel         => UI.Title_Name;
@@ -138,7 +138,7 @@ public sealed class SubdirectoryViewModel
     public string LinksLabel        => UI.Title_Links;
     public string ModeLabel         => UI.Title_Mode;
 
-    async Task ExecuteExtractFilesCommand()
+    async Task ExtractFiles()
     {
         if(SelectedEntries.Count == 0) return;
 

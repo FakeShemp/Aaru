@@ -33,8 +33,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
 using System.Threading;
+using System.Windows.Input;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -44,54 +44,91 @@ using Aaru.Localization;
 using Aaru.Logging;
 using Avalonia.Controls;
 using Avalonia.Threading;
-using ReactiveUI;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Sentry;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
-public sealed class ImageChecksumViewModel : ViewModelBase
+public sealed partial class ImageChecksumViewModel : ViewModelBase
 {
     // How many sectors to read at once
     const    uint        SECTORS_TO_READ = 256;
     const    string      MODULE_NAME     = "Image Checksum ViewModel";
     readonly IMediaImage _inputFormat;
     readonly Window      _view;
-    bool                 _adler32Checked;
-    bool                 _cancel;
-    bool                 _checksumMediaChecked;
-    bool                 _checksumTracksChecked;
-    bool                 _checksumTracksVisible;
-    bool                 _closeCommandEnabled;
-    bool                 _closeCommandVisible;
-    bool                 _crc16Checked;
-    bool                 _crc32Checked;
-    bool                 _crc64Checked;
-    bool                 _fletcher16Checked;
-    bool                 _fletcher32Checked;
-    bool                 _md5Checked;
-    bool                 _mediaChecksumsVisible;
-    bool                 _optionsEnabled;
-    bool                 _progress1Visible;
-    double               _progress2Max;
-    string               _progress2Text;
-    double               _progress2Value;
-    bool                 _progress2Visible;
-    double               _progressMax;
-    string               _progressText;
-    double               _progressValue;
-    bool                 _progressVisible;
-    bool                 _resultsVisible;
-    bool                 _sha1Checked;
-    bool                 _sha256Checked;
-    bool                 _sha384Checked;
-    bool                 _sha512Checked;
-    bool                 _spamsumChecked;
-    bool                 _startCommandEnabled;
-    bool                 _startCommandVisible;
-    bool                 _stopCommandEnabled;
-    bool                 _stopCommandVisible;
-    string               _title;
-    bool                 _trackChecksumsVisible;
+    [ObservableProperty]
+    bool _adler32Checked;
+    [ObservableProperty]
+    bool _cancel;
+    [ObservableProperty]
+    bool _checksumMediaChecked;
+    [ObservableProperty]
+    bool _checksumTracksChecked;
+    [ObservableProperty]
+    bool _checksumTracksVisible;
+    [ObservableProperty]
+    bool _closeCommandEnabled;
+    [ObservableProperty]
+    bool _closeCommandVisible;
+    [ObservableProperty]
+    bool _crc16Checked;
+    [ObservableProperty]
+    bool _crc32Checked;
+    [ObservableProperty]
+    bool _crc64Checked;
+    [ObservableProperty]
+    bool _fletcher16Checked;
+    [ObservableProperty]
+    bool _fletcher32Checked;
+    [ObservableProperty]
+    bool _md5Checked;
+    [ObservableProperty]
+    bool _mediaChecksumsVisible;
+    [ObservableProperty]
+    bool _optionsEnabled;
+    [ObservableProperty]
+    bool _progress1Visible;
+    [ObservableProperty]
+    double _progress2Max;
+    [ObservableProperty]
+    string _progress2Text;
+    [ObservableProperty]
+    double _progress2Value;
+    [ObservableProperty]
+    bool _progress2Visible;
+    [ObservableProperty]
+    double _progressMax;
+    [ObservableProperty]
+    string _progressText;
+    [ObservableProperty]
+    double _progressValue;
+    [ObservableProperty]
+    bool _progressVisible;
+    [ObservableProperty]
+    bool _resultsVisible;
+    [ObservableProperty]
+    bool _sha1Checked;
+    [ObservableProperty]
+    bool _sha256Checked;
+    [ObservableProperty]
+    bool _sha384Checked;
+    [ObservableProperty]
+    bool _sha512Checked;
+    [ObservableProperty]
+    bool _spamsumChecked;
+    [ObservableProperty]
+    bool _startCommandEnabled;
+    [ObservableProperty]
+    bool _startCommandVisible;
+    [ObservableProperty]
+    bool _stopCommandEnabled;
+    [ObservableProperty]
+    bool _stopCommandVisible;
+    [ObservableProperty]
+    string _title;
+    [ObservableProperty]
+    bool _trackChecksumsVisible;
 
     public ImageChecksumViewModel(IMediaImage inputFormat, Window view)
     {
@@ -110,9 +147,9 @@ public sealed class ImageChecksumViewModel : ViewModelBase
         SpamsumChecked        = true;
         TrackChecksums        = [];
         MediaChecksums        = [];
-        StartCommand          = ReactiveCommand.Create(ExecuteStartCommand);
-        CloseCommand          = ReactiveCommand.Create(ExecuteCloseCommand);
-        StopCommand           = ReactiveCommand.Create(ExecuteStopCommand);
+        StartCommand          = new RelayCommand(Start);
+        CloseCommand          = new RelayCommand(Close);
+        StopCommand           = new RelayCommand(Stop);
         StopCommandVisible    = false;
         StartCommandVisible   = true;
         CloseCommandVisible   = true;
@@ -154,223 +191,13 @@ public sealed class ImageChecksumViewModel : ViewModelBase
     public string CloseLabel          => UI.ButtonLabel_Close;
     public string StopLabel           => UI.ButtonLabel_Stop;
 
-    public string Title
-    {
-        get => _title;
-        set => this.RaiseAndSetIfChanged(ref _title, value);
-    }
-
-    public bool OptionsEnabled
-    {
-        get => _optionsEnabled;
-        set => this.RaiseAndSetIfChanged(ref _optionsEnabled, value);
-    }
-
-    public bool ChecksumMediaChecked
-    {
-        get => _checksumMediaChecked;
-        set => this.RaiseAndSetIfChanged(ref _checksumMediaChecked, value);
-    }
-
-    public bool ChecksumTracksChecked
-    {
-        get => _checksumTracksChecked;
-        set => this.RaiseAndSetIfChanged(ref _checksumTracksChecked, value);
-    }
-
-    public bool Adler32Checked
-    {
-        get => _adler32Checked;
-        set => this.RaiseAndSetIfChanged(ref _adler32Checked, value);
-    }
-
-    public bool Crc16Checked
-    {
-        get => _crc16Checked;
-        set => this.RaiseAndSetIfChanged(ref _crc16Checked, value);
-    }
-
-    public bool Crc32Checked
-    {
-        get => _crc32Checked;
-        set => this.RaiseAndSetIfChanged(ref _crc32Checked, value);
-    }
-
-    public bool Crc64Checked
-    {
-        get => _crc64Checked;
-        set => this.RaiseAndSetIfChanged(ref _crc64Checked, value);
-    }
-
-    public bool Fletcher16Checked
-    {
-        get => _fletcher16Checked;
-        set => this.RaiseAndSetIfChanged(ref _fletcher16Checked, value);
-    }
-
-    public bool Fletcher32Checked
-    {
-        get => _fletcher32Checked;
-        set => this.RaiseAndSetIfChanged(ref _fletcher32Checked, value);
-    }
-
-    public bool Md5Checked
-    {
-        get => _md5Checked;
-        set => this.RaiseAndSetIfChanged(ref _md5Checked, value);
-    }
-
-    public bool Sha1Checked
-    {
-        get => _sha1Checked;
-        set => this.RaiseAndSetIfChanged(ref _sha1Checked, value);
-    }
-
-    public bool Sha256Checked
-    {
-        get => _sha256Checked;
-        set => this.RaiseAndSetIfChanged(ref _sha256Checked, value);
-    }
-
-    public bool Sha384Checked
-    {
-        get => _sha384Checked;
-        set => this.RaiseAndSetIfChanged(ref _sha384Checked, value);
-    }
-
-    public bool Sha512Checked
-    {
-        get => _sha512Checked;
-        set => this.RaiseAndSetIfChanged(ref _sha512Checked, value);
-    }
-
-    public bool SpamsumChecked
-    {
-        get => _spamsumChecked;
-        set => this.RaiseAndSetIfChanged(ref _spamsumChecked, value);
-    }
-
-    public bool ResultsVisible
-    {
-        get => _resultsVisible;
-        set => this.RaiseAndSetIfChanged(ref _resultsVisible, value);
-    }
-
-    public bool TrackChecksumsVisible
-    {
-        get => _trackChecksumsVisible;
-        set => this.RaiseAndSetIfChanged(ref _trackChecksumsVisible, value);
-    }
-
-    public bool MediaChecksumsVisible
-    {
-        get => _mediaChecksumsVisible;
-        set => this.RaiseAndSetIfChanged(ref _mediaChecksumsVisible, value);
-    }
-
-    public bool ProgressVisible
-    {
-        get => _progressVisible;
-        set => this.RaiseAndSetIfChanged(ref _progressVisible, value);
-    }
-
-    public bool Progress1Visible
-    {
-        get => _progress1Visible;
-        set => this.RaiseAndSetIfChanged(ref _progress1Visible, value);
-    }
-
-    public string ProgressText
-    {
-        get => _progressText;
-        set => this.RaiseAndSetIfChanged(ref _progressText, value);
-    }
-
-    public double ProgressMax
-    {
-        get => _progressMax;
-        set => this.RaiseAndSetIfChanged(ref _progressMax, value);
-    }
-
-    public double ProgressValue
-    {
-        get => _progressValue;
-        set => this.RaiseAndSetIfChanged(ref _progressValue, value);
-    }
-
-    public bool Progress2Visible
-    {
-        get => _progress2Visible;
-        set => this.RaiseAndSetIfChanged(ref _progress2Visible, value);
-    }
-
-    public string Progress2Text
-    {
-        get => _progress2Text;
-        set => this.RaiseAndSetIfChanged(ref _progress2Text, value);
-    }
-
-    public double Progress2Max
-    {
-        get => _progress2Max;
-        set => this.RaiseAndSetIfChanged(ref _progress2Max, value);
-    }
-
-    public double Progress2Value
-    {
-        get => _progress2Value;
-        set => this.RaiseAndSetIfChanged(ref _progress2Value, value);
-    }
-
-    public bool StartCommandEnabled
-    {
-        get => _startCommandEnabled;
-        set => this.RaiseAndSetIfChanged(ref _startCommandEnabled, value);
-    }
-
-    public bool StartCommandVisible
-    {
-        get => _startCommandVisible;
-        set => this.RaiseAndSetIfChanged(ref _startCommandVisible, value);
-    }
-
-    public bool CloseCommandEnabled
-    {
-        get => _closeCommandEnabled;
-        set => this.RaiseAndSetIfChanged(ref _closeCommandEnabled, value);
-    }
-
-    public bool CloseCommandVisible
-    {
-        get => _closeCommandVisible;
-        set => this.RaiseAndSetIfChanged(ref _closeCommandVisible, value);
-    }
-
-    public bool StopCommandEnabled
-    {
-        get => _stopCommandEnabled;
-        set => this.RaiseAndSetIfChanged(ref _stopCommandEnabled, value);
-    }
-
-    public bool StopCommandVisible
-    {
-        get => _stopCommandVisible;
-        set => this.RaiseAndSetIfChanged(ref _stopCommandVisible, value);
-    }
-
-    public bool ChecksumTracksVisible
-    {
-        get => _checksumTracksVisible;
-        set => this.RaiseAndSetIfChanged(ref _stopCommandVisible, value);
-    }
-
     public ObservableCollection<ChecksumModel> TrackChecksums { get; }
     public ObservableCollection<ChecksumModel> MediaChecksums { get; }
-    public ReactiveCommand<Unit, Unit>         StartCommand   { get; }
-    public ReactiveCommand<Unit, Unit>         CloseCommand   { get; }
-    public ReactiveCommand<Unit, Unit>         StopCommand    { get; }
+    public ICommand                            StartCommand   { get; }
+    public ICommand                            CloseCommand   { get; }
+    public ICommand                            StopCommand    { get; }
 
-    void ExecuteStartCommand()
+    void Start()
     {
         OptionsEnabled      = false;
         CloseCommandVisible = false;
@@ -386,9 +213,9 @@ public sealed class ImageChecksumViewModel : ViewModelBase
         }.Start();
     }
 
-    void ExecuteCloseCommand() => _view.Close();
+    void Close() => _view.Close();
 
-    internal void ExecuteStopCommand()
+    internal void Stop()
     {
         _cancel            = true;
         StopCommandEnabled = false;

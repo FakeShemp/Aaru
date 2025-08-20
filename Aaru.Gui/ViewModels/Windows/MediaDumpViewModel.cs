@@ -36,11 +36,11 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Reactive;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Xml.Serialization;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
@@ -58,11 +58,11 @@ using Aaru.Logging;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using DynamicData;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
-using ReactiveUI;
 using Sentry;
 using DeviceInfo = Aaru.Core.Devices.Info.DeviceInfo;
 using Dump = Aaru.Core.Devices.Dumping.Dump;
@@ -71,50 +71,86 @@ using MediaType = Aaru.CommonTypes.MediaType;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
-public sealed class MediaDumpViewModel : ViewModelBase
+public sealed partial class MediaDumpViewModel : ViewModelBase
 {
-    readonly string  _devicePath;
-    readonly Window  _view;
-    bool             _closeVisible;
-    string           _destination;
-    bool             _destinationEnabled;
-    Device           _dev;
-    Dump             _dumper;
-    string           _encodingEnabled;
-    bool             _encodingVisible;
-    bool             _existingMetadata;
-    bool             _force;
-    string           _formatReadOnly;
-    string           _log;
-    bool             _optionsVisible;
-    string           _outputPrefix;
-    bool             _persistent;
-    bool             _progress1Visible;
-    bool             _progress2Indeterminate;
-    double           _progress2MaxValue;
-    string           _progress2Text;
-    double           _progress2Value;
-    bool             _progress2Visible;
-    bool             _progressIndeterminate;
-    double           _progressMaxValue;
-    string           _progressText;
-    double           _progressValue;
-    bool             _progressVisible;
-    Resume           _resume;
-    double           _retries;
-    EncodingModel    _selectedEncoding;
+    readonly string _devicePath;
+    readonly Window _view;
+    [ObservableProperty]
+    bool _closeVisible;
+    [ObservableProperty]
+    string _destination;
+    [ObservableProperty]
+    bool _destinationEnabled;
+    [ObservableProperty]
+    Device _dev;
+    [ObservableProperty]
+    Dump _dumper;
+    [ObservableProperty]
+    string _encodingEnabled;
+    [ObservableProperty]
+    bool _encodingVisible;
+    bool _existingMetadata;
+    [ObservableProperty]
+    bool _force;
+    [ObservableProperty]
+    string _formatReadOnly;
+    [ObservableProperty]
+    string _log;
+    [ObservableProperty]
+    bool _optionsVisible;
+    [ObservableProperty]
+    string _outputPrefix;
+    [ObservableProperty]
+    bool _persistent;
+    [ObservableProperty]
+    bool _progress1Visible;
+    [ObservableProperty]
+    bool _progress2Indeterminate;
+    [ObservableProperty]
+    double _progress2MaxValue;
+    [ObservableProperty]
+    string _progress2Text;
+    [ObservableProperty]
+    double _progress2Value;
+    [ObservableProperty]
+    bool _progress2Visible;
+    [ObservableProperty]
+    bool _progressIndeterminate;
+    [ObservableProperty]
+    double _progressMaxValue;
+    [ObservableProperty]
+    string _progressText;
+    [ObservableProperty]
+    double _progressValue;
+    [ObservableProperty]
+    bool _progressVisible;
+    Resume _resume;
+    [ObservableProperty]
+    double _retries;
+    [ObservableProperty]
+    EncodingModel _selectedEncoding;
     ImagePluginModel _selectedPlugin;
-    Metadata         _sidecar;
-    double           _skipped;
-    bool             _startVisible;
-    bool             _stopEnabled;
-    bool             _stopOnError;
-    bool             _stopVisible;
-    bool             _track1Pregap;
-    bool             _track1PregapVisible;
-    bool             _trim;
-    bool             _useResume;
-    bool             _useSidecar;
+    [ObservableProperty]
+    Metadata _sidecar;
+    [ObservableProperty]
+    double _skipped;
+    [ObservableProperty]
+    bool _startVisible;
+    [ObservableProperty]
+    bool _stopEnabled;
+    [ObservableProperty]
+    bool _stopOnError;
+    [ObservableProperty]
+    bool _stopVisible;
+    [ObservableProperty]
+    bool _track1Pregap;
+    [ObservableProperty]
+    bool _track1PregapVisible;
+    [ObservableProperty]
+    bool _trim;
+    bool _useResume;
+    [ObservableProperty]
+    bool _useSidecar;
 
     public MediaDumpViewModel(string               devicePath, DeviceInfo deviceInfo, Window view,
                               [CanBeNull] ScsiInfo scsiInfo = null)
@@ -124,10 +160,10 @@ public sealed class MediaDumpViewModel : ViewModelBase
         StartVisible       = true;
         CloseVisible       = true;
         OptionsVisible     = true;
-        StartCommand       = ReactiveCommand.Create(ExecuteStartCommand);
-        CloseCommand       = ReactiveCommand.Create(ExecuteCloseCommand);
-        StopCommand        = ReactiveCommand.Create(ExecuteStopCommand);
-        DestinationCommand = ReactiveCommand.Create(ExecuteDestinationCommand);
+        StartCommand       = new RelayCommand(Start);
+        CloseCommand       = new RelayCommand(Close);
+        StopCommand        = new RelayCommand(Stop);
+        DestinationCommand = new AsyncRelayCommand(DestinationAsync);
         PluginsList        = [];
         Encodings          = [];
 
@@ -137,7 +173,7 @@ public sealed class MediaDumpViewModel : ViewModelBase
         Persistent       = true;
         Resume           = true;
         Track1Pregap     = false;
-        Sidecar          = true;
+        UseSidecar       = true;
         Trim             = true;
         ExistingMetadata = false;
         Retries          = 5;
@@ -186,19 +222,21 @@ public sealed class MediaDumpViewModel : ViewModelBase
             }
         }
 
-        Encodings.AddRange(Encoding.GetEncodings()
-                                   .Select(info => new EncodingModel
-                                    {
-                                        Name        = info.Name,
-                                        DisplayName = info.GetEncoding().EncodingName
-                                    }));
-
-        Encodings.AddRange(Claunia.Encoding.Encoding.GetEncodings()
-                                  .Select(info => new EncodingModel
-                                   {
-                                       Name        = info.Name,
-                                       DisplayName = info.DisplayName
-                                   }));
+        foreach(EncodingModel model in Encoding.GetEncodings()
+                                               .Select(info => new EncodingModel
+                                                {
+                                                    Name        = info.Name,
+                                                    DisplayName = info.GetEncoding().EncodingName
+                                                })
+                                               .Concat(Claunia.Encoding.Encoding.GetEncodings()
+                                                              .Select(info => new EncodingModel
+                                                               {
+                                                                   Name        = info.Name,
+                                                                   DisplayName = info.DisplayName
+                                                               }))
+                                               .AsParallel()
+                                               .OrderBy(m => m.DisplayName))
+            Encodings.Add(model);
 
         Track1PregapVisible = mediaType switch
                               {
@@ -270,28 +308,22 @@ public sealed class MediaDumpViewModel : ViewModelBase
     public string CloseLabel            => UI.ButtonLabel_Close;
     public string StopLabel             => UI.ButtonLabel_Stop;
 
-    public ReactiveCommand<Unit, Unit> StartCommand       { get; }
-    public ReactiveCommand<Unit, Unit> CloseCommand       { get; }
-    public ReactiveCommand<Unit, Unit> StopCommand        { get; }
-    public ReactiveCommand<Unit, Task> DestinationCommand { get; }
+    public ICommand StartCommand       { get; }
+    public ICommand CloseCommand       { get; }
+    public ICommand StopCommand        { get; }
+    public ICommand DestinationCommand { get; }
 
     public ObservableCollection<ImagePluginModel> PluginsList { get; }
     public ObservableCollection<EncodingModel>    Encodings   { get; }
 
     public string Title { get; }
 
-    public bool OptionsVisible
-    {
-        get => _optionsVisible;
-        set => this.RaiseAndSetIfChanged(ref _optionsVisible, value);
-    }
-
     public ImagePluginModel SelectedPlugin
     {
         get => _selectedPlugin;
         set
         {
-            this.RaiseAndSetIfChanged(ref _selectedPlugin, value);
+            SetProperty(ref _selectedPlugin, value);
 
             Destination = "";
 
@@ -399,107 +431,27 @@ public sealed class MediaDumpViewModel : ViewModelBase
         }
     }
 
-    public string FormatReadOnly
-    {
-        get => _formatReadOnly;
-        set => this.RaiseAndSetIfChanged(ref _formatReadOnly, value);
-    }
-
-    public string Destination
-    {
-        get => _destination;
-        set => this.RaiseAndSetIfChanged(ref _destination, value);
-    }
-
-    public bool DestinationEnabled
-    {
-        get => _destinationEnabled;
-        set => this.RaiseAndSetIfChanged(ref _destinationEnabled, value);
-    }
-
-    public bool StopOnError
-    {
-        get => _stopOnError;
-        set => this.RaiseAndSetIfChanged(ref _stopOnError, value);
-    }
-
-    public bool Force
-    {
-        get => _force;
-        set => this.RaiseAndSetIfChanged(ref _force, value);
-    }
-
-    public double Retries
-    {
-        get => _retries;
-        set => this.RaiseAndSetIfChanged(ref _retries, value);
-    }
-
-    public bool Persistent
-    {
-        get => _persistent;
-        set => this.RaiseAndSetIfChanged(ref _persistent, value);
-    }
 
     public bool Resume
     {
         get => _useResume;
         set
         {
-            this.RaiseAndSetIfChanged(ref _useResume, value);
+            SetProperty(ref _useResume, value);
 
             if(!value) return;
 
-            if(_outputPrefix != null) CheckResumeFile().GetAwaiter().GetResult();
+            if(_outputPrefix != null) CheckResumeFileAsync().GetAwaiter().GetResult();
         }
     }
 
-    public bool Track1Pregap
-    {
-        get => _track1Pregap;
-        set => this.RaiseAndSetIfChanged(ref _track1Pregap, value);
-    }
-
-    public bool Track1PregapVisible
-    {
-        get => _track1PregapVisible;
-        set => this.RaiseAndSetIfChanged(ref _track1PregapVisible, value);
-    }
-
-    public double Skipped
-    {
-        get => _skipped;
-        set => this.RaiseAndSetIfChanged(ref _skipped, value);
-    }
-
-    public bool Sidecar
-    {
-        get => _useSidecar;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _useSidecar, value);
-            EncodingVisible = value;
-        }
-    }
-
-    public bool EncodingVisible
-    {
-        get => _encodingVisible;
-        set => this.RaiseAndSetIfChanged(ref _encodingVisible, value);
-    }
-
-    public bool Trim
-    {
-        get => _trim;
-        set => this.RaiseAndSetIfChanged(ref _trim, value);
-    }
 
     public bool ExistingMetadata
     {
         get => _existingMetadata;
         set
         {
-            this.RaiseAndSetIfChanged(ref _existingMetadata, value);
+            SetProperty(ref _existingMetadata, value);
 
             if(!value)
             {
@@ -553,115 +505,7 @@ public sealed class MediaDumpViewModel : ViewModelBase
         }
     }
 
-    public EncodingModel SelectedEncoding
-    {
-        get => _selectedEncoding;
-        set => this.RaiseAndSetIfChanged(ref _selectedEncoding, value);
-    }
-
-    public string EncodingEnabled
-    {
-        get => _encodingEnabled;
-        set => this.RaiseAndSetIfChanged(ref _encodingEnabled, value);
-    }
-
-    public bool ProgressVisible
-    {
-        get => _progressVisible;
-        set => this.RaiseAndSetIfChanged(ref _progressVisible, value);
-    }
-
-    public string Log
-    {
-        get => _log;
-        set => this.RaiseAndSetIfChanged(ref _log, value);
-    }
-
-    public bool Progress1Visible
-    {
-        get => _progress1Visible;
-        set => this.RaiseAndSetIfChanged(ref _progress1Visible, value);
-    }
-
-    public string ProgressText
-    {
-        get => _progressText;
-        set => this.RaiseAndSetIfChanged(ref _progressText, value);
-    }
-
-    public double ProgressValue
-    {
-        get => _progressValue;
-        set => this.RaiseAndSetIfChanged(ref _progressValue, value);
-    }
-
-    public double ProgressMaxValue
-    {
-        get => _progressMaxValue;
-        set => this.RaiseAndSetIfChanged(ref _progressMaxValue, value);
-    }
-
-    public bool ProgressIndeterminate
-    {
-        get => _progressIndeterminate;
-        set => this.RaiseAndSetIfChanged(ref _progressIndeterminate, value);
-    }
-
-    public bool Progress2Visible
-    {
-        get => _progress2Visible;
-        set => this.RaiseAndSetIfChanged(ref _progress2Visible, value);
-    }
-
-    public string Progress2Text
-    {
-        get => _progress2Text;
-        set => this.RaiseAndSetIfChanged(ref _progress2Text, value);
-    }
-
-    public double Progress2Value
-    {
-        get => _progress2Value;
-        set => this.RaiseAndSetIfChanged(ref _progress2Value, value);
-    }
-
-    public double Progress2MaxValue
-    {
-        get => _progress2MaxValue;
-        set => this.RaiseAndSetIfChanged(ref _progress2MaxValue, value);
-    }
-
-    public bool Progress2Indeterminate
-    {
-        get => _progress2Indeterminate;
-        set => this.RaiseAndSetIfChanged(ref _progress2Indeterminate, value);
-    }
-
-    public bool StartVisible
-    {
-        get => _startVisible;
-        set => this.RaiseAndSetIfChanged(ref _startVisible, value);
-    }
-
-    public bool CloseVisible
-    {
-        get => _closeVisible;
-        set => this.RaiseAndSetIfChanged(ref _closeVisible, value);
-    }
-
-    public bool StopVisible
-    {
-        get => _stopVisible;
-        set => this.RaiseAndSetIfChanged(ref _stopVisible, value);
-    }
-
-    public bool StopEnabled
-    {
-        get => _stopEnabled;
-        set => this.RaiseAndSetIfChanged(ref _stopEnabled, value);
-    }
-
-    async Task ExecuteDestinationCommand()
+    async Task DestinationAsync()
     {
         if(SelectedPlugin is null) return;
 
@@ -696,7 +540,7 @@ public sealed class MediaDumpViewModel : ViewModelBase
         Resume = true;
     }
 
-    async Task CheckResumeFile()
+    async Task CheckResumeFileAsync()
     {
         _resume = null;
 
@@ -760,15 +604,15 @@ public sealed class MediaDumpViewModel : ViewModelBase
         Resume = false;
     }
 
-    void ExecuteCloseCommand() => _view.Close();
+    void Close() => _view.Close();
 
-    internal void ExecuteStopCommand()
+    internal void Stop()
     {
         StopEnabled = false;
         _dumper?.Abort();
     }
 
-    void ExecuteStartCommand()
+    void Start()
     {
         Log                = "";
         CloseVisible       = false;
@@ -929,10 +773,10 @@ public sealed class MediaDumpViewModel : ViewModelBase
 
         _dev.Close();
 
-        await WorkFinished();
+        await WorkFinishedAsync();
     }
 
-    async Task WorkFinished() => await Dispatcher.UIThread.InvokeAsync(() =>
+    async Task WorkFinishedAsync() => await Dispatcher.UIThread.InvokeAsync(() =>
     {
         CloseVisible     = true;
         StopVisible      = false;
@@ -987,7 +831,7 @@ public sealed class MediaDumpViewModel : ViewModelBase
         await MessageBoxManager.GetMessageBoxStandard(UI.Title_Error, $"{text}", ButtonEnum.Ok, Icon.Error)
                                .ShowWindowDialogAsync(_view);
 
-        await WorkFinished();
+        await WorkFinishedAsync();
     });
 
     [SuppressMessage("ReSharper", "AsyncVoidMethod")]

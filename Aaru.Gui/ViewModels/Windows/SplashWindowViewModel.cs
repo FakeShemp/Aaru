@@ -45,35 +45,20 @@ using Aaru.Localization;
 using Aaru.Logging;
 using Aaru.Settings;
 using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.EntityFrameworkCore;
-using ReactiveUI;
 using Sentry;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
-public sealed class SplashWindowViewModel(SplashWindow view) : ViewModelBase
+public sealed partial class SplashWindowViewModel(SplashWindow view) : ViewModelBase
 {
+    [ObservableProperty]
     double _currentProgress;
+    [ObservableProperty]
     double _maxProgress;
+    [ObservableProperty]
     string _message;
-
-    public string Message
-    {
-        get => _message;
-        set => this.RaiseAndSetIfChanged(ref _message, value);
-    }
-
-    public double MaxProgress
-    {
-        get => _maxProgress;
-        set => this.RaiseAndSetIfChanged(ref _maxProgress, value);
-    }
-
-    public double CurrentProgress
-    {
-        get => _currentProgress;
-        set => this.RaiseAndSetIfChanged(ref _currentProgress, value);
-    }
 
     internal void OnOpened()
     {

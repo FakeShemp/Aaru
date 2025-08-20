@@ -32,14 +32,14 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Reactive;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.Decoders.DVD;
 using Aaru.Localization;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
-using ReactiveUI;
 
 namespace Aaru.Gui.ViewModels.Tabs;
 
@@ -64,12 +64,12 @@ public sealed class DvdInfoViewModel
         _dvdBca                    = bca;
         _dvdAacs                   = aacs;
         _view                      = view;
-        SaveDvdPfiCommand          = ReactiveCommand.Create(ExecuteSaveDvdPfiCommand);
-        SaveDvdDmiCommand          = ReactiveCommand.Create(ExecuteSaveDvdDmiCommand);
-        SaveDvdCmiCommand          = ReactiveCommand.Create(ExecuteSaveDvdCmiCommand);
-        SaveHdDvdCmiCommand        = ReactiveCommand.Create(ExecuteSaveHdDvdCmiCommand);
-        SaveDvdBcaCommand          = ReactiveCommand.Create(ExecuteSaveDvdBcaCommand);
-        SaveDvdAacsCommand         = ReactiveCommand.Create(ExecuteSaveDvdAacsCommand);
+        SaveDvdPfiCommand          = new AsyncRelayCommand(SaveDvdPfiAsync);
+        SaveDvdDmiCommand          = new AsyncRelayCommand(SaveDvdDmiAsync);
+        SaveDvdCmiCommand          = new AsyncRelayCommand(SaveDvdCmiAsync);
+        SaveHdDvdCmiCommand        = new AsyncRelayCommand(SaveHdDvdCmiAsync);
+        SaveDvdBcaCommand          = new AsyncRelayCommand(SaveDvdBcaAsync);
+        SaveDvdAacsCommand         = new AsyncRelayCommand(SaveDvdAacsAsync);
 
         /* TODO: Pass back
         switch(mediaType)
@@ -102,20 +102,20 @@ public sealed class DvdInfoViewModel
         SaveDvdAacsVisible  = aacs                   != null;
     }
 
-    public ReactiveCommand<Unit, Task> SaveDvdPfiCommand   { get; }
-    public ReactiveCommand<Unit, Task> SaveDvdDmiCommand   { get; }
-    public ReactiveCommand<Unit, Task> SaveDvdCmiCommand   { get; }
-    public ReactiveCommand<Unit, Task> SaveHdDvdCmiCommand { get; }
-    public ReactiveCommand<Unit, Task> SaveDvdBcaCommand   { get; }
-    public ReactiveCommand<Unit, Task> SaveDvdAacsCommand  { get; }
-    public string                      DvdPfiText          { get; }
-    public string                      DvdCmiText          { get; }
-    public bool                        SaveDvdPfiVisible   { get; }
-    public bool                        SaveDvdDmiVisible   { get; }
-    public bool                        SaveDvdCmiVisible   { get; }
-    public bool                        SaveHdDvdCmiVisible { get; }
-    public bool                        SaveDvdBcaVisible   { get; }
-    public bool                        SaveDvdAacsVisible  { get; }
+    public ICommand SaveDvdPfiCommand   { get; }
+    public ICommand SaveDvdDmiCommand   { get; }
+    public ICommand SaveDvdCmiCommand   { get; }
+    public ICommand SaveHdDvdCmiCommand { get; }
+    public ICommand SaveDvdBcaCommand   { get; }
+    public ICommand SaveDvdAacsCommand  { get; }
+    public string   DvdPfiText          { get; }
+    public string   DvdCmiText          { get; }
+    public bool     SaveDvdPfiVisible   { get; }
+    public bool     SaveDvdDmiVisible   { get; }
+    public bool     SaveDvdCmiVisible   { get; }
+    public bool     SaveHdDvdCmiVisible { get; }
+    public bool     SaveDvdBcaVisible   { get; }
+    public bool     SaveDvdAacsVisible  { get; }
 
     public string SaveDvdPfiLabel   => UI.ButtonLabel_Save_Physical_Format_Information;
     public string SaveDvdDmiLabel   => UI.ButtonLabel_Save_Disc_Manufacturer_Information;
@@ -124,7 +124,7 @@ public sealed class DvdInfoViewModel
     public string SaveDvdBcaLabel   => UI.ButtonLabel_Save_Burst_Cutting_Area;
     public string SaveDvdAacsLabel  => UI.ButtonLabel_Save_AACS_Information;
 
-    async Task SaveElement(byte[] data)
+    async Task SaveElementAsync(byte[] data)
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
@@ -142,15 +142,15 @@ public sealed class DvdInfoViewModel
         saveFs.Close();
     }
 
-    async Task ExecuteSaveDvdPfiCommand() => await SaveElement(_dvdPfi);
+    Task SaveDvdPfiAsync() => SaveElementAsync(_dvdPfi);
 
-    async Task ExecuteSaveDvdDmiCommand() => await SaveElement(_dvdDmi);
+    Task SaveDvdDmiAsync() => SaveElementAsync(_dvdDmi);
 
-    async Task ExecuteSaveDvdCmiCommand() => await SaveElement(_dvdCmi);
+    Task SaveDvdCmiAsync() => SaveElementAsync(_dvdCmi);
 
-    async Task ExecuteSaveHdDvdCmiCommand() => await SaveElement(_hddvdCopyrightInformation);
+    Task SaveHdDvdCmiAsync() => SaveElementAsync(_hddvdCopyrightInformation);
 
-    async Task ExecuteSaveDvdBcaCommand() => await SaveElement(_dvdBca);
+    Task SaveDvdBcaAsync() => SaveElementAsync(_dvdBca);
 
-    async Task ExecuteSaveDvdAacsCommand() => await SaveElement(_dvdAacs);
+    Task SaveDvdAacsAsync() => SaveElementAsync(_dvdAacs);
 }

@@ -32,14 +32,14 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Reactive;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.Decoders.ATA;
 using Aaru.Localization;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
-using ReactiveUI;
 
 namespace Aaru.Gui.ViewModels.Tabs;
 
@@ -52,8 +52,8 @@ public sealed class AtaInfoViewModel : ViewModelBase
     public AtaInfoViewModel([CanBeNull] byte[] ataIdentify, byte[] atapiIdentify, AtaErrorRegistersChs? ataMcptError,
                             Window             view)
     {
-        SaveAtaBinaryCommand = ReactiveCommand.Create(ExecuteSaveAtaBinaryCommand);
-        SaveAtaTextCommand   = ReactiveCommand.Create(ExecuteSaveAtaTextCommand);
+        SaveAtaBinaryCommand = new AsyncRelayCommand(SaveAtaBinaryAsync);
+        SaveAtaTextCommand   = new AsyncRelayCommand(SaveAtaTextAsync);
 
         _ata   = ataIdentify;
         _atapi = atapiIdentify;
@@ -82,7 +82,8 @@ public sealed class AtaInfoViewModel : ViewModelBase
 
                 AtaMcptWriteProtectionChecked = (ataMcptError.Value.DeviceHead & 0x08) == 0x08;
 
-                var specificData = (ushort)(ataMcptError.Value.CylinderHigh * 0x100 + ataMcptError.Value.CylinderLow);
+                ushort specificData =
+                    (ushort)(ataMcptError.Value.CylinderHigh * 0x100 + ataMcptError.Value.CylinderLow);
 
                 AtaMcptSpecificDataText = string.Format(Localization.Core.Card_specific_data_0, specificData);
             }
@@ -96,14 +97,14 @@ public sealed class AtaInfoViewModel : ViewModelBase
         }
     }
 
-    public string                      AtaIdentifyText               { get; }
-    public string                      AtaMcptText                   { get; }
-    public string                      AtaMcptSpecificDataText       { get; }
-    public bool                        AtaMcptChecked                { get; }
-    public bool                        AtaMcptWriteProtectionChecked { get; }
-    public bool                        AtaMcptVisible                { get; }
-    public ReactiveCommand<Unit, Task> SaveAtaBinaryCommand          { get; }
-    public ReactiveCommand<Unit, Task> SaveAtaTextCommand            { get; }
+    public string   AtaIdentifyText               { get; }
+    public string   AtaMcptText                   { get; }
+    public string   AtaMcptSpecificDataText       { get; }
+    public bool     AtaMcptChecked                { get; }
+    public bool     AtaMcptWriteProtectionChecked { get; }
+    public bool     AtaMcptVisible                { get; }
+    public ICommand SaveAtaBinaryCommand          { get; }
+    public ICommand SaveAtaTextCommand            { get; }
 
     public string AtaOrAtapiText { get; }
 
@@ -112,7 +113,7 @@ public sealed class AtaInfoViewModel : ViewModelBase
     public string SaveAtaBinaryLabel          => UI.ButtonLabel_Save_binary_to_file;
     public string SaveAtaTextLabel            => UI.ButtonLabel_Save_text_to_file;
 
-    async Task ExecuteSaveAtaBinaryCommand()
+    async Task SaveAtaBinaryAsync()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
@@ -133,7 +134,7 @@ public sealed class AtaInfoViewModel : ViewModelBase
         saveFs.Close();
     }
 
-    async Task ExecuteSaveAtaTextCommand()
+    async Task SaveAtaTextAsync()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {

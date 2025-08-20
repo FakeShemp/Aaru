@@ -34,21 +34,26 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
 using Aaru.Localization;
+using CommunityToolkit.Mvvm.ComponentModel;
 using JetBrains.Annotations;
-using ReactiveUI;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
-public sealed class ViewSectorViewModel : ViewModelBase
+public sealed partial class ViewSectorViewModel : ViewModelBase
 {
     const    int         HEX_COLUMNS = 32;
     readonly IMediaImage _inputFormat;
-    bool                 _longSectorChecked;
-    bool                 _longSectorVisible;
-    string               _printHexText;
-    double               _sectorNumber;
-    string               _title;
-    string               _totalSectorsText;
+    [ObservableProperty]
+    bool _longSectorChecked;
+    [ObservableProperty]
+    bool _longSectorVisible;
+    [ObservableProperty]
+    string _printHexText;
+    double _sectorNumber;
+    [ObservableProperty]
+    string _title;
+    [ObservableProperty]
+    string _totalSectorsText;
 
     public ViewSectorViewModel([NotNull] IMediaImage inputFormat)
     {
@@ -68,18 +73,13 @@ public sealed class ViewSectorViewModel : ViewModelBase
     public string SectorLabel     => UI.Title_Sector;
     public string LongSectorLabel => UI.Show_long_sector;
 
-    public string Title
-    {
-        get => _title;
-        set => this.RaiseAndSetIfChanged(ref _title, value);
-    }
 
     public double SectorNumber
     {
         get => _sectorNumber;
         set
         {
-            this.RaiseAndSetIfChanged(ref _sectorNumber, value);
+            SetProperty(ref _sectorNumber, value);
 
             ErrorNumber errno = LongSectorChecked
                                     ? _inputFormat.ReadSectorLong((ulong)SectorNumber, out byte[] sector)
@@ -87,21 +87,5 @@ public sealed class ViewSectorViewModel : ViewModelBase
 
             if(errno == ErrorNumber.NoError) PrintHexText = PrintHex.ByteArrayToHexArrayString(sector, HEX_COLUMNS);
         }
-    }
-
-    public string TotalSectorsText { get; }
-
-    public bool LongSectorChecked
-    {
-        get => _longSectorChecked;
-        set => this.RaiseAndSetIfChanged(ref _longSectorChecked, value);
-    }
-
-    public bool LongSectorVisible { get; }
-
-    public string PrintHexText
-    {
-        get => _printHexText;
-        set => this.RaiseAndSetIfChanged(ref _printHexText, value);
     }
 }

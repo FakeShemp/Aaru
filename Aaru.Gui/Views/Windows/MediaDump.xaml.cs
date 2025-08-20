@@ -51,7 +51,7 @@ public sealed class MediaDump : Window
 
     protected override void OnClosing(WindowClosingEventArgs e)
     {
-        (DataContext as MediaDumpViewModel)?.ExecuteStopCommand();
+        (DataContext as MediaDumpViewModel)?.Stop();
         base.OnClosing(e);
     }
 }

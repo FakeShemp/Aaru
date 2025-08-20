@@ -32,15 +32,15 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Reactive;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.Decoders.Bluray;
 using Aaru.Decoders.SCSI.MMC;
 using Aaru.Localization;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
-using ReactiveUI;
 
 namespace Aaru.Gui.ViewModels.Tabs;
 
@@ -73,17 +73,17 @@ public sealed class BlurayInfoViewModel
         _trackResources                   = blurayTrackResources;
         _rawDfl                           = blurayRawDfl;
         _pac                              = blurayPac;
-        SaveBlurayDiscInformationCommand  = ReactiveCommand.Create(ExecuteSaveBlurayDiscInformationCommand);
-        SaveBlurayBurstCuttingAreaCommand = ReactiveCommand.Create(ExecuteSaveBlurayBurstCuttingAreaCommand);
-        SaveBlurayDdsCommand              = ReactiveCommand.Create(ExecuteSaveBlurayDdsCommand);
-        SaveBlurayCartridgeStatusCommand  = ReactiveCommand.Create(ExecuteSaveBlurayCartridgeStatusCommand);
+        SaveBlurayDiscInformationCommand  = new AsyncRelayCommand(SaveBlurayDiscInformationAsync);
+        SaveBlurayBurstCuttingAreaCommand = new AsyncRelayCommand(SaveBlurayBurstCuttingAreaAsync);
+        SaveBlurayDdsCommand              = new AsyncRelayCommand(SaveBlurayDdsAsync);
+        SaveBlurayCartridgeStatusCommand  = new AsyncRelayCommand(SaveBlurayCartridgeStatusAsync);
 
-        SaveBluraySpareAreaInformationCommand = ReactiveCommand.Create(ExecuteSaveBluraySpareAreaInformationCommand);
+        SaveBluraySpareAreaInformationCommand = new AsyncRelayCommand(SaveBluraySpareAreaInformationAsync);
 
-        SaveBlurayPowResourcesCommand   = ReactiveCommand.Create(ExecuteSaveBlurayPowResourcesCommand);
-        SaveBlurayTrackResourcesCommand = ReactiveCommand.Create(ExecuteSaveBlurayTrackResourcesCommand);
-        SaveBlurayRawDflCommand         = ReactiveCommand.Create(ExecuteSaveBlurayRawDflCommand);
-        SaveBlurayPacCommand            = ReactiveCommand.Create(ExecuteSaveBlurayPacCommand);
+        SaveBlurayPowResourcesCommand   = new AsyncRelayCommand(SaveBlurayPowResourcesAsync);
+        SaveBlurayTrackResourcesCommand = new AsyncRelayCommand(SaveBlurayTrackResourcesAsync);
+        SaveBlurayRawDflCommand         = new AsyncRelayCommand(SaveBlurayRawDflAsync);
+        SaveBlurayPacCommand            = new AsyncRelayCommand(SaveBlurayPacAsync);
 
         if(blurayDiscInformation != null)
         {
@@ -131,31 +131,31 @@ public sealed class BlurayInfoViewModel
         SaveBlurayPacVisible    = blurayPac    != null;
     }
 
-    public string                      BlurayDiscInformationText             { get; }
-    public string                      BlurayBurstCuttingAreaText            { get; }
-    public string                      BlurayDdsText                         { get; }
-    public string                      BlurayCartridgeStatusText             { get; }
-    public string                      BluraySpareAreaInformationText        { get; }
-    public string                      BlurayPowResourcesText                { get; }
-    public string                      BlurayTrackResourcesText              { get; }
-    public ReactiveCommand<Unit, Task> SaveBlurayDiscInformationCommand      { get; }
-    public ReactiveCommand<Unit, Task> SaveBlurayBurstCuttingAreaCommand     { get; }
-    public ReactiveCommand<Unit, Task> SaveBlurayDdsCommand                  { get; }
-    public ReactiveCommand<Unit, Task> SaveBlurayCartridgeStatusCommand      { get; }
-    public ReactiveCommand<Unit, Task> SaveBluraySpareAreaInformationCommand { get; }
-    public ReactiveCommand<Unit, Task> SaveBlurayPowResourcesCommand         { get; }
-    public ReactiveCommand<Unit, Task> SaveBlurayTrackResourcesCommand       { get; }
-    public ReactiveCommand<Unit, Task> SaveBlurayRawDflCommand               { get; }
-    public ReactiveCommand<Unit, Task> SaveBlurayPacCommand                  { get; }
-    public bool                        SaveBlurayDiscInformationVisible      { get; }
-    public bool                        SaveBlurayBurstCuttingAreaVisible     { get; }
-    public bool                        SaveBlurayDdsVisible                  { get; }
-    public bool                        SaveBlurayCartridgeStatusVisible      { get; }
-    public bool                        SaveBluraySpareAreaInformationVisible { get; }
-    public bool                        SaveBlurayPowResourcesVisible         { get; }
-    public bool                        SaveBlurayTrackResourcesVisible       { get; }
-    public bool                        SaveBlurayRawDflVisible               { get; }
-    public bool                        SaveBlurayPacVisible                  { get; }
+    public string   BlurayDiscInformationText             { get; }
+    public string   BlurayBurstCuttingAreaText            { get; }
+    public string   BlurayDdsText                         { get; }
+    public string   BlurayCartridgeStatusText             { get; }
+    public string   BluraySpareAreaInformationText        { get; }
+    public string   BlurayPowResourcesText                { get; }
+    public string   BlurayTrackResourcesText              { get; }
+    public ICommand SaveBlurayDiscInformationCommand      { get; }
+    public ICommand SaveBlurayBurstCuttingAreaCommand     { get; }
+    public ICommand SaveBlurayDdsCommand                  { get; }
+    public ICommand SaveBlurayCartridgeStatusCommand      { get; }
+    public ICommand SaveBluraySpareAreaInformationCommand { get; }
+    public ICommand SaveBlurayPowResourcesCommand         { get; }
+    public ICommand SaveBlurayTrackResourcesCommand       { get; }
+    public ICommand SaveBlurayRawDflCommand               { get; }
+    public ICommand SaveBlurayPacCommand                  { get; }
+    public bool     SaveBlurayDiscInformationVisible      { get; }
+    public bool     SaveBlurayBurstCuttingAreaVisible     { get; }
+    public bool     SaveBlurayDdsVisible                  { get; }
+    public bool     SaveBlurayCartridgeStatusVisible      { get; }
+    public bool     SaveBluraySpareAreaInformationVisible { get; }
+    public bool     SaveBlurayPowResourcesVisible         { get; }
+    public bool     SaveBlurayTrackResourcesVisible       { get; }
+    public bool     SaveBlurayRawDflVisible               { get; }
+    public bool     SaveBlurayPacVisible                  { get; }
 
     public string DiscInformationLabel                => UI.Disc_information;
     public string BurstCuttingAreaLabel               => UI.Burst_Cutting_Area;
@@ -174,7 +174,7 @@ public sealed class BlurayInfoViewModel
     public string SaveBlurayRawDflLabel               => UI.ButtonLabel_Save_raw_DFL;
     public string SaveBlurayPacLabel                  => UI.ButtonLabel_Save_PAC;
 
-    async Task SaveElement(byte[] data)
+    async Task SaveElementAsync(byte[] data)
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
@@ -192,21 +192,21 @@ public sealed class BlurayInfoViewModel
         saveFs.Close();
     }
 
-    async Task ExecuteSaveBlurayDiscInformationCommand() => await SaveElement(_discInformation);
+    Task SaveBlurayDiscInformationAsync() => SaveElementAsync(_discInformation);
 
-    async Task ExecuteSaveBlurayBurstCuttingAreaCommand() => await SaveElement(_burstCuttingArea);
+    Task SaveBlurayBurstCuttingAreaAsync() => SaveElementAsync(_burstCuttingArea);
 
-    async Task ExecuteSaveBlurayDdsCommand() => await SaveElement(_dds);
+    Task SaveBlurayDdsAsync() => SaveElementAsync(_dds);
 
-    async Task ExecuteSaveBlurayCartridgeStatusCommand() => await SaveElement(_cartridgeStatus);
+    Task SaveBlurayCartridgeStatusAsync() => SaveElementAsync(_cartridgeStatus);
 
-    async Task ExecuteSaveBluraySpareAreaInformationCommand() => await SaveElement(_spareAreaInformation);
+    Task SaveBluraySpareAreaInformationAsync() => SaveElementAsync(_spareAreaInformation);
 
-    async Task ExecuteSaveBlurayPowResourcesCommand() => await SaveElement(_powResources);
+    Task SaveBlurayPowResourcesAsync() => SaveElementAsync(_powResources);
 
-    async Task ExecuteSaveBlurayTrackResourcesCommand() => await SaveElement(_trackResources);
+    Task SaveBlurayTrackResourcesAsync() => SaveElementAsync(_trackResources);
 
-    async Task ExecuteSaveBlurayRawDflCommand() => await SaveElement(_rawDfl);
+    Task SaveBlurayRawDflAsync() => SaveElementAsync(_rawDfl);
 
-    async Task ExecuteSaveBlurayPacCommand() => await SaveElement(_pac);
+    Task SaveBlurayPacAsync() => SaveElementAsync(_pac);
 }

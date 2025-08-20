@@ -32,14 +32,14 @@
 
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive;
+using System.Windows.Input;
 using Aaru.Database;
 using Aaru.Database.Models;
 using Aaru.Gui.Models;
 using Aaru.Gui.Views.Dialogs;
 using Aaru.Localization;
+using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
-using ReactiveUI;
 using NameCountModel = Aaru.Gui.Models.NameCountModel;
 
 namespace Aaru.Gui.ViewModels.Dialogs;
@@ -96,7 +96,7 @@ public sealed class StatisticsViewModel : ViewModelBase
         Filesystems  = [];
         Devices      = [];
         Medias       = [];
-        CloseCommand = ReactiveCommand.Create(ExecuteCloseCommand);
+        CloseCommand = new RelayCommand(Close);
         using var ctx = AaruContext.Create(Settings.Settings.LocalDbPath);
 
         if(ctx.Commands.Any())
@@ -481,235 +481,235 @@ public sealed class StatisticsViewModel : ViewModelBase
     public string FsInfoText
     {
         get => _fsinfoText;
-        set => this.RaiseAndSetIfChanged(ref _fsinfoText, value);
+        set => SetProperty(ref _fsinfoText, value);
     }
 
     public bool FsInfoVisible
     {
         get => _fsinfoVisible;
-        set => this.RaiseAndSetIfChanged(ref _fsinfoVisible, value);
+        set => SetProperty(ref _fsinfoVisible, value);
     }
 
     public string ChecksumText
     {
         get => _checksumText;
-        set => this.RaiseAndSetIfChanged(ref _checksumText, value);
+        set => SetProperty(ref _checksumText, value);
     }
 
     public bool ChecksumVisible
     {
         get => _checksumVisible;
-        set => this.RaiseAndSetIfChanged(ref _checksumVisible, value);
+        set => SetProperty(ref _checksumVisible, value);
     }
 
     public string CompareText
     {
         get => _compareText;
-        set => this.RaiseAndSetIfChanged(ref _compareText, value);
+        set => SetProperty(ref _compareText, value);
     }
 
     public bool CompareVisible
     {
         get => _compareVisible;
-        set => this.RaiseAndSetIfChanged(ref _compareVisible, value);
+        set => SetProperty(ref _compareVisible, value);
     }
 
     public string ConvertImageText
     {
         get => _convertImageText;
-        set => this.RaiseAndSetIfChanged(ref _convertImageText, value);
+        set => SetProperty(ref _convertImageText, value);
     }
 
     public bool ConvertImageVisible
     {
         get => _convertImageVisible;
-        set => this.RaiseAndSetIfChanged(ref _convertImageVisible, value);
+        set => SetProperty(ref _convertImageVisible, value);
     }
 
     public string CreateSidecarText
     {
         get => _createSidecarText;
-        set => this.RaiseAndSetIfChanged(ref _createSidecarText, value);
+        set => SetProperty(ref _createSidecarText, value);
     }
 
     public bool CreateSidecarVisible
     {
         get => _createSidecarVisible;
-        set => this.RaiseAndSetIfChanged(ref _createSidecarVisible, value);
+        set => SetProperty(ref _createSidecarVisible, value);
     }
 
     public string DecodeText
     {
         get => _decodeText;
-        set => this.RaiseAndSetIfChanged(ref _decodeText, value);
+        set => SetProperty(ref _decodeText, value);
     }
 
     public bool DecodeVisible
     {
         get => _decodeVisible;
-        set => this.RaiseAndSetIfChanged(ref _decodeVisible, value);
+        set => SetProperty(ref _decodeVisible, value);
     }
 
     public string DeviceInfoText
     {
         get => _deviceInfoText;
-        set => this.RaiseAndSetIfChanged(ref _deviceInfoText, value);
+        set => SetProperty(ref _deviceInfoText, value);
     }
 
     public bool DeviceInfoVisible
     {
         get => _deviceInfoVisible;
-        set => this.RaiseAndSetIfChanged(ref _deviceInfoVisible, value);
+        set => SetProperty(ref _deviceInfoVisible, value);
     }
 
     public string DeviceReportText
     {
         get => _deviceReportText;
-        set => this.RaiseAndSetIfChanged(ref _deviceReportText, value);
+        set => SetProperty(ref _deviceReportText, value);
     }
 
     public bool DeviceReportVisible
     {
         get => _deviceReportVisible;
-        set => this.RaiseAndSetIfChanged(ref _deviceReportVisible, value);
+        set => SetProperty(ref _deviceReportVisible, value);
     }
 
     public string DumpMediaText
     {
         get => _dumpMediaText;
-        set => this.RaiseAndSetIfChanged(ref _dumpMediaText, value);
+        set => SetProperty(ref _dumpMediaText, value);
     }
 
     public bool DumpMediaVisible
     {
         get => _dumpMediaVisible;
-        set => this.RaiseAndSetIfChanged(ref _dumpMediaVisible, value);
+        set => SetProperty(ref _dumpMediaVisible, value);
     }
 
     public string EntropyText
     {
         get => _entropyText;
-        set => this.RaiseAndSetIfChanged(ref _entropyText, value);
+        set => SetProperty(ref _entropyText, value);
     }
 
     public bool EntropyVisible
     {
         get => _entropyVisible;
-        set => this.RaiseAndSetIfChanged(ref _entropyVisible, value);
+        set => SetProperty(ref _entropyVisible, value);
     }
 
     public string FormatsCommandText
     {
         get => _formatsText;
-        set => this.RaiseAndSetIfChanged(ref _formatsText, value);
+        set => SetProperty(ref _formatsText, value);
     }
 
     public bool FormatsCommandVisible
     {
         get => _formatsCommandVisible;
-        set => this.RaiseAndSetIfChanged(ref _formatsCommandVisible, value);
+        set => SetProperty(ref _formatsCommandVisible, value);
     }
 
     public string ImageInfoText
     {
         get => _imageInfoText;
-        set => this.RaiseAndSetIfChanged(ref _imageInfoText, value);
+        set => SetProperty(ref _imageInfoText, value);
     }
 
     public bool ImageInfoVisible
     {
         get => _imageInfoVisible;
-        set => this.RaiseAndSetIfChanged(ref _imageInfoVisible, value);
+        set => SetProperty(ref _imageInfoVisible, value);
     }
 
     public string MediaInfoText
     {
         get => _mediaInfoText;
-        set => this.RaiseAndSetIfChanged(ref _mediaInfoText, value);
+        set => SetProperty(ref _mediaInfoText, value);
     }
 
     public bool MediaInfoVisible
     {
         get => _mediaInfoVisible;
-        set => this.RaiseAndSetIfChanged(ref _mediaInfoVisible, value);
+        set => SetProperty(ref _mediaInfoVisible, value);
     }
 
     public string MediaScanText
     {
         get => _mediaScanText;
-        set => this.RaiseAndSetIfChanged(ref _mediaScanText, value);
+        set => SetProperty(ref _mediaScanText, value);
     }
 
     public bool MediaScanVisible
     {
         get => _mediaScanVisible;
-        set => this.RaiseAndSetIfChanged(ref _mediaScanVisible, value);
+        set => SetProperty(ref _mediaScanVisible, value);
     }
 
     public string PrintHexText
     {
         get => _printHexText;
-        set => this.RaiseAndSetIfChanged(ref _printHexText, value);
+        set => SetProperty(ref _printHexText, value);
     }
 
     public bool PrintHexVisible
     {
         get => _printHexVisible;
-        set => this.RaiseAndSetIfChanged(ref _printHexVisible, value);
+        set => SetProperty(ref _printHexVisible, value);
     }
 
     public string VerifyText
     {
         get => _verifyText;
-        set => this.RaiseAndSetIfChanged(ref _verifyText, value);
+        set => SetProperty(ref _verifyText, value);
     }
 
     public bool VerifyVisible
     {
         get => _verifyVisible;
-        set => this.RaiseAndSetIfChanged(ref _verifyVisible, value);
+        set => SetProperty(ref _verifyVisible, value);
     }
 
     public bool CommandsVisible
     {
         get => _commandsVisible;
-        set => this.RaiseAndSetIfChanged(ref _commandsVisible, value);
+        set => SetProperty(ref _commandsVisible, value);
     }
 
     public bool FiltersVisible
     {
         get => _filtersVisible;
-        set => this.RaiseAndSetIfChanged(ref _filtersVisible, value);
+        set => SetProperty(ref _filtersVisible, value);
     }
 
     public bool PartitionsVisible
     {
         get => _partitionsVisible;
-        set => this.RaiseAndSetIfChanged(ref _partitionsVisible, value);
+        set => SetProperty(ref _partitionsVisible, value);
     }
 
     public bool FormatsVisible
     {
         get => _formatsVisible;
-        set => this.RaiseAndSetIfChanged(ref _formatsVisible, value);
+        set => SetProperty(ref _formatsVisible, value);
     }
 
     public bool FilesystemsVisible
     {
         get => _filesystemsVisible;
-        set => this.RaiseAndSetIfChanged(ref _filesystemsVisible, value);
+        set => SetProperty(ref _filesystemsVisible, value);
     }
 
     public bool DevicesVisible
     {
         get => _devicesVisible;
-        set => this.RaiseAndSetIfChanged(ref _devicesVisible, value);
+        set => SetProperty(ref _devicesVisible, value);
     }
 
     public bool MediasVisible
     {
         get => _mediasVisible;
-        set => this.RaiseAndSetIfChanged(ref _mediasVisible, value);
+        set => SetProperty(ref _mediasVisible, value);
     }
 
     [NotNull]
@@ -772,7 +772,7 @@ public sealed class StatisticsViewModel : ViewModelBase
     [NotNull]
     public string CloseLabel => UI.ButtonLabel_Close;
 
-    public ReactiveCommand<Unit, Unit>            CloseCommand { get; }
+    public ICommand                               CloseCommand { get; }
     public ObservableCollection<NameCountModel>   Filters      { get; }
     public ObservableCollection<NameCountModel>   Formats      { get; }
     public ObservableCollection<NameCountModel>   Partitions   { get; }
@@ -780,5 +780,5 @@ public sealed class StatisticsViewModel : ViewModelBase
     public ObservableCollection<DeviceStatsModel> Devices      { get; }
     public ObservableCollection<MediaStatsModel>  Medias       { get; }
 
-    void ExecuteCloseCommand() => _view.Close();
+    void Close() => _view.Close();
 }

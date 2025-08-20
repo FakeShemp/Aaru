@@ -32,15 +32,15 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Reactive;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.Core.Media.Info;
 using Aaru.Decoders.Xbox;
 using Aaru.Localization;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
-using ReactiveUI;
 
 namespace Aaru.Gui.ViewModels.Tabs;
 
@@ -54,7 +54,7 @@ public sealed class XboxInfoViewModel
     {
         _xboxSecuritySector = securitySector;
         _view               = view;
-        SaveXboxSsCommand   = ReactiveCommand.Create(ExecuteSaveXboxSsCommand);
+        SaveXboxSsCommand   = new AsyncRelayCommand(SaveXboxSsAsync);
 
         if(xgdInfo != null)
         {
@@ -79,17 +79,17 @@ public sealed class XboxInfoViewModel
         SaveXboxSsVisible = securitySector != null;
     }
 
-    public ReactiveCommand<Unit, Task> SaveXboxSsCommand      { get; }
-    public bool                        XboxInformationVisible { get; }
-    public bool                        SaveXboxSsVisible      { get; }
-    public string                      XboxL0VideoText        { get; }
-    public string                      XboxL1VideoText        { get; }
-    public string                      XboxMiddleZoneText     { get; }
-    public string                      XboxGameSizeText       { get; }
-    public string                      XboxTotalSizeText      { get; }
-    public string                      XboxRealBreakText      { get; }
-    public string                      XboxDmiText            { get; }
-    public string                      XboxSsText             { get; }
+    public ICommand SaveXboxSsCommand      { get; }
+    public bool     XboxInformationVisible { get; }
+    public bool     SaveXboxSsVisible      { get; }
+    public string   XboxL0VideoText        { get; }
+    public string   XboxL1VideoText        { get; }
+    public string   XboxMiddleZoneText     { get; }
+    public string   XboxGameSizeText       { get; }
+    public string   XboxTotalSizeText      { get; }
+    public string   XboxRealBreakText      { get; }
+    public string   XboxDmiText            { get; }
+    public string   XboxSsText             { get; }
 
     public string XboxL0VideoLabel    => Localization.Core.Video_layer_zero_size;
     public string XboxL1VideoLabel    => Localization.Core.Video_layer_one_size;
@@ -101,7 +101,7 @@ public sealed class XboxInfoViewModel
     public string XboxSsLabel         => UI.Title_Security_Sector;
     public string SaveXboxSsLabel     => UI.ButtonLabel_Save_Xbox_Security_Sector;
 
-    async Task SaveElement(byte[] data)
+    async Task SaveElementAsync(byte[] data)
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
@@ -119,5 +119,5 @@ public sealed class XboxInfoViewModel
         saveFs.Close();
     }
 
-    public async Task ExecuteSaveXboxSsCommand() => await SaveElement(_xboxSecuritySector);
+    Task SaveXboxSsAsync() => SaveElementAsync(_xboxSecuritySector);
 }

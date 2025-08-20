@@ -33,8 +33,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive;
 using System.Text;
+using System.Windows.Input;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -53,9 +53,9 @@ using Aaru.Localization;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using CommunityToolkit.Mvvm.Input;
 using Humanizer;
 using Humanizer.Bytes;
-using ReactiveUI;
 using Sentry;
 using Inquiry = Aaru.CommonTypes.Structs.Devices.SCSI.Inquiry;
 using Session = Aaru.CommonTypes.Structs.Session;
@@ -87,13 +87,13 @@ public sealed class ImageInfoViewModel : ViewModelBase
         Sessions              = [];
         Tracks                = [];
         DumpHardwareList      = [];
-        EntropyCommand        = ReactiveCommand.Create(ExecuteEntropyCommand);
-        VerifyCommand         = ReactiveCommand.Create(ExecuteVerifyCommand);
-        ChecksumCommand       = ReactiveCommand.Create(ExecuteChecksumCommand);
-        ConvertCommand        = ReactiveCommand.Create(ExecuteConvertCommand);
-        CreateSidecarCommand  = ReactiveCommand.Create(ExecuteCreateSidecarCommand);
-        ViewSectorsCommand    = ReactiveCommand.Create(ExecuteViewSectorsCommand);
-        DecodeMediaTagCommand = ReactiveCommand.Create(ExecuteDecodeMediaTagCommand);
+        EntropyCommand        = new RelayCommand(Entropy);
+        VerifyCommand         = new RelayCommand(Verify);
+        ChecksumCommand       = new RelayCommand(Checksum);
+        ConvertCommand        = new RelayCommand(Convert);
+        CreateSidecarCommand  = new RelayCommand(CreateSidecar);
+        ViewSectorsCommand    = new RelayCommand(ViewSectors);
+        DecodeMediaTagCommand = new RelayCommand(DecodeMediaTag);
 
         var genericHddIcon =
             new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/drive-harddisk.png")));
@@ -780,13 +780,13 @@ public sealed class ImageInfoViewModel : ViewModelBase
     public ObservableCollection<Session>           Sessions                  { get; }
     public ObservableCollection<Track>             Tracks                    { get; }
     public ObservableCollection<DumpHardwareModel> DumpHardwareList          { get; }
-    public ReactiveCommand<Unit, Unit>             EntropyCommand            { get; }
-    public ReactiveCommand<Unit, Unit>             VerifyCommand             { get; }
-    public ReactiveCommand<Unit, Unit>             ChecksumCommand           { get; }
-    public ReactiveCommand<Unit, Unit>             ConvertCommand            { get; }
-    public ReactiveCommand<Unit, Unit>             CreateSidecarCommand      { get; }
-    public ReactiveCommand<Unit, Unit>             ViewSectorsCommand        { get; }
-    public ReactiveCommand<Unit, Unit>             DecodeMediaTagCommand     { get; }
+    public ICommand                                EntropyCommand            { get; }
+    public ICommand                                VerifyCommand             { get; }
+    public ICommand                                ChecksumCommand           { get; }
+    public ICommand                                ConvertCommand            { get; }
+    public ICommand                                CreateSidecarCommand      { get; }
+    public ICommand                                ViewSectorsCommand        { get; }
+    public ICommand                                DecodeMediaTagCommand     { get; }
 
     public bool DriveInformationVisible => DriveManufacturerText     != null ||
                                            DriveModelText            != null ||
@@ -848,7 +848,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
     public string ViewSectorsLabel        => UI.ButtonLabel_View_sectors;
     public string DecodeMediaTagLabel     => UI.ButtonLabel_Decode_media_tags;
 
-    void ExecuteEntropyCommand()
+    void Entropy()
     {
         if(_imageEntropy != null)
         {
@@ -865,7 +865,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
         _imageEntropy.Show();
     }
 
-    void ExecuteVerifyCommand()
+    void Verify()
     {
         if(_imageVerify != null)
         {
@@ -882,7 +882,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
         _imageVerify.Show();
     }
 
-    void ExecuteChecksumCommand()
+    void Checksum()
     {
         if(_imageChecksum != null)
         {
@@ -899,7 +899,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
         _imageChecksum.Show();
     }
 
-    void ExecuteConvertCommand()
+    void Convert()
     {
         if(_imageConvert != null)
         {
@@ -916,7 +916,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
         _imageConvert.Show();
     }
 
-    void ExecuteCreateSidecarCommand()
+    void CreateSidecar()
     {
         if(_imageSidecar != null)
         {
@@ -936,7 +936,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
         _imageSidecar.Show();
     }
 
-    void ExecuteViewSectorsCommand()
+    void ViewSectors()
     {
         if(_viewSector != null)
         {
@@ -955,7 +955,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
         _viewSector.Show();
     }
 
-    void ExecuteDecodeMediaTagCommand()
+    void DecodeMediaTag()
     {
         if(_decodeMediaTags != null)
         {

@@ -51,7 +51,7 @@ public sealed class ImageEntropy : Window
 
     protected override void OnClosing(WindowClosingEventArgs e)
     {
-        (DataContext as ImageEntropyViewModel)?.ExecuteStopCommand();
+        (DataContext as ImageEntropyViewModel)?.Stop();
         base.OnClosing(e);
     }
 }

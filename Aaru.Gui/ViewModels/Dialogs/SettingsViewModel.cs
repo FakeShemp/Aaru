@@ -30,33 +30,49 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System.Reactive;
+using System.Windows.Input;
 using Aaru.Gui.Views.Dialogs;
 using Aaru.Localization;
 using Aaru.Settings;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
-using ReactiveUI;
 
 namespace Aaru.Gui.ViewModels.Dialogs;
 
-public sealed class SettingsViewModel : ViewModelBase
+public sealed partial class SettingsViewModel : ViewModelBase
 {
     readonly SettingsDialog _view;
-    bool                    _commandStatsChecked;
-    bool                    _deviceStatsChecked;
-    bool                    _filesystemStatsChecked;
-    bool                    _filterStatsChecked;
-    bool                    _gdprVisible;
-    bool                    _mediaImageStatsChecked;
-    bool                    _mediaScanStatsChecked;
-    bool                    _mediaStatsChecked;
-    bool                    _partitionStatsChecked;
-    bool                    _saveReportsGloballyChecked;
-    bool                    _saveStatsChecked;
-    bool                    _shareReportsChecked;
-    bool                    _shareStatsChecked;
-    int                     _tabControlSelectedIndex;
-    bool                    _verifyStatsChecked;
+    [ObservableProperty]
+    bool _commandStatsChecked;
+    [ObservableProperty]
+    bool _deviceStatsChecked;
+    [ObservableProperty]
+    bool _filesystemStatsChecked;
+    [ObservableProperty]
+    bool _filterStatsChecked;
+    [ObservableProperty]
+    bool _gdprVisible;
+    [ObservableProperty]
+    bool _mediaImageStatsChecked;
+    [ObservableProperty]
+    bool _mediaScanStatsChecked;
+    [ObservableProperty]
+    bool _mediaStatsChecked;
+    [ObservableProperty]
+    bool _partitionStatsChecked;
+    [ObservableProperty]
+    bool _saveReportsGloballyChecked;
+    [ObservableProperty]
+    bool _saveStatsChecked;
+    [ObservableProperty]
+    bool _shareReportsChecked;
+    [ObservableProperty]
+    bool _shareStatsChecked;
+    [ObservableProperty]
+    int _tabControlSelectedIndex;
+    [ObservableProperty]
+    bool _verifyStatsChecked;
 
     public SettingsViewModel(SettingsDialog view, bool gdprChange)
     {
@@ -82,8 +98,8 @@ public sealed class SettingsViewModel : ViewModelBase
         else
             SaveStatsChecked = false;
 
-        CancelCommand = ReactiveCommand.Create(ExecuteCancelCommand);
-        SaveCommand   = ReactiveCommand.Create(ExecuteSaveCommand);
+        CancelCommand = new RelayCommand(Cancel);
+        SaveCommand   = new RelayCommand(Save);
 
         if(!_gdprVisible) _tabControlSelectedIndex = 1;
     }
@@ -164,100 +180,10 @@ public sealed class SettingsViewModel : ViewModelBase
     [NotNull]
     public string VerifyStatsText => UI.Gather_statistics_about_media_image_verifications_Q;
 
-    public ReactiveCommand<Unit, Unit> CancelCommand { get; }
-    public ReactiveCommand<Unit, Unit> SaveCommand   { get; }
+    public ICommand CancelCommand { get; }
+    public ICommand SaveCommand   { get; }
 
-    public bool GdprVisible
-    {
-        get => _gdprVisible;
-        set => this.RaiseAndSetIfChanged(ref _gdprVisible, value);
-    }
-
-    public bool SaveReportsGloballyChecked
-    {
-        get => _saveReportsGloballyChecked;
-        set => this.RaiseAndSetIfChanged(ref _saveReportsGloballyChecked, value);
-    }
-
-    public bool ShareReportsChecked
-    {
-        get => _shareReportsChecked;
-        set => this.RaiseAndSetIfChanged(ref _shareReportsChecked, value);
-    }
-
-    public bool SaveStatsChecked
-    {
-        get => _saveStatsChecked;
-        set => this.RaiseAndSetIfChanged(ref _saveStatsChecked, value);
-    }
-
-    public bool ShareStatsChecked
-    {
-        get => _shareStatsChecked;
-        set => this.RaiseAndSetIfChanged(ref _shareStatsChecked, value);
-    }
-
-    public bool CommandStatsChecked
-    {
-        get => _commandStatsChecked;
-        set => this.RaiseAndSetIfChanged(ref _commandStatsChecked, value);
-    }
-
-    public bool DeviceStatsChecked
-    {
-        get => _deviceStatsChecked;
-        set => this.RaiseAndSetIfChanged(ref _deviceStatsChecked, value);
-    }
-
-    public bool FilesystemStatsChecked
-    {
-        get => _filesystemStatsChecked;
-        set => this.RaiseAndSetIfChanged(ref _filesystemStatsChecked, value);
-    }
-
-    public bool FilterStatsChecked
-    {
-        get => _filterStatsChecked;
-        set => this.RaiseAndSetIfChanged(ref _filterStatsChecked, value);
-    }
-
-    public bool MediaImageStatsChecked
-    {
-        get => _mediaImageStatsChecked;
-        set => this.RaiseAndSetIfChanged(ref _mediaImageStatsChecked, value);
-    }
-
-    public bool MediaScanStatsChecked
-    {
-        get => _mediaScanStatsChecked;
-        set => this.RaiseAndSetIfChanged(ref _mediaScanStatsChecked, value);
-    }
-
-    public bool PartitionStatsChecked
-    {
-        get => _partitionStatsChecked;
-        set => this.RaiseAndSetIfChanged(ref _partitionStatsChecked, value);
-    }
-
-    public bool MediaStatsChecked
-    {
-        get => _mediaStatsChecked;
-        set => this.RaiseAndSetIfChanged(ref _mediaStatsChecked, value);
-    }
-
-    public bool VerifyStatsChecked
-    {
-        get => _verifyStatsChecked;
-        set => this.RaiseAndSetIfChanged(ref _verifyStatsChecked, value);
-    }
-
-    public int TabControlSelectedIndex
-    {
-        get => _tabControlSelectedIndex;
-        set => this.RaiseAndSetIfChanged(ref _tabControlSelectedIndex, value);
-    }
-
-    void ExecuteSaveCommand()
+    void Save()
     {
         Settings.Settings.Current.SaveReportsGlobally = SaveReportsGloballyChecked;
         Settings.Settings.Current.ShareReports        = ShareReportsChecked;
@@ -286,5 +212,5 @@ public sealed class SettingsViewModel : ViewModelBase
         _view.Close();
     }
 
-    void ExecuteCancelCommand() => _view.Close();
+    void Cancel() => _view.Close();
 }

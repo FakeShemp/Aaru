@@ -35,8 +35,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reactive;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -60,10 +60,10 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
-using ReactiveUI;
 using Spectre.Console;
 using Console = Aaru.Gui.Views.Dialogs.Console;
 using DeviceInfo = Aaru.Core.Devices.Info.DeviceInfo;
@@ -94,22 +94,22 @@ public sealed class MainWindowViewModel : ViewModelBase
 
     public MainWindowViewModel(MainWindow view)
     {
-        AboutCommand                = ReactiveCommand.Create(ExecuteAboutCommand);
-        EncodingsCommand            = ReactiveCommand.Create(ExecuteEncodingsCommand);
-        PluginsCommand              = ReactiveCommand.Create(ExecutePluginsCommand);
-        StatisticsCommand           = ReactiveCommand.Create(ExecuteStatisticsCommand);
-        ExitCommand                 = ReactiveCommand.Create(ExecuteExitCommand);
-        SettingsCommand             = ReactiveCommand.Create(ExecuteSettingsCommand);
-        ConsoleCommand              = ReactiveCommand.Create(ExecuteConsoleCommand);
-        OpenCommand                 = ReactiveCommand.Create(ExecuteOpenCommand);
-        CalculateEntropyCommand     = ReactiveCommand.Create(ExecuteCalculateEntropyCommand);
-        VerifyImageCommand          = ReactiveCommand.Create(ExecuteVerifyImageCommand);
-        ChecksumImageCommand        = ReactiveCommand.Create(ExecuteChecksumImageCommand);
-        ConvertImageCommand         = ReactiveCommand.Create(ExecuteConvertImageCommand);
-        CreateSidecarCommand        = ReactiveCommand.Create(ExecuteCreateSidecarCommand);
-        ViewImageSectorsCommand     = ReactiveCommand.Create(ExecuteViewImageSectorsCommand);
-        DecodeImageMediaTagsCommand = ReactiveCommand.Create(ExecuteDecodeImageMediaTagsCommand);
-        RefreshDevicesCommand       = ReactiveCommand.Create(ExecuteRefreshDevicesCommand);
+        AboutCommand                = new RelayCommand(About);
+        EncodingsCommand            = new RelayCommand(Encodings);
+        PluginsCommand              = new RelayCommand(Plugins);
+        StatisticsCommand           = new RelayCommand(Statistics);
+        ExitCommand                 = new RelayCommand(Exit);
+        SettingsCommand             = new AsyncRelayCommand(SettingsAsync);
+        ConsoleCommand              = new RelayCommand(Console);
+        OpenCommand                 = new AsyncRelayCommand(OpenAsync);
+        CalculateEntropyCommand     = new RelayCommand(CalculateEntropy);
+        VerifyImageCommand          = new RelayCommand(VerifyImage);
+        ChecksumImageCommand        = new RelayCommand(ChecksumImage);
+        ConvertImageCommand         = new RelayCommand(ConvertImage);
+        CreateSidecarCommand        = new RelayCommand(CreateSidecar);
+        ViewImageSectorsCommand     = new RelayCommand(ViewImageSectors);
+        DecodeImageMediaTagsCommand = new RelayCommand(DecodeImageMediaTags);
+        RefreshDevicesCommand       = new RelayCommand(RefreshDevices);
         _view                       = view;
         TreeRoot                    = [];
         ContentPanel                = Greeting;
@@ -190,7 +190,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     public bool DevicesSupported
     {
         get => _devicesSupported;
-        set => this.RaiseAndSetIfChanged(ref _devicesSupported, value);
+        set => SetProperty(ref _devicesSupported, value);
     }
 
     public bool NativeMenuSupported
@@ -208,27 +208,27 @@ public sealed class MainWindowViewModel : ViewModelBase
     public string Greeting => UI.Welcome_to_Aaru;
 
     public ObservableCollection<RootModel> TreeRoot                    { get; }
-    public ReactiveCommand<Unit, Unit>     AboutCommand                { get; }
-    public ReactiveCommand<Unit, Unit>     ConsoleCommand              { get; }
-    public ReactiveCommand<Unit, Unit>     EncodingsCommand            { get; }
-    public ReactiveCommand<Unit, Unit>     PluginsCommand              { get; }
-    public ReactiveCommand<Unit, Unit>     StatisticsCommand           { get; }
-    public ReactiveCommand<Unit, Unit>     ExitCommand                 { get; }
-    public ReactiveCommand<Unit, Task>     SettingsCommand             { get; }
-    public ReactiveCommand<Unit, Task>     OpenCommand                 { get; }
-    public ReactiveCommand<Unit, Unit>     CalculateEntropyCommand     { get; }
-    public ReactiveCommand<Unit, Unit>     VerifyImageCommand          { get; }
-    public ReactiveCommand<Unit, Unit>     ChecksumImageCommand        { get; }
-    public ReactiveCommand<Unit, Unit>     ConvertImageCommand         { get; }
-    public ReactiveCommand<Unit, Unit>     CreateSidecarCommand        { get; }
-    public ReactiveCommand<Unit, Unit>     ViewImageSectorsCommand     { get; }
-    public ReactiveCommand<Unit, Unit>     DecodeImageMediaTagsCommand { get; }
-    public ReactiveCommand<Unit, Unit>     RefreshDevicesCommand       { get; }
+    public ICommand                        AboutCommand                { get; }
+    public ICommand                        ConsoleCommand              { get; }
+    public ICommand                        EncodingsCommand            { get; }
+    public ICommand                        PluginsCommand              { get; }
+    public ICommand                        StatisticsCommand           { get; }
+    public ICommand                        ExitCommand                 { get; }
+    public ICommand                        SettingsCommand             { get; }
+    public ICommand                        OpenCommand                 { get; }
+    public ICommand                        CalculateEntropyCommand     { get; }
+    public ICommand                        VerifyImageCommand          { get; }
+    public ICommand                        ChecksumImageCommand        { get; }
+    public ICommand                        ConvertImageCommand         { get; }
+    public ICommand                        CreateSidecarCommand        { get; }
+    public ICommand                        ViewImageSectorsCommand     { get; }
+    public ICommand                        DecodeImageMediaTagsCommand { get; }
+    public ICommand                        RefreshDevicesCommand       { get; }
 
     public object ContentPanel
     {
         get => _contentPanel;
-        set => this.RaiseAndSetIfChanged(ref _contentPanel, value);
+        set => SetProperty(ref _contentPanel, value);
     }
 
     public object TreeViewSelectedItem
@@ -238,7 +238,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         {
             if(value == _treeViewSelectedItem) return;
 
-            this.RaiseAndSetIfChanged(ref _treeViewSelectedItem, value);
+            SetProperty(ref _treeViewSelectedItem, value);
 
             ContentPanel = null;
 
@@ -285,11 +285,11 @@ public sealed class MainWindowViewModel : ViewModelBase
 
                                 return;
                             case Devices.Remote.Device remoteDev:
-                                Statistics.AddRemote(remoteDev.RemoteApplication,
-                                                     remoteDev.RemoteVersion,
-                                                     remoteDev.RemoteOperatingSystem,
-                                                     remoteDev.RemoteOperatingSystemVersion,
-                                                     remoteDev.RemoteArchitecture);
+                                Core.Statistics.AddRemote(remoteDev.RemoteApplication,
+                                                          remoteDev.RemoteVersion,
+                                                          remoteDev.RemoteOperatingSystem,
+                                                          remoteDev.RemoteOperatingSystemVersion,
+                                                          remoteDev.RemoteArchitecture);
 
                                 break;
                         }
@@ -378,7 +378,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
     }
 
-    void ExecuteCalculateEntropyCommand()
+    void CalculateEntropy()
     {
         if(TreeViewSelectedItem is not ImageModel imageModel) return;
 
@@ -390,7 +390,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         imageEntropyWindow.Show();
     }
 
-    void ExecuteVerifyImageCommand()
+    void VerifyImage()
     {
         if(TreeViewSelectedItem is not ImageModel imageModel) return;
 
@@ -402,7 +402,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         imageVerifyWindow.Show();
     }
 
-    void ExecuteChecksumImageCommand()
+    void ChecksumImage()
     {
         if(TreeViewSelectedItem is not ImageModel imageModel) return;
 
@@ -414,7 +414,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         imageChecksumWindow.Show();
     }
 
-    void ExecuteConvertImageCommand()
+    void ConvertImage()
     {
         if(TreeViewSelectedItem is not ImageModel imageModel) return;
 
@@ -428,7 +428,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         imageConvertWindow.Show();
     }
 
-    void ExecuteCreateSidecarCommand()
+    void CreateSidecar()
     {
         if(TreeViewSelectedItem is not ImageModel imageModel) return;
 
@@ -445,7 +445,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         imageSidecarWindow.Show();
     }
 
-    void ExecuteViewImageSectorsCommand()
+    void ViewImageSectors()
     {
         if(TreeViewSelectedItem is not ImageModel imageModel) return;
 
@@ -455,7 +455,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         }.Show();
     }
 
-    void ExecuteDecodeImageMediaTagsCommand()
+    void DecodeImageMediaTags()
     {
         if(TreeViewSelectedItem is not ImageModel imageModel) return;
 
@@ -465,28 +465,28 @@ public sealed class MainWindowViewModel : ViewModelBase
         }.Show();
     }
 
-    internal void ExecuteAboutCommand()
+    internal void About()
     {
         var dialog = new About();
         dialog.DataContext = new AboutViewModel(dialog);
         dialog.ShowDialog(_view);
     }
 
-    void ExecuteEncodingsCommand()
+    void Encodings()
     {
         var dialog = new Encodings();
         dialog.DataContext = new EncodingsViewModel(dialog);
         dialog.ShowDialog(_view);
     }
 
-    void ExecutePluginsCommand()
+    void Plugins()
     {
         var dialog = new PluginsDialog();
         dialog.DataContext = new PluginsViewModel(dialog);
         dialog.ShowDialog(_view);
     }
 
-    void ExecuteStatisticsCommand()
+    void Statistics()
     {
         using var ctx = AaruContext.Create(Settings.Settings.LocalDbPath);
 
@@ -509,17 +509,17 @@ public sealed class MainWindowViewModel : ViewModelBase
         dialog.ShowDialog(_view);
     }
 
-    internal async Task ExecuteSettingsCommand()
+    internal async Task SettingsAsync()
     {
         var dialog = new SettingsDialog();
         dialog.DataContext = new SettingsViewModel(dialog, false);
         await dialog.ShowDialog(_view);
     }
 
-    internal void ExecuteExitCommand() =>
+    internal void Exit() =>
         (Application.Current?.ApplicationLifetime as ClassicDesktopStyleApplicationLifetime)?.Shutdown();
 
-    void ExecuteConsoleCommand()
+    void Console()
     {
         if(_console is null)
         {
@@ -530,7 +530,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         _console.Show();
     }
 
-    async Task ExecuteOpenCommand()
+    async Task OpenAsync()
     {
         // TODO: Extensions
         IReadOnlyList<IStorageFile> result = await _view.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
@@ -698,10 +698,10 @@ public sealed class MainWindowViewModel : ViewModelBase
                                             Plugin = rofs
                                         });
 
-                                        Statistics.AddCommand("ls");
+                                        Core.Statistics.AddCommand("ls");
                                     }
 
-                                    Statistics.AddFilesystem(rofs?.Metadata.Type ?? fsMetadata.Type);
+                                    Core.Statistics.AddFilesystem(rofs?.Metadata.Type ?? fsMetadata.Type);
                                     partitionModel.FileSystems.Add(filesystemModel);
                                 }
                             }
@@ -776,18 +776,18 @@ public sealed class MainWindowViewModel : ViewModelBase
                                     Plugin = rofs
                                 });
 
-                                Statistics.AddCommand("ls");
+                                Core.Statistics.AddCommand("ls");
                             }
 
-                            Statistics.AddFilesystem(rofs?.Metadata.Type ?? fsMetadata.Type);
+                            Core.Statistics.AddFilesystem(rofs?.Metadata.Type ?? fsMetadata.Type);
                             imageModel.PartitionSchemesOrFileSystems.Add(filesystemModel);
                         }
                     }
                 }
 
-                Statistics.AddMediaFormat(imageFormat.Format);
-                Statistics.AddMedia(imageFormat.Info.MediaType, false);
-                Statistics.AddFilter(inputFilter.Name);
+                Core.Statistics.AddMediaFormat(imageFormat.Format);
+                Core.Statistics.AddMedia(imageFormat.Info.MediaType, false);
+                Core.Statistics.AddFilter(inputFilter.Name);
 
                 _imagesRoot.Images.Add(imageModel);
             }
@@ -814,12 +814,10 @@ public sealed class MainWindowViewModel : ViewModelBase
             AaruLogging.Exception(ex, UI.Error_reading_file_0, ex.Message);
         }
 
-        Statistics.AddCommand("image-info");
+        Core.Statistics.AddCommand("image-info");
     }
 
     internal void LoadComplete() => RefreshDevices();
-
-    void ExecuteRefreshDevicesCommand() => RefreshDevices();
 
     void RefreshDevices()
     {
@@ -855,11 +853,11 @@ public sealed class MainWindowViewModel : ViewModelBase
                 {
                     if(dev is Devices.Remote.Device remoteDev)
                     {
-                        Statistics.AddRemote(remoteDev.RemoteApplication,
-                                             remoteDev.RemoteVersion,
-                                             remoteDev.RemoteOperatingSystem,
-                                             remoteDev.RemoteOperatingSystemVersion,
-                                             remoteDev.RemoteArchitecture);
+                        Core.Statistics.AddRemote(remoteDev.RemoteApplication,
+                                                  remoteDev.RemoteVersion,
+                                                  remoteDev.RemoteOperatingSystem,
+                                                  remoteDev.RemoteOperatingSystemVersion,
+                                                  remoteDev.RemoteArchitecture);
                     }
 
                     deviceModel.Icon = dev.Type switch

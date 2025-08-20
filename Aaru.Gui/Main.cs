@@ -29,8 +29,6 @@
 using System;
 using System.Text;
 using Avalonia;
-using Avalonia.Dialogs;
-using Avalonia.ReactiveUI;
 using Sentry;
 
 namespace Aaru.Gui;
@@ -78,6 +76,5 @@ public static class Main
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp() =>
-        AppBuilder.Configure<App>().UsePlatformDetect().UseReactiveUI().UseManagedSystemDialogs();
+    public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>().UsePlatformDetect();
 }

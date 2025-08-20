@@ -46,8 +46,8 @@ using Aaru.Decoders.Xbox;
 using Aaru.Gui.Models;
 using Aaru.Helpers;
 using Aaru.Localization;
+using CommunityToolkit.Mvvm.ComponentModel;
 using JetBrains.Annotations;
-using ReactiveUI;
 using BCA = Aaru.Decoders.Bluray.BCA;
 using Cartridge = Aaru.Decoders.DVD.Cartridge;
 using DDS = Aaru.Decoders.DVD.DDS;
@@ -57,14 +57,17 @@ using Spare = Aaru.Decoders.DVD.Spare;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
-public sealed class DecodeMediaTagsViewModel : ViewModelBase
+public sealed partial class DecodeMediaTagsViewModel : ViewModelBase
 {
     const    int       HEX_COLUMNS = 32;
     readonly MediaType _mediaType;
-    string             _decodedText;
-    bool               _decodedVisible;
-    string             _hexViewText;
-    MediaTagModel      _selectedTag;
+    [ObservableProperty]
+    string _decodedText;
+    [ObservableProperty]
+    bool _decodedVisible;
+    [ObservableProperty]
+    string _hexViewText;
+    MediaTagModel _selectedTag;
 
     public DecodeMediaTagsViewModel([NotNull] IMediaImage inputFormat)
     {
@@ -95,7 +98,7 @@ public sealed class DecodeMediaTagsViewModel : ViewModelBase
         get => _selectedTag;
         set
         {
-            this.RaiseAndSetIfChanged(ref _selectedTag, value);
+            SetProperty(ref _selectedTag, value);
 
             if(value is null) return;
 
@@ -231,24 +234,6 @@ public sealed class DecodeMediaTagsViewModel : ViewModelBase
 
             if(DecodedText != null) value.Decoded = DecodedText;
         }
-    }
-
-    public string HexViewText
-    {
-        get => _hexViewText;
-        set => this.RaiseAndSetIfChanged(ref _hexViewText, value);
-    }
-
-    public bool DecodedVisible
-    {
-        get => _decodedVisible;
-        set => this.RaiseAndSetIfChanged(ref _decodedVisible, value);
-    }
-
-    public string DecodedText
-    {
-        get => _decodedText;
-        set => this.RaiseAndSetIfChanged(ref _decodedText, value);
     }
 
     public string TagLabel     => UI.Title_Tag;

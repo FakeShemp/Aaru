@@ -91,7 +91,7 @@ public sealed class App : Application
                                       })
             return;
 
-        mainWindowViewModel.ExecuteAboutCommand();
+        mainWindowViewModel.About();
     }
 
     void OnQuitClicked(object sender, EventArgs args)
@@ -105,7 +105,7 @@ public sealed class App : Application
                                       })
             return;
 
-        mainWindowViewModel.ExecuteExitCommand();
+        mainWindowViewModel.Exit();
     }
 
     void OnPreferencesClicked(object sender, EventArgs args)
@@ -119,6 +119,6 @@ public sealed class App : Application
                                       })
             return;
 
-        mainWindowViewModel.ExecuteSettingsCommand();
+        mainWindowViewModel.SettingsAsync();
     }
 }

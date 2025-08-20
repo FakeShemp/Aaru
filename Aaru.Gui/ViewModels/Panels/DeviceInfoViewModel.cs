@@ -33,8 +33,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reactive;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.Decoders.SCSI.SSC;
 using Aaru.Devices;
 using Aaru.Gui.ViewModels.Tabs;
@@ -42,110 +42,200 @@ using Aaru.Gui.Views.Tabs;
 using Aaru.Localization;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Humanizer;
 using Humanizer.Localisation;
-using ReactiveUI;
 using DeviceInfo = Aaru.Core.Devices.Info.DeviceInfo;
 
 namespace Aaru.Gui.ViewModels.Panels;
 
-public sealed class DeviceInfoViewModel : ViewModelBase
+public sealed partial class DeviceInfoViewModel : ViewModelBase
 {
     readonly DeviceInfo _devInfo;
     readonly Window     _view;
-    AtaInfo             _ataInfo;
-    string              _blockLimits;
-    string              _blockSizeGranularity;
-    string              _cid;
-    string              _csd;
-    string              _densities;
-    string              _deviceType;
-    string              _extendedCsd;
-    string              _firewireGuid;
-    string              _firewireManufacturer;
-    string              _firewireModel;
-    string              _firewireModelId;
-    string              _firewireVendorId;
-    bool                _firewireVisible;
-    bool                _kreon;
-    bool                _kreonChallengeResponse;
-    bool                _kreonChallengeResponse360;
-    bool                _kreonDecryptSs;
-    bool                _kreonDecryptSs360;
-    bool                _kreonErrorSkipping;
-    bool                _kreonLock;
-    bool                _kreonWxripperUnlock;
-    bool                _kreonWxripperUnlock360;
-    bool                _kreonXtremeUnlock;
-    bool                _kreonXtremeUnlock360;
-    string              _manufacturer;
-    string              _maxBlockSize;
-    string              _mediumDensity;
-    string              _mediumTypes;
-    string              _minBlockSize;
-    string              _model;
-    string              _ocr;
-    PcmciaInfo          _pcmciaInfo;
-    bool                _plextorBitSetting;
-    bool                _plextorBitSettingDl;
-    string              _plextorCdReadTime;
-    string              _plextorCdWriteTime;
-    string              _plextorDiscs;
-    string              _plextorDvd;
-    bool                _plextorDvdPlusWriteTest;
-    string              _plextorDvdReadTime;
-    bool                _plextorDvdTimesVisible;
-    string              _plextorDvdWriteTime;
-    bool                _plextorEepromVisible;
-    bool                _plextorGigaRec;
-    bool                _plextorHidesRecordables;
-    bool                _plextorHidesSessions;
-    bool                _plextorHiding;
-    bool                _plextorPoweRec;
-    bool                _plextorPoweRecEnabled;
-    string              _plextorPoweRecLast;
-    bool                _plextorPoweRecLastVisible;
-    string              _plextorPoweRecMax;
-    bool                _plextorPoweRecMaxVisible;
-    string              _plextorPoweRecRecommended;
-    bool                _plextorPoweRecRecommendedVisible;
-    string              _plextorPoweRecSelected;
-    bool                _plextorPoweRecSelectedVisible;
-    bool                _plextorSecuRec;
-    bool                _plextorSilentMode;
-    string              _plextorSilentModeAccessTime;
-    string              _plextorSilentModeCdReadSpeedLimit;
-    string              _plextorSilentModeCdWriteSpeedLimit;
-    string              _plextorSilentModeDvdReadSpeedLimit;
-    bool                _plextorSilentModeDvdReadSpeedLimitVisible;
-    bool                _plextorSilentModeEnabled;
-    bool                _plextorSpeedEnabled;
-    bool                _plextorSpeedRead;
-    bool                _plextorVariRec;
-    bool                _plextorVariRecDvd;
-    bool                _plextorVisible;
-    bool                _removable;
-    string              _revision;
-    bool                _saveUsbDescriptorsEnabled;
-    string              _scr;
-    ScsiInfo            _scsiInfo;
-    string              _scsiType;
-    string              _sdMm;
-    SdMmcInfo           _sdMmcInfo;
-    string              _secureDigital;
-    string              _serial;
-    bool                _ssc;
-    string              _usbConnected;
-    string              _usbManufacturer;
-    string              _usbProduct;
-    string              _usbProductId;
-    string              _usbSerial;
-    string              _usbVendorId;
-    bool                _usbVisible;
+    [ObservableProperty]
+    AtaInfo _ataInfo;
+    [ObservableProperty]
+    string _blockLimits;
+    [ObservableProperty]
+    string _blockSizeGranularity;
+    [ObservableProperty]
+    string _cid;
+    [ObservableProperty]
+    string _csd;
+    [ObservableProperty]
+    string _densities;
+    [ObservableProperty]
+    string _deviceType;
+    [ObservableProperty]
+    string _extendedCsd;
+    [ObservableProperty]
+    string _firewireGuid;
+    [ObservableProperty]
+    string _firewireManufacturer;
+    [ObservableProperty]
+    string _firewireModel;
+    [ObservableProperty]
+    string _firewireModelId;
+    [ObservableProperty]
+    string _firewireVendorId;
+    [ObservableProperty]
+    bool _firewireVisible;
+    [ObservableProperty]
+    bool _kreon;
+    [ObservableProperty]
+    bool _kreonChallengeResponse;
+    [ObservableProperty]
+    bool _kreonChallengeResponse360;
+    [ObservableProperty]
+    bool _kreonDecryptSs;
+    [ObservableProperty]
+    bool _kreonDecryptSs360;
+    [ObservableProperty]
+    bool _kreonErrorSkipping;
+    [ObservableProperty]
+    bool _kreonLock;
+    [ObservableProperty]
+    bool _kreonWxripperUnlock;
+    [ObservableProperty]
+    bool _kreonWxripperUnlock360;
+    [ObservableProperty]
+    bool _kreonXtremeUnlock;
+    [ObservableProperty]
+    bool _kreonXtremeUnlock360;
+    [ObservableProperty]
+    string _manufacturer;
+    [ObservableProperty]
+    string _maxBlockSize;
+    [ObservableProperty]
+    string _mediumDensity;
+    [ObservableProperty]
+    string _mediumTypes;
+    [ObservableProperty]
+    string _minBlockSize;
+    [ObservableProperty]
+    string _model;
+    [ObservableProperty]
+    string _ocr;
+    [ObservableProperty]
+    PcmciaInfo _pcmciaInfo;
+    [ObservableProperty]
+    bool _plextorBitSetting;
+    [ObservableProperty]
+    bool _plextorBitSettingDl;
+    [ObservableProperty]
+    string _plextorCdReadTime;
+    [ObservableProperty]
+    string _plextorCdWriteTime;
+    [ObservableProperty]
+    string _plextorDiscs;
+    [ObservableProperty]
+    string _plextorDvd;
+    [ObservableProperty]
+    bool _plextorDvdPlusWriteTest;
+    [ObservableProperty]
+    string _plextorDvdReadTime;
+    [ObservableProperty]
+    bool _plextorDvdTimesVisible;
+    [ObservableProperty]
+    string _plextorDvdWriteTime;
+    [ObservableProperty]
+    bool _plextorEepromVisible;
+    [ObservableProperty]
+    bool _plextorGigaRec;
+    [ObservableProperty]
+    bool _plextorHidesRecordables;
+    [ObservableProperty]
+    bool _plextorHidesSessions;
+    [ObservableProperty]
+    bool _plextorHiding;
+    [ObservableProperty]
+    bool _plextorPoweRec;
+    [ObservableProperty]
+    bool _plextorPoweRecEnabled;
+    [ObservableProperty]
+    string _plextorPoweRecLast;
+    [ObservableProperty]
+    bool _plextorPoweRecLastVisible;
+    [ObservableProperty]
+    string _plextorPoweRecMax;
+    [ObservableProperty]
+    bool _plextorPoweRecMaxVisible;
+    [ObservableProperty]
+    string _plextorPoweRecRecommended;
+    [ObservableProperty]
+    bool _plextorPoweRecRecommendedVisible;
+    [ObservableProperty]
+    string _plextorPoweRecSelected;
+    [ObservableProperty]
+    bool _plextorPoweRecSelectedVisible;
+    [ObservableProperty]
+    bool _plextorSecuRec;
+    [ObservableProperty]
+    bool _plextorSilentMode;
+    [ObservableProperty]
+    string _plextorSilentModeAccessTime;
+    [ObservableProperty]
+    string _plextorSilentModeCdReadSpeedLimit;
+    [ObservableProperty]
+    string _plextorSilentModeCdWriteSpeedLimit;
+    [ObservableProperty]
+    string _plextorSilentModeDvdReadSpeedLimit;
+    [ObservableProperty]
+    bool _plextorSilentModeDvdReadSpeedLimitVisible;
+    [ObservableProperty]
+    bool _plextorSilentModeEnabled;
+    [ObservableProperty]
+    bool _plextorSpeedEnabled;
+    [ObservableProperty]
+    bool _plextorSpeedRead;
+    [ObservableProperty]
+    bool _plextorVariRec;
+    [ObservableProperty]
+    bool _plextorVariRecDvd;
+    [ObservableProperty]
+    bool _plextorVisible;
+    [ObservableProperty]
+    bool _removable;
+    [ObservableProperty]
+    string _revision;
+    [ObservableProperty]
+    bool _saveUsbDescriptorsEnabled;
+    [ObservableProperty]
+    string _scr;
+    [ObservableProperty]
+    ScsiInfo _scsiInfo;
+    [ObservableProperty]
+    string _scsiType;
+    [ObservableProperty]
+    string _sdMm;
+    [ObservableProperty]
+    SdMmcInfo _sdMmcInfo;
+    [ObservableProperty]
+    string _secureDigital;
+    [ObservableProperty]
+    string _serial;
+    [ObservableProperty]
+    bool _ssc;
+    [ObservableProperty]
+    string _usbConnected;
+    [ObservableProperty]
+    string _usbManufacturer;
+    [ObservableProperty]
+    string _usbProduct;
+    [ObservableProperty]
+    string _usbProductId;
+    [ObservableProperty]
+    string _usbSerial;
+    [ObservableProperty]
+    string _usbVendorId;
+    [ObservableProperty]
+    bool _usbVisible;
 
     public DeviceInfoViewModel(DeviceInfo devInfo, Window view)
     {
-        SaveUsbDescriptorsCommand = ReactiveCommand.Create(ExecuteSaveUsbDescriptorsCommand);
+        SaveUsbDescriptorsCommand = new AsyncRelayCommand(SaveUsbDescriptorsAsync);
         _view                     = view;
         _devInfo                  = devInfo;
 
@@ -412,541 +502,7 @@ public sealed class DeviceInfoViewModel : ViewModelBase
         };
     }
 
-    public ReactiveCommand<Unit, Task> SaveUsbDescriptorsCommand { get; }
-
-    public string DeviceType
-    {
-        get => _deviceType;
-        set => this.RaiseAndSetIfChanged(ref _deviceType, value);
-    }
-
-    public string Manufacturer
-    {
-        get => _manufacturer;
-        set => this.RaiseAndSetIfChanged(ref _manufacturer, value);
-    }
-
-    public string Model
-    {
-        get => _model;
-        set => this.RaiseAndSetIfChanged(ref _model, value);
-    }
-
-    public string Revision
-    {
-        get => _revision;
-        set => this.RaiseAndSetIfChanged(ref _revision, value);
-    }
-
-    public string Serial
-    {
-        get => _serial;
-        set => this.RaiseAndSetIfChanged(ref _serial, value);
-    }
-
-    public string ScsiType
-    {
-        get => _scsiType;
-        set => this.RaiseAndSetIfChanged(ref _scsiType, value);
-    }
-
-    public bool Removable
-    {
-        get => _removable;
-        set => this.RaiseAndSetIfChanged(ref _removable, value);
-    }
-
-    public string UsbConnected
-    {
-        get => _usbConnected;
-        set => this.RaiseAndSetIfChanged(ref _usbConnected, value);
-    }
-
-    public bool UsbVisible
-    {
-        get => _usbVisible;
-        set => this.RaiseAndSetIfChanged(ref _usbVisible, value);
-    }
-
-    public string UsbVendorId
-    {
-        get => _usbVendorId;
-        set => this.RaiseAndSetIfChanged(ref _usbVendorId, value);
-    }
-
-    public string UsbProductId
-    {
-        get => _usbProductId;
-        set => this.RaiseAndSetIfChanged(ref _usbProductId, value);
-    }
-
-    public string UsbManufacturer
-    {
-        get => _usbManufacturer;
-        set => this.RaiseAndSetIfChanged(ref _usbManufacturer, value);
-    }
-
-    public string UsbProduct
-    {
-        get => _usbProduct;
-        set => this.RaiseAndSetIfChanged(ref _usbProduct, value);
-    }
-
-    public string UsbSerial
-    {
-        get => _usbSerial;
-        set => this.RaiseAndSetIfChanged(ref _usbSerial, value);
-    }
-
-    public bool SaveUsbDescriptorsEnabled
-    {
-        get => _saveUsbDescriptorsEnabled;
-        set => this.RaiseAndSetIfChanged(ref _saveUsbDescriptorsEnabled, value);
-    }
-
-    public bool FirewireVisible
-    {
-        get => _firewireVisible;
-        set => this.RaiseAndSetIfChanged(ref _firewireVisible, value);
-    }
-
-    public string FirewireVendorId
-    {
-        get => _firewireVendorId;
-        set => this.RaiseAndSetIfChanged(ref _firewireVendorId, value);
-    }
-
-    public string FirewireModelId
-    {
-        get => _firewireModelId;
-        set => this.RaiseAndSetIfChanged(ref _firewireModelId, value);
-    }
-
-    public string FirewireManufacturer
-    {
-        get => _firewireManufacturer;
-        set => this.RaiseAndSetIfChanged(ref _firewireManufacturer, value);
-    }
-
-    public string FirewireModel
-    {
-        get => _firewireModel;
-        set => this.RaiseAndSetIfChanged(ref _firewireModel, value);
-    }
-
-    public string FirewireGuid
-    {
-        get => _firewireGuid;
-        set => this.RaiseAndSetIfChanged(ref _firewireGuid, value);
-    }
-
-    public bool PlextorVisible
-    {
-        get => _plextorVisible;
-        set => this.RaiseAndSetIfChanged(ref _plextorVisible, value);
-    }
-
-    public bool PlextorEepromVisible
-    {
-        get => _plextorEepromVisible;
-        set => this.RaiseAndSetIfChanged(ref _plextorEepromVisible, value);
-    }
-
-    public string PlextorDiscs
-    {
-        get => _plextorDiscs;
-        set => this.RaiseAndSetIfChanged(ref _plextorDiscs, value);
-    }
-
-    public string PlextorCdReadTime
-    {
-        get => _plextorCdReadTime;
-        set => this.RaiseAndSetIfChanged(ref _plextorCdReadTime, value);
-    }
-
-    public string PlextorCdWriteTime
-    {
-        get => _plextorCdWriteTime;
-        set => this.RaiseAndSetIfChanged(ref _plextorCdWriteTime, value);
-    }
-
-    public bool PlextorDvdTimesVisible
-    {
-        get => _plextorDvdTimesVisible;
-        set => this.RaiseAndSetIfChanged(ref _plextorDvdTimesVisible, value);
-    }
-
-    public string PlextorDvdReadTime
-    {
-        get => _plextorDvdReadTime;
-        set => this.RaiseAndSetIfChanged(ref _plextorDvdReadTime, value);
-    }
-
-    public string PlextorDvdWriteTime
-    {
-        get => _plextorDvdWriteTime;
-        set => this.RaiseAndSetIfChanged(ref _plextorDvdWriteTime, value);
-    }
-
-    public bool PlextorPoweRec
-    {
-        get => _plextorPoweRec;
-        set => this.RaiseAndSetIfChanged(ref _plextorPoweRec, value);
-    }
-
-    public bool PlextorPoweRecEnabled
-    {
-        get => _plextorPoweRecEnabled;
-        set => this.RaiseAndSetIfChanged(ref _plextorPoweRecEnabled, value);
-    }
-
-    public bool PlextorPoweRecRecommendedVisible
-    {
-        get => _plextorPoweRecRecommendedVisible;
-        set => this.RaiseAndSetIfChanged(ref _plextorPoweRecRecommendedVisible, value);
-    }
-
-    public string PlextorPoweRecRecommended
-    {
-        get => _plextorPoweRecRecommended;
-        set => this.RaiseAndSetIfChanged(ref _plextorPoweRecRecommended, value);
-    }
-
-    public bool PlextorPoweRecSelectedVisible
-    {
-        get => _plextorPoweRecSelectedVisible;
-        set => this.RaiseAndSetIfChanged(ref _plextorPoweRecSelectedVisible, value);
-    }
-
-    public string PlextorPoweRecSelected
-    {
-        get => _plextorPoweRecSelected;
-        set => this.RaiseAndSetIfChanged(ref _plextorPoweRecSelected, value);
-    }
-
-    public bool PlextorPoweRecMaxVisible
-    {
-        get => _plextorPoweRecMaxVisible;
-        set => this.RaiseAndSetIfChanged(ref _plextorPoweRecMaxVisible, value);
-    }
-
-    public string PlextorPoweRecMax
-    {
-        get => _plextorPoweRecMax;
-        set => this.RaiseAndSetIfChanged(ref _plextorPoweRecMax, value);
-    }
-
-    public bool PlextorPoweRecLastVisible
-    {
-        get => _plextorPoweRecLastVisible;
-        set => this.RaiseAndSetIfChanged(ref _plextorPoweRecLastVisible, value);
-    }
-
-    public string PlextorPoweRecLast
-    {
-        get => _plextorPoweRecLast;
-        set => this.RaiseAndSetIfChanged(ref _plextorPoweRecLast, value);
-    }
-
-    public bool PlextorSilentMode
-    {
-        get => _plextorSilentMode;
-        set => this.RaiseAndSetIfChanged(ref _plextorSilentMode, value);
-    }
-
-    public bool PlextorSilentModeEnabled
-    {
-        get => _plextorSilentModeEnabled;
-        set => this.RaiseAndSetIfChanged(ref _plextorSilentModeEnabled, value);
-    }
-
-    public string PlextorSilentModeAccessTime
-    {
-        get => _plextorSilentModeAccessTime;
-        set => this.RaiseAndSetIfChanged(ref _plextorSilentModeAccessTime, value);
-    }
-
-    public string PlextorSilentModeCdReadSpeedLimit
-    {
-        get => _plextorSilentModeCdReadSpeedLimit;
-        set => this.RaiseAndSetIfChanged(ref _plextorSilentModeCdReadSpeedLimit, value);
-    }
-
-    public string PlextorSilentModeCdWriteSpeedLimit
-    {
-        get => _plextorSilentModeCdWriteSpeedLimit;
-        set => this.RaiseAndSetIfChanged(ref _plextorSilentModeCdWriteSpeedLimit, value);
-    }
-
-    public bool PlextorSilentModeDvdReadSpeedLimitVisible
-    {
-        get => _plextorSilentModeDvdReadSpeedLimitVisible;
-        set => this.RaiseAndSetIfChanged(ref _plextorSilentModeDvdReadSpeedLimitVisible, value);
-    }
-
-    public string PlextorSilentModeDvdReadSpeedLimit
-    {
-        get => _plextorSilentModeDvdReadSpeedLimit;
-        set => this.RaiseAndSetIfChanged(ref _plextorSilentModeDvdReadSpeedLimit, value);
-    }
-
-    public bool PlextorGigaRec
-    {
-        get => _plextorGigaRec;
-        set => this.RaiseAndSetIfChanged(ref _plextorGigaRec, value);
-    }
-
-    public bool PlextorSecuRec
-    {
-        get => _plextorSecuRec;
-        set => this.RaiseAndSetIfChanged(ref _plextorSecuRec, value);
-    }
-
-    public bool PlextorSpeedRead
-    {
-        get => _plextorSpeedRead;
-        set => this.RaiseAndSetIfChanged(ref _plextorSpeedRead, value);
-    }
-
-    public bool PlextorSpeedEnabled
-    {
-        get => _plextorSpeedEnabled;
-        set => this.RaiseAndSetIfChanged(ref _plextorSpeedEnabled, value);
-    }
-
-    public bool PlextorHiding
-    {
-        get => _plextorHiding;
-        set => this.RaiseAndSetIfChanged(ref _plextorHiding, value);
-    }
-
-    public bool PlextorHidesRecordables
-    {
-        get => _plextorHidesRecordables;
-        set => this.RaiseAndSetIfChanged(ref _plextorHidesRecordables, value);
-    }
-
-    public bool PlextorHidesSessions
-    {
-        get => _plextorHidesSessions;
-        set => this.RaiseAndSetIfChanged(ref _plextorHidesSessions, value);
-    }
-
-    public bool PlextorVariRec
-    {
-        get => _plextorVariRec;
-        set => this.RaiseAndSetIfChanged(ref _plextorVariRec, value);
-    }
-
-    public string PlextorDvd
-    {
-        get => _plextorDvd;
-        set => this.RaiseAndSetIfChanged(ref _plextorDvd, value);
-    }
-
-    public bool PlextorVariRecDvd
-    {
-        get => _plextorVariRecDvd;
-        set => this.RaiseAndSetIfChanged(ref _plextorVariRecDvd, value);
-    }
-
-    public bool PlextorBitSetting
-    {
-        get => _plextorBitSetting;
-        set => this.RaiseAndSetIfChanged(ref _plextorBitSetting, value);
-    }
-
-    public bool PlextorBitSettingDl
-    {
-        get => _plextorBitSettingDl;
-        set => this.RaiseAndSetIfChanged(ref _plextorBitSettingDl, value);
-    }
-
-    public bool PlextorDvdPlusWriteTest
-    {
-        get => _plextorDvdPlusWriteTest;
-        set => this.RaiseAndSetIfChanged(ref _plextorDvdPlusWriteTest, value);
-    }
-
-    public bool Kreon
-    {
-        get => _kreon;
-        set => this.RaiseAndSetIfChanged(ref _kreon, value);
-    }
-
-    public bool KreonChallengeResponse
-    {
-        get => _kreonChallengeResponse;
-        set => this.RaiseAndSetIfChanged(ref _kreonChallengeResponse, value);
-    }
-
-    public bool KreonDecryptSs
-    {
-        get => _kreonDecryptSs;
-        set => this.RaiseAndSetIfChanged(ref _kreonDecryptSs, value);
-    }
-
-    public bool KreonXtremeUnlock
-    {
-        get => _kreonXtremeUnlock;
-        set => this.RaiseAndSetIfChanged(ref _kreonXtremeUnlock, value);
-    }
-
-    public bool KreonWxripperUnlock
-    {
-        get => _kreonWxripperUnlock;
-        set => this.RaiseAndSetIfChanged(ref _kreonWxripperUnlock, value);
-    }
-
-    public bool KreonChallengeResponse360
-    {
-        get => _kreonChallengeResponse360;
-        set => this.RaiseAndSetIfChanged(ref _kreonChallengeResponse360, value);
-    }
-
-    public bool KreonDecryptSs360
-    {
-        get => _kreonDecryptSs360;
-        set => this.RaiseAndSetIfChanged(ref _kreonDecryptSs360, value);
-    }
-
-    public bool KreonXtremeUnlock360
-    {
-        get => _kreonXtremeUnlock360;
-        set => this.RaiseAndSetIfChanged(ref _kreonXtremeUnlock360, value);
-    }
-
-    public bool KreonWxripperUnlock360
-    {
-        get => _kreonWxripperUnlock360;
-        set => this.RaiseAndSetIfChanged(ref _kreonWxripperUnlock360, value);
-    }
-
-    public bool KreonLock
-    {
-        get => _kreonLock;
-        set => this.RaiseAndSetIfChanged(ref _kreonLock, value);
-    }
-
-    public bool KreonErrorSkipping
-    {
-        get => _kreonErrorSkipping;
-        set => this.RaiseAndSetIfChanged(ref _kreonErrorSkipping, value);
-    }
-
-    public bool Ssc
-    {
-        get => _ssc;
-        set => this.RaiseAndSetIfChanged(ref _ssc, value);
-    }
-
-    public string BlockLimits
-    {
-        get => _blockLimits;
-        set => this.RaiseAndSetIfChanged(ref _blockLimits, value);
-    }
-
-    public string MinBlockSize
-    {
-        get => _minBlockSize;
-        set => this.RaiseAndSetIfChanged(ref _minBlockSize, value);
-    }
-
-    public string MaxBlockSize
-    {
-        get => _maxBlockSize;
-        set => this.RaiseAndSetIfChanged(ref _maxBlockSize, value);
-    }
-
-    public string BlockSizeGranularity
-    {
-        get => _blockSizeGranularity;
-        set => this.RaiseAndSetIfChanged(ref _blockSizeGranularity, value);
-    }
-
-    public string Densities
-    {
-        get => _densities;
-        set => this.RaiseAndSetIfChanged(ref _densities, value);
-    }
-
-    public string MediumTypes
-    {
-        get => _mediumTypes;
-        set => this.RaiseAndSetIfChanged(ref _mediumTypes, value);
-    }
-
-    public string MediumDensity
-    {
-        get => _mediumDensity;
-        set => this.RaiseAndSetIfChanged(ref _mediumDensity, value);
-    }
-
-    public string SecureDigital
-    {
-        get => _secureDigital;
-        set => this.RaiseAndSetIfChanged(ref _secureDigital, value);
-    }
-
-    public string SdMm
-    {
-        get => _sdMm;
-        set => this.RaiseAndSetIfChanged(ref _sdMm, value);
-    }
-
-    public string Cid
-    {
-        get => _cid;
-        set => this.RaiseAndSetIfChanged(ref _cid, value);
-    }
-
-    public string Csd
-    {
-        get => _csd;
-        set => this.RaiseAndSetIfChanged(ref _csd, value);
-    }
-
-    public string Ocr
-    {
-        get => _ocr;
-        set => this.RaiseAndSetIfChanged(ref _ocr, value);
-    }
-
-    public string ExtendedCsd
-    {
-        get => _extendedCsd;
-        set => this.RaiseAndSetIfChanged(ref _extendedCsd, value);
-    }
-
-    public string Scr
-    {
-        get => _scr;
-        set => this.RaiseAndSetIfChanged(ref _scr, value);
-    }
-
-    public PcmciaInfo PcmciaInfo
-    {
-        get => _pcmciaInfo;
-        set => this.RaiseAndSetIfChanged(ref _pcmciaInfo, value);
-    }
-
-    public ScsiInfo ScsiInfo
-    {
-        get => _scsiInfo;
-        set => this.RaiseAndSetIfChanged(ref _scsiInfo, value);
-    }
-
-    public AtaInfo AtaInfo
-    {
-        get => _ataInfo;
-        set => this.RaiseAndSetIfChanged(ref _ataInfo, value);
-    }
-
-    public SdMmcInfo SdMmcInfo
-    {
-        get => _sdMmcInfo;
-        set => this.RaiseAndSetIfChanged(ref _sdMmcInfo, value);
-    }
+    public ICommand SaveUsbDescriptorsCommand { get; }
 
     public string DeviceInformationLabel => UI.Title_Device_information;
     public string GeneralLabel => UI.Title_General;
@@ -1018,7 +574,7 @@ public sealed class DeviceInfoViewModel : ViewModelBase
     public string SCSILabel => UI.Title_SCSI;
     public string Sd_MMCLabel => UI.Title_SD_MMC;
 
-    async Task ExecuteSaveUsbDescriptorsCommand()
+    async Task SaveUsbDescriptorsAsync()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {

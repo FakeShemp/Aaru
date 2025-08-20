@@ -34,8 +34,8 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Reactive;
 using System.Threading;
+using System.Windows.Input;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Core;
 using Aaru.Gui.Models;
@@ -43,53 +43,84 @@ using Aaru.Localization;
 using Aaru.Logging;
 using Avalonia.Controls;
 using Avalonia.Threading;
-using ReactiveUI;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
-public sealed class ImageEntropyViewModel : ViewModelBase
+public sealed partial class ImageEntropyViewModel : ViewModelBase
 {
     readonly IMediaImage _inputFormat;
     readonly Window      _view;
-    bool                 _closeVisible;
-    bool                 _duplicatedSectorsChecked;
-    bool                 _duplicatedSectorsEnabled;
-    EntropyResults       _entropy;
-    string               _mediaEntropyText;
-    bool                 _mediaEntropyVisible;
-    string               _mediaUniqueSectorsText;
-    bool                 _mediaUniqueSectorsVisible;
-    bool                 _optionsVisible;
-    bool                 _progress1Visible;
-    bool                 _progress2Indeterminate;
-    double               _progress2Max;
-    string               _progress2Text;
-    double               _progress2Value;
-    bool                 _progress2Visible;
-    bool                 _progressIndeterminate;
-    double               _progressMax;
-    string               _progressText;
-    double               _progressValue;
-    bool                 _progressVisible;
-    bool                 _resultsVisible;
-    bool                 _separatedTracksChecked;
-    bool                 _separatedTracksEnabled;
-    bool                 _separatedTracksVisible;
-    bool                 _startVisible;
-    bool                 _stopVisible;
-    EntropyResults[]     _tracksEntropy;
-    bool                 _wholeDiscChecked;
-    bool                 _wholeDiscEnabled;
-    bool                 _wholeDiscVisible;
+    [ObservableProperty]
+    bool _closeVisible;
+    [ObservableProperty]
+    bool _duplicatedSectorsChecked;
+    [ObservableProperty]
+    bool _duplicatedSectorsEnabled;
+    [ObservableProperty]
+    EntropyResults _entropy;
+    [ObservableProperty]
+    string _mediaEntropyText;
+    [ObservableProperty]
+    bool _mediaEntropyVisible;
+    [ObservableProperty]
+    string _mediaUniqueSectorsText;
+    [ObservableProperty]
+    bool _mediaUniqueSectorsVisible;
+    [ObservableProperty]
+    bool _optionsVisible;
+    [ObservableProperty]
+    bool _progress1Visible;
+    [ObservableProperty]
+    bool _progress2Indeterminate;
+    [ObservableProperty]
+    double _progress2Max;
+    [ObservableProperty]
+    string _progress2Text;
+    [ObservableProperty]
+    double _progress2Value;
+    [ObservableProperty]
+    bool _progress2Visible;
+    [ObservableProperty]
+    bool _progressIndeterminate;
+    [ObservableProperty]
+    double _progressMax;
+    [ObservableProperty]
+    string _progressText;
+    [ObservableProperty]
+    double _progressValue;
+    [ObservableProperty]
+    bool _progressVisible;
+    [ObservableProperty]
+    bool _resultsVisible;
+    [ObservableProperty]
+    bool _separatedTracksChecked;
+    [ObservableProperty]
+    bool _separatedTracksEnabled;
+    [ObservableProperty]
+    bool _separatedTracksVisible;
+    [ObservableProperty]
+    bool _startVisible;
+    [ObservableProperty]
+    bool _stopVisible;
+    [ObservableProperty]
+    EntropyResults[] _tracksEntropy;
+    [ObservableProperty]
+    bool _wholeDiscChecked;
+    [ObservableProperty]
+    bool _wholeDiscEnabled;
+    [ObservableProperty]
+    bool _wholeDiscVisible;
 
     public ImageEntropyViewModel(IMediaImage inputFormat, Window view)
     {
         _inputFormat             = inputFormat;
         _view                    = view;
         TrackEntropy             = [];
-        StartCommand             = ReactiveCommand.Create(ExecuteStartCommand);
-        CloseCommand             = ReactiveCommand.Create(ExecuteCloseCommand);
-        StopCommand              = ReactiveCommand.Create(ExecuteStopCommand);
+        StartCommand             = new RelayCommand(Start);
+        CloseCommand             = new RelayCommand(Close);
+        StopCommand              = new RelayCommand(Stop);
         OptionsVisible           = true;
         DuplicatedSectorsChecked = true;
         SeparatedTracksChecked   = true;
@@ -121,183 +152,15 @@ public sealed class ImageEntropyViewModel : ViewModelBase
     public string CloseLabel             => UI.ButtonLabel_Close;
     public string StopLabel              => UI.ButtonLabel_Stop;
 
-    public bool SeparatedTracksVisible
-    {
-        get => _separatedTracksVisible;
-        set => this.RaiseAndSetIfChanged(ref _separatedTracksVisible, value);
-    }
-
-    public bool WholeDiscVisible
-    {
-        get => _wholeDiscVisible;
-        set => this.RaiseAndSetIfChanged(ref _wholeDiscVisible, value);
-    }
-
-    public bool SeparatedTracksChecked
-    {
-        get => _separatedTracksChecked;
-        set => this.RaiseAndSetIfChanged(ref _separatedTracksChecked, value);
-    }
-
-    public bool WholeDiscChecked
-    {
-        get => _wholeDiscChecked;
-        set => this.RaiseAndSetIfChanged(ref _wholeDiscChecked, value);
-    }
-
-    public bool DuplicatedSectorsEnabled
-    {
-        get => _duplicatedSectorsEnabled;
-        set => this.RaiseAndSetIfChanged(ref _duplicatedSectorsEnabled, value);
-    }
-
-    public bool SeparatedTracksEnabled
-    {
-        get => _separatedTracksEnabled;
-        set => this.RaiseAndSetIfChanged(ref _separatedTracksEnabled, value);
-    }
-
-    public bool WholeDiscEnabled
-    {
-        get => _wholeDiscEnabled;
-        set => this.RaiseAndSetIfChanged(ref _wholeDiscEnabled, value);
-    }
-
-    public bool CloseVisible
-    {
-        get => _closeVisible;
-        set => this.RaiseAndSetIfChanged(ref _closeVisible, value);
-    }
-
-    public bool StartVisible
-    {
-        get => _startVisible;
-        set => this.RaiseAndSetIfChanged(ref _startVisible, value);
-    }
-
-    public bool StopVisible
-    {
-        get => _stopVisible;
-        set => this.RaiseAndSetIfChanged(ref _stopVisible, value);
-    }
-
-    public bool ProgressVisible
-    {
-        get => _progressVisible;
-        set => this.RaiseAndSetIfChanged(ref _progressVisible, value);
-    }
-
-    public bool DuplicatedSectorsChecked
-    {
-        get => _duplicatedSectorsChecked;
-        set => this.RaiseAndSetIfChanged(ref _duplicatedSectorsChecked, value);
-    }
-
-    public bool OptionsVisible
-    {
-        get => _optionsVisible;
-        set => this.RaiseAndSetIfChanged(ref _optionsVisible, value);
-    }
-
-    public bool ResultsVisible
-    {
-        get => _resultsVisible;
-        set => this.RaiseAndSetIfChanged(ref _resultsVisible, value);
-    }
-
-    public string MediaEntropyText
-    {
-        get => _mediaEntropyText;
-        set => this.RaiseAndSetIfChanged(ref _mediaEntropyText, value);
-    }
-
-    public bool MediaEntropyVisible
-    {
-        get => _mediaEntropyVisible;
-        set => this.RaiseAndSetIfChanged(ref _mediaEntropyVisible, value);
-    }
-
-    public string MediaUniqueSectorsText
-    {
-        get => _mediaUniqueSectorsText;
-        set => this.RaiseAndSetIfChanged(ref _mediaUniqueSectorsText, value);
-    }
-
-    public bool MediaUniqueSectorsVisible
-    {
-        get => _mediaUniqueSectorsVisible;
-        set => this.RaiseAndSetIfChanged(ref _mediaUniqueSectorsVisible, value);
-    }
-
-    public bool Progress1Visible
-    {
-        get => _progress1Visible;
-        set => this.RaiseAndSetIfChanged(ref _progress1Visible, value);
-    }
-
-    public bool Progress2Visible
-    {
-        get => _progress2Visible;
-        set => this.RaiseAndSetIfChanged(ref _progress2Visible, value);
-    }
-
-    public string ProgressText
-    {
-        get => _progressText;
-        set => this.RaiseAndSetIfChanged(ref _progressText, value);
-    }
-
-    public bool ProgressIndeterminate
-    {
-        get => _progressIndeterminate;
-        set => this.RaiseAndSetIfChanged(ref _progressIndeterminate, value);
-    }
-
-    public double ProgressMax
-    {
-        get => _progressMax;
-        set => this.RaiseAndSetIfChanged(ref _progressMax, value);
-    }
-
-    public double ProgressValue
-    {
-        get => _progressValue;
-        set => this.RaiseAndSetIfChanged(ref _progressValue, value);
-    }
-
-    public string Progress2Text
-    {
-        get => _progress2Text;
-        set => this.RaiseAndSetIfChanged(ref _progress2Text, value);
-    }
-
-    public bool Progress2Indeterminate
-    {
-        get => _progress2Indeterminate;
-        set => this.RaiseAndSetIfChanged(ref _progress2Indeterminate, value);
-    }
-
-    public double Progress2Max
-    {
-        get => _progress2Max;
-        set => this.RaiseAndSetIfChanged(ref _progress2Max, value);
-    }
-
-    public double Progress2Value
-    {
-        get => _progress2Value;
-        set => this.RaiseAndSetIfChanged(ref _progress2Value, value);
-    }
-
     [JetBrains.Annotations.NotNull]
     public string Title => UI.Title_Calculating_entropy;
 
     public ObservableCollection<TrackEntropyModel> TrackEntropy { get; }
-    public ReactiveCommand<Unit, Unit>             StartCommand { get; }
-    public ReactiveCommand<Unit, Unit>             CloseCommand { get; }
-    public ReactiveCommand<Unit, Unit>             StopCommand  { get; }
+    public ICommand                                StartCommand { get; }
+    public ICommand                                CloseCommand { get; }
+    public ICommand                                StopCommand  { get; }
 
-    void ExecuteStartCommand()
+    void Start()
     {
         var entropyCalculator = new Entropy(false, _inputFormat);
         entropyCalculator.InitProgressEvent    += InitProgress;
@@ -388,9 +251,9 @@ public sealed class ImageEntropyViewModel : ViewModelBase
         MediaUniqueSectorsVisible = true;
     }
 
-    void ExecuteCloseCommand() => _view.Close();
+    void Close() => _view.Close();
 
-    internal void ExecuteStopCommand() => throw new NotImplementedException();
+    internal void Stop() => throw new NotImplementedException();
 
     void InitProgress() => Progress1Visible = true;
 

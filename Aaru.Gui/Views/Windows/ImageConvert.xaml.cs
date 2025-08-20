@@ -51,7 +51,7 @@ public sealed class ImageConvert : Window
 
     protected override void OnClosing(WindowClosingEventArgs e)
     {
-        (DataContext as ImageConvertViewModel)?.ExecuteStopCommand();
+        (DataContext as ImageConvertViewModel)?.Stop();
         base.OnClosing(e);
     }
 }

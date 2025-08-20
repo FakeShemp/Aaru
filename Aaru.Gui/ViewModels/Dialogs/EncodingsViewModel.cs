@@ -32,14 +32,14 @@
 
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.Gui.Models;
 using Aaru.Gui.Views.Dialogs;
 using Aaru.Localization;
+using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
-using ReactiveUI;
 
 namespace Aaru.Gui.ViewModels.Dialogs;
 
@@ -51,9 +51,9 @@ public sealed class EncodingsViewModel : ViewModelBase
     {
         _view        = view;
         Encodings    = [];
-        CloseCommand = ReactiveCommand.Create(ExecuteCloseCommand);
+        CloseCommand = new RelayCommand(Close);
 
-        Task.Run(() =>
+        _ = Task.Run(() =>
         {
             var encodings = Encoding.GetEncodings()
                                     .Select(info => new EncodingModel
@@ -83,8 +83,8 @@ public sealed class EncodingsViewModel : ViewModelBase
     public string CodeLabel => UI.Title_Code_for_encoding;
     public string NameLabel => UI.Title_Name;
 
-    public ReactiveCommand<Unit, Unit>         CloseCommand { get; }
+    public ICommand                            CloseCommand { get; }
     public ObservableCollection<EncodingModel> Encodings    { get; }
 
-    void ExecuteCloseCommand() => _view.Close();
+    void Close() => _view.Close();
 }

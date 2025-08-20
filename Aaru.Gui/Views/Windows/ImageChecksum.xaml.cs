@@ -51,7 +51,7 @@ public sealed class ImageChecksum : Window
 
     protected override void OnClosing(WindowClosingEventArgs e)
     {
-        (DataContext as ImageChecksumViewModel)?.ExecuteStopCommand();
+        (DataContext as ImageChecksumViewModel)?.Stop();
         base.OnClosing(e);
     }
 }

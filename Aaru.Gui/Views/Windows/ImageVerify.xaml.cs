@@ -51,7 +51,7 @@ public sealed class ImageVerify : Window
 
     protected override void OnClosing(WindowClosingEventArgs e)
     {
-        (DataContext as ImageVerifyViewModel)?.ExecuteStopCommand();
+        (DataContext as ImageVerifyViewModel)?.Stop();
         base.OnClosing(e);
     }
 }

@@ -31,15 +31,15 @@
 // ****************************************************************************/
 
 using System.Collections.ObjectModel;
-using System.Reactive;
 using System.Reflection;
+using System.Windows.Input;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Gui.Models;
 using Aaru.Gui.Views.Dialogs;
 using Aaru.Localization;
+using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
-using ReactiveUI;
 
 namespace Aaru.Gui.ViewModels.Dialogs;
 
@@ -58,7 +58,7 @@ public sealed class PluginsViewModel : ViewModelBase
         WritableImages       = [];
         FloppyImages         = [];
         WritableFloppyImages = [];
-        CloseCommand         = ReactiveCommand.Create(ExecuteCloseCommand);
+        CloseCommand         = new RelayCommand(Close);
 
         // TODO: Takes too much time
         foreach(IFilter filter in PluginRegister.Singleton.Filters.Values)
@@ -201,7 +201,7 @@ public sealed class PluginsViewModel : ViewModelBase
     public string VersionLabel => UI.Title_Version;
     public string AuthorLabel  => UI.Title_Author;
 
-    public ReactiveCommand<Unit, Unit>       CloseCommand         { get; }
+    public ICommand                          CloseCommand         { get; }
     public ObservableCollection<PluginModel> Filters              { get; }
     public ObservableCollection<PluginModel> PartitionSchemes     { get; }
     public ObservableCollection<PluginModel> Filesystems          { get; }
@@ -211,5 +211,5 @@ public sealed class PluginsViewModel : ViewModelBase
     public ObservableCollection<PluginModel> FloppyImages         { get; }
     public ObservableCollection<PluginModel> WritableFloppyImages { get; }
 
-    void ExecuteCloseCommand() => _view.Close();
+    void Close() => _view.Close();
 }

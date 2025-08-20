@@ -31,12 +31,12 @@
 // ****************************************************************************/
 
 using System.IO;
-using System.Reactive;
 using System.Reflection;
+using System.Windows.Input;
 using Aaru.Gui.Views.Dialogs;
 using Aaru.Localization;
+using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
-using ReactiveUI;
 
 namespace Aaru.Gui.ViewModels.Dialogs;
 
@@ -48,7 +48,7 @@ public sealed class LicenseViewModel : ViewModelBase
     public LicenseViewModel(LicenseDialog view)
     {
         _view        = view;
-        CloseCommand = ReactiveCommand.Create(ExecuteCloseCommand);
+        CloseCommand = new RelayCommand(Close);
 
         // TODO: Localize
         using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Aaru.Gui.LICENSE");
@@ -66,8 +66,8 @@ public sealed class LicenseViewModel : ViewModelBase
     [NotNull]
     public string CloseLabel => UI.ButtonLabel_Close;
 
-    public string                      LicenseText  { get; }
-    public ReactiveCommand<Unit, Unit> CloseCommand { get; }
+    public string   LicenseText  { get; }
+    public ICommand CloseCommand { get; }
 
-    void ExecuteCloseCommand() => _view.Close();
+    void Close() => _view.Close();
 }

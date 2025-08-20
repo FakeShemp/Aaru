@@ -33,15 +33,15 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Reactive;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.Decoders.CD;
 using Aaru.Decoders.SCSI.MMC;
 using Aaru.Gui.Models;
 using Aaru.Localization;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
-using ReactiveUI;
+using CommunityToolkit.Mvvm.Input;
 
 namespace Aaru.Gui.ViewModels.Tabs;
 
@@ -72,13 +72,13 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
         _cdTextLeadInData           = cdTextLeadIn;
         _view                       = view;
         IsrcList                    = [];
-        SaveCdInformationCommand    = ReactiveCommand.Create(ExecuteSaveCdInformationCommand);
-        SaveCdTocCommand            = ReactiveCommand.Create(ExecuteSaveCdTocCommand);
-        SaveCdFullTocCommand        = ReactiveCommand.Create(ExecuteSaveCdFullTocCommand);
-        SaveCdSessionCommand        = ReactiveCommand.Create(ExecuteSaveCdSessionCommand);
-        SaveCdTextCommand           = ReactiveCommand.Create(ExecuteSaveCdTextCommand);
-        SaveCdAtipCommand           = ReactiveCommand.Create(ExecuteSaveCdAtipCommand);
-        SaveCdPmaCommand            = ReactiveCommand.Create(ExecuteSaveCdPmaCommand);
+        SaveCdInformationCommand    = new AsyncRelayCommand(SaveCdInformationAsync);
+        SaveCdTocCommand            = new AsyncRelayCommand(SaveCdTocAsync);
+        SaveCdFullTocCommand        = new AsyncRelayCommand(SaveCdFullTocAsync);
+        SaveCdSessionCommand        = new AsyncRelayCommand(SaveCdSessionAsync);
+        SaveCdTextCommand           = new AsyncRelayCommand(SaveCdTextAsync);
+        SaveCdAtipCommand           = new AsyncRelayCommand(SaveCdAtipAsync);
+        SaveCdPmaCommand            = new AsyncRelayCommand(SaveCdPmaAsync);
 
         if(decodedCompactDiscInformation.HasValue)
             CdInformationText = DiscInformation.Prettify000b(decodedCompactDiscInformation);
@@ -120,13 +120,13 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
     public bool                            MiscellaneousVisible     { get; }
     public string                          McnText                  { get; }
     public bool                            CdPmaVisible             { get; }
-    public ReactiveCommand<Unit, Task>     SaveCdInformationCommand { get; }
-    public ReactiveCommand<Unit, Task>     SaveCdTocCommand         { get; }
-    public ReactiveCommand<Unit, Task>     SaveCdFullTocCommand     { get; }
-    public ReactiveCommand<Unit, Task>     SaveCdSessionCommand     { get; }
-    public ReactiveCommand<Unit, Task>     SaveCdTextCommand        { get; }
-    public ReactiveCommand<Unit, Task>     SaveCdAtipCommand        { get; }
-    public ReactiveCommand<Unit, Task>     SaveCdPmaCommand         { get; }
+    public ICommand                        SaveCdInformationCommand { get; }
+    public ICommand                        SaveCdTocCommand         { get; }
+    public ICommand                        SaveCdFullTocCommand     { get; }
+    public ICommand                        SaveCdSessionCommand     { get; }
+    public ICommand                        SaveCdTextCommand        { get; }
+    public ICommand                        SaveCdAtipCommand        { get; }
+    public ICommand                        SaveCdPmaCommand         { get; }
     public ObservableCollection<IsrcModel> IsrcList                 { get; }
 
     public string CdInformationLabel     => UI.Title_Information;
@@ -148,7 +148,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
     public string ISRCLabel              => UI.Title_ISRC;
     public string SaveCdPmaLabel         => UI.ButtonLabel_Save_READ_PMA_response;
 
-    async Task ExecuteSaveCdInformationCommand()
+    async Task SaveCdInformationAsync()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
@@ -166,7 +166,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
         saveFs.Close();
     }
 
-    async Task ExecuteSaveCdTocCommand()
+    async Task SaveCdTocAsync()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
@@ -184,7 +184,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
         saveFs.Close();
     }
 
-    async Task ExecuteSaveCdFullTocCommand()
+    async Task SaveCdFullTocAsync()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
@@ -202,7 +202,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
         saveFs.Close();
     }
 
-    async Task ExecuteSaveCdSessionCommand()
+    async Task SaveCdSessionAsync()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
@@ -220,7 +220,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
         saveFs.Close();
     }
 
-    async Task ExecuteSaveCdTextCommand()
+    async Task SaveCdTextAsync()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
@@ -238,7 +238,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
         saveFs.Close();
     }
 
-    async Task ExecuteSaveCdAtipCommand()
+    async Task SaveCdAtipAsync()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
@@ -256,7 +256,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
         saveFs.Close();
     }
 
-    async Task ExecuteSaveCdPmaCommand()
+    async Task SaveCdPmaAsync()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {

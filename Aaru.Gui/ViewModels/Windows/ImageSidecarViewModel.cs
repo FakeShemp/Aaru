@@ -34,11 +34,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Reactive;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Core;
@@ -47,37 +47,58 @@ using Aaru.Logging;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using ReactiveUI;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
-public sealed class ImageSidecarViewModel : ViewModelBase
+public sealed partial class ImageSidecarViewModel : ViewModelBase
 {
     readonly Encoding    _encoding;
     readonly Guid        _filterId;
     readonly string      _imageSource;
     readonly IMediaImage _inputFormat;
     readonly Window      _view;
-    bool                 _closeVisible;
-    bool                 _destinationEnabled;
-    string               _destinationText;
-    bool                 _progress1Visible;
-    bool                 _progress2Indeterminate;
-    double               _progress2MaxValue;
-    string               _progress2Text;
-    double               _progress2Value;
-    bool                 _progress2Visible;
-    bool                 _progressIndeterminate;
-    double               _progressMaxValue;
-    string               _progressText;
-    double               _progressValue;
-    bool                 _progressVisible;
-    Sidecar              _sidecarClass;
-    bool                 _startVisible;
-    string               _statusText;
-    bool                 _statusVisible;
-    bool                 _stopEnabled;
-    bool                 _stopVisible;
+    [ObservableProperty]
+    bool _closeVisible;
+    [ObservableProperty]
+    bool _destinationEnabled;
+    [ObservableProperty]
+    string _destinationText;
+    [ObservableProperty]
+    bool _progress1Visible;
+    [ObservableProperty]
+    bool _progress2Indeterminate;
+    [ObservableProperty]
+    double _progress2MaxValue;
+    [ObservableProperty]
+    string _progress2Text;
+    [ObservableProperty]
+    double _progress2Value;
+    [ObservableProperty]
+    bool _progress2Visible;
+    [ObservableProperty]
+    bool _progressIndeterminate;
+    [ObservableProperty]
+    double _progressMaxValue;
+    [ObservableProperty]
+    string _progressText;
+    [ObservableProperty]
+    double _progressValue;
+    [ObservableProperty]
+    bool _progressVisible;
+    [ObservableProperty]
+    Sidecar _sidecarClass;
+    [ObservableProperty]
+    bool _startVisible;
+    [ObservableProperty]
+    string _statusText;
+    [ObservableProperty]
+    bool _statusVisible;
+    [ObservableProperty]
+    bool _stopEnabled;
+    [ObservableProperty]
+    bool _stopVisible;
 
     public ImageSidecarViewModel(IMediaImage inputFormat, string imageSource, Guid filterId, Encoding encoding,
                                  Window      view)
@@ -94,10 +115,10 @@ public sealed class ImageSidecarViewModel : ViewModelBase
         DestinationEnabled = true;
         StartVisible       = true;
         CloseVisible       = true;
-        DestinationCommand = ReactiveCommand.Create(ExecuteDestinationCommand);
-        StartCommand       = ReactiveCommand.Create(ExecuteStartCommand);
-        CloseCommand       = ReactiveCommand.Create(ExecuteCloseCommand);
-        StopCommand        = ReactiveCommand.Create(ExecuteStopCommand);
+        DestinationCommand = new AsyncRelayCommand(DestinationAsync);
+        StartCommand       = new RelayCommand(Start);
+        CloseCommand       = new RelayCommand(Close);
+        StopCommand        = new RelayCommand(Stop);
     }
 
     public string DestinationFileLabel => UI.Title_Destination_file;
@@ -106,127 +127,13 @@ public sealed class ImageSidecarViewModel : ViewModelBase
     public string CloseLabel           => UI.ButtonLabel_Close;
     public string StopLabel            => UI.ButtonLabel_Stop;
 
-    public string                      Title              { get; }
-    public ReactiveCommand<Unit, Task> DestinationCommand { get; }
-    public ReactiveCommand<Unit, Unit> StartCommand       { get; }
-    public ReactiveCommand<Unit, Unit> CloseCommand       { get; }
-    public ReactiveCommand<Unit, Unit> StopCommand        { get; }
+    public string   Title              { get; }
+    public ICommand DestinationCommand { get; }
+    public ICommand StartCommand       { get; }
+    public ICommand CloseCommand       { get; }
+    public ICommand StopCommand        { get; }
 
-    public bool ProgressIndeterminate
-    {
-        get => _progressIndeterminate;
-        set => this.RaiseAndSetIfChanged(ref _progressIndeterminate, value);
-    }
-
-    public bool ProgressVisible
-    {
-        get => _progressVisible;
-        set => this.RaiseAndSetIfChanged(ref _progressVisible, value);
-    }
-
-    public bool Progress1Visible
-    {
-        get => _progress1Visible;
-        set => this.RaiseAndSetIfChanged(ref _progress1Visible, value);
-    }
-
-    public bool Progress2Visible
-    {
-        get => _progress2Visible;
-        set => this.RaiseAndSetIfChanged(ref _progress2Visible, value);
-    }
-
-    public bool Progress2Indeterminate
-    {
-        get => _progress2Indeterminate;
-        set => this.RaiseAndSetIfChanged(ref _progress2Indeterminate, value);
-    }
-
-    public double ProgressMaxValue
-    {
-        get => _progressMaxValue;
-        set => this.RaiseAndSetIfChanged(ref _progressMaxValue, value);
-    }
-
-    public double Progress2MaxValue
-    {
-        get => _progress2MaxValue;
-        set => this.RaiseAndSetIfChanged(ref _progress2MaxValue, value);
-    }
-
-    public string ProgressText
-    {
-        get => _progressText;
-        set => this.RaiseAndSetIfChanged(ref _progressText, value);
-    }
-
-    public double ProgressValue
-    {
-        get => _progressValue;
-        set => this.RaiseAndSetIfChanged(ref _progressValue, value);
-    }
-
-    public double Progress2Value
-    {
-        get => _progress2Value;
-        set => this.RaiseAndSetIfChanged(ref _progress2Value, value);
-    }
-
-    public string Progress2Text
-    {
-        get => _progress2Text;
-        set => this.RaiseAndSetIfChanged(ref _progress2Text, value);
-    }
-
-    public string DestinationText
-    {
-        get => _destinationText;
-        set => this.RaiseAndSetIfChanged(ref _destinationText, value);
-    }
-
-    public bool DestinationEnabled
-    {
-        get => _destinationEnabled;
-        set => this.RaiseAndSetIfChanged(ref _destinationEnabled, value);
-    }
-
-    public string StatusText
-    {
-        get => _statusText;
-        set => this.RaiseAndSetIfChanged(ref _statusText, value);
-    }
-
-    public bool StatusVisible
-    {
-        get => _statusVisible;
-        set => this.RaiseAndSetIfChanged(ref _statusVisible, value);
-    }
-
-    public bool StartVisible
-    {
-        get => _startVisible;
-        set => this.RaiseAndSetIfChanged(ref _startVisible, value);
-    }
-
-    public bool CloseVisible
-    {
-        get => _closeVisible;
-        set => this.RaiseAndSetIfChanged(ref _closeVisible, value);
-    }
-
-    public bool StopEnabled
-    {
-        get => _stopEnabled;
-        set => this.RaiseAndSetIfChanged(ref _stopEnabled, value);
-    }
-
-    public bool StopVisible
-    {
-        get => _stopVisible;
-        set => this.RaiseAndSetIfChanged(ref _stopVisible, value);
-    }
-
-    void ExecuteStartCommand() => new Thread(DoWork).Start();
+    void Start() => new Thread(DoWork).Start();
 
     [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void DoWork()
@@ -313,16 +220,16 @@ public sealed class ImageSidecarViewModel : ViewModelBase
     [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void UpdateStatus(string text) => await Dispatcher.UIThread.InvokeAsync(() => { StatusText = text; });
 
-    void ExecuteCloseCommand() => _view.Close();
+    void Close() => _view.Close();
 
-    void ExecuteStopCommand()
+    void Stop()
     {
         ProgressText = Localization.Core.Aborting;
         StopEnabled  = false;
         _sidecarClass.Abort();
     }
 
-    async Task ExecuteDestinationCommand()
+    async Task DestinationAsync()
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {

@@ -51,7 +51,7 @@ public sealed class MediaScan : Window
 
     protected override void OnClosing(WindowClosingEventArgs e)
     {
-        (DataContext as MediaScanViewModel)?.ExecuteStopCommand();
+        (DataContext as MediaScanViewModel)?.Stop();
         base.OnClosing(e);
     }
 }
