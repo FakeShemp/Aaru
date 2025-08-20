@@ -53,6 +53,7 @@ using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
 using Humanizer.Localisation;
+using Spectre.Console;
 using Track = Aaru.CommonTypes.Structs.Track;
 using TrackType = Aaru.CommonTypes.Enums.TrackType;
 using Version = Aaru.CommonTypes.Interop.Version;
@@ -1026,7 +1027,7 @@ sealed partial class Dump
         if(supportedSubchannel != MmcSubchannel.None)
         {
             AaruLogging.WriteLine(string.Format(Localization.Core.Creating_subchannel_log_in_0,
-                                                _outputPrefix + ".sub.log"));
+                                                Markup.Escape(_outputPrefix + ".sub.log")));
 
             subLog = new SubchannelLog(_outputPrefix + ".sub.log", bcdSubchannel);
         }
@@ -1078,9 +1079,8 @@ sealed partial class Dump
             foreach(int sub in _resume.BadSubchannels) subchannelExtents.Add(sub);
 
             if(_resume.NextBlock < blocks)
-            {
-                for(ulong i = _resume.NextBlock; i < blocks; i++) subchannelExtents.Add((int)i);
-            }
+                for(ulong i = _resume.NextBlock; i < blocks; i++)
+                    subchannelExtents.Add((int)i);
         }
 
         if(_resume.NextBlock > 0)
@@ -1495,9 +1495,8 @@ sealed partial class Dump
                         supportsLongSectors);
 
         foreach(Tuple<ulong, ulong> leadoutExtent in leadOutExtents.ToArray())
-        {
-            for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++) subchannelExtents.Remove((int)e);
-        }
+            for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++)
+                subchannelExtents.Remove((int)e);
 
         if(subchannelExtents.Count > 0 && _retryPasses > 0 && _retrySubchannel)
         {
