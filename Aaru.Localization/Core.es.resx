@@ -1379,17 +1379,17 @@
     <value>Calculando el hash de la imagen de DiscFerret...</value>
   </data>
     <data name="Hashing_files" xml:space="preserve">
-    <value>Calculando el hash de los ficheros...</value>
-  </data>
+        <value>[slateblue1]Calculando el hash de los ficheros...[/]</value>
+    </data>
     <data name="Hashing_file_0" xml:space="preserve">
-    <value>Calculando el hash del fichero {0}...</value>
-  </data>
+        <value>[slateblue1]Calculando el hash del fichero [green]{0}[/]...[/]</value>
+    </data>
     <data name="Hashing_file_0_1" xml:space="preserve">
-    <value>Calculando el hash del fichero {0} de {1}...</value>
-  </data>
+        <value>[slateblue1]Calculando el hash del fichero [teal]{0}[/] de [teal]{1}[/]...[/]</value>
+    </data>
     <data name="Hashing_file_byte_0_of_1" xml:space="preserve">
-    <value>Calculando el hash del byte {0} de {1} del fichero</value>
-  </data>
+        <value>[slateblue1]Calculando el hash del byte [lime]{0}[/] de [violet]{1}[/] del fichero[/]</value>
+    </data>
     <data name="Hashing_image_file" xml:space="preserve">
         <value>[slateblue1]Calculando el hash del fichero de imagen...[/]</value>
     </data>
@@ -1638,8 +1638,8 @@
     <value>Modificados {0} fabricantes USB</value>
   </data>
     <data name="Mounting_0" xml:space="preserve">
-    <value>Montando {0}</value>
-  </data>
+        <value>[slateblue1]Montando [fuchsia]{0}[/][/]</value>
+    </data>
     <data name="MultiMediaCard_CID_contained_in_image_WithMarkup" xml:space="preserve">
         <value>[bold][blue]CID de MultiMediaCard contenido en la imagen:[/][/]</value>
     </data>
