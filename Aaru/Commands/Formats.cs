@@ -132,7 +132,7 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
 
         table = new Table
         {
-            Title = new TableTitle(string.Format(UI.Supported_filters_0, plugins.WritableImages.Count))
+            Title = new TableTitle(string.Format(UI.Read_write_media_image_formats_0, plugins.WritableImages.Count))
         };
 
         table.Border(TableBorder.Rounded);
@@ -144,7 +144,7 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
 
         table.AddColumn(new TableColumn(new Markup(UI.Title_Media_image_format).Centered()));
 
-        foreach(IWritableImage plugin in plugins.WritableImages.Values)
+        foreach(IBaseWritableImage plugin in plugins.WritableImages.Values)
         {
             if(plugin is null) continue;
 

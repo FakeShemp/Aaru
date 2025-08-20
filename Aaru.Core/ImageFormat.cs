@@ -31,7 +31,6 @@
 // ****************************************************************************/
 
 using System;
-using System.Linq;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Logging;
@@ -55,7 +54,7 @@ public static class ImageFormat
             IBaseImage imageFormat = null;
 
             // Check all but RAW plugin
-            foreach(IMediaImage imagePlugin in plugins.MediaImages.Values.Concat(plugins.WritableImages.Values))
+            foreach(IMediaImage imagePlugin in plugins.MediaImages.Values)
             {
                 if(imagePlugin is null) continue;
 
@@ -107,7 +106,7 @@ public static class ImageFormat
             if(imageFormat != null) return imageFormat;
 
             // Check only RAW plugin
-            foreach(IMediaImage imagePlugin in plugins.MediaImages.Values.Concat(plugins.WritableImages.Values))
+            foreach(IMediaImage imagePlugin in plugins.MediaImages.Values)
             {
                 if(imagePlugin is null) continue;
 
