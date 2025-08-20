@@ -1,161 +1,461 @@
-#nullable enable
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 
 namespace Aaru.Generators;
 
 [Generator]
-public sealed class PluginRegisterGenerator : IIncrementalGenerator
+public class PluginRegisterGenerator : ISourceGenerator
 {
-    // name → (registration method, directOnly)
-    static readonly (string Name, string Method, bool DirectOnly)[] PluginMap = new[]
+#region ISourceGenerator Members
+
+    /// <inheritdoc />
+    public void Initialize(GeneratorInitializationContext context) =>
+
+        // Nothing to do
+        context.RegisterForSyntaxNotifications(() => new PluginFinder());
+
+    /// <inheritdoc />
+    public void Execute(GeneratorExecutionContext context)
     {
-        ("IArchive", "RegisterArchivePlugins", true), ("IChecksum", "RegisterChecksumPlugins", true),
-        ("IFilesystem", "RegisterFilesystemPlugins", true), ("IFilter", "RegisterFilterPlugins", true),
-        ("IFloppyImage", "RegisterFloppyImagePlugins", true),
-        ("IMediaImage", "RegisterMediaImagePlugins", true), // direct only
-        ("IPartition", "RegisterPartitionPlugins", true),
-        ("IReadOnlyFilesystem", "RegisterReadOnlyFilesystemPlugins", true),
-        ("IWritableFloppyImage", "RegisterWritableFloppyImagePlugins", true),
-        ("IWritableImage", "RegisterWritableImagePlugins", false), // inherited OK
-        ("IByteAddressableImage", "RegisterByteAddressablePlugins", false),
-        ("IFluxImage", "RegisterFluxImagePlugins", true),
-        ("IWritableFluxImage", "RegisterWritableFluxImagePlugins", false)
+        /*
+        #if DEBUG
+            if(!Debugger.IsAttached)
+            {
+                Debugger.Launch();
+            }
+        #endif
+        */
 
-        // …add more as needed…
-    };
+        ClassDeclarationSyntax pluginRegister = ((PluginFinder)context.SyntaxReceiver)?.Register;
 
-#region IIncrementalGenerator Members
+        if(pluginRegister == null) return;
 
-    public void Initialize(IncrementalGeneratorInitializationContext ctx)
-    {
-        // 1) grab every ClassDeclarationSyntax that has a base list
-        IncrementalValueProvider<ImmutableArray<ClassDeclarationSyntax>> classSyntaxes = ctx.SyntaxProvider
-           .CreateSyntaxProvider((node, ct) => node is ClassDeclarationSyntax cds && cds.BaseList != null,
-                                 (ctx,  ct) => (ClassDeclarationSyntax)ctx.Node)
-           .Collect();
+        string @namespace =
+            (pluginRegister.Ancestors().FirstOrDefault(x => x is FileScopedNamespaceDeclarationSyntax) as
+                 FileScopedNamespaceDeclarationSyntax)?.Name.ToString();
 
-        // 2) combine with the compilation for symbol lookups
-        IncrementalValueProvider<(Compilation Left, ImmutableArray<ClassDeclarationSyntax> Right)>
-            compilationAndClasses = ctx.CompilationProvider.Combine(classSyntaxes);
+        @namespace ??=
+            (pluginRegister.Ancestors().FirstOrDefault(x => x is NamespaceDeclarationSyntax) as
+                 NamespaceDeclarationSyntax)?.ToString();
 
-        // 3) register our source output
-        ctx.RegisterSourceOutput(compilationAndClasses,
-                                 (spc, source) =>
-                                 {
-                                     (Compilation? compilation, ImmutableArray<ClassDeclarationSyntax> classDecls) =
-                                         source;
+        string className = pluginRegister.Identifier.Text;
 
-                                     if(compilation is null) return;
+        List<string> archives                    = ((PluginFinder)context.SyntaxReceiver)?.Archives;
+        List<string> checksums                   = ((PluginFinder)context.SyntaxReceiver)?.Checksums;
+        List<string> fileSystems                 = ((PluginFinder)context.SyntaxReceiver)?.FileSystems;
+        List<string> filters                     = ((PluginFinder)context.SyntaxReceiver)?.Filters;
+        List<string> floppyImagePlugins          = ((PluginFinder)context.SyntaxReceiver)?.FloppyImagePlugins;
+        List<string> partitionPlugins            = ((PluginFinder)context.SyntaxReceiver)?.PartitionPlugins;
+        List<string> mediaImagePlugins           = ((PluginFinder)context.SyntaxReceiver)?.MediaImagePlugins;
+        List<string> readOnlyFileSystems         = ((PluginFinder)context.SyntaxReceiver)?.ReadOnlyFileSystems;
+        List<string> writableFloppyImagePlugins  = ((PluginFinder)context.SyntaxReceiver)?.WritableFloppyImagePlugins;
+        List<string> writableImagePlugins        = ((PluginFinder)context.SyntaxReceiver)?.WritableImagePlugins;
+        List<string> byteAddressableImagePlugins = ((PluginFinder)context.SyntaxReceiver)?.ByteAddressableImagePlugins;
+        List<string> fluxImagePlugins            = ((PluginFinder)context.SyntaxReceiver)?.FluxImagePlugins;
+        List<string> writableFluxImagePlugins    = ((PluginFinder)context.SyntaxReceiver)?.WritableFluxImagePlugins;
 
-                                     // load all plugin‐interface symbols
-                                     (string Name, string Method, bool DirectOnly, INamedTypeSymbol? Symbol)[]
-                                         ifaceDefs = PluginMap.Select(x =>
-                                                               {
-                                                                   INamedTypeSymbol? sym =
-                                                                       compilation
-                                                                          .GetTypeByMetadataName($"Aaru.CommonTypes.Interfaces.{x.Name}");
+        StringBuilder sb = new();
 
-                                                                   return (x.Name, x.Method, x.DirectOnly, Symbol: sym);
-                                                               })
-                                                              .Where(x => x.Symbol is not null)
-                                                              .ToArray();
+        sb.AppendLine("""
+                      // /***************************************************************************
+                      // Aaru Data Preservation Suite
+                      // ----------------------------------------------------------------------------
+                      //
+                      // Filename       : Register.g.cs
+                      // Author(s)      : Natalia Portillo <claunia@claunia.com>
+                      //
+                      // --[ Description ] ----------------------------------------------------------
+                      //
+                      //     Registers all plugins in this assembly.
+                      //
+                      // --[ License ] --------------------------------------------------------------
+                      //
+                      //     Permission is hereby granted, free of charge, to any person obtaining a
+                      //     copy of this software and associated documentation files (the
+                      //     "Software"), to deal in the Software without restriction, including
+                      //     without limitation the rights to use, copy, modify, merge, publish,
+                      //     distribute, sublicense, and/or sell copies of the Software, and to
+                      //     permit persons to whom the Software is furnished to do so, subject to
+                      //     the following conditions:
+                      //
+                      //     The above copyright notice and this permission notice shall be included
+                      //     in all copies or substantial portions of the Software.
+                      //
+                      //     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+                      //     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+                      //     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+                      //     IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+                      //     CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+                      //     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+                      //     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+                      //
+                      // ----------------------------------------------------------------------------
+                      // Copyright © 2011-2025 Natalia Portillo
+                      // ****************************************************************************/
+                      """);
 
-                                     // load IPluginRegister
-                                     INamedTypeSymbol? registerSym =
-                                         compilation
-                                            .GetTypeByMetadataName("Aaru.CommonTypes.Interfaces.IPluginRegister");
+        sb.AppendLine();
+        sb.AppendLine("using System;");
+        sb.AppendLine("using System.Collections.Generic;");
+        sb.AppendLine("using Aaru.CommonTypes.Interfaces;");
+        sb.AppendLine("using Microsoft.Extensions.DependencyInjection;");
+        sb.AppendLine();
+        sb.AppendLine($"namespace {@namespace};");
+        sb.AppendLine();
+        sb.AppendLine($"public sealed partial class {className} : IPluginRegister");
+        sb.AppendLine("{");
 
-                                     var plugins = new List<PluginInfo>();
+        if(archives?.Count > 0)
+        {
+            sb.AppendLine("    public void RegisterArchivePlugins(IServiceCollection services)");
+            sb.AppendLine("    {");
 
-                                     foreach(ClassDeclarationSyntax? decl in classDecls.Distinct())
-                                     {
-                                         SemanticModel model = compilation.GetSemanticModel(decl.SyntaxTree);
+            foreach(string plugin in archives.Distinct())
+                sb.AppendLine($"        services.AddTransient<IArchive, {plugin}>();");
 
-                                         var cls = model.GetDeclaredSymbol(decl, spc.CancellationToken)
-                                                       as INamedTypeSymbol;
+            sb.AppendLine("    }");
+        }
+        else
+            sb.AppendLine("    public void RegisterArchivePlugins(IServiceCollection services) {}");
 
-                                         if(cls is null) continue;
+        sb.AppendLine();
 
-                                         // direct vs. all (transitive) interfaces
-                                         ImmutableArray<INamedTypeSymbol> directIfaces = cls.Interfaces;
-                                         ImmutableArray<INamedTypeSymbol> allIfaces    = cls.AllInterfaces;
+        if(checksums?.Count > 0)
+        {
+            sb.AppendLine("    public void RegisterChecksumPlugins(IServiceCollection services)");
+            sb.AppendLine("    {");
 
-                                         var info = new PluginInfo
-                                         {
-                                             Namespace = cls.ContainingNamespace.ToDisplayString(),
-                                             ClassName = cls.Name,
-                                             IsRegister =
-                                                 registerSym != null &&
-                                                 allIfaces.Contains(registerSym, SymbolEqualityComparer.Default)
-                                         };
+            foreach(string plugin in checksums.Distinct())
+                sb.AppendLine($"        services.AddTransient<IChecksum, {plugin}>();");
 
-                                         // for each plugin interface, choose direct or inherited match
-                                         foreach((string Name, string Method, bool DirectOnly,
-                                                  INamedTypeSymbol? Symbol) in ifaceDefs)
-                                         {
-                                             bool matches = DirectOnly
-                                                                ? directIfaces.Contains(Symbol!,
-                                                                    SymbolEqualityComparer.Default)
-                                                                : allIfaces.Contains(Symbol!,
-                                                                    SymbolEqualityComparer.Default);
+            sb.AppendLine("    }");
+        }
+        else
+            sb.AppendLine("    public void RegisterChecksumPlugins(IServiceCollection services) {}");
 
-                                             if(matches) info.Interfaces.Add((Name, Method));
-                                         }
+        sb.AppendLine();
 
-                                         if(info.IsRegister || info.Interfaces.Count > 0) plugins.Add(info);
-                                     }
+        if(fileSystems?.Count > 0)
+        {
+            sb.AppendLine("    public void RegisterFilesystemPlugins(IServiceCollection services)");
+            sb.AppendLine("    {");
 
-                                     if(plugins.Count == 0) return;
+            foreach(string plugin in fileSystems.Distinct())
+                sb.AppendLine($"        services.AddTransient<IFilesystem, {plugin}>();");
 
-                                     // find the one class that implements IPluginRegister
-                                     PluginInfo? registrar = plugins.FirstOrDefault(p => p.IsRegister);
+            sb.AppendLine("    }");
+        }
+        else
+            sb.AppendLine("    public void RegisterFilesystemPlugins(IServiceCollection services) {}");
 
-                                     if(registrar is null) return;
+        sb.AppendLine();
 
-                                     // build the generated file
-                                     var sb = new StringBuilder();
-                                     sb.AppendLine("using Microsoft.Extensions.DependencyInjection;");
-                                     sb.AppendLine("using Aaru.CommonTypes.Interfaces;");
-                                     sb.AppendLine($"namespace {registrar.Namespace};");
-                                     sb.AppendLine($"public sealed partial class {registrar.ClassName} : IPluginRegister");
-                                     sb.AppendLine("{");
+        if(filters?.Count > 0)
+        {
+            sb.AppendLine("    public void RegisterFilterPlugins(IServiceCollection services)");
+            sb.AppendLine("    {");
 
-                                     // emit one registration method per plugin‐interface
-                                     foreach((string Name, string Method, bool _) in PluginMap)
-                                     {
-                                         sb.AppendLine($"    public void {Method}(IServiceCollection services)");
-                                         sb.AppendLine("    {");
+            foreach(string plugin in filters.Distinct())
+                sb.AppendLine($"        services.AddTransient<IFilter, {plugin}>();");
 
-                                         foreach(string? impl in plugins
-                                                                .Where(pi => pi.Interfaces.Any(i => i.Name == Name))
-                                                                .Select(pi => pi.ClassName)
-                                                                .Distinct())
-                                             sb.AppendLine($"        services.AddTransient<{Name}, {impl}>();");
+            sb.AppendLine("    }");
+        }
+        else
+            sb.AppendLine("    public void RegisterFilterPlugins(IServiceCollection services) {}");
 
-                                         sb.AppendLine("    }");
-                                     }
+        sb.AppendLine();
 
-                                     sb.AppendLine("}");
-                                     spc.AddSource("Register.g.cs", SourceText.From(sb.ToString(), Encoding.UTF8));
-                                 });
+        if(floppyImagePlugins?.Count > 0)
+        {
+            sb.AppendLine("    public void RegisterFloppyImagePlugins(IServiceCollection services)");
+            sb.AppendLine("    {");
+
+            foreach(string plugin in floppyImagePlugins.Distinct())
+                sb.AppendLine($"        services.AddTransient<IFloppyImage, {plugin}>();");
+
+            sb.AppendLine("    }");
+        }
+        else
+            sb.AppendLine("    public void RegisterFloppyImagePlugins(IServiceCollection services) {}");
+
+        sb.AppendLine();
+
+        if(mediaImagePlugins?.Count > 0)
+        {
+            sb.AppendLine("    public void RegisterMediaImagePlugins(IServiceCollection services)");
+            sb.AppendLine("    {");
+
+            foreach(string plugin in mediaImagePlugins.Distinct())
+                sb.AppendLine($"        services.AddTransient<IMediaImage, {plugin}>();");
+
+            sb.AppendLine("    }");
+        }
+        else
+            sb.AppendLine("    public void RegisterMediaImagePlugins(IServiceCollection services) {}");
+
+        sb.AppendLine();
+
+        if(partitionPlugins?.Count > 0)
+        {
+            sb.AppendLine("    public void RegisterPartitionPlugins(IServiceCollection services)");
+            sb.AppendLine("    {");
+
+            foreach(string plugin in partitionPlugins.Distinct())
+                sb.AppendLine($"        services.AddTransient<IPartition, {plugin}>();");
+
+            sb.AppendLine("    }");
+        }
+        else
+            sb.AppendLine("    public void RegisterPartitionPlugins(IServiceCollection services) {}");
+
+        sb.AppendLine();
+
+        if(readOnlyFileSystems?.Count > 0)
+        {
+            sb.AppendLine("    public void RegisterReadOnlyFilesystemPlugins(IServiceCollection services)");
+            sb.AppendLine("    {");
+
+            foreach(string plugin in readOnlyFileSystems.Distinct())
+                sb.AppendLine($"        services.AddTransient<IReadOnlyFilesystem, {plugin}>();");
+
+            sb.AppendLine("    }");
+        }
+        else
+            sb.AppendLine("    public void RegisterReadOnlyFilesystemPlugins(IServiceCollection services) {}");
+
+        sb.AppendLine();
+
+        if(writableFloppyImagePlugins?.Count > 0)
+        {
+            sb.AppendLine("    public void RegisterWritableFloppyImagePlugins(IServiceCollection services)");
+            sb.AppendLine("    {");
+
+            foreach(string plugin in writableFloppyImagePlugins.Distinct())
+                sb.AppendLine($"        services.AddTransient<IWritableFloppyImage, {plugin}>();");
+
+            sb.AppendLine("    }");
+        }
+        else
+            sb.AppendLine("    public void RegisterWritableFloppyImagePlugins(IServiceCollection services) {}");
+
+        sb.AppendLine();
+
+        if(writableImagePlugins?.Count > 0)
+        {
+            sb.AppendLine("    public void RegisterWritableImagePlugins(IServiceCollection services)");
+            sb.AppendLine("    {");
+
+            foreach(string plugin in writableImagePlugins.Distinct())
+                sb.AppendLine($"        services.AddTransient<IBaseWritableImage, {plugin}>();");
+
+            sb.AppendLine("    }");
+        }
+        else
+            sb.AppendLine("    public void RegisterWritableImagePlugins(IServiceCollection services) {}");
+
+        sb.AppendLine();
+
+        if(byteAddressableImagePlugins?.Count > 0)
+        {
+            sb.AppendLine("    public void RegisterByteAddressablePlugins(IServiceCollection services)");
+            sb.AppendLine("    {");
+
+            foreach(string plugin in byteAddressableImagePlugins.Distinct())
+                sb.AppendLine($"        services.AddTransient<IByteAddressableImage, {plugin}>();");
+
+            sb.AppendLine("    }");
+        }
+        else
+            sb.AppendLine("    public void RegisterByteAddressablePlugins(IServiceCollection services) {}");
+
+        if(fluxImagePlugins?.Count > 0)
+        {
+            sb.AppendLine("    public void RegisterFluxImagePlugins(IServiceCollection services)");
+            sb.AppendLine("    {");
+
+            foreach(string plugin in fluxImagePlugins.Distinct())
+                sb.AppendLine($"        services.AddTransient<IFluxImage, {plugin}>();");
+
+            sb.AppendLine("    }");
+        }
+        else
+            sb.AppendLine("    public void RegisterFluxImagePlugins(IServiceCollection services) {}");
+
+        if(writableFluxImagePlugins?.Count > 0)
+        {
+            sb.AppendLine("    public void RegisterWritableFluxImagePlugins(IServiceCollection services)");
+            sb.AppendLine("    {");
+
+            foreach(string plugin in writableFluxImagePlugins.Distinct())
+                sb.AppendLine($"        services.AddTransient<IWritableFluxImage, {plugin}>();");
+
+            sb.AppendLine("    }");
+        }
+        else
+            sb.AppendLine("    public void RegisterWritableFluxImagePlugins(IServiceCollection services) {}");
+
+        sb.AppendLine("}");
+
+        context.AddSource("Register.g.cs", sb.ToString());
     }
 
 #endregion
 
-#region Nested type: PluginInfo
+#region Nested type: PluginFinder
 
-    class PluginInfo
+    sealed class PluginFinder : ISyntaxReceiver
     {
-        public          string                             ClassName  = "";
-        public readonly List<(string Name, string Method)> Interfaces = new();
-        public          bool                               IsRegister;
-        public          string                             Namespace = "";
+        public List<string>           Archives                    { get; } = [];
+        public List<string>           Checksums                   { get; } = [];
+        public List<string>           FileSystems                 { get; } = [];
+        public List<string>           Filters                     { get; } = [];
+        public List<string>           FloppyImagePlugins          { get; } = [];
+        public List<string>           MediaImagePlugins           { get; } = [];
+        public List<string>           PartitionPlugins            { get; } = [];
+        public List<string>           ReadOnlyFileSystems         { get; } = [];
+        public List<string>           WritableFloppyImagePlugins  { get; } = [];
+        public List<string>           WritableImagePlugins        { get; } = [];
+        public List<string>           ByteAddressableImagePlugins { get; } = [];
+        public List<string>           FluxImagePlugins            { get; } = [];
+        public List<string>           WritableFluxImagePlugins    { get; } = [];
+        public ClassDeclarationSyntax Register                    { get; private set; }
+
+#region ISyntaxReceiver Members
+
+        public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
+        {
+            if(syntaxNode is not ClassDeclarationSyntax plugin) return;
+
+            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                              .ValueText ==
+                                               "IPluginRegister") ==
+               true)
+                Register = plugin;
+
+            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                              .ValueText ==
+                                               "IArchive") ==
+               true)
+            {
+                if(!Archives.Contains(plugin.Identifier.Text)) Archives.Add(plugin.Identifier.Text);
+            }
+
+            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                              .ValueText ==
+                                               "IChecksum") ==
+               true)
+            {
+                if(!Checksums.Contains(plugin.Identifier.Text)) Checksums.Add(plugin.Identifier.Text);
+            }
+
+            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                              .ValueText ==
+                                               "IFilesystem") ==
+               true)
+            {
+                if(!FileSystems.Contains(plugin.Identifier.Text)) FileSystems.Add(plugin.Identifier.Text);
+            }
+
+            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                              .ValueText ==
+                                               "IFilter") ==
+               true)
+            {
+                if(!Filters.Contains(plugin.Identifier.Text)) Filters.Add(plugin.Identifier.Text);
+            }
+
+            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                              .ValueText ==
+                                               "IFloppyImage") ==
+               true)
+            {
+                if(!FloppyImagePlugins.Contains(plugin.Identifier.Text)) FloppyImagePlugins.Add(plugin.Identifier.Text);
+            }
+
+            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                              .ValueText ==
+                                               "IFluxImage") ==
+               true)
+            {
+                if(!FluxImagePlugins.Contains(plugin.Identifier.Text)) FluxImagePlugins.Add(plugin.Identifier.Text);
+            }
+
+
+            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                              .ValueText is "IMediaImage"
+                                                         or "IOpticalMediaImage"
+                                                         or "IFloppyImage"
+                                                         or "ITapeImage"
+                                                         or "IFluxImage") ==
+               true)
+            {
+                if(!MediaImagePlugins.Contains(plugin.Identifier.Text)) MediaImagePlugins.Add(plugin.Identifier.Text);
+            }
+
+            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                              .ValueText ==
+                                               "IPartition") ==
+               true)
+            {
+                if(!PartitionPlugins.Contains(plugin.Identifier.Text)) PartitionPlugins.Add(plugin.Identifier.Text);
+            }
+
+            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                              .ValueText ==
+                                               "IReadOnlyFilesystem") ==
+               true)
+            {
+                if(!ReadOnlyFileSystems.Contains(plugin.Identifier.Text))
+                    ReadOnlyFileSystems.Add(plugin.Identifier.Text);
+            }
+
+            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                              .ValueText ==
+                                               "IWritableFloppyImage") ==
+               true)
+            {
+                if(!WritableFloppyImagePlugins.Contains(plugin.Identifier.Text))
+                    WritableFloppyImagePlugins.Add(plugin.Identifier.Text);
+            }
+
+            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                              .ValueText ==
+                                               "IWritableFluxImage") ==
+               true)
+            {
+                if(!WritableFluxImagePlugins.Contains(plugin.Identifier.Text))
+                    WritableFluxImagePlugins.Add(plugin.Identifier.Text);
+            }
+
+            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                              .ValueText is "IWritableImage"
+                                                         or "IWritableOpticalImage"
+                                                         or "IWritableTapeImage"
+                                                         or "IByteAddressableImage"
+                                                         or "IWritableFluxImage") ==
+               true)
+            {
+                if(!WritableImagePlugins.Contains(plugin.Identifier.Text))
+                    WritableImagePlugins.Add(plugin.Identifier.Text);
+            }
+
+            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                              .ValueText ==
+                                               "IByteAddressableImage") ==
+               true)
+            {
+                if(!ByteAddressableImagePlugins.Contains(plugin.Identifier.Text))
+                    ByteAddressableImagePlugins.Add(plugin.Identifier.Text);
+            }
+
+            MediaImagePlugins.AddRange(WritableImagePlugins.Where(t => !ByteAddressableImagePlugins.Contains(t)));
+            FileSystems.AddRange(ReadOnlyFileSystems);
+        }
+
+#endregion
     }
 
 #endregion
