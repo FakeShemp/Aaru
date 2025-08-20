@@ -211,12 +211,14 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
                             Title = new TableTitle(string.Format(UI.Partition_0, partitionsList[i].Sequence))
                         };
 
+                        AaruLogging.Information(UI.Partition_0, partitionsList[i].Sequence);
+
                         table.AddColumn("");
                         table.AddColumn("");
                         table.HideHeaders();
 
-                        table.AddRow(UI.Title_Name, Markup.Escape(partitionsList[i].Name ?? ""));
-                        table.AddRow(UI.Title_Type, Markup.Escape(partitionsList[i].Type ?? ""));
+                        table.AddRow(UI.Title_Name, $"[darkgreen]{Markup.Escape(partitionsList[i].Name ?? "")}[/]");
+                        table.AddRow(UI.Title_Type, $"[olive]{Markup.Escape(partitionsList[i].Type     ?? "")}[/]");
 
                         table.AddRow(Localization.Core.Title_Start,
                                      string.Format(UI.sector_0_byte_1,
@@ -228,8 +230,26 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
                                                    partitionsList[i].Length,
                                                    partitionsList[i].Size));
 
-                        table.AddRow(UI.Title_Scheme,      Markup.Escape(partitionsList[i].Scheme      ?? ""));
-                        table.AddRow(UI.Title_Description, Markup.Escape(partitionsList[i].Description ?? ""));
+                        table.AddRow(UI.Title_Scheme, $"[purple]{Markup.Escape(partitionsList[i].Scheme ?? "")}[/]");
+
+                        table.AddRow(UI.Title_Description,
+                                     $"[slateblue1]{Markup.Escape(partitionsList[i].Description ?? "")}[/]");
+
+                        AaruLogging.Information($"{UI.Title_Name}: {Markup.Escape(partitionsList[i].Name ?? "")}");
+                        AaruLogging.Information($"{UI.Title_Type}: {Markup.Escape(partitionsList[i].Type ?? "")}");
+
+                        AaruLogging
+                           .Information($"{Localization.Core.Title_Start}: {string.Format(UI.sector_0_byte_1, partitionsList[i].Start, partitionsList[i].Offset)}");
+
+                        AaruLogging
+                           .Information($"{UI.Title_Length}: {string.Format(UI._0_sectors_1_bytes, partitionsList[i].Length, partitionsList[i].Size)}");
+
+                        AaruLogging.Information($"{UI.Title_Scheme}: {Markup.Escape(partitionsList[i].Scheme ?? "")}");
+
+                        AaruLogging
+                           .Information($"{UI.Title_Description}: {Markup.Escape(partitionsList[i].Description ?? "")}");
+
+                        AaruLogging.WriteLine();
 
                         AnsiConsole.Write(table);
 

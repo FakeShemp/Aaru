@@ -435,8 +435,8 @@
     <value>[slateblue1]Testing [teal]{0}[/] seeks, longest seek took [aqua]{1:F3}[/] ms, fastest one took [aqua]{2:F3}[/] ms. ([aqua]{3:F3}[/] ms average)[/]</value>
   </data>
     <data name="Whole_device" xml:space="preserve">
-    <value>Whole device</value>
-  </data>
+        <value>[slateblue1]Whole device[/]</value>
+    </data>
     <data name="Device_block_size_is_fixed_at_0_bytes" xml:space="preserve">
     <value>Device's block size is fixed at {0} bytes</value>
   </data>

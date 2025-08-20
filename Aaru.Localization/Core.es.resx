@@ -3380,8 +3380,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
         <value>[slateblue1]Creado con [italic][rosybrown]{0}[/][/][/]</value>
     </data>
     <data name="Whole_device" xml:space="preserve">
-    <value>Dispositivo completo</value>
-  </data>
+        <value>[slateblue1]Dispositivo completo[/]</value>
+    </data>
     <data name="Writing_0_to_1" xml:space="preserve">
     <value>Escribiendo {0} en {1}</value>
   </data>

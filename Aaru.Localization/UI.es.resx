@@ -50,8 +50,8 @@
     <value>Pidiendo a la unidad que descargue la cinta (puede tomar unos minutos)...</value>
   </data>
     <data name="As_identified_by_0" xml:space="preserve">
-    <value>Como lo identificó {0}.</value>
-  </data>
+        <value>[slateblue1]Como lo identificó [fuchsia]{0}[/].[/]</value>
+    </data>
     <data name="ATA_IDENTIFY_DEVICE_command_response" xml:space="preserve">
     <value>Respuesta al comando ATA IDENTIFY DEVICE:</value>
   </data>
@@ -851,8 +851,8 @@
         <value>[slateblue1]La entropía de la pista [teal]{0}[/] es [teal]{1:F4}[/].[/]</value>
     </data>
     <data name="Enumerating_partitions" xml:space="preserve">
-    <value>Enumerando particiones...</value>
-  </data>
+        <value>[slateblue1]Enumerando particiones...[/]</value>
+    </data>
     <data name="Error_0_closing_output_image_Contents_are_not_correct" xml:space="preserve">
         <value>[red]Error [orange3]{0}[/] al cerrar la imagen de salida... Su contenido no es correcto.[/]</value>
     </data>
@@ -995,8 +995,8 @@
     <value>Error leyendo fichero</value>
   </data>
     <data name="Error_reading_file_0" xml:space="preserve">
-    <value>Error leyendo fichero: {0}</value>
-  </data>
+        <value>[red]Error leyendo fichero:[/] [orange3]{0}[/]</value>
+    </data>
     <data name="Error_setting_output_image_in_tape_mode" xml:space="preserve">
         <value>[red]Error estableciendo imagen de salida en modo cinta, no se continuará[/]</value>
     </data>
@@ -1034,8 +1034,8 @@
     <value>Lista los ficheros de la imagen de disco.</value>
   </data>
     <data name="Filesystem_not_identified" xml:space="preserve">
-    <value>Sistema de ficheros no identificado</value>
-  </data>
+        <value>[red]Sistema de ficheros no identificado[/]</value>
+    </data>
     <data name="Filesystem_Options_Command_Description" xml:space="preserve">
     <value>Lista todas las opciones soportadas por los sistemas de ficheros de sólo lectura.</value>
   </data>
@@ -1235,17 +1235,17 @@
     <value>Página de números de serie de la unidad IBM</value>
   </data>
     <data name="Identified_by_0" xml:space="preserve">
-    <value>Identificado por {0}.</value>
-  </data>
+        <value>[slateblue1]Identificado por [fuchsia]{0}[/].[/]</value>
+    </data>
     <data name="Identified_by_0_plugins" xml:space="preserve">
-    <value>Identificado por {0} extensiones</value>
-  </data>
+        <value>[slateblue1]Identificado por [teal]{0}[/] extensiones[/]</value>
+    </data>
     <data name="Identifying_filesystems" xml:space="preserve">
     <value>Identificando sistemas de ficheros...</value>
   </data>
     <data name="Identifying_filesystems_on_partition" xml:space="preserve">
-    <value>Identificando sistemas de ficheros en la partición...</value>
-  </data>
+        <value>[slateblue1]Identificando sistemas de ficheros en la partición...[/]</value>
+    </data>
     <data name="Identifying_file_filter" xml:space="preserve">
         <value>[slateblue1]Identificando el filtro de fichero...[/]</value>
     </data>
@@ -1671,11 +1671,11 @@
     <value>No hay medio insertado</value>
   </data>
     <data name="No_partitions_found" xml:space="preserve">
-    <value>No se encontraron particiones</value>
-  </data>
+        <value>[red]No se encontraron particiones[/]</value>
+    </data>
     <data name="No_partitions_found_not_searching_for_filesystems" xml:space="preserve">
-    <value>No se encontraron particiones, no se buscarán sistemas de ficheros</value>
-  </data>
+        <value>[red]No se encontraron particiones, no se buscarán sistemas de ficheros[/]</value>
+    </data>
     <data name="No_plugin_supports_requested_extension" xml:space="preserve">
         <value>[red]Ninguna extensión soportada.[/]</value>
     </data>
@@ -1737,8 +1737,8 @@
         <value>[bold][blue]Estadísticas de esquemas de particionado[/][/]</value>
     </data>
     <data name="Partition_0" xml:space="preserve">
-    <value>Partición {0}:</value>
-  </data>
+        <value>[bold][blue]Partición {0}:[/][/]</value>
+    </data>
     <data name="Part_number_of_media_by_image" xml:space="preserve">
     <value>Número de parte del medio representado por la imagen.</value>
   </data>
@@ -1926,8 +1926,8 @@
     <value>Sector {0}</value>
   </data>
     <data name="sector_0_byte_1" xml:space="preserve">
-    <value>sector 0, byte {1}</value>
-  </data>
+        <value>[slateblue1]sector [violet]{0}[/], byte [lime]{1}[/][/]</value>
+    </data>
     <data name="Sector_to_start_decoding_from" xml:space="preserve">
     <value>Sector donde empezar a descodificar.</value>
   </data>
@@ -2418,8 +2418,8 @@ Probadores:
     <value>LBA</value>
   </data>
     <data name="Title_Length" xml:space="preserve">
-    <value>Longitud</value>
-  </data>
+        <value>[green]Longitud[/]</value>
+    </data>
     <data name="Title_Library" xml:space="preserve">
     <value>Libreria</value>
   </data>
@@ -2910,11 +2910,11 @@ Probadores:
     <value>{0} Kb/seg.</value>
   </data>
     <data name="_0_partitions_found" xml:space="preserve">
-    <value>{0} particiones encontradas.</value>
-  </data>
+        <value>[teal]{0}[/] [slateblue1]particiones encontradas.[/]</value>
+    </data>
     <data name="_0_sectors_1_bytes" xml:space="preserve">
-    <value>{0} sectores, {1} bytes</value>
-  </data>
+        <value>[slateblue1][violet]{0}[/] sectores, [lime]{1}[/] bytes[/]</value>
+    </data>
     <data name="_0_sectors_to_convert" xml:space="preserve">
         <value>[violet]{0}[/] [slateblue1]sectores para convertir[/]</value>
     </data>

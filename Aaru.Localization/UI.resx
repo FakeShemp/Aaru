@@ -429,29 +429,29 @@ In you are unsure, please press N to not continue.</value>
         <value>[slateblue1]Image has [violet]{0}[/] sectors.[/]</value>
     </data>
     <data name="Enumerating_partitions" xml:space="preserve">
-    <value>Enumerating partitions...</value>
-  </data>
+        <value>[slateblue1]Enumerating partitions...[/]</value>
+    </data>
     <data name="No_partitions_found" xml:space="preserve">
-    <value>No partitions found</value>
-  </data>
+        <value>[red]No partitions found[/]</value>
+    </data>
     <data name="_0_partitions_found" xml:space="preserve">
-    <value>{0} partitions found.</value>
-  </data>
+        <value>[teal]{0}[/] [slateblue1]partitions found.[/]</value>
+    </data>
     <data name="Partition_0" xml:space="preserve">
-    <value>Partition {0}:</value>
-  </data>
+        <value>[bold][blue]Partition {0}:[/][/]</value>
+    </data>
     <data name="Identifying_filesystems_on_partition" xml:space="preserve">
-    <value>Identifying filesystems on partition...</value>
-  </data>
+        <value>[slateblue1]Identifying filesystems on partition...[/]</value>
+    </data>
     <data name="Filesystem_not_identified" xml:space="preserve">
-    <value>Filesystem not identified</value>
-  </data>
+        <value>[red]Filesystem not identified[/]</value>
+    </data>
     <data name="Identified_by_0_plugins" xml:space="preserve">
-    <value>Identified by {0} plugins</value>
-  </data>
+        <value>[slateblue1]Identified by [teal]{0}[/] plugins[/]</value>
+    </data>
     <data name="As_identified_by_0" xml:space="preserve">
-    <value>As identified by {0}.</value>
-  </data>
+        <value>[slateblue1]As identified by [fuchsia]{0}[/].[/]</value>
+    </data>
     <data name="Mounting_filesystem" xml:space="preserve">
     <value>Mounting filesystem...</value>
   </data>
@@ -459,11 +459,11 @@ In you are unsure, please press N to not continue.</value>
     <value>Unable to mount volume, error {0}</value>
   </data>
     <data name="Identified_by_0" xml:space="preserve">
-    <value>Identified by {0}.</value>
-  </data>
+        <value>[slateblue1]Identified by [fuchsia]{0}[/].[/]</value>
+    </data>
     <data name="Error_reading_file_0" xml:space="preserve">
-    <value>Error reading file: {0}</value>
-  </data>
+        <value>[red]Error reading file:[/] [orange3]{0}[/]</value>
+    </data>
     <data name="Error_0_reading_root_directory" xml:space="preserve">
     <value>Error {0} reading root directory.</value>
   </data>
@@ -510,8 +510,8 @@ In you are unsure, please press N to not continue.</value>
     <value>Image format not identified, not proceeding with analysis.</value>
   </data>
     <data name="No_partitions_found_not_searching_for_filesystems" xml:space="preserve">
-    <value>No partitions found, not searching for filesystems</value>
-  </data>
+        <value>[red]No partitions found, not searching for filesystems[/]</value>
+    </data>
     <data name="Title_Name" xml:space="preserve">
     <value>[bold][darkgreen]Name[/][/]</value>
   </data>
@@ -519,14 +519,14 @@ In you are unsure, please press N to not continue.</value>
     <value>[bold][olive]Type[/][/]</value>
   </data>
     <data name="Title_Length" xml:space="preserve">
-    <value>Length</value>
-  </data>
+        <value>[green]Length[/]</value>
+    </data>
     <data name="sector_0_byte_1" xml:space="preserve">
-    <value>sector {0}, byte {1}</value>
-  </data>
+        <value>[slateblue1]sector [violet]{0}[/], byte [lime]{1}[/][/]</value>
+    </data>
     <data name="_0_sectors_1_bytes" xml:space="preserve">
-    <value>{0} sectors, {1} bytes</value>
-  </data>
+        <value>[slateblue1][violet]{0}[/] sectors, [lime]{1}[/] bytes[/]</value>
+    </data>
     <data name="Title_Description" xml:space="preserve">
     <value>[bold][slateblue1]Description[/][/]</value>
   </data>
