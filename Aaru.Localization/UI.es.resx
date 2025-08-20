@@ -2934,16 +2934,16 @@ Probadores:
         <value>Formato de archivo identificado por {0}.</value>
     </data>
     <data name="Archive_format_identified_by_0_1" xml:space="preserve">
-        <value>Format de archivo identificado por {0} ({1}).</value>
+        <value>[slateblue1[Formato de archivo identificado por [green]{0}[/] ([italic][red]{1}[/][/]).[/]</value>
     </data>
     <data name="Archive_format_not_identified" xml:space="preserve">
-        <value>Formato de archivo no identificado.</value>
+        <value>[red]Formato de archivo no identificado.[/]</value>
     </data>
     <data name="Archive_format_not_identified_not_proceeding_with_extraction" xml:space="preserve">
-        <value>Formato de archivo no identificado, no se procederá con la extracción</value>
+        <value>[red]Formato de archivo no identificado, no se procederá con la extracción[/]</value>
     </data>
     <data name="Archive_format_not_identified_not_proceeding_with_listing" xml:space="preserve">
-        <value>Formato de archivo no identificado, no se procederá con el listado.</value>
+        <value>[red]Formato de archivo no identificado, no se procederá con el listado.[/]</value>
     </data>
     <data name="Correctly_opened_archive_file" xml:space="preserve">
         <value>Archivo abierto correctamente.</value>
@@ -2970,10 +2970,10 @@ Probadores:
         <value>Error {0} obteniendo información de la entrada nº {1} del archivo.</value>
     </data>
     <data name="Identifying_archive_format" xml:space="preserve">
-        <value>Identificando el formato del archivo...</value>
+        <value>[slateblue1]Identificando el formato del archivo...[/]</value>
     </data>
     <data name="Obtaining_archive_information" xml:space="preserve">
-        <value>Obteniendo información del archivo...</value>
+        <value>[slateblue1]Obteniendo información del archivo...[/]</value>
     </data>
     <data name="Opening_archive" xml:space="preserve">
         <value>Abriendo archivo...</value>
@@ -2991,7 +2991,7 @@ Probadores:
         <value>Tamaño</value>
     </data>
     <data name="Unable_to_get_information_about_archive" xml:space="preserve">
-        <value>No se pudo obtener información sobre el archivo...</value>
+        <value>[red]No se pudo obtener información sobre el archivo...[/]</value>
     </data>
     <data name="Unable_to_open_archive_format" xml:space="preserve">
         <value>No se pudo abrir el archivo</value>

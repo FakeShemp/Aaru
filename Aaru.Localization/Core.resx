@@ -3482,8 +3482,8 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>This image contains low-level flux captures.</value>
   </data>
     <data name="Archive_Information_With_Markup" xml:space="preserve">
-    <value>[bold]Archive information:[/]</value>
-  </data>
+        <value>[bold][blue]Archive information:[/][/]</value>
+    </data>
     <data name="Using_Lite-On_raw_DVD_reading" xml:space="preserve">
         <value>[slateblue1]Using [fuchsia]Lite-On raw DVD[/] reading[/]</value>
     </data>

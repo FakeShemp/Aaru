@@ -48,7 +48,7 @@ public static class ArchiveInfo
 
         imageFormat.GetInformation(filter, encoding, out string information);
 
-        AaruLogging.WriteLine(Markup.Escape(information));
+        AaruLogging.WriteLine(MarkupHelper.HighlightNumbers(Markup.Escape(information), "teal"));
 
         AaruLogging.WriteLine();
     }
