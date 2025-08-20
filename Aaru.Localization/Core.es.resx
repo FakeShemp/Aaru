@@ -998,8 +998,8 @@
     <value>Error {0} solicitando ATA PACKET IDENTIFY</value>
   </data>
     <data name="Error_0_reading_sector_1" xml:space="preserve">
-    <value>Error {0} leyendo sector {1}</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] leyendo sector [lime]{1}[/][/]</value>
+    </data>
     <data name="Error_0_reopening_device" xml:space="preserve">
     <value>Error {0} reabriendo el dispositivo.</value>
   </data>
@@ -1052,8 +1052,8 @@
         <value>[red]Error enviando las pistas a la imagen de salida, no se continuará.[/]</value>
     </data>
     <data name="Error_setting_output_image_in_tape_mode_not_continuing" xml:space="preserve">
-    <value>Error activando el modo cinta en la imagen de salida, no se continuará.</value>
-  </data>
+        <value>[red]Error activando el modo cinta en la imagen de salida, no se continuará.[/]</value>
+    </data>
     <data name="Error_Tag_type_0_is_null_skipping" xml:space="preserve">
     <value>Error: La etiqueta tipo {0} es nula, omitiendo...</value>
   </data>

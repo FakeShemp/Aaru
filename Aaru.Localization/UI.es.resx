@@ -335,8 +335,8 @@
     <value>No se pudo abrir el 2º fichero de entrada</value>
   </data>
     <data name="Cannot_open_specified_file" xml:space="preserve">
-    <value>No se pudo abrir el fichero especificado.</value>
-  </data>
+        <value>[red]No se pudo abrir el fichero especificado.[/]</value>
+    </data>
     <data name="Cannot_write_file_0_output_exists" xml:space="preserve">
     <value>No se pudo escribir el fichero {0}, ya existe</value>
   </data>
@@ -443,8 +443,8 @@
     <value>Comando no soportado para este tipo de imagen.</value>
   </data>
     <data name="Command_not_yet_supported_for_this_image_type" xml:space="preserve">
-    <value>Comando aún no soportado para este tipo de imagen.</value>
-  </data>
+        <value>[red]Comando aún no soportado para este tipo de imagen.[/]</value>
+    </data>
     <data name="Comma_separated_name_value_pairs_of_filesystem_options" xml:space="preserve">
     <value>Pares de nombre=valor separados por coma con opciones que pasar a la extensión de sistema de ficheros.</value>
   </data>
@@ -488,79 +488,79 @@
     <value>Continuar el volcado pase lo que pase.</value>
   </data>
     <data name="Conversion_done" xml:space="preserve">
-    <value>Conversión completada.</value>
-  </data>
+        <value>[slateblue1]Conversión completada.[/]</value>
+    </data>
     <data name="Converting_disc" xml:space="preserve">
-    <value>Convirtiendo disco...</value>
-  </data>
+        <value>[slateblue1]Convirtiendo disco...[/]</value>
+    </data>
     <data name="Converting_files" xml:space="preserve">
-    <value>Convirtiendo ficheros</value>
-  </data>
+        <value>[slateblue1]Convirtiendo ficheros[/]</value>
+    </data>
     <data name="Converting_file_0_of_partition_1" xml:space="preserve">
-    <value>Convirtiendo fichero {0} de la partición {1}...</value>
-  </data>
+        <value>[slateblue1]Convirtiendo fichero [lime]{0}[/] de la partición [teal]{1}[/]...[/]</value>
+    </data>
     <data name="Converting_image_will_lose_media_tag_0" xml:space="preserve">
-    <value>La conversión perdería la etiqueta de medio {0}, no se continuará...</value>
-  </data>
+        <value>[red]La conversión perdería la etiqueta de medio [orange3]{0}[/], no se continuará...[/]</value>
+    </data>
     <data name="Converting_image_will_lose_sector_tag_0" xml:space="preserve">
-    <value>La conversión perdería la etiqueta de sector {0}, no se continuará...</value>
-  </data>
+        <value>[red]La conversión perdería la etiqueta de sector [orange3]{0}[/], no se continuará...[/]</value>
+    </data>
     <data name="Converting_media" xml:space="preserve">
-    <value>Convirtiendo medio</value>
-  </data>
+        <value>[slateblue1]Convirtiendo medio[/]</value>
+    </data>
     <data name="Converting_media_tag_0" xml:space="preserve">
-    <value>Convirtiendo etiqueta de medio {0}</value>
-  </data>
+        <value>[slateblue1]Convirtiendo etiqueta de medio [orange3]{0}[/][/]</value>
+    </data>
     <data name="Converting_sectors" xml:space="preserve">
-    <value>Convirtiendo sectores</value>
-  </data>
+        <value>[slateblue1]Convirtiendo sectores[/]</value>
+    </data>
     <data name="Converting_sectors_0_to_1" xml:space="preserve">
-    <value>Convirtiendo sectores del {0} al {1}</value>
-  </data>
+        <value>[slateblue1]Convirtiendo sectores del [lime]{0}[/] al [violet]{1}[/][/]</value>
+    </data>
     <data name="Converting_sectors_0_to_1_2_done" xml:space="preserve">
-    <value>Convirtiendo sectores del {0} al {1} ({2:P2} completado)</value>
-  </data>
+        <value>[slateblue1]Convirtiendo sectores del [lime]{0}[/] al [violet]{1}[/] ([aqua]{2:P2}[/] completado)[/]</value>
+    </data>
     <data name="Converting_sectors_0_to_1_in_track_2" xml:space="preserve">
-    <value>Convirtiendo sectores del {0} al {1} en la pista {2}</value>
-  </data>
+        <value>[slateblue1]Convirtiendo sectores del [lime]{0}[/] al [violet]{1}[/] en la pista [teal]{2}[/][/]</value>
+    </data>
     <data name="Converting_sectors_0_to_1_in_track_2_3_done" xml:space="preserve">
-    <value>Convirtiendo sectores del {0} al {1} en la pista {2} ({3:P2} completado)</value>
-  </data>
+        <value>[slateblue1]Convirtiendo sectores del [lime]{0}[/] al [violet]{1}[/] en la pista [teal]{2}[/] ([aqua]{3:P2}[/] completado)[/]</value>
+    </data>
     <data name="Converting_sectors_in_track_0" xml:space="preserve">
-    <value>Convirtiendo sectores en la pista {0}</value>
-  </data>
+        <value>[slateblue1]Convirtiendo sectores en la pista [teal]{0}[/]</value>
+    </data>
     <data name="Converting_sectors_in_track_0_of_1" xml:space="preserve">
-    <value>Convirtiendo sectores en la pista {0} de {1}</value>
-  </data>
+        <value>[slateblue1]Convirtiendo sectores en la pista [teal]{0}[/] de [teal]{1}[/][/]</value>
+    </data>
     <data name="Converting_tags" xml:space="preserve">
-    <value>Convirtiendo etiquetas</value>
-  </data>
+        <value>[slateblue1]Convirtiendo etiquetas[/]</value>
+    </data>
     <data name="Converting_tags_in_track_0_of_1" xml:space="preserve">
-    <value>Convirtiendo etiquetas en la pista {0} de {1}</value>
-  </data>
+        <value>[slateblue1]Convirtiendo etiquetas en la pista [teal]{0}[/] de [teal]{1}[/][/]</value>
+    </data>
     <data name="Converting_tag_0" xml:space="preserve">
-    <value>Convirtiendo etiqueta {0}</value>
-  </data>
+        <value>[slateblue1]Convirtiendo etiqueta [orange3]{0}[/]</value>
+    </data>
     <data name="Converting_tag_0_for_sectors_1_to_2_3_done" xml:space="preserve">
-    <value>Convirtiendo etiqueta {0} para los sectores del {1} al {2} ({3:P2} completado)</value>
-  </data>
+        <value>[slateblue1]Convirtiendo etiqueta [orange3]{0}[/] para los sectores del [lime]{1}[/] al [violet]{2}[/] ([aqua]{3:P2}[/] completado)[/]</value>
+    </data>
     <data name="Converting_tag_0_for_sectors_1_to_2_in_track_3_4_done" xml:space="preserve">
-    <value>Convirtiendo etiqueta {0} para los sectores del {1} al {2} en la pista {3} ({4:P2} completado)</value>
-  </data>
+        <value>[slateblue1]Convirtiendo etiqueta [orange3]{0}[/] para los sectores del [lime]{1}[/] al [violet]{2}[/] en la pista [teal]{3}[/] ([aqua]{4:P2}[/] completado)[/]</value>
+    </data>
     <data name="Converting_tag_2_for_sectors_0_to_1" xml:space="preserve">
-    <value>Convirtiendo etiqueta {2} para los sectores del {0} al {1}</value>
-  </data>
+        <value>[slateblue1]Convirtiendo etiqueta [orange3]{2}[/] para los sectores del [lime]{0}[/] al [violet]{1}[/][/]</value>
+    </data>
     <data name="Converting_tag_3_for_sectors_0_to_1_in_track_2" xml:space="preserve">
-    <value>Convirtiendo etiqueta {3} para los sectores del {0} al {1} en la pista {2}</value>
-  </data>
+        <value>[slateblue1]Convirtiendo etiqueta [orange3]{3}[/] para los sectores del [lime]{0}[/] al [violet]{1}[/] en la pista [teal]{2}[/][/]</value>
+    </data>
     <data name="Converting_tape_partition_0" xml:space="preserve">
-    <value>Convirtiendo partición {0} de cinta...</value>
-  </data>
+        <value>[slateblue1]Convirtiendo partición [teal]{0}[/] de cinta...[/]</value>
+    </data>
     <data name="Converting_track" xml:space="preserve">
-    <value>Convirtiendo pista</value>
-  </data>
+        <value>[slateblue1]Convirtiendo pista[/]</value>
+    </data>
     <data name="Correctly_opened_image_file" xml:space="preserve">
-        <value>Fichero de imagen abierto correctamente.</value>
+        <value>[green]Fichero de imagen abierto correctamente.[/]</value>
     </data>
     <data name="Could_note_delete_existe_file_continue_Q" xml:space="preserve">
     <value>No se puedo eliminar el fichero existente. ¿Desea continuar?</value>
@@ -569,8 +569,8 @@
     <value>No se pudo crear el fichero destino. ¿Desea continuar?</value>
   </data>
     <data name="Could_not_find_metadata_sidecar" xml:space="preserve">
-    <value>No se pudo encontrar el sidecar de datos, no se continuará...</value>
-  </data>
+        <value>[red]No se pudo encontrar el sidecar de datos, no se continuará...[/]</value>
+    </data>
     <data name="Could_not_find_resume_file" xml:space="preserve">
     <value>No se pudo encontrar el fichero de resumen, no se continuará...</value>
   </data>
@@ -854,8 +854,8 @@
     <value>Enumerando particiones...</value>
   </data>
     <data name="Error_0_closing_output_image_Contents_are_not_correct" xml:space="preserve">
-    <value>Error {0} al cerrar la imagen de salida... Su contenido no es correcto.</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] al cerrar la imagen de salida... Su contenido no es correcto.[/]</value>
+    </data>
     <data name="Error_0_creating_output_image" xml:space="preserve">
     <value>Error {0} al crear la imagen de salida.</value>
   </data>
@@ -896,11 +896,11 @@
     <value>Error {0} leyendo fichero. ¿Desea continuar?</value>
   </data>
     <data name="Error_0_reading_media_tag" xml:space="preserve">
-    <value>Error {0} leyendo etiqueta del medio, continuando...</value>
-  </data>
+        <value>[olive]Error [orange3]{0}[/] leyendo etiqueta del medio, continuando...[/]</value>
+    </data>
     <data name="Error_0_reading_media_tag_not_continuing" xml:space="preserve">
-    <value>Error {0} leyendo etiqueta del medio, no se continuará...</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] leyendo etiqueta del medio, no se continuará...[/]</value>
+    </data>
     <data name="Error_0_reading_root_directory" xml:space="preserve">
     <value>Error {0} leyendo directorio raíz.</value>
   </data>
@@ -908,29 +908,29 @@
     <value>Error {0} leyendo la respuesta de SCSI INQUIRY de la imagen</value>
   </data>
     <data name="Error_0_reading_sector_1" xml:space="preserve">
-    <value>Error {0} leyendo el sector {1}.</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] leyendo el sector [lime]{1}[/][/]</value>
+    </data>
     <data name="Error_0_reading_sector_1_continuing" xml:space="preserve">
-    <value>Error {0} leyendo el sector {1}, continuando...</value>
-  </data>
+        <value>[olive]Error [orange3]{0}[/] leyendo el sector [lime]{1}[/], continuando...[/]</value>
+    </data>
     <data name="Error_0_reading_sector_1_from_first_image" xml:space="preserve">
-    <value>Error {0} leyendo el sector {1} de la 1ª imagen.</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] leyendo el sector [lime]{1}[/] de la 1ª imagen[/]</value>
+    </data>
     <data name="Error_0_reading_sector_1_from_second_image" xml:space="preserve">
-    <value>Error {0} leyendo el sector {1} de la 2ª imagen.</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] leyendo el sector [lime]{1}[/] de la 2ª imagen[/]</value>
+    </data>
     <data name="Error_0_reading_sector_1_not_continuing" xml:space="preserve">
-    <value>Error {0} leyendo el sector {1}, no se continuará...</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] leyendo el sector [lime]{1}[/], no se continuará..[/]</value>
+    </data>
     <data name="Error_0_reading_tag_for_sector_1_continuing" xml:space="preserve">
-    <value>Error {0} leyendo etiqueta del sector {1}, continuando...</value>
-  </data>
+        <value>[olive]Error [orange3]{0}[/] leyendo etiqueta del sector [lime]{1}[/], continuando...[/]</value>
+    </data>
     <data name="Error_0_reading_tag_for_sector_1_not_continuing" xml:space="preserve">
-    <value>Error {0} leyendo etiqueta del sector {1}, no se continuará</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] leyendo etiqueta del sector [lime]{1}[/], no se continuará[/]</value>
+    </data>
     <data name="Error_0_sending_tracks_list_to_output_image" xml:space="preserve">
-    <value>Error {0} enviando lista de pistas a la imagen de salida.</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] enviando lista de pistas a la imagen de salida.[/]</value>
+    </data>
     <data name="Error_0_setting_geometry_image_may_be_incorrect_continuing" xml:space="preserve">
         <value>[olive]Error [red]{0}[/] estableciendo geometría. La imagen puede ser incorrecta, continuando...[/]</value>
     </data>
@@ -956,23 +956,23 @@
     <value>Error {0} escribiendo metadatos de Aaru en la imagen de salida.</value>
   </data>
     <data name="Error_0_writing_dump_hardware_list_to_output_image" xml:space="preserve">
-    <value>Error {0} escribiendo lista de hardware de volcado en la imagen de salida.</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] escribiendo lista de hardware de volcado en la imagen de salida.[/]</value>
+    </data>
     <data name="Error_0_writing_media_tag" xml:space="preserve">
-    <value>Error {0} escribiendo etiqueta de medio, continuando...</value>
-  </data>
+        <value>[olive]Error [orange3]{0}[/] escribiendo etiqueta de medio, continuando...[/]</value>
+    </data>
     <data name="Error_0_writing_media_tag_not_continuing" xml:space="preserve">
-    <value>Error {0} escribiendo etiqueta de medio, no se continuará...</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] escribiendo etiqueta de medio, no se continuará...[/]</value>
+    </data>
     <data name="Error_0_writing_sector_1_continuing" xml:space="preserve">
-    <value>Error {0} escribiendo el sector {1}, continuando...</value>
-  </data>
+        <value>[olive]Error [orange3]{0}[/] escribiendo el sector [lime]{1}[/], continuando...[/]</value>
+    </data>
     <data name="Error_0_writing_sector_1_not_continuing" xml:space="preserve">
-    <value>Error {0} escribiendo el sector {1}, no se continuará...</value>
-  </data>
+        <value>[red]Error [orange]{0}[/] escribiendo el sector [lime]{1}[/], no se continuará...[/]</value>
+    </data>
     <data name="Error_0_writing_tag_continuing" xml:space="preserve">
-    <value>Error {0} escribiendo etiqueta, continuando...</value>
-  </data>
+        <value>[olive]Error [orange3]{0}[/] escribiendo etiqueta, continuando...[/]</value>
+    </data>
     <data name="Error_0_writing_tag_for_sector_1_continuing" xml:space="preserve">
     <value>Error {0} escribiendo etiqueta del sector {1}, continuando...</value>
   </data>
@@ -980,8 +980,8 @@
     <value>Error {0} escribiendo etiqueta del sector {1}, no se continuará...</value>
   </data>
     <data name="Error_0_writing_tag_not_continuing" xml:space="preserve">
-    <value>Error {0} escribiendo etiqueta, no se continuará...</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] escribiendo etiqueta, no se continuará...[/]</value>
+    </data>
     <data name="Error_decoding_page_please_open_an_issue" xml:space="preserve">
     <value>Error descodificando página, por favor repórtelo</value>
   </data>
@@ -998,8 +998,8 @@
     <value>Error leyendo fichero: {0}</value>
   </data>
     <data name="Error_setting_output_image_in_tape_mode" xml:space="preserve">
-    <value>Error estableciendo imagen de salida en modo cinta, no se continuará</value>
-  </data>
+        <value>[red]Error estableciendo imagen de salida en modo cinta, no se continuará[/]</value>
+    </data>
     <data name="Error_trying_to_find_selected_plugin" xml:space="preserve">
     <value>Error intentando encontrar la extensión elegida</value>
   </data>
@@ -1142,8 +1142,8 @@
     <value>Generando subcanales faltantes (no cuentan como volcados en el fichero de resumen).</value>
   </data>
     <data name="Generating_decryption_keys" xml:space="preserve">
-    <value>Llaves de desencriptación no encontrados. Intentando generarlas.</value>
-  </data>
+        <value>[yellow]Llaves de desencriptación no encontrados. Intentando generarlas.[/]</value>
+    </data>
     <data name="Hashing_blocks_0_to_2_of_file_1" xml:space="preserve">
         <value>[slateblue1]Calculando hash de los bloques [lime]{0}[/] a [violet]{2}[/] del fichero [teal]{1}[/][/]</value>
     </data>
@@ -1265,12 +1265,12 @@
         <value>[slateblue1]Identificando el formato de la 2ª imagen..[/]</value>
     </data>
     <data name="If_you_dont_care_use_force_option" xml:space="preserve">
-    <value>Si no le importa, use la opción "force".</value>
-  </data>
+        <value>[red]Si no le importa, use la opción "force".[/]</value>
+    </data>
     <data name="If_you_dont_care_use_force_option_This_will_skip_all_sector_tags_converting_only_user_data"
           xml:space="preserve">
-    <value>Si no le importa, use la opción "force". Esto omitirá todas las etiquetas de sector convirtiendo sólo los datos de usuario.</value>
-  </data>
+        <value>[red]Si no le importa, use la opción "force". Esto omitirá todas las etiquetas de sector convirtiendo sólo los datos de usuario.[/]</value>
+    </data>
     <data name="Images_differ" xml:space="preserve">
     <value>Las imágenes son diferentes</value>
   </data>
@@ -1326,11 +1326,11 @@
     <value>Format de imagen no identificado, no se procede con la creación del sidecar.</value>
   </data>
     <data name="Image_has_0_sectors" xml:space="preserve">
-    <value>La imagen contiene {0} sectores.</value>
-  </data>
+        <value>[slateblue1]La imagen contiene [violet]{0}[/] sectores.[/]</value>
+    </data>
     <data name="Image_identifies_media_type_as_0" xml:space="preserve">
-    <value>La imagen identifica el tipo de medio como {0}.</value>
-  </data>
+        <value>[slateblue1]La imagen identifica el tipo de medio como [fuchsia]{0}[/].[/]</value>
+    </data>
     <data name="Image_Info_Command_Description" xml:space="preserve">
     <value>Identifica y muestra información sobre una imagen, el medio que representa y sus metadatos.</value>
   </data>
@@ -1356,14 +1356,14 @@
     <value>Verifica la integridad de una imagen, y si está soportado, de sus sectores.</value>
   </data>
     <data name="Image_without_headers_is_0_bytes" xml:space="preserve">
-    <value>La imagen sin cabeceras ocupa {0} bytes.</value>
-  </data>
+        <value>[slateblue1]La imagen sin cabeceras ocupa [lime]{0}[/] bytes.[/]</value>
+    </data>
     <data name="Incorrect_metadata_sidecar_file" xml:space="preserve">
     <value>Fichero sidecar de metadatos incorrecto...</value>
   </data>
     <data name="Incorrect_metadata_sidecar_file_not_continuing" xml:space="preserve">
-    <value>Fichero sidecar de metadatos incorrecto, no se continuará...</value>
-  </data>
+        <value>[red]Fichero sidecar de metadatos incorrecto, no se continuará...[/]</value>
+    </data>
     <data name="Incorrect_resume_file" xml:space="preserve">
     <value>Fichero de resumen incorrecto...</value>
   </data>
@@ -1371,8 +1371,8 @@
     <value>Fichero de resumen incorrecto, no se puede usar...</value>
   </data>
     <data name="Incorrect_resume_file_not_continuing" xml:space="preserve">
-    <value>Fichero de resumen incorrecto, no se continuará...</value>
-  </data>
+        <value>[red]Fichero de resumen incorrecto, no se continuará...[/]</value>
+    </data>
     <data name="Incorrect_subchannel_type_0_requested" xml:space="preserve">
     <value>El tipo de subcanal solicitado, "{0}", es incorrecto.</value>
   </data>
@@ -1380,8 +1380,8 @@
     <value>Inicializando consola...</value>
   </data>
     <data name="Input_format_contains_a_tape_image_and_is_not_supported_by_output_format" xml:space="preserve">
-    <value>El formato de entrada contiene la imagen de una cinta y esto no está soportado por el formato de salida, no se continuará...</value>
-  </data>
+        <value>[red]El formato de entrada contiene la imagen de una cinta y esto no está soportado por el formato de salida, no se continuará...[/]</value>
+    </data>
     <data name="Input_image_format_identified_by_0" xml:space="preserve">
         <value>[slateblue1]Formato de imagen de entrada identificado por [green]{0}[/].[/]</value>
     </data>
@@ -1389,11 +1389,11 @@
         <value>[slateblue1]Formato de imagen de entrada identificado por [green]{0}[/] ([italic][red]{1}[/][/]).[/]</value>
     </data>
     <data name="Input_image_format_not_identified" xml:space="preserve">
-    <value>Formato de imagen de entrada no identificado, no se procederá con la conversión...</value>
-  </data>
+        <value>[red]Formato de imagen de entrada no identificado, no se procederá con la conversión...[/]</value>
+    </data>
     <data name="Input_image_is_not_returning_raw_sectors_use_force_if_you_want_to_continue" xml:space="preserve">
-    <value>El formato de imagen de entrada no está devolviendo sectores sin procesar, utilice "force" si desea continuar...</value>
-  </data>
+        <value>[red]El formato de imagen de entrada no está devolviendo sectores sin procesar, utilice "force" si desea continuar...[/]</value>
+    </data>
     <data name="Input_image_path" xml:space="preserve">
     <value>Ruta de la imagen de entrada</value>
   </data>
@@ -1410,14 +1410,14 @@
     <value>La lista de elementos no es válido</value>
   </data>
     <data name="Invalid_number_of_cylinders_specified" xml:space="preserve">
-    <value>El número de cilindros especificado no es válido</value>
-  </data>
+        <value>[red]El número de cilindros especificado no es válido[/]</value>
+    </data>
     <data name="Invalid_number_of_heads_specified" xml:space="preserve">
-    <value>El número de cabezas especificado no es válido</value>
-  </data>
+        <value>[red]El número de cabezas especificado no es válido[/]</value>
+    </data>
     <data name="Invalid_sectors_per_track_specified" xml:space="preserve">
-    <value>El número de sectores por pista especificado no es válido</value>
-  </data>
+        <value>[red]El número de sectores por pista especificado no es válido[/]</value>
+    </data>
     <data name="Invoke_Opening_image_file" xml:space="preserve">
         <value>[slateblue1]Abriendo fichero de imagen...[/]</value>
     </data>
@@ -1632,8 +1632,8 @@
     <value>MODE {0:X2}h Subpágina {1:X2}</value>
   </data>
     <data name="More_than_one_plugin_supports_requested_extension" xml:space="preserve">
-    <value>Más de una extensión soportada.</value>
-  </data>
+        <value>[red]Más de un plugin soporta la extensión solicitada.[/]</value>
+    </data>
     <data name="Mounting_filesystem" xml:space="preserve">
     <value>Montando sistema de ficheros...</value>
   </data>
@@ -1647,8 +1647,8 @@
     <value>Nombre de la codificación de caracteres para usar.</value>
   </data>
     <data name="Need_to_specify_more_than_zero_sectors_to_copy_at_once" xml:space="preserve">
-    <value>Debe especificar más de 0 sectores para copiar de una vez</value>
-  </data>
+        <value>[red]Debe especificar más de 0 sectores para copiar de una vez[/]</value>
+    </data>
     <data name="New_database_version_updating" xml:space="preserve">
     <value>Nueva versión de la base de datos, actualizando...</value>
   </data>
@@ -1677,8 +1677,8 @@
     <value>No se encontraron particiones, no se buscarán sistemas de ficheros</value>
   </data>
     <data name="No_plugin_supports_requested_extension" xml:space="preserve">
-    <value>Ninguna extensión soportada.</value>
-  </data>
+        <value>[red]Ninguna extensión soportada.[/]</value>
+    </data>
     <data name="Number_in_sequence_for_media_by_image" xml:space="preserve">
     <value>El número en la secuencia del medio representado por la imagen.</value>
   </data>
@@ -1704,8 +1704,8 @@
     <value>Falta el directorio de salida.</value>
   </data>
     <data name="Output_file_already_exists" xml:space="preserve">
-    <value>El fichero de salida ya existe, no se continuará.</value>
-  </data>
+        <value>[red]El fichero de salida ya existe, no se continuará.[/]</value>
+    </data>
     <data name="Output_format" xml:space="preserve">
     <value>Formato de salida</value>
   </data>
@@ -1944,8 +1944,8 @@
     <value>Número de serie del medio representado por la imagen.</value>
   </data>
     <data name="Setting_geometry_to_0_cylinders_1_heads_and_2_sectors_per_track" xml:space="preserve">
-    <value>Estableciendo geometría en {0} cilindros, {1} cabezas y {2} sectores por pista</value>
-  </data>
+        <value>[slateblue1]Estableciendo geometría en [lime]{0}[/] cilindros, [lime]{1}[/] cabezas y [lime]{2}[/] sectores por pista[/]</value>
+    </data>
     <data name="Setting_image_metadata" xml:space="preserve">
     <value>Estableciendo metadatos de la imagen</value>
   </data>
@@ -2748,8 +2748,8 @@ Probadores:
     <value>No se pudo abrir la 1ª imagen</value>
   </data>
     <data name="Unable_to_open_image_format" xml:space="preserve">
-    <value>No se pudo abrir la imagen</value>
-  </data>
+        <value>[red]No se pudo abrir la imagen[/]</value>
+    </data>
     <data name="Unable_to_open_second_image_format" xml:space="preserve">
     <value>No se pudo abrir la 2ª imagen</value>
   </data>
@@ -2832,8 +2832,8 @@ Probadores:
     <value>Escribiendo los metadatos de Aaru en la imagen.</value>
   </data>
     <data name="Writing_dump_hardware_list" xml:space="preserve">
-    <value>Escribiendo la lista del hardware de volcado...</value>
-  </data>
+        <value>[slateblue1]Escribiendo la lista del hardware de volcado...[/]</value>
+    </data>
     <data name="Writing_extended_attribute" xml:space="preserve">
     <value>Escribiendo atributo extendido...</value>
   </data>
@@ -2850,11 +2850,11 @@ Probadores:
     <value>Escritos {0} bytes del atributo extendido {1} del fichero {2} en {3}</value>
   </data>
     <data name="Written_Aaru_Metadata_to_output_image" xml:space="preserve">
-    <value>Escritos los metadatos de Aaru en la imagen.</value>
-  </data>
+        <value>[slateblue1]Escritos los metadatos de Aaru en la imagen.[/]</value>
+    </data>
     <data name="Written_dump_hardware_list_to_output_image" xml:space="preserve">
-    <value>Escrita la lista de hardware de volcado en la imagen.</value>
-  </data>
+        <value>[slateblue1]Escrita la lista de hardware de volcado en la imagen.[/]</value>
+    </data>
     <data name="You_cannot_use_tape_option_when_input_is_a_file" xml:space="preserve">
     <value>No puede usar la opción --tape cuando la entrada es un fichero.</value>
   </data>
@@ -2916,8 +2916,8 @@ Probadores:
     <value>{0} sectores, {1} bytes</value>
   </data>
     <data name="_0_sectors_to_convert" xml:space="preserve">
-    <value>{0} sectores para convertir</value>
-  </data>
+        <value>[violet]{0}[/] [slateblue1]sectores para convertir[/]</value>
+    </data>
     <data name="_From_image_" xml:space="preserve">
     <value>&lt;De la imagen&gt;</value>
   </data>

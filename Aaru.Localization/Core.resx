@@ -1640,8 +1640,8 @@
         <value>[olive]Cannot reposition tape, unable to resume. Dumping from the start.[/]</value>
     </data>
     <data name="Error_setting_output_image_in_tape_mode_not_continuing" xml:space="preserve">
-    <value>Error setting output image in tape mode, not continuing.</value>
-  </data>
+        <value>[red]Error setting output image in tape mode, not continuing.[/]</value>
+    </data>
     <data name="Finished_partition_0" xml:space="preserve">
         <value>[slateblue1]Finished partition [teal]{0}[/][/]</value>
     </data>
@@ -2949,8 +2949,8 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
         <value>[slateblue1]Hashing media tags...[/]</value>
     </data>
     <data name="Error_0_reading_sector_1" xml:space="preserve">
-    <value>Error {0} reading sector {1}</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] reading sector [lime]{1}[/][/]</value>
+    </data>
     <data name="Hashing_sector_0_of_1" xml:space="preserve">
         <value>[slateblue1]Hashing sector [lime]{0}[/] of [violet]{1}[/][/]</value>
     </data>
