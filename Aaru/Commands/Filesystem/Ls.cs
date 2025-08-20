@@ -33,6 +33,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Aaru.CommonTypes;
@@ -40,11 +41,13 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Core;
+using Aaru.Helpers;
 using Aaru.Localization;
 using Aaru.Logging;
 using JetBrains.Annotations;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
 namespace Aaru.Commands.Filesystem;
 
@@ -379,17 +382,20 @@ sealed class LsCommand : Command<LsCommand.Settings>
                     table.AddRow($"[gold3]{entry.Value.Attributes.ToAttributeChars()}[/]",
                                  "",
                                  "",
-                                 $"[green]{Markup.Escape(entry.Key)}[/]");
+                                 $"[{DirColorsParser.Instance.DirectoryColor}]{Markup.Escape(entry.Key)}[/]");
 
                     AaruLogging.Information($"{entry.Value.Attributes.ToAttributeChars()} {entry.Key}");
                 }
-
                 else
                 {
+                    if(!DirColorsParser.Instance.ExtensionColors.TryGetValue(Path.GetExtension(entry.Key) ?? "",
+                                                                             out string color))
+                        color = DirColorsParser.Instance.NormalColor;
+
                     table.AddRow($"[gold3]{entry.Value.Attributes.ToAttributeChars()}[/]",
                                  $"[lime]{entry.Value.Length}[/]",
                                  $"[dodgerblue1]{entry.Value.LastWriteTimeUtc:s}[/]",
-                                 $"[green]{Markup.Escape(entry.Key)}[/]");
+                                 $"[{color}]{Markup.Escape(entry.Key)}[/]");
 
                     AaruLogging
                        .Information($"{entry.Value.Attributes.ToAttributeChars()} {entry.Value.Length} {entry.Value.LastWriteTimeUtc:s} {entry.Key}");

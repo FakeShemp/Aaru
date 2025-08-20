@@ -41,6 +41,8 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Localization.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Remove="dir_colors"/>
+    <EmbeddedResource Include="dir_colors"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Memory"/>

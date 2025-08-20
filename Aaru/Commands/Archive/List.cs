@@ -32,16 +32,19 @@
 
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Core;
+using Aaru.Helpers;
 using Aaru.Localization;
 using Aaru.Logging;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
 namespace Aaru.Commands.Archive;
 
@@ -312,6 +315,15 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
                                     continue;
                                 }
 
+                                string color = DirColorsParser.Instance.NormalColor;
+
+                                if(stat.Attributes.HasFlag(FileAttributes.Directory))
+                                    color = DirColorsParser.Instance.DirectoryColor;
+                                else if(!DirColorsParser.Instance.ExtensionColors
+                                                        .TryGetValue(Path.GetExtension(fileName) ?? "",
+                                                                     out color))
+                                    color = DirColorsParser.Instance.NormalColor;
+
                                 if(archive.ArchiveFeatures.HasFlag(ArchiveSupportedFeature.SupportsCompression))
                                 {
                                     table.AddRow($"[blue]{stat.CreationTime?.ToShortDateString()       ?? ""}[/]",
@@ -319,7 +331,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
                                                  $"[gold3]{new string(attr)}[/]",
                                                  $"[lime]{uncompressedSize}[/]",
                                                  $"[teal]{compressedSize}[/]",
-                                                 $"[green]{Markup.Escape(fileName)}[/]");
+                                                 $"[{color}]{Markup.Escape(fileName)}[/]");
 
                                     AaruLogging.Information($"Date: {stat.CreationTime?.ToShortDateString() ?? ""} "   +
                                                             $"Time: ({stat.CreationTime?.ToLongTimeString() ?? ""}), " +
@@ -334,7 +346,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
                                                  $"[dodgerblue1]{stat.CreationTime?.ToLongTimeString() ?? ""}[/]",
                                                  $"[gold3]{new string(attr)}[/]",
                                                  $"[lime]{uncompressedSize}[/]",
-                                                 $"[green]{Markup.Escape(fileName)}[/]");
+                                                 $"[{color}]{Markup.Escape(fileName)}[/]");
 
                                     AaruLogging.Information($"Date: {stat.CreationTime?.ToShortDateString() ?? ""} "   +
                                                             $"Time: ({stat.CreationTime?.ToLongTimeString() ?? ""}), " +
