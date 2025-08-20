@@ -338,11 +338,11 @@
         <value>[red]No se pudo abrir el fichero especificado.[/]</value>
     </data>
     <data name="Cannot_write_file_0_output_exists" xml:space="preserve">
-    <value>No se pudo escribir el fichero {0}, ya existe</value>
-  </data>
+        <value>[slateblue1]No se pudo escribir el fichero [green]{0}[/], ya existe[/]</value>
+    </data>
     <data name="Cannot_write_xattr_0_for_1_output_exists" xml:space="preserve">
-    <value>No se pudo escribir el atributo extendido {0} del fichero {1} ,ya existe</value>
-  </data>
+        <value>[red]No se pudo escribir el atributo extendido [fuchsia]{0}[/] del fichero [green]{1}[/], ya existe[/]</value>
+    </data>
     <data name="Cartridge_Status" xml:space="preserve">
     <value>Estado del cartucho</value>
   </data>
@@ -440,8 +440,8 @@
         <value>[bold][blue]Estadísticas de comandos[/][/]</value>
     </data>
     <data name="Command_not_supported_for_this_image_type" xml:space="preserve">
-    <value>Comando no soportado para este tipo de imagen.</value>
-  </data>
+        <value>[red]Comando no soportado para este tipo de imagen.[/]</value>
+    </data>
     <data name="Command_not_yet_supported_for_this_image_type" xml:space="preserve">
         <value>[red]Comando aún no soportado para este tipo de imagen.[/]</value>
     </data>
@@ -584,8 +584,8 @@
     <value>No se pudo eliminar la base de datos principal.</value>
   </data>
     <data name="Created_subdirectory_at_0" xml:space="preserve">
-    <value>Creando subdirectorio en {0}</value>
-  </data>
+        <value>[slateblue1]Creando subdirectorio en [blue]{0}[/][/]</value>
+    </data>
     <data name="Create_Aaru_Metadata_sidecar" xml:space="preserve">
     <value>Creando sidecar de metadatos de Aaru</value>
   </data>
@@ -887,11 +887,11 @@
     <value>Error {0} leyendo datos desde {1}.</value>
   </data>
     <data name="Error_0_reading_directory_1" xml:space="preserve">
-    <value>Error {0} leyendo el directorio {1}</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] leyendo el directorio [green]{1}[/][/]</value>
+    </data>
     <data name="Error_0_reading_file_1" xml:space="preserve">
-    <value>Error {0} leyendo el fichero {1}</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] leyendo el fichero [green]{1}[/][/]</value>
+    </data>
     <data name="Error_0_reading_file_continue_Q" xml:space="preserve">
     <value>Error {0} leyendo fichero. ¿Desea continuar?</value>
   </data>
@@ -1317,8 +1317,8 @@
     <value>Format de imagen no identificado, no se procede con el análisis.</value>
   </data>
     <data name="Image_format_not_identified_not_proceeding_with_file_extraction" xml:space="preserve">
-    <value>Format de imagen no identificado, no se procede con la extracción de ficheros.</value>
-  </data>
+        <value>[red]Formato de imagen no identificado, no se procede con la extracción de ficheros.[/]</value>
+    </data>
     <data name="Image_format_not_identified_not_proceeding_with_listing" xml:space="preserve">
     <value>Format de imagen no identificado, no se procede con el listado.</value>
   </data>
@@ -1701,8 +1701,8 @@
     <value>Para MMC/SD, usar lecturas con el búfer del SO si CMD23 no está soportado.</value>
   </data>
     <data name="Output_directory_missing" xml:space="preserve">
-    <value>Falta el directorio de salida.</value>
-  </data>
+        <value>[red]Falta el directorio de salida.[/]</value>
+    </data>
     <data name="Output_file_already_exists" xml:space="preserve">
         <value>[red]El fichero de salida ya existe, no se continuará.[/]</value>
     </data>
@@ -1806,8 +1806,8 @@
     <value>Leyendo atributo extendido...</value>
   </data>
     <data name="Reading_file_0" xml:space="preserve">
-    <value>Leyendo fichero {0}...</value>
-  </data>
+        <value>[slateblue1]Leyendo fichero [green]{0}[/]...[/]</value>
+    </data>
     <data name="Reading_sector" xml:space="preserve">
     <value>Leyendo sector...</value>
   </data>
@@ -1986,8 +1986,8 @@
     <value>Información del área de reserva</value>
   </data>
     <data name="Specified_encoding_is_not_supported" xml:space="preserve">
-    <value>La codificación especificada no está soportada</value>
-  </data>
+        <value>[red]La codificación especificada no está soportada.[/]</value>
+    </data>
     <data name="SpeedRead_is_enabled" xml:space="preserve">
     <value>SpeedRead está activado</value>
   </data>
@@ -2742,8 +2742,8 @@ Probadores:
     <value>uuid</value>
   </data>
     <data name="Unable_to_mount_volume_error_0" xml:space="preserve">
-    <value>No se pudo montar el volumen, error {0}</value>
-  </data>
+        <value>[red]No se pudo montar el volumen, error [orange3]{0}[/][/]</value>
+    </data>
     <data name="Unable_to_open_first_image_format" xml:space="preserve">
     <value>No se pudo abrir la 1ª imagen</value>
   </data>
@@ -2835,8 +2835,8 @@ Probadores:
         <value>[slateblue1]Escribiendo la lista del hardware de volcado...[/]</value>
     </data>
     <data name="Writing_extended_attribute" xml:space="preserve">
-    <value>Escribiendo atributo extendido...</value>
-  </data>
+        <value>[slateblue1]Escribiendo atributo extendido...[/]</value>
+    </data>
     <data name="Writing_image_to" xml:space="preserve">
     <value>Escribiendo imagen a:</value>
   </data>
@@ -2844,11 +2844,11 @@ Probadores:
         <value>[slateblue1]Escribiendo metadatos...[/]</value>
     </data>
     <data name="Written_0_bytes_of_file_1_to_2" xml:space="preserve">
-    <value>Escritos {0} bytes del fichero {1} en {2}</value>
-  </data>
+        <value>[slateblue1]Escritos [lime]{0}[/] bytes del fichero [green]{1}[/] en [teal]{2}[/][/]</value>
+    </data>
     <data name="Written_0_bytes_of_xattr_1_from_file_2_to_3" xml:space="preserve">
-    <value>Escritos {0} bytes del atributo extendido {1} del fichero {2} en {3}</value>
-  </data>
+        <value>[slateblue1]Escritos [lime]{0}[/] bytes del atributo extendido [fuchsia]{1}[/] del fichero [green]{2}[/] en [teal]{3}[/]</value>
+    </data>
     <data name="Written_Aaru_Metadata_to_output_image" xml:space="preserve">
         <value>[slateblue1]Escritos los metadatos de Aaru en la imagen.[/]</value>
     </data>
@@ -2964,7 +2964,7 @@ Probadores:
         <value>Error {0} listando los atributos extendidos de la entrada nº {1} del archivo.</value>
     </data>
     <data name="Error_0_reading_extended_attribute_1_for_archive_entry_2" xml:space="preserve">
-        <value>Error {0} leyendo el atributo extendido {1} de la entrada nº {2} del archivo.</value>
+        <value>[red]Error [orange3]{0}[/] leyendo el atributo extendido [green]{1}[/] de la entrada [teal]nº {2}[/] del archivo.[/]</value>
     </data>
     <data name="Error_0_retrieving_stat_for_archive_entry_1" xml:space="preserve">
         <value>Error {0} obteniendo información de la entrada nº {1} del archivo.</value>

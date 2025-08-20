@@ -390,17 +390,17 @@ In you are unsure, please press N to not continue.</value>
     <value>Using encoding for {0}.</value>
   </data>
     <data name="Specified_encoding_is_not_supported" xml:space="preserve">
-    <value>Specified encoding is not supported.</value>
-  </data>
+        <value>[red]Specified encoding is not supported.[/]</value>
+    </data>
     <data name="Identifying_image_format" xml:space="preserve">
     <value>[slateblue1]Identifying image format...[/]</value>
   </data>
     <data name="Image_format_not_identified_not_proceeding_with_file_extraction" xml:space="preserve">
-    <value>Image format not identified, not proceeding with file extraction.</value>
-  </data>
+        <value>[red]Image format not identified, not proceeding with file extraction.[/]</value>
+    </data>
     <data name="Command_not_supported_for_this_image_type" xml:space="preserve">
-    <value>Command not supported for this image type.</value>
-  </data>
+        <value>[red]Command not supported for this image type.[/]</value>
+    </data>
     <data name="Image_format_identified_by_0_1" xml:space="preserve">
     <value>[slateblue1]Image format identified by [green]{0}[/] ([italic][red]{1}[/][/]).[/]</value>
   </data>
@@ -408,8 +408,8 @@ In you are unsure, please press N to not continue.</value>
         <value>[slateblue1]Image format identified by [green]{0}[/].[/]</value>
     </data>
     <data name="Output_directory_missing" xml:space="preserve">
-    <value>Output directory missing.</value>
-  </data>
+        <value>[red]Output directory missing.[/]</value>
+    </data>
     <data name="Destination_exists_aborting" xml:space="preserve">
     <value>Destination exists, aborting.</value>
   </data>
@@ -456,8 +456,8 @@ In you are unsure, please press N to not continue.</value>
     <value>Mounting filesystem...</value>
   </data>
     <data name="Unable_to_mount_volume_error_0" xml:space="preserve">
-    <value>Unable to mount volume, error {0}</value>
-  </data>
+        <value>[red]Unable to mount volume, error [orange3]{0}[/][/]</value>
+    </data>
     <data name="Identified_by_0" xml:space="preserve">
         <value>[slateblue1]Identified by [fuchsia]{0}[/].[/]</value>
     </data>
@@ -471,8 +471,8 @@ In you are unsure, please press N to not continue.</value>
     <value>Retrieving file information...</value>
   </data>
     <data name="Created_subdirectory_at_0" xml:space="preserve">
-    <value>Created subdirectory at {0}</value>
-  </data>
+        <value>[slateblue1]Created subdirectory at [blue]{0}[/][/]</value>
+    </data>
     <data name="Listing_extended_attributes" xml:space="preserve">
     <value>Listing extended attributes...</value>
   </data>
@@ -480,26 +480,26 @@ In you are unsure, please press N to not continue.</value>
     <value>Reading extended attribute...</value>
   </data>
     <data name="Writing_extended_attribute" xml:space="preserve">
-    <value>Writing extended attribute...</value>
-  </data>
+        <value>[slateblue1]Writing extended attribute...[/]</value>
+    </data>
     <data name="Written_0_bytes_of_xattr_1_from_file_2_to_3" xml:space="preserve">
-    <value>Written {0} bytes of xattr {1} from file {2} to {3}</value>
-  </data>
+        <value>[slateblue1]Written [lime]{0}[/] bytes of xattr [fuchsia]{1}[/] from file [green]{2}[/] to [teal]{3}[/][/]</value>
+    </data>
     <data name="Cannot_write_xattr_0_for_1_output_exists" xml:space="preserve">
-    <value>Cannot write xattr {0} for {1}, output exists</value>
-  </data>
+        <value>[red]Cannot write xattr [fuchsia]{0}[/] for [green]{1}[/], output exists[/]</value>
+    </data>
     <data name="Reading_file_0" xml:space="preserve">
-    <value>Reading file {0}...</value>
-  </data>
+        <value>[slateblue1]Reading file [green]{0}[/]...[/]</value>
+    </data>
     <data name="Error_0_reading_file_1" xml:space="preserve">
-    <value>Error {0} reading file {1}</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] reading file [green]{1}[/][/]</value>
+    </data>
     <data name="Written_0_bytes_of_file_1_to_2" xml:space="preserve">
-    <value>Written {0} bytes of file {1} to {2}</value>
-  </data>
+        <value>[slateblue1]Written [lime]{0}[/] bytes of file [green]{1}[/] to [teal]{2}[/][/]</value>
+    </data>
     <data name="Cannot_write_file_0_output_exists" xml:space="preserve">
-    <value>Cannot write file {0}, output exists</value>
-  </data>
+        <value>[slateblue1]Cannot write file [green]{0}[/], output exists[/]</value>
+    </data>
     <data name="Searches_and_prints_information_about_filesystems" xml:space="preserve">
     <value>Searches and prints information about filesystems.</value>
   </data>
@@ -549,8 +549,8 @@ In you are unsure, please press N to not continue.</value>
     <value>Reading directory...</value>
   </data>
     <data name="Error_0_reading_directory_1" xml:space="preserve">
-    <value>Error {0} reading directory {1}</value>
-  </data>
+        <value>[red]Error [orange3]{0}[/] reading directory [green]{1}[/][/]</value>
+    </data>
     <data name="Directory_abbreviation" xml:space="preserve">
     <value>&lt;DIR&gt;</value>
         <comment>Directory abbreviation as shown in CLI filesystem listing, like old DOS showed</comment>
@@ -3054,7 +3054,7 @@ Do you want to continue?</value>
         <value>Error {0} listing extended attributes for archive entry #{1}.</value>
     </data>
     <data name="Error_0_reading_extended_attribute_1_for_archive_entry_2" xml:space="preserve">
-        <value>Error {0} reading extended attribute {1} for archive entry #{2}.</value>
+        <value>[red]Error [orange3]{0}[/] reading extended attribute [green]{1}[/] for archive entry [teal]#{2}[/].[/]</value>
     </data>
     <data name="Title_Date" xml:space="preserve">
         <value>Date</value>
