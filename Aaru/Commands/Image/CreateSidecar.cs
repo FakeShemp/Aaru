@@ -64,8 +64,8 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
 
         AaruLogging.Debug(MODULE_NAME, "--block-size={0}", settings.BlockSize);
         AaruLogging.Debug(MODULE_NAME, "--debug={0}",      settings.Debug);
-        AaruLogging.Debug(MODULE_NAME, "--encoding={0}",   Markup.Escape(settings.Encoding  ?? ""));
-        AaruLogging.Debug(MODULE_NAME, "--input={0}",      Markup.Escape(settings.ImagePath ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--encoding={0}",   settings.Encoding);
+        AaruLogging.Debug(MODULE_NAME, "--input={0}",      settings.ImagePath);
         AaruLogging.Debug(MODULE_NAME, "--tape={0}",       settings.Tape);
         AaruLogging.Debug(MODULE_NAME, "--verbose={0}",    settings.Verbose);
 
@@ -181,7 +181,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
                                 sidecarClass.UpdateProgressEvent += (text, current, maximum) =>
                                 {
                                     _progressTask1             ??= ctx.AddTask("Progress");
-                                    _progressTask1.Description =   Markup.Escape(text);
+                                    _progressTask1.Description =   text;
                                     _progressTask1.Value       =   current;
                                     _progressTask1.MaxValue    =   maximum;
                                 };
@@ -189,7 +189,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
                                 sidecarClass.UpdateProgressEvent2 += (text, current, maximum) =>
                                 {
                                     _progressTask2             ??= ctx.AddTask("Progress");
-                                    _progressTask2.Description =   Markup.Escape(text);
+                                    _progressTask2.Description =   text;
                                     _progressTask2.Value       =   current;
                                     _progressTask2.MaxValue    =   maximum;
                                 };
@@ -206,10 +206,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
                                     _progressTask2 = null;
                                 };
 
-                                sidecarClass.UpdateStatusEvent += text =>
-                                    {
-                                        AaruLogging.WriteLine(Markup.Escape(text));
-                                    };
+                                sidecarClass.UpdateStatusEvent += text => { AaruLogging.WriteLine(text); };
 
                                 Console.CancelKeyPress += (_, e) =>
                                 {
@@ -244,7 +241,6 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
             }
             catch(Exception ex)
             {
-                AaruLogging.Error(string.Format(UI.Error_reading_file_0, Markup.Escape(ex.Message)));
                 AaruLogging.Exception(ex, UI.Error_reading_file_0, ex.Message);
 
                 return (int)ErrorNumber.UnexpectedException;
@@ -280,7 +276,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
                             sidecarClass.UpdateProgressEvent += (text, current, maximum) =>
                             {
                                 _progressTask1             ??= ctx.AddTask("Progress");
-                                _progressTask1.Description =   Markup.Escape(text);
+                                _progressTask1.Description =   text;
                                 _progressTask1.Value       =   current;
                                 _progressTask1.MaxValue    =   maximum;
                             };
@@ -288,7 +284,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
                             sidecarClass.UpdateProgressEvent2 += (text, current, maximum) =>
                             {
                                 _progressTask2             ??= ctx.AddTask("Progress");
-                                _progressTask2.Description =   Markup.Escape(text);
+                                _progressTask2.Description =   text;
                                 _progressTask2.Value       =   current;
                                 _progressTask2.MaxValue    =   maximum;
                             };
@@ -305,7 +301,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
                                 _progressTask2 = null;
                             };
 
-                            sidecarClass.UpdateStatusEvent += text => { AaruLogging.WriteLine(Markup.Escape(text)); };
+                            sidecarClass.UpdateStatusEvent += text => { AaruLogging.WriteLine(text); };
 
                             Console.CancelKeyPress += (_, e) =>
                             {
@@ -315,7 +311,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
 
                             sidecar = sidecarClass.BlockTape(Path.GetFileName(settings.ImagePath),
                                                              files,
-                                                             settings.BlockSize);
+                                                             (uint)settings.BlockSize);
                         });
 
             Core.Spectre.ProgressSingleSpinner(ctx =>
@@ -353,7 +349,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
         [CommandOption("-b|--block-size")]
         [Description("Only used for tapes, indicates block size. Files in the folder whose size is not a multiple of this value will simply be ignored.")]
         [DefaultValue(512)]
-        public uint BlockSize { get; init; }
+        public int BlockSize { get; init; }
         [CommandOption("-e|--encoding")]
         [Description("Name of character encoding to use.")]
         [DefaultValue(null)]

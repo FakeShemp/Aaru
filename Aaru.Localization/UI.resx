@@ -405,8 +405,8 @@ In you are unsure, please press N to not continue.</value>
     <value>[slateblue1]Image format identified by [green]{0}[/] ([italic][red]{1}[/][/]).[/]</value>
   </data>
     <data name="Image_format_identified_by_0" xml:space="preserve">
-    <value>Image format identified by {0}.</value>
-  </data>
+        <value>[slateblue1]Image format identified by [green]{0}[/].[/]</value>
+    </data>
     <data name="Output_directory_missing" xml:space="preserve">
     <value>Output directory missing.</value>
   </data>
@@ -995,11 +995,11 @@ In you are unsure, please press N to not continue.</value>
     <value>Command not yet supported for this image type.</value>
   </data>
     <data name="Input_image_format_identified_by_0_1" xml:space="preserve">
-    <value>Input image format identified by {0} ({1}).</value>
-  </data>
+        <value>[slateblue1]Input image format identified by [green]{0}[/] ([italic][red]{1}[/][/]).[/]</value>
+    </data>
     <data name="Input_image_format_identified_by_0" xml:space="preserve">
-    <value>Input image format identified by {0}.</value>
-  </data>
+        <value>[slateblue1]Input image format identified by [green]{0}[/].[/]</value>
+    </data>
     <data name="Image_identifies_media_type_as_0" xml:space="preserve">
     <value>Image identifies media type as {0}.</value>
   </data>

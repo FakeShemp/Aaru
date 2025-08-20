@@ -1305,8 +1305,8 @@
     <value>Calcula la entropía y/o sectores duplicados de una imagen.</value>
   </data>
     <data name="Image_format_identified_by_0" xml:space="preserve">
-    <value>Formato de imagen identificado por {0}.</value>
-  </data>
+        <value>[slateblue1]Formato de imagen identificado por [green]{0}[/].[/]</value>
+    </data>
     <data name="Image_format_identified_by_0_1" xml:space="preserve">
         <value>[slateblue1]Formato de imagen identificado por [green]{0}[/] ([italic][red]{1}[/][/]).[/]</value>
     </data>
@@ -1383,11 +1383,11 @@
     <value>El formato de entrada contiene la imagen de una cinta y esto no está soportado por el formato de salida, no se continuará...</value>
   </data>
     <data name="Input_image_format_identified_by_0" xml:space="preserve">
-    <value>Formato de imagen de entrada identificado por {0}.</value>
-  </data>
+        <value>[slateblue1]Formato de imagen de entrada identificado por [green]{0}[/].[/]</value>
+    </data>
     <data name="Input_image_format_identified_by_0_1" xml:space="preserve">
-    <value>Formato de imagen de entrada identificado por {0} ({1}).</value>
-  </data>
+        <value>[slateblue1]Formato de imagen de entrada identificado por [green]{0}[/] ([italic][red]{1}[/][/]).[/]</value>
+    </data>
     <data name="Input_image_format_not_identified" xml:space="preserve">
     <value>Formato de imagen de entrada no identificado, no se procederá con la conversión...</value>
   </data>
