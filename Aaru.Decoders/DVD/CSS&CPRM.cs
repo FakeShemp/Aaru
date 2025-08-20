@@ -161,11 +161,12 @@ public static class CSS_CPRM
 
                 if((decoded.RegionMask & 0x80) != 0x80) sb.Append(" 8");
 
+                sb.AppendLine("[/]");
+
                 break;
             }
         }
 
-        sb.AppendLine("[/]");
 
         switch(decoded.RPCScheme)
         {
