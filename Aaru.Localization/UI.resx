@@ -477,8 +477,8 @@ In you are unsure, please press N to not continue.</value>
     <value>Listing extended attributes...</value>
   </data>
     <data name="Reading_extended_attribute" xml:space="preserve">
-    <value>Reading extended attribute...</value>
-  </data>
+        <value>[slateblue1]Reading extended attribute...[/]</value>
+    </data>
     <data name="Writing_extended_attribute" xml:space="preserve">
         <value>[slateblue1]Writing extended attribute...[/]</value>
     </data>
@@ -498,7 +498,7 @@ In you are unsure, please press N to not continue.</value>
         <value>[slateblue1]Written [lime]{0}[/] bytes of file [green]{1}[/] to [teal]{2}[/][/]</value>
     </data>
     <data name="Cannot_write_file_0_output_exists" xml:space="preserve">
-        <value>[slateblue1]Cannot write file [green]{0}[/], output exists[/]</value>
+        <value>[red]Cannot write file [green]{0}[/], output exists[/]</value>
     </data>
     <data name="Searches_and_prints_information_about_filesystems" xml:space="preserve">
     <value>Searches and prints information about filesystems.</value>
@@ -3024,7 +3024,7 @@ Do you want to continue?</value>
         <value>[red]Archive format not identified, not proceeding with extraction.[/]</value>
     </data>
     <data name="Archive_format_identified_by_0" xml:space="preserve">
-        <value>Archive format identified by {0}.</value>
+        <value>[slateblue1]Archive format identified by [green]{0}[/].[/]</value>
     </data>
     <data name="Archive_format_not_identified_not_proceeding_with_listing" xml:space="preserve">
         <value>[red]Archive format not identified, not proceeding with listing.[/]</value>
@@ -3033,25 +3033,25 @@ Do you want to continue?</value>
         <value>Opening archive...</value>
     </data>
     <data name="Unable_to_open_archive_format" xml:space="preserve">
-        <value>Unable to open archive format</value>
+        <value>[red]Unable to open archive format[/]</value>
     </data>
     <data name="Correctly_opened_archive_file" xml:space="preserve">
-        <value>Correctly opened archive file.</value>
+        <value>[slateblue1]Correctly opened archive file.[/]</value>
     </data>
     <data name="Error_0_getting_filename_for_archive_entry_1" xml:space="preserve">
-        <value>Error {0} getting filename for archive entry #{1}.</value>
+        <value>[red]Error [orange3]{0}[/] getting filename for archive entry [teal]#{1}[/].[/]</value>
     </data>
     <data name="Error_0_retrieving_stat_for_archive_entry_1" xml:space="preserve">
-        <value>Error {0} retrieving stat for archive entry #{1}.</value>
+        <value>[red]Error [orange3]{0}[/] retrieving stat for archive entry [teal]#{1}[/].[/]</value>
     </data>
     <data name="Error_0_getting_uncompressed_size_for_archive_entry_1" xml:space="preserve">
-        <value>Error {0} getting uncompressed size for archive entry #{1}.</value>
+        <value>[red]Error [orange3]{0}[/] getting uncompressed size for archive entry [teal]#{1}[/].[/]</value>
     </data>
     <data name="Error_0_getting_filter_for_archive_entry_1" xml:space="preserve">
-        <value>Error {0} getting filter for archive entry #{1}.</value>
+        <value>[red]Error [orange3]{0}[/] getting filter for archive entry [teal]#{1}[/].[/]</value>
     </data>
     <data name="Error_0_listing_extended_attributes_for_archive_entry_1" xml:space="preserve">
-        <value>Error {0} listing extended attributes for archive entry #{1}.</value>
+        <value>[red]Error [orange3]{0}[/] listing extended attributes for archive entry [teal]#{1}[/].[/]</value>
     </data>
     <data name="Error_0_reading_extended_attribute_1_for_archive_entry_2" xml:space="preserve">
         <value>[red]Error [orange3]{0}[/] reading extended attribute [green]{1}[/] for archive entry [teal]#{2}[/].[/]</value>

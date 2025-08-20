@@ -338,7 +338,7 @@
         <value>[red]No se pudo abrir el fichero especificado.[/]</value>
     </data>
     <data name="Cannot_write_file_0_output_exists" xml:space="preserve">
-        <value>[slateblue1]No se pudo escribir el fichero [green]{0}[/], ya existe[/]</value>
+        <value>[red]No se pudo escribir el fichero [green]{0}[/], ya existe[/]</value>
     </data>
     <data name="Cannot_write_xattr_0_for_1_output_exists" xml:space="preserve">
         <value>[red]No se pudo escribir el atributo extendido [fuchsia]{0}[/] del fichero [green]{1}[/], ya existe[/]</value>
@@ -1803,8 +1803,8 @@
     <value>Leyendo directorio...</value>
   </data>
     <data name="Reading_extended_attribute" xml:space="preserve">
-    <value>Leyendo atributo extendido...</value>
-  </data>
+        <value>[slateblue1]Leyendo atributo extendido...[/]</value>
+    </data>
     <data name="Reading_file_0" xml:space="preserve">
         <value>[slateblue1]Leyendo fichero [green]{0}[/]...[/]</value>
     </data>
@@ -2931,7 +2931,7 @@ Probadores:
         <value>Ruta al archivo</value>
     </data>
     <data name="Archive_format_identified_by_0" xml:space="preserve">
-        <value>Formato de archivo identificado por {0}.</value>
+        <value>[slateblue1]Formato de archivo identificado por [green]{0}[/].[/]</value>
     </data>
     <data name="Archive_format_identified_by_0_1" xml:space="preserve">
         <value>[slateblue1[Formato de archivo identificado por [green]{0}[/] ([italic][red]{1}[/][/]).[/]</value>
@@ -2946,28 +2946,28 @@ Probadores:
         <value>[red]Formato de archivo no identificado, no se procederá con el listado.[/]</value>
     </data>
     <data name="Correctly_opened_archive_file" xml:space="preserve">
-        <value>Archivo abierto correctamente.</value>
+        <value>[slateblue1]Archivo abierto correctamente.[/]</value>
     </data>
     <data name="Error_0_getting_compressed_size_for_archive_entry_1" xml:space="preserve">
         <value>Error {0} obteniendo el tamaño de la entrada nº {1} del archivo.</value>
     </data>
     <data name="Error_0_getting_filename_for_archive_entry_1" xml:space="preserve">
-        <value>Error {0} obteniendo el nombre de fichero de la entrada nº {1} del archivo.</value>
+        <value>[red]Error [orange3]{0}[/] obteniendo el nombre de fichero de la entrada [teal]nº {1}[/] del archivo.[/]</value>
     </data>
     <data name="Error_0_getting_filter_for_archive_entry_1" xml:space="preserve">
-        <value>Error {0} obteniendo el filtro de la entrada nº {1} del archivo.</value>
+        <value>[red]Error [orange3]{0}[/] obteniendo el filtro de la entrada [teal]nº {1}[/] del archivo.[/]</value>
     </data>
     <data name="Error_0_getting_uncompressed_size_for_archive_entry_1" xml:space="preserve">
-        <value>Error {0} obteniendo el tamaño descomprimido de la entrada nº {1} del archivo.</value>
+        <value>[red]Error [orange3]{0}[/] obteniendo el tamaño descomprimido de la entrada [teal]nº {1}[/] del archivo.[/]</value>
     </data>
     <data name="Error_0_listing_extended_attributes_for_archive_entry_1" xml:space="preserve">
-        <value>Error {0} listando los atributos extendidos de la entrada nº {1} del archivo.</value>
+        <value>[red]Error [orange3]{0}[/] listando los atributos extendidos de la entrada [teal]nº {1}[/] del archivo.[/]</value>
     </data>
     <data name="Error_0_reading_extended_attribute_1_for_archive_entry_2" xml:space="preserve">
         <value>[red]Error [orange3]{0}[/] leyendo el atributo extendido [green]{1}[/] de la entrada [teal]nº {2}[/] del archivo.[/]</value>
     </data>
     <data name="Error_0_retrieving_stat_for_archive_entry_1" xml:space="preserve">
-        <value>Error {0} obteniendo información de la entrada nº {1} del archivo.</value>
+        <value>[red]Error [orange3]{0}[/] obteniendo información de la entrada [teal]nº {1}[/] del archivo.[/]</value>
     </data>
     <data name="Identifying_archive_format" xml:space="preserve">
         <value>[slateblue1]Identificando el formato del archivo...[/]</value>
@@ -2994,7 +2994,7 @@ Probadores:
         <value>[red]No se pudo obtener información sobre el archivo...[/]</value>
     </data>
     <data name="Unable_to_open_archive_format" xml:space="preserve">
-        <value>No se pudo abrir el archivo</value>
+        <value>[red]No se pudo abrir el archivo[/]</value>
     </data>
     <data name="_0_files" xml:space="preserve">
         <value>{0} ficheros</value>
