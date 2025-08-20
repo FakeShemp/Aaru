@@ -2625,8 +2625,8 @@ Probadores:
     <value>Etiqueta:</value>
   </data>
     <data name="Title_Time" xml:space="preserve">
-    <value>Hora</value>
-  </data>
+        <value>[bold][dodgerblue1]Hora[/][/]</value>
+    </data>
     <data name="Title_Times_used" xml:space="preserve">
         <value>[bold][teal]Veces usado[/][/]</value>
     </data>
@@ -2979,16 +2979,16 @@ Probadores:
         <value>Abriendo archivo...</value>
     </data>
     <data name="Title_Attributes_ABBREVIATED" xml:space="preserve">
-        <value>Atrib</value>
+        <value>[bold][gold3]Atrib[/][/]</value>
     </data>
     <data name="Title_Compressed" xml:space="preserve">
-        <value>Comprimido</value>
+        <value>[bold][teal]Comprimido[/][/]</value>
     </data>
     <data name="Title_Date" xml:space="preserve">
-        <value>Fecha</value>
+        <value>[bold][blue]Fecha[/][/]</value>
     </data>
     <data name="Title_Size" xml:space="preserve">
-        <value>Tamaño</value>
+        <value>[bold][lime]Tamaño[/][/]</value>
     </data>
     <data name="Unable_to_get_information_about_archive" xml:space="preserve">
         <value>[red]No se pudo obtener información sobre el archivo...[/]</value>
@@ -2997,10 +2997,10 @@ Probadores:
         <value>[red]No se pudo abrir el archivo[/]</value>
     </data>
     <data name="_0_files" xml:space="preserve">
-        <value>{0} ficheros</value>
+        <value>[slateblue1][italic][teal]{0}[/] ficheros[/][/]</value>
     </data>
     <data name="_0_files_1_folders" xml:space="preserve">
-        <value>{0} ficheros, {1} carpetas</value>
+        <value>[slateblue1][italic][teal]{0}[/] ficheros, [teal]{1}[/] carpetas[/][/]</value>
     </data>
     <data name="LogEntry_Type_Debug" xml:space="preserve">
         <value>Depuración</value>

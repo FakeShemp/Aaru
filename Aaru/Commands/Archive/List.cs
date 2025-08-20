@@ -180,6 +180,8 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
                        .Start(ctx =>
                         {
                             table.HideFooters();
+                            table.Border(TableBorder.Rounded);
+                            table.BorderColor(Color.Yellow);
 
                             table.AddColumn(new TableColumn(UI.Title_Date)
                             {
@@ -237,9 +239,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
 
                                 if(errno != ErrorNumber.NoError)
                                 {
-                                    AaruLogging.Error(UI.Error_0_getting_filename_for_archive_entry_1,
-                                                               errno,
-                                                               i);
+                                    AaruLogging.Error(UI.Error_0_getting_filename_for_archive_entry_1, errno, i);
 
                                     continue;
                                 }
@@ -248,9 +248,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
 
                                 if(errno != ErrorNumber.NoError)
                                 {
-                                    AaruLogging.Error(UI.Error_0_retrieving_stat_for_archive_entry_1,
-                                                               errno,
-                                                               i);
+                                    AaruLogging.Error(UI.Error_0_retrieving_stat_for_archive_entry_1, errno, i);
 
                                     continue;
                                 }
@@ -295,9 +293,9 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
                                 if(errno != ErrorNumber.NoError)
                                 {
                                     AaruLogging.Debug(MODULE_NAME,
-                                                               UI.Error_0_getting_compressed_size_for_archive_entry_1,
-                                                               errno,
-                                                               i);
+                                                      UI.Error_0_getting_compressed_size_for_archive_entry_1,
+                                                      errno,
+                                                      i);
 
                                     continue;
                                 }
@@ -307,29 +305,42 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
                                 if(errno != ErrorNumber.NoError)
                                 {
                                     AaruLogging.Debug(MODULE_NAME,
-                                                               UI.Error_0_getting_uncompressed_size_for_archive_entry_1,
-                                                               errno,
-                                                               i);
+                                                      UI.Error_0_getting_uncompressed_size_for_archive_entry_1,
+                                                      errno,
+                                                      i);
 
                                     continue;
                                 }
 
                                 if(archive.ArchiveFeatures.HasFlag(ArchiveSupportedFeature.SupportsCompression))
                                 {
-                                    table.AddRow(stat.CreationTime?.ToShortDateString() ?? "",
-                                                 stat.CreationTime?.ToLongTimeString()  ?? "",
-                                                 new string(attr),
-                                                 uncompressedSize.ToString(),
-                                                 compressedSize.ToString(),
-                                                 fileName);
+                                    table.AddRow($"[blue]{stat.CreationTime?.ToShortDateString()       ?? ""}[/]",
+                                                 $"[dodgerblue1]{stat.CreationTime?.ToLongTimeString() ?? ""}[/]",
+                                                 $"[gold3]{new string(attr)}[/]",
+                                                 $"[lime]{uncompressedSize}[/]",
+                                                 $"[teal]{compressedSize}[/]",
+                                                 $"[green]{Markup.Escape(fileName)}[/]");
+
+                                    AaruLogging.Information($"Date: {stat.CreationTime?.ToShortDateString() ?? ""} "   +
+                                                            $"Time: ({stat.CreationTime?.ToLongTimeString() ?? ""}), " +
+                                                            $"Attributes: {new string(attr)}, "                        +
+                                                            $"Uncompressed Size: {uncompressedSize}, "                 +
+                                                            $"Compressed Size: {compressedSize}, "                     +
+                                                            $"File Name: {fileName}");
                                 }
                                 else
                                 {
-                                    table.AddRow(stat.CreationTime?.ToShortDateString() ?? "",
-                                                 stat.CreationTime?.ToLongTimeString()  ?? "",
-                                                 new string(attr),
-                                                 uncompressedSize.ToString(),
-                                                 fileName);
+                                    table.AddRow($"[blue]{stat.CreationTime?.ToShortDateString()       ?? ""}[/]",
+                                                 $"[dodgerblue1]{stat.CreationTime?.ToLongTimeString() ?? ""}[/]",
+                                                 $"[gold3]{new string(attr)}[/]",
+                                                 $"[lime]{uncompressedSize}[/]",
+                                                 $"[green]{Markup.Escape(fileName)}[/]");
+
+                                    AaruLogging.Information($"Date: {stat.CreationTime?.ToShortDateString() ?? ""} "   +
+                                                            $"Time: ({stat.CreationTime?.ToLongTimeString() ?? ""}), " +
+                                                            $"Attributes: {new string(attr)}, "                        +
+                                                            $"Uncompressed Size: {uncompressedSize}, "                 +
+                                                            $"File Name: {fileName}");
                                 }
 
                                 totalSize         += compressedSize;
@@ -339,13 +350,13 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
                             }
 
                             table.ShowFooters();
-                            table.Columns[0].Footer(inputFilter.CreationTime.ToShortDateString());
-                            table.Columns[1].Footer(inputFilter.CreationTime.ToLongTimeString());
-                            table.Columns[3].Footer(totalUncompressed.ToString());
+                            table.Columns[0].Footer($"[blue]{inputFilter.CreationTime.ToShortDateString()}[/]");
+                            table.Columns[1].Footer($"[dodgerblue1]{inputFilter.CreationTime.ToLongTimeString()}[/]");
+                            table.Columns[3].Footer($"[lime]{totalUncompressed}[/]");
 
                             if(archive.ArchiveFeatures.HasFlag(ArchiveSupportedFeature.SupportsCompression))
                             {
-                                table.Columns[4].Footer(totalSize.ToString());
+                                table.Columns[4].Footer($"[teal]{totalSize}[/]");
 
                                 table.Columns[5]
                                      .Footer(archive.ArchiveFeatures.HasFlag(ArchiveSupportedFeature

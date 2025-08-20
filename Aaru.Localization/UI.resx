@@ -1721,8 +1721,8 @@ Testers:
     <value>Clear</value>
   </data>
     <data name="Title_Time" xml:space="preserve">
-    <value>Time</value>
-  </data>
+        <value>[bold][dodgerblue1]Time[/][/]</value>
+    </data>
     <data name="Title_Module" xml:space="preserve">
     <value>Module</value>
   </data>
@@ -3057,26 +3057,26 @@ Do you want to continue?</value>
         <value>[red]Error [orange3]{0}[/] reading extended attribute [green]{1}[/] for archive entry [teal]#{2}[/].[/]</value>
     </data>
     <data name="Title_Date" xml:space="preserve">
-        <value>Date</value>
+        <value>[bold][blue]Date[/][/]</value>
     </data>
     <data name="Title_Attributes_ABBREVIATED" xml:space="preserve">
-        <value>Attr</value>
+        <value>[bold][gold3]Attr[/][/]</value>
         <comment>"Attributes" abbreviated to the smallest possible size, if allowed by language rules.</comment>
     </data>
     <data name="Title_Size" xml:space="preserve">
-        <value>Size</value>
+        <value>[bold][lime]Size[/][/]</value>
     </data>
     <data name="Title_Compressed" xml:space="preserve">
-        <value>Compressed</value>
+        <value>[bold][teal]Compressed[/][/]</value>
     </data>
     <data name="Error_0_getting_compressed_size_for_archive_entry_1" xml:space="preserve">
         <value>Error {0} getting compressed size for archive entry #{1}.</value>
     </data>
     <data name="_0_files_1_folders" xml:space="preserve">
-        <value>{0} files, {1} folders</value>
+        <value>[slateblue1][italic][teal]{0}[/] files, [teal]{1}[/] folders[/][/]</value>
     </data>
     <data name="_0_files" xml:space="preserve">
-        <value>{0} files</value>
+        <value>[slateblue1][italic][teal]{0}[/] files[/][/]</value>
     </data>
     <data name="LogEntry_Type_Exception" xml:space="preserve">
         <value>Exception</value>
