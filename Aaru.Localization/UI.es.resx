@@ -1058,8 +1058,8 @@
     <value>La revisión del firmware de la unidad usada para leer el medio representado por la imagen.</value>
   </data>
     <data name="First_image_has_more_sectors" xml:space="preserve">
-    <value>La 1ª imagen tiene más sectores</value>
-  </data>
+        <value>[red]La 1ª imagen tiene más sectores[/]</value>
+    </data>
     <data name="First_input_file_format_identified_by_0" xml:space="preserve">
         <value>[slateblue1]El formato del 1er fichero es identificado por [green]{0}[/].[/]</value>
     </data>
@@ -1272,11 +1272,11 @@
         <value>[red]Si no le importa, use la opción "force". Esto omitirá todas las etiquetas de sector convirtiendo sólo los datos de usuario.[/]</value>
     </data>
     <data name="Images_differ" xml:space="preserve">
-    <value>Las imágenes son diferentes</value>
-  </data>
+        <value>[red]Las imágenes son diferentes[/]</value>
+    </data>
     <data name="Images_do_not_differ" xml:space="preserve">
-    <value>Las imágenes son idénticas</value>
-  </data>
+        <value>[green]Las imágenes son idénticas[/]</value>
+    </data>
     <data name="Image_Checksum_Command_Description" xml:space="preserve">
     <value>Calcula el checksum de una imagen.</value>
   </data>
@@ -1566,8 +1566,8 @@
     <value>Título del medio: {0}</value>
   </data>
     <data name="Media_type_differs" xml:space="preserve">
-    <value>El tipo de medio difiere</value>
-  </data>
+        <value>[red]El tipo de medio difiere[/]</value>
+    </data>
     <data name="Medium_types_currently_inserted_in_device" xml:space="preserve">
     <value>Tipos de medio actualmente introducidos en la unidad</value>
   </data>

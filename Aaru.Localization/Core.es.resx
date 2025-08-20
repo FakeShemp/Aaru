@@ -451,8 +451,8 @@
     <value>No se pudo encontrar el desplazamiento del fotograma de VideoNow Color, el volcado podría ser incorrecto.</value>
   </data>
     <data name="Could_not_get_a_working_read_command" xml:space="preserve">
-    <value>¡No se pudo encontrar un comando de lectura que funcione!</value>
-  </data>
+        <value>[red]¡No se pudo encontrar un comando de lectura que funcione![/]</value>
+    </data>
     <data name="Could_not_get_correct_subchannel_for_sector_0" xml:space="preserve">
     <value>No se pudo obtener el subcanal correcto para el sector {0}</value>
   </data>
@@ -2867,8 +2867,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
         <value>[bold][aqua]Bps sin procesar[/][/]</value>
     </data>
     <data name="Title_Serial" xml:space="preserve">
-    <value>Serie</value>
-  </data>
+        <value>[bold][fuchsia]Serie[/][/]</value>
+    </data>
     <data name="Title_Session" xml:space="preserve">
         <value>[bold][navy]Sesión[/][/]</value>
     </data>
@@ -3401,7 +3401,7 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>DMI de Xbox 360</value>
   </data>
     <data name="Xbox_360_DMI_contained_in_image_WithMarkup" xml:space="preserve">
-        <value>[bold[blue]DMI de Xbox 360 contenida en la imagen:[/][/]</value>
+        <value>[bold][blue]DMI de Xbox 360 contenida en la imagen:[/][/]</value>
     </data>
     <data name="Xbox_DMI" xml:space="preserve">
     <value>DMI de Xbox</value>
