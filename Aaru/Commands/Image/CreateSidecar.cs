@@ -129,9 +129,11 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
                 }
 
                 if(settings.Verbose)
-                    AaruLogging.Verbose(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
+                    AaruLogging.Verbose(UI.Image_format_identified_by_0_1,
+                                        Markup.Escape(imageFormat.Name),
+                                        imageFormat.Id);
                 else
-                    AaruLogging.WriteLine(UI.Image_format_identified_by_0, imageFormat.Name);
+                    AaruLogging.WriteLine(UI.Image_format_identified_by_0, Markup.Escape(imageFormat.Name));
 
                 try
                 {

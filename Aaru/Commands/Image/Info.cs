@@ -89,7 +89,7 @@ sealed class ImageInfoCommand : Command<ImageInfoCommand.Settings>
                 return (int)ErrorNumber.UnrecognizedFormat;
             }
 
-            AaruLogging.WriteLine(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
+            AaruLogging.WriteLine(UI.Image_format_identified_by_0_1, Markup.Escape(imageFormat.Name), imageFormat.Id);
 
             AaruLogging.WriteLine();
 

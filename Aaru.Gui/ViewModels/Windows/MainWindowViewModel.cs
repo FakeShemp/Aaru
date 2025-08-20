@@ -64,6 +64,7 @@ using JetBrains.Annotations;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using ReactiveUI;
+using Spectre.Console;
 using Console = Aaru.Gui.Views.Dialogs.Console;
 using DeviceInfo = Aaru.Core.Devices.Info.DeviceInfo;
 using ImageInfo = Aaru.Gui.Views.Panels.ImageInfo;
@@ -568,7 +569,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            AaruLogging.WriteLine(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
+            AaruLogging.WriteLine(UI.Image_format_identified_by_0_1, Markup.Escape(imageFormat.Name), imageFormat.Id);
 
             try
             {
@@ -835,11 +836,11 @@ public sealed class MainWindowViewModel : ViewModelBase
                                                        .ThenBy(d => d.Model))
             {
                 AaruLogging.Debug(MODULE_NAME,
-                                           UI.Found_supported_device_model_0_by_manufacturer_1_on_bus_2_and_path_3,
-                                           device.Model,
-                                           device.Vendor,
-                                           device.Bus,
-                                           device.Path);
+                                  UI.Found_supported_device_model_0_by_manufacturer_1_on_bus_2_and_path_3,
+                                  device.Model,
+                                  device.Vendor,
+                                  device.Bus,
+                                  device.Path);
 
                 var deviceModel = new DeviceModel
                 {

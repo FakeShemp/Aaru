@@ -695,8 +695,9 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Sessions is { Count: > 0 })
-                    foreach(Session session in opticalMediaImage.Sessions)
-                        Sessions.Add(session);
+                {
+                    foreach(Session session in opticalMediaImage.Sessions) Sessions.Add(session);
+                }
             }
             catch(Exception ex)
             {
@@ -706,8 +707,9 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Tracks is { Count: > 0 })
-                    foreach(Track track in opticalMediaImage.Tracks)
-                        Tracks.Add(track);
+                {
+                    foreach(Track track in opticalMediaImage.Tracks) Tracks.Add(track);
+                }
             }
             catch(Exception ex)
             {
