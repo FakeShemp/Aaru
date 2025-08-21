@@ -6117,5 +6117,35 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Title_Date_modified", resourceCulture);
             }
         }
+        
+        public static string Title_Server_information {
+            get {
+                return ResourceManager.GetString("Title_Server_information", resourceCulture);
+            }
+        }
+        
+        public static string Server_application {
+            get {
+                return ResourceManager.GetString("Server_application", resourceCulture);
+            }
+        }
+        
+        public static string Server_operating_system {
+            get {
+                return ResourceManager.GetString("Server_operating_system", resourceCulture);
+            }
+        }
+        
+        public static string Server_maximum_protocol {
+            get {
+                return ResourceManager.GetString("Server_maximum_protocol", resourceCulture);
+            }
+        }
+        
+        public static string Error_connecting_to_host {
+            get {
+                return ResourceManager.GetString("Error_connecting_to_host", resourceCulture);
+            }
+        }
     }
 }

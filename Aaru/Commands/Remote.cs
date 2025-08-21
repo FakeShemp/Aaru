@@ -36,6 +36,7 @@ using System;
 using System.ComponentModel;
 using Aaru.CommonTypes.Enums;
 using Aaru.Core;
+using Aaru.Localization;
 using Aaru.Logging;
 using Sentry;
 using Spectre.Console;
@@ -70,20 +71,29 @@ sealed class RemoteCommand : Command<RemoteCommand.Settings>
 
             Table table = new()
             {
-                Title = new TableTitle("Server information")
+                Title = new TableTitle(UI.Title_Server_information)
             };
+
+            AaruLogging.Information(UI.Title_Server_information);
 
             table.AddColumn("");
             table.AddColumn("");
             table.Columns[0].RightAligned();
+            table.Border(TableBorder.Rounded);
+            table.BorderColor(Color.Yellow);
+            table.HideHeaders();
 
-            table.AddRow("Server application", $"{remote.ServerApplication} {remote.ServerVersion}");
+            table.AddRow(UI.Server_application, $"[green]{remote.ServerApplication}[/] [red]{remote.ServerVersion}[/]");
 
-            table.AddRow("Server operating system",
-                         $"{remote.ServerOperatingSystem} {remote.ServerOperatingSystemVersion} ({
-                             remote.ServerArchitecture})");
+            table.AddRow(UI.Server_operating_system,
+                         $"[fuchsia]{remote.ServerOperatingSystem}[/] [lime]{remote.ServerOperatingSystemVersion}[/] [slateblue1]([gold3]{
+                             remote.ServerArchitecture}[/])[/]");
 
-            table.AddRow("Server maximum protocol", $"{remote.ServerProtocolVersion}");
+            table.AddRow(UI.Server_maximum_protocol, $"[teal]{remote.ServerProtocolVersion}[/]");
+
+            AaruLogging.Information($"{UI.Server_application}: {remote.ServerApplication} {remote.ServerVersion}");
+            AaruLogging.Information($"{UI.Server_operating_system}: {remote.ServerOperatingSystem} {remote.ServerOperatingSystemVersion} ({remote.ServerArchitecture})");
+            AaruLogging.Information($"{UI.Server_maximum_protocol}: {remote.ServerProtocolVersion}");
 
             AnsiConsole.Write(table);
             remote.Disconnect();
@@ -91,7 +101,7 @@ sealed class RemoteCommand : Command<RemoteCommand.Settings>
         catch(Exception ex)
         {
             SentrySdk.CaptureException(ex);
-            AaruLogging.Error("Error connecting to host.");
+            AaruLogging.Error(UI.Error_connecting_to_host);
 
             return (int)ErrorNumber.CannotOpenDevice;
         }

@@ -3056,4 +3056,19 @@ Probadores:
     <data name="Title_Date_modified" xml:space="preserve">
         <value>[bold][dodgerblue1]Fecha modificación[/][/]</value>
     </data>
+    <data name="Title_Server_information" xml:space="preserve">
+        <value>[bold][blue]Información del servidor[/][/]</value>
+    </data>
+    <data name="Server_application" xml:space="preserve">
+        <value>[green]Aplicación del servidor[/]</value>
+    </data>
+    <data name="Server_operating_system" xml:space="preserve">
+        <value>[orange3]Sistema operativo del servidor[/]</value>
+    </data>
+    <data name="Server_maximum_protocol" xml:space="preserve">
+        <value>[slateblue1]Protocolo máximo del servidor[/]</value>
+    </data>
+    <data name="Error_connecting_to_host" xml:space="preserve">
+        <value>[red]Error al conectar al servidor.[/]</value>
+    </data>
 </root>

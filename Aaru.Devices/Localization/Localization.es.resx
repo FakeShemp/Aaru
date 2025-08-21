@@ -421,8 +421,8 @@
     <value>URI remota inválida.</value>
   </data>
     <data name="Error_connecting_to_host" xml:space="preserve">
-    <value>Error al conectar al servidor.</value>
-  </data>
+        <value>[red]Error al conectar al servidor.[/]</value>
+    </data>
     <data name="Invalid_remote_protocol" xml:space="preserve">
     <value>Protocolo remoto inválido.</value>
   </data>
@@ -430,8 +430,8 @@
     <value>Servidor no encontrado</value>
   </data>
     <data name="Connected_to_0" xml:space="preserve">
-    <value>Conectado a {0}</value>
-  </data>
+        <value>[slateblue1]Conectado a [teal]{0}[/][/]</value>
+    </data>
     <data name="Could_not_read_from_the_network" xml:space="preserve">
     <value>No se pudo leer desde la red...</value>
   </data>

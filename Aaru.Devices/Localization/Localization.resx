@@ -428,8 +428,8 @@
     <value>Invalid remote URI.</value>
   </data>
     <data name="Error_connecting_to_host" xml:space="preserve">
-    <value>Error connecting to host.</value>
-  </data>
+        <value>[red]Error connecting to host.[/]</value>
+    </data>
     <data name="Invalid_remote_protocol" xml:space="preserve">
     <value>Invalid remote protocol.</value>
   </data>
@@ -437,8 +437,8 @@
     <value>Host not found</value>
   </data>
     <data name="Connected_to_0" xml:space="preserve">
-    <value>Connected to {0}</value>
-  </data>
+        <value>[slateblue1]Connected to [teal]{0}[/][/]</value>
+    </data>
     <data name="Could_not_read_from_the_network" xml:space="preserve">
     <value>Could not read from the network...</value>
   </data>

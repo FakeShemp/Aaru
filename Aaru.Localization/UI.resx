@@ -3135,4 +3135,19 @@ Do you want to continue?</value>
     <data name="Title_Date_modified" xml:space="preserve">
         <value>[bold][dodgerblue1]Date modified[/][/]</value>
     </data>
+    <data name="Title_Server_information" xml:space="preserve">
+        <value>[bold][blue]Server information[/][/]</value>
+    </data>
+    <data name="Server_application" xml:space="preserve">
+        <value>[green]Server application[/]</value>
+    </data>
+    <data name="Server_operating_system" xml:space="preserve">
+        <value>[orange3]Server operating system[/]</value>
+    </data>
+    <data name="Server_maximum_protocol" xml:space="preserve">
+        <value>[slateblue1]Server maximum protocol[/]</value>
+    </data>
+    <data name="Error_connecting_to_host" xml:space="preserve">
+        <value>[red]Error connecting to host.[/]</value>
+    </data>
 </root>
