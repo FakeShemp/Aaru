@@ -48,6 +48,8 @@ public static class ArchiveFormat
     /// <returns>Detected archive plugin</returns>
     public static IArchive Detect(IFilter archiveFilter)
     {
+        ITransactionTracer transaction = SentrySdk.StartTransaction("GetPlugin", "DetectArchive");
+
         try
         {
             PluginRegister plugins = PluginRegister.Singleton;
@@ -76,11 +78,15 @@ public static class ArchiveFormat
             }
 
             // Not recognized
+            transaction.Finish();
+
             return format;
         }
         catch(Exception ex)
         {
             SentrySdk.CaptureException(ex);
+
+            transaction.Finish();
 
             return null;
         }

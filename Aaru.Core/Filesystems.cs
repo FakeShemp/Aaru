@@ -36,6 +36,7 @@ using System.Linq;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Logging;
+using Sentry;
 
 namespace Aaru.Core;
 
@@ -53,7 +54,8 @@ public static class Filesystems
     public static void Identify(IMediaImage imagePlugin, out List<string> idPlugins, Partition partition,
                                 bool        getGuid = false)
     {
-        PluginRegister plugins = PluginRegister.Singleton;
+        ITransactionTracer transaction = SentrySdk.StartTransaction("GetPlugin", "DetectFilesystem");
+        PluginRegister     plugins     = PluginRegister.Singleton;
 
         idPlugins = [];
 
@@ -66,13 +68,12 @@ public static class Filesystems
             }
             catch(Exception ex)
             {
-                AaruLogging
-                   .Error(Localization.Core.Filesystems_Identify_Error,
-                                   plugin.Name);
+                AaruLogging.Error(Localization.Core.Filesystems_Identify_Error, plugin.Name);
 
-                AaruLogging.Exception(ex, Localization.Core.Filesystems_Identify_Error,
-                                      plugin.Name);
+                AaruLogging.Exception(ex, Localization.Core.Filesystems_Identify_Error, plugin.Name);
             }
         }
+
+        transaction.Finish();
     }
 }

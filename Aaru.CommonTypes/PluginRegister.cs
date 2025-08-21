@@ -257,7 +257,8 @@ public class PluginRegister
     /// <returns>The filter that allows reading the specified path</returns>
     public IFilter GetFilter(string path)
     {
-        IFilter noFilter = null;
+        ITransactionTracer transaction = SentrySdk.StartTransaction("GetPlugin", "DetectFilter");
+        IFilter            noFilter    = null;
 
         foreach(IFilter filter in Filters.Values)
         {
@@ -269,7 +270,12 @@ public class PluginRegister
 
                     var foundFilter = (IFilter)filter.GetType().GetConstructor(Type.EmptyTypes)?.Invoke([]);
 
-                    if(foundFilter?.Open(path) == ErrorNumber.NoError) return foundFilter;
+                    if(foundFilter?.Open(path) == ErrorNumber.NoError)
+                    {
+                        transaction.Finish();
+
+                        return foundFilter;
+                    }
                 }
                 else
                     noFilter = filter;
@@ -281,9 +287,16 @@ public class PluginRegister
             }
         }
 
-        if(!noFilter?.Identify(path) == true) return null;
+        if(!noFilter?.Identify(path) == true)
+        {
+            transaction.Finish();
+
+            return null;
+        }
 
         noFilter?.Open(path);
+
+        transaction.Finish();
 
         return noFilter;
     }

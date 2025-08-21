@@ -48,6 +48,8 @@ public static class ImageFormat
     /// <returns>Detected image plugin</returns>
     public static IBaseImage Detect(IFilter imageFilter)
     {
+        ITransactionTracer transaction = SentrySdk.StartTransaction("GetPlugin", "DetectImageFormat");
+
         try
         {
             PluginRegister plugins = PluginRegister.Singleton;
@@ -102,7 +104,12 @@ public static class ImageFormat
                 }
             }
 
-            if(imageFormat != null) return imageFormat;
+            if(imageFormat != null)
+            {
+                transaction.Finish();
+
+                return imageFormat;
+            }
 
             // Check only RAW plugin
             foreach(IMediaImage imagePlugin in plugins.MediaImages.Values)
@@ -128,11 +135,15 @@ public static class ImageFormat
             }
 
             // Still not recognized
+            transaction.Finish();
+
             return imageFormat;
         }
         catch(Exception ex)
         {
             SentrySdk.CaptureException(ex);
+
+            transaction.Finish();
 
             return null;
         }
