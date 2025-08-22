@@ -13,17 +13,17 @@ do
   dotnet publish -f net10.0 -r ${distro} -c ${conf}
 
 # Package the Linux packages (stopped working)
-  if [[ ${distro} == alpine* ]] || [[ ${distro} == linux* ]]; then
-    dotnet tarball -f net10.0 -r ${distro} -c ${conf} -o ../build
-    dotnet rpm -f net10.0 -r ${distro} -c ${conf} -o ../build
-    dotnet deb -f net10.0 -r ${distro} -c ${conf} -o ../build
-  elif [[ ${distro} == win* ]] || [[ ${distro} == osx* ]]; then
-    dotnet zip -f net10.0 -r ${distro} -c ${conf} -o ../build
+#  if [[ ${distro} == alpine* ]] || [[ ${distro} == linux* ]]; then
+#    dotnet tarball -f net10.0 -r ${distro} -c ${conf} -o ../build
+#    dotnet rpm -f net10.0 -r ${distro} -c ${conf} -o ../build
+#    dotnet deb -f net10.0 -r ${distro} -c ${conf} -o ../build
+#  elif [[ ${distro} == win* ]] || [[ ${distro} == osx* ]]; then
+#    dotnet zip -f net10.0 -r ${distro} -c ${conf} -o ../build
 #  elif [[ ${distro} == rhel* ]] || [[ ${distro} == sles* ]]; then
 #    pkg="rpm"
 #  else
 #    pkg="deb"
-  fi
+#  fi
 
   done
 done

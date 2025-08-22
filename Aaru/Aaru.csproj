@@ -12,6 +12,8 @@
     <IsPackable>false</IsPackable>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Packaging.Targets"/>
@@ -100,7 +102,7 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <PackageVersion>6.0.0-alpha10</PackageVersion>
+    <PackageVersion>6.0.0-alpha.11</PackageVersion>
     <PackagePrefix>aaru</PackagePrefix>
     <Authors>Natalia Portillo &lt;claunia@claunia.com&gt;</Authors>
     <Section>net</Section>
