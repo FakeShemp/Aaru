@@ -1,3 +1,42 @@
+# [6.0.0-alpha.11] - 2025-08-22
+
+## Added
+
+### - Console
+
+- Add colors to all output from console, except from plugins themselves (this will come later).
+
+## Fixed
+
+### - Media detection
+
+- Fix detection of BD-R when profile is set wrong by drive.
+
+### - Media information
+
+- Fix media information not returning anything.
+- Prevent crash when incorrect MMC features are returned by the drive.
+
+### - Media scanning
+
+- Fixed wrong speed average.
+
+### - Decoding
+
+- Guards against certain EVPD page 80h.
+
+### - Dumping
+
+- Show MAX instead of "0x" when dumping CDs.
+- DI and BCA will be dumped from all Blu-ray derived media types.
+
+## Changes
+
+- Add Sentry to catch and send exceptions to be reviewed.
+- Add option to save log file globally.
+- Disable automatic creation of log file on dumping, use global log file.
+- Updated to .NET 10
+
 # [5.4.1] - 2025-08-14
 
 - Updated EntityFrameworkCore due to compatibility issues.
@@ -23,6 +62,7 @@
 - Find CSS keys from pattern attack
 
 ### - Filesystems
+
 - Implement full support for mounting, reading and extracting Commodore 1540/1541/1571/1581 filesystems.
 
 ### - Fletcher-32 checksum
@@ -31,6 +71,7 @@
 - SSSE3 implementation if supported by running host.
 
 ### - Formats
+
 - A2R flux format support
 - HyperFlex floppy formats.
 - SuperCard Pro flux parsing
@@ -38,29 +79,35 @@
 ## Fixes
 
 ### - Commands
+
 - Continue identifying filesystems if one of them throws an exception, and ask user to fill a report about it.
 - Ensure a directory that exists with the same name of a file is considered as file already existing.
 - Fix creation of metadata sidecar for optical media images not mounting supported filesystems.
 
 ### - Devices
+
 - Make Kreon SCSI CDB10 for Linux.
 - Fix spiral maximum sector count for DDCD parameters from a real DDCD-R disc.
 - Workaround some devices not liking oddly sized buffers when calling MODE SENSE (6) / MODE SENSE (10).
 
 ### - SCSI response decoders
+
 - Fix decoding of MODE SENSE (10) pages in page 0 format.
 - Fix handling of corrupt/invalid MODE SENSE (6) block descriptors. Fixes #842
 - Fix SCSI SENSE not being decoded if VALID bit set. Fixes #824
 
 ### - Dumping
+
 - Check title keys resume for null when not a DVD Video (#827)
 - Check sector validity when reading scrambled using Plextor drives.
 - Fix USB field sizes for 64-bit Windows systems.
 - Fix trying to write to subchannel log when there's none available.
 - In CD-i discs with no tracks in TOC and an audio lead-out, fix setting track 1 as data.
-- When trimming or retrying using scrambled mode, fix offset and check validity of data sectors because drive can report no error but return errored data.
+- When trimming or retrying using scrambled mode, fix offset and check validity of data sectors because drive can report
+  no error but return errored data.
 
 ### - ISO9660 filesystem
+
 - Do not declare the presence of MODE 2 sub-headers based on long sector content, but on tag presence on media image.
 - Fixed performance issue caused by reading the whole data previous to the asked offset.
 
@@ -2531,6 +2578,8 @@
 - Apple Partition Map (aka APM).
 - Master Boot Record (aka MBR).
 - NeXT disklabels.
+
+[6.0.0-alpha.11]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.11
 
 [5.4.1]: https://github.com/aaru-dps/Aaru/releases/tag/v5.4.1
 
