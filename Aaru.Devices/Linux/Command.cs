@@ -46,14 +46,48 @@ partial class Device
     public override unsafe int SendScsiCommand(Span<byte> cdb, ref byte[] buffer, uint timeout, ScsiDirection direction,
                                                out double duration, out bool sense)
     {
-        // We need a timeout
+        // Defaults
         if(timeout == 0) timeout = Timeout > 0 ? Timeout : 15;
-
         duration = 0;
         sense    = false;
         SenseBuffer.Clear();
 
         if(buffer == null) return -1;
+
+        int len = buffer.Length;
+        int rc;
+
+        if(len == 0)
+        {
+            // Zero-length command: no data buffer
+            var ioHdr0 = new SgIoHdrT
+            {
+                interface_id    = 'S',
+                cmd_len         = (byte)cdb.Length,
+                mx_sb_len       = (byte)SenseBuffer.Length,
+                dxfer_direction = ScsiIoctlDirection.None,
+                dxfer_len       = 0,
+                dxferp          = IntPtr.Zero,
+                cmdp            = (IntPtr)CdbPtr,
+                sbp             = (IntPtr)SensePtr,
+                timeout         = timeout * 1000,
+                flags           = 0
+            };
+
+            // Load CDB
+            cdb.CopyTo(new Span<byte>(CdbPtr, cdb.Length));
+
+            long t0 = Stopwatch.GetTimestamp();
+            rc = Extern.ioctlSg(_fileDescriptor, LinuxIoctl.SgIo, ref ioHdr0);
+            if(rc < 0) rc = Marshal.GetLastWin32Error();
+            sense |= (ioHdr0.info & SgInfo.OkMask) != SgInfo.Ok;
+
+            duration = ioHdr0.duration > 0
+                           ? ioHdr0.duration
+                           : (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency;
+
+            return rc;
+        }
 
         ScsiIoctlDirection dir = direction switch
                                  {
@@ -64,39 +98,65 @@ partial class Device
                                      _                           => ScsiIoctlDirection.Unknown
                                  };
 
-        EnsureCapacityAligned((nuint)buffer.Length);
+        // Prepare sg_io_hdr
+        var ioHdr = new SgIoHdrT
+        {
+            interface_id    = 'S',
+            cmd_len         = (byte)cdb.Length,
+            mx_sb_len       = (byte)SenseBuffer.Length,
+            dxfer_direction = dir,
+            dxfer_len       = (uint)len,
+            cmdp            = (IntPtr)CdbPtr,
+            sbp             = (IntPtr)SensePtr,
+            timeout         = timeout * 1000,
 
-        var ioHdr = new SgIoHdrT();
+            // Direct I/O can help for larger transfers; benchmark threshold for your device
+            flags = (uint)(len >= 4096 ? SgFlags.DirectIo : 0)
+        };
 
-        ioHdr.interface_id    = 'S';
-        ioHdr.cmd_len         = (byte)cdb.Length;
-        ioHdr.mx_sb_len       = (byte)SenseBuffer.Length;
-        ioHdr.dxfer_direction = dir;
-        ioHdr.dxfer_len       = (uint)buffer.Length;
-        ioHdr.dxferp          = (IntPtr)_nativeBuffer;
-        ioHdr.cmdp            = (IntPtr)CdbPtr;
-        ioHdr.sbp             = (IntPtr)SensePtr;
-        ioHdr.timeout         = timeout * 1000;
-        ioHdr.flags           = (uint)SgFlags.DirectIo;
+        // Load CDB into pinned CDB buffer
+        cdb.CopyTo(new Span<byte>(CdbPtr, cdb.Length));
 
-        // OUT or bidirectional → pre‑fill from managed buffer
-        if(direction != ScsiDirection.In) buffer.AsSpan().CopyTo(new Span<byte>((void*)_nativeBuffer, buffer.Length));
+        long tStart = Stopwatch.GetTimestamp();
 
-        var cmdStopWatch = new Stopwatch();
-        cmdStopWatch.Start();
-        int error = Extern.ioctlSg(_fileDescriptor, LinuxIoctl.SgIo, ref ioHdr);
-        cmdStopWatch.Stop();
+        if(direction == ScsiDirection.Out)
+        {
+            // Zero-copy OUT: pin and pass managed buffer directly
+            fixed(byte* pBuf = buffer)
+            {
+                ioHdr.dxferp = (IntPtr)pBuf;
+                rc           = Extern.ioctlSg(_fileDescriptor, LinuxIoctl.SgIo, ref ioHdr);
+            }
+        }
+        else
+        {
+            // IN or BiDir → use pooled, aligned native buffer
+            EnsureCapacityAligned((nuint)len);
+            ioHdr.dxferp = (IntPtr)_nativeBuffer;
 
-        if(error < 0) error = Marshal.GetLastWin32Error();
+            var nativeSpan = new Span<byte>((void*)_nativeBuffer, len);
 
-        // IN or bidirectional → copy back into managed buffer
-        if(direction != ScsiDirection.Out) new Span<byte>((void*)_nativeBuffer, buffer.Length).CopyTo(buffer);
+            // BiDir prefill (protocol dependent); IN has nothing to send
+            if(direction == ScsiDirection.Bidirectional) buffer.AsSpan().CopyTo(nativeSpan);
+
+            rc = Extern.ioctlSg(_fileDescriptor, LinuxIoctl.SgIo, ref ioHdr);
+
+            // Copy back only the bytes actually transferred if resid is sane
+            int bytesToCopy                                        = len;
+            if(ioHdr.resid >= 0 && ioHdr.resid <= len) bytesToCopy = len - ioHdr.resid;
+
+            if(bytesToCopy > 0) nativeSpan[..bytesToCopy].CopyTo(buffer);
+        }
+
+        if(rc < 0) rc = Marshal.GetLastWin32Error();
 
         sense |= (ioHdr.info & SgInfo.OkMask) != SgInfo.Ok;
 
-        duration = ioHdr.duration > 0 ? ioHdr.duration : cmdStopWatch.Elapsed.TotalMilliseconds;
+        duration = ioHdr.duration > 0
+                       ? ioHdr.duration
+                       : (Stopwatch.GetTimestamp() - tStart) * 1000.0 / Stopwatch.Frequency;
 
-        return error;
+        return rc;
     }
 
 
