@@ -49,6 +49,7 @@ using Aaru.Filters;
 using Aaru.Helpers;
 using Aaru.Helpers.IO;
 using Aaru.Logging;
+using Humanizer;
 using Sentry;
 using DMI = Aaru.Decoders.Xbox.DMI;
 using Sector = Aaru.Decoders.CD.Sector;
@@ -1136,7 +1137,7 @@ public sealed partial class BlindWrite5
                 partition.Sequence = track.Sequence;
                 partition.Offset   = offsetBytes;
                 partition.Start    = track.StartSector;
-                partition.Type     = track.Type.ToString();
+                partition.Type     = track.Type.Humanize();
 
                 offsetBytes += partition.Size;
 

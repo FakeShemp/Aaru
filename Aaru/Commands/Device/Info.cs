@@ -357,7 +357,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                 AaruLogging.WriteLine(removable
                                           ? Localization.Core.Media_identified_as_0
                                           : Localization.Core.Device_identified_as_0,
-                                      mediaType);
+                                      mediaType.Humanize());
 
                 Statistics.AddMedia(mediaType, true);
             }

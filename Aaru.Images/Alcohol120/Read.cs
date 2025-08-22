@@ -152,114 +152,114 @@ public sealed partial class Alcohol120
                 }
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].mode = {0}",
-                                           track.mode,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].mode = {0}",
+                                  track.mode,
+                                  track.point,
+                                  session.sessionSequence);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].subMode = {0}",
-                                           track.subMode,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].subMode = {0}",
+                                  track.subMode,
+                                  track.point,
+                                  session.sessionSequence);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].adrCtl = {0}",
-                                           track.adrCtl,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].adrCtl = {0}",
+                                  track.adrCtl,
+                                  track.point,
+                                  session.sessionSequence);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].tno = {0}",
-                                           track.tno,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].tno = {0}",
+                                  track.tno,
+                                  track.point,
+                                  session.sessionSequence);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].point = {0:X2}",
-                                           track.point,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].point = {0:X2}",
+                                  track.point,
+                                  track.point,
+                                  session.sessionSequence);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].min = {0}",
-                                           track.min,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].min = {0}",
+                                  track.min,
+                                  track.point,
+                                  session.sessionSequence);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].sec = {0}",
-                                           track.sec,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].sec = {0}",
+                                  track.sec,
+                                  track.point,
+                                  session.sessionSequence);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].frame = {0}",
-                                           track.frame,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].frame = {0}",
+                                  track.frame,
+                                  track.point,
+                                  session.sessionSequence);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].zero = {0}",
-                                           track.zero,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].zero = {0}",
+                                  track.zero,
+                                  track.point,
+                                  session.sessionSequence);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].pmin = {0}",
-                                           track.pmin,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].pmin = {0}",
+                                  track.pmin,
+                                  track.point,
+                                  session.sessionSequence);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].psec = {0}",
-                                           track.psec,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].psec = {0}",
+                                  track.psec,
+                                  track.point,
+                                  session.sessionSequence);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].pframe = {0}",
-                                           track.pframe,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].pframe = {0}",
+                                  track.pframe,
+                                  track.point,
+                                  session.sessionSequence);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].extraOffset = {0}",
-                                           track.extraOffset,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].extraOffset = {0}",
+                                  track.extraOffset,
+                                  track.point,
+                                  session.sessionSequence);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].sectorSize = {0}",
-                                           track.sectorSize,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].sectorSize = {0}",
+                                  track.sectorSize,
+                                  track.point,
+                                  session.sessionSequence);
 
                 //for(int j = 0; j < track.unknown.Length; j++)
                 //    AaruLogging.DebugWriteLine(MODULE_NAME, "session[{2}].track[{1}].unknown[{2}] = {0}", track.unknown[j], i, j, session.sessionSequence);
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].startLba = {0}",
-                                           track.startLba,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].startLba = {0}",
+                                  track.startLba,
+                                  track.point,
+                                  session.sessionSequence);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].startOffset = {0}",
-                                           track.startOffset,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].startOffset = {0}",
+                                  track.startOffset,
+                                  track.point,
+                                  session.sessionSequence);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].files = {0}",
-                                           track.files,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].files = {0}",
+                                  track.files,
+                                  track.point,
+                                  session.sessionSequence);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "session[{2}].track[{1}].footerOffset = {0}",
-                                           track.footerOffset,
-                                           track.point,
-                                           session.sessionSequence);
+                                  "session[{2}].track[{1}].footerOffset = {0}",
+                                  track.footerOffset,
+                                  track.point,
+                                  session.sessionSequence);
 
                 //for(int j = 0; j < track.unknown2.Length; j++)
                 //    AaruLogging.DebugWriteLine(MODULE_NAME, "session[{2}].track[{1}].unknown2[{2}] = {0}", track.unknown2[j], i, j, session.sessionSequence);
@@ -269,7 +269,7 @@ public sealed partial class Alcohol120
                 if(track is { point: 1, startLba: > 0 })
                 {
                     AaruLogging.Error(Localization
-                                                  .The_disc_this_image_represents_contained_a_hidden_track_in_the_first_pregap_that_this_image_format_cannot_store_This_dump_is_therefore_incorrect);
+                                         .The_disc_this_image_represents_contained_a_hidden_track_in_the_first_pregap_that_this_image_format_cannot_store_This_dump_is_therefore_incorrect);
 
                     track1Index1   = track.startLba;
                     track.startLba = 0;

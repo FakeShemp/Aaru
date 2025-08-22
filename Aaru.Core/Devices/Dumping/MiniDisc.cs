@@ -154,7 +154,7 @@ partial class Dump
 
         UpdateStatus?.Invoke(string.Format(Localization.Core.SCSI_device_type_0,    _dev.ScsiType));
         UpdateStatus?.Invoke(string.Format(Localization.Core.SCSI_medium_type_0,    scsiMediumType));
-        UpdateStatus?.Invoke(string.Format(Localization.Core.Media_identified_as_0, dskType));
+        UpdateStatus?.Invoke(string.Format(Localization.Core.Media_identified_as_0, dskType.Humanize()));
 
 
         sense = _dev.MiniDiscGetType(out cmdBuf, out _, _dev.Timeout, out _);

@@ -949,7 +949,7 @@ sealed partial class Dump
         UpdateStatus?.Invoke(string.Format(Localization.Core.Device_can_read_0_blocks_at_a_time, _maximumReadable));
         UpdateStatus?.Invoke(string.Format(Localization.Core.Device_reports_0_bytes_per_logical_block, blockSize));
         UpdateStatus?.Invoke(string.Format(Localization.Core.SCSI_device_type_0, _dev.ScsiType));
-        UpdateStatus?.Invoke(string.Format(Localization.Core.Media_identified_as_0, dskType));
+        UpdateStatus?.Invoke(string.Format(Localization.Core.Media_identified_as_0, dskType.Humanize()));
 
         ret = outputOptical.Create(_outputPath,
                                    dskType,
@@ -1079,8 +1079,9 @@ sealed partial class Dump
             foreach(int sub in _resume.BadSubchannels) subchannelExtents.Add(sub);
 
             if(_resume.NextBlock < blocks)
-                for(ulong i = _resume.NextBlock; i < blocks; i++)
-                    subchannelExtents.Add((int)i);
+            {
+                for(ulong i = _resume.NextBlock; i < blocks; i++) subchannelExtents.Add((int)i);
+            }
         }
 
         if(_resume.NextBlock > 0)
@@ -1495,8 +1496,9 @@ sealed partial class Dump
                         supportsLongSectors);
 
         foreach(Tuple<ulong, ulong> leadoutExtent in leadOutExtents.ToArray())
-            for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++)
-                subchannelExtents.Remove((int)e);
+        {
+            for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++) subchannelExtents.Remove((int)e);
+        }
 
         if(subchannelExtents.Count > 0 && _retryPasses > 0 && _retrySubchannel)
         {

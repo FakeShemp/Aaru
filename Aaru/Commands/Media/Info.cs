@@ -51,6 +51,7 @@ using Aaru.Decoders.SCSI.SSC;
 using Aaru.Decoders.Xbox;
 using Aaru.Localization;
 using Aaru.Logging;
+using Humanizer;
 using Humanizer.Bytes;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -796,7 +797,7 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
             AaruLogging.WriteLine("");
         }
 
-        AaruLogging.WriteLine(Localization.Core.Media_identified_as_0, scsiInfo.MediaType);
+        AaruLogging.WriteLine(Localization.Core.Media_identified_as_0, scsiInfo.MediaType.Humanize());
         Statistics.AddMedia(scsiInfo.MediaType, true);
 
         if(scsiInfo.Toc != null || scsiInfo.RawToc != null)
@@ -851,7 +852,7 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
                                           track.StartSector,
                                           track.EndSector,
                                           track.Pregap,
-                                          track.Type);
+                                          track.Type.Humanize());
                 }
 
                 AaruLogging.WriteLine();

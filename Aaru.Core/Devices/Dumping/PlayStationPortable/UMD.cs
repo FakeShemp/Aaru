@@ -143,7 +143,7 @@ public partial class Dump
         UpdateStatus?.Invoke(string.Format(Localization.Core.Device_reports_0_bytes_per_logical_block, blockSize));
         UpdateStatus?.Invoke(string.Format(Localization.Core.Device_reports_0_bytes_per_physical_block, blockSize));
         UpdateStatus?.Invoke(string.Format(Localization.Core.SCSI_device_type_0, _dev.ScsiType));
-        UpdateStatus?.Invoke(string.Format(Localization.Core.Media_identified_as_0, dskType));
+        UpdateStatus?.Invoke(string.Format(Localization.Core.Media_identified_as_0, dskType.Humanize()));
         UpdateStatus?.Invoke(string.Format(Localization.Core.Media_part_number_is_0, mediaPartNumber));
 
         bool ret;

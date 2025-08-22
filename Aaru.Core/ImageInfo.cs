@@ -941,7 +941,7 @@ public static class ImageInfo
             foreach(Track track in opticalImage.Tracks)
             {
                 table.AddRow($"[teal]{track.Sequence}[/]",
-                             $"[orange3]{track.Type}[/]",
+                             $"[orange3]{track.Type.Humanize()}[/]",
                              $"[aqua]{track.BytesPerSector}[/]",
                              $"[aqua]{track.RawBytesPerSector}[/]",
                              $"[fuchsia]{track.SubchannelType}[/]",
@@ -951,7 +951,7 @@ public static class ImageInfo
 
                 // Write all the track information to AaruLogging.Information in a single line
                 AaruLogging
-                   .Information($"Track {track.Sequence}: type {track.Type}, bytes per sector {track.BytesPerSector}, raw bytes per sector {track.RawBytesPerSector}, subchannel type {track.SubchannelType}, pregap {track.Pregap}, start sector {track.StartSector}, end sector {track.EndSector}");
+                   .Information($"Track {track.Sequence}: type {track.Type.Humanize()}, bytes per sector {track.BytesPerSector}, raw bytes per sector {track.RawBytesPerSector}, subchannel type {track.SubchannelType}, pregap {track.Pregap}, start sector {track.StartSector}, end sector {track.EndSector}");
             }
 
             AnsiConsole.Write(table);

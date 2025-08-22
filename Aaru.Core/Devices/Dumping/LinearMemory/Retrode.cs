@@ -236,7 +236,7 @@ public partial class Dump
                                            romSize,
                                            ByteSize.FromBytes(romSize).ToString("0.000")));
 
-        UpdateStatus?.Invoke(string.Format(Localization.Core.Media_identified_as_0, mediaType));
+        UpdateStatus?.Invoke(string.Format(Localization.Core.Media_identified_as_0, mediaType.Humanize()));
 
         ErrorNumber ret = outputBai.Create(_outputPath, mediaType, _formatOptions, romSize);
 

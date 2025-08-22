@@ -40,6 +40,7 @@
 // ReSharper disable UnusedMember.Global
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Aaru.CommonTypes.Enums;
@@ -52,12 +53,16 @@ public enum TrackType : byte
     /// <summary>Data track (not any of the below defined ones)</summary>
     Data = 1,
     /// <summary>Data track, compact disc mode 1</summary>
+    [Description("MODE 1")]
     CdMode1 = 2,
     /// <summary>Data track, compact disc mode 2, formless</summary>
+    [Description("MODE 2 (Formless)")]
     CdMode2Formless = 3,
     /// <summary>Data track, compact disc mode 2, form 1</summary>
+    [Description("MODE 2 FORM 1")]
     CdMode2Form1 = 4,
     /// <summary>Data track, compact disc mode 2, form 2</summary>
+    [Description("MODE 2 FORM 2")]
     CdMode2Form2 = 5
 }
 

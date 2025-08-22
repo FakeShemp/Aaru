@@ -42,6 +42,7 @@ using Aaru.CommonTypes.Structs;
 using Aaru.Decoders.CD;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Humanizer;
 using Session = Aaru.CommonTypes.Structs.Session;
 
 namespace Aaru.Images;
@@ -130,8 +131,7 @@ public sealed partial class CloneCd
                 {
                     if(inDisk || inSession || inEntry || inTrack || inCdText)
                     {
-                        AaruLogging.Error(string.Format(Localization.Found_CloneCD_out_of_order_in_line_0,
-                                                                 lineNumber));
+                        AaruLogging.Error(string.Format(Localization.Found_CloneCD_out_of_order_in_line_0, lineNumber));
 
                         return ErrorNumber.InvalidArgument;
                     }
@@ -179,8 +179,8 @@ public sealed partial class CloneCd
                         if(_imageInfo.Version != "2" && _imageInfo.Version != "3")
                         {
                             AaruLogging.Error(Localization
-                                                          .CloneCD_plugin_Warning_Unknown_CCD_image_version_0_may_not_work,
-                                                       _imageInfo.Version);
+                                                 .CloneCD_plugin_Warning_Unknown_CCD_image_version_0_may_not_work,
+                                              _imageInfo.Version);
                         }
                     }
                     else if(inDisk)
@@ -193,31 +193,25 @@ public sealed partial class CloneCd
 
                         if(discEntMatch.Success)
                         {
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.Found_TocEntries_at_line_0,
-                                                       lineNumber);
+                            AaruLogging.Debug(MODULE_NAME, Localization.Found_TocEntries_at_line_0, lineNumber);
                         }
                         else if(discSessMatch.Success)
                             AaruLogging.Debug(MODULE_NAME, Localization.Found_Sessions_at_line_0, lineNumber);
                         else if(discScrMatch.Success)
                         {
                             AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.Found_DataTracksScrambled_at_line_0,
-                                                       lineNumber);
+                                              Localization.Found_DataTracksScrambled_at_line_0,
+                                              lineNumber);
 
                             _scrambled |= discScrMatch.Groups["value"].Value == "1";
                         }
                         else if(cdtLenMatch.Success)
                         {
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.Found_CDTextLength_at_line_0,
-                                                       lineNumber);
+                            AaruLogging.Debug(MODULE_NAME, Localization.Found_CDTextLength_at_line_0, lineNumber);
                         }
                         else if(discCatMatch.Success)
                         {
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.Found_Catalog_at_line_0_smallcase,
-                                                       lineNumber);
+                            AaruLogging.Debug(MODULE_NAME, Localization.Found_Catalog_at_line_0_smallcase, lineNumber);
 
                             _catalog = discCatMatch.Groups["value"].Value;
                         }
@@ -231,15 +225,11 @@ public sealed partial class CloneCd
 
                         if(cdtEntsMatch.Success)
                         {
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.Found_CD_Text_Entries_at_line_0,
-                                                       lineNumber);
+                            AaruLogging.Debug(MODULE_NAME, Localization.Found_CD_Text_Entries_at_line_0, lineNumber);
                         }
                         else if(cdtEntMatch.Success)
                         {
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.Found_CD_Text_Entry_at_line_0,
-                                                       lineNumber);
+                            AaruLogging.Debug(MODULE_NAME, Localization.Found_CD_Text_Entry_at_line_0, lineNumber);
 
                             string[] bytes = cdtEntMatch.Groups["value"]
                                                         .Value.Split(new[]
@@ -260,15 +250,11 @@ public sealed partial class CloneCd
 
                         if(sessPregMatch.Success)
                         {
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.Found_PreGapMode_at_line_0,
-                                                       lineNumber);
+                            AaruLogging.Debug(MODULE_NAME, Localization.Found_PreGapMode_at_line_0, lineNumber);
                         }
                         else if(sessSubcMatch.Success)
                         {
-                            AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.Found_PreGapSubC_at_line_0,
-                                                       lineNumber);
+                            AaruLogging.Debug(MODULE_NAME, Localization.Found_PreGapSubC_at_line_0, lineNumber);
                         }
                     }
                     else if(inEntry)
@@ -567,8 +553,8 @@ public sealed partial class CloneCd
                                     if(_imageInfo.MediaManufacturer != "")
                                     {
                                         AaruLogging.Debug(MODULE_NAME,
-                                                                   Localization.Disc_manufactured_by_0,
-                                                                   _imageInfo.MediaManufacturer);
+                                                          Localization.Disc_manufactured_by_0,
+                                                          _imageInfo.MediaManufacturer);
                                     }
                                 }
 
@@ -580,7 +566,7 @@ public sealed partial class CloneCd
                     {
                         uint id = (uint)((descriptor.Min << 16) + (descriptor.Sec << 8) + descriptor.Frame);
                         AaruLogging.Debug(MODULE_NAME, Localization.Disc_ID_0_X6, id & 0x00FFFFFF);
-                        _imageInfo.MediaSerialNumber = $"{id                                  & 0x00FFFFFF:X6}";
+                        _imageInfo.MediaSerialNumber = $"{id                         & 0x00FFFFFF:X6}";
 
                         break;
                     }
@@ -836,7 +822,7 @@ public sealed partial class CloneCd
                     Sequence    = track.Sequence,
                     Offset      = track.FileOffset,
                     Start       = (ulong)track.Indexes[1],
-                    Type        = track.Type.ToString()
+                    Type        = track.Type.Humanize()
                 };
 
                 Partitions.Add(partition);

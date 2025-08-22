@@ -43,6 +43,7 @@ using Aaru.CommonTypes.Structs;
 using Aaru.Decoders.CD;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Humanizer;
 using Session = Aaru.CommonTypes.Structs.Session;
 
 namespace Aaru.Images;
@@ -689,7 +690,7 @@ public sealed partial class BlindWrite4
                 };
 
                 partition.Offset = partition.Start * 2352;
-                partition.Type   = track.Type.ToString();
+                partition.Type   = track.Type.Humanize();
 
                 Partitions.Add(partition);
                 Tracks.Add(track);
@@ -744,9 +745,8 @@ public sealed partial class BlindWrite4
 
         // As long as subchannel is written for any track, it is present for all tracks
         if(Tracks.Any(t => t.SubchannelType == TrackSubchannelType.Packed))
-        {
-            foreach(Track track in Tracks) track.SubchannelType = TrackSubchannelType.Packed;
-        }
+            foreach(Track track in Tracks)
+                track.SubchannelType = TrackSubchannelType.Packed;
 
         _imageInfo.MediaType = MediaType.CD;
 

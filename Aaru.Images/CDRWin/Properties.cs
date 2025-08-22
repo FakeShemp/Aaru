@@ -90,7 +90,7 @@ public sealed partial class CdrWin
 
             ulong       previousStartSector = 0;
             const ulong gdRomSession2Offset = 45000;
-            var         previousTrackFile   = "";
+            string      previousTrackFile   = "";
 
             foreach(CdrWinTrack cdrTrack in _discImage.Tracks)
             {

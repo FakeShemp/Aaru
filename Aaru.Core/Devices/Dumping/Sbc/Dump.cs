@@ -290,7 +290,7 @@ partial class Dump
         UpdateStatus?.Invoke(string.Format(Localization.Core.SCSI_medium_type_0,              scsiMediumType));
         UpdateStatus?.Invoke(string.Format(Localization.Core.SCSI_density_type_0,             scsiDensityCode));
         UpdateStatus?.Invoke(string.Format(Localization.Core.SCSI_floppy_mode_page_present_0, containsFloppyPage));
-        UpdateStatus?.Invoke(string.Format(Localization.Core.Media_identified_as_0,           dskType));
+        UpdateStatus?.Invoke(string.Format(Localization.Core.Media_identified_as_0,           dskType.Humanize()));
 
         uint longBlockSize = scsiReader.LongBlockSize;
 

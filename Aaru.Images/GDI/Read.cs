@@ -103,15 +103,14 @@ public sealed partial class Gdi
                 }
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization
-                                              .Found_track_0_starts_at_1_flags_2_type_3_file_4_offset_5_at_line_6,
-                                           trackMatch.Groups["track"].Value,
-                                           trackMatch.Groups["start"].Value,
-                                           trackMatch.Groups["flags"].Value,
-                                           trackMatch.Groups["type"].Value,
-                                           trackMatch.Groups["filename"].Value,
-                                           trackMatch.Groups["offset"].Value,
-                                           lineNumber);
+                                  Localization.Found_track_0_starts_at_1_flags_2_type_3_file_4_offset_5_at_line_6,
+                                  trackMatch.Groups["track"].Value,
+                                  trackMatch.Groups["start"].Value,
+                                  trackMatch.Groups["flags"].Value,
+                                  trackMatch.Groups["type"].Value,
+                                  trackMatch.Groups["filename"].Value,
+                                  trackMatch.Groups["offset"].Value,
+                                  lineNumber);
 
 
                 var currentTrack = new GdiTrack
@@ -216,50 +215,36 @@ public sealed partial class Gdi
 
             AaruLogging.Debug(MODULE_NAME, Localization.Session_information);
 
-            AaruLogging.Debug(MODULE_NAME,
-                                       "\t" + Localization.Disc_contains_0_sessions,
-                                       _discImage.Sessions.Count);
+            AaruLogging.Debug(MODULE_NAME, "\t" + Localization.Disc_contains_0_sessions, _discImage.Sessions.Count);
 
             for(int i = 0; i < _discImage.Sessions.Count; i++)
             {
                 AaruLogging.Debug(MODULE_NAME, "\t" + Localization.Session_0_information, i + 1);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "\t\t" + Localization.Starting_track_0,
-                                           _discImage.Sessions[i].StartTrack);
+                                  "\t\t" + Localization.Starting_track_0,
+                                  _discImage.Sessions[i].StartTrack);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "\t\t" + Localization.Starting_sector_0,
-                                           _discImage.Sessions[i].StartSector);
+                                  "\t\t" + Localization.Starting_sector_0,
+                                  _discImage.Sessions[i].StartSector);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "\t\t" + Localization.Ending_track_0,
-                                           _discImage.Sessions[i].EndTrack);
+                AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Ending_track_0, _discImage.Sessions[i].EndTrack);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "\t\t" + Localization.Ending_sector_0,
-                                           _discImage.Sessions[i].EndSector);
+                AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Ending_sector_0, _discImage.Sessions[i].EndSector);
             }
 
             AaruLogging.Debug(MODULE_NAME, Localization.Track_information);
 
-            AaruLogging.Debug(MODULE_NAME,
-                                       "\t" + Localization.Disc_contains_0_tracks,
-                                       _discImage.Tracks.Count);
+            AaruLogging.Debug(MODULE_NAME, "\t" + Localization.Disc_contains_0_tracks, _discImage.Tracks.Count);
 
             for(int i = 0; i < _discImage.Tracks.Count; i++)
             {
-                AaruLogging.Debug(MODULE_NAME,
-                                           "\t" + Localization.Track_0_information,
-                                           _discImage.Tracks[i].Sequence);
+                AaruLogging.Debug(MODULE_NAME, "\t" + Localization.Track_0_information, _discImage.Tracks[i].Sequence);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "\t\t" + Localization._0_bytes_per_sector,
-                                           _discImage.Tracks[i].Bps);
+                AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization._0_bytes_per_sector, _discImage.Tracks[i].Bps);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "\t\t" + Localization.Pregap_0_sectors,
-                                           _discImage.Tracks[i].Pregap);
+                AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Pregap_0_sectors, _discImage.Tracks[i].Pregap);
 
                 if((_discImage.Tracks[i].Flags & 0x8) == 0x8)
                     AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Track_is_flagged_as_quadraphonic);
@@ -274,11 +259,10 @@ public sealed partial class Gdi
                     AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Track_has_pre_emphasis_applied);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "\t\t" +
-                                           Localization.Track_resides_in_file_0_type_defined_as_1_starting_at_byte_2,
-                                           _discImage.Tracks[i].TrackFilter,
-                                           _discImage.Tracks[i].TrackType,
-                                           _discImage.Tracks[i].Offset);
+                                  "\t\t" + Localization.Track_resides_in_file_0_type_defined_as_1_starting_at_byte_2,
+                                  _discImage.Tracks[i].TrackFilter,
+                                  _discImage.Tracks[i].TrackType,
+                                  _discImage.Tracks[i].Offset);
             }
 
             AaruLogging.Debug(MODULE_NAME, Localization.Building_offset_map);

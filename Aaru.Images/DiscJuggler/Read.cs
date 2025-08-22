@@ -42,6 +42,7 @@ using Aaru.CommonTypes.Structs;
 using Aaru.Decoders.CD;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Humanizer;
 using Session = Aaru.CommonTypes.Structs.Session;
 
 namespace Aaru.Images;
@@ -242,10 +243,10 @@ public sealed partial class DiscJuggler
                 track.Sequence =  BitConverter.ToUInt32(descriptor, position) + lastSessionTrack + 1;
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "\ttrack = {1} + {2} + 1 = {0}",
-                                           track.Sequence,
-                                           BitConverter.ToUInt32(descriptor, position),
-                                           lastSessionTrack);
+                                  "\ttrack = {1} + {2} + 1 = {0}",
+                                  track.Sequence,
+                                  BitConverter.ToUInt32(descriptor, position),
+                                  lastSessionTrack);
 
                 // There's always an index 0 in the image
                 track.Pregap = (ulong)track.Indexes[0];
@@ -406,9 +407,8 @@ public sealed partial class DiscJuggler
 
                                 break;
                             case 1:
-                                AaruLogging.Error(string.Format(Localization
-                                                                            .Invalid_read_mode_0_for_this_track,
-                                                                         readMode));
+                                AaruLogging.Error(string.Format(Localization.Invalid_read_mode_0_for_this_track,
+                                                                readMode));
 
                                 return ErrorNumber.InvalidArgument;
                             case 2:
@@ -514,9 +514,8 @@ public sealed partial class DiscJuggler
                         switch(readMode)
                         {
                             case 0:
-                                AaruLogging.Error(string.Format(Localization
-                                                                            .Invalid_read_mode_0_for_this_track,
-                                                                         readMode));
+                                AaruLogging.Error(string.Format(Localization.Invalid_read_mode_0_for_this_track,
+                                                                readMode));
 
                                 return ErrorNumber.InvalidArgument;
                             case 1:
@@ -609,7 +608,7 @@ public sealed partial class DiscJuggler
                     Sequence    = track.Sequence,
                     Offset      = track.FileOffset,
                     Start       = track.StartSector,
-                    Type        = track.Type.ToString()
+                    Type        = track.Type.Humanize()
                 };
 
                 if(track.Sequence > 1 && track.Pregap > 0)

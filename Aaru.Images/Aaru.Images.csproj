@@ -35,6 +35,7 @@
     <PackageReference Include="Claunia.Encoding"/>
     <PackageReference Include="Claunia.RsrcFork"/>
     <PackageReference Include="DotNetZip"/>
+    <PackageReference Include="Humanizer"/>
     <PackageReference Include="plist-cil"/>
     <PackageReference Include="SharpCompress"/>
     <PackageReference Include="System.Text.Json"/>
