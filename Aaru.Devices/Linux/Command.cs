@@ -64,6 +64,8 @@ partial class Device
                                      _                           => ScsiIoctlDirection.Unknown
                                  };
 
+        EnsureCapacityAligned((nuint)buffer.Length);
+
         var ioHdr = new SgIoHdrT();
 
         ioHdr.interface_id    = 'S';
@@ -71,13 +73,14 @@ partial class Device
         ioHdr.mx_sb_len       = (byte)SenseBuffer.Length;
         ioHdr.dxfer_direction = dir;
         ioHdr.dxfer_len       = (uint)buffer.Length;
-        ioHdr.dxferp          = Marshal.AllocHGlobal(buffer.Length);
+        ioHdr.dxferp          = (IntPtr)_nativeBuffer;
         ioHdr.cmdp            = (IntPtr)CdbPtr;
         ioHdr.sbp             = (IntPtr)SensePtr;
         ioHdr.timeout         = timeout * 1000;
         ioHdr.flags           = (uint)SgFlags.DirectIo;
 
-        Marshal.Copy(buffer, 0, ioHdr.dxferp, buffer.Length);
+        // OUT or bidirectional → pre‑fill from managed buffer
+        if(direction != ScsiDirection.In) buffer.AsSpan().CopyTo(new Span<byte>((void*)_nativeBuffer, buffer.Length));
 
         var cmdStopWatch = new Stopwatch();
         cmdStopWatch.Start();
@@ -86,13 +89,12 @@ partial class Device
 
         if(error < 0) error = Marshal.GetLastWin32Error();
 
-        Marshal.Copy(ioHdr.dxferp, buffer, 0, buffer.Length);
+        // IN or bidirectional → copy back into managed buffer
+        if(direction != ScsiDirection.Out) new Span<byte>((void*)_nativeBuffer, buffer.Length).CopyTo(buffer);
 
         sense |= (ioHdr.info & SgInfo.OkMask) != SgInfo.Ok;
 
         duration = ioHdr.duration > 0 ? ioHdr.duration : cmdStopWatch.Elapsed.TotalMilliseconds;
-
-        Marshal.FreeHGlobal(ioHdr.dxferp);
 
         return error;
     }

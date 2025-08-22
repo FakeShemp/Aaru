@@ -33,6 +33,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interop;
@@ -47,13 +48,41 @@ namespace Aaru.Devices.Linux;
 
 /// <inheritdoc />
 [SupportedOSPlatform("linux")]
-partial class Device : Devices.Device
+partial class Device : Devices.Device, IDisposable
 {
+    private const nuint ALIGNMENT = 64;
+    private       nuint _capacity;
     /// <summary>Gets the file handle representing this device</summary>
     /// <value>The file handle</value>
     int _fileDescriptor;
 
+// Persistent, aligned native buffer
+    private nuint _nativeBuffer;
+
     Device() {}
+
+#region IDisposable Members
+
+    public new unsafe void Dispose()
+    {
+        if(_nativeBuffer == 0) return;
+        NativeMemory.AlignedFree((void*)_nativeBuffer);
+        _nativeBuffer = 0;
+        _capacity     = 0;
+    }
+
+#endregion
+
+
+    private unsafe void EnsureCapacityAligned(nuint size)
+    {
+        if(size <= _capacity) return;
+
+        if(_nativeBuffer != 0) NativeMemory.AlignedFree((void*)_nativeBuffer);
+
+        _nativeBuffer = (nuint)NativeMemory.AlignedAlloc(size, ALIGNMENT);
+        _capacity     = size;
+    }
 
     internal new static Device Create(string devicePath, out ErrorNumber errno)
     {

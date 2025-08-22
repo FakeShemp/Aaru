@@ -44,8 +44,8 @@ namespace Aaru.Devices.Windows;
 partial class Device
 {
     /// <inheritdoc />
-    public override int SendScsiCommand(Span<byte> cdb,      ref byte[] buffer, uint timeout, ScsiDirection direction,
-                                        out double duration, out bool   sense)
+    public override unsafe int SendScsiCommand(Span<byte> cdb, ref byte[] buffer, uint timeout, ScsiDirection direction,
+                                               out double duration, out bool sense)
     {
         // We need a timeout
         if(timeout == 0) timeout = Timeout > 0 ? Timeout : 15;
@@ -62,6 +62,8 @@ partial class Device
                                      _                 => ScsiIoctlDirection.Unspecified
                                  };
 
+        EnsureCapacityAligned((nuint)buffer.Length);
+
         var sptdSb = new ScsiPassThroughDirectAndSenseBuffer
         {
             SenseBuf = new byte[32],
@@ -73,7 +75,7 @@ partial class Device
                 DataIn             = dir,
                 DataTransferLength = (uint)buffer.Length,
                 TimeOutValue       = timeout,
-                DataBuffer         = Marshal.AllocHGlobal(buffer.Length)
+                DataBuffer         = (IntPtr)_nativeBuffer
             }
         };
 
@@ -81,10 +83,11 @@ partial class Device
         sptdSb.sptd.SenseInfoOffset = (uint)Marshal.SizeOf(sptdSb.sptd);
         cdb.CopyTo(sptdSb.sptd.Cdb);
 
+// OUT or BiDir → pre‑copy
+        if(direction != ScsiDirection.In) buffer.AsSpan().CopyTo(new Span<byte>((void*)_nativeBuffer, buffer.Length));
+
         uint k     = 0;
         int  error = 0;
-
-        Marshal.Copy(buffer, 0, sptdSb.sptd.DataBuffer, buffer.Length);
 
         var cmdStopwatch = new Stopwatch();
         cmdStopwatch.Start();
@@ -102,15 +105,13 @@ partial class Device
 
         if(hasError) error = Marshal.GetLastWin32Error();
 
-        Marshal.Copy(sptdSb.sptd.DataBuffer, buffer, 0, buffer.Length);
+        if(direction != ScsiDirection.Out) new Span<byte>((void*)_nativeBuffer, buffer.Length).CopyTo(buffer);
 
         sense |= sptdSb.sptd.ScsiStatus != 0;
 
         sptdSb.SenseBuf.AsSpan().CopyTo(SenseBuffer);
 
         duration = cmdStopwatch.Elapsed.TotalMilliseconds;
-
-        Marshal.FreeHGlobal(sptdSb.sptd.DataBuffer);
 
         return error;
     }

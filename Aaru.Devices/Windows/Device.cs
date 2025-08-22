@@ -43,13 +43,39 @@ namespace Aaru.Devices.Windows;
 
 /// <inheritdoc />
 [SupportedOSPlatform("windows")]
-partial class Device : Devices.Device
+partial class Device : Devices.Device, IDisposable
 {
+    private const nuint ALIGNMENT = 64;
+    private       nuint _capacity;
     /// <summary>Gets the file handle representing this device</summary>
     /// <value>The file handle</value>
     SafeFileHandle _fileHandle;
+    private nuint _nativeBuffer;
 
     Device() {}
+
+#region IDisposable Members
+
+    public new unsafe void Dispose()
+    {
+        if(_nativeBuffer == 0) return;
+        NativeMemory.AlignedFree((void*)_nativeBuffer);
+        _nativeBuffer = 0;
+        _capacity     = 0;
+    }
+
+#endregion
+
+    private unsafe void EnsureCapacityAligned(nuint size)
+    {
+        if(size <= _capacity) return;
+
+        if(_nativeBuffer != 0) NativeMemory.AlignedFree((void*)_nativeBuffer);
+
+        _nativeBuffer = (nuint)NativeMemory.AlignedAlloc(size, ALIGNMENT);
+
+        _capacity = size;
+    }
 
     internal new static Device Create(string devicePath, out ErrorNumber errno)
     {
@@ -102,10 +128,10 @@ partial class Device : Devices.Device
         };
 
         IntPtr descriptorPtr = Marshal.AllocHGlobal(1000);
-        var    descriptorB   = new byte[1000];
+        byte[] descriptorB   = new byte[1000];
 
         uint returned = 0;
-        var  error    = 0;
+        int  error    = 0;
 
         bool hasError = !Extern.DeviceIoControlStorageQuery(dev._fileHandle,
                                                             WindowsIoctl.IoctlStorageQueryProperty,
@@ -203,7 +229,7 @@ partial class Device : Devices.Device
 
         if(IsSdhci(dev._fileHandle))
         {
-            var sdBuffer = new byte[16];
+            byte[] sdBuffer = new byte[16];
 
             dev.LastError = dev.SendMmcCommand(MmcCommands.SendCsd,
                                                false,
