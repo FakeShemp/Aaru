@@ -30,6 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using Aaru.Logging;
 
 // ReSharper disable UnusedMember.Global
@@ -84,8 +85,9 @@ public partial class Device
                              bool       inhibitDma, bool readLong, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[6];
-        bool   sense;
+        Span<byte> cdb = CdbBuffer[..6];
+        cdb.Clear();
+        bool sense;
 
         cdb[0] = (byte)ScsiCommands.Read6;
         cdb[1] = (byte)((lba & 0x1F0000) >> 16);
@@ -170,8 +172,9 @@ public partial class Device
                               ushort transferLength, bool inhibitDma, bool readLong, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
-        bool   sense;
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
+        bool sense;
 
         cdb[0] = (byte)ScsiCommands.Read10;
         cdb[2] = (byte)((lba & 0xFF000000) >> 24);

@@ -30,6 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using Aaru.Helpers;
 using Aaru.Logging;
 
@@ -51,7 +52,8 @@ public partial class Device
                                 uint transferLength, PlextorSubchannel subchannel, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0]  = (byte)ScsiCommands.ReadCdDa;
         cdb[2]  = (byte)((lba & 0xFF000000) >> 24);
@@ -77,15 +79,15 @@ public partial class Device
         Error = LastError != 0;
 
         AaruLogging.Debug(SCSI_MODULE_NAME,
-                                   Localization
-                                      .Plextor_READ_CD_DA_LBA_1_Block_Size_2_Transfer_Length_3_Subchannel_4_Sense_5_Last_Error_6_took_0_ms,
-                                   duration,
-                                   lba,
-                                   blockSize,
-                                   transferLength,
-                                   subchannel,
-                                   sense,
-                                   LastError);
+                          Localization
+                             .Plextor_READ_CD_DA_LBA_1_Block_Size_2_Transfer_Length_3_Subchannel_4_Sense_5_Last_Error_6_took_0_ms,
+                          duration,
+                          lba,
+                          blockSize,
+                          transferLength,
+                          subchannel,
+                          sense,
+                          LastError);
 
         return sense;
     }
@@ -102,7 +104,8 @@ public partial class Device
                                   uint       timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
         buffer = new byte[2064 * transferLength];
 
         cdb[0] = (byte)ScsiCommands.ReadBuffer;
@@ -139,7 +142,8 @@ public partial class Device
     {
         buffer      = new byte[256];
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.PlextorReadEeprom;
         cdb[8] = 1;
@@ -169,7 +173,8 @@ public partial class Device
     {
         buffer      = new byte[512];
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.PlextorReadEeprom;
         cdb[8] = 2;
@@ -202,7 +207,8 @@ public partial class Device
     {
         buffer      = new byte[blockSize];
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.PlextorReadEeprom;
         cdb[1] = 1;
@@ -238,7 +244,8 @@ public partial class Device
     {
         byte[] buf = new byte[10];
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         selected = 0;
         max      = 0;
@@ -280,7 +287,8 @@ public partial class Device
     {
         byte[] buf = new byte[8];
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         enabled = false;
         speed   = 0;
@@ -319,7 +327,8 @@ public partial class Device
     {
         buffer      = new byte[8];
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0]  = (byte)ScsiCommands.PlextorExtend;
         cdb[1]  = (byte)PlextorSubCommands.GetMode;
@@ -352,7 +361,8 @@ public partial class Device
     {
         buffer      = new byte[8];
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0]  = (byte)ScsiCommands.PlextorExtend;
         cdb[1]  = (byte)PlextorSubCommands.GetMode;
@@ -386,7 +396,8 @@ public partial class Device
     {
         buffer      = new byte[8];
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0]  = (byte)ScsiCommands.PlextorExtend;
         cdb[1]  = (byte)PlextorSubCommands.GetMode;
@@ -423,7 +434,8 @@ public partial class Device
     {
         buffer      = new byte[8];
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0]  = (byte)ScsiCommands.PlextorExtend;
         cdb[2]  = (byte)PlextorSubCommands.SecuRec;
@@ -454,7 +466,8 @@ public partial class Device
     {
         buffer      = new byte[8];
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0]  = (byte)ScsiCommands.PlextorExtend;
         cdb[1]  = (byte)PlextorSubCommands.GetMode;
@@ -486,7 +499,8 @@ public partial class Device
     {
         buffer      = new byte[8];
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.PlextorExtend;
         cdb[1] = (byte)PlextorSubCommands.GetMode;
@@ -503,9 +517,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruLogging.Debug(SCSI_MODULE_NAME,
-                                   Localization.PLEXTOR_GET_SINGLE_SESSION_HIDE_CD_R_took_0_ms,
-                                   duration);
+        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.PLEXTOR_GET_SINGLE_SESSION_HIDE_CD_R_took_0_ms, duration);
 
         return sense;
     }
@@ -522,7 +534,8 @@ public partial class Device
     {
         buffer      = new byte[8];
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.PlextorExtend;
         cdb[1] = (byte)PlextorSubCommands.GetMode;
@@ -559,7 +572,8 @@ public partial class Device
     {
         buffer      = new byte[8];
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0]  = (byte)ScsiCommands.PlextorExtend;
         cdb[1]  = (byte)PlextorSubCommands.GetMode;

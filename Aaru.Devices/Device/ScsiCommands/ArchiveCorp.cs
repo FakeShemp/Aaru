@@ -30,6 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using Aaru.Logging;
 
 // ReSharper disable UnusedMember.Global
@@ -48,7 +49,8 @@ public partial class Device
                                                out double duration)
     {
         buffer = new byte[3];
-        byte[] cdb = new byte[6];
+        Span<byte> cdb = CdbBuffer[..6];
+        cdb.Clear();
         senseBuffer = new byte[64];
 
         cdb[0] = (byte)ScsiCommands.ArchiveRequestBlockAddress;
@@ -67,9 +69,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        AaruLogging.Debug(SCSI_MODULE_NAME,
-                                   Localization.ARCHIVE_CORP_REQUEST_BLOCK_ADDRESS_took_0_ms,
-                                   duration);
+        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.ARCHIVE_CORP_REQUEST_BLOCK_ADDRESS_took_0_ms, duration);
 
         return sense;
     }
@@ -91,8 +91,9 @@ public partial class Device
     public bool ArchiveCorpSeekBlock(out byte[] senseBuffer, bool immediate, uint lba, uint timeout,
                                      out double duration)
     {
-        byte[] buffer = [];
-        byte[] cdb    = new byte[6];
+        byte[]     buffer = [];
+        Span<byte> cdb    = CdbBuffer[..6];
+        cdb.Clear();
         senseBuffer = new byte[64];
 
         cdb[0] = (byte)ScsiCommands.ArchiveSeekBlock;

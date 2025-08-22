@@ -79,7 +79,8 @@ public partial class Device
                                  MmcGetConfigurationRt rt,     uint       timeout,     out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
         buffer = new byte[8];
 
         cdb[0] = (byte)ScsiCommands.GetConfiguration;
@@ -119,13 +120,13 @@ public partial class Device
         Error = LastError != 0;
 
         AaruLogging.Debug(SCSI_MODULE_NAME,
-                                   Localization
-                                      .GET_CONFIGURATION_Starting_Feature_Number_1_Return_Type_2_Sense_3_Last_Error_4_took_0_ms,
-                                   duration,
-                                   startingFeatureNumber,
-                                   rt,
-                                   sense,
-                                   LastError);
+                          Localization
+                             .GET_CONFIGURATION_Starting_Feature_Number_1_Return_Type_2_Sense_3_Last_Error_4_took_0_ms,
+                          duration,
+                          startingFeatureNumber,
+                          rt,
+                          sense,
+                          LastError);
 
         return sense;
     }
@@ -146,7 +147,8 @@ public partial class Device
                                   uint       timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
         buffer = new byte[8];
 
         cdb[0]  = (byte)ScsiCommands.ReadDiscStructure;
@@ -206,16 +208,16 @@ public partial class Device
         Error = LastError != 0;
 
         AaruLogging.Debug(SCSI_MODULE_NAME,
-                                   Localization
-                                      .READ_DISC_STRUCTURE_Media_Type_1_Address_2_Layer_Number_3_Format_4_AGID_5_Sense_6_Last_Error_7_took_0_ms,
-                                   duration,
-                                   mediaType,
-                                   address,
-                                   layerNumber,
-                                   format,
-                                   agid,
-                                   sense,
-                                   LastError);
+                          Localization
+                             .READ_DISC_STRUCTURE_Media_Type_1_Address_2_Layer_Number_3_Format_4_AGID_5_Sense_6_Last_Error_7_took_0_ms,
+                          duration,
+                          mediaType,
+                          address,
+                          layerNumber,
+                          format,
+                          agid,
+                          sense,
+                          LastError);
 
         return sense;
     }
@@ -313,7 +315,8 @@ public partial class Device
                                byte       trackSessionNumber, uint       timeout,     out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
 
         byte[] tmpBuffer = (format & 0x0F) == 5 ? new byte[32768] : new byte[1536];
 
@@ -344,14 +347,14 @@ public partial class Device
             Array.Copy(tmpBuffer, 0, buffer, 0, buffer.Length);
 
             AaruLogging.Debug(SCSI_MODULE_NAME,
-                                       Localization
-                                          .READ_TOC_PMA_ATIP_took_MSF_1_Format_2_Track_Session_Number_3_Sense_4_LastError_5_0_ms,
-                                       duration,
-                                       msf,
-                                       format,
-                                       trackSessionNumber,
-                                       sense,
-                                       LastError);
+                              Localization
+                                 .READ_TOC_PMA_ATIP_took_MSF_1_Format_2_Track_Session_Number_3_Sense_4_LastError_5_0_ms,
+                              duration,
+                              msf,
+                              format,
+                              trackSessionNumber,
+                              sense,
+                              LastError);
 
             return sense;
         }
@@ -371,14 +374,14 @@ public partial class Device
         duration += tmpDuration;
 
         AaruLogging.Debug(SCSI_MODULE_NAME,
-                                   Localization
-                                      .READ_TOC_PMA_ATIP_took_MSF_1_Format_2_Track_Session_Number_3_Sense_4_LastError_5_0_ms,
-                                   duration,
-                                   msf,
-                                   format,
-                                   trackSessionNumber,
-                                   sense,
-                                   LastError);
+                          Localization
+                             .READ_TOC_PMA_ATIP_took_MSF_1_Format_2_Track_Session_Number_3_Sense_4_LastError_5_0_ms,
+                          duration,
+                          msf,
+                          format,
+                          trackSessionNumber,
+                          sense,
+                          LastError);
 
         return sense;
     }
@@ -407,7 +410,8 @@ public partial class Device
                                     uint       timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb       = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
         byte[] tmpBuffer = new byte[804];
 
         cdb[0] = (byte)ScsiCommands.ReadDiscInformation;
@@ -433,11 +437,11 @@ public partial class Device
         Array.Copy(tmpBuffer, 0, buffer, 0, buffer.Length);
 
         AaruLogging.Debug(SCSI_MODULE_NAME,
-                                   Localization.READ_DISC_INFORMATION_Data_Type_1_Sense_2_Last_Error_3_took_0_ms,
-                                   duration,
-                                   dataType,
-                                   sense,
-                                   LastError);
+                          Localization.READ_DISC_INFORMATION_Data_Type_1_Sense_2_Last_Error_3_took_0_ms,
+                          duration,
+                          dataType,
+                          sense,
+                          LastError);
 
         return sense;
     }
@@ -466,7 +470,8 @@ public partial class Device
                        out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.ReadCd;
         cdb[1] = (byte)((byte)expectedSectorType << 2);
@@ -506,23 +511,23 @@ public partial class Device
         Error = LastError != 0;
 
         AaruLogging.Debug(SCSI_MODULE_NAME,
-                                   Localization
-                                      .READ_CD_LBA_1_Block_Size_2_Transfer_Length_3_Expected_Sector_Type_4_DAP_5_Relative_Address_6_Sync_7_Headers_8_User_Data_9_ECC_EDC_10_C2_11_Subchannel_12_Sense_13_Last_Error_14_took_0_ms,
-                                   duration,
-                                   lba,
-                                   blockSize,
-                                   transferLength,
-                                   expectedSectorType,
-                                   dap,
-                                   relAddr,
-                                   sync,
-                                   headerCodes,
-                                   userData,
-                                   edcEcc,
-                                   c2Error,
-                                   subchannel,
-                                   sense,
-                                   LastError);
+                          Localization
+                             .READ_CD_LBA_1_Block_Size_2_Transfer_Length_3_Expected_Sector_Type_4_DAP_5_Relative_Address_6_Sync_7_Headers_8_User_Data_9_ECC_EDC_10_C2_11_Subchannel_12_Sense_13_Last_Error_14_took_0_ms,
+                          duration,
+                          lba,
+                          blockSize,
+                          transferLength,
+                          expectedSectorType,
+                          dap,
+                          relAddr,
+                          sync,
+                          headerCodes,
+                          userData,
+                          edcEcc,
+                          c2Error,
+                          subchannel,
+                          sense,
+                          LastError);
 
         return sense;
     }
@@ -550,7 +555,8 @@ public partial class Device
                           out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.ReadCdMsf;
         cdb[1] = (byte)((byte)expectedSectorType << 2);
@@ -589,22 +595,22 @@ public partial class Device
         Error = LastError != 0;
 
         AaruLogging.Debug(SCSI_MODULE_NAME,
-                                   Localization
-                                      .READ_CD_MSF_Start_MSF_1_End_MSF_2_Block_Size_3_Expected_Sector_Type_4_DAP_5_Sync_6_Headers_7_User_Data_8_ECC_EDC_9_C2_10_Subchannel_11_Sense_12_LastError_13_took_0_ms,
-                                   duration,
-                                   startMsf,
-                                   endMsf,
-                                   blockSize,
-                                   expectedSectorType,
-                                   dap,
-                                   sync,
-                                   headerCodes,
-                                   userData,
-                                   edcEcc,
-                                   c2Error,
-                                   subchannel,
-                                   sense,
-                                   LastError);
+                          Localization
+                             .READ_CD_MSF_Start_MSF_1_End_MSF_2_Block_Size_3_Expected_Sector_Type_4_DAP_5_Sync_6_Headers_7_User_Data_8_ECC_EDC_9_C2_10_Subchannel_11_Sense_12_LastError_13_took_0_ms,
+                          duration,
+                          startMsf,
+                          endMsf,
+                          blockSize,
+                          expectedSectorType,
+                          dap,
+                          sync,
+                          headerCodes,
+                          userData,
+                          edcEcc,
+                          c2Error,
+                          subchannel,
+                          sense,
+                          LastError);
 
         return sense;
     }
@@ -636,7 +642,8 @@ public partial class Device
                                           out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb    = new byte[6];
+        Span<byte> cdb = CdbBuffer[..6];
+        cdb.Clear();
         byte[] buffer = [];
 
         cdb[0] = (byte)ScsiCommands.PreventAllowMediumRemoval;
@@ -656,13 +663,13 @@ public partial class Device
         Error = LastError != 0;
 
         AaruLogging.Debug(SCSI_MODULE_NAME,
-                                   Localization
-                                      .PREVENT_ALLOW_MEDIUM_REMOVAL_Persistent_1_Prevent_2_Sense_3_LastError_4_took_0_ms,
-                                   duration,
-                                   persistent,
-                                   prevent,
-                                   sense,
-                                   LastError);
+                          Localization
+                             .PREVENT_ALLOW_MEDIUM_REMOVAL_Persistent_1_Prevent_2_Sense_3_LastError_4_took_0_ms,
+                          duration,
+                          persistent,
+                          prevent,
+                          sense,
+                          LastError);
 
         return sense;
     }
@@ -714,7 +721,8 @@ public partial class Device
                               bool changeFormatLayer, bool loadEject, bool start, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb    = new byte[6];
+        Span<byte> cdb = CdbBuffer[..6];
+        cdb.Clear();
         byte[] buffer = [];
 
         cdb[0] = (byte)ScsiCommands.StartStopUnit;
@@ -746,17 +754,17 @@ public partial class Device
         Error = LastError != 0;
 
         AaruLogging.Debug(SCSI_MODULE_NAME,
-                                   Localization
-                                      .START_STOP_UNIT_Immediate_1_FormatLayer_2_Power_Conditions_3_Change_Format_Layer_4_Load_Eject_5_Start_6_Sense_7_Last_Error_8_took_0_ms,
-                                   duration,
-                                   immediate,
-                                   formatLayer,
-                                   powerConditions,
-                                   changeFormatLayer,
-                                   loadEject,
-                                   start,
-                                   sense,
-                                   LastError);
+                          Localization
+                             .START_STOP_UNIT_Immediate_1_FormatLayer_2_Power_Conditions_3_Change_Format_Layer_4_Load_Eject_5_Start_6_Sense_7_Last_Error_8_took_0_ms,
+                          duration,
+                          immediate,
+                          formatLayer,
+                          powerConditions,
+                          changeFormatLayer,
+                          loadEject,
+                          start,
+                          sense,
+                          LastError);
 
         return sense;
     }
@@ -772,7 +780,8 @@ public partial class Device
     public bool ReadMcn(out string mcn, out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
         mcn = null;
 
         cdb[0] = (byte)ScsiCommands.ReadSubChannel;
@@ -795,10 +804,10 @@ public partial class Device
         Error = LastError != 0;
 
         AaruLogging.Debug(SCSI_MODULE_NAME,
-                                   Localization.READ_READ_SUB_CHANNEL_MCN_Sense_1_Last_Error_2_took_0_ms,
-                                   duration,
-                                   sense,
-                                   LastError);
+                          Localization.READ_READ_SUB_CHANNEL_MCN_Sense_1_Last_Error_2_took_0_ms,
+                          duration,
+                          sense,
+                          LastError);
 
         if(!sense && (buffer[8] & 0x80) == 0x80) mcn = Encoding.ASCII.GetString(buffer, 9, 13);
 
@@ -818,7 +827,8 @@ public partial class Device
                          out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
         isrc = null;
 
         cdb[0] = (byte)ScsiCommands.ReadSubChannel;
@@ -842,12 +852,11 @@ public partial class Device
         Error = LastError != 0;
 
         AaruLogging.Debug(SCSI_MODULE_NAME,
-                                   Localization
-                                      .READ_READ_SUB_CHANNEL_ISRC_Track_Number_1_Sense_2_Last_Error_3_took_0_ms,
-                                   duration,
-                                   trackNumber,
-                                   sense,
-                                   LastError);
+                          Localization.READ_READ_SUB_CHANNEL_ISRC_Track_Number_1_Sense_2_Last_Error_3_took_0_ms,
+                          duration,
+                          trackNumber,
+                          sense,
+                          LastError);
 
         if(!sense && (buffer[8] & 0x80) == 0x80) isrc = Encoding.ASCII.GetString(buffer, 9, 12);
 
@@ -866,7 +875,8 @@ public partial class Device
                            ushort     writeSpeed,  uint              timeout,           out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb    = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
         byte[] buffer = [];
 
         cdb[0] = (byte)ScsiCommands.SetCdRomSpeed;
@@ -887,14 +897,14 @@ public partial class Device
         Error = LastError != 0;
 
         AaruLogging.Debug(SCSI_MODULE_NAME,
-                                   Localization
-                                      .SET_CD_SPEED_Rotational_Control_1_Read_Speed_2_Write_Speed_3_Sense_4_Last_Error_5_took_0_ms,
-                                   duration,
-                                   rotationalControl,
-                                   readSpeed,
-                                   writeSpeed,
-                                   sense,
-                                   LastError);
+                          Localization
+                             .SET_CD_SPEED_Rotational_Control_1_Read_Speed_2_Write_Speed_3_Sense_4_Last_Error_5_took_0_ms,
+                          duration,
+                          rotationalControl,
+                          readSpeed,
+                          writeSpeed,
+                          sense,
+                          LastError);
 
         return sense;
     }
@@ -912,7 +922,8 @@ public partial class Device
                                      uint       address, uint       timeout,     out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
         buffer = new byte[48];
 
         cdb[0] = (byte)ScsiCommands.ReadTrackInformation;
@@ -937,11 +948,11 @@ public partial class Device
         Error = LastError != 0;
 
         AaruLogging.Debug(SCSI_MODULE_NAME,
-                                   Localization.READ_TRACK_INFORMATION_Data_Type_1_Sense_2_Last_Error_3_took_0_ms,
-                                   duration,
-                                   type,
-                                   sense,
-                                   LastError);
+                          Localization.READ_TRACK_INFORMATION_Data_Type_1_Sense_2_Last_Error_3_took_0_ms,
+                          duration,
+                          type,
+                          sense,
+                          LastError);
 
         return sense;
     }

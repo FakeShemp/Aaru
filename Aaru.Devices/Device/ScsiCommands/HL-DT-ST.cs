@@ -30,6 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.Decoders.DVD;
@@ -60,7 +61,8 @@ public partial class Device
         Read12(out _, out _, 0, false, false, false, false, lba, 2048, 0, 16, false, timeout, out duration);
 
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
         buffer = new byte[2064 * transferLength];
 
         uint cacheDataOffset = 0x80000000 + lba % 96 * 2064;

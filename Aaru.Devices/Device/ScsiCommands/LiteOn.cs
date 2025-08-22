@@ -115,7 +115,8 @@ public partial class Device
         Read12(out _, out _, 0, false, false, false, false, lba, 2048, 0, 16, false, timeout, out duration);
 
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
 
         buffer = new byte[transferLength];
 

@@ -44,7 +44,7 @@ namespace Aaru.Devices.Windows;
 partial class Device
 {
     /// <inheritdoc />
-    public override int SendScsiCommand(byte[]        cdb, ref byte[] buffer, out byte[] senseBuffer, uint timeout,
+    public override int SendScsiCommand(Span<byte>    cdb, ref byte[] buffer, out byte[] senseBuffer, uint timeout,
                                         ScsiDirection direction, out double duration, out bool sense)
     {
         // We need a timeout
@@ -80,10 +80,10 @@ partial class Device
 
         sptdSb.sptd.Length          = (ushort)Marshal.SizeOf(sptdSb.sptd);
         sptdSb.sptd.SenseInfoOffset = (uint)Marshal.SizeOf(sptdSb.sptd);
-        Array.Copy(cdb, sptdSb.sptd.Cdb, cdb.Length);
+        cdb.CopyTo(sptdSb.sptd.Cdb);
 
         uint k     = 0;
-        var  error = 0;
+        int  error = 0;
 
         Marshal.Copy(buffer, 0, sptdSb.sptd.DataBuffer, buffer.Length);
 
@@ -173,7 +173,7 @@ partial class Device
         aptd.AtaFlags |= AtaFlags.DrdyRequired;
 
         uint k     = 0;
-        var  error = 0;
+        int  error = 0;
 
         Marshal.Copy(buffer, 0, aptd.DataBuffer, buffer.Length);
 
@@ -268,7 +268,7 @@ partial class Device
         aptd.AtaFlags |= AtaFlags.DrdyRequired;
 
         uint k     = 0;
-        var  error = 0;
+        int  error = 0;
 
         Marshal.Copy(buffer, 0, aptd.DataBuffer, buffer.Length);
 
@@ -372,7 +372,7 @@ partial class Device
         aptd.AtaFlags |= AtaFlags.DrdyRequired;
 
         uint k     = 0;
-        var  error = 0;
+        int  error = 0;
 
         Marshal.Copy(buffer, 0, aptd.DataBuffer, buffer.Length);
 
@@ -535,17 +535,18 @@ partial class Device
 
         if(flags.HasFlag(MmcFlags.ResponseR6)) commandDescriptor.responseType = SdResponseType.R6;
 
-        var commandB = new byte[commandData.size + commandData.protocolArgumentSize + commandData.deviceDataBufferSize];
+        byte[] commandB =
+            new byte[commandData.size + commandData.protocolArgumentSize + commandData.deviceDataBufferSize];
 
         Array.Copy(buffer, 0, commandB, commandData.size + commandData.protocolArgumentSize, buffer.Length);
         IntPtr hBuf = Marshal.AllocHGlobal(commandB.Length);
         Marshal.StructureToPtr(commandData, hBuf, true);
-        var descriptorOffset = IntPtr.Add(hBuf, commandData.size);
+        IntPtr descriptorOffset = IntPtr.Add(hBuf, commandData.size);
         Marshal.StructureToPtr(commandDescriptor, descriptorOffset, true);
         Marshal.Copy(hBuf, commandB, 0, commandB.Length);
         Marshal.FreeHGlobal(hBuf);
 
-        var error = 0;
+        int error = 0;
         cmdStopwatch.Restart();
 
         sense = !Extern.DeviceIoControl(_fileHandle,
@@ -577,7 +578,7 @@ partial class Device
         // We need a timeout
         if(timeout == 0) timeout = Timeout > 0 ? Timeout : 15;
 
-        var error = 0;
+        int error = 0;
         duration = 0;
         sense    = false;
 

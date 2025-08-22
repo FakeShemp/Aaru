@@ -30,6 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Aaru.Logging;
 
@@ -59,8 +60,9 @@ public partial class Device
     /// <param name="duration">Duration.</param>
     public bool CertanceParkUnpark(out byte[] senseBuffer, bool park, uint timeout, out double duration)
     {
-        byte[] buffer = [];
-        byte[] cdb    = new byte[6];
+        byte[]     buffer = [];
+        Span<byte> cdb    = CdbBuffer[..6];
+        cdb.Clear();
         senseBuffer = new byte[64];
 
         cdb[0] = (byte)ScsiCommands.CertanceParkUnpark;

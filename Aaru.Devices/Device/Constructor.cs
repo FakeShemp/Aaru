@@ -33,6 +33,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs.Devices.ATA;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
@@ -48,9 +49,35 @@ namespace Aaru.Devices;
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 [SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global")]
-public partial class Device
+public partial class Device : IDisposable
 {
-    protected Device() {}
+    // Pointer to send CDB to device
+    protected unsafe void* CdbPtr;
+
+    protected Device()
+    {
+        unsafe
+        {
+            CdbPtr = NativeMemory.AlignedAlloc(16, 64);
+            NativeMemory.Clear(CdbPtr, 16);
+        }
+    }
+
+    // Span to make pointer usable as data. Fixed size CDB is maximum 16 bytes. Variable size CDB is another problem.
+    public unsafe Span<byte> CdbBuffer => new(CdbPtr, 16);
+
+#region IDisposable Members
+
+    /// <inheritdoc />
+    public unsafe void Dispose()
+    {
+        void* p = CdbPtr;
+        CdbPtr = null;
+        if(p != null) NativeMemory.AlignedFree(p);
+        GC.SuppressFinalize(this);
+    }
+
+#endregion
 
     /// <summary>Opens the device for sending direct commands</summary>
     /// <param name="devicePath">Device path</param>
@@ -184,8 +211,9 @@ public partial class Device
             if(string.IsNullOrEmpty(dev.Serial))
                 dev.Serial = dev.UsbSerialString;
             else
-                foreach(char c in dev.Serial.Where(c => !char.IsControl(c)))
-                    dev.Serial = $"{dev.Serial}{c:X2}";
+            {
+                foreach(char c in dev.Serial.Where(c => !char.IsControl(c))) dev.Serial = $"{dev.Serial}{c:X2}";
+            }
         }
 
         if(dev.IsFireWire)
@@ -197,8 +225,9 @@ public partial class Device
             if(string.IsNullOrEmpty(dev.Serial))
                 dev.Serial = $"{dev.FirewireGuid:X16}";
             else
-                foreach(char c in dev.Serial.Where(c => !char.IsControl(c)))
-                    dev.Serial = $"{dev.Serial}{c:X2}";
+            {
+                foreach(char c in dev.Serial.Where(c => !char.IsControl(c))) dev.Serial = $"{dev.Serial}{c:X2}";
+            }
         }
 
         // Some optical drives are not getting the correct serial, and IDENTIFY PACKET DEVICE is blocked without

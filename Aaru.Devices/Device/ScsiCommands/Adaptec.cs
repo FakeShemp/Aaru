@@ -61,7 +61,8 @@ public partial class Device
                                  out double duration)
     {
         buffer = new byte[8];
-        byte[] cdb = new byte[6];
+        Span<byte> cdb = CdbBuffer[..6];
+        cdb.Clear();
         senseBuffer = new byte[64];
 
         cdb[0] = (byte)ScsiCommands.AdaptecTranslate;
@@ -107,7 +108,8 @@ public partial class Device
     {
         byte[] buffer = new byte[1];
         buffer[0] = threshold;
-        byte[] cdb = new byte[6];
+        Span<byte> cdb = CdbBuffer[..6];
+        cdb.Clear();
         senseBuffer = new byte[64];
 
         cdb[0] = (byte)ScsiCommands.AdaptecSetErrorThreshold;
@@ -149,7 +151,8 @@ public partial class Device
                                         out double duration)
     {
         buffer = new byte[9];
-        byte[] cdb = new byte[6];
+        Span<byte> cdb = CdbBuffer[..6];
+        cdb.Clear();
         senseBuffer = new byte[64];
 
         cdb[0] = (byte)ScsiCommands.AdaptecTranslate;
@@ -183,7 +186,8 @@ public partial class Device
         byte[] oneKBuffer = new byte[1024];
         Array.Copy(buffer, 0, oneKBuffer, 0, buffer.Length < 1024 ? buffer.Length : 1024);
 
-        byte[] cdb = new byte[6];
+        Span<byte> cdb = CdbBuffer[..6];
+        cdb.Clear();
         senseBuffer = new byte[64];
 
         cdb[0] = (byte)ScsiCommands.AdaptecWriteBuffer;
@@ -211,7 +215,8 @@ public partial class Device
     public bool AdaptecReadBuffer(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
     {
         buffer = new byte[1024];
-        byte[] cdb = new byte[6];
+        Span<byte> cdb = CdbBuffer[..6];
+        cdb.Clear();
         senseBuffer = new byte[64];
 
         cdb[0] = (byte)ScsiCommands.AdaptecReadBuffer;

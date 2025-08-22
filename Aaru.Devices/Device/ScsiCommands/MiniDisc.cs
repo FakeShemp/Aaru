@@ -32,6 +32,7 @@
 
 // ReSharper disable InconsistentNaming
 
+using System;
 using Aaru.Logging;
 
 // ReSharper disable UnusedMember.Global
@@ -50,7 +51,8 @@ public partial class Device
     {
         const ushort transferLength = 2336;
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.MiniDiscReadDTOC;
 
@@ -86,7 +88,8 @@ public partial class Device
     {
         const ushort transferLength = 2336;
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.MiniDiscReadUTOC;
 
@@ -124,7 +127,8 @@ public partial class Device
     {
         const ushort transferLength = 4;
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.MiniDiscD5;
 
@@ -157,7 +161,8 @@ public partial class Device
     public bool MiniDiscStopPlaying(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.MiniDiscStopPlay;
 
@@ -188,7 +193,8 @@ public partial class Device
     {
         const ushort transferLength = 4;
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.MiniDiscReadPosition;
 
@@ -222,7 +228,8 @@ public partial class Device
     {
         const ushort transferLength = 8;
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.MiniDiscGetType;
 

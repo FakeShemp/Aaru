@@ -41,7 +41,7 @@ namespace Aaru.Devices.Remote;
 public partial class Device
 {
     /// <inheritdoc />
-    public override int SendScsiCommand(byte[]        cdb, ref byte[] buffer, out byte[] senseBuffer, uint timeout,
+    public override int SendScsiCommand(Span<byte>    cdb, ref byte[] buffer, out byte[] senseBuffer, uint timeout,
                                         ScsiDirection direction, out double duration, out bool sense)
     {
         // We need a timeout
@@ -194,7 +194,7 @@ public partial class Device
         if(_remote.ServerProtocolVersion >= 2)
             return _remote.SendMultipleMmcCommands(commands, out duration, out sense, timeout);
 
-        var error = 0;
+        int error = 0;
         duration = 0;
         sense    = false;
 

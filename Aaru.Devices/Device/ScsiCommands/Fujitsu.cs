@@ -51,13 +51,14 @@ public partial class Device
     public bool FujitsuDisplay(out byte[] senseBuffer, bool flash,   FujitsuDisplayModes mode, string firstHalf,
                                string     secondHalf,  uint timeout, out double          duration)
     {
-        byte[] tmp;
-        byte[] firstHalfBytes  = new byte[8];
-        byte[] secondHalfBytes = new byte[8];
-        byte[] buffer          = new byte[17];
-        bool   displayLen      = false;
-        bool   halfMsg         = false;
-        byte[] cdb             = new byte[10];
+        byte[]     tmp;
+        byte[]     firstHalfBytes  = new byte[8];
+        byte[]     secondHalfBytes = new byte[8];
+        byte[]     buffer          = new byte[17];
+        bool       displayLen      = false;
+        bool       halfMsg         = false;
+        Span<byte> cdb             = CdbBuffer[..10];
+        cdb.Clear();
 
         if(!string.IsNullOrWhiteSpace(firstHalf))
         {

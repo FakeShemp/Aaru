@@ -77,7 +77,15 @@ public partial class Device
         buffer      = new byte[36];
         senseBuffer = new byte[64];
 
-        byte[] cdb = [(byte)ScsiCommands.Inquiry, 0, 0, 0, 36, 0];
+        Span<byte> cdb = CdbBuffer[..6];
+        cdb.Clear();
+
+        cdb[0] = (byte)ScsiCommands.Inquiry;
+        cdb[1] = 0;
+        cdb[2] = 0;
+        cdb[3] = 0;
+        cdb[4] = 36;
+        cdb[5] = 0;
 
         LastError = SendScsiCommand(cdb,
                                     ref buffer,
@@ -93,7 +101,12 @@ public partial class Device
 
         byte pagesLength = (byte)(buffer[4] + 5);
 
-        cdb = [(byte)ScsiCommands.Inquiry, 0, 0, 0, pagesLength, 0];
+        cdb[0] = (byte)ScsiCommands.Inquiry;
+        cdb[1] = 0;
+        cdb[2] = 0;
+        cdb[3] = 0;
+        cdb[4] = pagesLength;
+        cdb[5] = 0;
 
         buffer      = new byte[pagesLength];
         senseBuffer = new byte[64];
@@ -157,7 +170,14 @@ public partial class Device
         buffer      = new byte[36];
         senseBuffer = new byte[64];
 
-        byte[] cdb = [(byte)ScsiCommands.Inquiry, 1, page, 0, 36, 0];
+        Span<byte> cdb = CdbBuffer[..6];
+
+        cdb[0] = (byte)ScsiCommands.Inquiry;
+        cdb[1] = 1;
+        cdb[2] = page;
+        cdb[3] = 0;
+        cdb[4] = 36;
+        cdb[5] = 0;
 
         LastError = SendScsiCommand(cdb,
                                     ref buffer,
@@ -176,7 +196,12 @@ public partial class Device
 
         byte pagesLength = (byte)(buffer[3] + 4);
 
-        cdb = [(byte)ScsiCommands.Inquiry, 1, page, 0, pagesLength, 0];
+        cdb[0] = (byte)ScsiCommands.Inquiry;
+        cdb[1] = 1;
+        cdb[2] = page;
+        cdb[3] = 0;
+        cdb[4] = pagesLength;
+        cdb[5] = 0;
 
         buffer      = new byte[pagesLength];
         senseBuffer = new byte[64];
@@ -205,7 +230,10 @@ public partial class Device
     {
         senseBuffer = new byte[64];
 
-        byte[] cdb = [(byte)ScsiCommands.TestUnitReady, 0, 0, 0, 0, 0];
+        Span<byte> cdb = CdbBuffer[..6];
+        cdb.Clear();
+
+        cdb[0] = (byte)ScsiCommands.TestUnitReady;
 
         byte[] buffer = [];
 
@@ -260,8 +288,10 @@ public partial class Device
                            byte       pageCode, byte       subPageCode, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[6];
+        Span<byte> cdb = CdbBuffer[..6];
+        cdb.Clear();
         buffer = new byte[254];
+
 
         cdb[0] = (byte)ScsiCommands.ModeSense;
 
@@ -350,7 +380,8 @@ public partial class Device
                             out double               duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
         buffer = new byte[4096];
 
         cdb[0] = (byte)ScsiCommands.ModeSense10;
@@ -438,7 +469,8 @@ public partial class Device
                                              out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb    = new byte[6];
+        Span<byte> cdb = CdbBuffer[..6];
+        cdb.Clear();
         byte[] buffer = [];
 
         cdb[0] = (byte)ScsiCommands.PreventAllowMediumRemoval;
@@ -481,7 +513,8 @@ public partial class Device
                              uint       timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
         buffer = new byte[8];
 
         cdb[0] = (byte)ScsiCommands.ReadCapacity;
@@ -534,7 +567,8 @@ public partial class Device
                                out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[16];
+        Span<byte> cdb = CdbBuffer[..16];
+        cdb.Clear();
         buffer = new byte[32];
 
         cdb[0] = (byte)ScsiCommands.ServiceActionIn;
@@ -583,7 +617,8 @@ public partial class Device
     public bool ReadMediaSerialNumber(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
         buffer = new byte[4];
 
         cdb[0] = (byte)ScsiCommands.ReadSerialNumber;
@@ -775,7 +810,8 @@ public partial class Device
             return true;
         }
 
-        byte[] cdb = new byte[6];
+        Span<byte> cdb = CdbBuffer[..6];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.ModeSelect;
 
@@ -832,9 +868,8 @@ public partial class Device
             return true;
         }
 
-        byte[] cdb = new byte[10];
-
-        cdb[0] = (byte)ScsiCommands.ModeSelect10;
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
 
         if(pageFormat) cdb[1] += 0x10;
 
@@ -874,7 +909,8 @@ public partial class Device
     /// <returns><c>true</c> if the command failed.</returns>
     public bool RequestSense(bool descriptor, out byte[] buffer, uint timeout, out double duration)
     {
-        byte[] cdb = new byte[6];
+        Span<byte> cdb = CdbBuffer[..6];
+        cdb.Clear();
         buffer = new byte[252];
 
         cdb[0] = (byte)ScsiCommands.RequestSense;

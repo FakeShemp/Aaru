@@ -30,6 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using Aaru.Logging;
 
 // ReSharper disable UnusedMember.Global
@@ -92,7 +93,8 @@ public partial class Device
                                           uint       timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.PlasmonReadSectorLocation;
         cdb[2] = (byte)((address & 0xFF000000) >> 24);

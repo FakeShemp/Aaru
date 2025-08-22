@@ -219,8 +219,8 @@ partial class Device : Devices.Device
 
                         var usbFs = new FileStream(resolvedLink + "/descriptors", FileMode.Open, FileAccess.Read);
 
-                        var usbBuf   = new byte[65536];
-                        int usbCount = usbFs.EnsureRead(usbBuf, 0, 65536);
+                        byte[] usbBuf   = new byte[65536];
+                        int    usbCount = usbFs.EnsureRead(usbBuf, 0, 65536);
                         dev.UsbDescriptors = new byte[usbCount];
                         Array.Copy(usbBuf, 0, dev.UsbDescriptors, 0, usbCount);
                         usbFs.Close();
@@ -388,8 +388,8 @@ partial class Device : Devices.Device
 
             var cisFs = new FileStream(possibleDir + "/cis", FileMode.Open, FileAccess.Read);
 
-            var cisBuf   = new byte[65536];
-            int cisCount = cisFs.EnsureRead(cisBuf, 0, 65536);
+            byte[] cisBuf   = new byte[65536];
+            int    cisCount = cisFs.EnsureRead(cisBuf, 0, 65536);
             dev.Cis = new byte[cisCount];
             Array.Copy(cisBuf, 0, dev.Cis, 0, cisCount);
             cisFs.Close();

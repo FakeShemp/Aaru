@@ -30,6 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using Aaru.Logging;
 
 namespace Aaru.Devices;
@@ -53,7 +54,8 @@ public partial class Device
                               uint       timeout, out double duration)
     {
         buffer = new byte[256];
-        byte[] cdb = new byte[16];
+        Span<byte> cdb = CdbBuffer[..16];
+        cdb.Clear();
         senseBuffer = new byte[64];
 
         cdb[0]  = (byte)ScsiCommands.ReadAttribute;

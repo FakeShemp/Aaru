@@ -45,7 +45,8 @@ public partial class Device
     public bool KreonDeprecatedUnlock(out byte[] senseBuffer, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb    = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
         byte[] buffer = [];
 
         cdb[0] = (byte)ScsiCommands.KreonCommand;
@@ -101,7 +102,8 @@ public partial class Device
     public bool KreonSetLockState(out byte[] senseBuffer, KreonLockStates state, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb    = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
         byte[] buffer = [];
 
         cdb[0] = (byte)ScsiCommands.KreonCommand;
@@ -135,7 +137,8 @@ public partial class Device
                                     out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb    = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
         byte[] buffer = new byte[26];
         features = 0;
 
@@ -225,7 +228,8 @@ public partial class Device
                                byte       requestNumber = 0x00)
     {
         buffer = new byte[2048];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
         senseBuffer = new byte[64];
 
         cdb[0]  = (byte)ScsiCommands.KreonSsCommand;

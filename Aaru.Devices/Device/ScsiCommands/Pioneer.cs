@@ -30,6 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using Aaru.Logging;
 
 namespace Aaru.Devices;
@@ -50,7 +51,8 @@ public partial class Device
                                 uint transferLength, PioneerSubchannel subchannel, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0]  = (byte)ScsiCommands.ReadCdDa;
         cdb[2]  = (byte)((lba & 0xFF000000) >> 24);
@@ -93,7 +95,8 @@ public partial class Device
                                    uint blockSize, PioneerSubchannel subchannel, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0]  = (byte)ScsiCommands.ReadCdDaMsf;
         cdb[3]  = (byte)((startMsf & 0xFF0000) >> 16);
@@ -139,7 +142,8 @@ public partial class Device
                                 bool       errorFlags, bool       wholeSector, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.ReadCdXa;
         cdb[2] = (byte)((lba & 0xFF000000) >> 24);

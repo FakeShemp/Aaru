@@ -62,7 +62,8 @@ public partial class Device
                       uint       timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[6];
+        Span<byte> cdb = CdbBuffer[..6];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.Read6;
         cdb[1] = (byte)((lba & 0x1F0000) >> 16);
@@ -113,7 +114,8 @@ public partial class Device
                        out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.Read10;
         cdb[1] = (byte)((rdprotect & 0x07) << 5);
@@ -178,7 +180,8 @@ public partial class Device
                        uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[12];
+        Span<byte> cdb = CdbBuffer[..12];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.Read12;
         cdb[1] = (byte)((rdprotect & 0x07) << 5);
@@ -246,7 +249,8 @@ public partial class Device
                        out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb      = new byte[16];
+        Span<byte> cdb = CdbBuffer[..16];
+        cdb.Clear();
         byte[] lbaBytes = BitConverter.GetBytes(lba);
 
         cdb[0] = (byte)ScsiCommands.Read16;
@@ -308,7 +312,8 @@ public partial class Device
                            ushort     transferBytes, uint       timeout,     out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.ReadLong;
 
@@ -356,7 +361,8 @@ public partial class Device
                            uint       timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb      = new byte[16];
+        Span<byte> cdb = CdbBuffer[..16];
+        cdb.Clear();
         byte[] lbaBytes = BitConverter.GetBytes(lba);
 
         cdb[0]  = (byte)ScsiCommands.ServiceActionIn;
@@ -399,7 +405,8 @@ public partial class Device
     public bool Seek6(out byte[] senseBuffer, uint lba, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb    = new byte[6];
+        Span<byte> cdb = CdbBuffer[..6];
+        cdb.Clear();
         byte[] buffer = [];
 
         cdb[0] = (byte)ScsiCommands.Seek6;
@@ -430,7 +437,8 @@ public partial class Device
     public bool Seek10(out byte[] senseBuffer, uint lba, uint timeout, out double duration)
     {
         senseBuffer = new byte[64];
-        byte[] cdb    = new byte[10];
+        Span<byte> cdb = CdbBuffer[..10];
+        cdb.Clear();
         byte[] buffer = [];
 
         cdb[0] = (byte)ScsiCommands.Seek10;

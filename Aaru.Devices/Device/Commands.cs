@@ -30,6 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Aaru.Decoders.ATA;
 
@@ -50,7 +51,7 @@ public partial class Device
     ///     <c>True</c> if SCSI command returned non-OK status and <paramref name="senseBuffer" /> contains
     ///     SCSI sense
     /// </param>
-    public virtual int SendScsiCommand(byte[]        cdb,       ref byte[] buffer, out byte[] senseBuffer, uint timeout,
+    public virtual int SendScsiCommand(Span<byte>    cdb,       ref byte[] buffer, out byte[] senseBuffer, uint timeout,
                                        ScsiDirection direction, out double duration, out bool sense)
     {
         duration    = 0;
