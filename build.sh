@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-AARU_VERSION=6.0.0-alpha10
+AARU_VERSION=6.0.0-alpha.11
 OS_NAME=$(uname)
 
 mkdir -p build
@@ -10,15 +10,15 @@ for conf in Debug Release;
 do
  for distro in linux-arm64 linux-arm linux-x64 osx-x64 osx-arm64 win-arm64 win-x64 win-x86;
  do
-  dotnet publish -f net8.0 -r ${distro} -c ${conf}
+  dotnet publish -f net10.0 -r ${distro} -c ${conf}
 
 # Package the Linux packages (stopped working)
   if [[ ${distro} == alpine* ]] || [[ ${distro} == linux* ]]; then
-    dotnet tarball -f net8.0 -r ${distro} -c ${conf} -o ../build
-    dotnet rpm -f net8.0 -r ${distro} -c ${conf} -o ../build
-    dotnet deb -f net8.0 -r ${distro} -c ${conf} -o ../build
+    dotnet tarball -f net10.0 -r ${distro} -c ${conf} -o ../build
+    dotnet rpm -f net10.0 -r ${distro} -c ${conf} -o ../build
+    dotnet deb -f net10.0 -r ${distro} -c ${conf} -o ../build
   elif [[ ${distro} == win* ]] || [[ ${distro} == osx* ]]; then
-    dotnet zip -f net8.0 -r ${distro} -c ${conf} -o ../build
+    dotnet zip -f net10.0 -r ${distro} -c ${conf} -o ../build
 #  elif [[ ${distro} == rhel* ]] || [[ ${distro} == sles* ]]; then
 #    pkg="rpm"
 #  else
@@ -69,10 +69,10 @@ mkdir -p build/macos/Aaru.app/Contents/Resources
 mkdir -p build/macos/Aaru.app/Contents/MacOS
 cp Aaru/Aaru.icns build/macos/Aaru.app/Contents/Resources
 cp Aaru/Info.plist build/macos/Aaru.app/Contents
-cp -r Aaru/bin/Release/net8.0/osx-x64/publish/* build/macos/Aaru.app/Contents/MacOS
+cp -r Aaru/bin/Release/net10.0/osx-x64/publish/* build/macos/Aaru.app/Contents/MacOS
 rm -Rf build/macos-dbg/Aaru.app
 mkdir -p build/macos-dbg/Aaru.app/Contents/Resources
 mkdir -p build/macos-dbg/Aaru.app/Contents/MacOS
 cp Aaru/Aaru.icns build/macos-dbg/Aaru.app/Contents/Resources
 cp Aaru/Info.plist build/macos-dbg/Aaru.app/Contents
-cp -r Aaru/bin/Debug/net8.0/osx-x64/publish/* build/macos-dbg/Aaru.app/Contents/MacOS
+cp -r Aaru/bin/Debug/net10.0/osx-x64/publish/* build/macos-dbg/Aaru.app/Contents/MacOS
