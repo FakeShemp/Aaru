@@ -58,11 +58,11 @@ public partial class Device
     /// </param>
     /// <param name="requested">Number of contiguous blocks to find</param>
     /// <param name="foundLba">First LBA found</param>
-    public bool MediumScan(out byte[] senseBuffer, bool written, bool advancedScan, bool reverse, bool partial,
-                           bool       relAddr,     uint lba,     uint requested, uint scanLength, out uint foundLba,
-                           out uint   foundBlocks, uint timeout, out double duration)
+    public bool MediumScan(out ReadOnlySpan<byte> senseBuffer, bool written, bool advancedScan, bool reverse,
+                           bool partial, bool relAddr, uint lba, uint requested, uint scanLength, out uint foundLba,
+                           out uint foundBlocks, uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
         byte[] buffer = [];
@@ -102,7 +102,6 @@ public partial class Device
 
         LastError = SendScsiCommand(cdb,
                                     ref buffer,
-                                    out senseBuffer,
                                     timeout,
                                     buffer.Length == 0 ? ScsiDirection.None : ScsiDirection.Out,
                                     out duration,
@@ -114,7 +113,7 @@ public partial class Device
 
         if(Error) return sense;
 
-        DecodedSense? decodedSense = Sense.Decode(senseBuffer);
+        DecodedSense? decodedSense = Sense.Decode(senseBuffer.ToArray());
 
         switch(decodedSense?.SenseKey)
         {

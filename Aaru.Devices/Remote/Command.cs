@@ -41,13 +41,13 @@ namespace Aaru.Devices.Remote;
 public partial class Device
 {
     /// <inheritdoc />
-    public override int SendScsiCommand(Span<byte>    cdb, ref byte[] buffer, out byte[] senseBuffer, uint timeout,
-                                        ScsiDirection direction, out double duration, out bool sense)
+    public override int SendScsiCommand(Span<byte> cdb,      ref byte[] buffer, uint timeout, ScsiDirection direction,
+                                        out double duration, out bool   sense)
     {
         // We need a timeout
         if(timeout == 0) timeout = Timeout > 0 ? Timeout : 15;
 
-        return _remote.SendScsiCommand(cdb, ref buffer, out senseBuffer, timeout, direction, out duration, out sense);
+        return _remote.SendScsiCommand(cdb, ref buffer, SenseBuffer, timeout, direction, out duration, out sense);
     }
 
     /// <inheritdoc />

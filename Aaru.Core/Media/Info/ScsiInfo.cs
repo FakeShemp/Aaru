@@ -66,13 +66,13 @@ public sealed class ScsiInfo
 
         MediaType     = MediaType.Unknown;
         MediaInserted = false;
-        int    resets = 0;
-        bool   sense;
-        byte[] cmdBuf;
-        byte[] senseBuf;
-        bool   containsFloppyPage    = false;
-        int    sessions              = 1;
-        int    firstTrackLastSession = 1;
+        int                resets = 0;
+        bool               sense;
+        byte[]             cmdBuf;
+        ReadOnlySpan<byte> senseBuf;
+        bool               containsFloppyPage    = false;
+        int                sessions              = 1;
+        int                firstTrackLastSession = 1;
 
         if(dev.IsRemovable)
         {
@@ -137,7 +137,7 @@ public sealed class ScsiInfo
                             if(sense)
                             {
                                 AaruLogging.Error(Localization.Core.Error_testing_unit_was_ready_0,
-                                                  Sense.PrettifySense(senseBuf));
+                                                  Sense.PrettifySense(senseBuf.ToArray()));
 
                                 return;
                             }
@@ -146,7 +146,7 @@ public sealed class ScsiInfo
                         }
                         default:
                             AaruLogging.Error(Localization.Core.Error_testing_unit_was_ready_0,
-                                              Sense.PrettifySense(senseBuf));
+                                              Sense.PrettifySense(senseBuf.ToArray()));
 
                             return;
                     }
@@ -211,7 +211,7 @@ public sealed class ScsiInfo
                         if(dev.ScsiType != PeripheralDeviceTypes.MultiMediaDevice)
                         {
                             AaruLogging.Error(Localization.Core.Unable_to_get_media_capacity);
-                            AaruLogging.Error("{0}", Sense.PrettifySense(senseBuf));
+                            AaruLogging.Error("{0}", Sense.PrettifySense(senseBuf.ToArray()));
                         }
                     }
 
@@ -262,7 +262,7 @@ public sealed class ScsiInfo
                 /*
             sense = dev.ReadAttribute(out seqBuf, out senseBuf, ScsiAttributeAction.List, 0, dev.Timeout, out _);
             if (sense)
-                AaruLogging.ErrorWriteLine("SCSI READ ATTRIBUTE:\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf));
+                AaruLogging.ErrorWriteLine("SCSI READ ATTRIBUTE:\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf.ToArray()));
             else
             {
                 DataFile.WriteTo(MODULE_NAME, outputPrefix, "_scsi_readattribute.bin", "SCSI READ ATTRIBUTE", seqBuf);
@@ -296,7 +296,7 @@ public sealed class ScsiInfo
 
             if(sense)
             {
-                AaruLogging.Debug(MODULE_NAME, "READ GET CONFIGURATION:\n{0}", Sense.PrettifySense(senseBuf));
+                AaruLogging.Debug(MODULE_NAME, "READ GET CONFIGURATION:\n{0}", Sense.PrettifySense(senseBuf.ToArray()));
 
                 if(dev.IsUsb && scsiMediumType is 0x40 or 0x41 or 0x42) MediaType = MediaType.FlashDrive;
             }
@@ -371,7 +371,7 @@ public sealed class ScsiInfo
             {
                 AaruLogging.Debug(MODULE_NAME,
                                   Localization.Core.READ_DISC_STRUCTURE_Recognized_Format_Layers_0,
-                                  Sense.PrettifySense(senseBuf));
+                                  Sense.PrettifySense(senseBuf.ToArray()));
             }
             else
                 RecognizedFormatLayers = cmdBuf;
@@ -390,7 +390,7 @@ public sealed class ScsiInfo
             {
                 AaruLogging.Debug(MODULE_NAME,
                                   Localization.Core.READ_DISC_STRUCTURE_Write_Protection_Status_0,
-                                  Sense.PrettifySense(senseBuf));
+                                  Sense.PrettifySense(senseBuf.ToArray()));
             }
             else
                 WriteProtectionStatus = cmdBuf;
@@ -399,7 +399,7 @@ public sealed class ScsiInfo
             /*
             sense = dev.ReadDiscStructure(out cmdBuf, out senseBuf, MmcDiscStructureMediaType.DVD, 0, 0, MmcDiscStructureFormat.CapabilityList, 0, dev.Timeout, out _);
             if(sense)
-                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: Capability List\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf));
+                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: Capability List\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf.ToArray()));
             else
                 DataFile.WriteTo(MODULE_NAME, outputPrefix, "_readdiscstructure_capabilitylist.bin", "SCSI READ DISC STRUCTURE", cmdBuf);
             */
@@ -438,7 +438,7 @@ public sealed class ScsiInfo
                 {
                     AaruLogging.Debug(MODULE_NAME,
                                       Localization.Core.READ_DISC_STRUCTURE_PFI_0,
-                                      Sense.PrettifySense(senseBuf));
+                                      Sense.PrettifySense(senseBuf.ToArray()));
                 }
                 else
                 {
@@ -490,7 +490,7 @@ public sealed class ScsiInfo
                 {
                     AaruLogging.Debug(MODULE_NAME,
                                       Localization.Core.READ_DISC_STRUCTURE_DMI_0,
-                                      Sense.PrettifySense(senseBuf));
+                                      Sense.PrettifySense(senseBuf.ToArray()));
                 }
                 else
                 {
@@ -529,7 +529,7 @@ public sealed class ScsiInfo
                 {
                     AaruLogging.Debug(MODULE_NAME,
                                       Localization.Core.READ_DISC_STRUCTURE_CMI_0,
-                                      Sense.PrettifySense(senseBuf));
+                                      Sense.PrettifySense(senseBuf.ToArray()));
                 }
                 else
                     DvdCmi = cmdBuf;
@@ -558,7 +558,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_BCA_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         DvdBca = cmdBuf;
@@ -577,7 +577,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_DVD_AACS_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         DvdAacs = cmdBuf;
@@ -604,7 +604,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_DDS_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         DvdRamDds = cmdBuf;
@@ -623,7 +623,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_Medium_Status_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         DvdRamCartridgeStatus = cmdBuf;
@@ -642,7 +642,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_SAI_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         DvdRamSpareArea = cmdBuf;
@@ -669,7 +669,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_Last_Out_Border_RMD_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         LastBorderOutRmd = cmdBuf;
@@ -698,7 +698,7 @@ public sealed class ScsiInfo
                 {
                     AaruLogging.Debug(MODULE_NAME,
                                       Localization.Core.READ_DISC_STRUCTURE_Disc_Key_0,
-                                      Sense.PrettifySense(senseBuf));
+                                      Sense.PrettifySense(senseBuf.ToArray()));
                 }
                 else
                     DvdDiscKey = cmdBuf;
@@ -717,7 +717,7 @@ public sealed class ScsiInfo
                 {
                     AaruLogging.Debug(MODULE_NAME,
                                       Localization.Core.READ_DISC_STRUCTURE_Sector_CMI_0,
-                                      Sense.PrettifySense(senseBuf));
+                                      Sense.PrettifySense(senseBuf.ToArray()));
                 }
                 else
                     DvdSectorCmi = cmdBuf;
@@ -728,47 +728,47 @@ public sealed class ScsiInfo
             /*
             sense = dev.ReadDiscStructure(out cmdBuf, out senseBuf, MmcDiscStructureMediaType.DVD, 0, 0, MmcDiscStructureFormat.MediaIdentifier, 0, dev.Timeout, out _);
             if(sense)
-                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: Media ID\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf));
+                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: Media ID\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf.ToArray()));
             else
                 DataFile.WriteTo(MODULE_NAME, outputPrefix, "_readdiscstructure_dvd_mediaid.bin", "SCSI READ DISC STRUCTURE", cmdBuf);
             sense = dev.ReadDiscStructure(out cmdBuf, out senseBuf, MmcDiscStructureMediaType.DVD, 0, 0, MmcDiscStructureFormat.MediaKeyBlock, 0, dev.Timeout, out _);
             if(sense)
-                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: MKB\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf));
+                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: MKB\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf.ToArray()));
             else
                 DataFile.WriteTo(MODULE_NAME, outputPrefix, "_readdiscstructure_dvd_mkb.bin", "SCSI READ DISC STRUCTURE", cmdBuf);
             sense = dev.ReadDiscStructure(out cmdBuf, out senseBuf, MmcDiscStructureMediaType.DVD, 0, 0, MmcDiscStructureFormat.AACSVolId, 0, dev.Timeout, out _);
             if(sense)
-                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: AACS Volume ID\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf));
+                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: AACS Volume ID\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf.ToArray()));
             else
                 DataFile.WriteTo(MODULE_NAME, outputPrefix, "_readdiscstructure_aacsvolid.bin", "SCSI READ DISC STRUCTURE", cmdBuf);
             sense = dev.ReadDiscStructure(out cmdBuf, out senseBuf, MmcDiscStructureMediaType.DVD, 0, 0, MmcDiscStructureFormat.AACSMediaSerial, 0, dev.Timeout, out _);
             if(sense)
-                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: AACS Media Serial Number\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf));
+                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: AACS Media Serial Number\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf.ToArray()));
             else
                 DataFile.WriteTo(MODULE_NAME, outputPrefix, "_readdiscstructure_aacssn.bin", "SCSI READ DISC STRUCTURE", cmdBuf);
             sense = dev.ReadDiscStructure(out cmdBuf, out senseBuf, MmcDiscStructureMediaType.DVD, 0, 0, MmcDiscStructureFormat.AACSMediaId, 0, dev.Timeout, out _);
             if(sense)
-                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: AACS Media ID\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf));
+                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: AACS Media ID\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf.ToArray()));
             else
                 DataFile.WriteTo(MODULE_NAME, outputPrefix, "_readdiscstructure_aacsmediaid.bin", "SCSI READ DISC STRUCTURE", cmdBuf);
             sense = dev.ReadDiscStructure(out cmdBuf, out senseBuf, MmcDiscStructureMediaType.DVD, 0, 0, MmcDiscStructureFormat.AACSMKB, 0, dev.Timeout, out _);
             if(sense)
-                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: AACS MKB\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf));
+                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: AACS MKB\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf.ToArray()));
             else
                 DataFile.WriteTo(MODULE_NAME, outputPrefix, "_readdiscstructure_aacsmkb.bin", "SCSI READ DISC STRUCTURE", cmdBuf);
             sense = dev.ReadDiscStructure(out cmdBuf, out senseBuf, MmcDiscStructureMediaType.DVD, 0, 0, MmcDiscStructureFormat.AACSLBAExtents, 0, dev.Timeout, out _);
             if(sense)
-                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: AACS LBA Extents\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf));
+                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: AACS LBA Extents\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf.ToArray()));
             else
                 DataFile.WriteTo(MODULE_NAME, outputPrefix, "_readdiscstructure_aacslbaextents.bin", "SCSI READ DISC STRUCTURE", cmdBuf);
             sense = dev.ReadDiscStructure(out cmdBuf, out senseBuf, MmcDiscStructureMediaType.DVD, 0, 0, MmcDiscStructureFormat.AACSMKBCPRM, 0, dev.Timeout, out _);
             if(sense)
-                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: AACS CPRM MKB\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf));
+                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: AACS CPRM MKB\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf.ToArray()));
             else
                 DataFile.WriteTo(MODULE_NAME, outputPrefix, "_readdiscstructure_aacscprmmkb.bin", "SCSI READ DISC STRUCTURE", cmdBuf);
             sense = dev.ReadDiscStructure(out cmdBuf, out senseBuf, MmcDiscStructureMediaType.DVD, 0, 0, MmcDiscStructureFormat.AACSDataKeys, 0, dev.Timeout, out _);
             if(sense)
-                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: AACS Data Keys\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf));
+                AaruLogging.DebugWriteLine(MODULE_NAME, "READ DISC STRUCTURE: AACS Data Keys\n{0}", Decoders.SCSI.Sense.PrettifySense(senseBuf.ToArray()));
             else
                 DataFile.WriteTo(MODULE_NAME, outputPrefix, "_readdiscstructure_aacsdatakeys.bin", "SCSI READ DISC STRUCTURE", cmdBuf);
             */
@@ -793,7 +793,7 @@ public sealed class ScsiInfo
                 {
                     AaruLogging.Debug(MODULE_NAME,
                                       Localization.Core.READ_DISC_STRUCTURE_Pre_Recorded_Info_0,
-                                      Sense.PrettifySense(senseBuf));
+                                      Sense.PrettifySense(senseBuf.ToArray()));
                 }
                 else
                 {
@@ -828,7 +828,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_DVD_R_Media_ID_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         DvdrMediaIdentifier = cmdBuf;
@@ -847,7 +847,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_DVD_R_PFI_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                     {
@@ -880,7 +880,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_ADIP_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         DvdPlusAdip = cmdBuf;
@@ -899,7 +899,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_DCB_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         DvdPlusDcb = cmdBuf;
@@ -925,7 +925,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_HD_DVD_CMI_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         HddvdCopyrightInformation = cmdBuf;
@@ -955,7 +955,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_HD_DVD_R_Medium_Status,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         HddvdrMediumStatus = cmdBuf;
@@ -974,7 +974,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_Last_RMD_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         HddvdrLastRmd = cmdBuf;
@@ -1002,7 +1002,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_Layer_Capacity_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         DvdrLayerCapacity = cmdBuf;
@@ -1032,7 +1032,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_Middle_Zone_Start_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         DvdrDlMiddleZoneStart = cmdBuf;
@@ -1051,7 +1051,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_Jump_Interval_Size_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         DvdrDlJumpIntervalSize = cmdBuf;
@@ -1070,7 +1070,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_Manual_Layer_Jump_Start_LBA_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         DvdrDlManualLayerJumpStartLba = cmdBuf;
@@ -1089,7 +1089,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_Remap_Anchor_Point_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         DvdrDlRemapAnchorPoint = cmdBuf;
@@ -1123,7 +1123,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_DI_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         BlurayDiscInformation = cmdBuf;
@@ -1142,7 +1142,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_PAC_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         BlurayPac = cmdBuf;
@@ -1161,7 +1161,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_BCA_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         BlurayBurstCuttingArea = cmdBuf;
@@ -1193,7 +1193,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_DDS_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         BlurayDds = cmdBuf;
@@ -1212,7 +1212,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_Cartridge_Status_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         BlurayCartridgeStatus = cmdBuf;
@@ -1231,7 +1231,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           "READ DISC STRUCTURE: Spare Area Information\n{0}",
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         BluraySpareAreaInformation = cmdBuf;
@@ -1250,7 +1250,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_Raw_DFL_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         BlurayRawDfl = cmdBuf;
@@ -1265,7 +1265,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_001b_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         BlurayTrackResources = cmdBuf;
@@ -1280,7 +1280,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_DISC_STRUCTURE_010b_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                         BlurayPowResources = cmdBuf;
@@ -1304,7 +1304,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_TOC_PMA_ATIP_TOC_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                     {
@@ -1322,7 +1322,7 @@ public sealed class ScsiInfo
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_TOC_PMA_ATIP_ATIP_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
                     }
                     else
                     {
@@ -1346,7 +1346,7 @@ public sealed class ScsiInfo
                         {
                             AaruLogging.Debug(MODULE_NAME,
                                               Localization.Core.READ_TOC_PMA_ATIP_Session_Info_0,
-                                              Sense.PrettifySense(senseBuf));
+                                              Sense.PrettifySense(senseBuf.ToArray()));
                         }
                         else if(cmdBuf.Length > 4)
                         {
@@ -1366,7 +1366,7 @@ public sealed class ScsiInfo
                         {
                             AaruLogging.Debug(MODULE_NAME,
                                               Localization.Core.READ_TOC_PMA_ATIP_Raw_TOC_0,
-                                              Sense.PrettifySense(senseBuf));
+                                              Sense.PrettifySense(senseBuf.ToArray()));
                         }
                         else if(cmdBuf.Length > 4)
                         {
@@ -1381,7 +1381,7 @@ public sealed class ScsiInfo
                         {
                             AaruLogging.Debug(MODULE_NAME,
                                               Localization.Core.READ_TOC_PMA_ATIP_PMA_0,
-                                              Sense.PrettifySense(senseBuf));
+                                              Sense.PrettifySense(senseBuf.ToArray()));
                         }
                         else if(cmdBuf.Length > 4) Pma = cmdBuf;
 
@@ -1391,7 +1391,7 @@ public sealed class ScsiInfo
                         {
                             AaruLogging.Debug(MODULE_NAME,
                                               Localization.Core.READ_TOC_PMA_ATIP_CD_TEXT_0,
-                                              Sense.PrettifySense(senseBuf));
+                                              Sense.PrettifySense(senseBuf.ToArray()));
                         }
                         else if(cmdBuf.Length > 4)
                         {
@@ -1438,7 +1438,7 @@ public sealed class ScsiInfo
                 {
                     AaruLogging.Debug(MODULE_NAME,
                                       Localization.Core.READ_DISC_STRUCTURE_PFI_0,
-                                      Sense.PrettifySense(senseBuf));
+                                      Sense.PrettifySense(senseBuf.ToArray()));
                 }
                 else
                 {
@@ -1475,7 +1475,7 @@ public sealed class ScsiInfo
                 {
                     AaruLogging.Debug(MODULE_NAME,
                                       Localization.Core.READ_DISC_STRUCTURE_DMI_0,
-                                      Sense.PrettifySense(senseBuf));
+                                      Sense.PrettifySense(senseBuf.ToArray()));
                 }
                 else
                     DvdDmi = cmdBuf;
@@ -1487,9 +1487,9 @@ public sealed class ScsiInfo
         sense = dev.ReadMediaSerialNumber(out cmdBuf, out senseBuf, dev.Timeout, out _);
 
         if(sense)
-        {
-            AaruLogging.Debug(MODULE_NAME, Localization.Core.READ_MEDIA_SERIAL_NUMBER_0, Sense.PrettifySense(senseBuf));
-        }
+            AaruLogging.Debug(MODULE_NAME,
+                              Localization.Core.READ_MEDIA_SERIAL_NUMBER_0,
+                              Sense.PrettifySense(senseBuf.ToArray()));
         else
         {
             if(cmdBuf.Length >= 4) MediaSerialNumber = cmdBuf;
@@ -1517,7 +1517,7 @@ public sealed class ScsiInfo
                         {
                             AaruLogging.Debug(MODULE_NAME,
                                               Localization.Core.KREON_EXTRACT_SS_0,
-                                              Sense.PrettifySense(senseBuf));
+                                              Sense.PrettifySense(senseBuf.ToArray()));
                         }
                         else
                             XboxSecuritySector = cmdBuf;
@@ -1702,7 +1702,7 @@ public sealed class ScsiInfo
         {
             AaruLogging.Debug(MODULE_NAME,
                               Localization.Core.READ_DISC_INFORMATION_000b_0,
-                              Sense.PrettifySense(senseBuf));
+                              Sense.PrettifySense(senseBuf.ToArray()));
         }
         else
         {

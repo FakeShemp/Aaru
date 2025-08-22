@@ -58,10 +58,10 @@ public sealed class Dump(Device dev)
     /// <param name="keyClass">Key class.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadAsf(out byte[] buffer, out byte[] senseBuffer, DvdCssKeyClass keyClass, uint timeout,
+    public bool ReadAsf(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, DvdCssKeyClass keyClass, uint timeout,
                         out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = dev.SenseBuffer;
         Span<byte> cdb = dev.CdbBuffer[..12];
         cdb.Clear();
         buffer = new byte[8];
@@ -72,7 +72,7 @@ public sealed class Dump(Device dev)
         cdb[9]  = (byte)(buffer.Length & 0xFF);
         cdb[10] = (byte)((byte)CssReportKeyFormat.Asf ^ (Agid & 0x03) << 6);
 
-        dev.SendScsiCommand(cdb, ref buffer, out senseBuffer, timeout, ScsiDirection.In, out duration, out bool sense);
+        dev.SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         AaruLogging.Debug(MODULE_NAME,
                           Localization.REPORT_ASF_AGID_1_Sense_2_Last_Error_3_took_0_ms,
@@ -91,10 +91,10 @@ public sealed class Dump(Device dev)
     /// <param name="keyClass">Key class.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadRpc(out byte[] buffer, out byte[] senseBuffer, DvdCssKeyClass keyClass, uint timeout,
+    public bool ReadRpc(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, DvdCssKeyClass keyClass, uint timeout,
                         out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = dev.SenseBuffer;
         Span<byte> cdb = dev.CdbBuffer[..12];
         cdb.Clear();
         buffer = new byte[8];
@@ -105,7 +105,7 @@ public sealed class Dump(Device dev)
         cdb[9]  = (byte)(buffer.Length & 0xFF);
         cdb[10] = (byte)((byte)CssReportKeyFormat.RpcState ^ (Agid & 0x03) << 6);
 
-        dev.SendScsiCommand(cdb, ref buffer, out senseBuffer, timeout, ScsiDirection.In, out duration, out bool sense);
+        dev.SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         AaruLogging.Debug(MODULE_NAME,
                           Localization.REPORT_ASF_AGID_1_Sense_2_Last_Error_3_took_0_ms,
@@ -124,10 +124,10 @@ public sealed class Dump(Device dev)
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
-    public bool InvalidateAgid(out byte[] buffer, out byte[] senseBuffer, DvdCssKeyClass keyClass, uint timeout,
-                               out double duration)
+    public bool InvalidateAgid(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, DvdCssKeyClass keyClass,
+                               uint       timeout, out double             duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = dev.SenseBuffer;
         Span<byte> cdb = dev.CdbBuffer[..12];
         cdb.Clear();
         buffer = [];
@@ -138,7 +138,7 @@ public sealed class Dump(Device dev)
         cdb[9]  = (byte)(buffer.Length & 0xFF);
         cdb[10] = (byte)((byte)CssReportKeyFormat.InvalidateAgid ^ (Agid & 0x03) << 6);
 
-        dev.SendScsiCommand(cdb, ref buffer, out senseBuffer, timeout, ScsiDirection.In, out duration, out bool sense);
+        dev.SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         AaruLogging.Debug(MODULE_NAME,
                           Localization.INVALIDATE_AGID_AGID_1_Sense_2_Last_Error_3_took_0_ms,
@@ -157,10 +157,10 @@ public sealed class Dump(Device dev)
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
-    public bool ReportAgidCssCppm(out byte[] buffer, out byte[] senseBuffer, DvdCssKeyClass keyClass, uint timeout,
-                                  out double duration)
+    public bool ReportAgidCssCppm(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, DvdCssKeyClass keyClass,
+                                  uint       timeout, out double             duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = dev.SenseBuffer;
         Span<byte> cdb = dev.CdbBuffer[..12];
         cdb.Clear();
         buffer = new byte[8];
@@ -171,7 +171,7 @@ public sealed class Dump(Device dev)
         cdb[9]  = (byte)(buffer.Length & 0xFF);
         cdb[10] = (byte)((byte)CssReportKeyFormat.AgidForCssCppm ^ (Agid & 0x03) << 6);
 
-        dev.SendScsiCommand(cdb, ref buffer, out senseBuffer, timeout, ScsiDirection.In, out duration, out bool sense);
+        dev.SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         AaruLogging.Debug(MODULE_NAME,
                           Localization.REPORT_AGID_CSS_CPPM_AGID_1_Sense_2_Last_Error_3_took_0_ms,
@@ -190,10 +190,10 @@ public sealed class Dump(Device dev)
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
-    public bool ReportKey1(out byte[] buffer, out byte[] senseBuffer, DvdCssKeyClass keyClass, uint timeout,
+    public bool ReportKey1(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, DvdCssKeyClass keyClass, uint timeout,
                            out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = dev.SenseBuffer;
         Span<byte> cdb = dev.CdbBuffer[..12];
         cdb.Clear();
         buffer = new byte[12];
@@ -204,7 +204,7 @@ public sealed class Dump(Device dev)
         cdb[9]  = (byte)(buffer.Length & 0xFF);
         cdb[10] = (byte)((byte)CssReportKeyFormat.Key1 ^ (Agid & 0x03) << 6);
 
-        dev.SendScsiCommand(cdb, ref buffer, out senseBuffer, timeout, ScsiDirection.In, out duration, out bool sense);
+        dev.SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         AaruLogging.Debug(MODULE_NAME,
                           Localization.REPORT_KEY1_AGID_1_Sense_2_Last_Error_3_took_0_ms,
@@ -223,10 +223,10 @@ public sealed class Dump(Device dev)
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
-    public bool ReportChallenge(out byte[] buffer, out byte[] senseBuffer, DvdCssKeyClass keyClass, uint timeout,
-                                out double duration)
+    public bool ReportChallenge(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, DvdCssKeyClass keyClass,
+                                uint       timeout, out double             duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = dev.SenseBuffer;
         Span<byte> cdb = dev.CdbBuffer[..12];
         cdb.Clear();
         buffer = new byte[16];
@@ -237,7 +237,7 @@ public sealed class Dump(Device dev)
         cdb[9]  = (byte)(buffer.Length & 0xFF);
         cdb[10] = (byte)((byte)CssReportKeyFormat.ChallengeKey ^ (Agid & 0x03) << 6);
 
-        dev.SendScsiCommand(cdb, ref buffer, out senseBuffer, timeout, ScsiDirection.In, out duration, out bool sense);
+        dev.SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         AaruLogging.Debug(MODULE_NAME,
                           Localization.REPORT_CHALLENGE_AGID_1_Sense_2_Last_Error_3_took_0_ms,
@@ -257,10 +257,10 @@ public sealed class Dump(Device dev)
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
-    public bool SendChallenge(out byte[] buffer,  out byte[] senseBuffer, DvdCssKeyClass keyClass, byte[] challengeKey,
-                              uint       timeout, out double duration)
+    public bool SendChallenge(out byte[] buffer,       out ReadOnlySpan<byte> senseBuffer, DvdCssKeyClass keyClass,
+                              byte[]     challengeKey, uint                   timeout,     out double     duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = dev.SenseBuffer;
         Span<byte> cdb = dev.CdbBuffer[..12];
         cdb.Clear();
         buffer = new byte[16];
@@ -283,7 +283,7 @@ public sealed class Dump(Device dev)
         buffer[12] = challengeKey[1];
         buffer[13] = challengeKey[0];
 
-        dev.SendScsiCommand(cdb, ref buffer, out senseBuffer, timeout, ScsiDirection.Out, out duration, out bool sense);
+        dev.SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.Out, out duration, out bool sense);
 
         AaruLogging.Debug(MODULE_NAME,
                           Localization.SEND_CHALLENGE_AGID_1_Challenge_2_Sense_3_Last_Error_4_took_0_ms,
@@ -304,10 +304,10 @@ public sealed class Dump(Device dev)
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
-    public bool SendKey2(out byte[] buffer, out byte[] senseBuffer, DvdCssKeyClass keyClass, byte[] key2, uint timeout,
-                         out double duration)
+    public bool SendKey2(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, DvdCssKeyClass keyClass, byte[] key2,
+                         uint       timeout, out double             duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = dev.SenseBuffer;
         Span<byte> cdb = dev.CdbBuffer[..12];
         cdb.Clear();
         buffer = new byte[12];
@@ -325,7 +325,7 @@ public sealed class Dump(Device dev)
         buffer[7] = key2[1];
         buffer[8] = key2[0];
 
-        dev.SendScsiCommand(cdb, ref buffer, out senseBuffer, timeout, ScsiDirection.Out, out duration, out bool sense);
+        dev.SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.Out, out duration, out bool sense);
 
         AaruLogging.Debug(MODULE_NAME,
                           Localization.SEND_CHALLENGE_AGID_1_KEY2_2_Sense_3_Last_Error_4_took_0_ms,
@@ -344,9 +344,9 @@ public sealed class Dump(Device dev)
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadDiscKey(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
+    public bool ReadDiscKey(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = dev.SenseBuffer;
         Span<byte> cdb = dev.CdbBuffer[..12];
         cdb.Clear();
         buffer = new byte[2052];
@@ -359,7 +359,7 @@ public sealed class Dump(Device dev)
         cdb[9]  = (byte)(buffer.Length & 0xFF);
         cdb[10] = (byte)((Agid & 0x03) << 6);
 
-        dev.SendScsiCommand(cdb, ref buffer, out senseBuffer, timeout, ScsiDirection.In, out duration, out bool sense);
+        dev.SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         return sense;
     }
@@ -371,12 +371,12 @@ public sealed class Dump(Device dev)
     /// <param name="protectionType">The type of protection the logical unit reports</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadBusKey(out byte[] buffer, out byte[] senseBuffer, CopyrightType protectionType, uint timeout,
-                           out double duration)
+    public bool ReadBusKey(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, CopyrightType protectionType,
+                           uint       timeout, out double             duration)
     {
         duration    = 0;
         buffer      = [];
-        senseBuffer = new byte[64];
+        senseBuffer = dev.SenseBuffer;
 
         bool   sense     = false;
         byte[] challenge = new byte[CHALLENGE_SIZE];
@@ -478,15 +478,15 @@ public sealed class Dump(Device dev)
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
-    public bool ReadTitleKey(out byte[] buffer,  out byte[] senseBuffer, DvdCssKeyClass keyClass, ulong address,
-                             uint       timeout, out double duration)
+    public bool ReadTitleKey(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, DvdCssKeyClass keyClass,
+                             ulong      address, uint                   timeout,     out double     duration)
     {
         // We need to be in a bus key state to read title keys. Only CSS has title keys.
         ReadBusKey(out buffer, out senseBuffer, CopyrightType.CSS, timeout, out duration);
 
         BusKey = buffer;
 
-        senseBuffer = new byte[64];
+        senseBuffer = dev.SenseBuffer;
         Span<byte> cdb = dev.CdbBuffer[..12];
         cdb.Clear();
         buffer = new byte[12];
@@ -501,7 +501,7 @@ public sealed class Dump(Device dev)
         cdb[9]  = (byte)(buffer.Length & 0xFF);
         cdb[10] = (byte)((byte)CssReportKeyFormat.TitleKey ^ (Agid & 0x03) << 6);
 
-        dev.SendScsiCommand(cdb, ref buffer, out senseBuffer, timeout, ScsiDirection.In, out duration, out bool sense);
+        dev.SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         AaruLogging.Debug(MODULE_NAME,
                           Localization.GET_TITLE_KEY_AGID_1_LBA_2_Sense_3_took_0_ms,

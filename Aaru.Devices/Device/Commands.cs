@@ -43,7 +43,6 @@ public partial class Device
     /// <returns>0 if no error occurred, otherwise, errno</returns>
     /// <param name="cdb">SCSI CDB</param>
     /// <param name="buffer">Buffer for SCSI command response</param>
-    /// <param name="senseBuffer">Buffer with the SCSI sense</param>
     /// <param name="timeout">Timeout in seconds</param>
     /// <param name="direction">SCSI command transfer direction</param>
     /// <param name="duration">Time it took to execute the command in milliseconds</param>
@@ -51,12 +50,12 @@ public partial class Device
     ///     <c>True</c> if SCSI command returned non-OK status and <paramref name="senseBuffer" /> contains
     ///     SCSI sense
     /// </param>
-    public virtual int SendScsiCommand(Span<byte>    cdb,       ref byte[] buffer, out byte[] senseBuffer, uint timeout,
-                                       ScsiDirection direction, out double duration, out bool sense)
+    public virtual int SendScsiCommand(Span<byte> cdb,      ref byte[] buffer, uint timeout, ScsiDirection direction,
+                                       out double duration, out bool   sense)
     {
-        duration    = 0;
-        sense       = true;
-        senseBuffer = null;
+        duration = 0;
+        sense    = true;
+        buffer   = null;
 
         return -1;
     }

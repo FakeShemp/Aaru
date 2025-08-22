@@ -48,8 +48,8 @@ public partial class Device
     /// <param name="timeout">Timeout to wait for command execution</param>
     /// <param name="duration">Time the device took to execute the command in milliseconds</param>
     /// <returns><c>true</c> if the device set an error condition, <c>false</c> otherwise</returns>
-    public bool FujitsuDisplay(out byte[] senseBuffer, bool flash,   FujitsuDisplayModes mode, string firstHalf,
-                               string     secondHalf,  uint timeout, out double          duration)
+    public bool FujitsuDisplay(out ReadOnlySpan<byte> senseBuffer, bool   flash,      FujitsuDisplayModes mode,
+                               string                 firstHalf,   string secondHalf, uint timeout, out double duration)
     {
         byte[]     tmp;
         byte[]     firstHalfBytes  = new byte[8];
@@ -58,6 +58,7 @@ public partial class Device
         bool       displayLen      = false;
         bool       halfMsg         = false;
         Span<byte> cdb             = CdbBuffer[..10];
+        senseBuffer = SenseBuffer;
         cdb.Clear();
 
         if(!string.IsNullOrWhiteSpace(firstHalf))
@@ -98,13 +99,7 @@ public partial class Device
         cdb[0] = (byte)ScsiCommands.FujitsuDisplay;
         cdb[6] = (byte)buffer.Length;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.Out,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.Out, out duration, out bool sense);
 
         Error = LastError != 0;
 

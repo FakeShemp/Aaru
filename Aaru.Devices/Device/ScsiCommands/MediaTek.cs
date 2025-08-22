@@ -45,10 +45,10 @@ public partial class Device
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="offset">Starting offset in DRAM memory.</param>
     /// <param name="length">How much data to retrieve from DRAM.</param>
-    public bool MediaTekReadDram(out byte[] buffer, out byte[] senseBuffer, uint offset, uint length, uint timeout,
-                                 out double duration)
+    public bool MediaTekReadDram(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, uint offset, uint length,
+                                 uint       timeout, out double             duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
         buffer = new byte[length];
@@ -64,13 +64,7 @@ public partial class Device
         cdb[8] = (byte)((length & 0xFF00)     >> 8);
         cdb[9] = (byte)(length & 0xFF);
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 

@@ -522,7 +522,7 @@ public class Remote : IDisposable
     ///     <c>True</c> if SCSI command returned non-OK status and <paramref name="senseBuffer" /> contains
     ///     SCSI sense
     /// </param>
-    public int SendScsiCommand(Span<byte>    cdb,       ref byte[] buffer,   out byte[] senseBuffer, uint timeout,
+    public int SendScsiCommand(Span<byte>    cdb,       ref byte[] buffer,   Span<byte> senseBuffer, uint timeout,
                                ScsiDirection direction, out double duration, out bool   sense)
     {
         senseBuffer = null;
@@ -610,8 +610,7 @@ public class Remote : IDisposable
 
         AaruPacketResScsi res = Marshal.ByteArrayToStructureLittleEndian<AaruPacketResScsi>(buf);
 
-        senseBuffer = new byte[res.sense_len];
-        Array.Copy(buf, Marshal.SizeOf<AaruPacketResScsi>(), senseBuffer, 0, res.sense_len);
+        buf.AsSpan(Marshal.SizeOf<AaruPacketResScsi>(), (int)res.sense_len).CopyTo(senseBuffer);
         buffer = new byte[res.buf_len];
         Array.Copy(buf, Marshal.SizeOf<AaruPacketResScsi>() + res.sense_len, buffer, 0, res.buf_len);
         duration = res.duration;

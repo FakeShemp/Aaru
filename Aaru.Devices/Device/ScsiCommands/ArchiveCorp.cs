@@ -45,13 +45,13 @@ public partial class Device
     /// <param name="lba">Address.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool ArchiveCorpRequestBlockAddress(out byte[] buffer, out byte[] senseBuffer, uint lba, uint timeout,
-                                               out double duration)
+    public bool ArchiveCorpRequestBlockAddress(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, uint lba,
+                                               uint       timeout, out double             duration)
     {
         buffer = new byte[3];
         Span<byte> cdb = CdbBuffer[..6];
         cdb.Clear();
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
         cdb[0] = (byte)ScsiCommands.ArchiveRequestBlockAddress;
         cdb[1] = (byte)((lba & 0x1F0000) >> 16);
@@ -59,13 +59,7 @@ public partial class Device
         cdb[3] = (byte)(lba & 0xFF);
         cdb[4] = 3;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -79,7 +73,7 @@ public partial class Device
     /// <param name="lba">Logical Block Address, starting from 1.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool ArchiveCorpSeekBlock(out byte[] senseBuffer, uint lba, uint timeout, out double duration) =>
+    public bool ArchiveCorpSeekBlock(out ReadOnlySpan<byte> senseBuffer, uint lba, uint timeout, out double duration) =>
         ArchiveCorpSeekBlock(out senseBuffer, false, lba, timeout, out duration);
 
     /// <summary>Positions the tape at the specified block address</summary>
@@ -88,13 +82,13 @@ public partial class Device
     /// <param name="lba">Logical Block Address, starting from 1.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool ArchiveCorpSeekBlock(out byte[] senseBuffer, bool immediate, uint lba, uint timeout,
-                                     out double duration)
+    public bool ArchiveCorpSeekBlock(out ReadOnlySpan<byte> senseBuffer, bool immediate, uint lba, uint timeout,
+                                     out double             duration)
     {
         byte[]     buffer = [];
         Span<byte> cdb    = CdbBuffer[..6];
         cdb.Clear();
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
         cdb[0] = (byte)ScsiCommands.ArchiveSeekBlock;
         cdb[1] = (byte)((lba & 0x1F0000) >> 16);
@@ -103,13 +97,7 @@ public partial class Device
 
         if(immediate) cdb[1] += 0x01;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.None,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out bool sense);
 
         Error = LastError != 0;
 

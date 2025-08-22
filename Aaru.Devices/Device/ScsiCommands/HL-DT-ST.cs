@@ -53,14 +53,14 @@ public partial class Device
     /// <param name="transferLength">How many blocks to read.</param>
     /// <param name="layerbreak">The address in which the layerbreak occur</param>
     /// <param name="otp">Set to <c>true</c> if disk is Opposite Track Path (OTP)</param>
-    public bool HlDtStReadRawDvd(out byte[] buffer, out byte[] senseBuffer, uint lba, uint transferLength, uint timeout,
-                                 out double duration, uint layerbreak, bool otp)
+    public bool HlDtStReadRawDvd(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, uint lba, uint transferLength,
+                                 uint       timeout, out double             duration,    uint layerbreak, bool otp)
     {
         // We need to fill the buffer before reading it with the HL-DT-ST command. We don't care about sense,
         // because the data can be wrong anyway, so we check the buffer data later instead.
         Read12(out _, out _, 0, false, false, false, false, lba, 2048, 0, 16, false, timeout, out duration);
 
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
         buffer = new byte[2064 * transferLength];
@@ -79,13 +79,7 @@ public partial class Device
         cdb[10] = (byte)((buffer.Length & 0xFF00) >> 8);
         cdb[11] = (byte)(buffer.Length & 0xFF);
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 

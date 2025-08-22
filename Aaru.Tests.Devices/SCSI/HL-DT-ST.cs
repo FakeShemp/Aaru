@@ -147,7 +147,7 @@ static class HlDtSt
         Console.Clear();
 
         bool sense = dev.HlDtStReadRawDvd(out byte[] buffer,
-                                          out byte[] senseBuffer,
+                                          out ReadOnlySpan<byte> senseBuffer,
                                           lba,
                                           count,
                                           dev.Timeout,
@@ -163,11 +163,9 @@ static class HlDtSt
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -214,7 +212,7 @@ static class HlDtSt
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_DVD_RAW_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -226,7 +224,7 @@ static class HlDtSt
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_DVD_RAW_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();

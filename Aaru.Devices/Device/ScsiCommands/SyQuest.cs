@@ -47,16 +47,9 @@ public partial class Device
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="lba">Starting block.</param>
     /// <param name="blockSize">Block size in bytes.</param>
-    public bool SyQuestRead6(out byte[] buffer, out byte[] senseBuffer, uint lba, uint blockSize, uint timeout,
-                             out double duration) => SyQuestRead6(out buffer,
-                                                                  out senseBuffer,
-                                                                  lba,
-                                                                  blockSize,
-                                                                  1,
-                                                                  false,
-                                                                  false,
-                                                                  timeout,
-                                                                  out duration);
+    public bool SyQuestRead6(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, uint lba, uint blockSize,
+                             uint       timeout, out double             duration) =>
+        SyQuestRead6(out buffer, out senseBuffer, lba, blockSize, 1, false, false, timeout, out duration);
 
     /// <summary>Sends the SyQuest READ LONG (6) command</summary>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
@@ -66,8 +59,8 @@ public partial class Device
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="lba">Starting block.</param>
     /// <param name="blockSize">Block size in bytes.</param>
-    public bool SyQuestReadLong6(out byte[] buffer, out byte[] senseBuffer, uint lba, uint blockSize, uint timeout,
-                                 out double duration) =>
+    public bool SyQuestReadLong6(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, uint lba, uint blockSize,
+                                 uint       timeout, out double             duration) =>
         SyQuestRead6(out buffer, out senseBuffer, lba, blockSize, 1, false, true, timeout, out duration);
 
     /// <summary>Sends the SyQuest READ (6) command</summary>
@@ -81,10 +74,10 @@ public partial class Device
     /// <param name="readLong">If set to <c>true</c> drive will return ECC bytes and disable error detection.</param>
     /// <param name="blockSize">Block size in bytes.</param>
     /// <param name="transferLength">How many blocks to read.</param>
-    public bool SyQuestRead6(out byte[] buffer, out byte[] senseBuffer, uint lba, uint blockSize, byte transferLength,
-                             bool       inhibitDma, bool readLong, uint timeout, out double duration)
+    public bool SyQuestRead6(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint lba, uint blockSize,
+                             byte transferLength, bool inhibitDma, bool readLong, uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..6];
         cdb.Clear();
         bool sense;
@@ -111,23 +104,11 @@ public partial class Device
 
         if(!inhibitDma)
         {
-            LastError = SendScsiCommand(cdb,
-                                        ref buffer,
-                                        out senseBuffer,
-                                        timeout,
-                                        ScsiDirection.In,
-                                        out duration,
-                                        out sense);
+            LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out sense);
         }
         else
         {
-            LastError = SendScsiCommand(cdb,
-                                        ref buffer,
-                                        out senseBuffer,
-                                        timeout,
-                                        ScsiDirection.None,
-                                        out duration,
-                                        out sense);
+            LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out sense);
         }
 
         Error = LastError != 0;
@@ -142,7 +123,8 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool SyQuestReadUsageCounter(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool SyQuestReadUsageCounter(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout,
+                                        out double duration) =>
         AdaptecReadUsageCounter(out buffer, out senseBuffer, false, timeout, out duration);
 
     /// <summary>Sends the SyQuest READ LONG (10) command</summary>
@@ -153,8 +135,8 @@ public partial class Device
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="lba">Starting block.</param>
     /// <param name="blockSize">Block size in bytes.</param>
-    public bool SyQuestReadLong10(out byte[] buffer, out byte[] senseBuffer, uint lba, uint blockSize, uint timeout,
-                                  out double duration) =>
+    public bool SyQuestReadLong10(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, uint lba, uint blockSize,
+                                  uint       timeout, out double             duration) =>
         SyQuestRead10(out buffer, out senseBuffer, lba, blockSize, 1, false, true, timeout, out duration);
 
     /// <summary>Sends the SyQuest READ (10) command</summary>
@@ -168,10 +150,10 @@ public partial class Device
     /// <param name="readLong">If set to <c>true</c> drive will return ECC bytes and disable error detection.</param>
     /// <param name="blockSize">Block size in bytes.</param>
     /// <param name="transferLength">How many blocks to read.</param>
-    public bool SyQuestRead10(out byte[] buffer, out byte[] senseBuffer, uint lba, uint blockSize,
+    public bool SyQuestRead10(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint lba, uint blockSize,
                               ushort transferLength, bool inhibitDma, bool readLong, uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
         bool sense;
@@ -200,23 +182,11 @@ public partial class Device
 
         if(!inhibitDma)
         {
-            LastError = SendScsiCommand(cdb,
-                                        ref buffer,
-                                        out senseBuffer,
-                                        timeout,
-                                        ScsiDirection.In,
-                                        out duration,
-                                        out sense);
+            LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out sense);
         }
         else
         {
-            LastError = SendScsiCommand(cdb,
-                                        ref buffer,
-                                        out senseBuffer,
-                                        timeout,
-                                        ScsiDirection.None,
-                                        out duration,
-                                        out sense);
+            LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out sense);
         }
 
         Error = LastError != 0;

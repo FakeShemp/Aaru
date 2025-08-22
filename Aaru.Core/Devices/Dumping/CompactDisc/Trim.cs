@@ -84,13 +84,13 @@ partial class Dump
                         Dictionary<byte, string> isrcs, ref string mcn, HashSet<int> subchannelExtents,
                         Dictionary<byte, int> smallestPregapLbaPerTrack)
     {
-        bool              sense       = true; // Sense indicator
-        byte[]            cmdBuf      = null; // Data buffer
-        double            cmdDuration = 0;    // Command execution time
-        const uint        sectorSize  = 2352; // Full sector size
-        PlextorSubchannel supportedPlextorSubchannel;
-        byte[]            senseBuf      = null;
-        var               outputOptical = _outputPlugin as IWritableOpticalImage;
+        bool               sense       = true; // Sense indicator
+        byte[]             cmdBuf      = null; // Data buffer
+        double             cmdDuration = 0;    // Command execution time
+        const uint         sectorSize  = 2352; // Full sector size
+        PlextorSubchannel  supportedPlextorSubchannel;
+        ReadOnlySpan<byte> senseBuf      = null;
+        var                outputOptical = _outputPlugin as IWritableOpticalImage;
 
         supportedPlextorSubchannel = supportedSubchannel switch
                                      {
@@ -387,7 +387,7 @@ partial class Dump
 
             if(sense || _dev.Error)
             {
-                _errorLog?.WriteLine(badSectorToRead, _dev.Error, _dev.LastError, senseBuf);
+                _errorLog?.WriteLine(badSectorToRead, _dev.Error, _dev.LastError, senseBuf.ToArray());
 
                 continue;
             }

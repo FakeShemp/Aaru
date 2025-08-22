@@ -9,7 +9,6 @@ using Aaru.CommonTypes.Extents;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Core.Logging;
 using Aaru.Decoders.SCSI;
-using Aaru.Helpers;
 using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
@@ -62,7 +61,7 @@ partial class Dump
         {
             blankExtents = new ExtentsULong();
 
-            written = _dev.MediumScan(out buffer,
+            written = _dev.MediumScan(out ReadOnlySpan<byte> senseBuffer,
                                       true,
                                       false,
                                       false,
@@ -76,7 +75,7 @@ partial class Dump
                                       uint.MaxValue,
                                       out _);
 
-            DecodedSense? decodedSense = Sense.Decode(buffer);
+            DecodedSense? decodedSense = Sense.Decode(senseBuffer.ToArray());
 
             if(_dev.LastError != 0 || decodedSense?.SenseKey == SenseKeys.IllegalRequest)
             {
@@ -87,8 +86,7 @@ partial class Dump
             }
 
             // TODO: Find a place where MEDIUM SCAN works properly
-            else if(buffer?.Length > 0 && !ArrayHelpers.ArrayIsNullOrEmpty(buffer))
-                AaruLogging.WriteLine(Localization.Core.MEDIUM_SCAN_github_plead_message);
+            else if(senseBuffer.IsEmpty) AaruLogging.WriteLine(Localization.Core.MEDIUM_SCAN_github_plead_message);
 
             changingCounter = false;
             changingWritten = false;
@@ -181,8 +179,9 @@ partial class Dump
             writtenExtents.Add(0, blocks - 1);
 
             foreach(Tuple<ulong, ulong> blank in blankExtents.ToArray())
-                for(ulong b = blank.Item1; b <= blank.Item2; b++)
-                    writtenExtents.Remove(b);
+            {
+                for(ulong b = blank.Item1; b <= blank.Item2; b++) writtenExtents.Remove(b);
+            }
         }
 
         if(writtenExtents.Count == 0)

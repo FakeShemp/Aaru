@@ -90,11 +90,11 @@ partial class Dump
                         ref string mcn, Track[] tracks, HashSet<int> subchannelExtents,
                         Dictionary<byte, int> smallestPregapLbaPerTrack)
     {
-        byte[]     cmdBuf        = null; // Data buffer
-        const uint sectorSize    = 2352; // Full sector size
-        bool       sense         = true; // Sense indicator
-        byte[]     senseBuf      = null;
-        var        outputOptical = _outputPlugin as IWritableOpticalImage;
+        byte[]             cmdBuf        = null; // Data buffer
+        const uint         sectorSize    = 2352; // Full sector size
+        bool               sense         = true; // Sense indicator
+        ReadOnlySpan<byte> senseBuf      = null;
+        var                outputOptical = _outputPlugin as IWritableOpticalImage;
 
         UpdateStatus?.Invoke(Localization.Core.Reading_lead_outs);
 
@@ -253,7 +253,7 @@ partial class Dump
                 }
                 else
                 {
-                    _errorLog?.WriteLine(i, _dev.Error, _dev.LastError, senseBuf);
+                    _errorLog?.WriteLine(i, _dev.Error, _dev.LastError, senseBuf.ToArray());
 
                     // TODO: Reset device after X errors
                     if(_stopOnError) return; // TODO: Return more cleanly
@@ -329,11 +329,11 @@ partial class Dump
                          ref string mcn, Track[] tracks, HashSet<int> subchannelExtents,
                          Dictionary<byte, int> smallestPregapLbaPerTrack)
     {
-        byte[]     cmdBuf        = null; // Data buffer
-        const uint sectorSize    = 2352; // Full sector size
-        bool       sense         = true; // Sense indicator
-        byte[]     senseBuf      = null;
-        var        outputOptical = _outputPlugin as IWritableOpticalImage;
+        byte[]             cmdBuf        = null; // Data buffer
+        const uint         sectorSize    = 2352; // Full sector size
+        bool               sense         = true; // Sense indicator
+        ReadOnlySpan<byte> senseBuf      = null;
+        var                outputOptical = _outputPlugin as IWritableOpticalImage;
 
         AaruLogging.WriteLine("Retrying lead-outs");
 
@@ -492,7 +492,7 @@ partial class Dump
                 }
                 else
                 {
-                    _errorLog?.WriteLine(i, _dev.Error, _dev.LastError, senseBuf);
+                    _errorLog?.WriteLine(i, _dev.Error, _dev.LastError, senseBuf.ToArray());
 
                     // TODO: Reset device after X errors
                     if(_stopOnError) return; // TODO: Return more cleanly

@@ -58,14 +58,14 @@ public partial class Dump
     [SuppressMessage("ReSharper", "JoinDeclarationAndInitializer")]
     void DumpUmd()
     {
-        const uint      blockSize     = 2048;
-        const MediaType dskType       = MediaType.UMD;
-        uint            blocksToRead  = 16;
-        double          totalDuration = 0;
-        double          currentSpeed  = 0;
-        double          maxSpeed      = double.MinValue;
-        double          minSpeed      = double.MaxValue;
-        byte[]          senseBuf;
+        const uint         blockSize     = 2048;
+        const MediaType    dskType       = MediaType.UMD;
+        uint               blocksToRead  = 16;
+        double             totalDuration = 0;
+        double             currentSpeed  = 0;
+        double             maxSpeed      = double.MinValue;
+        double             minSpeed      = double.MaxValue;
+        ReadOnlySpan<byte> senseBuf;
 
         if(_outputPlugin is not IWritableOpticalImage outputOptical)
         {

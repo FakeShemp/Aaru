@@ -219,7 +219,7 @@ public static class Sense
         return decoded;
     }
 
-    public static DecodedSense? Decode(byte[] sense)
+    public static DecodedSense? Decode(ReadOnlySpan<byte> sense)
     {
         var decoded = new DecodedSense();
 
@@ -227,12 +227,12 @@ public static class Sense
         {
             case 0x70:
             case 0x71:
-                decoded.Fixed = DecodeFixed(sense);
+                decoded.Fixed = DecodeFixed(sense.ToArray());
 
                 break;
             case 0x72:
             case 0x73:
-                decoded.Descriptor = DecodeDescriptor(sense);
+                decoded.Descriptor = DecodeDescriptor(sense.ToArray());
 
                 break;
         }
@@ -310,7 +310,7 @@ public static class Sense
 
         senseDescription = GetSenseDescription(decoded.ASC, decoded.ASCQ);
 
-        var offset = 8;
+        int offset = 8;
 
         while(offset < sense.Length)
         {
@@ -319,7 +319,7 @@ public static class Sense
                 byte descType = sense[offset];
                 int  descLen  = sense[offset + 1] + 2;
 
-                var desc = new byte[descLen];
+                byte[] desc = new byte[descLen];
 
                 if(offset + descLen >= sense.Length) descLen = sense.Length - offset;
 
@@ -466,7 +466,7 @@ public static class Sense
     {
         if(descriptor.Length != 12 || descriptor[0] != 0x00) return 0;
 
-        var temp = new byte[8];
+        byte[] temp = new byte[8];
 
         temp[0] = descriptor[11];
         temp[1] = descriptor[10];
@@ -487,7 +487,7 @@ public static class Sense
     {
         if(descriptor.Length != 12 || descriptor[0] != 0x01) return 0;
 
-        var temp = new byte[8];
+        byte[] temp = new byte[8];
 
         temp[0] = descriptor[11];
         temp[1] = descriptor[10];
@@ -508,7 +508,7 @@ public static class Sense
     {
         if(descriptor.Length != 8 || descriptor[0] != 0x02) return null;
 
-        var temp = new byte[3];
+        byte[] temp = new byte[3];
         Array.Copy(descriptor, 4, temp, 0, 3);
 
         return temp;
@@ -2705,4 +2705,6 @@ public static class Sense
                        ? string.Format(Localization.ASC_0_WITH_VENDOR_SPECIFIC_ASCQ_1, ASC, ASCQ)
                        : string.Format(Localization.ASC_0_WITH_ASCQ_1,                 ASC, ASCQ);
     }
+
+    public static string PrettifySense(ReadOnlySpan<byte> senseBuffer) => PrettifySense(senseBuffer.ToArray());
 }

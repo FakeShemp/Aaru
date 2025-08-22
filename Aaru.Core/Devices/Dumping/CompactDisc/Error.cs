@@ -80,13 +80,13 @@ partial class Dump
                          ref string mcn, HashSet<int> subchannelExtents,
                          Dictionary<byte, int> smallestPregapLbaPerTrack, bool supportsLongSectors)
     {
-        bool              sense  = true;     // Sense indicator
-        byte[]            cmdBuf = null;     // Data buffer
-        double            cmdDuration;       // Command execution time
-        const uint        sectorSize = 2352; // Full sector size
-        byte[]            senseBuf   = null; // Sense buffer
-        PlextorSubchannel supportedPlextorSubchannel;
-        var               outputOptical = _outputPlugin as IWritableOpticalImage;
+        bool               sense  = true;     // Sense indicator
+        byte[]             cmdBuf = null;     // Data buffer
+        double             cmdDuration;       // Command execution time
+        const uint         sectorSize = 2352; // Full sector size
+        ReadOnlySpan<byte> senseBuf   = null; // Sense buffer
+        PlextorSubchannel  supportedPlextorSubchannel;
+        var                outputOptical = _outputPlugin as IWritableOpticalImage;
 
         supportedPlextorSubchannel = supportedSubchannel switch
                                      {
@@ -457,7 +457,7 @@ partial class Dump
 
             if(sense || _dev.Error)
             {
-                _errorLog?.WriteLine(badSector, _dev.Error, _dev.LastError, senseBuf);
+                _errorLog?.WriteLine(badSector, _dev.Error, _dev.LastError, senseBuf.ToArray());
 
                 if(!runningPersistent) continue;
 
@@ -465,9 +465,8 @@ partial class Dump
 
                 // MEDIUM ERROR, retry with ignore error below
                 if(decSense is { ASC: 0x11 })
-                {
-                    if(!sectorsNotEvenPartial.Contains(badSector)) sectorsNotEvenPartial.Add(badSector);
-                }
+                    if(!sectorsNotEvenPartial.Contains(badSector))
+                        sectorsNotEvenPartial.Add(badSector);
             }
 
             // Because one block has been partially used to fix the offset
@@ -499,7 +498,7 @@ partial class Dump
                 sectorsNotEvenPartial.Remove(badSector);
             }
             else
-                _errorLog?.WriteLine(badSector, _dev.Error, _dev.LastError, senseBuf);
+                _errorLog?.WriteLine(badSector, _dev.Error, _dev.LastError, senseBuf.ToArray());
 
             if(supportedSubchannel != MmcSubchannel.None)
             {
@@ -647,7 +646,7 @@ partial class Dump
 
                     if(sense || _dev.Error)
                     {
-                        _errorLog?.WriteLine(badSector, _dev.Error, _dev.LastError, senseBuf);
+                        _errorLog?.WriteLine(badSector, _dev.Error, _dev.LastError, senseBuf.ToArray());
 
                         continue;
                     }
@@ -742,12 +741,12 @@ partial class Dump
                          Dictionary<byte, string> isrcs, ref string mcn, HashSet<int> subchannelExtents,
                          Dictionary<byte, int> smallestPregapLbaPerTrack)
     {
-        bool              sense  = true;   // Sense indicator
-        byte[]            cmdBuf = null;   // Data buffer
-        double            cmdDuration;     // Command execution time
-        byte[]            senseBuf = null; // Sense buffer
-        PlextorSubchannel supportedPlextorSubchannel;
-        var               outputOptical = _outputPlugin as IWritableOpticalImage;
+        bool               sense  = true;   // Sense indicator
+        byte[]             cmdBuf = null;   // Data buffer
+        double             cmdDuration;     // Command execution time
+        ReadOnlySpan<byte> senseBuf = null; // Sense buffer
+        PlextorSubchannel  supportedPlextorSubchannel;
+        var                outputOptical = _outputPlugin as IWritableOpticalImage;
 
         if(supportedSubchannel == MmcSubchannel.None || desiredSubchannel == MmcSubchannel.None) return;
 
@@ -836,7 +835,7 @@ partial class Dump
 
             if(sense || _dev.Error)
             {
-                _errorLog?.WriteLine(badSector, _dev.Error, _dev.LastError, senseBuf);
+                _errorLog?.WriteLine(badSector, _dev.Error, _dev.LastError, senseBuf.ToArray());
 
                 continue;
             }

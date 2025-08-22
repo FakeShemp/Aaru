@@ -45,7 +45,7 @@ public partial class Device
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="lba">Starting block.</param>
     /// <param name="blockSize">Block size in bytes.</param>
-    public bool Read6(out byte[] buffer, out byte[] senseBuffer, uint lba, uint blockSize, uint timeout,
+    public bool Read6(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint lba, uint blockSize, uint timeout,
                       out double duration) =>
         Read6(out buffer, out senseBuffer, lba, blockSize, 1, timeout, out duration);
 
@@ -58,10 +58,10 @@ public partial class Device
     /// <param name="lba">Starting block.</param>
     /// <param name="blockSize">Block size in bytes.</param>
     /// <param name="transferLength">How many blocks to read.</param>
-    public bool Read6(out byte[] buffer,  out byte[] senseBuffer, uint lba, uint blockSize, byte transferLength,
-                      uint       timeout, out double duration)
+    public bool Read6(out byte[] buffer,         out ReadOnlySpan<byte> senseBuffer, uint       lba, uint blockSize,
+                      byte       transferLength, uint                   timeout,     out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..6];
         cdb.Clear();
 
@@ -73,13 +73,7 @@ public partial class Device
 
         buffer = transferLength == 0 ? new byte[256 * blockSize] : new byte[transferLength * blockSize];
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -109,11 +103,11 @@ public partial class Device
     /// <param name="groupNumber">Group number where attributes associated with this command should be collected.</param>
     /// <param name="transferLength">How many blocks to read.</param>
     /// <param name="relAddr">If set to <c>true</c> address is relative to current position.</param>
-    public bool Read10(out byte[] buffer, out byte[] senseBuffer, byte rdprotect, bool dpo, bool fua, bool fuaNv,
-                       bool relAddr, uint lba, uint blockSize, byte groupNumber, ushort transferLength, uint timeout,
-                       out double duration)
+    public bool Read10(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, byte rdprotect, bool dpo, bool fua,
+                       bool fuaNv, bool relAddr, uint lba, uint blockSize, byte groupNumber, ushort transferLength,
+                       uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
 
@@ -138,13 +132,7 @@ public partial class Device
 
         buffer = new byte[transferLength * blockSize];
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -175,11 +163,11 @@ public partial class Device
     /// <param name="transferLength">How many blocks to read.</param>
     /// <param name="streaming">If set to <c>true</c> the stream playback operation should be used (MMC only).</param>
     /// <param name="relAddr">If set to <c>true</c> address is relative to current position.</param>
-    public bool Read12(out byte[] buffer, out byte[] senseBuffer, byte rdprotect, bool dpo, bool fua, bool fuaNv,
-                       bool relAddr, uint lba, uint blockSize, byte groupNumber, uint transferLength, bool streaming,
-                       uint timeout, out double duration)
+    public bool Read12(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, byte rdprotect, bool dpo, bool fua,
+                       bool       fuaNv, bool relAddr, uint lba, uint blockSize, byte groupNumber, uint transferLength,
+                       bool       streaming, uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
 
@@ -208,13 +196,7 @@ public partial class Device
 
         buffer = new byte[transferLength * blockSize];
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -244,11 +226,11 @@ public partial class Device
     /// <param name="groupNumber">Group number where attributes associated with this command should be collected.</param>
     /// <param name="transferLength">How many blocks to read.</param>
     /// <param name="streaming">If set to <c>true</c> the stream playback operation should be used (MMC only).</param>
-    public bool Read16(out byte[] buffer, out byte[] senseBuffer, byte rdprotect, bool dpo, bool fua, bool fuaNv,
-                       ulong lba, uint blockSize, byte groupNumber, uint transferLength, bool streaming, uint timeout,
-                       out double duration)
+    public bool Read16(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, byte rdprotect, bool dpo, bool fua,
+                       bool fuaNv, ulong lba, uint blockSize, byte groupNumber, uint transferLength, bool streaming,
+                       uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..16];
         cdb.Clear();
         byte[] lbaBytes = BitConverter.GetBytes(lba);
@@ -280,13 +262,7 @@ public partial class Device
 
         buffer = new byte[transferLength * blockSize];
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -308,10 +284,10 @@ public partial class Device
     ///     How many bytes to read. If the number is not exactly the drive's size, the command will
     ///     fail and incidate a delta of the size in SENSE.
     /// </param>
-    public bool ReadLong10(out byte[] buffer,        out byte[] senseBuffer, bool       correct, bool relAddr, uint lba,
-                           ushort     transferBytes, uint       timeout,     out double duration)
+    public bool ReadLong10(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, bool correct, bool relAddr, uint lba,
+                           ushort     transferBytes, uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
 
@@ -330,13 +306,7 @@ public partial class Device
 
         buffer = new byte[transferBytes];
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -357,10 +327,10 @@ public partial class Device
     ///     How many bytes to read. If the number is not exactly the drive's size, the command will
     ///     fail and incidate a delta of the size in SENSE.
     /// </param>
-    public bool ReadLong16(out byte[] buffer,  out byte[] senseBuffer, bool correct, ulong lba, uint transferBytes,
-                           uint       timeout, out double duration)
+    public bool ReadLong16(out byte[] buffer,        out ReadOnlySpan<byte> senseBuffer, bool       correct, ulong lba,
+                           uint       transferBytes, uint                   timeout,     out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..16];
         cdb.Clear();
         byte[] lbaBytes = BitConverter.GetBytes(lba);
@@ -382,13 +352,7 @@ public partial class Device
 
         buffer = new byte[transferBytes];
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -402,9 +366,9 @@ public partial class Device
     /// <param name="lba">LBA.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool Seek6(out byte[] senseBuffer, uint lba, uint timeout, out double duration)
+    public bool Seek6(out ReadOnlySpan<byte> senseBuffer, uint lba, uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..6];
         cdb.Clear();
         byte[] buffer = [];
@@ -414,13 +378,7 @@ public partial class Device
         cdb[2] = (byte)((lba & 0xFF00)   >> 8);
         cdb[3] = (byte)(lba & 0xFF);
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.None,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -434,9 +392,9 @@ public partial class Device
     /// <param name="lba">LBA.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool Seek10(out byte[] senseBuffer, uint lba, uint timeout, out double duration)
+    public bool Seek10(out ReadOnlySpan<byte> senseBuffer, uint lba, uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
         byte[] buffer = [];
@@ -447,13 +405,7 @@ public partial class Device
         cdb[4] = (byte)((lba & 0xFF00)     >> 8);
         cdb[5] = (byte)(lba & 0xFF);
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.None,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out bool sense);
 
         Error = LastError != 0;
 

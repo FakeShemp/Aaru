@@ -49,14 +49,14 @@ public partial class Device
     /// <param name="cache">If set to <c>true</c> device can return cached data.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool ReadAttribute(out byte[] buffer, out byte[] senseBuffer, ScsiAttributeAction action, ushort element,
-                              byte       elementType, byte volume, byte partition, ushort firstAttribute, bool cache,
-                              uint       timeout, out double duration)
+    public bool ReadAttribute(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, ScsiAttributeAction action,
+                              ushort     element, byte elementType, byte volume, byte partition, ushort firstAttribute,
+                              bool       cache,   uint timeout, out double duration)
     {
         buffer = new byte[256];
         Span<byte> cdb = CdbBuffer[..16];
         cdb.Clear();
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
         cdb[0]  = (byte)ScsiCommands.ReadAttribute;
         cdb[1]  = (byte)((byte)action & 0x1F);
@@ -74,13 +74,7 @@ public partial class Device
 
         if(cache) cdb[14] += 0x01;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -92,15 +86,9 @@ public partial class Device
         cdb[11]     = (byte)((buffer.Length & 0xFF0000)   >> 16);
         cdb[12]     = (byte)((buffer.Length & 0xFF00)     >> 8);
         cdb[13]     = (byte)(buffer.Length & 0xFF);
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out sense);
 
         Error = LastError != 0;
 

@@ -202,7 +202,7 @@ static class Sbc
         Console.Clear();
 
         bool sense = dev.Read6(out byte[] buffer,
-                               out byte[] senseBuffer,
+                               out ReadOnlySpan<byte> senseBuffer,
                                lba,
                                blockSize,
                                count,
@@ -217,11 +217,9 @@ static class Sbc
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -268,7 +266,7 @@ static class Sbc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_6_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -280,7 +278,7 @@ static class Sbc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_6_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -469,7 +467,7 @@ static class Sbc
         Console.Clear();
 
         bool sense = dev.Read10(out byte[] buffer,
-                                out byte[] senseBuffer,
+                                out ReadOnlySpan<byte> senseBuffer,
                                 rdprotect,
                                 dpo,
                                 fua,
@@ -490,11 +488,9 @@ static class Sbc
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -541,7 +537,7 @@ static class Sbc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_10_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -553,7 +549,7 @@ static class Sbc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_10_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -756,7 +752,7 @@ static class Sbc
         Console.Clear();
 
         bool sense = dev.Read12(out byte[] buffer,
-                                out byte[] senseBuffer,
+                                out ReadOnlySpan<byte> senseBuffer,
                                 rdprotect,
                                 dpo,
                                 fua,
@@ -778,11 +774,9 @@ static class Sbc
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -829,7 +823,7 @@ static class Sbc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_12_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -841,7 +835,7 @@ static class Sbc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_12_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1030,7 +1024,7 @@ static class Sbc
         Console.Clear();
 
         bool sense = dev.Read16(out byte[] buffer,
-                                out byte[] senseBuffer,
+                                out ReadOnlySpan<byte> senseBuffer,
                                 rdprotect,
                                 dpo,
                                 fua,
@@ -1051,11 +1045,9 @@ static class Sbc
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -1102,7 +1094,7 @@ static class Sbc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_16_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -1114,7 +1106,7 @@ static class Sbc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_16_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1233,7 +1225,7 @@ static class Sbc
         Console.Clear();
 
         bool sense = dev.ReadLong10(out byte[] buffer,
-                                    out byte[] senseBuffer,
+                                    out ReadOnlySpan<byte> senseBuffer,
                                     correct,
                                     relative,
                                     lba,
@@ -1249,11 +1241,9 @@ static class Sbc
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -1300,7 +1290,7 @@ static class Sbc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_LONG_10_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -1312,7 +1302,7 @@ static class Sbc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_LONG_10_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1417,7 +1407,7 @@ static class Sbc
         Console.Clear();
 
         bool sense = dev.ReadLong16(out byte[] buffer,
-                                    out byte[] senseBuffer,
+                                    out ReadOnlySpan<byte> senseBuffer,
                                     correct,
                                     lba,
                                     blockSize,
@@ -1432,11 +1422,9 @@ static class Sbc
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -1483,7 +1471,7 @@ static class Sbc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_LONG_16_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -1495,7 +1483,7 @@ static class Sbc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_LONG_16_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1578,7 +1566,7 @@ static class Sbc
 
     start:
         Console.Clear();
-        bool sense = dev.Seek6(out byte[] senseBuffer, lba, dev.Timeout, out double duration);
+        bool sense = dev.Seek6(out ReadOnlySpan<byte> senseBuffer, lba, dev.Timeout, out double duration);
 
     menu:
         AaruLogging.WriteLine(Localization.Device_0, devPath);
@@ -1586,14 +1574,12 @@ static class Sbc
         AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
         AaruLogging.WriteLine(Localization.Sense_is_0,        sense);
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.SEEK_6_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);
@@ -1624,7 +1610,7 @@ static class Sbc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.SEEK_6_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -1700,7 +1686,7 @@ static class Sbc
 
     start:
         Console.Clear();
-        bool sense = dev.Seek10(out byte[] senseBuffer, lba, dev.Timeout, out double duration);
+        bool sense = dev.Seek10(out ReadOnlySpan<byte> senseBuffer, lba, dev.Timeout, out double duration);
 
     menu:
         AaruLogging.WriteLine(Localization.Device_0, devPath);
@@ -1708,14 +1694,12 @@ static class Sbc
         AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
         AaruLogging.WriteLine(Localization.Sense_is_0,        sense);
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.SEEK_6_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);
@@ -1746,7 +1730,7 @@ static class Sbc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.SEEK_10_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();

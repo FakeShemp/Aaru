@@ -71,7 +71,8 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--device={0}",  Markup.Escape(settings.Path ?? ""));
         AaruLogging.Debug(MODULE_NAME, "--verbose={0}", settings.Verbose);
 
-        string devicePath = settings.Path;
+        string             devicePath  = settings.Path;
+        ReadOnlySpan<byte> senseBuffer = [];
 
         if(devicePath.Length == 2 && devicePath[1] == ':' && devicePath[0] != '/' && char.IsLetter(devicePath[0]))
             devicePath = "\\\\.\\" + char.ToUpper(devicePath[0]) + ':';
@@ -326,18 +327,18 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                         case PeripheralDeviceTypes.BridgingExpander
                             when dev.Model.StartsWith("MDM", StringComparison.Ordinal) ||
                                  dev.Model.StartsWith("MDH", StringComparison.Ordinal):
-                            dev.AllowMediumRemoval(out buffer, dev.Timeout, out _);
-                            dev.EjectTray(out buffer, dev.Timeout, out _);
+                            dev.AllowMediumRemoval(out _, dev.Timeout, out _);
+                            dev.EjectTray(out _, dev.Timeout, out _);
 
                             break;
                         case PeripheralDeviceTypes.SequentialAccess:
-                            dev.SpcAllowMediumRemoval(out buffer, dev.Timeout, out _);
+                            dev.SpcAllowMediumRemoval(out _, dev.Timeout, out _);
 
                             Core.Spectre.ProgressSingleSpinner(ctx =>
                             {
                                 ctx.AddTask(UI.Asking_drive_to_unload_tape).IsIndeterminate();
 
-                                dev.Unload(out buffer, dev.Timeout, out _);
+                                dev.Unload(out _, dev.Timeout, out _);
                             });
 
                             break;
@@ -360,8 +361,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                 reporter.ReportScsiModes(ref report, out byte[] cdromMode, out MediumTypes mediumType);
 
                 string mediumManufacturer;
-                byte[] senseBuffer = [];
-                bool   sense       = true;
+                bool   sense = true;
 
                 switch(dev.ScsiType)
                 {
@@ -723,13 +723,15 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                  .StartAsync(Localization.Core.Waiting_for_drive_to_become_ready,
                                                              async ctx =>
                                                              {
-                                                                 sense = dev.ScsiTestUnitReady(out senseBuffer,
+                                                                 ReadOnlySpan<byte> localSense;
+
+                                                                 sense = dev.ScsiTestUnitReady(out localSense,
                                                                      dev.Timeout,
                                                                      out _);
 
                                                                  if(!sense) return;
 
-                                                                 DecodedSense? decSense = Sense.Decode(senseBuffer);
+                                                                 DecodedSense? decSense = Sense.Decode(localSense);
 
                                                                  if(decSense.HasValue)
                                                                  {
@@ -749,7 +751,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                                  sense =
                                                                                      dev
                                                                                         .ScsiTestUnitReady(out
-                                                                                             senseBuffer,
+                                                                                             localSense,
                                                                                              dev.Timeout,
                                                                                              out _);
 
@@ -830,14 +832,14 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                                                             sense = mediaTest.SupportsReadLong16 == true
                                                                         ? dev.ReadLong16(out buffer,
-                                                                            out senseBuffer,
+                                                                            out _,
                                                                             false,
                                                                             0,
                                                                             i,
                                                                             dev.Timeout,
                                                                             out _)
                                                                         : dev.ReadLong10(out buffer,
-                                                                            out senseBuffer,
+                                                                            out _,
                                                                             false,
                                                                             false,
                                                                             0,
@@ -865,7 +867,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                             ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_10).IsIndeterminate();
 
                                             sense = dev.ReadLong10(out buffer,
-                                                                   out senseBuffer,
+                                                                   out _,
                                                                    false,
                                                                    false,
                                                                    0,
@@ -886,7 +888,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                             ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_16).IsIndeterminate();
 
                                             sense = dev.ReadLong16(out buffer,
-                                                                   out senseBuffer,
+                                                                   out _,
                                                                    false,
                                                                    0,
                                                                    mediaTest.LongBlockSize ?? mediaTest.BlockSize ?? 0,
@@ -902,8 +904,8 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                 mediaTest.MediaIsRecognized = mediaIsRecognized;
                                 mediaTests.Add(mediaTest);
 
-                                dev.AllowMediumRemoval(out buffer, dev.Timeout, out _);
-                                dev.EjectTray(out buffer, dev.Timeout, out _);
+                                dev.AllowMediumRemoval(out _, dev.Timeout, out _);
+                                dev.EjectTray(out senseBuffer, dev.Timeout, out _);
                             }
 
                             report.SCSI.MultiMediaDevice.TestedMedia = mediaTests;
@@ -937,7 +939,9 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                              .StartAsync(Localization.Core.Waiting_for_drive_to_become_ready,
                                                          async ctx =>
                                                          {
-                                                             sense = dev.ScsiTestUnitReady(out senseBuffer,
+                                                             ReadOnlySpan<byte> localSense;
+
+                                                             sense = dev.ScsiTestUnitReady(out localSense,
                                                                  dev.Timeout,
                                                                  out _);
 
@@ -945,7 +949,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                                                              if(!sense) return;
 
-                                                             DecodedSense? decSense = Sense.Decode(senseBuffer);
+                                                             DecodedSense? decSense = Sense.Decode(localSense);
 
                                                              if(decSense.HasValue)
                                                              {
@@ -963,7 +967,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                              await Task.Delay(2000);
 
                                                                              sense =
-                                                                                 dev.ScsiTestUnitReady(out senseBuffer,
+                                                                                 dev.ScsiTestUnitReady(out localSense,
                                                                                      dev.Timeout,
                                                                                      out _);
 
@@ -1015,8 +1019,8 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                             {
                                 ctx.AddTask(UI.Asking_drive_to_unload_tape).IsIndeterminate();
 
-                                dev.SpcAllowMediumRemoval(out buffer, dev.Timeout, out _);
-                                dev.Unload(out buffer, dev.Timeout, out _);
+                                dev.SpcAllowMediumRemoval(out _, dev.Timeout, out _);
+                                dev.Unload(out _, dev.Timeout, out _);
                             });
                         }
 
@@ -1054,13 +1058,15 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                              .StartAsync(Localization.Core.Waiting_for_drive_to_become_ready,
                                                          async ctx =>
                                                          {
-                                                             sense = dev.ScsiTestUnitReady(out senseBuffer,
+                                                             ReadOnlySpan<byte> localSense;
+
+                                                             sense = dev.ScsiTestUnitReady(out localSense,
                                                                  dev.Timeout,
                                                                  out _);
 
                                                              if(!sense) return;
 
-                                                             DecodedSense? decSense = Sense.Decode(senseBuffer);
+                                                             DecodedSense? decSense = Sense.Decode(localSense);
 
                                                              if(decSense.HasValue)
                                                              {
@@ -1078,7 +1084,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                              await Task.Delay(2000);
 
                                                                              sense =
-                                                                                 dev.ScsiTestUnitReady(out senseBuffer,
+                                                                                 dev.ScsiTestUnitReady(out localSense,
                                                                                      dev.Timeout,
                                                                                      out _);
 
@@ -1149,14 +1155,14 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                                                         sense = mediaTest.SupportsReadLong16 == true
                                                                     ? dev.ReadLong16(out buffer,
-                                                                        out senseBuffer,
+                                                                        out _,
                                                                         false,
                                                                         0,
                                                                         i,
                                                                         dev.Timeout,
                                                                         out _)
                                                                     : dev.ReadLong10(out buffer,
-                                                                        out senseBuffer,
+                                                                        out _,
                                                                         false,
                                                                         false,
                                                                         0,
@@ -1185,7 +1191,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                         ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_10).IsIndeterminate();
 
                                         sense = dev.ReadLong10(out buffer,
-                                                               out senseBuffer,
+                                                               out _,
                                                                false,
                                                                false,
                                                                0,
@@ -1206,7 +1212,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                         ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_16).IsIndeterminate();
 
                                         sense = dev.ReadLong16(out buffer,
-                                                               out senseBuffer,
+                                                               out _,
                                                                false,
                                                                0,
                                                                (ushort)(mediaTest.LongBlockSize ??
@@ -1234,8 +1240,8 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                             mediaTest.MediaIsRecognized = mediaIsRecognized;
                             mediaTests.Add(mediaTest);
 
-                            dev.AllowMediumRemoval(out buffer, dev.Timeout, out _);
-                            dev.EjectTray(out buffer, dev.Timeout, out _);
+                            dev.AllowMediumRemoval(out _, dev.Timeout, out _);
+                            dev.EjectTray(out _, dev.Timeout, out _);
                         }
 
                         report.SCSI.RemovableMedias = mediaTests;
@@ -1268,13 +1274,15 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                  .StartAsync(Localization.Core.Waiting_for_drive_to_become_ready,
                                                              async ctx =>
                                                              {
-                                                                 sense = dev.ScsiTestUnitReady(out senseBuffer,
+                                                                 ReadOnlySpan<byte> localSense;
+
+                                                                 sense = dev.ScsiTestUnitReady(out localSense,
                                                                      dev.Timeout,
                                                                      out _);
 
                                                                  if(!sense) return;
 
-                                                                 DecodedSense? decSense = Sense.Decode(senseBuffer);
+                                                                 DecodedSense? decSense = Sense.Decode(localSense);
 
                                                                  if(decSense.HasValue)
                                                                  {
@@ -1292,7 +1300,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                                  sense =
                                                                                      dev
                                                                                         .ScsiTestUnitReady(out
-                                                                                             senseBuffer,
+                                                                                             localSense,
                                                                                              dev.Timeout,
                                                                                              out _);
 
@@ -1350,14 +1358,14 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                                                             sense = mediaTest.SupportsReadLong16 == true
                                                                         ? dev.ReadLong16(out buffer,
-                                                                            out senseBuffer,
+                                                                            out _,
                                                                             false,
                                                                             0,
                                                                             i,
                                                                             dev.Timeout,
                                                                             out _)
                                                                         : dev.ReadLong10(out buffer,
-                                                                            out senseBuffer,
+                                                                            out _,
                                                                             false,
                                                                             false,
                                                                             0,
@@ -1387,7 +1395,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                             ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_10).IsIndeterminate();
 
                                             sense = dev.ReadLong10(out buffer,
-                                                                   out senseBuffer,
+                                                                   out _,
                                                                    false,
                                                                    false,
                                                                    0,
@@ -1408,7 +1416,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                             ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_16).IsIndeterminate();
 
                                             sense = dev.ReadLong16(out buffer,
-                                                                   out senseBuffer,
+                                                                   out _,
                                                                    false,
                                                                    0,
                                                                    (ushort)(mediaTest.LongBlockSize ??
@@ -1428,8 +1436,8 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                                 mediaTests.Add(mediaTest);
 
-                                dev.AllowMediumRemoval(out buffer, dev.Timeout, out _);
-                                dev.EjectTray(out buffer, dev.Timeout, out _);
+                                dev.AllowMediumRemoval(out _, dev.Timeout, out _);
+                                dev.EjectTray(out _, dev.Timeout, out _);
                             }
 
                             report.SCSI.RemovableMedias = mediaTests;
@@ -1467,14 +1475,14 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                                                     sense = report.SCSI.ReadCapabilities.SupportsReadLong16 == true
                                                                 ? dev.ReadLong16(out buffer,
-                                                                    out senseBuffer,
+                                                                    out _,
                                                                     false,
                                                                     0,
                                                                     i,
                                                                     dev.Timeout,
                                                                     out _)
                                                                 : dev.ReadLong10(out buffer,
-                                                                    out senseBuffer,
+                                                                    out _,
                                                                     false,
                                                                     false,
                                                                     0,
@@ -1504,7 +1512,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                     ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_10).IsIndeterminate();
 
                                     sense = dev.ReadLong10(out buffer,
-                                                           out senseBuffer,
+                                                           out _,
                                                            false,
                                                            false,
                                                            0,
@@ -1525,7 +1533,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                     ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_16).IsIndeterminate();
 
                                     sense = dev.ReadLong16(out buffer,
-                                                           out senseBuffer,
+                                                           out _,
                                                            false,
                                                            0,
                                                            report.SCSI.ReadCapabilities.LongBlockSize ??

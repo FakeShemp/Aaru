@@ -319,8 +319,8 @@ public sealed class ErrorLog
         }
 
         DecodedSense? decodedSense = Sense.Decode(senseBuffer);
-        string        prettySense  = Sense.PrettifySense(senseBuffer);
-        var           hexSense     = string.Join(' ', senseBuffer.Select(b => $"{b:X2}"));
+        string        prettySense  = Sense.PrettifySense(senseBuffer.ToArray());
+        string        hexSense     = string.Join(' ', senseBuffer.Select(b => $"{b:X2}"));
 
         if(decodedSense.HasValue)
         {
@@ -369,6 +369,9 @@ public sealed class ErrorLog
         _logSw.Flush();
     }
 
+    public void WriteLine(ulong block, bool osError, int errno, ReadOnlySpan<byte> senseBuffer) =>
+        WriteLine(block, osError, errno, senseBuffer.ToArray());
+
     /// <summary>Register an SCSI error after trying to read</summary>
     /// <param name="block">Starting block</param>
     /// <param name="osError"><c>true</c> if operating system returned an error status instead of the device</param>
@@ -385,8 +388,8 @@ public sealed class ErrorLog
         }
 
         DecodedSense? decodedSense = Sense.Decode(senseBuffer);
-        string        prettySense  = Sense.PrettifySense(senseBuffer);
-        var           hexSense     = string.Join(' ', senseBuffer.Select(b => $"{b:X2}"));
+        string        prettySense  = Sense.PrettifySense(senseBuffer.ToArray());
+        string        hexSense     = string.Join(' ', senseBuffer.Select(b => $"{b:X2}"));
 
         if(decodedSense.HasValue)
         {
@@ -487,5 +490,10 @@ public sealed class ErrorLog
                          string.Join(" - ", response.Select(r => $"0x{r:X8}")));
 
         throw new NotImplementedException();
+    }
+
+    public void WriteLine(string command, bool osError, int errno, ReadOnlySpan<byte> senseBuffer)
+    {
+        WriteLine(command, osError, errno, senseBuffer.ToArray());
     }
 }

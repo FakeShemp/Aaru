@@ -25,6 +25,7 @@
 // Copyright © 2020-2025 Rebecca Wallander
 // ****************************************************************************/
 
+using System;
 using System.Linq;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
@@ -223,7 +224,7 @@ partial class Dump
             }
 
             UpdateStatus?.Invoke(Localization.Core.Sending_MODE_SELECT_to_drive_return_damaged_blocks);
-            sense = _dev.ModeSelect(md6, out byte[] senseBuf, true, false, _dev.Timeout, out _);
+            sense = _dev.ModeSelect(md6, out ReadOnlySpan<byte> senseBuf, true, false, _dev.Timeout, out _);
 
             if(sense) sense = _dev.ModeSelect10(md10, out senseBuf, true, false, _dev.Timeout, out _);
 

@@ -49,15 +49,15 @@ public sealed partial class MediaScan
 {
     ScanResults Scsi()
     {
-        var     results = new ScanResults();
-        MhddLog mhddLog;
-        IbgLog  ibgLog;
-        byte[]  senseBuf;
-        bool    sense;
-        uint    blockSize        = 0;
-        ushort  currentProfile   = 0x0001;
-        bool    foundReadCommand = false;
-        bool    readcd           = false;
+        var                results = new ScanResults();
+        MhddLog            mhddLog;
+        IbgLog             ibgLog;
+        ReadOnlySpan<byte> senseBuf;
+        bool               sense;
+        uint               blockSize        = 0;
+        ushort             currentProfile   = 0x0001;
+        bool               foundReadCommand = false;
+        bool               readcd           = false;
 
         results.Blocks = 0;
 
@@ -119,7 +119,7 @@ public sealed partial class MediaScan
                             {
                                 StoppingErrorMessage?.Invoke(string.Format(Localization.Core
                                                                               .Error_testing_unit_was_ready_0,
-                                                                           Sense.PrettifySense(senseBuf)));
+                                                                           Sense.PrettifySense(senseBuf.ToArray())));
 
                                 return results;
                             }
@@ -148,7 +148,7 @@ public sealed partial class MediaScan
                             {
                                 StoppingErrorMessage?.Invoke(string.Format(Localization.Core
                                                                               .Error_testing_unit_was_ready_0,
-                                                                           Sense.PrettifySense(senseBuf)));
+                                                                           Sense.PrettifySense(senseBuf.ToArray())));
 
                                 return results;
                             }
@@ -157,7 +157,7 @@ public sealed partial class MediaScan
                         }
                         default:
                             StoppingErrorMessage?.Invoke(string.Format(Localization.Core.Error_testing_unit_was_ready_0,
-                                                                       Sense.PrettifySense(senseBuf)));
+                                                                       Sense.PrettifySense(senseBuf.ToArray())));
 
                             return results;
                     }
@@ -458,7 +458,9 @@ public sealed partial class MediaScan
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           Localization.Core.READ_CD_error_0,
-                                          Sense.PrettifySense(senseBuf));
+                                          Sense.PrettifySense(senseBuf.ToArray()));
+
+                        ;
 
                         senseDecoded = Sense.Decode(senseBuf);
 

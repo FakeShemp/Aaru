@@ -48,10 +48,10 @@ public partial class Device
     /// <param name="transferLength">How many blocks to read.</param>
     /// <param name="blockSize">Block size.</param>
     /// <param name="subchannel">Subchannel selection.</param>
-    public bool PlextorReadCdDa(out byte[] buffer, out byte[] senseBuffer, uint lba, uint blockSize,
+    public bool PlextorReadCdDa(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint lba, uint blockSize,
                                 uint transferLength, PlextorSubchannel subchannel, uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
 
@@ -68,13 +68,7 @@ public partial class Device
 
         buffer = new byte[blockSize * transferLength];
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -100,10 +94,10 @@ public partial class Device
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="lba">Start block address.</param>
     /// <param name="transferLength">How many blocks to read.</param>
-    public bool PlextorReadRawDvd(out byte[] buffer,  out byte[] senseBuffer, uint lba, uint transferLength,
-                                  uint       timeout, out double duration)
+    public bool PlextorReadRawDvd(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, uint lba, uint transferLength,
+                                  uint       timeout, out double             duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
         buffer = new byte[2064 * transferLength];
@@ -117,13 +111,7 @@ public partial class Device
         cdb[7] = (byte)((buffer.Length & 0xFF00)   >> 8);
         cdb[8] = (byte)(buffer.Length & 0xFF);
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -138,23 +126,18 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool PlextorReadEepromCdr(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
+    public bool PlextorReadEepromCdr(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout,
+                                     out double duration)
     {
         buffer      = new byte[256];
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.PlextorReadEeprom;
         cdb[8] = 1;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -169,23 +152,18 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool PlextorReadEeprom(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
+    public bool PlextorReadEeprom(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout,
+                                  out double duration)
     {
         buffer      = new byte[512];
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
 
         cdb[0] = (byte)ScsiCommands.PlextorReadEeprom;
         cdb[8] = 2;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -202,11 +180,11 @@ public partial class Device
     /// <param name="blockSize">How many bytes are in the EEPROM block</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool PlextorReadEepromBlock(out byte[] buffer,  out byte[] senseBuffer, byte block, ushort blockSize,
-                                       uint       timeout, out double duration)
+    public bool PlextorReadEepromBlock(out byte[] buffer,    out ReadOnlySpan<byte> senseBuffer, byte       block,
+                                       ushort     blockSize, uint                   timeout,     out double duration)
     {
         buffer      = new byte[blockSize];
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
 
@@ -216,13 +194,7 @@ public partial class Device
         cdb[8] = (byte)((blockSize & 0xFF00) >> 8);
         cdb[9] = (byte)(blockSize & 0xFF);
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -239,11 +211,11 @@ public partial class Device
     /// <param name="last">Last actual speed.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool PlextorGetSpeeds(out byte[] senseBuffer, out ushort selected, out ushort max, out ushort last,
-                                 uint       timeout,     out double duration)
+    public bool PlextorGetSpeeds(out ReadOnlySpan<byte> senseBuffer, out ushort selected, out ushort max,
+                                 out ushort             last,        uint       timeout,  out double duration)
     {
         byte[] buf = new byte[10];
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
 
@@ -254,13 +226,7 @@ public partial class Device
         cdb[0] = (byte)ScsiCommands.PlextorPoweRec;
         cdb[9] = (byte)buf.Length;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buf,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buf, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -282,11 +248,11 @@ public partial class Device
     /// <param name="speed">PoweRec recommended speed.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool PlextorGetPoweRec(out byte[] senseBuffer, out bool enabled, out ushort speed, uint timeout,
-                                  out double duration)
+    public bool PlextorGetPoweRec(out ReadOnlySpan<byte> senseBuffer, out bool enabled, out ushort speed, uint timeout,
+                                  out double             duration)
     {
         byte[] buf = new byte[8];
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
 
@@ -297,13 +263,7 @@ public partial class Device
         cdb[1] = (byte)PlextorSubCommands.GetMode;
         cdb[9] = (byte)buf.Length;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buf,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buf, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -323,10 +283,11 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool PlextorGetSilentMode(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
+    public bool PlextorGetSilentMode(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout,
+                                     out double duration)
     {
         buffer      = new byte[8];
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
 
@@ -336,13 +297,7 @@ public partial class Device
         cdb[3]  = 4;
         cdb[10] = (byte)buffer.Length;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -357,10 +312,11 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool PlextorGetGigaRec(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
+    public bool PlextorGetGigaRec(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout,
+                                  out double duration)
     {
         buffer      = new byte[8];
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
 
@@ -369,13 +325,7 @@ public partial class Device
         cdb[2]  = (byte)PlextorSubCommands.GigaRec;
         cdb[10] = (byte)buffer.Length;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -391,11 +341,11 @@ public partial class Device
     /// <param name="dvd">Set if request is for DVD.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool PlextorGetVariRec(out byte[] buffer, out byte[] senseBuffer, bool dvd, uint timeout,
+    public bool PlextorGetVariRec(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, bool dvd, uint timeout,
                                   out double duration)
     {
         buffer      = new byte[8];
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
 
@@ -409,13 +359,7 @@ public partial class Device
         else
             cdb[3] = 0x02;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -430,10 +374,11 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool PlextorGetSecuRec(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
+    public bool PlextorGetSecuRec(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout,
+                                  out double duration)
     {
         buffer      = new byte[8];
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
 
@@ -441,13 +386,7 @@ public partial class Device
         cdb[2]  = (byte)PlextorSubCommands.SecuRec;
         cdb[10] = (byte)buffer.Length;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -462,10 +401,11 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool PlextorGetSpeedRead(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
+    public bool PlextorGetSpeedRead(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout,
+                                    out double duration)
     {
         buffer      = new byte[8];
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
 
@@ -474,13 +414,7 @@ public partial class Device
         cdb[2]  = (byte)PlextorSubCommands.SpeedRead;
         cdb[10] = (byte)buffer.Length;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -495,10 +429,11 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool PlextorGetHiding(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
+    public bool PlextorGetHiding(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout,
+                                 out double duration)
     {
         buffer      = new byte[8];
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
 
@@ -507,13 +442,7 @@ public partial class Device
         cdb[2] = (byte)PlextorSubCommands.SessionHide;
         cdb[9] = (byte)buffer.Length;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -529,11 +458,11 @@ public partial class Device
     /// <param name="dualLayer">Set if bitset is for dual layer discs.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool PlextorGetBitsetting(out byte[] buffer, out byte[] senseBuffer, bool dualLayer, uint timeout,
-                                     out double duration)
+    public bool PlextorGetBitsetting(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, bool dualLayer,
+                                     uint       timeout, out double             duration)
     {
         buffer      = new byte[8];
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
 
@@ -547,13 +476,7 @@ public partial class Device
         else
             cdb[3] = (byte)PlextorSubCommands.BitSetR;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -568,10 +491,11 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool PlextorGetTestWriteDvdPlus(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
+    public bool PlextorGetTestWriteDvdPlus(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout,
+                                           out double duration)
     {
         buffer      = new byte[8];
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
 
@@ -580,13 +504,7 @@ public partial class Device
         cdb[2]  = (byte)PlextorSubCommands.TestWriteDvdPlus;
         cdb[10] = (byte)buffer.Length;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 

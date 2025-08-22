@@ -148,7 +148,7 @@ static class Kreon
         Console.Clear();
 
         bool sense = dev.KreonExtractSs(out byte[] buffer,
-                                        out byte[] senseBuffer,
+                                        out ReadOnlySpan<byte> senseBuffer,
                                         dev.Timeout,
                                         out double duration,
                                         requestNumber);
@@ -161,11 +161,9 @@ static class Kreon
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -212,7 +210,7 @@ static class Kreon
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.EXTRACT_SS_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -224,7 +222,7 @@ static class Kreon
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.EXTRACT_SS_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -249,7 +247,7 @@ static class Kreon
     start:
         Console.Clear();
 
-        bool sense = dev.KreonGetFeatureList(out byte[] senseBuffer,
+        bool sense = dev.KreonGetFeatureList(out ReadOnlySpan<byte> senseBuffer,
                                              out KreonFeatures features,
                                              dev.Timeout,
                                              out double duration);
@@ -260,15 +258,13 @@ static class Kreon
         AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
         AaruLogging.WriteLine(Localization.Sense_is_0,        sense);
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.Features_0, features);
         AaruLogging.WriteLine(Localization.GET_FEATURE_LIST_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);
@@ -298,7 +294,7 @@ static class Kreon
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_FEATURE_LIST_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -379,7 +375,7 @@ static class Kreon
 
     start:
         Console.Clear();
-        bool sense = dev.KreonSetLockState(out byte[] senseBuffer, state, dev.Timeout, out double duration);
+        bool sense = dev.KreonSetLockState(out ReadOnlySpan<byte> senseBuffer, state, dev.Timeout, out double duration);
 
     menu:
         AaruLogging.WriteLine(Localization.Device_0, devPath);
@@ -387,7 +383,7 @@ static class Kreon
         AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
         AaruLogging.WriteLine(Localization.Sense_is_0,        sense);
         AaruLogging.WriteLine(Localization.SET_LOCK_STATE_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Send_command_again);
@@ -429,7 +425,7 @@ static class Kreon
     {
     start:
         Console.Clear();
-        bool sense = dev.KreonDeprecatedUnlock(out byte[] senseBuffer, dev.Timeout, out double duration);
+        bool sense = dev.KreonDeprecatedUnlock(out ReadOnlySpan<byte> senseBuffer, dev.Timeout, out double duration);
 
     menu:
         AaruLogging.WriteLine(Localization.Device_0, devPath);
@@ -437,14 +433,12 @@ static class Kreon
         AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
         AaruLogging.WriteLine(Localization.Sense_is_0,        sense);
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.UNLOCK_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);
@@ -474,7 +468,7 @@ static class Kreon
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.UNLOCK_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();

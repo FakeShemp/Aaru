@@ -157,11 +157,11 @@ public partial class DeviceInfo
 
             case DeviceType.SCSI:
             {
-                bool sense = dev.ScsiInquiry(out byte[] inqBuf, out byte[] senseBuf);
+                bool sense = dev.ScsiInquiry(out byte[] inqBuf, out ReadOnlySpan<byte> senseBuf);
 
                 if(sense)
                 {
-                    AaruLogging.Error(Localization.Core.SCSI_error_0, Sense.PrettifySense(senseBuf));
+                    AaruLogging.Error(Localization.Core.SCSI_error_0, Sense.PrettifySense(senseBuf.ToArray()));
 
                     break;
                 }
@@ -546,14 +546,14 @@ public partial class DeviceInfo
                         sense = dev.ReadBlockLimits(out byte[] seqBuf, out senseBuf, dev.Timeout, out _);
 
                         if(sense)
-                            AaruLogging.Error("READ BLOCK LIMITS:\n{0}", Sense.PrettifySense(senseBuf));
+                            AaruLogging.Error("READ BLOCK LIMITS:\n{0}", Sense.PrettifySense(senseBuf.ToArray()));
                         else
                             BlockLimits = seqBuf;
 
                         sense = dev.ReportDensitySupport(out seqBuf, out senseBuf, dev.Timeout, out _);
 
                         if(sense)
-                            AaruLogging.Error("REPORT DENSITY SUPPORT:\n{0}", Sense.PrettifySense(senseBuf));
+                            AaruLogging.Error("REPORT DENSITY SUPPORT:\n{0}", Sense.PrettifySense(senseBuf.ToArray()));
                         else
                         {
                             DensitySupport       = seqBuf;
@@ -565,7 +565,7 @@ public partial class DeviceInfo
                         if(sense)
                         {
                             AaruLogging.Error("REPORT DENSITY SUPPORT (MEDIUM):\n{0}",
-                                                       Sense.PrettifySense(senseBuf));
+                                              Sense.PrettifySense(senseBuf.ToArray()));
                         }
                         else
                         {

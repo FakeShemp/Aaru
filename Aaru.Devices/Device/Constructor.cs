@@ -53,18 +53,22 @@ public partial class Device : IDisposable
 {
     // Pointer to send CDB to device
     protected unsafe void* CdbPtr;
+    protected unsafe void* SensePtr;
 
     protected Device()
     {
         unsafe
         {
-            CdbPtr = NativeMemory.AlignedAlloc(16, 64);
-            NativeMemory.Clear(CdbPtr, 16);
+            CdbPtr   = NativeMemory.AlignedAlloc(16, 64);
+            SensePtr = NativeMemory.AlignedAlloc(64, 64);
+            NativeMemory.Clear(CdbPtr,   16);
+            NativeMemory.Clear(SensePtr, 64);
         }
     }
 
     // Span to make pointer usable as data. Fixed size CDB is maximum 16 bytes. Variable size CDB is another problem.
-    public unsafe Span<byte> CdbBuffer => new(CdbPtr, 16);
+    public unsafe Span<byte> CdbBuffer   => new(CdbPtr, 16);
+    public unsafe Span<byte> SenseBuffer => new(SensePtr, 64);
 
 #region IDisposable Members
 
@@ -211,9 +215,8 @@ public partial class Device : IDisposable
             if(string.IsNullOrEmpty(dev.Serial))
                 dev.Serial = dev.UsbSerialString;
             else
-            {
-                foreach(char c in dev.Serial.Where(c => !char.IsControl(c))) dev.Serial = $"{dev.Serial}{c:X2}";
-            }
+                foreach(char c in dev.Serial.Where(c => !char.IsControl(c)))
+                    dev.Serial = $"{dev.Serial}{c:X2}";
         }
 
         if(dev.IsFireWire)
@@ -225,9 +228,8 @@ public partial class Device : IDisposable
             if(string.IsNullOrEmpty(dev.Serial))
                 dev.Serial = $"{dev.FirewireGuid:X16}";
             else
-            {
-                foreach(char c in dev.Serial.Where(c => !char.IsControl(c))) dev.Serial = $"{dev.Serial}{c:X2}";
-            }
+                foreach(char c in dev.Serial.Where(c => !char.IsControl(c)))
+                    dev.Serial = $"{dev.Serial}{c:X2}";
         }
 
         // Some optical drives are not getting the correct serial, and IDENTIFY PACKET DEVICE is blocked without

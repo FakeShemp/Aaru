@@ -52,7 +52,7 @@ public partial class Dump
         {
             InitProgress?.Invoke();
         deviceGotReset:
-            bool sense = _dev.ScsiTestUnitReady(out byte[] senseBuf, _dev.Timeout, out _);
+            bool sense = _dev.ScsiTestUnitReady(out ReadOnlySpan<byte> senseBuf, _dev.Timeout, out _);
 
             if(sense)
             {
@@ -198,7 +198,7 @@ public partial class Dump
                         }
                         default:
                             StoppingErrorMessage?.Invoke(string.Format(Localization.Core.Error_testing_unit_was_ready_0,
-                                                                       Sense.PrettifySense(senseBuf)));
+                                                                       Sense.PrettifySense(senseBuf.ToArray())));
 
                             return;
                     }

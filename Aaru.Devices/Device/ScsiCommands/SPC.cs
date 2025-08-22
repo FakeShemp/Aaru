@@ -47,7 +47,7 @@ public partial class Device
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
     /// <param name="buffer">Buffer where the SCSI INQUIRY response will be stored</param>
     /// <param name="senseBuffer">Sense buffer.</param>
-    public bool ScsiInquiry(out byte[] buffer, out byte[] senseBuffer) =>
+    public bool ScsiInquiry(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer) =>
         ScsiInquiry(out buffer, out senseBuffer, Timeout);
 
     /// <summary>Sends the SPC INQUIRY command to the device using default device timeout.</summary>
@@ -55,7 +55,7 @@ public partial class Device
     /// <param name="buffer">Buffer where the SCSI INQUIRY response will be stored</param>
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ScsiInquiry(out byte[] buffer, out byte[] senseBuffer, out double duration) =>
+    public bool ScsiInquiry(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, out double duration) =>
         ScsiInquiry(out buffer, out senseBuffer, Timeout, out duration);
 
     /// <summary>Sends the SPC INQUIRY command to the device.</summary>
@@ -63,7 +63,7 @@ public partial class Device
     /// <param name="buffer">Buffer where the SCSI INQUIRY response will be stored</param>
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout in seconds.</param>
-    public bool ScsiInquiry(out byte[] buffer, out byte[] senseBuffer, uint timeout) =>
+    public bool ScsiInquiry(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout) =>
         ScsiInquiry(out buffer, out senseBuffer, timeout, out _);
 
     /// <summary>Sends the SPC INQUIRY command to the device.</summary>
@@ -72,10 +72,10 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ScsiInquiry(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
+    public bool ScsiInquiry(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration)
     {
         buffer      = new byte[36];
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
         Span<byte> cdb = CdbBuffer[..6];
         cdb.Clear();
@@ -87,13 +87,7 @@ public partial class Device
         cdb[4] = 36;
         cdb[5] = 0;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -109,15 +103,9 @@ public partial class Device
         cdb[5] = 0;
 
         buffer      = new byte[pagesLength];
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out sense);
 
         Error = LastError != 0;
 
@@ -134,7 +122,7 @@ public partial class Device
     /// <param name="buffer">Buffer where the SCSI INQUIRY response will be stored</param>
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="page">The Extended Vital Product Data</param>
-    public bool ScsiInquiry(out byte[] buffer, out byte[] senseBuffer, byte page) =>
+    public bool ScsiInquiry(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, byte page) =>
         ScsiInquiry(out buffer, out senseBuffer, page, Timeout);
 
     /// <summary>
@@ -146,7 +134,7 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="page">The Extended Vital Product Data</param>
-    public bool ScsiInquiry(out byte[] buffer, out byte[] senseBuffer, byte page, out double duration) =>
+    public bool ScsiInquiry(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, byte page, out double duration) =>
         ScsiInquiry(out buffer, out senseBuffer, page, Timeout, out duration);
 
     /// <summary>Sends the SPC INQUIRY command to the device with an Extended Vital Product Data page.</summary>
@@ -155,7 +143,7 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="page">The Extended Vital Product Data</param>
-    public bool ScsiInquiry(out byte[] buffer, out byte[] senseBuffer, byte page, uint timeout) =>
+    public bool ScsiInquiry(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, byte page, uint timeout) =>
         ScsiInquiry(out buffer, out senseBuffer, page, timeout, out _);
 
     /// <summary>Sends the SPC INQUIRY command to the device with an Extended Vital Product Data page.</summary>
@@ -165,10 +153,11 @@ public partial class Device
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="page">The Extended Vital Product Data</param>
-    public bool ScsiInquiry(out byte[] buffer, out byte[] senseBuffer, byte page, uint timeout, out double duration)
+    public bool ScsiInquiry(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, byte page, uint timeout,
+                            out double duration)
     {
         buffer      = new byte[36];
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
         Span<byte> cdb = CdbBuffer[..6];
 
@@ -179,13 +168,7 @@ public partial class Device
         cdb[4] = 36;
         cdb[5] = 0;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -204,15 +187,9 @@ public partial class Device
         cdb[5] = 0;
 
         buffer      = new byte[pagesLength];
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out sense);
 
         Error = LastError != 0;
 
@@ -226,9 +203,9 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ScsiTestUnitReady(out byte[] senseBuffer, uint timeout, out double duration)
+    public bool ScsiTestUnitReady(out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
         Span<byte> cdb = CdbBuffer[..6];
         cdb.Clear();
@@ -237,13 +214,7 @@ public partial class Device
 
         byte[] buffer = [];
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.None,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -258,7 +229,7 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ModeSense(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool ModeSense(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         ModeSense6(out buffer, out senseBuffer, false, ScsiModeSensePageControl.Current, 0, 0, timeout, out duration);
 
     /// <summary>Sends the SPC MODE SENSE(6) command to the device as introduced in SCSI-2</summary>
@@ -270,8 +241,8 @@ public partial class Device
     /// <param name="dbd">If set to <c>true</c> device MUST not return any block descriptor.</param>
     /// <param name="pageControl">Page control.</param>
     /// <param name="pageCode">Page code.</param>
-    public bool ModeSense6(out byte[] buffer,   out byte[] senseBuffer, bool dbd, ScsiModeSensePageControl pageControl,
-                           byte       pageCode, uint       timeout,     out double duration) =>
+    public bool ModeSense6(out byte[]               buffer,      out ReadOnlySpan<byte> senseBuffer, bool dbd,
+                           ScsiModeSensePageControl pageControl, byte pageCode, uint timeout, out double duration) =>
         ModeSense6(out buffer, out senseBuffer, dbd, pageControl, pageCode, 0, timeout, out duration);
 
     /// <summary>Sends the SPC MODE SENSE(6) command to the device as introduced in SCSI-3 SPC-3</summary>
@@ -284,10 +255,11 @@ public partial class Device
     /// <param name="pageControl">Page control.</param>
     /// <param name="pageCode">Page code.</param>
     /// <param name="subPageCode">Sub-page code.</param>
-    public bool ModeSense6(out byte[] buffer,   out byte[] senseBuffer, bool dbd, ScsiModeSensePageControl pageControl,
-                           byte       pageCode, byte       subPageCode, uint timeout, out double duration)
+    public bool ModeSense6(out byte[]               buffer,      out ReadOnlySpan<byte> senseBuffer, bool dbd,
+                           ScsiModeSensePageControl pageControl, byte pageCode, byte subPageCode, uint timeout,
+                           out double               duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..6];
         cdb.Clear();
         buffer = new byte[254];
@@ -303,13 +275,7 @@ public partial class Device
         cdb[4] =  (byte)buffer.Length;
         cdb[5] =  0;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -320,15 +286,9 @@ public partial class Device
 
         buffer      = new byte[modeLength];
         cdb[4]      = (byte)buffer.Length;
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out sense);
 
         Error = LastError != 0;
 
@@ -346,8 +306,8 @@ public partial class Device
     /// <param name="dbd">If set to <c>true</c> device MUST not return any block descriptor.</param>
     /// <param name="pageControl">Page control.</param>
     /// <param name="pageCode">Page code.</param>
-    public bool ModeSense10(out byte[] buffer,   out byte[] senseBuffer, bool dbd, ScsiModeSensePageControl pageControl,
-                            byte       pageCode, uint       timeout,     out double duration) =>
+    public bool ModeSense10(out byte[]               buffer,      out ReadOnlySpan<byte> senseBuffer, bool dbd,
+                            ScsiModeSensePageControl pageControl, byte pageCode, uint timeout, out double duration) =>
         ModeSense10(out buffer, out senseBuffer, false, dbd, pageControl, pageCode, 0, timeout, out duration);
 
     /// <summary>Sends the SPC MODE SENSE(10) command to the device as introduced in SCSI-3 SPC-2</summary>
@@ -360,7 +320,7 @@ public partial class Device
     /// <param name="pageControl">Page control.</param>
     /// <param name="pageCode">Page code.</param>
     /// <param name="llbaa">If set means 64-bit LBAs are accepted by the caller.</param>
-    public bool ModeSense10(out byte[]               buffer,      out byte[] senseBuffer, bool llbaa, bool dbd,
+    public bool ModeSense10(out byte[]               buffer, out ReadOnlySpan<byte> senseBuffer, bool llbaa, bool dbd,
                             ScsiModeSensePageControl pageControl, byte pageCode, uint timeout, out double duration) =>
         ModeSense10(out buffer, out senseBuffer, llbaa, dbd, pageControl, pageCode, 0, timeout, out duration);
 
@@ -375,11 +335,11 @@ public partial class Device
     /// <param name="pageCode">Page code.</param>
     /// <param name="subPageCode">Sub-page code.</param>
     /// <param name="llbaa">If set means 64-bit LBAs are accepted by the caller.</param>
-    public bool ModeSense10(out byte[]               buffer,      out byte[] senseBuffer, bool llbaa, bool dbd,
-                            ScsiModeSensePageControl pageControl, byte       pageCode, byte subPageCode, uint timeout,
+    public bool ModeSense10(out byte[]               buffer, out ReadOnlySpan<byte> senseBuffer, bool llbaa, bool dbd,
+                            ScsiModeSensePageControl pageControl, byte pageCode, byte subPageCode, uint timeout,
                             out double               duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
         buffer = new byte[4096];
@@ -397,13 +357,7 @@ public partial class Device
         cdb[8] =  (byte)(buffer.Length & 0xFF);
         cdb[9] =  0;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -415,15 +369,9 @@ public partial class Device
         buffer      = new byte[modeLength];
         cdb[7]      = (byte)((buffer.Length & 0xFF00) >> 8);
         cdb[8]      = (byte)(buffer.Length & 0xFF);
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out sense);
 
         Error = LastError != 0;
 
@@ -437,7 +385,7 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool SpcPreventMediumRemoval(out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool SpcPreventMediumRemoval(out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         SpcPreventAllowMediumRemoval(out senseBuffer, ScsiPreventAllowMode.Prevent, timeout, out duration);
 
     /// <summary>Sends the SPC PREVENT ALLOW MEDIUM REMOVAL command to allow medium removal</summary>
@@ -445,7 +393,7 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool SpcAllowMediumRemoval(out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool SpcAllowMediumRemoval(out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         SpcPreventAllowMediumRemoval(out senseBuffer, ScsiPreventAllowMode.Allow, timeout, out duration);
 
     /// <summary>Sends the SPC PREVENT ALLOW MEDIUM REMOVAL command</summary>
@@ -454,7 +402,8 @@ public partial class Device
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="prevent"><c>true</c> to prevent medium removal, <c>false</c> to allow it.</param>
-    public bool SpcPreventAllowMediumRemoval(out byte[] senseBuffer, bool prevent, uint timeout, out double duration) =>
+    public bool SpcPreventAllowMediumRemoval(out ReadOnlySpan<byte> senseBuffer, bool prevent, uint timeout,
+                                             out double             duration) =>
         prevent
             ? SpcPreventAllowMediumRemoval(out senseBuffer, ScsiPreventAllowMode.Prevent, timeout, out duration)
             : SpcPreventAllowMediumRemoval(out senseBuffer, ScsiPreventAllowMode.Allow,   timeout, out duration);
@@ -465,10 +414,10 @@ public partial class Device
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="preventMode">Prevention mode.</param>
-    public bool SpcPreventAllowMediumRemoval(out byte[] senseBuffer, ScsiPreventAllowMode preventMode, uint timeout,
-                                             out double duration)
+    public bool SpcPreventAllowMediumRemoval(out ReadOnlySpan<byte> senseBuffer, ScsiPreventAllowMode preventMode,
+                                             uint                   timeout,     out double           duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..6];
         cdb.Clear();
         byte[] buffer = [];
@@ -476,13 +425,7 @@ public partial class Device
         cdb[0] = (byte)ScsiCommands.PreventAllowMediumRemoval;
         cdb[4] = (byte)((byte)preventMode & 0x03);
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.None,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -497,7 +440,8 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadCapacity(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool
+        ReadCapacity(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         ReadCapacity(out buffer, out senseBuffer, false, 0, false, timeout, out duration);
 
     /// <summary>Sends the SPC READ CAPACITY command</summary>
@@ -509,10 +453,10 @@ public partial class Device
     /// <param name="pmi">If set, it is requesting partial media capacity</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadCapacity(out byte[] buffer,  out byte[] senseBuffer, bool relAddr, uint address, bool pmi,
-                             uint       timeout, out double duration)
+    public bool ReadCapacity(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, bool       relAddr, uint address,
+                             bool       pmi,    uint                   timeout,     out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
         buffer = new byte[8];
@@ -531,13 +475,7 @@ public partial class Device
             cdb[5] = (byte)(address & 0xFF);
         }
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -552,7 +490,8 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadCapacity16(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool
+        ReadCapacity16(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         ReadCapacity16(out buffer, out senseBuffer, 0, false, timeout, out duration);
 
     /// <summary>Sends the SPC READ CAPACITY(16) command</summary>
@@ -563,10 +502,10 @@ public partial class Device
     /// <param name="pmi">If set, it is requesting partial media capacity</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadCapacity16(out byte[] buffer, out byte[] senseBuffer, ulong address, bool pmi, uint timeout,
-                               out double duration)
+    public bool ReadCapacity16(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, ulong address, bool pmi,
+                               uint       timeout, out double             duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..16];
         cdb.Clear();
         buffer = new byte[32];
@@ -593,13 +532,7 @@ public partial class Device
         cdb[12] = (byte)((buffer.Length & 0xFF00)     >> 8);
         cdb[13] = (byte)(buffer.Length & 0xFF);
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -614,9 +547,10 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadMediaSerialNumber(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
+    public bool ReadMediaSerialNumber(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout,
+                                      out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
         buffer = new byte[4];
@@ -628,13 +562,7 @@ public partial class Device
         cdb[8] = (byte)((buffer.Length & 0xFF00)     >> 8);
         cdb[9] = (byte)(buffer.Length & 0xFF);
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -646,15 +574,9 @@ public partial class Device
         cdb[7]      = (byte)((buffer.Length & 0xFF0000)   >> 16);
         cdb[8]      = (byte)((buffer.Length & 0xFF00)     >> 8);
         cdb[9]      = (byte)(buffer.Length & 0xFF);
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out sense);
 
         Error = LastError != 0;
 
@@ -672,8 +594,8 @@ public partial class Device
     /// <param name="cache">If set to <c>true</c> device can return cached data.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool ReadAttribute(out byte[] buffer, out byte[] senseBuffer, ScsiAttributeAction action, byte partition,
-                              ushort     firstAttribute, bool cache, uint timeout, out double duration) =>
+    public bool ReadAttribute(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, ScsiAttributeAction action,
+                              byte partition, ushort firstAttribute, bool cache, uint timeout, out double duration) =>
         ReadAttribute(out buffer,
                       out senseBuffer,
                       action,
@@ -694,8 +616,8 @@ public partial class Device
     /// <param name="cache">If set to <c>true</c> device can return cached data.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool ReadAttribute(out byte[] buffer,         out byte[] senseBuffer, ScsiAttributeAction action,
-                              ushort     firstAttribute, bool       cache,       uint timeout, out double duration) =>
+    public bool ReadAttribute(out byte[] buffer,         out ReadOnlySpan<byte> senseBuffer, ScsiAttributeAction action,
+                              ushort     firstAttribute, bool cache, uint timeout, out double duration) =>
         ReadAttribute(out buffer, out senseBuffer, action, 0, 0, 0, 0, firstAttribute, cache, timeout, out duration);
 
     /// <summary>Reads an attribute from the medium auxiliary memory</summary>
@@ -706,8 +628,8 @@ public partial class Device
     /// <param name="firstAttribute">First attribute identifier.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool ReadAttribute(out byte[] buffer, out byte[] senseBuffer, ScsiAttributeAction action, byte partition,
-                              ushort     firstAttribute, uint timeout, out double duration) =>
+    public bool ReadAttribute(out byte[] buffer,    out ReadOnlySpan<byte> senseBuffer, ScsiAttributeAction action,
+                              byte       partition, ushort firstAttribute, uint timeout, out double duration) =>
         ReadAttribute(out buffer,
                       out senseBuffer,
                       action,
@@ -727,8 +649,8 @@ public partial class Device
     /// <param name="firstAttribute">First attribute identifier.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool ReadAttribute(out byte[] buffer,         out byte[] senseBuffer, ScsiAttributeAction action,
-                              ushort     firstAttribute, uint       timeout,     out double          duration) =>
+    public bool ReadAttribute(out byte[] buffer,         out ReadOnlySpan<byte> senseBuffer, ScsiAttributeAction action,
+                              ushort     firstAttribute, uint                   timeout,     out double duration) =>
         ReadAttribute(out buffer, out senseBuffer, action, 0, 0, 0, 0, firstAttribute, false, timeout, out duration);
 
     /// <summary>Reads an attribute from the medium auxiliary memory</summary>
@@ -740,8 +662,8 @@ public partial class Device
     /// <param name="firstAttribute">First attribute identifier.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool ReadAttribute(out byte[] buffer,    out byte[] senseBuffer,    ScsiAttributeAction action, byte volume,
-                              byte       partition, ushort     firstAttribute, uint timeout, out double duration) =>
+    public bool ReadAttribute(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, ScsiAttributeAction action,
+                              byte volume, byte partition, ushort firstAttribute, uint timeout, out double duration) =>
         ReadAttribute(out buffer,
                       out senseBuffer,
                       action,
@@ -764,19 +686,19 @@ public partial class Device
     /// <param name="cache">If set to <c>true</c> device can return cached data.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool ReadAttribute(out byte[] buffer, out byte[] senseBuffer, ScsiAttributeAction action, byte volume,
-                              byte partition, ushort firstAttribute, bool cache, uint timeout, out double duration) =>
-        ReadAttribute(out buffer,
-                      out senseBuffer,
-                      action,
-                      0,
-                      0,
-                      volume,
-                      partition,
-                      firstAttribute,
-                      cache,
-                      timeout,
-                      out duration);
+    public bool ReadAttribute(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, ScsiAttributeAction action,
+                              byte       volume, byte partition, ushort firstAttribute, bool cache, uint timeout,
+                              out double duration) => ReadAttribute(out buffer,
+                                                                    out senseBuffer,
+                                                                    action,
+                                                                    0,
+                                                                    0,
+                                                                    volume,
+                                                                    partition,
+                                                                    firstAttribute,
+                                                                    cache,
+                                                                    timeout,
+                                                                    out duration);
 
     /// <summary>Sends the SPC MODE SELECT(6) command</summary>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
@@ -786,10 +708,10 @@ public partial class Device
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="pageFormat">Set if page is formatted.</param>
-    public bool ModeSelect(byte[]     buffer, out byte[] senseBuffer, bool pageFormat, bool savePages, uint timeout,
-                           out double duration)
+    public bool ModeSelect(byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, bool pageFormat, bool savePages,
+                           uint   timeout, out double             duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
         // Prevent overflows
         if(buffer.Length > 255)
@@ -821,13 +743,7 @@ public partial class Device
 
         cdb[4] = (byte)buffer.Length;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.Out,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.Out, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -844,10 +760,10 @@ public partial class Device
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="pageFormat">Set if page is formatted.</param>
-    public bool ModeSelect10(byte[]     buffer, out byte[] senseBuffer, bool pageFormat, bool savePages, uint timeout,
-                             out double duration)
+    public bool ModeSelect10(byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, bool pageFormat, bool savePages,
+                             uint   timeout, out double             duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
         // Prevent overflows
         if(buffer.Length > 65535)
@@ -878,13 +794,7 @@ public partial class Device
         cdb[7] = (byte)((buffer.Length & 0xFF00) << 8);
         cdb[8] = (byte)(buffer.Length & 0xFF);
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.Out,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.Out, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -922,7 +832,7 @@ public partial class Device
         cdb[4] = (byte)buffer.Length;
         cdb[5] = 0;
 
-        LastError = SendScsiCommand(cdb, ref buffer, out _, timeout, ScsiDirection.In, out duration, out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 

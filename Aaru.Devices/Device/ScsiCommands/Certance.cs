@@ -43,14 +43,14 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool CertancePark(out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool CertancePark(out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         CertanceParkUnpark(out senseBuffer, true, timeout, out duration);
 
     /// <summary>Unparks the load arm prior to operation</summary>
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool CertanceUnpark(out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool CertanceUnpark(out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         CertanceParkUnpark(out senseBuffer, false, timeout, out duration);
 
     /// <summary>Parks the load arm in preparation for transport or unparks it prior to operation</summary>
@@ -58,24 +58,18 @@ public partial class Device
     /// <param name="park">If set to <c>true</c>, parks the load arm</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool CertanceParkUnpark(out byte[] senseBuffer, bool park, uint timeout, out double duration)
+    public bool CertanceParkUnpark(out ReadOnlySpan<byte> senseBuffer, bool park, uint timeout, out double duration)
     {
         byte[]     buffer = [];
         Span<byte> cdb    = CdbBuffer[..6];
         cdb.Clear();
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
         cdb[0] = (byte)ScsiCommands.CertanceParkUnpark;
 
         if(park) cdb[4] = 1;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.None,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out bool sense);
 
         Error = LastError != 0;
 

@@ -103,7 +103,7 @@ partial class Dump
         if(mediaTags.ContainsKey(MediaTagType.DVD_DMI)) mediaTags.Remove(MediaTagType.DVD_DMI);
 
         // Drive shall move to lock state when a new disc is inserted. Old kreon versions do not lock correctly so save this
-        sense = _dev.ReadCapacity(out byte[] coldReadCapacity, out byte[] senseBuf, _dev.Timeout, out _);
+        sense = _dev.ReadCapacity(out byte[] coldReadCapacity, out ReadOnlySpan<byte> senseBuf, _dev.Timeout, out _);
 
         if(sense)
         {
@@ -894,7 +894,7 @@ partial class Dump
             }
             else
             {
-                _errorLog?.WriteLine(currentSector, _dev.Error, _dev.LastError, senseBuf);
+                _errorLog?.WriteLine(currentSector, _dev.Error, _dev.LastError, senseBuf.ToArray());
 
                 // TODO: Reset device after X errors
                 if(_stopOnError) return; // TODO: Return more cleanly
@@ -1050,8 +1050,9 @@ partial class Dump
             List<ulong> tmpList = [];
 
             foreach(ulong ur in _resume.BadBlocks)
-                for(ulong i = ur; i < ur + blocksToRead; i++)
-                    tmpList.Add(i);
+            {
+                for(ulong i = ur; i < ur + blocksToRead; i++) tmpList.Add(i);
+            }
 
             tmpList.Sort();
 
@@ -1223,7 +1224,8 @@ partial class Dump
 
                 totalDuration += cmdDuration;
 
-                if(sense || _dev.Error) _errorLog?.WriteLine(currentSector, _dev.Error, _dev.LastError, senseBuf);
+                if(sense || _dev.Error)
+                    _errorLog?.WriteLine(currentSector, _dev.Error, _dev.LastError, senseBuf.ToArray());
 
                 if(!sense && !_dev.Error)
                 {

@@ -44,15 +44,14 @@ namespace Aaru.Devices.Windows;
 partial class Device
 {
     /// <inheritdoc />
-    public override int SendScsiCommand(Span<byte>    cdb, ref byte[] buffer, out byte[] senseBuffer, uint timeout,
-                                        ScsiDirection direction, out double duration, out bool sense)
+    public override int SendScsiCommand(Span<byte> cdb,      ref byte[] buffer, uint timeout, ScsiDirection direction,
+                                        out double duration, out bool   sense)
     {
         // We need a timeout
         if(timeout == 0) timeout = Timeout > 0 ? Timeout : 15;
 
-        senseBuffer = null;
-        duration    = 0;
-        sense       = false;
+        duration = 0;
+        sense    = false;
 
         if(buffer == null) return -1;
 
@@ -107,8 +106,7 @@ partial class Device
 
         sense |= sptdSb.sptd.ScsiStatus != 0;
 
-        senseBuffer = new byte[64];
-        Array.Copy(sptdSb.SenseBuf, senseBuffer, 32);
+        sptdSb.SenseBuf.AsSpan().CopyTo(SenseBuffer);
 
         duration = cmdStopwatch.Elapsed.TotalMilliseconds;
 

@@ -46,7 +46,7 @@ public partial class Device
     /// <param name="lba">SCSI Logical Block Address.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool AdaptecTranslate(out byte[] buffer, out byte[] senseBuffer, uint lba, uint timeout,
+    public bool AdaptecTranslate(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint lba, uint timeout,
                                  out double duration) =>
         AdaptecTranslate(out buffer, out senseBuffer, false, lba, timeout, out duration);
 
@@ -57,13 +57,13 @@ public partial class Device
     /// <param name="lba">SCSI Logical Block Address.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool AdaptecTranslate(out byte[] buffer, out byte[] senseBuffer, bool drive1, uint lba, uint timeout,
-                                 out double duration)
+    public bool AdaptecTranslate(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, bool drive1, uint lba,
+                                 uint       timeout, out double             duration)
     {
         buffer = new byte[8];
         Span<byte> cdb = CdbBuffer[..6];
         cdb.Clear();
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
         cdb[0] = (byte)ScsiCommands.AdaptecTranslate;
         cdb[1] = (byte)((lba & 0x1F0000) >> 16);
@@ -72,13 +72,7 @@ public partial class Device
 
         if(drive1) cdb[1] += 0x20;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -93,7 +87,8 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool AdaptecSetErrorThreshold(byte threshold, out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool AdaptecSetErrorThreshold(byte       threshold, out ReadOnlySpan<byte> senseBuffer, uint timeout,
+                                         out double duration) =>
         AdaptecSetErrorThreshold(threshold, out senseBuffer, false, timeout, out duration);
 
     /// <summary>Sets the error threshold</summary>
@@ -103,14 +98,14 @@ public partial class Device
     /// <param name="drive1">If set to <c>true</c> set the threshold from drive 1.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool AdaptecSetErrorThreshold(byte       threshold, out byte[] senseBuffer, bool drive1, uint timeout,
+    public bool AdaptecSetErrorThreshold(byte threshold, out ReadOnlySpan<byte> senseBuffer, bool drive1, uint timeout,
                                          out double duration)
     {
         byte[] buffer = new byte[1];
         buffer[0] = threshold;
         Span<byte> cdb = CdbBuffer[..6];
         cdb.Clear();
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
         cdb[0] = (byte)ScsiCommands.AdaptecSetErrorThreshold;
 
@@ -118,13 +113,7 @@ public partial class Device
 
         cdb[4] = 1;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.Out,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.Out, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -138,7 +127,8 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool AdaptecReadUsageCounter(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool AdaptecReadUsageCounter(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout,
+                                        out double duration) =>
         AdaptecReadUsageCounter(out buffer, out senseBuffer, false, timeout, out duration);
 
     /// <summary>Requests the usage, seek and error counters, and resets them</summary>
@@ -147,13 +137,13 @@ public partial class Device
     /// <param name="drive1">If set to <c>true</c> get the counters from drive 1.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool AdaptecReadUsageCounter(out byte[] buffer, out byte[] senseBuffer, bool drive1, uint timeout,
-                                        out double duration)
+    public bool AdaptecReadUsageCounter(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, bool drive1,
+                                        uint       timeout, out double             duration)
     {
         buffer = new byte[9];
         Span<byte> cdb = CdbBuffer[..6];
         cdb.Clear();
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
         cdb[0] = (byte)ScsiCommands.AdaptecTranslate;
 
@@ -161,13 +151,7 @@ public partial class Device
 
         cdb[4] = (byte)buffer.Length;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -181,24 +165,18 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool AdaptecWriteBuffer(byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
+    public bool AdaptecWriteBuffer(byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration)
     {
         byte[] oneKBuffer = new byte[1024];
         Array.Copy(buffer, 0, oneKBuffer, 0, buffer.Length < 1024 ? buffer.Length : 1024);
 
         Span<byte> cdb = CdbBuffer[..6];
         cdb.Clear();
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
         cdb[0] = (byte)ScsiCommands.AdaptecWriteBuffer;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref oneKBuffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.Out,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref oneKBuffer, timeout, ScsiDirection.Out, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -212,22 +190,17 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool AdaptecReadBuffer(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
+    public bool AdaptecReadBuffer(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout,
+                                  out double duration)
     {
         buffer = new byte[1024];
         Span<byte> cdb = CdbBuffer[..6];
         cdb.Clear();
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
         cdb[0] = (byte)ScsiCommands.AdaptecReadBuffer;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 

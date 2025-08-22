@@ -578,15 +578,15 @@ public sealed partial class DeviceReport
     public TestedMedia ReportMmcMedia(string mediaType, bool tryPlextor, bool tryPioneer, bool tryNec, bool tryHldtst,
                                       bool   tryMediaTekF106, bool tryLiteOn)
     {
-        bool   sense       = true;
-        byte[] buffer      = [];
-        byte[] senseBuffer = [];
-        var    mediaTest   = new TestedMedia();
+        bool               sense       = true;
+        byte[]             buffer      = [];
+        ReadOnlySpan<byte> senseBuffer = [];
+        var                mediaTest   = new TestedMedia();
 
         Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(Localization.Core.Querying_SCSI_READ_CAPACITY).IsIndeterminate();
-            sense = _dev.ReadCapacity(out buffer, out senseBuffer, _dev.Timeout, out _);
+            sense = _dev.ReadCapacity(out buffer, out _, _dev.Timeout, out _);
         });
 
         if(!sense && !_dev.Error)
@@ -603,7 +603,7 @@ public sealed partial class DeviceReport
         Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(Localization.Core.Querying_SCSI_READ_CAPACITY_16).IsIndeterminate();
-            sense = _dev.ReadCapacity16(out buffer, out buffer, _dev.Timeout, out _);
+            sense = _dev.ReadCapacity16(out buffer, out _, _dev.Timeout, out _);
         });
 
         if(!sense && !_dev.Error)
@@ -623,7 +623,7 @@ public sealed partial class DeviceReport
             ctx.AddTask(Localization.Core.Querying_SCSI_MODE_SENSE_10).IsIndeterminate();
 
             sense = _dev.ModeSense10(out buffer,
-                                     out senseBuffer,
+                                     out _,
                                      false,
                                      true,
                                      ScsiModeSensePageControl.Current,
@@ -643,7 +643,7 @@ public sealed partial class DeviceReport
         Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(Localization.Core.Querying_SCSI_MODE_SENSE).IsIndeterminate();
-            sense = _dev.ModeSense(out buffer, out senseBuffer, _dev.Timeout, out _);
+            sense = _dev.ModeSense(out buffer, out _, _dev.Timeout, out _);
         });
 
         if(!sense && !_dev.Error)
@@ -669,8 +669,7 @@ public sealed partial class DeviceReport
             {
                 ctx.AddTask(Localization.Core.Querying_CD_TOC).IsIndeterminate();
 
-                mediaTest.CanReadTOC =
-                    !_dev.ReadTocPmaAtip(out buffer, out senseBuffer, false, 0, 0, _dev.Timeout, out _);
+                mediaTest.CanReadTOC = !_dev.ReadTocPmaAtip(out buffer, out _, false, 0, 0, _dev.Timeout, out _);
             });
 
             AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.Sense_equals_0, !mediaTest.CanReadTOC);
@@ -679,7 +678,7 @@ public sealed partial class DeviceReport
             Spectre.ProgressSingleSpinner(ctx =>
             {
                 ctx.AddTask(Localization.Core.Querying_CD_Full_TOC).IsIndeterminate();
-                mediaTest.CanReadFullTOC = !_dev.ReadRawToc(out buffer, out senseBuffer, 1, _dev.Timeout, out _);
+                mediaTest.CanReadFullTOC = !_dev.ReadRawToc(out buffer, out _, 1, _dev.Timeout, out _);
             });
 
             AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.Sense_equals_0, !mediaTest.CanReadFullTOC);
@@ -692,7 +691,7 @@ public sealed partial class DeviceReport
             Spectre.ProgressSingleSpinner(ctx =>
             {
                 ctx.AddTask(Localization.Core.Querying_CD_ATIP).IsIndeterminate();
-                mediaTest.CanReadATIP = !_dev.ReadAtip(out buffer, out senseBuffer, _dev.Timeout, out _);
+                mediaTest.CanReadATIP = !_dev.ReadAtip(out buffer, out _, _dev.Timeout, out _);
             });
 
             AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.Sense_equals_0, !mediaTest.CanReadATIP);
@@ -702,7 +701,7 @@ public sealed partial class DeviceReport
             Spectre.ProgressSingleSpinner(ctx =>
             {
                 ctx.AddTask(Localization.Core.Querying_CD_PMA).IsIndeterminate();
-                mediaTest.CanReadPMA = !_dev.ReadPma(out buffer, out senseBuffer, _dev.Timeout, out _);
+                mediaTest.CanReadPMA = !_dev.ReadPma(out buffer, out _, _dev.Timeout, out _);
             });
 
             AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.Sense_equals_0, !mediaTest.CanReadPMA);
@@ -720,7 +719,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Querying_DVD_PFI).IsIndeterminate();
 
                 mediaTest.CanReadPFI = !_dev.ReadDiscStructure(out buffer,
-                                                               out senseBuffer,
+                                                               out _,
                                                                MmcDiscStructureMediaType.Dvd,
                                                                0,
                                                                0,
@@ -739,7 +738,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Querying_DVD_DMI).IsIndeterminate();
 
                 mediaTest.CanReadDMI = !_dev.ReadDiscStructure(out buffer,
-                                                               out senseBuffer,
+                                                               out _,
                                                                MmcDiscStructureMediaType.Dvd,
                                                                0,
                                                                0,
@@ -761,7 +760,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Querying_DVD_CMI).IsIndeterminate();
 
                 mediaTest.CanReadCMI = !_dev.ReadDiscStructure(out buffer,
-                                                               out senseBuffer,
+                                                               out _,
                                                                MmcDiscStructureMediaType.Dvd,
                                                                0,
                                                                0,
@@ -785,7 +784,7 @@ public sealed partial class DeviceReport
                     ctx.AddTask(Localization.Core.Querying_DVD_BCA).IsIndeterminate();
 
                     mediaTest.CanReadBCA = !_dev.ReadDiscStructure(out buffer,
-                                                                   out senseBuffer,
+                                                                   out _,
                                                                    MmcDiscStructureMediaType.Dvd,
                                                                    0,
                                                                    0,
@@ -804,7 +803,7 @@ public sealed partial class DeviceReport
                     ctx.AddTask(Localization.Core.Querying_DVD_AACS).IsIndeterminate();
 
                     mediaTest.CanReadAACS = !_dev.ReadDiscStructure(out buffer,
-                                                                    out senseBuffer,
+                                                                    out _,
                                                                     MmcDiscStructureMediaType.Dvd,
                                                                     0,
                                                                     0,
@@ -826,7 +825,7 @@ public sealed partial class DeviceReport
                     ctx.AddTask(Localization.Core.Querying_DVD_BCA).IsIndeterminate();
 
                     mediaTest.CanReadBCA = !_dev.ReadDiscStructure(out buffer,
-                                                                   out senseBuffer,
+                                                                   out _,
                                                                    MmcDiscStructureMediaType.Dvd,
                                                                    0,
                                                                    0,
@@ -845,7 +844,7 @@ public sealed partial class DeviceReport
                     ctx.AddTask(Localization.Core.Querying_DVD_PFI).IsIndeterminate();
 
                     mediaTest.CanReadPFI = !_dev.ReadDiscStructure(out buffer,
-                                                                   out senseBuffer,
+                                                                   out _,
                                                                    MmcDiscStructureMediaType.Dvd,
                                                                    0,
                                                                    0,
@@ -864,7 +863,7 @@ public sealed partial class DeviceReport
                     ctx.AddTask(Localization.Core.Querying_DVD_DMI).IsIndeterminate();
 
                     mediaTest.CanReadDMI = !_dev.ReadDiscStructure(out buffer,
-                                                                   out senseBuffer,
+                                                                   out _,
                                                                    MmcDiscStructureMediaType.Dvd,
                                                                    0,
                                                                    0,
@@ -891,7 +890,7 @@ public sealed partial class DeviceReport
                     ctx.AddTask(Localization.Core.Querying_BD_BCA).IsIndeterminate();
 
                     mediaTest.CanReadBCA = !_dev.ReadDiscStructure(out buffer,
-                                                                   out senseBuffer,
+                                                                   out _,
                                                                    MmcDiscStructureMediaType.Bd,
                                                                    0,
                                                                    0,
@@ -915,7 +914,7 @@ public sealed partial class DeviceReport
                     ctx.AddTask(Localization.Core.Querying_Disc_Definition_Structure).IsIndeterminate();
 
                     mediaTest.CanReadDDS = !_dev.ReadDiscStructure(out buffer,
-                                                                   out senseBuffer,
+                                                                   out _,
                                                                    MmcDiscStructureMediaType.Dvd,
                                                                    0,
                                                                    0,
@@ -935,7 +934,7 @@ public sealed partial class DeviceReport
 
                     mediaTest.CanReadSpareAreaInformation =
                         !_dev.ReadDiscStructure(out buffer,
-                                                out senseBuffer,
+                                                out _,
                                                 MmcDiscStructureMediaType.Dvd,
                                                 0,
                                                 0,
@@ -961,7 +960,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Querying_BD_DDS).IsIndeterminate();
 
                 mediaTest.CanReadDDS = !_dev.ReadDiscStructure(out buffer,
-                                                               out senseBuffer,
+                                                               out _,
                                                                MmcDiscStructureMediaType.Bd,
                                                                0,
                                                                0,
@@ -981,7 +980,7 @@ public sealed partial class DeviceReport
 
                 mediaTest.CanReadSpareAreaInformation =
                     !_dev.ReadDiscStructure(out buffer,
-                                            out senseBuffer,
+                                            out _,
                                             MmcDiscStructureMediaType.Bd,
                                             0,
                                             0,
@@ -1005,7 +1004,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Querying_DVD_PRI).IsIndeterminate();
 
                 mediaTest.CanReadPRI = !_dev.ReadDiscStructure(out buffer,
-                                                               out senseBuffer,
+                                                               out _,
                                                                MmcDiscStructureMediaType.Dvd,
                                                                0,
                                                                0,
@@ -1027,7 +1026,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Querying_DVD_Media_ID).IsIndeterminate();
 
                 mediaTest.CanReadMediaID = !_dev.ReadDiscStructure(out buffer,
-                                                                   out senseBuffer,
+                                                                   out _,
                                                                    MmcDiscStructureMediaType.Dvd,
                                                                    0,
                                                                    0,
@@ -1044,7 +1043,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Querying_DVD_Embossed_PFI).IsIndeterminate();
 
                 mediaTest.CanReadRecordablePFI = !_dev.ReadDiscStructure(out buffer,
-                                                                         out senseBuffer,
+                                                                         out _,
                                                                          MmcDiscStructureMediaType.Dvd,
                                                                          0,
                                                                          0,
@@ -1066,7 +1065,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Querying_DVD_ADIP).IsIndeterminate();
 
                 mediaTest.CanReadADIP = !_dev.ReadDiscStructure(out buffer,
-                                                                out senseBuffer,
+                                                                out _,
                                                                 MmcDiscStructureMediaType.Dvd,
                                                                 0,
                                                                 0,
@@ -1085,7 +1084,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Querying_DVD_DCB).IsIndeterminate();
 
                 mediaTest.CanReadDCB = !_dev.ReadDiscStructure(out buffer,
-                                                               out senseBuffer,
+                                                               out _,
                                                                MmcDiscStructureMediaType.Dvd,
                                                                0,
                                                                0,
@@ -1107,7 +1106,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Querying_HD_DVD_CMI).IsIndeterminate();
 
                 mediaTest.CanReadHDCMI = !_dev.ReadDiscStructure(out buffer,
-                                                                 out senseBuffer,
+                                                                 out _,
                                                                  MmcDiscStructureMediaType.Dvd,
                                                                  0,
                                                                  0,
@@ -1129,7 +1128,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Querying_DVD_Layer_Capacity).IsIndeterminate();
 
                 mediaTest.CanReadLayerCapacity = !_dev.ReadDiscStructure(out buffer,
-                                                                         out senseBuffer,
+                                                                         out _,
                                                                          MmcDiscStructureMediaType.Dvd,
                                                                          0,
                                                                          0,
@@ -1157,7 +1156,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Querying_BD_Disc_Information).IsIndeterminate();
 
                 mediaTest.CanReadDiscInformation = !_dev.ReadDiscStructure(out buffer,
-                                                                           out senseBuffer,
+                                                                           out _,
                                                                            MmcDiscStructureMediaType.Bd,
                                                                            0,
                                                                            0,
@@ -1176,7 +1175,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Querying_BD_PAC).IsIndeterminate();
 
                 mediaTest.CanReadPAC = !_dev.ReadDiscStructure(out buffer,
-                                                               out senseBuffer,
+                                                               out _,
                                                                MmcDiscStructureMediaType.Bd,
                                                                0,
                                                                0,
@@ -1198,7 +1197,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Trying_SCSI_READ_CD_scrambled).IsIndeterminate();
 
                 mediaTest.CanReadCdScrambled = !_dev.ReadCd(out buffer,
-                                                            out senseBuffer,
+                                                            out _,
                                                             16,
                                                             2352,
                                                             1,
@@ -1223,7 +1222,7 @@ public sealed partial class DeviceReport
             Spectre.ProgressSingleSpinner(ctx =>
             {
                 ctx.AddTask(Localization.Core.Trying_SCSI_READ_6).IsIndeterminate();
-                mediaTest.SupportsRead6 = !_dev.Read6(out buffer, out senseBuffer, 16, 512, _dev.Timeout, out _);
+                mediaTest.SupportsRead6 = !_dev.Read6(out buffer, out _, 16, 512, _dev.Timeout, out _);
             });
 
             AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.Sense_equals_0, !mediaTest.SupportsRead6);
@@ -1235,7 +1234,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Trying_SCSI_READ_10).IsIndeterminate();
 
                 mediaTest.SupportsRead10 = !_dev.Read10(out buffer,
-                                                        out senseBuffer,
+                                                        out _,
                                                         0,
                                                         false,
                                                         true,
@@ -1258,7 +1257,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Trying_SCSI_READ_12).IsIndeterminate();
 
                 mediaTest.SupportsRead12 = !_dev.Read12(out buffer,
-                                                        out senseBuffer,
+                                                        out _,
                                                         0,
                                                         false,
                                                         true,
@@ -1282,7 +1281,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Trying_SCSI_READ_16).IsIndeterminate();
 
                 mediaTest.SupportsRead16 = !_dev.Read16(out buffer,
-                                                        out senseBuffer,
+                                                        out _,
                                                         0,
                                                         false,
                                                         true,
@@ -1305,7 +1304,7 @@ public sealed partial class DeviceReport
             Spectre.ProgressSingleSpinner(ctx =>
             {
                 ctx.AddTask(Localization.Core.Trying_SCSI_READ_6).IsIndeterminate();
-                mediaTest.SupportsRead6 = !_dev.Read6(out buffer, out senseBuffer, 16, 2048, _dev.Timeout, out _);
+                mediaTest.SupportsRead6 = !_dev.Read6(out buffer, out _, 16, 2048, _dev.Timeout, out _);
             });
 
             AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.Sense_equals_0, !mediaTest.SupportsRead6);
@@ -1317,7 +1316,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Trying_SCSI_READ_10).IsIndeterminate();
 
                 mediaTest.SupportsRead10 = !_dev.Read10(out buffer,
-                                                        out senseBuffer,
+                                                        out _,
                                                         0,
                                                         false,
                                                         true,
@@ -1340,7 +1339,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Trying_SCSI_READ_12).IsIndeterminate();
 
                 mediaTest.SupportsRead12 = !_dev.Read12(out buffer,
-                                                        out senseBuffer,
+                                                        out _,
                                                         0,
                                                         false,
                                                         true,
@@ -1364,7 +1363,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Trying_SCSI_READ_16).IsIndeterminate();
 
                 mediaTest.SupportsRead16 = !_dev.Read16(out buffer,
-                                                        out senseBuffer,
+                                                        out _,
                                                         0,
                                                         false,
                                                         true,
@@ -1394,7 +1393,7 @@ public sealed partial class DeviceReport
                     ctx.AddTask(Localization.Core.Trying_SCSI_READ_CD).IsIndeterminate();
 
                     mediaTest.SupportsReadCd = !_dev.ReadCd(out buffer,
-                                                            out senseBuffer,
+                                                            out _,
                                                             16,
                                                             2352,
                                                             1,
@@ -1420,7 +1419,7 @@ public sealed partial class DeviceReport
                     ctx.AddTask(Localization.Core.Trying_SCSI_READ_CD_MSF).IsIndeterminate();
 
                     mediaTest.SupportsReadCdMsf = !_dev.ReadCdMsf(out buffer,
-                                                                  out senseBuffer,
+                                                                  out _,
                                                                   0x00000210,
                                                                   0x00000211,
                                                                   2352,
@@ -1447,7 +1446,7 @@ public sealed partial class DeviceReport
                     ctx.AddTask(Localization.Core.Trying_SCSI_READ_CD).IsIndeterminate();
 
                     mediaTest.SupportsReadCd = !_dev.ReadCd(out buffer,
-                                                            out senseBuffer,
+                                                            out _,
                                                             16,
                                                             2048,
                                                             1,
@@ -1473,7 +1472,7 @@ public sealed partial class DeviceReport
                     ctx.AddTask(Localization.Core.Trying_SCSI_READ_CD_MSF).IsIndeterminate();
 
                     mediaTest.SupportsReadCdMsf = !_dev.ReadCdMsf(out buffer,
-                                                                  out senseBuffer,
+                                                                  out _,
                                                                   0x00000210,
                                                                   0x00000211,
                                                                   2048,
@@ -1498,7 +1497,7 @@ public sealed partial class DeviceReport
                     ctx.AddTask(Localization.Core.Trying_SCSI_READ_CD_full_sector).IsIndeterminate();
 
                     mediaTest.SupportsReadCdRaw = !_dev.ReadCd(out buffer,
-                                                               out senseBuffer,
+                                                               out _,
                                                                16,
                                                                2352,
                                                                1,
@@ -1524,7 +1523,7 @@ public sealed partial class DeviceReport
                     ctx.AddTask(Localization.Core.Trying_SCSI_READ_CD_MSF_full_sector).IsIndeterminate();
 
                     mediaTest.SupportsReadCdMsfRaw = !_dev.ReadCdMsf(out buffer,
-                                                                     out senseBuffer,
+                                                                     out _,
                                                                      0x00000210,
                                                                      0x00000211,
                                                                      2352,
@@ -1557,7 +1556,7 @@ public sealed partial class DeviceReport
                         if(mediaType == "Audio CD")
                         {
                             sense = _dev.ReadCd(out buffer,
-                                                out senseBuffer,
+                                                out _,
                                                 (uint)i,
                                                 2352,
                                                 1,
@@ -1576,7 +1575,7 @@ public sealed partial class DeviceReport
                         else
                         {
                             sense = _dev.ReadCd(out buffer,
-                                                out senseBuffer,
+                                                out _,
                                                 (uint)i,
                                                 2352,
                                                 1,
@@ -1621,7 +1620,7 @@ public sealed partial class DeviceReport
                         if(mediaType == "Audio CD")
                         {
                             sense = _dev.ReadCd(out buffer,
-                                                out senseBuffer,
+                                                out _,
                                                 (uint)i,
                                                 2352,
                                                 1,
@@ -1640,7 +1639,7 @@ public sealed partial class DeviceReport
                         else
                         {
                             sense = _dev.ReadCd(out buffer,
-                                                out senseBuffer,
+                                                out _,
                                                 (uint)i,
                                                 2352,
                                                 1,
@@ -1678,7 +1677,7 @@ public sealed partial class DeviceReport
                     if(mediaType == "Audio CD")
                     {
                         mediaTest.CanReadLeadOut = !_dev.ReadCd(out buffer,
-                                                                out senseBuffer,
+                                                                out _,
                                                                 (uint)((mediaTest.Blocks ?? 0) + 1),
                                                                 2352,
                                                                 1,
@@ -1697,7 +1696,7 @@ public sealed partial class DeviceReport
                     else
                     {
                         mediaTest.CanReadLeadOut = !_dev.ReadCd(out buffer,
-                                                                out senseBuffer,
+                                                                out _,
                                                                 (uint)((mediaTest.Blocks ?? 0) + 1),
                                                                 2352,
                                                                 1,
@@ -1732,7 +1731,7 @@ public sealed partial class DeviceReport
                     else
                     {
                         mediaTest.CanReadC2Pointers = !_dev.ReadCd(out buffer,
-                                                                   out senseBuffer,
+                                                                   out _,
                                                                    11,
                                                                    2646,
                                                                    1,
@@ -1751,7 +1750,7 @@ public sealed partial class DeviceReport
                         if(!mediaTest.CanReadC2Pointers == true)
                         {
                             mediaTest.CanReadC2Pointers = !_dev.ReadCd(out buffer,
-                                                                       out senseBuffer,
+                                                                       out _,
                                                                        11,
                                                                        2648,
                                                                        1,
@@ -1781,7 +1780,7 @@ public sealed partial class DeviceReport
                     ctx.AddTask(Localization.Core.Trying_to_read_subchannels).IsIndeterminate();
 
                     mediaTest.CanReadPQSubchannel = !_dev.ReadCd(out buffer,
-                                                                 out senseBuffer,
+                                                                 out _,
                                                                  11,
                                                                  2368,
                                                                  1,
@@ -1804,7 +1803,7 @@ public sealed partial class DeviceReport
                     mediaTest.PQSubchannelData = buffer;
 
                     mediaTest.CanReadRWSubchannel = !_dev.ReadCd(out buffer,
-                                                                 out senseBuffer,
+                                                                 out _,
                                                                  11,
                                                                  2448,
                                                                  1,
@@ -1832,7 +1831,7 @@ public sealed partial class DeviceReport
                     else
                     {
                         mediaTest.CanReadCorrectedSubchannel = !_dev.ReadCd(out buffer,
-                                                                            out senseBuffer,
+                                                                            out _,
                                                                             11,
                                                                             2448,
                                                                             1,
@@ -1870,7 +1869,7 @@ public sealed partial class DeviceReport
                     else
                     {
                         mediaTest.CanReadPQSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                           out senseBuffer,
+                                                                           out _,
                                                                            11,
                                                                            2662,
                                                                            1,
@@ -1889,7 +1888,7 @@ public sealed partial class DeviceReport
                         if(mediaTest.CanReadPQSubchannelWithC2 == false)
                         {
                             mediaTest.CanReadPQSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                               out senseBuffer,
+                                                                               out _,
                                                                                11,
                                                                                2664,
                                                                                1,
@@ -1913,7 +1912,7 @@ public sealed partial class DeviceReport
                         mediaTest.PQSubchannelWithC2Data = buffer;
 
                         mediaTest.CanReadRWSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                           out senseBuffer,
+                                                                           out _,
                                                                            11,
                                                                            2712,
                                                                            1,
@@ -1932,7 +1931,7 @@ public sealed partial class DeviceReport
                         if(mediaTest.CanReadRWSubchannelWithC2 == false)
                         {
                             mediaTest.CanReadRWSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                               out senseBuffer,
+                                                                               out _,
                                                                                11,
                                                                                2714,
                                                                                1,
@@ -1956,7 +1955,7 @@ public sealed partial class DeviceReport
                         mediaTest.RWSubchannelWithC2Data = buffer;
 
                         mediaTest.CanReadCorrectedSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                         out senseBuffer,
+                                                                         out _,
                                                                          11,
                                                                          2712,
                                                                          1,
@@ -1975,7 +1974,7 @@ public sealed partial class DeviceReport
                         if(mediaTest.CanReadCorrectedSubchannelWithC2 == false)
                         {
                             mediaTest.CanReadCorrectedSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                             out senseBuffer,
+                                                                             out _,
                                                                              11,
                                                                              2714,
                                                                              1,
@@ -2012,7 +2011,7 @@ public sealed partial class DeviceReport
                     else
                     {
                         mediaTest.CanReadC2Pointers = !_dev.ReadCd(out buffer,
-                                                                   out senseBuffer,
+                                                                   out _,
                                                                    16,
                                                                    2646,
                                                                    1,
@@ -2031,7 +2030,7 @@ public sealed partial class DeviceReport
                         if(mediaTest.CanReadC2Pointers == false)
                         {
                             mediaTest.CanReadC2Pointers = !_dev.ReadCd(out buffer,
-                                                                       out senseBuffer,
+                                                                       out _,
                                                                        16,
                                                                        2648,
                                                                        1,
@@ -2061,7 +2060,7 @@ public sealed partial class DeviceReport
                     ctx.AddTask(Localization.Core.Trying_to_read_subchannels).IsIndeterminate();
 
                     mediaTest.CanReadPQSubchannel = !_dev.ReadCd(out buffer,
-                                                                 out senseBuffer,
+                                                                 out _,
                                                                  16,
                                                                  2368,
                                                                  1,
@@ -2084,7 +2083,7 @@ public sealed partial class DeviceReport
                     mediaTest.PQSubchannelData = buffer;
 
                     mediaTest.CanReadRWSubchannel = !_dev.ReadCd(out buffer,
-                                                                 out senseBuffer,
+                                                                 out _,
                                                                  16,
                                                                  2448,
                                                                  1,
@@ -2112,7 +2111,7 @@ public sealed partial class DeviceReport
                     else
                     {
                         mediaTest.CanReadCorrectedSubchannel = !_dev.ReadCd(out buffer,
-                                                                            out senseBuffer,
+                                                                            out _,
                                                                             16,
                                                                             2448,
                                                                             1,
@@ -2149,7 +2148,7 @@ public sealed partial class DeviceReport
                     else
                     {
                         mediaTest.CanReadPQSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                           out senseBuffer,
+                                                                           out _,
                                                                            16,
                                                                            2662,
                                                                            1,
@@ -2168,7 +2167,7 @@ public sealed partial class DeviceReport
                         if(mediaTest.CanReadPQSubchannelWithC2 == false)
                         {
                             mediaTest.CanReadPQSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                               out senseBuffer,
+                                                                               out _,
                                                                                16,
                                                                                2664,
                                                                                1,
@@ -2192,7 +2191,7 @@ public sealed partial class DeviceReport
                         mediaTest.PQSubchannelWithC2Data = buffer;
 
                         mediaTest.CanReadRWSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                           out senseBuffer,
+                                                                           out _,
                                                                            16,
                                                                            2712,
                                                                            1,
@@ -2211,7 +2210,7 @@ public sealed partial class DeviceReport
                         if(mediaTest.CanReadRWSubchannelWithC2 == false)
                         {
                             mediaTest.CanReadRWSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                               out senseBuffer,
+                                                                               out _,
                                                                                16,
                                                                                2714,
                                                                                1,
@@ -2235,7 +2234,7 @@ public sealed partial class DeviceReport
                         mediaTest.RWSubchannelWithC2Data = buffer;
 
                         mediaTest.CanReadCorrectedSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                         out senseBuffer,
+                                                                         out _,
                                                                          16,
                                                                          2712,
                                                                          1,
@@ -2259,7 +2258,7 @@ public sealed partial class DeviceReport
                             if(mediaTest.CanReadCorrectedSubchannelWithC2 == false)
                             {
                                 mediaTest.CanReadCorrectedSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                                 out senseBuffer,
+                                                                                 out _,
                                                                                  16,
                                                                                  2714,
                                                                                  1,
@@ -2296,7 +2295,7 @@ public sealed partial class DeviceReport
                         ctx.AddTask(Localization.Core.Trying_to_read_C2_Pointers).IsIndeterminate();
 
                         mediaTest.CanReadC2Pointers = !_dev.ReadCd(out buffer,
-                                                                   out senseBuffer,
+                                                                   out _,
                                                                    16,
                                                                    2342,
                                                                    1,
@@ -2315,7 +2314,7 @@ public sealed partial class DeviceReport
                         if(mediaTest.CanReadC2Pointers == false)
                         {
                             mediaTest.CanReadC2Pointers = !_dev.ReadCd(out buffer,
-                                                                       out senseBuffer,
+                                                                       out _,
                                                                        16,
                                                                        2344,
                                                                        1,
@@ -2343,7 +2342,7 @@ public sealed partial class DeviceReport
                     ctx.AddTask(Localization.Core.Trying_to_read_subchannels).IsIndeterminate();
 
                     mediaTest.CanReadPQSubchannel = !_dev.ReadCd(out buffer,
-                                                                 out senseBuffer,
+                                                                 out _,
                                                                  16,
                                                                  2064,
                                                                  1,
@@ -2366,7 +2365,7 @@ public sealed partial class DeviceReport
                     mediaTest.PQSubchannelData = buffer;
 
                     mediaTest.CanReadRWSubchannel = !_dev.ReadCd(out buffer,
-                                                                 out senseBuffer,
+                                                                 out _,
                                                                  16,
                                                                  2144,
                                                                  1,
@@ -2394,7 +2393,7 @@ public sealed partial class DeviceReport
                     else
                     {
                         mediaTest.CanReadCorrectedSubchannel = !_dev.ReadCd(out buffer,
-                                                                            out senseBuffer,
+                                                                            out _,
                                                                             16,
                                                                             2144,
                                                                             1,
@@ -2431,7 +2430,7 @@ public sealed partial class DeviceReport
                     else
                     {
                         mediaTest.CanReadPQSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                           out senseBuffer,
+                                                                           out _,
                                                                            16,
                                                                            2358,
                                                                            1,
@@ -2450,7 +2449,7 @@ public sealed partial class DeviceReport
                         if(mediaTest.CanReadPQSubchannelWithC2 == false)
                         {
                             mediaTest.CanReadPQSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                               out senseBuffer,
+                                                                               out _,
                                                                                16,
                                                                                2360,
                                                                                1,
@@ -2474,7 +2473,7 @@ public sealed partial class DeviceReport
                         mediaTest.PQSubchannelWithC2Data = buffer;
 
                         mediaTest.CanReadRWSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                           out senseBuffer,
+                                                                           out _,
                                                                            16,
                                                                            2438,
                                                                            1,
@@ -2493,7 +2492,7 @@ public sealed partial class DeviceReport
                         if(mediaTest.CanReadRWSubchannelWithC2 == false)
                         {
                             mediaTest.CanReadRWSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                               out senseBuffer,
+                                                                               out _,
                                                                                16,
                                                                                2440,
                                                                                1,
@@ -2517,7 +2516,7 @@ public sealed partial class DeviceReport
                         mediaTest.RWSubchannelWithC2Data = buffer;
 
                         mediaTest.CanReadCorrectedSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                         out senseBuffer,
+                                                                         out _,
                                                                          16,
                                                                          2438,
                                                                          1,
@@ -2536,7 +2535,7 @@ public sealed partial class DeviceReport
                         if(mediaTest.CanReadCorrectedSubchannelWithC2 == false)
                         {
                             mediaTest.CanReadCorrectedSubchannelWithC2 = !_dev.ReadCd(out buffer,
-                                                                             out senseBuffer,
+                                                                             out _,
                                                                              16,
                                                                              2440,
                                                                              1,
@@ -2570,7 +2569,7 @@ public sealed partial class DeviceReport
 
                     mediaTest.SupportsPlextorReadCDDA =
                         !_dev.PlextorReadCdDa(out buffer,
-                                              out senseBuffer,
+                                              out _,
                                               16,
                                               2352,
                                               1,
@@ -2594,7 +2593,7 @@ public sealed partial class DeviceReport
 
                     mediaTest.SupportsPioneerReadCDDA =
                         !_dev.PioneerReadCdDa(out buffer,
-                                              out senseBuffer,
+                                              out _,
                                               16,
                                               2352,
                                               1,
@@ -2615,7 +2614,7 @@ public sealed partial class DeviceReport
 
                     mediaTest.SupportsPioneerReadCDDAMSF =
                         !_dev.PioneerReadCdDaMsf(out buffer,
-                                                 out senseBuffer,
+                                                 out _,
                                                  0x00000210,
                                                  0x00000211,
                                                  2352,
@@ -2637,8 +2636,7 @@ public sealed partial class DeviceReport
                 {
                     ctx.AddTask(Localization.Core.Trying_NEC_READ_CD_DA).IsIndeterminate();
 
-                    mediaTest.SupportsNECReadCDDA =
-                        !_dev.NecReadCdDa(out buffer, out senseBuffer, 16, 1, _dev.Timeout, out _);
+                    mediaTest.SupportsNECReadCDDA = !_dev.NecReadCdDa(out buffer, out _, 16, 1, _dev.Timeout, out _);
                 });
 
                 AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.Sense_equals_0, !mediaTest.SupportsNECReadCDDA);
@@ -2648,16 +2646,19 @@ public sealed partial class DeviceReport
         }
 
         mediaTest.LongBlockSize = mediaTest.BlockSize;
+        byte[] senseBytes = [];
 
         Spectre.ProgressSingleSpinner(ctx =>
         {
+            ReadOnlySpan<byte> localSense;
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_10).IsIndeterminate();
-            sense = _dev.ReadLong10(out buffer, out senseBuffer, false, false, 16, 0xFFFF, _dev.Timeout, out _);
+            sense      = _dev.ReadLong10(out buffer, out localSense, false, false, 16, 0xFFFF, _dev.Timeout, out _);
+            senseBytes = localSense.ToArray();
         });
 
         if(sense && !_dev.Error)
         {
-            DecodedSense? decSense = Sense.Decode(senseBuffer);
+            DecodedSense? decSense = Sense.Decode(senseBytes);
 
             if(decSense is { SenseKey: SenseKeys.IllegalRequest, ASC: 0x24, ASCQ: 0x00 })
             {
@@ -2682,7 +2683,7 @@ public sealed partial class DeviceReport
         if(mediaTest.SupportsReadLong == true && mediaTest.LongBlockSize == mediaTest.BlockSize)
         {
             // DVDs
-            sense = _dev.ReadLong10(out buffer, out senseBuffer, false, false, 16, 37856, _dev.Timeout, out _);
+            sense = _dev.ReadLong10(out buffer, out _, false, false, 16, 37856, _dev.Timeout, out _);
 
             if(!sense && !_dev.Error)
             {
@@ -2699,7 +2700,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Trying_Plextor_trick_to_raw_read_DVDs).IsIndeterminate();
 
                 mediaTest.SupportsPlextorReadRawDVD =
-                    !_dev.PlextorReadRawDvd(out buffer, out senseBuffer, 16, 1, _dev.Timeout, out _);
+                    !_dev.PlextorReadRawDvd(out buffer, out _, 16, 1, _dev.Timeout, out _);
             });
 
             AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.Sense_equals_0, !mediaTest.SupportsPlextorReadRawDVD);
@@ -2717,7 +2718,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Trying_HL_DT_ST_aka_LG_trick_to_raw_read_DVDs).IsIndeterminate();
 
                 mediaTest.SupportsHLDTSTReadRawDVD =
-                    !_dev.HlDtStReadRawDvd(out buffer, out senseBuffer, 16, 1, _dev.Timeout, out _, 0xffff, false);
+                    !_dev.HlDtStReadRawDvd(out buffer, out _, 16, 1, _dev.Timeout, out _, 0xffff, false);
             });
 
             AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.Sense_equals_0, !mediaTest.SupportsHLDTSTReadRawDVD);
@@ -2735,7 +2736,7 @@ public sealed partial class DeviceReport
                 ctx.AddTask(Localization.Core.Trying_Lite_On_trick_to_raw_read_DVDs).IsIndeterminate();
 
                 mediaTest.SupportsLiteOnReadRawDVD =
-                    !_dev.LiteOnReadRawDvd(out buffer, out senseBuffer, 16, 1, _dev.Timeout, out _, 0xffff, false);
+                    !_dev.LiteOnReadRawDvd(out buffer, out _, 16, 1, _dev.Timeout, out _, 0xffff, false);
             });
 
             AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.Sense_equals_0, !mediaTest.SupportsLiteOnReadRawDVD);
@@ -2846,10 +2847,12 @@ public sealed partial class DeviceReport
 
                 if(!triedLba0) return;
 
-                mediaTest.CanReadF1_06 =
-                    !_dev.MediaTekReadDram(out buffer, out senseBuffer, 0, 0xB00, _dev.Timeout, out _);
+                ReadOnlySpan<byte> localSense;
 
-                mediaTest.ReadF1_06Data = mediaTest.CanReadF1_06 == true ? buffer : senseBuffer;
+                mediaTest.CanReadF1_06 =
+                    !_dev.MediaTekReadDram(out buffer, out localSense, 0, 0xB00, _dev.Timeout, out _);
+
+                mediaTest.ReadF1_06Data = mediaTest.CanReadF1_06 == true ? buffer : localSense.ToArray();
 
                 AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.Sense_equals_0, !mediaTest.CanReadF1_06);
             });
@@ -2990,10 +2993,12 @@ public sealed partial class DeviceReport
 
                 if(!triedLeadOut) return;
 
-                mediaTest.CanReadF1_06LeadOut =
-                    !_dev.MediaTekReadDram(out buffer, out senseBuffer, 0, 0xB00, _dev.Timeout, out _);
+                ReadOnlySpan<byte> localSense;
 
-                mediaTest.ReadF1_06LeadOutData = mediaTest.CanReadF1_06LeadOut == true ? buffer : senseBuffer;
+                mediaTest.CanReadF1_06LeadOut =
+                    !_dev.MediaTekReadDram(out buffer, out localSense, 0, 0xB00, _dev.Timeout, out _);
+
+                mediaTest.ReadF1_06LeadOutData = mediaTest.CanReadF1_06LeadOut == true ? buffer : localSense.ToArray();
 
                 // This means it has returned the same as previous read, so not really lead-out.
                 if(mediaTest.CanReadF1_06        == true &&
@@ -3001,7 +3006,7 @@ public sealed partial class DeviceReport
                    mediaTest.ReadF1_06Data.SequenceEqual(mediaTest.ReadF1_06LeadOutData))
                 {
                     mediaTest.CanReadF1_06LeadOut  = false;
-                    mediaTest.ReadF1_06LeadOutData = senseBuffer;
+                    mediaTest.ReadF1_06LeadOutData = localSense.ToArray();
                 }
 
                 AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.Sense_equals_0, !mediaTest.CanReadF1_06LeadOut);
@@ -3014,7 +3019,7 @@ public sealed partial class DeviceReport
             Spectre.ProgressSingleSpinner(ctx =>
             {
                 ctx.AddTask(Localization.Core.Querying_CD_Full_TOC).IsIndeterminate();
-                mediaTest.CanReadFullTOC = !_dev.ReadRawToc(out buffer, out senseBuffer, 1, _dev.Timeout, out _);
+                mediaTest.CanReadFullTOC = !_dev.ReadRawToc(out buffer, out _, 1, _dev.Timeout, out _);
             });
 
             AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.Sense_equals_0, !mediaTest.CanReadFullTOC);
@@ -3082,7 +3087,7 @@ public sealed partial class DeviceReport
                         ctx.AddTask(Localization.Core.Trying_SCSI_READ_CD_in_first_session_Lead_Out).IsIndeterminate();
 
                         mediaTest.CanReadingIntersessionLeadOut = !_dev.ReadCd(out buffer,
-                                                                               out senseBuffer,
+                                                                               out _,
                                                                                firstSessionLeadOutLba,
                                                                                2448,
                                                                                1,
@@ -3101,7 +3106,7 @@ public sealed partial class DeviceReport
                         if(mediaTest.CanReadingIntersessionLeadOut != false) return;
 
                         mediaTest.CanReadingIntersessionLeadOut = !_dev.ReadCd(out buffer,
-                                                                               out senseBuffer,
+                                                                               out _,
                                                                                firstSessionLeadOutLba,
                                                                                2368,
                                                                                1,
@@ -3120,7 +3125,7 @@ public sealed partial class DeviceReport
                         if(mediaTest.CanReadingIntersessionLeadOut == false)
                         {
                             mediaTest.CanReadingIntersessionLeadOut = !_dev.ReadCd(out buffer,
-                                                                          out senseBuffer,
+                                                                          out _,
                                                                           firstSessionLeadOutLba,
                                                                           2352,
                                                                           1,
@@ -3149,7 +3154,7 @@ public sealed partial class DeviceReport
                         ctx.AddTask(Localization.Core.Trying_SCSI_READ_CD_in_second_session_Lead_In).IsIndeterminate();
 
                         mediaTest.CanReadingIntersessionLeadIn = !_dev.ReadCd(out buffer,
-                                                                              out senseBuffer,
+                                                                              out _,
                                                                               secondSessionLeadInLba,
                                                                               2448,
                                                                               1,
@@ -3168,7 +3173,7 @@ public sealed partial class DeviceReport
                         if(mediaTest.CanReadingIntersessionLeadIn != false) return;
 
                         mediaTest.CanReadingIntersessionLeadIn = !_dev.ReadCd(out buffer,
-                                                                              out senseBuffer,
+                                                                              out _,
                                                                               secondSessionLeadInLba,
                                                                               2368,
                                                                               1,
@@ -3187,7 +3192,7 @@ public sealed partial class DeviceReport
                         if(mediaTest.CanReadingIntersessionLeadIn == false)
                         {
                             mediaTest.CanReadingIntersessionLeadIn = !_dev.ReadCd(out buffer,
-                                                                         out senseBuffer,
+                                                                         out _,
                                                                          secondSessionLeadInLba,
                                                                          2352,
                                                                          1,

@@ -510,15 +510,15 @@ public sealed partial class DeviceReport
     /// <returns>Media report</returns>
     public TestedMedia ReportScsiMedia()
     {
-        var    mediaTest   = new TestedMedia();
-        bool   sense       = true;
-        byte[] buffer      = [];
-        byte[] senseBuffer = [];
+        var                mediaTest   = new TestedMedia();
+        bool               sense       = true;
+        byte[]             buffer      = [];
+        ReadOnlySpan<byte> senseBuffer = [];
 
         Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(Localization.Core.Querying_SCSI_READ_CAPACITY).IsIndeterminate();
-            sense = _dev.ReadCapacity(out buffer, out senseBuffer, _dev.Timeout, out _);
+            sense = _dev.ReadCapacity(out buffer, out _, _dev.Timeout, out _);
         });
 
         if(!sense && !_dev.Error)
@@ -535,7 +535,7 @@ public sealed partial class DeviceReport
         Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(Localization.Core.Querying_SCSI_READ_CAPACITY_16).IsIndeterminate();
-            sense = _dev.ReadCapacity16(out buffer, out buffer, _dev.Timeout, out _);
+            sense = _dev.ReadCapacity16(out buffer, out _, _dev.Timeout, out _);
         });
 
         if(!sense && !_dev.Error)
@@ -555,7 +555,7 @@ public sealed partial class DeviceReport
             ctx.AddTask(Localization.Core.Querying_SCSI_MODE_SENSE_10).IsIndeterminate();
 
             sense = _dev.ModeSense10(out buffer,
-                                     out senseBuffer,
+                                     out _,
                                      false,
                                      true,
                                      ScsiModeSensePageControl.Current,
@@ -574,7 +574,7 @@ public sealed partial class DeviceReport
         Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(Localization.Core.Querying_SCSI_MODE_SENSE).IsIndeterminate();
-            sense = _dev.ModeSense(out buffer, out senseBuffer, _dev.Timeout, out _);
+            sense = _dev.ModeSense(out buffer, out _, _dev.Timeout, out _);
         });
 
         if(!sense && !_dev.Error)
@@ -597,7 +597,7 @@ public sealed partial class DeviceReport
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_6).IsIndeterminate();
 
             mediaTest.SupportsRead6 =
-                !_dev.Read6(out buffer, out senseBuffer, 0, mediaTest.BlockSize ?? 512, _dev.Timeout, out _);
+                !_dev.Read6(out buffer, out _, 0, mediaTest.BlockSize ?? 512, _dev.Timeout, out _);
         });
 
         AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.Sense_equals_0, !mediaTest.SupportsRead6);
@@ -608,7 +608,7 @@ public sealed partial class DeviceReport
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_10).IsIndeterminate();
 
             mediaTest.SupportsRead10 = !_dev.Read10(out buffer,
-                                                    out senseBuffer,
+                                                    out _,
                                                     0,
                                                     false,
                                                     false,
@@ -630,7 +630,7 @@ public sealed partial class DeviceReport
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_12).IsIndeterminate();
 
             mediaTest.SupportsRead12 = !_dev.Read12(out buffer,
-                                                    out senseBuffer,
+                                                    out _,
                                                     0,
                                                     false,
                                                     false,
@@ -653,7 +653,7 @@ public sealed partial class DeviceReport
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_16).IsIndeterminate();
 
             mediaTest.SupportsRead16 = !_dev.Read16(out buffer,
-                                                    out senseBuffer,
+                                                    out _,
                                                     0,
                                                     false,
                                                     false,
@@ -671,16 +671,19 @@ public sealed partial class DeviceReport
         mediaTest.Read16Data = buffer;
 
         mediaTest.LongBlockSize = mediaTest.BlockSize;
+        byte[] senseBytes = [];
 
         Spectre.ProgressSingleSpinner(ctx =>
         {
+            ReadOnlySpan<byte> localSense;
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_10).IsIndeterminate();
-            sense = _dev.ReadLong10(out buffer, out senseBuffer, false, false, 0, 0xFFFF, _dev.Timeout, out _);
+            sense      = _dev.ReadLong10(out buffer, out localSense, false, false, 0, 0xFFFF, _dev.Timeout, out _);
+            senseBytes = localSense.ToArray();
         });
 
         if(sense && !_dev.Error)
         {
-            DecodedSense? decSense = Sense.Decode(senseBuffer);
+            DecodedSense? decSense = Sense.Decode(senseBytes);
 
             if(decSense is { SenseKey: SenseKeys.IllegalRequest, ASC: 0x24, ASCQ: 0x00 })
             {
@@ -704,12 +707,13 @@ public sealed partial class DeviceReport
 
         Spectre.ProgressSingleSpinner(ctx =>
         {
+            ReadOnlySpan<byte> localSense;
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_16).IsIndeterminate();
-            sense = _dev.ReadLong16(out buffer, out senseBuffer, false, 0, 0xFFFF, _dev.Timeout, out _);
+            sense = _dev.ReadLong16(out buffer, out localSense, false, 0, 0xFFFF, _dev.Timeout, out _);
 
             if(sense && !_dev.Error)
             {
-                DecodedSense? decSense = Sense.Decode(senseBuffer);
+                DecodedSense? decSense = Sense.Decode(localSense);
 
                 if(decSense is { SenseKey: SenseKeys.IllegalRequest, ASC: 0x24, ASCQ: 0x00 })
                 {
@@ -753,14 +757,14 @@ public sealed partial class DeviceReport
                     {
                         sense = mediaTest.SupportsReadLong16 == true
                                     ? _dev.ReadLong16(out buffer,
-                                                      out senseBuffer,
+                                                      out localSense,
                                                       false,
                                                       0,
                                                       testSize,
                                                       _dev.Timeout,
                                                       out _)
                                     : _dev.ReadLong10(out buffer,
-                                                      out senseBuffer,
+                                                      out localSense,
                                                       false,
                                                       false,
                                                       0,
@@ -790,14 +794,14 @@ public sealed partial class DeviceReport
                     {
                         sense = mediaTest.SupportsReadLong16 == true
                                     ? _dev.ReadLong16(out buffer,
-                                                      out senseBuffer,
+                                                      out localSense,
                                                       false,
                                                       0,
                                                       testSize,
                                                       _dev.Timeout,
                                                       out _)
                                     : _dev.ReadLong10(out buffer,
-                                                      out senseBuffer,
+                                                      out localSense,
                                                       false,
                                                       false,
                                                       0,
@@ -817,9 +821,9 @@ public sealed partial class DeviceReport
                 case 2048:
                 {
                     sense = mediaTest.SupportsReadLong16 == true
-                                ? _dev.ReadLong16(out buffer, out senseBuffer, false, 0, 2380, _dev.Timeout, out _)
+                                ? _dev.ReadLong16(out buffer, out localSense, false, 0, 2380, _dev.Timeout, out _)
                                 : _dev.ReadLong10(out buffer,
-                                                  out senseBuffer,
+                                                  out localSense,
                                                   false,
                                                   false,
                                                   0,
@@ -834,9 +838,9 @@ public sealed partial class DeviceReport
                 case 4096:
                 {
                     sense = mediaTest.SupportsReadLong16 == true
-                                ? _dev.ReadLong16(out buffer, out senseBuffer, false, 0, 4760, _dev.Timeout, out _)
+                                ? _dev.ReadLong16(out buffer, out localSense, false, 0, 4760, _dev.Timeout, out _)
                                 : _dev.ReadLong10(out buffer,
-                                                  out senseBuffer,
+                                                  out localSense,
                                                   false,
                                                   false,
                                                   0,
@@ -851,9 +855,9 @@ public sealed partial class DeviceReport
                 case 8192:
                 {
                     sense = mediaTest.SupportsReadLong16 == true
-                                ? _dev.ReadLong16(out buffer, out senseBuffer, false, 0, 9424, _dev.Timeout, out _)
+                                ? _dev.ReadLong16(out buffer, out localSense, false, 0, 9424, _dev.Timeout, out _)
                                 : _dev.ReadLong10(out buffer,
-                                                  out senseBuffer,
+                                                  out localSense,
                                                   false,
                                                   false,
                                                   0,
@@ -872,8 +876,7 @@ public sealed partial class DeviceReport
         {
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_MEDIA_SERIAL_NUMBER).IsIndeterminate();
 
-            mediaTest.CanReadMediaSerial =
-                !_dev.ReadMediaSerialNumber(out buffer, out senseBuffer, _dev.Timeout, out _);
+            mediaTest.CanReadMediaSerial = !_dev.ReadMediaSerialNumber(out buffer, out _, _dev.Timeout, out _);
         });
 
         return mediaTest;
@@ -883,9 +886,9 @@ public sealed partial class DeviceReport
     /// <returns>Media report</returns>
     public TestedMedia ReportScsi()
     {
-        bool   sense       = true;
-        byte[] buffer      = [];
-        byte[] senseBuffer = [];
+        bool               sense       = true;
+        byte[]             buffer      = [];
+        ReadOnlySpan<byte> senseBuffer = [];
 
         var capabilities = new TestedMedia
         {
@@ -895,7 +898,7 @@ public sealed partial class DeviceReport
         Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(Localization.Core.Querying_SCSI_READ_CAPACITY).IsIndeterminate();
-            sense = _dev.ReadCapacity(out buffer, out senseBuffer, _dev.Timeout, out _);
+            sense = _dev.ReadCapacity(out buffer, out _, _dev.Timeout, out _);
         });
 
         if(!sense && !_dev.Error)
@@ -912,7 +915,7 @@ public sealed partial class DeviceReport
         Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(Localization.Core.Querying_SCSI_READ_CAPACITY_16).IsIndeterminate();
-            sense = _dev.ReadCapacity16(out buffer, out buffer, _dev.Timeout, out _);
+            sense = _dev.ReadCapacity16(out buffer, out _, _dev.Timeout, out _);
         });
 
         if(!sense && !_dev.Error)
@@ -932,7 +935,7 @@ public sealed partial class DeviceReport
             ctx.AddTask(Localization.Core.Querying_SCSI_MODE_SENSE_10).IsIndeterminate();
 
             sense = _dev.ModeSense10(out buffer,
-                                     out senseBuffer,
+                                     out _,
                                      false,
                                      true,
                                      ScsiModeSensePageControl.Current,
@@ -951,7 +954,7 @@ public sealed partial class DeviceReport
         Spectre.ProgressSingleSpinner(ctx =>
         {
             ctx.AddTask(Localization.Core.Querying_SCSI_MODE_SENSE).IsIndeterminate();
-            sense = _dev.ModeSense(out buffer, out senseBuffer, _dev.Timeout, out _);
+            sense = _dev.ModeSense(out buffer, out _, _dev.Timeout, out _);
         });
 
         if(!sense && !_dev.Error)
@@ -974,7 +977,7 @@ public sealed partial class DeviceReport
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_6).IsIndeterminate();
 
             capabilities.SupportsRead6 = !_dev.Read6(out buffer,
-                                                     out senseBuffer,
+                                                     out _,
                                                      0,
                                                      capabilities.BlockSize ?? 512,
                                                      _dev.Timeout,
@@ -989,7 +992,7 @@ public sealed partial class DeviceReport
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_10).IsIndeterminate();
 
             capabilities.SupportsRead10 = !_dev.Read10(out buffer,
-                                                       out senseBuffer,
+                                                       out _,
                                                        0,
                                                        false,
                                                        false,
@@ -1011,7 +1014,7 @@ public sealed partial class DeviceReport
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_12).IsIndeterminate();
 
             capabilities.SupportsRead12 = !_dev.Read12(out buffer,
-                                                       out senseBuffer,
+                                                       out _,
                                                        0,
                                                        false,
                                                        false,
@@ -1034,7 +1037,7 @@ public sealed partial class DeviceReport
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_16).IsIndeterminate();
 
             capabilities.SupportsRead16 = !_dev.Read16(out buffer,
-                                                       out senseBuffer,
+                                                       out _,
                                                        0,
                                                        false,
                                                        false,
@@ -1052,16 +1055,19 @@ public sealed partial class DeviceReport
         capabilities.Read16Data = buffer;
 
         capabilities.LongBlockSize = capabilities.BlockSize;
+        byte[] senseBytes = [];
 
         Spectre.ProgressSingleSpinner(ctx =>
         {
+            ReadOnlySpan<byte> localSense;
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_10).IsIndeterminate();
-            sense = _dev.ReadLong10(out buffer, out senseBuffer, false, false, 0, 0xFFFF, _dev.Timeout, out _);
+            sense      = _dev.ReadLong10(out buffer, out localSense, false, false, 0, 0xFFFF, _dev.Timeout, out _);
+            senseBytes = localSense.ToArray();
         });
 
         if(sense && !_dev.Error)
         {
-            DecodedSense? decSense = Sense.Decode(senseBuffer);
+            DecodedSense? decSense = Sense.Decode(senseBytes);
 
             if(decSense is { SenseKey: SenseKeys.IllegalRequest, ASC: 0x24, ASCQ: 0x00 })
             {
@@ -1085,14 +1091,16 @@ public sealed partial class DeviceReport
 
         Spectre.ProgressSingleSpinner(ctx =>
         {
+            ReadOnlySpan<byte> localSense;
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_16).IsIndeterminate();
-            sense = _dev.ReadLong16(out buffer, out senseBuffer, false, 0, 0xFFFF, _dev.Timeout, out _);
+            sense      = _dev.ReadLong16(out buffer, out localSense, false, 0, 0xFFFF, _dev.Timeout, out _);
+            senseBytes = localSense.ToArray();
         });
 
         if(sense && !_dev.Error)
         {
             capabilities.SupportsReadLong16 = true;
-            DecodedSense? decSense = Sense.Decode(senseBuffer);
+            DecodedSense? decSense = Sense.Decode(senseBytes);
 
             if(decSense is { SenseKey: SenseKeys.IllegalRequest, ASC: 0x24, ASCQ: 0x00 })
             {
@@ -1142,15 +1150,9 @@ public sealed partial class DeviceReport
                             })
                     {
                         sense = capabilities.SupportsReadLong16 == true
-                                    ? _dev.ReadLong16(out buffer,
-                                                      out senseBuffer,
-                                                      false,
-                                                      0,
-                                                      testSize,
-                                                      _dev.Timeout,
-                                                      out _)
+                                    ? _dev.ReadLong16(out buffer, out _, false, 0, testSize, _dev.Timeout, out _)
                                     : _dev.ReadLong10(out buffer,
-                                                      out senseBuffer,
+                                                      out _,
                                                       false,
                                                       false,
                                                       0,
@@ -1180,15 +1182,9 @@ public sealed partial class DeviceReport
                             })
                     {
                         sense = capabilities.SupportsReadLong16 == true
-                                    ? _dev.ReadLong16(out buffer,
-                                                      out senseBuffer,
-                                                      false,
-                                                      0,
-                                                      testSize,
-                                                      _dev.Timeout,
-                                                      out _)
+                                    ? _dev.ReadLong16(out buffer, out _, false, 0, testSize, _dev.Timeout, out _)
                                     : _dev.ReadLong10(out buffer,
-                                                      out senseBuffer,
+                                                      out _,
                                                       false,
                                                       false,
                                                       0,
@@ -1209,15 +1205,8 @@ public sealed partial class DeviceReport
                 case 2048:
                 {
                     sense = capabilities.SupportsReadLong16 == true
-                                ? _dev.ReadLong16(out buffer, out senseBuffer, false, 0, 2380, _dev.Timeout, out _)
-                                : _dev.ReadLong10(out buffer,
-                                                  out senseBuffer,
-                                                  false,
-                                                  false,
-                                                  0,
-                                                  2380,
-                                                  _dev.Timeout,
-                                                  out _);
+                                ? _dev.ReadLong16(out buffer, out _, false, 0, 2380, _dev.Timeout, out _)
+                                : _dev.ReadLong10(out buffer, out _, false, false, 0, 2380, _dev.Timeout, out _);
 
                     if(sense || _dev.Error) return;
 
@@ -1229,15 +1218,8 @@ public sealed partial class DeviceReport
                 case 4096:
                 {
                     sense = capabilities.SupportsReadLong16 == true
-                                ? _dev.ReadLong16(out buffer, out senseBuffer, false, 0, 4760, _dev.Timeout, out _)
-                                : _dev.ReadLong10(out buffer,
-                                                  out senseBuffer,
-                                                  false,
-                                                  false,
-                                                  0,
-                                                  4760,
-                                                  _dev.Timeout,
-                                                  out _);
+                                ? _dev.ReadLong16(out buffer, out _, false, 0, 4760, _dev.Timeout, out _)
+                                : _dev.ReadLong10(out buffer, out _, false, false, 0, 4760, _dev.Timeout, out _);
 
                     if(sense || _dev.Error) return;
 
@@ -1249,15 +1231,8 @@ public sealed partial class DeviceReport
                 case 8192:
                 {
                     sense = capabilities.SupportsReadLong16 == true
-                                ? _dev.ReadLong16(out buffer, out senseBuffer, false, 0, 9424, _dev.Timeout, out _)
-                                : _dev.ReadLong10(out buffer,
-                                                  out senseBuffer,
-                                                  false,
-                                                  false,
-                                                  0,
-                                                  9424,
-                                                  _dev.Timeout,
-                                                  out _);
+                                ? _dev.ReadLong16(out buffer, out _, false, 0, 9424, _dev.Timeout, out _)
+                                : _dev.ReadLong10(out buffer, out _, false, false, 0, 9424, _dev.Timeout, out _);
 
                     if(sense || _dev.Error) return;
 

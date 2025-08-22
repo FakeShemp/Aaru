@@ -59,16 +59,16 @@ public partial class Dump
     [SuppressMessage("ReSharper", "JoinDeclarationAndInitializer")]
     void DumpMs()
     {
-        const ushort sbcProfile    = 0x0001;
-        const uint   blockSize     = 512;
-        double       totalDuration = 0;
-        double       currentSpeed  = 0;
-        double       maxSpeed      = double.MinValue;
-        double       minSpeed      = double.MaxValue;
-        uint         blocksToRead  = 64;
-        MediaType    dskType;
-        bool         sense;
-        byte[]       senseBuf;
+        const ushort       sbcProfile    = 0x0001;
+        const uint         blockSize     = 512;
+        double             totalDuration = 0;
+        double             currentSpeed  = 0;
+        double             maxSpeed      = double.MinValue;
+        double             minSpeed      = double.MaxValue;
+        uint               blocksToRead  = 64;
+        MediaType          dskType;
+        bool               sense;
+        ReadOnlySpan<byte> senseBuf;
 
         if(_outputPlugin is not IWritableImage outputFormat)
         {

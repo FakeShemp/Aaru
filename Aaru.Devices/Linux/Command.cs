@@ -43,15 +43,15 @@ namespace Aaru.Devices.Linux;
 partial class Device
 {
     /// <inheritdoc />
-    public override unsafe int SendScsiCommand(Span<byte> cdb, ref byte[] buffer, out byte[] senseBuffer, uint timeout,
-                                               ScsiDirection direction, out double duration, out bool sense)
+    public override unsafe int SendScsiCommand(Span<byte> cdb, ref byte[] buffer, uint timeout, ScsiDirection direction,
+                                               out double duration, out bool sense)
     {
         // We need a timeout
         if(timeout == 0) timeout = Timeout > 0 ? Timeout : 15;
 
-        senseBuffer = null;
-        duration    = 0;
-        sense       = false;
+        duration = 0;
+        sense    = false;
+        SenseBuffer.Clear();
 
         if(buffer == null) return -1;
 
@@ -66,21 +66,18 @@ partial class Device
 
         var ioHdr = new SgIoHdrT();
 
-        senseBuffer = new byte[64];
-
         ioHdr.interface_id    = 'S';
         ioHdr.cmd_len         = (byte)cdb.Length;
-        ioHdr.mx_sb_len       = (byte)senseBuffer.Length;
+        ioHdr.mx_sb_len       = (byte)SenseBuffer.Length;
         ioHdr.dxfer_direction = dir;
         ioHdr.dxfer_len       = (uint)buffer.Length;
         ioHdr.dxferp          = Marshal.AllocHGlobal(buffer.Length);
         ioHdr.cmdp            = (IntPtr)CdbPtr;
-        ioHdr.sbp             = Marshal.AllocHGlobal(senseBuffer.Length);
+        ioHdr.sbp             = (IntPtr)SensePtr;
         ioHdr.timeout         = timeout * 1000;
         ioHdr.flags           = (uint)SgFlags.DirectIo;
 
-        Marshal.Copy(buffer,      0, ioHdr.dxferp, buffer.Length);
-        Marshal.Copy(senseBuffer, 0, ioHdr.sbp,    senseBuffer.Length);
+        Marshal.Copy(buffer, 0, ioHdr.dxferp, buffer.Length);
 
         var cmdStopWatch = new Stopwatch();
         cmdStopWatch.Start();
@@ -89,15 +86,13 @@ partial class Device
 
         if(error < 0) error = Marshal.GetLastWin32Error();
 
-        Marshal.Copy(ioHdr.dxferp, buffer,      0, buffer.Length);
-        Marshal.Copy(ioHdr.sbp,    senseBuffer, 0, senseBuffer.Length);
+        Marshal.Copy(ioHdr.dxferp, buffer, 0, buffer.Length);
 
         sense |= (ioHdr.info & SgInfo.OkMask) != SgInfo.Ok;
 
         duration = ioHdr.duration > 0 ? ioHdr.duration : cmdStopWatch.Elapsed.TotalMilliseconds;
 
         Marshal.FreeHGlobal(ioHdr.dxferp);
-        Marshal.FreeHGlobal(ioHdr.sbp);
 
         return error;
     }
@@ -165,22 +160,21 @@ partial class Device
 
         int error = SendScsiCommand(cdb,
                                     ref buffer,
-                                    out byte[] senseBuffer,
                                     timeout,
                                     AtaProtocolToScsiDirection(protocol),
                                     out duration,
                                     out sense);
 
-        if(senseBuffer.Length < 22 || senseBuffer[8] != 0x09 && senseBuffer[9] != 0x0C) return error;
+        if(SenseBuffer.Length < 22 || SenseBuffer[8] != 0x09 && SenseBuffer[9] != 0x0C) return error;
 
-        errorRegisters.Error = senseBuffer[11];
+        errorRegisters.Error = SenseBuffer[11];
 
-        errorRegisters.SectorCount  = senseBuffer[13];
-        errorRegisters.Sector       = senseBuffer[15];
-        errorRegisters.CylinderLow  = senseBuffer[17];
-        errorRegisters.CylinderHigh = senseBuffer[19];
-        errorRegisters.DeviceHead   = senseBuffer[20];
-        errorRegisters.Status       = senseBuffer[21];
+        errorRegisters.SectorCount  = SenseBuffer[13];
+        errorRegisters.Sector       = SenseBuffer[15];
+        errorRegisters.CylinderLow  = SenseBuffer[17];
+        errorRegisters.CylinderHigh = SenseBuffer[19];
+        errorRegisters.DeviceHead   = SenseBuffer[20];
+        errorRegisters.Status       = SenseBuffer[21];
 
         sense = errorRegisters.Error != 0 || (errorRegisters.Status & 0xA5) != 0;
 
@@ -230,22 +224,21 @@ partial class Device
 
         int error = SendScsiCommand(cdb,
                                     ref buffer,
-                                    out byte[] senseBuffer,
                                     timeout,
                                     AtaProtocolToScsiDirection(protocol),
                                     out duration,
                                     out sense);
 
-        if(senseBuffer.Length < 22 || senseBuffer[8] != 0x09 && senseBuffer[9] != 0x0C) return error;
+        if(SenseBuffer.Length < 22 || SenseBuffer[8] != 0x09 && SenseBuffer[9] != 0x0C) return error;
 
-        errorRegisters.Error = senseBuffer[11];
+        errorRegisters.Error = SenseBuffer[11];
 
-        errorRegisters.SectorCount = senseBuffer[13];
-        errorRegisters.LbaLow      = senseBuffer[15];
-        errorRegisters.LbaMid      = senseBuffer[17];
-        errorRegisters.LbaHigh     = senseBuffer[19];
-        errorRegisters.DeviceHead  = senseBuffer[20];
-        errorRegisters.Status      = senseBuffer[21];
+        errorRegisters.SectorCount = SenseBuffer[13];
+        errorRegisters.LbaLow      = SenseBuffer[15];
+        errorRegisters.LbaMid      = SenseBuffer[17];
+        errorRegisters.LbaHigh     = SenseBuffer[19];
+        errorRegisters.DeviceHead  = SenseBuffer[20];
+        errorRegisters.Status      = SenseBuffer[21];
 
         sense = errorRegisters.Error != 0 || (errorRegisters.Status & 0xA5) != 0;
 
@@ -301,25 +294,24 @@ partial class Device
 
         int error = SendScsiCommand(cdb,
                                     ref buffer,
-                                    out byte[] senseBuffer,
                                     timeout,
                                     AtaProtocolToScsiDirection(protocol),
                                     out duration,
                                     out sense);
 
-        if(senseBuffer.Length < 22 || senseBuffer[8] != 0x09 && senseBuffer[9] != 0x0C) return error;
+        if(SenseBuffer.Length < 22 || SenseBuffer[8] != 0x09 && SenseBuffer[9] != 0x0C) return error;
 
-        errorRegisters.Error = senseBuffer[11];
+        errorRegisters.Error = SenseBuffer[11];
 
-        errorRegisters.SectorCount     = (ushort)((senseBuffer[12] << 8) + senseBuffer[13]);
-        errorRegisters.LbaLowPrevious  = senseBuffer[14];
-        errorRegisters.LbaLowCurrent   = senseBuffer[15];
-        errorRegisters.LbaMidPrevious  = senseBuffer[16];
-        errorRegisters.LbaMidCurrent   = senseBuffer[17];
-        errorRegisters.LbaHighPrevious = senseBuffer[18];
-        errorRegisters.LbaHighCurrent  = senseBuffer[19];
-        errorRegisters.DeviceHead      = senseBuffer[20];
-        errorRegisters.Status          = senseBuffer[21];
+        errorRegisters.SectorCount     = (ushort)((SenseBuffer[12] << 8) + SenseBuffer[13]);
+        errorRegisters.LbaLowPrevious  = SenseBuffer[14];
+        errorRegisters.LbaLowCurrent   = SenseBuffer[15];
+        errorRegisters.LbaMidPrevious  = SenseBuffer[16];
+        errorRegisters.LbaMidCurrent   = SenseBuffer[17];
+        errorRegisters.LbaHighPrevious = SenseBuffer[18];
+        errorRegisters.LbaHighCurrent  = SenseBuffer[19];
+        errorRegisters.DeviceHead      = SenseBuffer[20];
+        errorRegisters.Status          = SenseBuffer[21];
 
         sense = errorRegisters.Error != 0 || (errorRegisters.Status & 0xA5) != 0;
 

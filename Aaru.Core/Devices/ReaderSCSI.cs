@@ -66,10 +66,10 @@ sealed partial class Reader
 
         if(Blocks == 0) return true;
 
-        byte[] senseBuf;
-        int    tries      = 0;
-        uint   lba        = 0;
-        bool   mediumScan = false;
+        ReadOnlySpan<byte> senseBuf;
+        int                tries      = 0;
+        uint               lba        = 0;
+        bool               mediumScan = false;
 
         if(_dev.ScsiType == PeripheralDeviceTypes.OpticalDevice)
         {
@@ -641,7 +641,7 @@ sealed partial class Reader
     {
         Blocks = 0;
 
-        bool sense = _dev.ReadCapacity(out byte[] cmdBuf, out byte[] senseBuf, _timeout, out _);
+        bool sense = _dev.ReadCapacity(out byte[] cmdBuf, out ReadOnlySpan<byte> senseBuf, _timeout, out _);
 
         if(!sense)
         {
@@ -774,8 +774,8 @@ sealed partial class Reader
     bool ScsiReadBlocks(out byte[] buffer, ulong block, uint count, out double duration, out bool recoveredError,
                         out bool   blankCheck)
     {
-        bool   sense;
-        byte[] senseBuf;
+        bool               sense;
+        ReadOnlySpan<byte> senseBuf;
         buffer         = null;
         duration       = 0;
         recoveredError = false;
@@ -913,7 +913,7 @@ sealed partial class Reader
                 return true;
         }
 
-        if(sense || _dev.Error) _errorLog?.WriteLine(block, _dev.Error, _dev.LastError, senseBuf);
+        if(sense || _dev.Error) _errorLog?.WriteLine(block, _dev.Error, _dev.LastError, senseBuf.ToArray());
 
         if(!sense && !_dev.Error) return false;
 
@@ -921,7 +921,7 @@ sealed partial class Reader
 
         blankCheck = Sense.Decode(senseBuf)?.SenseKey == SenseKeys.BlankCheck;
 
-        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.READ_error_0, Sense.PrettifySense(senseBuf));
+        AaruLogging.Debug(SCSI_MODULE_NAME, Localization.Core.READ_error_0, Sense.PrettifySense(senseBuf.ToArray()));
 
         return sense;
     }

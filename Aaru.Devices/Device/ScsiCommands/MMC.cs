@@ -48,7 +48,8 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool GetConfiguration(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool GetConfiguration(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout,
+                                 out double duration) =>
         GetConfiguration(out buffer, out senseBuffer, 0x0000, MmcGetConfigurationRt.All, timeout, out duration);
 
     /// <summary>Sends the MMC GET CONFIGURATION command for all Features starting with specified one</summary>
@@ -58,8 +59,8 @@ public partial class Device
     /// <param name="startingFeatureNumber">Feature number where the feature list should start from</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool GetConfiguration(out byte[] buffer, out byte[] senseBuffer, ushort startingFeatureNumber, uint timeout,
-                                 out double duration) =>
+    public bool GetConfiguration(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, ushort startingFeatureNumber,
+                                 uint       timeout, out double             duration) =>
         GetConfiguration(out buffer,
                          out senseBuffer,
                          startingFeatureNumber,
@@ -75,10 +76,10 @@ public partial class Device
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="startingFeatureNumber">Starting Feature number.</param>
     /// <param name="rt">Return type, <see cref="MmcGetConfigurationRt" />.</param>
-    public bool GetConfiguration(out byte[]            buffer, out byte[] senseBuffer, ushort     startingFeatureNumber,
-                                 MmcGetConfigurationRt rt,     uint       timeout,     out double duration)
+    public bool GetConfiguration(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, ushort startingFeatureNumber,
+                                 MmcGetConfigurationRt rt, uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
         buffer = new byte[8];
@@ -91,13 +92,7 @@ public partial class Device
         cdb[8] = (byte)(buffer.Length & 0xFF);
         cdb[9] = 0;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -107,15 +102,9 @@ public partial class Device
         buffer      = new byte[confLength];
         cdb[7]      = (byte)((buffer.Length & 0xFF00) >> 8);
         cdb[8]      = (byte)(buffer.Length & 0xFF);
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out sense);
 
         Error = LastError != 0;
 
@@ -142,11 +131,11 @@ public partial class Device
     /// <param name="format">Which disc structure are we requesting</param>
     /// <param name="agid">AGID used in medium copy protection</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadDiscStructure(out byte[] buffer,  out byte[] senseBuffer, MmcDiscStructureMediaType mediaType,
-                                  uint       address, byte       layerNumber, MmcDiscStructureFormat format, byte agid,
-                                  uint       timeout, out double duration)
+    public bool ReadDiscStructure(out byte[]                buffer,    out ReadOnlySpan<byte> senseBuffer,
+                                  MmcDiscStructureMediaType mediaType, uint address, byte layerNumber,
+                                  MmcDiscStructureFormat    format,    byte agid, uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
         buffer = new byte[8];
@@ -163,13 +152,7 @@ public partial class Device
         cdb[9]  = (byte)(buffer.Length & 0xFF);
         cdb[10] = (byte)((agid & 0x03) << 6);
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -195,15 +178,9 @@ public partial class Device
 
         cdb[8]      = (byte)((buffer.Length & 0xFF00) >> 8);
         cdb[9]      = (byte)(buffer.Length & 0xFF);
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out sense);
 
         Error = LastError != 0;
 
@@ -229,7 +206,8 @@ public partial class Device
     /// <param name="track">Start TOC from this track</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadToc(out byte[] buffer, out byte[] senseBuffer, byte track, uint timeout, out double duration) =>
+    public bool ReadToc(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, byte track, uint timeout,
+                        out double duration) =>
         ReadTocPmaAtip(out buffer, out senseBuffer, true, 0, track, timeout, out duration);
 
     /// <summary>Sends the MMC READ TOC/PMA/ATIP command to get formatted TOC from disc</summary>
@@ -240,7 +218,7 @@ public partial class Device
     /// <param name="track">Start TOC from this track</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadToc(out byte[] buffer, out byte[] senseBuffer, bool msf, byte track, uint timeout,
+    public bool ReadToc(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, bool msf, byte track, uint timeout,
                         out double duration) =>
         ReadTocPmaAtip(out buffer, out senseBuffer, msf, 0, track, timeout, out duration);
 
@@ -250,7 +228,8 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadSessionInfo(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool ReadSessionInfo(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout,
+                                out double duration) =>
         ReadTocPmaAtip(out buffer, out senseBuffer, true, 1, 0, timeout, out duration);
 
     /// <summary>Sends the MMC READ TOC/PMA/ATIP command to get multi-session information</summary>
@@ -260,7 +239,7 @@ public partial class Device
     /// <param name="msf">If <c>true</c>, request data in MM:SS:FF units, otherwise, in blocks</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadSessionInfo(out byte[] buffer, out byte[] senseBuffer, bool msf, uint timeout,
+    public bool ReadSessionInfo(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, bool msf, uint timeout,
                                 out double duration) =>
         ReadTocPmaAtip(out buffer, out senseBuffer, msf, 1, 0, timeout, out duration);
 
@@ -271,7 +250,7 @@ public partial class Device
     /// <param name="sessionNumber">Session which TOC to get</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadRawToc(out byte[] buffer, out byte[] senseBuffer, byte sessionNumber, uint timeout,
+    public bool ReadRawToc(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, byte sessionNumber, uint timeout,
                            out double duration) =>
         ReadTocPmaAtip(out buffer, out senseBuffer, true, 2, sessionNumber, timeout, out duration);
 
@@ -281,7 +260,7 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadPma(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool ReadPma(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         ReadTocPmaAtip(out buffer, out senseBuffer, true, 3, 0, timeout, out duration);
 
     /// <summary>Sends the MMC READ TOC/PMA/ATIP command to get ATIP</summary>
@@ -290,7 +269,7 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadAtip(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool ReadAtip(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         ReadTocPmaAtip(out buffer, out senseBuffer, true, 4, 0, timeout, out duration);
 
     /// <summary>Sends the MMC READ TOC/PMA/ATIP command to get Lead-In CD-TEXT</summary>
@@ -299,7 +278,7 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadCdText(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool ReadCdText(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         ReadTocPmaAtip(out buffer, out senseBuffer, true, 5, 0, timeout, out duration);
 
     /// <summary>Sends the MMC READ TOC/PMA/ATIP command</summary>
@@ -311,10 +290,10 @@ public partial class Device
     /// <param name="trackSessionNumber">Track/Session number</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadTocPmaAtip(out byte[] buffer,             out byte[] senseBuffer, bool       msf, byte format,
-                               byte       trackSessionNumber, uint       timeout,     out double duration)
+    public bool ReadTocPmaAtip(out byte[] buffer,             out ReadOnlySpan<byte> senseBuffer, bool msf, byte format,
+                               byte       trackSessionNumber, uint                   timeout,     out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
 
@@ -329,13 +308,7 @@ public partial class Device
         cdb[7] = (byte)((tmpBuffer.Length & 0xFF00) >> 8);
         cdb[8] = (byte)(tmpBuffer.Length & 0xFF);
 
-        LastError = SendScsiCommand(cdb,
-                                    ref tmpBuffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref tmpBuffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -361,13 +334,7 @@ public partial class Device
 
         double tmpDuration = duration;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out sense);
 
         Error = LastError != 0;
 
@@ -392,7 +359,8 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadDiscInformation(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool ReadDiscInformation(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout,
+                                    out double duration) =>
         ReadDiscInformation(out buffer,
                             out senseBuffer,
                             MmcDiscInformationDataTypes.DiscInformation,
@@ -406,10 +374,10 @@ public partial class Device
     /// <param name="dataType">Which disc information to read</param>
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
-    public bool ReadDiscInformation(out byte[] buffer,  out byte[] senseBuffer, MmcDiscInformationDataTypes dataType,
-                                    uint       timeout, out double duration)
+    public bool ReadDiscInformation(out byte[]                  buffer,   out ReadOnlySpan<byte> senseBuffer,
+                                    MmcDiscInformationDataTypes dataType, uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
         byte[] tmpBuffer = new byte[804];
@@ -419,13 +387,7 @@ public partial class Device
         cdb[7] = (byte)((tmpBuffer.Length & 0xFF00) >> 8);
         cdb[8] = (byte)(tmpBuffer.Length & 0xFF);
 
-        LastError = SendScsiCommand(cdb,
-                                    ref tmpBuffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref tmpBuffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -464,12 +426,12 @@ public partial class Device
     /// <param name="edcEcc">If set to <c>true</c> we request the EDC/ECC fields for data sectors.</param>
     /// <param name="c2Error">C2 error options.</param>
     /// <param name="subchannel">Subchannel selection.</param>
-    public bool ReadCd(out byte[] buffer, out byte[] senseBuffer, uint lba, uint blockSize, uint transferLength,
-                       MmcSectorTypes expectedSectorType, bool dap, bool relAddr, bool sync, MmcHeaderCodes headerCodes,
-                       bool userData, bool edcEcc, MmcErrorField c2Error, MmcSubchannel subchannel, uint timeout,
-                       out double duration)
+    public bool ReadCd(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint lba, uint blockSize,
+                       uint transferLength, MmcSectorTypes expectedSectorType, bool dap, bool relAddr, bool sync,
+                       MmcHeaderCodes headerCodes, bool userData, bool edcEcc, MmcErrorField c2Error,
+                       MmcSubchannel subchannel, uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
 
@@ -500,13 +462,7 @@ public partial class Device
 
         buffer = new byte[blockSize * transferLength];
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -549,12 +505,12 @@ public partial class Device
     /// <param name="edcEcc">If set to <c>true</c> we request the EDC/ECC fields for data sectors.</param>
     /// <param name="c2Error">C2 error options.</param>
     /// <param name="subchannel">Subchannel selection.</param>
-    public bool ReadCdMsf(out byte[] buffer, out byte[] senseBuffer, uint startMsf, uint endMsf, uint blockSize,
-                          MmcSectorTypes expectedSectorType, bool dap, bool sync, MmcHeaderCodes headerCodes,
-                          bool userData, bool edcEcc, MmcErrorField c2Error, MmcSubchannel subchannel, uint timeout,
-                          out double duration)
+    public bool ReadCdMsf(out byte[]     buffer,      out ReadOnlySpan<byte> senseBuffer, uint startMsf, uint endMsf,
+                          uint           blockSize,   MmcSectorTypes expectedSectorType, bool dap, bool sync,
+                          MmcHeaderCodes headerCodes, bool userData, bool edcEcc, MmcErrorField c2Error,
+                          MmcSubchannel  subchannel,  uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
 
@@ -584,13 +540,7 @@ public partial class Device
 
         buffer = new byte[blockSize * transferLength];
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -620,7 +570,7 @@ public partial class Device
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
-    public bool PreventMediumRemoval(out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool PreventMediumRemoval(out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         PreventAllowMediumRemoval(out senseBuffer, false, true, timeout, out duration);
 
     /// <summary>Allows ejection of the media inserted in the drive</summary>
@@ -628,7 +578,7 @@ public partial class Device
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
-    public bool AllowMediumRemoval(out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool AllowMediumRemoval(out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         PreventAllowMediumRemoval(out senseBuffer, false, false, timeout, out duration);
 
     /// <summary>Prevents or allows ejection of the media inserted in the drive</summary>
@@ -638,10 +588,10 @@ public partial class Device
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
-    public bool PreventAllowMediumRemoval(out byte[] senseBuffer, bool persistent, bool prevent, uint timeout,
-                                          out double duration)
+    public bool PreventAllowMediumRemoval(out ReadOnlySpan<byte> senseBuffer, bool       persistent, bool prevent,
+                                          uint                   timeout,     out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..6];
         cdb.Clear();
         byte[] buffer = [];
@@ -652,13 +602,7 @@ public partial class Device
 
         if(persistent) cdb[4] += 0x02;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.None,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -679,7 +623,7 @@ public partial class Device
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
-    public bool LoadTray(out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool LoadTray(out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         StartStopUnit(out senseBuffer, false, 0, 0, false, true, true, timeout, out duration);
 
     /// <summary>Ejects the media or its tray</summary>
@@ -687,7 +631,7 @@ public partial class Device
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
-    public bool EjectTray(out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool EjectTray(out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         StartStopUnit(out senseBuffer, false, 0, 0, false, true, false, timeout, out duration);
 
     /// <summary>Starts the drive's reading mechanism</summary>
@@ -695,7 +639,7 @@ public partial class Device
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
-    public bool StartUnit(out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool StartUnit(out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         StartStopUnit(out senseBuffer, false, 0, 0, false, false, true, timeout, out duration);
 
     /// <summary>Stops the drive's reading mechanism</summary>
@@ -703,7 +647,7 @@ public partial class Device
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
-    public bool StopUnit(out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool StopUnit(out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         StartStopUnit(out senseBuffer, false, 0, 0, false, false, false, timeout, out duration);
 
     /// <summary>Starts or stops the drive's reading mechanism or tray</summary>
@@ -717,10 +661,11 @@ public partial class Device
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
-    public bool StartStopUnit(out byte[] senseBuffer, bool immediate, byte formatLayer, byte powerConditions,
-                              bool changeFormatLayer, bool loadEject, bool start, uint timeout, out double duration)
+    public bool StartStopUnit(out ReadOnlySpan<byte> senseBuffer, bool immediate, byte formatLayer,
+                              byte powerConditions, bool changeFormatLayer, bool loadEject, bool start, uint timeout,
+                              out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..6];
         cdb.Clear();
         byte[] buffer = [];
@@ -743,13 +688,7 @@ public partial class Device
 
         cdb[4] += (byte)((powerConditions & 0x0F) << 4);
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.None,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -777,9 +716,10 @@ public partial class Device
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
     [SuppressMessage("ReSharper", "ShiftExpressionZeroLeftOperand")]
-    public bool ReadMcn(out string mcn, out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration)
+    public bool ReadMcn(out string mcn, out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout,
+                        out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
         mcn = null;
@@ -793,13 +733,7 @@ public partial class Device
 
         buffer = new byte[23];
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -823,10 +757,10 @@ public partial class Device
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
     [SuppressMessage("ReSharper", "ShiftExpressionZeroLeftOperand")]
-    public bool ReadIsrc(byte trackNumber, out string isrc, out byte[] buffer, out byte[] senseBuffer, uint timeout,
-                         out double duration)
+    public bool ReadIsrc(byte trackNumber, out string isrc, out byte[] buffer, out ReadOnlySpan<byte> senseBuffer,
+                         uint timeout,     out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
         isrc = null;
@@ -841,13 +775,7 @@ public partial class Device
 
         buffer = new byte[23];
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -871,10 +799,10 @@ public partial class Device
     /// <param name="timeout">Timeout in seconds.</param>
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
-    public bool SetCdSpeed(out byte[] senseBuffer, RotationalControl rotationalControl, ushort     readSpeed,
-                           ushort     writeSpeed,  uint              timeout,           out double duration)
+    public bool SetCdSpeed(out ReadOnlySpan<byte> senseBuffer, RotationalControl rotationalControl, ushort readSpeed,
+                           ushort                 writeSpeed,  uint              timeout,           out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
         byte[] buffer = [];
@@ -886,13 +814,7 @@ public partial class Device
         cdb[4] = (byte)((writeSpeed & 0xFF00) >> 8);
         cdb[5] = (byte)(writeSpeed & 0xFF);
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.None,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -918,10 +840,10 @@ public partial class Device
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="open">Report information of non-closed tracks</param>
     /// <param name="type">Type of information to retrieve</param>
-    public bool ReadTrackInformation(out byte[] buffer,  out byte[] senseBuffer, bool open, TrackInformationType type,
-                                     uint       address, uint       timeout,     out double duration)
+    public bool ReadTrackInformation(out byte[]           buffer, out ReadOnlySpan<byte> senseBuffer, bool open,
+                                     TrackInformationType type,   uint address, uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
         buffer = new byte[48];
@@ -937,13 +859,7 @@ public partial class Device
 
         if(open) cdb[1] += 4;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 

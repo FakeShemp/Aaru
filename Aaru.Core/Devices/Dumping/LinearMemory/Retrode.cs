@@ -192,12 +192,12 @@ public partial class Dump
                                                   ? MediaType.MegaDriveCartridge
                                                   : MediaType.SNESGamePak;
 
-        uint   blocksToRead  = 64;
-        double totalDuration = 0;
-        double currentSpeed  = 0;
-        double maxSpeed      = double.MinValue;
-        double minSpeed      = double.MaxValue;
-        byte[] senseBuf;
+        uint               blocksToRead  = 64;
+        double             totalDuration = 0;
+        double             currentSpeed  = 0;
+        double             maxSpeed      = double.MinValue;
+        double             minSpeed      = double.MaxValue;
+        ReadOnlySpan<byte> senseBuf;
 
         if(_outputPlugin is not IByteAddressableImage outputBai || !outputBai.SupportedMediaTypes.Contains(mediaType))
         {
@@ -232,7 +232,8 @@ public partial class Dump
         uint romSectors   = romSize / 512;
         uint romRemaining = romSize % 512;
 
-        UpdateStatus?.Invoke(string.Format(Localization.Core.Cartridge_has_0_bytes_1, romSize,
+        UpdateStatus?.Invoke(string.Format(Localization.Core.Cartridge_has_0_bytes_1,
+                                           romSize,
                                            ByteSize.FromBytes(romSize).ToString("0.000")));
 
         UpdateStatus?.Invoke(string.Format(Localization.Core.Media_identified_as_0, mediaType));

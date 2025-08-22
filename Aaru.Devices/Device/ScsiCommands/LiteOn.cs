@@ -50,8 +50,8 @@ public partial class Device
     /// <param name="transferLength">How many blocks to read.</param>
     /// <param name="layerbreak">The address in which the layerbreak occur</param>
     /// <param name="otp">Set to <c>true</c> if disk is Opposite Track Path (OTP)</param>
-    public bool LiteOnReadRawDvd(out byte[] buffer, out byte[] senseBuffer, uint lba, uint transferLength, uint timeout,
-                                 out double duration, uint layerbreak, bool otp)
+    public bool LiteOnReadRawDvd(out byte[] buffer,  out ReadOnlySpan<byte> senseBuffer, uint lba, uint transferLength,
+                                 uint       timeout, out double             duration,    uint layerbreak, bool otp)
     {
         _bufferOffset %= 714;
 
@@ -61,7 +61,7 @@ public partial class Device
         {
             buffer      = new byte[transferLength * 2064];
             duration    = 0;
-            senseBuffer = new byte[64];
+            senseBuffer = SenseBuffer;
 
             return true;
         }
@@ -107,14 +107,14 @@ public partial class Device
     /// <param name="duration">Duration in milliseconds it took for the device to execute the command.</param>
     /// <param name="lba">Start block address.</param>
     /// <returns><c>true</c> if the command failed and <paramref name="senseBuffer" /> contains the sense buffer.</returns>
-    private bool LiteOnReadBuffer(out byte[] buffer,  out byte[] senseBuffer, uint bufferOffset, uint transferLength,
-                                  uint       timeout, out double duration,    uint lba)
+    private bool LiteOnReadBuffer(out byte[] buffer,         out ReadOnlySpan<byte> senseBuffer, uint bufferOffset,
+                                  uint       transferLength, uint timeout, out double duration, uint lba)
     {
         // We need to fill the buffer before reading it with the ReadBuffer command. We don't care about sense,
         // because the data can be wrong anyway, so we check the buffer data later instead.
         Read12(out _, out _, 0, false, false, false, false, lba, 2048, 0, 16, false, timeout, out duration);
 
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
 
@@ -130,13 +130,7 @@ public partial class Device
         cdb[7] = (byte)((buffer.Length & 0xFF00)   >> 8);
         cdb[8] = (byte)(buffer.Length & 0xFF);
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         return sense;
     }
@@ -153,8 +147,9 @@ public partial class Device
     /// <param name="transferLength">How many blocks to read.</param>
     /// <param name="layerbreak">The address in which the layerbreak occur</param>
     /// <param name="otp">Set to <c>true</c> if disk is Opposite Track Path (OTP)</param>
-    private bool LiteOnReadSectorsFromBuffer(out byte[] buffer,  out byte[] senseBuffer, uint lba, uint transferLength,
-                                             uint       timeout, out double duration,    uint layerbreak, bool otp)
+    private bool LiteOnReadSectorsFromBuffer(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint lba,
+                                             uint transferLength, uint timeout, out double duration, uint layerbreak,
+                                             bool otp)
     {
         bool sense = LiteOnReadBuffer(out buffer,
                                       out senseBuffer,
@@ -210,15 +205,15 @@ public partial class Device
     /// <param name="transferLength">How many blocks to read.</param>
     /// <param name="layerbreak">The address in which the layerbreak occur</param>
     /// <param name="otp">Set to <c>true</c> if disk is Opposite Track Path (OTP)</param>
-    private bool LiteOnReadSectorsAcrossBufferBorder(out byte[] buffer,         out byte[] senseBuffer, uint lba,
-                                                     uint       transferLength, uint       timeout, out double duration,
-                                                     uint       layerbreak,     bool       otp)
+    private bool LiteOnReadSectorsAcrossBufferBorder(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint lba,
+                                                     uint       transferLength, uint timeout, out double duration,
+                                                     uint       layerbreak, bool otp)
     {
         uint newTransferLength1 = 714            - _bufferOffset;
         uint newTransferLength2 = transferLength - newTransferLength1;
 
         bool sense1 = LiteOnReadBuffer(out byte[] buffer1,
-                                       out byte[] _,
+                                       out _,
                                        _bufferOffset      * 2384,
                                        newTransferLength1 * 2384,
                                        timeout,
@@ -226,14 +221,14 @@ public partial class Device
                                        lba);
 
         bool sense2 = LiteOnReadBuffer(out byte[] buffer2,
-                                       out byte[] _,
+                                       out _,
                                        0,
                                        newTransferLength2 * 2384,
                                        timeout,
                                        out double duration2,
                                        lba);
 
-        senseBuffer = new byte[64]; // TODO
+        senseBuffer = SenseBuffer; // TODO
 
         buffer = new byte[2384 * transferLength];
         Array.Copy(buffer1, buffer, buffer1.Length);
@@ -267,7 +262,7 @@ public partial class Device
     {
         for(uint i = 0; i < 714; i++)
         {
-            LiteOnReadBuffer(out byte[] buffer, out byte[] _, i * 2384, 2384, timeout, out double _, lba);
+            LiteOnReadBuffer(out byte[] buffer, out _, i * 2384, 2384, timeout, out double _, lba);
 
             if(CheckSectorNumber(buffer, lba, 1, layerbreak, otp)) return (int)i;
         }

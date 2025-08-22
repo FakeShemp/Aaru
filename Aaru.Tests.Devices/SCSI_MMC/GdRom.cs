@@ -13,9 +13,9 @@ static partial class ScsiMmc
 {
     static void CheckGdromReadability(string devPath, Device dev)
     {
-        bool   tocIsNotBcd = false;
-        bool   sense;
-        byte[] senseBuffer;
+        bool               tocIsNotBcd = false;
+        bool               sense;
+        ReadOnlySpan<byte> senseBuffer;
 
     start:
         Console.Clear();
@@ -54,7 +54,7 @@ static partial class ScsiMmc
         if(sense)
         {
             AaruLogging.WriteLine(Localization.READ_FULL_TOC_failed);
-            AaruLogging.WriteLine("{0}", Sense.PrettifySense(senseBuffer));
+            AaruLogging.WriteLine("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
             AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
             Console.ReadLine();
 
@@ -159,7 +159,7 @@ static partial class ScsiMmc
         if(sense)
         {
             AaruLogging.WriteLine(Localization.READ_FULL_TOC_failed);
-            AaruLogging.WriteLine("{0}", Sense.PrettifySense(senseBuffer));
+            AaruLogging.WriteLine("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
             AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
             Console.ReadLine();
 
@@ -209,7 +209,7 @@ static partial class ScsiMmc
         AaruLogging.Write(Localization.Reading_LBA_zero);
 
         bool lba0Result = dev.ReadCd(out byte[] lba0Buffer,
-                                     out byte[] lba0Sense,
+                                     out ReadOnlySpan<byte> lba0Sense,
                                      0,
                                      2352,
                                      1,
@@ -230,7 +230,7 @@ static partial class ScsiMmc
         AaruLogging.Write(Localization.Reading_LBA_zero_as_audio_scrambled);
 
         bool lba0ScrambledResult = dev.ReadCd(out byte[] lba0ScrambledBuffer,
-                                              out byte[] lba0ScrambledSense,
+                                              out ReadOnlySpan<byte> lba0ScrambledSense,
                                               0,
                                               2352,
                                               1,
@@ -251,7 +251,7 @@ static partial class ScsiMmc
         AaruLogging.Write(Localization.Reading_LBA_100000);
 
         bool lba100000Result = dev.ReadCd(out byte[] lba100000Buffer,
-                                          out byte[] lba100000Sense,
+                                          out ReadOnlySpan<byte> lba100000Sense,
                                           100000,
                                           2352,
                                           1,
@@ -272,7 +272,7 @@ static partial class ScsiMmc
         AaruLogging.Write(Localization.Reading_LBA_50000);
 
         bool lba50000Result = dev.ReadCd(out byte[] lba50000Buffer,
-                                         out byte[] lba50000Sense,
+                                         out ReadOnlySpan<byte> lba50000Sense,
                                          50000,
                                          2352,
                                          1,
@@ -293,7 +293,7 @@ static partial class ScsiMmc
         AaruLogging.Write(Localization.Reading_LBA_450000);
 
         bool lba450000Result = dev.ReadCd(out byte[] lba450000Buffer,
-                                          out byte[] lba450000Sense,
+                                          out ReadOnlySpan<byte> lba450000Sense,
                                           450000,
                                           2352,
                                           1,
@@ -314,7 +314,7 @@ static partial class ScsiMmc
         AaruLogging.Write(Localization.Reading_LBA_400000);
 
         bool lba400000Result = dev.ReadCd(out byte[] lba400000Buffer,
-                                          out byte[] lba400000Sense,
+                                          out ReadOnlySpan<byte> lba400000Sense,
                                           400000,
                                           2352,
                                           1,
@@ -335,7 +335,7 @@ static partial class ScsiMmc
         AaruLogging.Write(Localization.Reading_LBA_45000);
 
         bool lba45000Result = dev.ReadCd(out byte[] lba45000Buffer,
-                                         out byte[] lba45000Sense,
+                                         out ReadOnlySpan<byte> lba45000Sense,
                                          45000,
                                          2352,
                                          1,
@@ -356,7 +356,7 @@ static partial class ScsiMmc
         AaruLogging.Write(Localization.Reading_LBA_44990);
 
         bool lba44990Result = dev.ReadCd(out byte[] lba44990Buffer,
-                                         out byte[] lba44990Sense,
+                                         out ReadOnlySpan<byte> lba44990Sense,
                                          44990,
                                          2352,
                                          1,
@@ -389,11 +389,7 @@ static partial class ScsiMmc
                                   : ArrayHelpers.ArrayIsNullOrEmpty(lba0Buffer)
                                       ? Localization.empty
                                       : string.Format(Localization._0_bytes, lba0Buffer.Length),
-                              lba0Sense is null
-                                  ? Localization._null
-                                  : ArrayHelpers.ArrayIsNullOrEmpty(lba0Sense)
-                                      ? Localization.empty
-                                      : $"{lba0Sense.Length}");
+                              lba0Sense.IsEmpty ? Localization.empty : $"{lba0Sense.Length}");
 
         AaruLogging.WriteLine(Localization.LBA_zero_scrambled_sense_is_0_buffer_is_1_sense_buffer_is_2_,
                               lba0ScrambledResult,
@@ -402,11 +398,7 @@ static partial class ScsiMmc
                                   : ArrayHelpers.ArrayIsNullOrEmpty(lba0ScrambledBuffer)
                                       ? Localization.empty
                                       : string.Format(Localization._0_bytes, lba0ScrambledBuffer.Length),
-                              lba0ScrambledSense is null
-                                  ? Localization._null
-                                  : ArrayHelpers.ArrayIsNullOrEmpty(lba0ScrambledSense)
-                                      ? Localization.empty
-                                      : $"{lba0ScrambledSense.Length}");
+                              lba0ScrambledSense.IsEmpty ? Localization.empty : $"{lba0ScrambledSense.Length}");
 
         AaruLogging.WriteLine(Localization.LBA_44990_sense_is_0_buffer_is_1_sense_buffer_is_2,
                               lba44990Result,
@@ -415,11 +407,7 @@ static partial class ScsiMmc
                                   : ArrayHelpers.ArrayIsNullOrEmpty(lba44990Buffer)
                                       ? Localization.empty
                                       : string.Format(Localization._0_bytes, lba44990Buffer.Length),
-                              lba44990Sense is null
-                                  ? Localization._null
-                                  : ArrayHelpers.ArrayIsNullOrEmpty(lba44990Sense)
-                                      ? Localization.empty
-                                      : $"{lba44990Sense.Length}");
+                              lba44990Sense.IsEmpty ? Localization.empty : $"{lba44990Sense.Length}");
 
         AaruLogging.WriteLine(Localization.LBA_45000_sense_is_0_buffer_is_1_sense_buffer_is_2,
                               lba45000Result,
@@ -428,11 +416,7 @@ static partial class ScsiMmc
                                   : ArrayHelpers.ArrayIsNullOrEmpty(lba45000Buffer)
                                       ? Localization.empty
                                       : string.Format(Localization._0_bytes, lba45000Buffer.Length),
-                              lba45000Sense is null
-                                  ? Localization._null
-                                  : ArrayHelpers.ArrayIsNullOrEmpty(lba45000Sense)
-                                      ? Localization.empty
-                                      : $"{lba45000Sense.Length}");
+                              lba45000Sense.IsEmpty ? Localization.empty : $"{lba45000Sense.Length}");
 
         AaruLogging.WriteLine(Localization.LBA_50000_sense_is_0_buffer_is_1_sense_buffer_is_2,
                               lba50000Result,
@@ -441,11 +425,7 @@ static partial class ScsiMmc
                                   : ArrayHelpers.ArrayIsNullOrEmpty(lba50000Buffer)
                                       ? Localization.empty
                                       : string.Format(Localization._0_bytes, lba50000Buffer.Length),
-                              lba50000Sense is null
-                                  ? Localization._null
-                                  : ArrayHelpers.ArrayIsNullOrEmpty(lba50000Sense)
-                                      ? Localization.empty
-                                      : $"{lba50000Sense.Length}");
+                              lba50000Sense.IsEmpty ? Localization.empty : $"{lba50000Sense.Length}");
 
         AaruLogging.WriteLine(Localization.LBA_100000_sense_is_0_buffer_is_1_sense_buffer_is_2,
                               lba100000Result,
@@ -454,11 +434,7 @@ static partial class ScsiMmc
                                   : ArrayHelpers.ArrayIsNullOrEmpty(lba100000Buffer)
                                       ? Localization.empty
                                       : string.Format(Localization._0_bytes, lba100000Buffer.Length),
-                              lba100000Sense is null
-                                  ? Localization._null
-                                  : ArrayHelpers.ArrayIsNullOrEmpty(lba100000Sense)
-                                      ? Localization.empty
-                                      : $"{lba100000Sense.Length}");
+                              lba100000Sense.IsEmpty ? Localization.empty : $"{lba100000Sense.Length}");
 
         AaruLogging.WriteLine(Localization.LBA_400000_sense_is_0_buffer_is_1_sense_buffer_is_2,
                               lba400000Result,
@@ -467,11 +443,7 @@ static partial class ScsiMmc
                                   : ArrayHelpers.ArrayIsNullOrEmpty(lba400000Buffer)
                                       ? Localization.empty
                                       : string.Format(Localization._0_bytes, lba400000Buffer.Length),
-                              lba400000Sense is null
-                                  ? Localization._null
-                                  : ArrayHelpers.ArrayIsNullOrEmpty(lba400000Sense)
-                                      ? Localization.empty
-                                      : $"{lba400000Sense.Length}");
+                              lba400000Sense.IsEmpty ? Localization.empty : $"{lba400000Sense.Length}");
 
         AaruLogging.WriteLine(Localization.LBA_450000_sense_is_0_buffer_is_1_sense_buffer_is_2,
                               lba450000Result,
@@ -480,11 +452,7 @@ static partial class ScsiMmc
                                   : ArrayHelpers.ArrayIsNullOrEmpty(lba450000Buffer)
                                       ? Localization.empty
                                       : string.Format(Localization._0_bytes, lba450000Buffer.Length),
-                              lba450000Sense is null
-                                  ? Localization._null
-                                  : ArrayHelpers.ArrayIsNullOrEmpty(lba450000Sense)
-                                      ? Localization.empty
-                                      : $"{lba450000Sense.Length}");
+                              lba450000Sense.IsEmpty ? Localization.empty : $"{lba450000Sense.Length}");
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -549,7 +517,7 @@ static partial class ScsiMmc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.LBA_zero_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(lba0Sense, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(lba0Sense.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -559,7 +527,7 @@ static partial class ScsiMmc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.LBA_zero_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(lba0Sense));
+                AaruLogging.Write("{0}", Sense.PrettifySense(lba0Sense.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
 
@@ -580,7 +548,7 @@ static partial class ScsiMmc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.LBA_zero_scrambled_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(lba0ScrambledSense, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(lba0ScrambledSense.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -590,7 +558,7 @@ static partial class ScsiMmc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.LBA_zero_scrambled_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(lba0ScrambledSense));
+                AaruLogging.Write("{0}", Sense.PrettifySense(lba0ScrambledSense.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
 
@@ -611,7 +579,7 @@ static partial class ScsiMmc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.LBA_44990_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(lba44990Sense, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(lba44990Sense.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -621,7 +589,7 @@ static partial class ScsiMmc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.LBA_44990_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(lba44990Sense));
+                AaruLogging.Write("{0}", Sense.PrettifySense(lba44990Sense.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
 
@@ -642,7 +610,7 @@ static partial class ScsiMmc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.LBA_45000_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(lba45000Sense, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(lba45000Sense.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -652,7 +620,7 @@ static partial class ScsiMmc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.LBA_45000_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(lba45000Sense));
+                AaruLogging.Write("{0}", Sense.PrettifySense(lba45000Sense.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
 
@@ -673,7 +641,7 @@ static partial class ScsiMmc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.LBA_50000_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(lba50000Sense, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(lba50000Sense.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -683,7 +651,7 @@ static partial class ScsiMmc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.LBA_50000_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(lba50000Sense));
+                AaruLogging.Write("{0}", Sense.PrettifySense(lba50000Sense.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
 
@@ -704,7 +672,7 @@ static partial class ScsiMmc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.LBA_100000_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(lba100000Sense, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(lba100000Sense.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -714,7 +682,7 @@ static partial class ScsiMmc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.LBA_100000_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(lba100000Sense));
+                AaruLogging.Write("{0}", Sense.PrettifySense(lba100000Sense.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
 
@@ -735,7 +703,7 @@ static partial class ScsiMmc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.LBA_400000_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(lba400000Sense, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(lba400000Sense.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -745,7 +713,7 @@ static partial class ScsiMmc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.LBA_400000_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(lba400000Sense));
+                AaruLogging.Write("{0}", Sense.PrettifySense(lba400000Sense.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
 
@@ -766,7 +734,7 @@ static partial class ScsiMmc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.LBA_450000_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(lba450000Sense, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(lba450000Sense.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -776,7 +744,7 @@ static partial class ScsiMmc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.LBA_450000_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(lba450000Sense));
+                AaruLogging.Write("{0}", Sense.PrettifySense(lba450000Sense.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
 

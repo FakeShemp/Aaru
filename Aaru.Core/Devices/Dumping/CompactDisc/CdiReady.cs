@@ -148,15 +148,15 @@ partial class Dump
                       bool cdiReadyReadAsAudio, int offsetBytes, int sectorsForOffset,
                       Dictionary<byte, int> smallestPregapLbaPerTrack)
     {
-        ulong      sectorSpeedStart = 0; // Used to calculate correct speed
-        bool       sense;                // Sense indicator
-        byte[]     cmdBuf;               // Data buffer
-        byte[]     senseBuf;             // Sense buffer
-        double     cmdDuration;          // Command execution time
-        const uint sectorSize = 2352;    // Full sector size
-        Track      firstTrack = tracks.FirstOrDefault();
-        uint       blocksToRead; // How many sectors to read at once
-        var        outputOptical = _outputPlugin as IWritableOpticalImage;
+        ulong              sectorSpeedStart = 0; // Used to calculate correct speed
+        bool               sense;                // Sense indicator
+        byte[]             cmdBuf;               // Data buffer
+        ReadOnlySpan<byte> senseBuf;             // Sense buffer
+        double             cmdDuration;          // Command execution time
+        const uint         sectorSize = 2352;    // Full sector size
+        Track              firstTrack = tracks.FirstOrDefault();
+        uint               blocksToRead; // How many sectors to read at once
+        var                outputOptical = _outputPlugin as IWritableOpticalImage;
 
         if(firstTrack is null) return;
 
@@ -337,7 +337,7 @@ partial class Dump
                     }
                     else
                     {
-                        _errorLog?.WriteLine(i + r, _dev.Error, _dev.LastError, senseBuf);
+                        _errorLog?.WriteLine(i + r, _dev.Error, _dev.LastError, senseBuf.ToArray());
 
                         leadOutExtents.Add(i + r, firstTrack.EndSector);
 
@@ -469,7 +469,7 @@ partial class Dump
             }
             else
             {
-                _errorLog?.WriteLine(i, _dev.Error, _dev.LastError, senseBuf);
+                _errorLog?.WriteLine(i, _dev.Error, _dev.LastError, senseBuf.ToArray());
 
                 _resume.NextBlock = firstTrack.EndSector + 1;
 

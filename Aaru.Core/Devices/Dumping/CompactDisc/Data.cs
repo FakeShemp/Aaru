@@ -101,13 +101,13 @@ partial class Dump
                     Dictionary<byte, string> isrcs, ref string mcn, HashSet<int> subchannelExtents,
                     Dictionary<byte, int> smallestPregapLbaPerTrack)
     {
-        ulong      sectorSpeedStart = 0; // Used to calculate correct speed
-        uint       blocksToRead;         // How many sectors to read at once
-        bool       sense       = true;   // Sense indicator
-        byte[]     cmdBuf      = null;   // Data buffer
-        byte[]     senseBuf    = null;   // Sense buffer
-        double     cmdDuration = 0;      // Command execution time
-        const uint sectorSize  = 2352;   // Full sector size
+        ulong              sectorSpeedStart = 0; // Used to calculate correct speed
+        uint               blocksToRead;         // How many sectors to read at once
+        bool               sense       = true;   // Sense indicator
+        byte[]             cmdBuf      = null;   // Data buffer
+        ReadOnlySpan<byte> senseBuf    = null;   // Sense buffer
+        double             cmdDuration = 0;      // Command execution time
+        const uint         sectorSize  = 2352;   // Full sector size
         newTrim = false;
         PlextorSubchannel supportedPlextorSubchannel;
         var               outputFormat = _outputPlugin as IWritableImage;
@@ -859,7 +859,7 @@ partial class Dump
                     }
                     else
                     {
-                        _errorLog?.WriteLine(i + r, _dev.Error, _dev.LastError, senseBuf);
+                        _errorLog?.WriteLine(i + r, _dev.Error, _dev.LastError, senseBuf.ToArray());
 
                         // Write empty data
                         _writeStopwatch.Restart();
@@ -1054,7 +1054,7 @@ partial class Dump
                     continue;
                 }
 
-                _errorLog?.WriteLine(firstSectorToRead, _dev.Error, _dev.LastError, senseBuf);
+                _errorLog?.WriteLine(firstSectorToRead, _dev.Error, _dev.LastError, senseBuf.ToArray());
 
                 // TODO: Reset device after X errors
                 if(_stopOnError) return; // TODO: Return more cleanly

@@ -46,8 +46,8 @@ partial class Dump
     /// <param name="supportedPlextorSubchannel">Supported subchannel type</param>
     /// <param name="cmdDuration">Time spent sending commands to the drive</param>
     /// <returns><c>true</c> if an error occured, <c>false</c> otherwise</returns>
-    bool ReadPlextorWithSubchannel(out byte[] cmdBuf,       out byte[] senseBuf, uint firstSectorToRead, uint blockSize,
-                                   uint       blocksToRead, PlextorSubchannel supportedPlextorSubchannel,
+    bool ReadPlextorWithSubchannel(out byte[] cmdBuf, out ReadOnlySpan<byte> senseBuf, uint firstSectorToRead,
+                                   uint blockSize, uint blocksToRead, PlextorSubchannel supportedPlextorSubchannel,
                                    out double cmdDuration)
     {
         bool sense;
@@ -140,7 +140,7 @@ partial class Dump
 
         cmdBuf = new byte[2352 * blocksToRead + subSize * blocksToRead];
 
-        for(var b = 0; b < blocksToRead; b++)
+        for(int b = 0; b < blocksToRead; b++)
         {
             Array.Copy(dataBuf, 2352    * b, cmdBuf, (2352 + subSize) * b,        2352);
             Array.Copy(subBuf,  subSize * b, cmdBuf, (2352 + subSize) * b + 2352, subSize);

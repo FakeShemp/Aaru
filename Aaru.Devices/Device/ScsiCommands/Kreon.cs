@@ -42,9 +42,9 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool KreonDeprecatedUnlock(out byte[] senseBuffer, uint timeout, out double duration)
+    public bool KreonDeprecatedUnlock(out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
         byte[] buffer = [];
@@ -54,13 +54,7 @@ public partial class Device
         cdb[2] = 0x01;
         cdb[3] = 0x01;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.None,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -74,7 +68,7 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool KreonLock(out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool KreonLock(out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         KreonSetLockState(out senseBuffer, KreonLockStates.Locked, timeout, out duration);
 
     /// <summary>Sets the drive to the xtreme unlocked state</summary>
@@ -82,7 +76,7 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool KreonUnlockXtreme(out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool KreonUnlockXtreme(out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         KreonSetLockState(out senseBuffer, KreonLockStates.Xtreme, timeout, out duration);
 
     /// <summary>Sets the drive to the wxripper unlocked state</summary>
@@ -90,7 +84,7 @@ public partial class Device
     /// <param name="senseBuffer">Sense buffer.</param>
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
-    public bool KreonUnlockWxripper(out byte[] senseBuffer, uint timeout, out double duration) =>
+    public bool KreonUnlockWxripper(out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration) =>
         KreonSetLockState(out senseBuffer, KreonLockStates.Wxripper, timeout, out duration);
 
     /// <summary>Sets the drive to the specified lock state</summary>
@@ -99,9 +93,10 @@ public partial class Device
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
     /// <param name="state">Lock state</param>
-    public bool KreonSetLockState(out byte[] senseBuffer, KreonLockStates state, uint timeout, out double duration)
+    public bool KreonSetLockState(out ReadOnlySpan<byte> senseBuffer, KreonLockStates state, uint timeout,
+                                  out double             duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
         byte[] buffer = [];
@@ -112,13 +107,7 @@ public partial class Device
         cdb[3] = 0x11;
         cdb[4] = (byte)state;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.None,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -133,10 +122,10 @@ public partial class Device
     /// <param name="timeout">Timeout.</param>
     /// <param name="duration">Duration.</param>
     /// <param name="features">Features supported by drive.</param>
-    public bool KreonGetFeatureList(out byte[] senseBuffer, out KreonFeatures features, uint timeout,
-                                    out double duration)
+    public bool KreonGetFeatureList(out ReadOnlySpan<byte> senseBuffer, out KreonFeatures features, uint timeout,
+                                    out double             duration)
     {
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
         byte[] buffer = new byte[26];
@@ -147,13 +136,7 @@ public partial class Device
         cdb[2] = 0x01;
         cdb[3] = 0x10;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 
@@ -224,13 +207,13 @@ public partial class Device
     /// <param name="duration">Duration.</param>
     /// <param name="buffer">The SS sector.</param>
     /// <param name="requestNumber">Request number.</param>
-    public bool KreonExtractSs(out byte[] buffer, out byte[] senseBuffer, uint timeout, out double duration,
+    public bool KreonExtractSs(out byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration,
                                byte       requestNumber = 0x00)
     {
         buffer = new byte[2048];
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
-        senseBuffer = new byte[64];
+        senseBuffer = SenseBuffer;
 
         cdb[0]  = (byte)ScsiCommands.KreonSsCommand;
         cdb[1]  = 0x00;
@@ -245,13 +228,7 @@ public partial class Device
         cdb[10] = requestNumber;
         cdb[11] = 0xC0;
 
-        LastError = SendScsiCommand(cdb,
-                                    ref buffer,
-                                    out senseBuffer,
-                                    timeout,
-                                    ScsiDirection.In,
-                                    out duration,
-                                    out bool sense);
+        LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out bool sense);
 
         Error = LastError != 0;
 

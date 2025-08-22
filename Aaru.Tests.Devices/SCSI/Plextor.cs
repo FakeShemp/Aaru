@@ -198,7 +198,7 @@ static class Plextor
         Console.Clear();
 
         bool sense = dev.PlextorGetBitsetting(out byte[] buffer,
-                                              out byte[] senseBuffer,
+                                              out ReadOnlySpan<byte> senseBuffer,
                                               dl,
                                               dev.Timeout,
                                               out double duration);
@@ -211,11 +211,9 @@ static class Plextor
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -262,7 +260,7 @@ static class Plextor
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_BOOK_BITSETTING_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -274,7 +272,7 @@ static class Plextor
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_BOOK_BITSETTING_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -299,7 +297,10 @@ static class Plextor
     start:
         Console.Clear();
 
-        bool sense = dev.PlextorGetGigaRec(out byte[] buffer, out byte[] senseBuffer, dev.Timeout, out double duration);
+        bool sense = dev.PlextorGetGigaRec(out byte[] buffer,
+                                           out ReadOnlySpan<byte> senseBuffer,
+                                           dev.Timeout,
+                                           out double duration);
 
     menu:
         AaruLogging.WriteLine(Localization.Device_0, devPath);
@@ -309,11 +310,9 @@ static class Plextor
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -359,7 +358,7 @@ static class Plextor
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_GIGAREC_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -371,7 +370,7 @@ static class Plextor
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_GIGAREC_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -394,7 +393,10 @@ static class Plextor
     start:
         Console.Clear();
 
-        bool sense = dev.PlextorGetSecuRec(out byte[] buffer, out byte[] senseBuffer, dev.Timeout, out double duration);
+        bool sense = dev.PlextorGetSecuRec(out byte[] buffer,
+                                           out ReadOnlySpan<byte> senseBuffer,
+                                           dev.Timeout,
+                                           out double duration);
 
     menu:
         AaruLogging.WriteLine(Localization.Device_0, devPath);
@@ -404,11 +406,9 @@ static class Plextor
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -454,7 +454,7 @@ static class Plextor
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_SECUREC_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -466,7 +466,7 @@ static class Plextor
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_SECUREC_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -489,8 +489,10 @@ static class Plextor
     start:
         Console.Clear();
 
-        bool sense =
-            dev.PlextorGetSilentMode(out byte[] buffer, out byte[] senseBuffer, dev.Timeout, out double duration);
+        bool sense = dev.PlextorGetSilentMode(out byte[] buffer,
+                                              out ReadOnlySpan<byte> senseBuffer,
+                                              dev.Timeout,
+                                              out double duration);
 
     menu:
         AaruLogging.WriteLine(Localization.Device_0, devPath);
@@ -500,11 +502,9 @@ static class Plextor
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -550,7 +550,7 @@ static class Plextor
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_SILENT_MODE_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -562,7 +562,7 @@ static class Plextor
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_SILENT_MODE_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -585,7 +585,10 @@ static class Plextor
     start:
         Console.Clear();
 
-        bool sense = dev.PlextorGetHiding(out byte[] buffer, out byte[] senseBuffer, dev.Timeout, out double duration);
+        bool sense = dev.PlextorGetHiding(out byte[] buffer,
+                                          out ReadOnlySpan<byte> senseBuffer,
+                                          dev.Timeout,
+                                          out double duration);
 
     menu:
         AaruLogging.WriteLine(Localization.Device_0, devPath);
@@ -595,11 +598,9 @@ static class Plextor
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -645,7 +646,7 @@ static class Plextor
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_SINGLE_SESSION_HIDE_CD_R_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -657,7 +658,7 @@ static class Plextor
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_SINGLE_SESSION_HIDE_CD_R_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -680,8 +681,10 @@ static class Plextor
     start:
         Console.Clear();
 
-        bool sense =
-            dev.PlextorGetSpeedRead(out byte[] buffer, out byte[] senseBuffer, dev.Timeout, out double duration);
+        bool sense = dev.PlextorGetSpeedRead(out byte[] buffer,
+                                             out ReadOnlySpan<byte> senseBuffer,
+                                             dev.Timeout,
+                                             out double duration);
 
     menu:
         AaruLogging.WriteLine(Localization.Device_0, devPath);
@@ -691,11 +694,9 @@ static class Plextor
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -741,7 +742,7 @@ static class Plextor
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_SPEEDREAD_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -753,7 +754,7 @@ static class Plextor
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_SPEEDREAD_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -776,8 +777,10 @@ static class Plextor
     start:
         Console.Clear();
 
-        bool sense =
-            dev.PlextorGetTestWriteDvdPlus(out byte[] buffer, out byte[] senseBuffer, dev.Timeout, out double duration);
+        bool sense = dev.PlextorGetTestWriteDvdPlus(out byte[] buffer,
+                                                    out ReadOnlySpan<byte> senseBuffer,
+                                                    dev.Timeout,
+                                                    out double duration);
 
     menu:
         AaruLogging.WriteLine(Localization.Device_0, devPath);
@@ -787,11 +790,9 @@ static class Plextor
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -837,7 +838,7 @@ static class Plextor
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_TEST_WRITE_DVD_Plus_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -849,7 +850,7 @@ static class Plextor
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_TEST_WRITE_DVD_Plus_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -924,7 +925,7 @@ static class Plextor
         Console.Clear();
 
         bool sense = dev.PlextorGetVariRec(out byte[] buffer,
-                                           out byte[] senseBuffer,
+                                           out ReadOnlySpan<byte> senseBuffer,
                                            dvd,
                                            dev.Timeout,
                                            out double duration);
@@ -937,11 +938,9 @@ static class Plextor
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -988,7 +987,7 @@ static class Plextor
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_VARIREC_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -1000,7 +999,7 @@ static class Plextor
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_VARIREC_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1025,7 +1024,7 @@ static class Plextor
     start:
         Console.Clear();
 
-        bool sense = dev.PlextorGetPoweRec(out byte[] senseBuffer,
+        bool sense = dev.PlextorGetPoweRec(out ReadOnlySpan<byte> senseBuffer,
                                            out bool enabled,
                                            out ushort speed,
                                            dev.Timeout,
@@ -1039,14 +1038,12 @@ static class Plextor
         AaruLogging.WriteLine(enabled ? Localization.PoweRec_is_enabled : Localization.PoweRec_is_disabled);
         AaruLogging.WriteLine(Localization.Speed_0, speed);
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.POWEREC_GET_SPEEDS_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);
@@ -1076,7 +1073,7 @@ static class Plextor
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.POWEREC_GET_SPEEDS_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -1201,7 +1198,7 @@ static class Plextor
         Console.Clear();
 
         bool sense = dev.PlextorReadCdDa(out byte[] buffer,
-                                         out byte[] senseBuffer,
+                                         out ReadOnlySpan<byte> senseBuffer,
                                          address,
                                          blockSize,
                                          length,
@@ -1217,11 +1214,9 @@ static class Plextor
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -1268,7 +1263,7 @@ static class Plextor
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_CD_DA_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -1280,7 +1275,7 @@ static class Plextor
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_CD_DA_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1371,7 +1366,7 @@ static class Plextor
         Console.Clear();
 
         bool sense = dev.PlextorReadRawDvd(out byte[] buffer,
-                                           out byte[] senseBuffer,
+                                           out ReadOnlySpan<byte> senseBuffer,
                                            lba,
                                            count,
                                            dev.Timeout,
@@ -1385,11 +1380,9 @@ static class Plextor
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -1436,7 +1429,7 @@ static class Plextor
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_DVD_RAW_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -1448,7 +1441,7 @@ static class Plextor
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_DVD_RAW_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1473,8 +1466,10 @@ static class Plextor
     start:
         Console.Clear();
 
-        bool sense =
-            dev.PlextorReadEepromCdr(out byte[] buffer, out byte[] senseBuffer, dev.Timeout, out double duration);
+        bool sense = dev.PlextorReadEepromCdr(out byte[] buffer,
+                                              out ReadOnlySpan<byte> senseBuffer,
+                                              dev.Timeout,
+                                              out double duration);
 
     menu:
         AaruLogging.WriteLine(Localization.Device_0, devPath);
@@ -1484,11 +1479,9 @@ static class Plextor
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -1534,7 +1527,7 @@ static class Plextor
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_EEPROM_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -1546,7 +1539,7 @@ static class Plextor
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_EEPROM_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1635,7 +1628,7 @@ static class Plextor
         Console.Clear();
 
         bool sense = dev.PlextorReadEepromBlock(out byte[] buffer,
-                                                out byte[] senseBuffer,
+                                                out ReadOnlySpan<byte> senseBuffer,
                                                 block,
                                                 blockSize,
                                                 dev.Timeout,
@@ -1649,11 +1642,9 @@ static class Plextor
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -1700,7 +1691,7 @@ static class Plextor
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_EEPROM_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -1712,7 +1703,7 @@ static class Plextor
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_EEPROM_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1737,7 +1728,10 @@ static class Plextor
     start:
         Console.Clear();
 
-        bool sense = dev.PlextorReadEeprom(out byte[] buffer, out byte[] senseBuffer, dev.Timeout, out double duration);
+        bool sense = dev.PlextorReadEeprom(out byte[] buffer,
+                                           out ReadOnlySpan<byte> senseBuffer,
+                                           dev.Timeout,
+                                           out double duration);
 
     menu:
         AaruLogging.WriteLine(Localization.Device_0, devPath);
@@ -1747,11 +1741,9 @@ static class Plextor
         AaruLogging.WriteLine(Localization.Buffer_is_0_bytes, buffer?.Length.ToString() ?? Localization._null);
         AaruLogging.WriteLine(Localization.Buffer_is_null_or_empty_0_Q, ArrayHelpers.ArrayIsNullOrEmpty(buffer));
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes,
-                              senseBuffer?.Length.ToString() ?? Localization._null);
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_0_bytes, senseBuffer.Length.ToString());
 
-        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0,
-                              ArrayHelpers.ArrayIsNullOrEmpty(senseBuffer));
+        AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
@@ -1797,7 +1789,7 @@ static class Plextor
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_EEPROM_sense);
 
-                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer, 64);
+                if(senseBuffer != null) PrintHex.PrintHexArray(senseBuffer.ToArray(), 64);
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -1809,7 +1801,7 @@ static class Plextor
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_EEPROM_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer));
+                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();

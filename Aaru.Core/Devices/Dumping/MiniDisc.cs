@@ -573,7 +573,7 @@ partial class Dump
                 md6 = Modes.EncodeMode6(md, _dev.ScsiType);
 
                 UpdateStatus?.Invoke(Localization.Core.Sending_MODE_SELECT_to_drive_return_damaged_blocks);
-                sense = _dev.ModeSelect(md6, out byte[] senseBuf, true, false, _dev.Timeout, out _);
+                sense = _dev.ModeSelect(md6, out ReadOnlySpan<byte> senseBuf, true, false, _dev.Timeout, out _);
 
                 if(sense)
                 {

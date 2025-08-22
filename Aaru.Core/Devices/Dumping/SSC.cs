@@ -74,8 +74,8 @@ partial class Dump
         double        minSpeed      = double.MaxValue;
         var           outputTape    = _outputPlugin as IWritableTapeImage;
 
-        _dev.RequestSense(out byte[] senseBuf, _dev.Timeout, out double duration);
-        decSense = Sense.Decode(senseBuf);
+        _dev.RequestSense(out byte[] buffer, _dev.Timeout, out double duration);
+        decSense = Sense.Decode(buffer);
 
         InitProgress?.Invoke();
 
@@ -93,6 +93,8 @@ partial class Dump
             return;
         }
 
+        ReadOnlySpan<byte> senseBuf;
+
         // Not in BOM/P
         if(decSense is { ASC: 0x00 }  &&
            decSense?.ASCQ     != 0x00 &&
@@ -109,12 +111,12 @@ partial class Dump
             do
             {
                 PulseProgress?.Invoke(Localization.Core.Rewinding_please_wait);
-                _dev.RequestSense(out senseBuf, _dev.Timeout, out duration);
-                decSense = Sense.Decode(senseBuf);
+                _dev.RequestSense(out buffer, _dev.Timeout, out duration);
+                decSense = Sense.Decode(buffer);
             } while(decSense is { ASC: 0x00, ASCQ: 0x1A or not (0x04 and 0x00) });
 
-            _dev.RequestSense(out senseBuf, _dev.Timeout, out duration);
-            decSense = Sense.Decode(senseBuf);
+            _dev.RequestSense(out buffer, _dev.Timeout, out duration);
+            decSense = Sense.Decode(buffer);
 
             // And yet, did not rewind!
             if(decSense.HasValue &&
@@ -194,8 +196,8 @@ partial class Dump
                 {
                     Thread.Sleep(1000);
                     PulseProgress?.Invoke(Localization.Core.Rewinding_please_wait);
-                    _dev.RequestSense(out senseBuf, _dev.Timeout, out duration);
-                    decSense = Sense.Decode(senseBuf);
+                    _dev.RequestSense(out buffer, _dev.Timeout, out duration);
+                    decSense = Sense.Decode(buffer);
                 } while(decSense is { ASC: 0x00, ASCQ: 0x1A or 0x19 });
 
                 // And yet, did not rewind!
@@ -283,8 +285,9 @@ partial class Dump
         Modes.DecodedMode? decMode = null;
 
         if(!sense && !_dev.Error)
-            if(Modes.DecodeMode10(cmdBuf, _dev.ScsiType).HasValue)
-                decMode = Modes.DecodeMode10(cmdBuf, _dev.ScsiType);
+        {
+            if(Modes.DecodeMode10(cmdBuf, _dev.ScsiType).HasValue) decMode = Modes.DecodeMode10(cmdBuf, _dev.ScsiType);
+        }
 
         UpdateStatus?.Invoke(Localization.Core.Requesting_MODE_SENSE_6);
 
@@ -312,8 +315,9 @@ partial class Dump
         if(sense || _dev.Error) sense = _dev.ModeSense(out cmdBuf, out senseBuf, 5, out duration);
 
         if(!sense && !_dev.Error)
-            if(Modes.DecodeMode6(cmdBuf, _dev.ScsiType).HasValue)
-                decMode = Modes.DecodeMode6(cmdBuf, _dev.ScsiType);
+        {
+            if(Modes.DecodeMode6(cmdBuf, _dev.ScsiType).HasValue) decMode = Modes.DecodeMode6(cmdBuf, _dev.ScsiType);
+        }
 
         // TODO: Check partitions page
         if(decMode.HasValue)
@@ -786,8 +790,8 @@ partial class Dump
             {
                 Thread.Sleep(1000);
                 PulseProgress?.Invoke(Localization.Core.Rewinding_please_wait);
-                _dev.RequestSense(out senseBuf, _dev.Timeout, out duration);
-                decSense = Sense.Decode(senseBuf);
+                _dev.RequestSense(out buffer, _dev.Timeout, out duration);
+                decSense = Sense.Decode(buffer);
             } while(decSense is { ASC: 0x00, ASCQ: 0x1A or 0x19 });
 
             // And yet, did not rewind!
@@ -944,7 +948,7 @@ partial class Dump
             _speedStopwatch.Stop();
             totalDuration += duration;
 
-            if(sense && senseBuf?.Length != 0 && !ArrayHelpers.ArrayIsNullOrEmpty(senseBuf))
+            if(sense && !senseBuf.IsEmpty)
             {
                 decSense = Sense.Decode(senseBuf);
 
@@ -1064,7 +1068,7 @@ partial class Dump
                                                                       .Drive_could_not_read_block_0_Sense_bytes_follow,
                                                           currentBlock));
 
-                    AaruLogging.Information(PrintHex.ByteArrayToHexArrayString(senseBuf, 32));
+                    AaruLogging.Information(PrintHex.ByteArrayToHexArrayString(senseBuf.ToArray(), 32));
                 }
                 else
                 {
