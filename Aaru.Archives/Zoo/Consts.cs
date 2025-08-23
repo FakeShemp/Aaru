@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Zoo.cs
+// Filename       : Consts.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Zoo plugin.
@@ -26,33 +26,35 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using Aaru.CommonTypes.Interfaces;
+// Copied from zoo.h
+/*
+The contents of this file are hereby released to the public domain.
+
+                                    -- Rahul Dhesi 1986/11/14
+*/
 
 namespace Aaru.Archives;
 
-public sealed partial class Zoo : IArchive
+public sealed partial class Zoo
 {
-    const string MODULE_NAME = "zoo Archive Plugin";
-
-#region IArchive Members
-
-    /// <inheritdoc />
-    public string Name => "zoo";
-    /// <inheritdoc />
-    public Guid Id => new("02CB37D8-1999-4B4A-9C8E-64FA87B9CDF1");
-    /// <inheritdoc />
-    public string Author => Authors.NataliaPortillo;
-    /// <inheritdoc />
-    public bool Opened { get; }
-    /// <inheritdoc />
-    public ArchiveSupportedFeature ArchiveFeatures => ArchiveSupportedFeature.HasEntryTimestamp      |
-                                                      ArchiveSupportedFeature.SupportsCompression    |
-                                                      ArchiveSupportedFeature.SupportsFilenames      |
-                                                      ArchiveSupportedFeature.SupportsSubdirectories |
-                                                      ArchiveSupportedFeature.SupportsXAttrs;
-    /// <inheritdoc />
-    public int NumberOfEntries { get; }
-
-#endregion
+    const uint ZOO_TAG = 0xFDC4A7DC;
+    /// <summary>Size of header text</summary>
+    const int SIZ_TEXT = 20;
+    /// <summary>Max length of pathname</summary>
+    const int PATHSIZE = 256;
+    /// <summary>Size of DOS filename</summary>
+    const int FNAMESIZE = 13;
+    /// <summary>Size of long filename</summary>
+    const int LFNAMESIZE = 256;
+    /// <summary>Size of fname without extension</summary>
+    const int ROOTSIZE = 8;
+    /// <summary>Size of extension</summary>
+    const int EXTLEN = 3;
+    /// <summary>4 chars plus null</summary>
+    const int SIZ_FLDR = 5;
+    /// <summary>max packing method we can handle</summary>
+    const int MAX_PACK = 2;
+    /// <summary>Allowing location of file data</summary>
+    readonly byte[] FILE_LEADER = "@)#("u8.ToArray();
+    readonly byte[] HEADER_TEXT = "ZOO 2.10 Archive.\x1A"u8.ToArray();
 }
