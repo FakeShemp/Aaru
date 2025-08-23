@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Xattrs.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Zoo plugin.
@@ -26,10 +26,8 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System;
+using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Archives;
 
@@ -38,19 +36,22 @@ public sealed partial class Zoo
 #region IArchive Members
 
     /// <inheritdoc />
-    public ErrorNumber GetEntryNumber(string fileName, bool caseInsensitiveMatch, out int entryNumber) =>
-        throw new NotImplementedException();
+    public ErrorNumber ListXAttr(int entryNumber, out List<string> xattrs)
+    {
+        xattrs = null;
 
+        if(!Opened) return ErrorNumber.NotOpened;
 
-    /// <inheritdoc />
-    public ErrorNumber GetXattr(int entryNumber, string xattr, ref byte[] buffer) =>
-        throw new NotImplementedException();
+        if(entryNumber < 0 || entryNumber >= _files.Count) return ErrorNumber.OutOfRange;
 
-    /// <inheritdoc />
-    public ErrorNumber Stat(int entryNumber, out FileEntryInfo stat) => throw new NotImplementedException();
+        Direntry entry = _files[entryNumber];
 
-    /// <inheritdoc />
-    public ErrorNumber GetEntry(int entryNumber, out IFilter filter) => throw new NotImplementedException();
+        xattrs = [];
+
+        if(entry.cmt_size > 0) xattrs.Add("comment");
+
+        return ErrorNumber.NoError;
+    }
 
 #endregion
 }
