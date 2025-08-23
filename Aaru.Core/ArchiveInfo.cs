@@ -33,7 +33,6 @@
 using System.Text;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Logging;
-using Spectre.Console;
 
 namespace Aaru.Core;
 
@@ -48,7 +47,7 @@ public static class ArchiveInfo
 
         imageFormat.GetInformation(filter, encoding, out string information);
 
-        AaruLogging.WriteLine(MarkupHelper.HighlightNumbers(Markup.Escape(information), "teal"));
+        AaruLogging.WriteLine(information);
 
         AaruLogging.WriteLine();
     }

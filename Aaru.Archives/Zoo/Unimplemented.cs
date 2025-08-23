@@ -79,11 +79,5 @@ public sealed partial class Zoo
     /// <inheritdoc />
     public ErrorNumber GetEntry(int entryNumber, out IFilter filter) => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public void GetInformation(IFilter filter, Encoding encoding, out string information)
-    {
-        throw new NotImplementedException();
-    }
-
 #endregion
 }
