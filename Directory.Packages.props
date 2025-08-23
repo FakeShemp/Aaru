@@ -1,7 +1,7 @@
 <Project ToolsVersion="15.0">
   <ItemGroup>
     <PackageVersion Include="Aaru.Checksums.Native" Version="6.0.0-alpha.11"/>
-    <PackageVersion Include="Aaru.Compression.Native" Version="6.0.0-alpha.10"/>
+    <PackageVersion Include="Aaru.Compression.Native" Version="6.0.0-alpha.11.1"/>
     <PackageVersion Include="AsyncFixer" Version="1.6.0"/>
     <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.3.4"/>
     <PackageVersion Include="Avalonia.Desktop" Version="11.3.4"/>
