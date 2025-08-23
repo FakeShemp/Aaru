@@ -30,8 +30,11 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using Aaru.Filters;
 using Aaru.Helpers;
+using Aaru.Helpers.IO;
 using FileAttributes = System.IO.FileAttributes;
 
 namespace Aaru.Archives;
@@ -159,6 +162,37 @@ public sealed partial class Zoo
         };
 
         return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetEntry(int entryNumber, out IFilter filter)
+    {
+        filter = null;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _files.Count) return ErrorNumber.OutOfRange;
+
+        Direntry entry = _files[entryNumber];
+
+        if(entry.packing_method > 1) return ErrorNumber.NotImplemented;
+
+        Stream stream = new OffsetStream(new NonClosableStream(_stream),
+                                         _files[entryNumber].offset,
+                                         _files[entryNumber].offset + _files[entryNumber].size_now);
+
+        if(_files[entryNumber].org_size == 0) stream = new MemoryStream([]);
+
+        if(entry.packing_method == 1) stream = new ForcedSeekStream<LzdStream>(entry.org_size, stream);
+
+        filter = new ZZZNoFilter();
+        ErrorNumber errno = filter.Open(stream);
+
+        if(errno == ErrorNumber.NoError) return ErrorNumber.NoError;
+
+        stream.Close();
+
+        return errno;
     }
 
 #endregion

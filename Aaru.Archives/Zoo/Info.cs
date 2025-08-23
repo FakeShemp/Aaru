@@ -32,6 +32,7 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
 using Aaru.Logging;
 using Spectre.Console;
+using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Archives;
 
