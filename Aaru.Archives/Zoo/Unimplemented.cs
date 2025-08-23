@@ -44,9 +44,6 @@ public sealed partial class Zoo
         throw new NotImplementedException();
 
     /// <inheritdoc />
-    public ErrorNumber GetUncompressedSize(int entryNumber, out long length) => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber GetAttributes(int entryNumber, out FileAttributes attributes) =>
         throw new NotImplementedException();
 
