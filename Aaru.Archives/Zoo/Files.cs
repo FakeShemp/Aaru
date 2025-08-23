@@ -65,5 +65,21 @@ public sealed partial class Zoo
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber GetCompressedSize(int entryNumber, out long length)
+    {
+        length = -1;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _files.Count) return ErrorNumber.OutOfRange;
+
+        Direntry entry = _files[entryNumber];
+
+        length = entry.size_now;
+
+        return ErrorNumber.NoError;
+    }
+
 #endregion
 }
