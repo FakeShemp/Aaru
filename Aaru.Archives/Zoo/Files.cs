@@ -97,5 +97,18 @@ public sealed partial class Zoo
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber GetAttributes(int entryNumber, out FileAttributes attributes)
+    {
+        // TODO: Decode them
+        attributes = FileAttributes.None;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _files.Count) return ErrorNumber.OutOfRange;
+
+        return ErrorNumber.NoError;
+    }
+
 #endregion
 }

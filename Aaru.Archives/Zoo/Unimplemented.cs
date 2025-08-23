@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using FileAttributes = System.IO.FileAttributes;
 
 namespace Aaru.Archives;
 
@@ -43,9 +42,6 @@ public sealed partial class Zoo
     public ErrorNumber GetEntryNumber(string fileName, bool caseInsensitiveMatch, out int entryNumber) =>
         throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(int entryNumber, out FileAttributes attributes) =>
-        throw new NotImplementedException();
 
     /// <inheritdoc />
     public ErrorNumber ListXAttr(int entryNumber, out List<string> xattrs) => throw new NotImplementedException();
