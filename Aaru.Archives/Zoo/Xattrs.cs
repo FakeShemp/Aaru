@@ -53,5 +53,25 @@ public sealed partial class Zoo
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber GetXattr(int entryNumber, string xattr, ref byte[] buffer)
+    {
+        buffer = null;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _files.Count) return ErrorNumber.OutOfRange;
+
+        Direntry entry = _files[entryNumber];
+
+        if(xattr != "comment" || entry.cmt_size <= 0) return ErrorNumber.NoSuchExtendedAttribute;
+
+        _stream.Position = entry.comment;
+        buffer           = new byte[entry.cmt_size];
+        _stream.ReadExactly(buffer, 0, buffer.Length);
+
+        return ErrorNumber.NoError;
+    }
+
 #endregion
 }

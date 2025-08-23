@@ -43,10 +43,6 @@ public sealed partial class Zoo
 
 
     /// <inheritdoc />
-    public ErrorNumber GetXattr(int entryNumber, string xattr, ref byte[] buffer) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber Stat(int entryNumber, out FileEntryInfo stat) => throw new NotImplementedException();
 
     /// <inheritdoc />
