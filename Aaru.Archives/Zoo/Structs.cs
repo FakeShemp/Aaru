@@ -41,68 +41,69 @@ public sealed partial class Zoo
 {
 #region Nested type: Direntry
 
-    record Direntry
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    readonly struct Direntry
     {
-        /// <summary>length of comment, 0 if none </summary>
-        ushort cmt_size;
-        /// <summary>points to comment;  zero if none </summary>
-        int comment;
+        /// <summary>tag -- redundancy check </summary>
+        public readonly uint zoo_tag;
+        /// <summary>type of directory entry.	always 1 for now </summary>
+        public readonly byte type;
+        /// <summary>0 = no packing, 1 = normal LZW </summary>
+        public readonly byte packing_method;
+        /// <summary>pos'n of next directory entry </summary>
+        public readonly int next;
+        /// <summary>position of this file </summary>
+        public readonly int offset;
         /// <summary>DOS format date </summary>
-        ushort date;
-        /// <summary>will be 1 if deleted, 0 if not </summary>
-        byte deleted;
-        /// <summary>CRC of directory entry </summary>
-        ushort dir_crc;
-        /// <summary>length of directory name </summary>
-        byte dirlen;
-        /// <summary>directory name </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = PATHSIZE)]
-        byte[] dirname;
-        /// <summary>File attributes -- 24 bits </summary>
-        uint fattr;
+        public readonly ushort date;
+        /// <summary>DOS format time </summary>
+        public readonly ushort time;
         /// <summary>CRC of this file </summary>
-        ushort file_crc;
+        public readonly ushort file_crc;
+        public readonly int  org_size;
+        public readonly int  size_now;
+        public readonly byte major_ver;
+        /// <summary>minimum version needed to extract </summary>
+        public readonly byte minor_ver;
+        /// <summary>will be 1 if deleted, 0 if not </summary>
+        public readonly byte deleted;
+        /// <summary>file structure if any </summary>
+        public readonly byte struc;
+        /// <summary>points to comment;  zero if none </summary>
+        public readonly int comment;
+        /// <summary>length of comment, 0 if none </summary>
+        public readonly ushort cmt_size;
         /// <summary>filename </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = FNAMESIZE)]
-        byte[] fname;
-        /// <summary>long filename </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = LFNAMESIZE)]
-        char lfname;
-        byte major_ver;
-        /// <summary>minimum version needed to extract </summary>
-        byte minor_ver;
+        public readonly byte[] fname;
+
+        /// <summary>length of variable part of dir entry </summary>
+        public readonly int var_dir_len;
+        /// <summary>timezone where file was archived </summary>
+        public readonly byte tz;
+        /// <summary>CRC of directory entry </summary>
+        public readonly ushort dir_crc;
 
         /* fields for variable part of directory entry follow */
 
         /// <summary>length of long filename </summary>
-        byte namlen;
-        /// <summary>pos'n of next directory entry </summary>
-        int next;
-        /// <summary>position of this file </summary>
-        int offset;
-        int org_size;
-        /// <summary>0 = no packing, 1 = normal LZW </summary>
-        byte packing_method;
-        int size_now;
-        /// <summary>file structure if any </summary>
-        byte struc;
+        public readonly byte namlen;
+        /// <summary>length of directory name </summary>
+        public readonly byte dirlen;
+        /// <summary>long filename </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = LFNAMESIZE)]
+        public readonly char lfname;
+        /// <summary>directory name </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = PATHSIZE)]
+        public readonly byte[] dirname;
         /// <summary>Filesystem ID </summary>
-        ushort system_id;
-        /// <summary>DOS format time </summary>
-        ushort time;
-        /// <summary>type of directory entry.	always 1 for now </summary>
-        byte type;
-        /// <summary>timezone where file was archived </summary>
-        byte tz;
-
-        /// <summary>length of variable part of dir entry </summary>
-        int var_dir_len;
-        /// <summary>file version number if any </summary>
-        ushort version_no;
+        public readonly ushort system_id;
+        /// <summary>File attributes -- 24 bits </summary>
+        public readonly uint fattr;
         /// <summary>version flag bits -- one byte in archive </summary>
-        ushort vflag;
-        /// <summary>tag -- redundancy check </summary>
-        uint zoo_tag;
+        public readonly ushort vflag;
+        /// <summary>file version number if any </summary>
+        public readonly ushort version_no;
     }
 
 #endregion
@@ -110,28 +111,28 @@ public sealed partial class Zoo
 #region Nested type: ZooHeader
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    record ZooHeader
+    readonly struct ZooHeader
     {
-        /// <summary>length of archive comment </summary>
-        ushort acmt_len;
-        /// <summary>position of archive comment </summary>
-        int acmt_pos;
-        byte major_ver;
-        /// <summary>minimum version to extract all files	</summary>
-        byte minor_ver;
         /// <summary>archive header text </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = SIZ_TEXT)]
-        byte[] text;
-        /// <summary>type of archive header </summary>
-        byte type;
-        /// <summary>byte in archive;	data about versions </summary>
-        ushort vdata;
-        /// <summary>for consistency checking of zoo_start </summary>
-        int zoo_minus;
-        /// <summary>where the archive's data starts </summary>
-        int zoo_start;
+        public readonly byte[] text;
         /// <summary>identifies archives </summary>
-        uint zoo_tag;
+        public readonly uint zoo_tag;
+        /// <summary>where the archive's data starts </summary>
+        public readonly int zoo_start;
+        /// <summary>for consistency checking of zoo_start </summary>
+        public readonly int zoo_minus;
+        public readonly byte major_ver;
+        /// <summary>minimum version to extract all files	</summary>
+        public readonly byte minor_ver;
+        /// <summary>type of archive header </summary>
+        public readonly byte type;
+        /// <summary>position of archive comment </summary>
+        public readonly int acmt_pos;
+        /// <summary>length of archive comment </summary>
+        public readonly ushort acmt_len;
+        /// <summary>byte in archive;	data about versions </summary>
+        public readonly ushort vdata;
     }
 
 #endregion
