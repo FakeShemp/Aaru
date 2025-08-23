@@ -41,9 +41,6 @@ public sealed partial class Zoo
 #region IArchive Members
 
     /// <inheritdoc />
-    public bool Identify(IFilter filter) => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber Open(IFilter filter, Encoding encoding) => throw new NotImplementedException();
 
     /// <inheritdoc />
