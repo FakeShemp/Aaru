@@ -26,6 +26,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Enums;
@@ -108,6 +109,30 @@ public sealed partial class Zoo
         if(entryNumber < 0 || entryNumber >= _files.Count) return ErrorNumber.OutOfRange;
 
         return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetEntryNumber(string fileName, bool caseInsensitiveMatch, out int entryNumber)
+    {
+        // This can be done faster, it's 7am, gimme a break
+        entryNumber = -1;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        StringComparison comparison = caseInsensitiveMatch
+                                          ? StringComparison.CurrentCultureIgnoreCase
+                                          : StringComparison.CurrentCulture;
+
+        for(int i = 0, count = _files.Count; i < count; i++)
+        {
+            if(GetFilename(i, out string name) != ErrorNumber.NoError || !name.Equals(fileName, comparison)) continue;
+
+            entryNumber = i;
+
+            return ErrorNumber.NoError;
+        }
+
+        return ErrorNumber.NoSuchFile;
     }
 
 #endregion

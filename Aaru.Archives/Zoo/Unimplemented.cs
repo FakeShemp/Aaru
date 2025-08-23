@@ -38,11 +38,6 @@ public sealed partial class Zoo
 #region IArchive Members
 
     /// <inheritdoc />
-    public ErrorNumber GetEntryNumber(string fileName, bool caseInsensitiveMatch, out int entryNumber) =>
-        throw new NotImplementedException();
-
-
-    /// <inheritdoc />
     public ErrorNumber Stat(int entryNumber, out FileEntryInfo stat) => throw new NotImplementedException();
 
     /// <inheritdoc />
