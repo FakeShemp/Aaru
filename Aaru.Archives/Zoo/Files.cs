@@ -2,7 +2,7 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : Unimplemented.cs
+// Filename       : Files.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
 // Component      : Zoo plugin.
@@ -26,12 +26,10 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System;
-using System.Collections.Generic;
+using System.IO;
+using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
-using Aaru.CommonTypes.Structs;
-using FileAttributes = System.IO.FileAttributes;
+using Aaru.Helpers;
 
 namespace Aaru.Archives;
 
@@ -40,31 +38,32 @@ public sealed partial class Zoo
 #region IArchive Members
 
     /// <inheritdoc />
-    public ErrorNumber GetEntryNumber(string fileName, bool caseInsensitiveMatch, out int entryNumber) =>
-        throw new NotImplementedException();
+    public ErrorNumber GetFilename(int entryNumber, out string fileName)
+    {
+        fileName = null;
 
-    /// <inheritdoc />
-    public ErrorNumber GetCompressedSize(int entryNumber, out long length) => throw new NotImplementedException();
+        if(!Opened) return ErrorNumber.NotOpened;
 
-    /// <inheritdoc />
-    public ErrorNumber GetUncompressedSize(int entryNumber, out long length) => throw new NotImplementedException();
+        if(entryNumber < 0 || entryNumber >= _files.Count) return ErrorNumber.OutOfRange;
 
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(int entryNumber, out FileAttributes attributes) =>
-        throw new NotImplementedException();
+        Direntry entry = _files[entryNumber];
 
-    /// <inheritdoc />
-    public ErrorNumber ListXAttr(int entryNumber, out List<string> xattrs) => throw new NotImplementedException();
+        fileName = StringHandlers.CToString(entry.lfname ?? entry.fname, _encoding);
 
-    /// <inheritdoc />
-    public ErrorNumber GetXattr(int entryNumber, string xattr, ref byte[] buffer) =>
-        throw new NotImplementedException();
+        if(entry.dirname is null) return ErrorNumber.NoError;
 
-    /// <inheritdoc />
-    public ErrorNumber Stat(int entryNumber, out FileEntryInfo stat) => throw new NotImplementedException();
+        string directoryName = StringHandlers.CToString(entry.dirname, _encoding);
 
-    /// <inheritdoc />
-    public ErrorNumber GetEntry(int entryNumber, out IFilter filter) => throw new NotImplementedException();
+        // Path separators are UNIX in archive, change them
+        if(entry.system_id != 1 && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            directoryName = directoryName.Replace('/', '\\');
+        else
+            directoryName = directoryName.Replace('\\', '/');
+
+        fileName = Path.Combine(directoryName, fileName);
+
+        return ErrorNumber.NoError;
+    }
 
 #endregion
 }

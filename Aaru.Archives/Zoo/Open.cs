@@ -48,9 +48,9 @@ public sealed partial class Zoo
     {
         if(filter.DataForkLength < Marshal.SizeOf<ZooHeader>()) return ErrorNumber.InvalidArgument;
 
-        _stream          =   filter.GetDataForkStream();
-        _stream.Position =   0;
-        encoding         ??= Encoding.UTF8;
+        _stream          = filter.GetDataForkStream();
+        _stream.Position = 0;
+        _encoding        = encoding ?? Encoding.UTF8;
 
         _features = ArchiveSupportedFeature.HasEntryTimestamp |
                     ArchiveSupportedFeature.SupportsFilenames |

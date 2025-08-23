@@ -28,6 +28,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Archives;
@@ -35,6 +36,7 @@ namespace Aaru.Archives;
 public sealed partial class Zoo : IArchive
 {
     const string            MODULE_NAME = "zoo Archive Plugin";
+    Encoding                _encoding;
     ArchiveSupportedFeature _features;
     Stream                  _stream;
 
