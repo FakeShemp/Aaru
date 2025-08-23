@@ -28,7 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -39,15 +38,6 @@ namespace Aaru.Archives;
 public sealed partial class Zoo
 {
 #region IArchive Members
-
-    /// <inheritdoc />
-    public ErrorNumber Open(IFilter filter, Encoding encoding) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public void Close()
-    {
-        throw new NotImplementedException();
-    }
 
     /// <inheritdoc />
     public ErrorNumber GetFilename(int entryNumber, out string fileName) => throw new NotImplementedException();

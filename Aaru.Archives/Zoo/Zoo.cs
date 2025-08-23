@@ -27,13 +27,16 @@
 // ****************************************************************************/
 
 using System;
+using System.IO;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Archives;
 
 public sealed partial class Zoo : IArchive
 {
-    const string MODULE_NAME = "zoo Archive Plugin";
+    const string            MODULE_NAME = "zoo Archive Plugin";
+    ArchiveSupportedFeature _features;
+    Stream                  _stream;
 
 #region IArchive Members
 
@@ -44,15 +47,18 @@ public sealed partial class Zoo : IArchive
     /// <inheritdoc />
     public string Author => Authors.NataliaPortillo;
     /// <inheritdoc />
-    public bool Opened { get; }
+    public bool Opened { get; private set; }
     /// <inheritdoc />
-    public ArchiveSupportedFeature ArchiveFeatures => ArchiveSupportedFeature.HasEntryTimestamp      |
-                                                      ArchiveSupportedFeature.SupportsCompression    |
-                                                      ArchiveSupportedFeature.SupportsFilenames      |
-                                                      ArchiveSupportedFeature.SupportsSubdirectories |
-                                                      ArchiveSupportedFeature.SupportsXAttrs;
+    public ArchiveSupportedFeature ArchiveFeatures => !Opened
+                                                          ? ArchiveSupportedFeature.SupportsFilenames      |
+                                                            ArchiveSupportedFeature.SupportsCompression    |
+                                                            ArchiveSupportedFeature.SupportsSubdirectories |
+                                                            ArchiveSupportedFeature.HasEntryTimestamp      |
+                                                            ArchiveSupportedFeature.SupportsXAttrs
+                                                          : _features;
+
     /// <inheritdoc />
-    public int NumberOfEntries { get; }
+    public int NumberOfEntries => Opened ? _files.Count : -1;
 
 #endregion
 }

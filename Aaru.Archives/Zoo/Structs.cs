@@ -42,7 +42,7 @@ public sealed partial class Zoo
 #region Nested type: Direntry
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    readonly struct Direntry
+    struct Direntry
     {
         /// <summary>tag -- redundancy check </summary>
         public readonly uint zoo_tag;
@@ -78,7 +78,7 @@ public sealed partial class Zoo
         public readonly byte[] fname;
 
         /// <summary>length of variable part of dir entry </summary>
-        public readonly int var_dir_len;
+        public readonly short var_dir_len;
         /// <summary>timezone where file was archived </summary>
         public readonly byte tz;
         /// <summary>CRC of directory entry </summary>
@@ -92,18 +92,18 @@ public sealed partial class Zoo
         public readonly byte dirlen;
         /// <summary>long filename </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = LFNAMESIZE)]
-        public readonly char lfname;
+        public byte[] lfname;
         /// <summary>directory name </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = PATHSIZE)]
-        public readonly byte[] dirname;
+        public byte[] dirname;
         /// <summary>Filesystem ID </summary>
-        public readonly ushort system_id;
+        public ushort system_id;
         /// <summary>File attributes -- 24 bits </summary>
-        public readonly uint fattr;
+        public uint fattr;
         /// <summary>version flag bits -- one byte in archive </summary>
-        public readonly ushort vflag;
+        public ushort vflag;
         /// <summary>file version number if any </summary>
-        public readonly ushort version_no;
+        public ushort version_no;
     }
 
 #endregion
