@@ -128,7 +128,7 @@ public sealed partial class Zoo
 
             AaruLogging.Debug(MODULE_NAME,
                               "[blue]entry.fname[/] = [green]\"{0}\"[/]",
-                              StringHandlers.CToString(entry.fname, encoding));
+                              StringHandlers.CToString(entry.fname, _encoding));
 
             AaruLogging.Debug(MODULE_NAME, "[blue]entry.var_dir_len[/] = [teal]{0}[/]",  entry.var_dir_len);
             AaruLogging.Debug(MODULE_NAME, "[blue]entry.tz[/] = [teal]{0}[/]",           entry.tz);
@@ -138,11 +138,11 @@ public sealed partial class Zoo
 
             AaruLogging.Debug(MODULE_NAME,
                               "[blue]entry.lfname[/] = [green]\"{0}\"[/]",
-                              StringHandlers.CToString(entry.lfname, encoding));
+                              StringHandlers.CToString(entry.lfname, _encoding));
 
             AaruLogging.Debug(MODULE_NAME,
                               "[blue]entry.dirname[/] = [green]\"{0}\"[/]",
-                              StringHandlers.CToString(entry.dirname, encoding));
+                              StringHandlers.CToString(entry.dirname, _encoding));
 
             AaruLogging.Debug(MODULE_NAME, "[blue]entry.system_id[/] = [teal]{0}[/]",  entry.system_id);
             AaruLogging.Debug(MODULE_NAME, "[blue]entry.fattr[/] = [teal]{0}[/]",      entry.fattr);

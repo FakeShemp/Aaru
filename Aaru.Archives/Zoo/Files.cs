@@ -30,7 +30,9 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Structs;
 using Aaru.Helpers;
+using FileAttributes = System.IO.FileAttributes;
 
 namespace Aaru.Archives;
 
@@ -133,6 +135,30 @@ public sealed partial class Zoo
         }
 
         return ErrorNumber.NoSuchFile;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber Stat(int entryNumber, out FileEntryInfo stat)
+    {
+        stat = null;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _files.Count) return ErrorNumber.OutOfRange;
+
+        Direntry entry = _files[entryNumber];
+
+        stat = new FileEntryInfo
+        {
+            Length           = entry.org_size,
+            Attributes       = CommonTypes.Structs.FileAttributes.File,
+            Blocks           = entry.org_size / 512,
+            BlockSize        = 512,
+            LastWriteTime    = DateHandlers.DosToDateTime(entry.date, entry.time),
+            LastWriteTimeUtc = DateHandlers.DosToDateTime(entry.date, entry.time) // TODO: Handle tz, when not 127
+        };
+
+        return ErrorNumber.NoError;
     }
 
 #endregion
