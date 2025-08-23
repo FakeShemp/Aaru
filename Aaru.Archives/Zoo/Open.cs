@@ -94,13 +94,26 @@ public sealed partial class Zoo
 
             entry = Marshal.ByteArrayToStructureLittleEndian<Direntry>(buf);
 
-            int pos                           = 56; // dir_crc
-            if(entry.namlen > 0) entry.lfname = new byte[entry.namlen];
-            Array.Copy(buf, pos, entry.lfname, 0, entry.namlen);
-            pos           += entry.namlen;
-            entry.dirname =  new byte[entry.dirlen];
-            Array.Copy(buf, pos, entry.dirname, 0, entry.dirlen);
-            pos              += entry.dirlen;
+            int pos = 56; // dir_crc
+
+            if(entry.namlen > 0)
+            {
+                entry.lfname = new byte[entry.namlen];
+                Array.Copy(buf, pos, entry.lfname, 0, entry.namlen);
+                pos += entry.namlen;
+            }
+            else
+                entry.lfname = null;
+
+            if(entry.dirlen > 0)
+            {
+                entry.dirname = new byte[entry.dirlen];
+                Array.Copy(buf, pos, entry.dirname, 0, entry.dirlen);
+                pos += entry.dirlen;
+            }
+            else
+                entry.dirname = null;
+
             entry.system_id  =  BitConverter.ToUInt16(buf, pos);
             pos              += 2;
             entry.fattr      =  BitConverter.ToUInt32(buf, pos);
