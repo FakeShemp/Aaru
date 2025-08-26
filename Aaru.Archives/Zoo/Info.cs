@@ -74,18 +74,18 @@ public sealed partial class Zoo
         ZooHeader header = Marshal.ByteArrayToStructureLittleEndian<ZooHeader>(hdr);
 
         AaruLogging.Debug(MODULE_NAME,
-                          "[blue]header.text[/] = [green]\"{0}\"[/]",
+                          "[navy]header.text[/] = [green]\"{0}\"[/]",
                           Markup.Escape(Encoding.UTF8.GetString(header.text).TrimEnd('\0')));
 
-        AaruLogging.Debug(MODULE_NAME, "[blue]header.zoo_tag[/] = [teal]0x{0:X8}[/]", header.zoo_tag);
-        AaruLogging.Debug(MODULE_NAME, "[blue]header.zoo_start[/] = [teal]{0}[/]",    header.zoo_start);
-        AaruLogging.Debug(MODULE_NAME, "[blue]header.zoo_minus[/] = [teal]{0}[/]",    header.zoo_minus);
-        AaruLogging.Debug(MODULE_NAME, "[blue]header.major_ver[/] = [teal]{0}[/]",    header.major_ver);
-        AaruLogging.Debug(MODULE_NAME, "[blue]header.minor_ver[/] = [teal]{0}[/]",    header.minor_ver);
-        AaruLogging.Debug(MODULE_NAME, "[blue]header.type[/] = [teal]{0}[/]",         header.type);
-        AaruLogging.Debug(MODULE_NAME, "[blue]header.acmt_pos[/] = [teal]{0}[/]",     header.acmt_pos);
-        AaruLogging.Debug(MODULE_NAME, "[blue]header.acmt_len[/] = [teal]{0}[/]",     header.acmt_len);
-        AaruLogging.Debug(MODULE_NAME, "[blue]header.vdata[/] = [teal]0x{0:X4}[/]",   header.vdata);
+        AaruLogging.Debug(MODULE_NAME, "[navy]header.zoo_tag[/] = [teal]0x{0:X8}[/]", header.zoo_tag);
+        AaruLogging.Debug(MODULE_NAME, "[navy]header.zoo_start[/] = [teal]{0}[/]",    header.zoo_start);
+        AaruLogging.Debug(MODULE_NAME, "[navy]header.zoo_minus[/] = [teal]{0}[/]",    header.zoo_minus);
+        AaruLogging.Debug(MODULE_NAME, "[navy]header.major_ver[/] = [teal]{0}[/]",    header.major_ver);
+        AaruLogging.Debug(MODULE_NAME, "[navy]header.minor_ver[/] = [teal]{0}[/]",    header.minor_ver);
+        AaruLogging.Debug(MODULE_NAME, "[navy]header.type[/] = [teal]{0}[/]",         header.type);
+        AaruLogging.Debug(MODULE_NAME, "[navy]header.acmt_pos[/] = [teal]{0}[/]",     header.acmt_pos);
+        AaruLogging.Debug(MODULE_NAME, "[navy]header.acmt_len[/] = [teal]{0}[/]",     header.acmt_len);
+        AaruLogging.Debug(MODULE_NAME, "[navy]header.vdata[/] = [teal]0x{0:X4}[/]",   header.vdata);
 
         var sb = new StringBuilder();
         sb.AppendLine("[bold][blue]Zoo archive:[/][/]");
