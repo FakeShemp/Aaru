@@ -107,7 +107,7 @@ public sealed partial class Zoo
     /// <inheritdoc />
     public ErrorNumber GetAttributes(int entryNumber, out FileAttributes attributes)
     {
-        // TODO: Decode them
+        // DOS version of ZOO ignores the attributes, so we just say it's a file
         attributes = FileAttributes.None;
 
         if(!Opened) return ErrorNumber.NotOpened;
@@ -161,6 +161,9 @@ public sealed partial class Zoo
             LastWriteTime    = DateHandlers.DosToDateTime(entry.date, entry.time),
             LastWriteTimeUtc = DateHandlers.DosToDateTime(entry.date, entry.time) // TODO: Handle tz, when not 127
         };
+
+        // POSIX permissions, DOS version of ZOO basically ignored the attributes
+        if((entry.fattr & 1 << 22) > 0) stat.Mode = entry.fattr & 0x1ff;
 
         return ErrorNumber.NoError;
     }
