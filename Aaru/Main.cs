@@ -138,11 +138,14 @@ class MainClass
                 Log.Information(formatted);
             };
 
-            AaruLogging.ErrorEvent += Log.Error;
+            AaruLogging.ErrorEvent   += Log.Error;
             AaruLogging.VerboseEvent += Log.Verbose;
-            AaruLogging.DebugEvent += (module, format, objects) => Log.Debug($"[blue]{module}[/] {format}", objects);
+
+            AaruLogging.DebugEvent += (module, format, objects) =>
+                Log.Debug(string.Format($"[blue]({module})[/] {format}", objects));
+
             AaruLogging.WriteExceptionEvent += Log.Error;
-            AaruLogging.InformationEvent += Log.Information;
+            AaruLogging.InformationEvent    += Log.Information;
 
             Settings.Settings.LoadSettings();
 
