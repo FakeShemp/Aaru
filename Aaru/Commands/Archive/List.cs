@@ -326,15 +326,15 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
 
                                 if(archive.ArchiveFeatures.HasFlag(ArchiveSupportedFeature.SupportsCompression))
                                 {
-                                    table.AddRow($"[blue]{stat.CreationTime?.ToShortDateString()       ?? ""}[/]",
-                                                 $"[dodgerblue1]{stat.CreationTime?.ToLongTimeString() ?? ""}[/]",
+                                    table.AddRow($"[blue]{stat.LastWriteTime?.ToShortDateString()       ?? ""}[/]",
+                                                 $"[dodgerblue1]{stat.LastWriteTime?.ToLongTimeString() ?? ""}[/]",
                                                  $"[gold3]{new string(attr)}[/]",
                                                  $"[lime]{uncompressedSize}[/]",
                                                  $"[teal]{compressedSize}[/]",
                                                  $"[{color}]{Markup.Escape(fileName)}[/]");
 
-                                    AaruLogging.Information($"Date: {stat.CreationTime?.ToShortDateString() ?? ""} "   +
-                                                            $"Time: ({stat.CreationTime?.ToLongTimeString() ?? ""}), " +
+                                    AaruLogging.Information($"Date: {stat.LastWriteTime?.ToShortDateString() ?? ""} "   +
+                                                            $"Time: ({stat.LastWriteTime?.ToLongTimeString() ?? ""}), " +
                                                             $"Attributes: {new string(attr)}, "                        +
                                                             $"Uncompressed Size: {uncompressedSize}, "                 +
                                                             $"Compressed Size: {compressedSize}, "                     +
@@ -342,14 +342,14 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
                                 }
                                 else
                                 {
-                                    table.AddRow($"[blue]{stat.CreationTime?.ToShortDateString()       ?? ""}[/]",
-                                                 $"[dodgerblue1]{stat.CreationTime?.ToLongTimeString() ?? ""}[/]",
+                                    table.AddRow($"[blue]{stat.LastWriteTime?.ToShortDateString()       ?? ""}[/]",
+                                                 $"[dodgerblue1]{stat.LastWriteTime?.ToLongTimeString() ?? ""}[/]",
                                                  $"[gold3]{new string(attr)}[/]",
                                                  $"[lime]{uncompressedSize}[/]",
                                                  $"[{color}]{Markup.Escape(fileName)}[/]");
 
-                                    AaruLogging.Information($"Date: {stat.CreationTime?.ToShortDateString() ?? ""} "   +
-                                                            $"Time: ({stat.CreationTime?.ToLongTimeString() ?? ""}), " +
+                                    AaruLogging.Information($"Date: {stat.LastWriteTime?.ToShortDateString() ?? ""} "   +
+                                                            $"Time: ({stat.LastWriteTime?.ToLongTimeString() ?? ""}), " +
                                                             $"Attributes: {new string(attr)}, "                        +
                                                             $"Uncompressed Size: {uncompressedSize}, "                 +
                                                             $"File Name: {fileName}");
@@ -362,8 +362,8 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
                             }
 
                             table.ShowFooters();
-                            table.Columns[0].Footer($"[blue]{inputFilter.CreationTime.ToShortDateString()}[/]");
-                            table.Columns[1].Footer($"[dodgerblue1]{inputFilter.CreationTime.ToLongTimeString()}[/]");
+                            table.Columns[0].Footer($"[blue]{inputFilter.LastWriteTime.ToShortDateString()}[/]");
+                            table.Columns[1].Footer($"[dodgerblue1]{inputFilter.LastWriteTime.ToLongTimeString()}[/]");
                             table.Columns[3].Footer($"[lime]{totalUncompressed}[/]");
 
                             if(archive.ArchiveFeatures.HasFlag(ArchiveSupportedFeature.SupportsCompression))
