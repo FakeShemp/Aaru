@@ -106,6 +106,8 @@ class MainClass
             options.IsGlobalModeEnabled = true;
         });
 
+        SentrySdk.ConfigureScope(scope => scope.SetExtra("Args", Environment.GetCommandLineArgs()));
+
         try
         {
             AaruLogging.WriteLineEvent += (format, objects) =>
