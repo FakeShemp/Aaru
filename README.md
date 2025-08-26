@@ -125,10 +125,11 @@ Supported disk image formats (read and write)
 * VMware VMDK and COWD images
 * XDF disk images (as created by IBM's XDFCOPY)
 
-Supported disk image formats (read-only)
-========================================
+Supported archives
+==================
 
 * Symbian Installation File (.SIS)
+* ZOO (.ZOO)
 
 Supported partitioning schemes
 ==============================
