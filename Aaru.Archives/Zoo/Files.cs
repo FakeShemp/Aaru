@@ -32,6 +32,7 @@ using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using Aaru.Compression;
 using Aaru.Filters;
 using Aaru.Helpers;
 using Aaru.Helpers.IO;
@@ -175,7 +176,7 @@ public sealed partial class Zoo
 
         Direntry entry = _files[entryNumber];
 
-        if(entry.packing_method > 1) return ErrorNumber.NotImplemented;
+        if(entry.packing_method > 2) return ErrorNumber.InvalidArgument;
 
         Stream stream = new OffsetStream(new NonClosableStream(_stream),
                                          _files[entryNumber].offset,
@@ -184,6 +185,8 @@ public sealed partial class Zoo
         if(_files[entryNumber].org_size == 0) stream = new MemoryStream([]);
 
         if(entry.packing_method == 1) stream = new ForcedSeekStream<LzdStream>(entry.org_size, stream);
+
+        if(entry.packing_method == 2) stream = new Lh5Stream(stream, entry.org_size);
 
         filter = new ZZZNoFilter();
         ErrorNumber errno = filter.Open(stream);

@@ -6,7 +6,7 @@ namespace Aaru.Archives;
 
 public sealed partial class Zoo : IArchive
 {
-    [LibraryImport("Aaru.Compression.Native")]
+    [LibraryImport("libAaru.Compression.Native")]
     private static partial IntPtr CreateLZDContext();
 
     [LibraryImport("libAaru.Compression.Native")]

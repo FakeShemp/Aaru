@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Aaru.CommonTypes\Aaru.CommonTypes.csproj"/>
+    <ProjectReference Include="..\Aaru.Compression\Aaru.Compression.csproj"/>
     <ProjectReference Include="..\Aaru.Logging\Aaru.Logging.csproj"/>
     <ProjectReference Include="..\Aaru.Filters\Aaru.Filters.csproj"/>
     <ProjectReference Include="..\Aaru.Helpers\Aaru.Helpers.csproj"/>
