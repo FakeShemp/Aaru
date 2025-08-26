@@ -106,7 +106,7 @@ public sealed partial class Zoo
         if(header.acmt_len > 0)
         {
             byte[] buffer = new byte[header.acmt_len];
-            stream.Position =   0;
+            stream.Position =   header.acmt_pos;
             encoding        ??= Encoding.UTF8;
             stream.ReadExactly(buffer, 0, buffer.Length);
             sb.AppendLine("[slateblue1]Archive comment:[/]");
