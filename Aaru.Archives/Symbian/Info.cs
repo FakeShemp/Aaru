@@ -39,6 +39,7 @@ using System.Text;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Spectre.Console;
 using Marshal = Aaru.Helpers.Marshal;
 
 namespace Aaru.Archives;
@@ -83,35 +84,35 @@ public sealed partial class Symbian
         stream.EnsureRead(buffer, 0, buffer.Length);
         SymbianHeader sh = Marshal.ByteArrayToStructureLittleEndian<SymbianHeader>(buffer);
 
-        AaruLogging.Debug(MODULE_NAME, "sh.uid1 = {0}",         sh.uid1);
-        AaruLogging.Debug(MODULE_NAME, "sh.uid2 = {0}",         sh.uid2);
-        AaruLogging.Debug(MODULE_NAME, "sh.uid3 = {0}",         sh.uid3);
-        AaruLogging.Debug(MODULE_NAME, "sh.uid4 = {0}",         sh.uid4);
-        AaruLogging.Debug(MODULE_NAME, "sh.crc16 = {0}",        sh.crc16);
-        AaruLogging.Debug(MODULE_NAME, "sh.languages = {0}",    sh.languages);
-        AaruLogging.Debug(MODULE_NAME, "sh.files = {0}",        sh.files);
-        AaruLogging.Debug(MODULE_NAME, "sh.requisites = {0}",   sh.requisites);
-        AaruLogging.Debug(MODULE_NAME, "sh.inst_lang = {0}",    sh.inst_lang);
-        AaruLogging.Debug(MODULE_NAME, "sh.inst_files = {0}",   sh.inst_files);
-        AaruLogging.Debug(MODULE_NAME, "sh.inst_drive = {0}",   sh.inst_drive);
-        AaruLogging.Debug(MODULE_NAME, "sh.capabilities = {0}", sh.capabilities);
-        AaruLogging.Debug(MODULE_NAME, "sh.inst_version = {0}", sh.inst_version);
-        AaruLogging.Debug(MODULE_NAME, "sh.options = {0}",      sh.options);
-        AaruLogging.Debug(MODULE_NAME, "sh.type = {0}",         sh.type);
-        AaruLogging.Debug(MODULE_NAME, "sh.major = {0}",        sh.major);
-        AaruLogging.Debug(MODULE_NAME, "sh.minor = {0}",        sh.minor);
-        AaruLogging.Debug(MODULE_NAME, "sh.variant = {0}",      sh.variant);
-        AaruLogging.Debug(MODULE_NAME, "sh.lang_ptr = {0}",     sh.lang_ptr);
-        AaruLogging.Debug(MODULE_NAME, "sh.files_ptr = {0}",    sh.files_ptr);
-        AaruLogging.Debug(MODULE_NAME, "sh.reqs_ptr = {0}",     sh.reqs_ptr);
-        AaruLogging.Debug(MODULE_NAME, "sh.certs_ptr = {0}",    sh.certs_ptr);
-        AaruLogging.Debug(MODULE_NAME, "sh.comp_ptr = {0}",     sh.comp_ptr);
-        AaruLogging.Debug(MODULE_NAME, "sh.sig_ptr = {0}",      sh.sig_ptr);
-        AaruLogging.Debug(MODULE_NAME, "sh.caps_ptr = {0}",     sh.caps_ptr);
-        AaruLogging.Debug(MODULE_NAME, "sh.instspace = {0}",    sh.instspace);
-        AaruLogging.Debug(MODULE_NAME, "sh.maxinsspc = {0}",    sh.maxinsspc);
-        AaruLogging.Debug(MODULE_NAME, "sh.reserved1 = {0}",    sh.reserved1);
-        AaruLogging.Debug(MODULE_NAME, "sh.reserved2 = {0}",    sh.reserved2);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.uid1[/] = [teal]{0}[/]",         sh.uid1);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.uid2[/] = [teal]{0}[/]",         sh.uid2);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.uid3[/] = [teal]{0}[/]",         sh.uid3);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.uid4[/] = [teal]{0}[/]",         sh.uid4);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.crc16[/] = [teal]{0}[/]",        sh.crc16);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.languages[/] = [teal]{0}[/]",    sh.languages);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.files[/] = [teal]{0}[/]",        sh.files);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.requisites[/] = [teal]{0}[/]",   sh.requisites);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.inst_lang[/] = [teal]{0}[/]",    sh.inst_lang);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.inst_files[/] = [teal]{0}[/]",   sh.inst_files);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.inst_drive[/] = [teal]{0}[/]",   sh.inst_drive);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.capabilities[/] = [teal]{0}[/]", sh.capabilities);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.inst_version[/] = [teal]{0}[/]", sh.inst_version);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.options[/] = [teal]{0}[/]",      sh.options);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.type[/] = [teal]{0}[/]",         sh.type);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.major[/] = [teal]{0}[/]",        sh.major);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.minor[/] = [teal]{0}[/]",        sh.minor);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.variant[/] = [teal]{0}[/]",      sh.variant);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.lang_ptr[/] = [teal]{0}[/]",     sh.lang_ptr);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.files_ptr[/] = [teal]{0}[/]",    sh.files_ptr);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.reqs_ptr[/] = [teal]{0}[/]",     sh.reqs_ptr);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.certs_ptr[/] = [teal]{0}[/]",    sh.certs_ptr);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.comp_ptr[/] = [teal]{0}[/]",     sh.comp_ptr);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.sig_ptr[/] = [teal]{0}[/]",      sh.sig_ptr);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.caps_ptr[/] = [teal]{0}[/]",     sh.caps_ptr);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.instspace[/] = [teal]{0}[/]",    sh.instspace);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.maxinsspc[/] = [teal]{0}[/]",    sh.maxinsspc);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.reserved1[/] = [teal]{0}[/]",    sh.reserved1);
+        AaruLogging.Debug(MODULE_NAME, "[navy]sh.reserved2[/] = [teal]{0}[/]",    sh.reserved2);
 
         _release6 = false;
 
@@ -123,7 +124,7 @@ public sealed partial class Symbian
             _release6 = true;
 
             description.AppendLine();
-            description.AppendLine("This file format is not yet implemented, no more information can be decoded.");
+            description.AppendLine(Localization.This_file_format_is_not_yet_implemented);
 
             information = description.ToString();
 
@@ -188,10 +189,10 @@ public sealed partial class Symbian
         for(int i = 0; i < sh.languages; i++)
         {
             AaruLogging.Debug(MODULE_NAME,
-                                       "Found component name for language {0} at {1} with a length of {2} bytes",
-                                       languages[i],
-                                       componentRecord.namesPointers[i],
-                                       componentRecord.namesLengths[i]);
+                              Localization.Found_component_name_for_language_0_at_1_with_a_length_of_2_bytes,
+                              languages[i],
+                              componentRecord.namesPointers[i],
+                              componentRecord.namesLengths[i]);
 
             br.BaseStream.Seek(componentRecord.namesPointers[i], SeekOrigin.Begin);
             buffer                   = br.ReadBytes((int)componentRecord.namesLengths[i]);
@@ -230,7 +231,7 @@ public sealed partial class Symbian
         for(int i = 0; i < languages.Count; i++)
         {
             if(i > 0) description.Append(", ");
-            description.Append($"{languages[i]}");
+            description.Append($"[italic][rosybrown]{languages[i]}[/][/]");
         }
 
         description.AppendLine();
@@ -240,7 +241,7 @@ public sealed partial class Symbian
         {
             description.AppendFormat(Localization.Component_name_for_language_with_code_0_1,
                                      languages[i],
-                                     componentRecord.names[i])
+                                     Markup.Escape(componentRecord.names[i]))
                        .AppendLine();
         }
 
@@ -276,7 +277,7 @@ public sealed partial class Symbian
                 description.AppendFormat(Localization.Requisite_0, r).AppendLine();
 
                 description.AppendFormat("\t" + Localization.Required_UID_0_version_1_2,
-                                         DecodePlatformUid(requisiteRecord.uid),
+                                         Markup.Escape(DecodePlatformUid(requisiteRecord.uid)),
                                          requisiteRecord.majorVersion,
                                          requisiteRecord.minorVersion)
                            .AppendLine();
@@ -292,7 +293,7 @@ public sealed partial class Symbian
 
                     description.AppendFormat("\t" + Localization.Requisite_for_language_0_1,
                                              languages[i],
-                                             _encoding.GetString(buffer))
+                                             Markup.Escape(_encoding.GetString(buffer)))
                                .AppendLine();
                 }
 
@@ -342,7 +343,7 @@ public sealed partial class Symbian
             description.AppendLine(Localization.Files_for_all_languages);
 
             foreach(DecodedFileRecord file in _files.Where(t => t.language is null))
-                description.AppendLine($"{file.destinationName}");
+                description.AppendLine($"[green]{Markup.Escape(file.destinationName)}[/]");
 
             description.AppendLine();
         }
@@ -354,7 +355,7 @@ public sealed partial class Symbian
             description.AppendFormat(Localization.Files_for_0_language, lang).AppendLine();
 
             foreach(DecodedFileRecord file in _files.Where(t => t.language == lang))
-                description.AppendLine($"{file.destinationName}");
+                description.AppendLine($"[green]{Markup.Escape(file.destinationName)}[/]");
 
             description.AppendLine();
         }
@@ -369,7 +370,9 @@ public sealed partial class Symbian
 
                 foreach(KeyValuePair<string, string> kvp in option.names)
                 {
-                    description.AppendFormat("\t" + Localization.Name_for_language_0_1, kvp.Key, kvp.Value)
+                    description.AppendFormat("\t" + Localization.Name_for_language_0_1,
+                                             kvp.Key,
+                                             Markup.Escape(kvp.Value))
                                .AppendLine();
                 }
             }
@@ -379,8 +382,8 @@ public sealed partial class Symbian
 
         if(_conditions.Count > 0)
         {
-            description.AppendLine("Conditions:");
-            foreach(string condition in _conditions) description.AppendLine(condition);
+            description.AppendLine(Localization.Conditions);
+            foreach(string condition in _conditions) description.AppendLine(Markup.Escape($"[green]{condition}[/]"));
         }
 
         information = description.ToString();

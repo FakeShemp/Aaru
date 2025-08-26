@@ -19,67 +19,67 @@
         <value>Fichero de Instalación de Symbian</value>
     </data>
     <data name="Application_ID_0" xml:space="preserve">
-        <value>ID de aplicación: 0x{0:X8}</value>
+        <value>[bold][slateblue1]ID de aplicación:[/][/] [teal]0x{0:X8}[/]</value>
     </data>
     <data name="Capabilities" xml:space="preserve">
-        <value>Capacidades:</value>
+        <value>[bold][slateblue1]Capacidades:[/][/]</value>
     </data>
     <data name="CRC16_of_header_0" xml:space="preserve">
-        <value>CRC16 de la cabecera: 0x{0:X4}</value>
+        <value>[bold][slateblue1]CRC16 de la cabecera:[/][/] [teal]0x{0:X4}[/]</value>
     </data>
     <data name="File_contains_0_files_pointer_1" xml:space="preserve">
-        <value>El archivo contiene {0} ficheros (pointer: {1})</value>
+        <value>[bold][slateblue1]El archivo contiene [green]{0}[/] ficheros (puntero: [teal]{1}[/])[/][/]</value>
     </data>
     <data name="File_contains_0_languages" xml:space="preserve">
-        <value>El archivo contiene {0} idiomas:</value>
+        <value>[bold][slateblue1]El archivo contiene [teal]{0}[/] idiomas:[/][/]</value>
     </data>
     <data name="File_contains_0_requisites" xml:space="preserve">
-        <value>El archivo contiene {0} requisitos:</value>
+        <value>[slateblue1]El archivo contiene [teal]{0}[/] requisitos:[/]</value>
     </data>
     <data name="SIS_contains_an_application" xml:space="preserve">
-        <value>El archivo contiene una aplicación</value>
+        <value>[slateblue1]El archivo contiene una aplicación[/]</value>
     </data>
     <data name="Symbian_3_or_later" xml:space="preserve">
-        <value>SymbianOS 3 o superior</value>
+        <value>[green]SymbianOS 3 o superior[/]</value>
     </data>
     <data name="Symbian_6_or_later" xml:space="preserve">
-        <value>SymbianOS 6 o superior</value>
+        <value>[green]SymbianOS 6 o superior[/]</value>
     </data>
     <data name="Symbian_9_1_or_later" xml:space="preserve">
-        <value>SymbianOS 9.1 o superior</value>
+        <value>[green]SymbianOS 9.1 o superior[/]</value>
     </data>
     <data name="Symbian_Installation_File" xml:space="preserve">
-        <value>Fichero de Instalación de Symbian</value>
+        <value>[fuchsia]Fichero de Instalación de Symbian[/]</value>
     </data>
     <data name="UIDs_checksum_0" xml:space="preserve">
-        <value>Checksum de los UIDs: 0x{0:X8}</value>
+        <value>[bold][slateblue1]Checksum de los UIDs:[/][/] [teal]0x{0:X8}[/]</value>
     </data>
     <data name="Unknown_EPOC_magic_0" xml:space="preserve">
-        <value>Mágica EPOC 0x{0:X8} desconocida</value>
+        <value>[slateblue1]Mágica EPOC [teal]0x{0:X8}[/] desconocida[/]</value>
     </data>
     <data name="Component_name_for_language_with_code_0_1" xml:space="preserve">
-        <value>Nombre del componente para el idioma con código {0}: {1}</value>
+        <value>[bold][slateblue1]Nombre del componente para el idioma con código [rosybrown][italic]{0}[/][/]:[/][/] [green]{1}[/]</value>
     </data>
     <data name="Component_version_0_1" xml:space="preserve">
-        <value>Versión del componente: {0}.{1}</value>
+        <value>[bold][slateblue1]Versión del componente:[/][/] [teal]{0}.{1}[/]</value>
     </data>
     <data name="Files_for_0_language" xml:space="preserve">
-        <value>Ficheros para el idioma `{0}`:</value>
+        <value>[bold][slateblue1]Ficheros para el idioma [rosybrown][italic]`{0}`[/][/]:[/][/]</value>
     </data>
     <data name="Files_for_all_languages" xml:space="preserve">
-        <value>Ficheros para todos los idiomas:</value>
+        <value>[bold][slateblue1]Ficheros para todos los idiomas:[/]</value>
     </data>
     <data name="Required_UID_0_version_1_2" xml:space="preserve">
-        <value>Requerida {0} versión {1}.{2}</value>
+        <value>[bold][slateblue1]Requerida [rosybrown]{0}[/] versión [teal]{1}.{2}[/][/][/]</value>
     </data>
     <data name="Required_variant_0" xml:space="preserve">
-        <value>Variante requerida: {0}</value>
+        <value>[bold][slateblue1]Variante requerida:[/][/] [rosybrown]{0}[/]</value>
     </data>
     <data name="Requisite_0" xml:space="preserve">
-        <value>Requisito nº {0}:</value>
+        <value>[bold][slateblue1]Requisito [teal]nº {0}[/]:[/][/]</value>
     </data>
     <data name="Requisite_for_language_0_1" xml:space="preserve">
-        <value>Requisito para el idioma {0}: {1}</value>
+        <value>[bold][slateblue1]Requisito para el idioma [italic][rosybrown]{0}[/][/]:[/][/] [green]{1}[/]</value>
     </data>
     <data name="SIS_Platform_UID_Nokia_Belle" xml:space="preserve">
         <value>Nokia Belle</value>
@@ -121,7 +121,7 @@
         <value>UID 0x{0:X8}</value>
     </data>
     <data name="Archive_options_0" xml:space="preserve">
-        <value>Opciones del archivo: {0}</value>
+        <value>[bold][slateblue1]Opciones del archivo:[/][/] [blue]{0}[/]</value>
     </data>
     <data name="SIS_Platform_UID_UIQ_21" xml:space="preserve">
         <value>UIQ v2.1</value>
@@ -232,9 +232,18 @@
         <value>Nokia E61</value>
     </data>
     <data name="Option_0" xml:space="preserve">
-        <value>Opción {0}:</value>
+        <value>[bold][slateblue1]Opción [teal]{0}[/]:[/][/]</value>
     </data>
     <data name="Name_for_language_0_1" xml:space="preserve">
-        <value>Nombre para el idioma {0}: {1}</value>
+        <value>[bold][slateblue1]Nombre para el idioma [italic][rosybrown]{0}[/][/]: [green]{1}[/]</value>
+    </data>
+    <data name="Found_component_name_for_language_0_at_1_with_a_length_of_2_bytes" xml:space="preserve">
+        <value>[slateblue1]Encontrado nombre de componente para el idioma [italic][rosybrown]{0}[/][/] en [teal]{1}[/] con una longitud de [lime]{2}[/] bytes</value>
+    </data>
+    <data name="This_file_format_is_not_yet_implemented" xml:space="preserve">
+        <value>[red]Este formato todavía no está implementado, no se puede decodificar más información.[/]</value>
+    </data>
+    <data name="Conditions" xml:space="preserve">
+        <value>[bold][slateblue1]Condiciones:[/][/]</value>
     </data>
 </root>
