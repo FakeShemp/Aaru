@@ -1,6 +1,7 @@
 using System;
-using System.IO;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Structs;
+using FileAttributes = System.IO.FileAttributes;
 
 namespace Aaru.Archives;
 
@@ -86,6 +87,45 @@ public sealed partial class Arc
         if(entryNumber < 0 || entryNumber >= _entries.Count) return ErrorNumber.OutOfRange;
 
         attributes = _entries[entryNumber].Attributes;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber Stat(int entryNumber, out FileEntryInfo stat)
+    {
+        stat = null;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _entries.Count) return ErrorNumber.OutOfRange;
+
+        Entry entry = _entries[entryNumber];
+
+        stat = new FileEntryInfo
+        {
+            Attributes       = CommonTypes.Structs.FileAttributes.None,
+            Blocks           = entry.Uncompressed / 512,
+            BlockSize        = 512,
+            Length           = entry.Uncompressed,
+            LastWriteTime    = entry.LastWriteTime,
+            LastWriteTimeUtc = entry.LastWriteTime
+        };
+
+        if(entry.Attributes.HasFlag(FileAttributes.Directory))
+            stat.Attributes |= CommonTypes.Structs.FileAttributes.Directory;
+
+        if(entry.Attributes.HasFlag(FileAttributes.Archive))
+            stat.Attributes |= CommonTypes.Structs.FileAttributes.Archive;
+
+        if(entry.Attributes.HasFlag(FileAttributes.Hidden))
+            stat.Attributes |= CommonTypes.Structs.FileAttributes.Hidden;
+
+        if(entry.Attributes.HasFlag(FileAttributes.ReadOnly))
+            stat.Attributes |= CommonTypes.Structs.FileAttributes.ReadOnly;
+
+        if(entry.Attributes.HasFlag(FileAttributes.System))
+            stat.Attributes |= CommonTypes.Structs.FileAttributes.System;
 
         return ErrorNumber.NoError;
     }
