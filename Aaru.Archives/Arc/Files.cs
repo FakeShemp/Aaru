@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Aaru.CommonTypes.Enums;
 
 namespace Aaru.Archives;
@@ -70,6 +71,21 @@ public sealed partial class Arc
         if(entryNumber < 0 || entryNumber >= _entries.Count) return ErrorNumber.OutOfRange;
 
         length = _entries[entryNumber].Uncompressed;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetAttributes(int entryNumber, out FileAttributes attributes)
+    {
+        // DOS version of ZOO ignores the attributes, so we just say it's a file
+        attributes = FileAttributes.None;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _entries.Count) return ErrorNumber.OutOfRange;
+
+        attributes = _entries[entryNumber].Attributes;
 
         return ErrorNumber.NoError;
     }
