@@ -10,10 +10,6 @@ public sealed partial class Arc
 #region IArchive Members
 
     /// <inheritdoc />
-    public ErrorNumber GetXattr(int entryNumber, string xattr, ref byte[] buffer) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber Stat(int entryNumber, out FileEntryInfo stat) => throw new NotImplementedException();
 
     /// <inheritdoc />
