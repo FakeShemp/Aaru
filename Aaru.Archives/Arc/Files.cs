@@ -114,6 +114,8 @@ public sealed partial class Arc
 
         if(entry.Attributes.HasFlag(FileAttributes.Directory))
             stat.Attributes |= CommonTypes.Structs.FileAttributes.Directory;
+        else
+            stat.Attributes |= CommonTypes.Structs.FileAttributes.File;
 
         if(entry.Attributes.HasFlag(FileAttributes.Archive))
             stat.Attributes |= CommonTypes.Structs.FileAttributes.Archive;
