@@ -44,8 +44,9 @@ public sealed partial class Arc
 
         // Not a valid filename character
         for(int i = 0; i < 11; i++)
-            if(header.filename[i] > 0 && header.filename[i] < 0x20)
-                return ErrorNumber.InvalidArgument;
+        {
+            if(header.filename[i] > 0 && header.filename[i] < 0x20) return ErrorNumber.InvalidArgument;
+        }
 
         // If the filename is not 8.3, it's probably not an ARC file, but maybe it is in MVS/UNIX?
         if(header.filename[11] != 0) return ErrorNumber.InvalidArgument;
@@ -193,7 +194,7 @@ public sealed partial class Arc
                 Method        = header.method,
                 Filename      = Path.Combine(path, filename),
                 Compressed    = header.compressed,
-                Uncompressed  = header.uncompressed,
+                Uncompressed  = header.method == Method.UnpackedOld ? header.compressed : header.uncompressed,
                 LastWriteTime = DateHandlers.DosToDateTime(header.date, header.time),
                 DataOffset    = _stream.Position,
                 Comment       = comment,

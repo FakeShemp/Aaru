@@ -60,5 +60,19 @@ public sealed partial class Arc
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber GetUncompressedSize(int entryNumber, out long length)
+    {
+        length = -1;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _entries.Count) return ErrorNumber.OutOfRange;
+
+        length = _entries[entryNumber].Uncompressed;
+
+        return ErrorNumber.NoError;
+    }
+
 #endregion
 }
