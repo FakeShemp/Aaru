@@ -1,11 +1,16 @@
 using System;
+using System.IO;
+using System.Text;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Archives;
 
 public sealed partial class Arc : IArchive
 {
-    const string MODULE_NAME = "arc Archive Plugin";
+    const string            MODULE_NAME = "arc Archive Plugin";
+    Encoding                _encoding;
+    ArchiveSupportedFeature _features;
+    Stream                  _stream;
 
 #region IArchive Members
 
@@ -16,12 +21,15 @@ public sealed partial class Arc : IArchive
     /// <inheritdoc />
     public string Author => Authors.NataliaPortillo;
     /// <inheritdoc />
-    public bool Opened { get; }
+    public bool Opened { get; private set; }
     /// <inheritdoc />
-    public ArchiveSupportedFeature ArchiveFeatures =>
-        ArchiveSupportedFeature.SupportsCompression | ArchiveSupportedFeature.SupportsFilenames;
+    public ArchiveSupportedFeature ArchiveFeatures => !Opened
+                                                          ? ArchiveSupportedFeature.SupportsCompression |
+                                                            ArchiveSupportedFeature.SupportsFilenames   |
+                                                            ArchiveSupportedFeature.HasEntryTimestamp
+                                                          : _features;
     /// <inheritdoc />
-    public int NumberOfEntries { get; }
+    public int NumberOfEntries => Opened ? _entries.Count : -1;
 
 #endregion
 }

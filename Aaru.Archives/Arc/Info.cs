@@ -27,7 +27,7 @@ public sealed partial class Arc
         // Not a valid marker
         if(header.marker != MARKER) return false;
 
-        switch(header.method)
+        switch((int)header.method)
         {
             // Not a valid compression method
             case > 12 and < 20:
@@ -41,9 +41,8 @@ public sealed partial class Arc
         for(int i = 0; i < 11; i++)
 
             // Not a valid filename character
-        {
-            if(header.filename[i] > 0 && header.filename[i] < 0x20) return false;
-        }
+            if(header.filename[i] > 0 && header.filename[i] < 0x20)
+                return false;
 
         // If the filename is not 8.3, it's probably not an ARC file, but maybe it is in MVS/UNIX?
         if(header.filename[11] != 0) return false;
@@ -85,7 +84,7 @@ public sealed partial class Arc
         // Not a valid marker
         if(header.marker != MARKER) return;
 
-        switch(header.method)
+        switch((int)header.method)
         {
             // Not a valid compression method
             case > 12 and < 20:
@@ -99,9 +98,8 @@ public sealed partial class Arc
         for(int i = 0; i < 11; i++)
 
             // Not a valid filename character
-        {
-            if(header.filename[i] > 0 && header.filename[i] < 0x20) return;
-        }
+            if(header.filename[i] > 0 && header.filename[i] < 0x20)
+                return;
 
         // If the filename is not 8.3, it's probably not an ARC file, but maybe it is in MVS/UNIX?
         if(header.filename[11] != 0) return;
