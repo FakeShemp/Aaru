@@ -42,15 +42,6 @@ public sealed partial class Arc
                 return ErrorNumber.InvalidArgument;
         }
 
-        // Not a valid filename character
-        for(int i = 0; i < 11; i++)
-        {
-            if(header.filename[i] > 0 && header.filename[i] < 0x20) return ErrorNumber.InvalidArgument;
-        }
-
-        // If the filename is not 8.3, it's probably not an ARC file, but maybe it is in MVS/UNIX?
-        if(header.filename[11] != 0) return ErrorNumber.InvalidArgument;
-
         // Compressed size is larger than file size
         // Hope for the best
         if(header.compressed >= _stream.Length && (int)header.method != 31) return ErrorNumber.InvalidArgument;

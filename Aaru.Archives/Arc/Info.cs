@@ -38,15 +38,6 @@ public sealed partial class Arc
                 return false;
         }
 
-        for(int i = 0; i < 11; i++)
-
-            // Not a valid filename character
-            if(header.filename[i] > 0 && header.filename[i] < 0x20)
-                return false;
-
-        // If the filename is not 8.3, it's probably not an ARC file, but maybe it is in MVS/UNIX?
-        if(header.filename[11] != 0) return false;
-
         // Compressed size is larger than file size
         // Hope for the best
         return header.compressed < stream.Length;
@@ -94,15 +85,6 @@ public sealed partial class Arc
             case > 31:
                 return;
         }
-
-        for(int i = 0; i < 11; i++)
-
-            // Not a valid filename character
-            if(header.filename[i] > 0 && header.filename[i] < 0x20)
-                return;
-
-        // If the filename is not 8.3, it's probably not an ARC file, but maybe it is in MVS/UNIX?
-        if(header.filename[11] != 0) return;
 
         // Compressed size is larger than file size
         if(header.compressed >= stream.Length) return;
