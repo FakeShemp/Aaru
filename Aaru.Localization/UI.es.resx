@@ -2934,7 +2934,7 @@ Probadores:
         <value>[slateblue1]Formato de archivo identificado por [green]{0}[/].[/]</value>
     </data>
     <data name="Archive_format_identified_by_0_1" xml:space="preserve">
-        <value>[slateblue1[Formato de archivo identificado por [green]{0}[/] ([italic][red]{1}[/][/]).[/]</value>
+        <value>[slateblue1]Formato de archivo identificado por [green]{0}[/] ([italic][red]{1}[/][/]).[/]</value>
     </data>
     <data name="Archive_format_not_identified" xml:space="preserve">
         <value>[red]Formato de archivo no identificado.[/]</value>
