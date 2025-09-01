@@ -1,6 +1,11 @@
 using System;
+using System.IO;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using Aaru.Compression;
+using Aaru.Filters;
+using Aaru.Helpers.IO;
 using FileAttributes = System.IO.FileAttributes;
 
 namespace Aaru.Archives;
@@ -132,5 +137,31 @@ public sealed partial class Arc
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber GetEntry(int entryNumber, out IFilter filter)
+    {
+        filter = null;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _entries.Count) return ErrorNumber.OutOfRange;
+
+        if((int)_entries[entryNumber].Method >= 20) return ErrorNumber.InvalidArgument;
+
+        Stream stream = new OffsetStream(new NonClosableStream(_stream),
+                                         _entries[entryNumber].DataOffset,
+                                         _entries[entryNumber].DataOffset + _entries[entryNumber].Compressed);
+
+        if(_entries[entryNumber].Uncompressed == 0) stream = new MemoryStream([]);
+
+        filter = new ZZZNoFilter();
+        ErrorNumber errno = filter.Open(stream);
+
+        if(errno == ErrorNumber.NoError) return ErrorNumber.NoError;
+
+        stream.Close();
+
+        return errno;
+    }
 #endregion
 }
