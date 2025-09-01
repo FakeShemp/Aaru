@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace Aaru.Archives;
 
-public partial class Arc
+public sealed partial class Arc
 {
 #region Nested type: Header
 

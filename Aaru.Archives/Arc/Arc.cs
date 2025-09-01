@@ -3,7 +3,7 @@ using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Archives;
 
-public partial class Arc : IArchive
+public sealed partial class Arc : IArchive
 {
     const string MODULE_NAME = "arc Archive Plugin";
 

@@ -8,7 +8,7 @@ using FileAttributes = System.IO.FileAttributes;
 
 namespace Aaru.Archives;
 
-public partial class Arc
+public sealed partial class Arc
 {
 #region IArchive Members
 

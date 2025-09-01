@@ -1,6 +1,6 @@
 namespace Aaru.Archives;
 
-public partial class Arc
+public sealed partial class Arc
 {
 #region ArchiveInformationType enum
 
