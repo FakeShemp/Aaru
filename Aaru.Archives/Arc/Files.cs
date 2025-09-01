@@ -148,11 +148,16 @@ public sealed partial class Arc
 
         if((int)_entries[entryNumber].Method >= 20) return ErrorNumber.InvalidArgument;
 
+        if(_entries[entryNumber].Method > Method.Pack) return ErrorNumber.NotSupported;
+
         Stream stream = new OffsetStream(new NonClosableStream(_stream),
                                          _entries[entryNumber].DataOffset,
                                          _entries[entryNumber].DataOffset + _entries[entryNumber].Compressed);
 
         if(_entries[entryNumber].Uncompressed == 0) stream = new MemoryStream([]);
+
+        if(_entries[entryNumber].Method == Method.Pack)
+            stream = new PackStream(stream, _entries[entryNumber].Uncompressed);
 
         filter = new ZZZNoFilter();
         ErrorNumber errno = filter.Open(stream);
@@ -163,5 +168,6 @@ public sealed partial class Arc
 
         return errno;
     }
+
 #endregion
 }
