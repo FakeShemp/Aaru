@@ -41,6 +41,7 @@
     <Compile Include="ADC.cs"/>
     <Compile Include="AppleRle.cs"/>
     <Compile Include="Arc\CrunchStream.cs"/>
+    <Compile Include="Arc\LzwStream.cs"/>
     <Compile Include="Arc\PackStream.cs"/>
     <Compile Include="Arc\SqueezeStream.cs"/>
     <Compile Include="BZip2.cs"/>

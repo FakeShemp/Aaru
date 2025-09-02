@@ -149,7 +149,7 @@ public sealed partial class Arc
 
         if((int)_entries[entryNumber].Method >= 20) return ErrorNumber.InvalidArgument;
 
-        if(_entries[entryNumber].Method > Method.CrunchFastHash) return ErrorNumber.NotSupported;
+        if(_entries[entryNumber].Method > Method.Squash) return ErrorNumber.NotSupported;
 
         Stream stream = new OffsetStream(new NonClosableStream(_stream),
                                          _entries[entryNumber].DataOffset,
@@ -171,6 +171,12 @@ public sealed partial class Arc
 
         if(_entries[entryNumber].Method == Method.CrunchFastHash)
             stream = new CrunchStream(stream, _entries[entryNumber].Uncompressed, true, true);
+
+        if(_entries[entryNumber].Method == Method.CrunchDynamic)
+            stream = new LzwStream(stream, _entries[entryNumber].Uncompressed, false);
+
+        if(_entries[entryNumber].Method == Method.Squash)
+            stream = new LzwStream(stream, _entries[entryNumber].Uncompressed, true);
 
         filter = new ZZZNoFilter();
         ErrorNumber errno = filter.Open(stream);
