@@ -4,6 +4,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Compression.Arc;
+using Aaru.Compression.Pak;
 using Aaru.Filters;
 using Aaru.Helpers.IO;
 using FileAttributes = System.IO.FileAttributes;
@@ -149,7 +150,7 @@ public sealed partial class Arc
 
         if((int)_entries[entryNumber].Method >= 20) return ErrorNumber.InvalidArgument;
 
-        if(_entries[entryNumber].Method > Method.Squash) return ErrorNumber.NotSupported;
+        if(_entries[entryNumber].Method > Method.Crush) return ErrorNumber.NotSupported;
 
         Stream stream = new OffsetStream(new NonClosableStream(_stream),
                                          _entries[entryNumber].DataOffset,
@@ -177,6 +178,9 @@ public sealed partial class Arc
 
         if(_entries[entryNumber].Method == Method.Squash)
             stream = new LzwStream(stream, _entries[entryNumber].Uncompressed, true);
+
+        if(_entries[entryNumber].Method == Method.Crush)
+            stream = new CrushStream(stream, _entries[entryNumber].Uncompressed);
 
         filter = new ZZZNoFilter();
         ErrorNumber errno = filter.Open(stream);

@@ -1,0 +1,108 @@
+using System;
+using System.IO;
+using System.Runtime.InteropServices;
+
+namespace Aaru.Compression.Pak;
+
+public partial class CrushStream : Stream
+{
+    readonly byte[] _decoded;
+    readonly long   _length;
+    long            _position;
+
+    public CrushStream(Stream compressedStream, long decompressedLength)
+    {
+        if(compressedStream == null) throw new ArgumentNullException(nameof(compressedStream));
+        if(!compressedStream.CanRead) throw new ArgumentException("Stream must be readable", nameof(compressedStream));
+        if(decompressedLength < 0) throw new ArgumentOutOfRangeException(nameof(decompressedLength));
+
+        // Read full compressed data into memory
+        compressedStream.Position = 0;
+        byte[] inBuf = new byte[compressedStream.Length];
+        compressedStream.ReadExactly(inBuf, 0, inBuf.Length);
+
+        // Allocate output buffer
+        _decoded = new byte[decompressedLength];
+        nint outLen = (nint)decompressedLength;
+
+        // Call native decompressor
+        int err = pak_decompress_crush(inBuf, inBuf.Length, _decoded, ref outLen);
+
+        if(err != 0) throw new InvalidOperationException("Crush decompression failed");
+
+        // Adjust actual length in case it differs
+        _length   = outLen;
+        _position = 0;
+    }
+
+    public override bool CanRead  => true;
+    public override bool CanSeek  => true;
+    public override bool CanWrite => false;
+    public override long Length   => _length;
+
+    public override long Position
+    {
+        get => _position;
+        set => Seek(value, SeekOrigin.Begin);
+    }
+
+    [LibraryImport("libAaru.Compression.Native")]
+    public static partial int pak_decompress_crush(byte[] in_buf, nint in_len, byte[] out_buf, ref nint out_len);
+
+    public override void Flush()
+    {
+        // no-op
+    }
+
+    /// <summary>
+    ///     Reads up to <paramref name="count" /> bytes from the decompressed buffer
+    ///     into <paramref name="buffer" />, starting at <paramref name="offset" />.
+    /// </summary>
+    public override int Read(byte[] buffer, int offset, int count)
+    {
+        if(buffer         == null) throw new ArgumentNullException(nameof(buffer));
+        if(offset         < 0) throw new ArgumentOutOfRangeException(nameof(offset));
+        if(count          < 0) throw new ArgumentOutOfRangeException(nameof(count));
+        if(offset + count > buffer.Length) throw new ArgumentException("offset+count exceeds buffer length");
+
+        long remaining = _length - _position;
+
+        if(remaining <= 0) return 0;
+
+        int toRead = (int)Math.Min(count, remaining);
+        Array.Copy(_decoded, _position, buffer, offset, toRead);
+        _position += toRead;
+
+        return toRead;
+    }
+
+    /// <summary>
+    ///     Sets the current position within the decompressed buffer.
+    /// </summary>
+    public override long Seek(long offset, SeekOrigin origin)
+    {
+        long newPos = origin switch
+                      {
+                          SeekOrigin.Begin   => offset,
+                          SeekOrigin.Current => _position + offset,
+                          SeekOrigin.End     => _length   + offset,
+                          _                  => throw new ArgumentException("Invalid SeekOrigin", nameof(origin))
+                      };
+
+        if(newPos < 0 || newPos > _length) throw new IOException("Attempt to seek outside the buffer");
+
+        _position = newPos;
+
+        return _position;
+    }
+
+    public override void SetLength(long value)
+    {
+        throw new NotSupportedException("Cannot resize decompressed buffer");
+    }
+
+    public override void Write(byte[] buffer, int offset, int count)
+    {
+        throw new NotSupportedException("Stream is read-only");
+    }
+}
