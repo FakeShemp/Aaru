@@ -28,7 +28,7 @@ public partial class SqueezeStream : Stream
         // Call native decompressor
         int err = arc_decompress_squeeze(inBuf, inBuf.Length, _decoded, ref outLen);
 
-        if(err != 0) throw new InvalidOperationException("LH5 decompression failed");
+        if(err != 0) throw new InvalidOperationException("Squeeze decompression failed");
 
         // Adjust actual length in case it differs
         _length   = outLen;

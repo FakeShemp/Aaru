@@ -4,13 +4,13 @@ using System.Runtime.InteropServices;
 
 namespace Aaru.Compression.Arc;
 
-public partial class PackStream : Stream
+public partial class CrunchStream : Stream
 {
     readonly byte[] _decoded;
     readonly long   _length;
     long            _position;
 
-    public PackStream(Stream compressedStream, long decompressedLength)
+    public CrunchStream(Stream compressedStream, long decompressedLength, bool rle, bool fastHash)
     {
         if(compressedStream == null) throw new ArgumentNullException(nameof(compressedStream));
         if(!compressedStream.CanRead) throw new ArgumentException("Stream must be readable", nameof(compressedStream));
@@ -25,10 +25,16 @@ public partial class PackStream : Stream
         _decoded = new byte[decompressedLength];
         nint outLen = (nint)decompressedLength;
 
-        // Call native decompressor
-        int err = arc_decompress_pack(inBuf, inBuf.Length, _decoded, ref outLen);
+        int err = rle switch
+                  {
+                      // Call native decompressor
+                      false when !fastHash => arc_decompress_crunch(inBuf, inBuf.Length, _decoded, ref outLen),
+                      true when !fastHash => arc_decompress_crunch_nrpack(inBuf, inBuf.Length, _decoded, ref outLen),
+                      true => arc_decompress_crunch_nrpack_new(inBuf, inBuf.Length, _decoded, ref outLen),
+                      _ => throw new InvalidOperationException("Invalid combination of RLE and FastHash options")
+                  };
 
-        if(err != 0) throw new InvalidOperationException("Pack decompression failed");
+        if(err != 0) throw new InvalidOperationException("LZW decompression failed");
 
         // Adjust actual length in case it differs
         _length   = outLen;
@@ -47,7 +53,15 @@ public partial class PackStream : Stream
     }
 
     [LibraryImport("libAaru.Compression.Native")]
-    public static partial int arc_decompress_pack(byte[] in_buf, nint in_len, byte[] out_buf, ref nint out_len);
+    public static partial int arc_decompress_crunch(byte[] in_buf, nint in_len, byte[] out_buf, ref nint out_len);
+
+    [LibraryImport("libAaru.Compression.Native")]
+    public static partial int
+        arc_decompress_crunch_nrpack(byte[] in_buf, nint in_len, byte[] out_buf, ref nint out_len);
+
+    [LibraryImport("libAaru.Compression.Native")]
+    public static partial int arc_decompress_crunch_nrpack_new(byte[]   in_buf, nint in_len, byte[] out_buf,
+                                                               ref nint out_len);
 
     public override void Flush()
     {
