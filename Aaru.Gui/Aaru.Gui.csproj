@@ -27,6 +27,7 @@
     <PackageReference Include="Humanizer.Core"/>
     <PackageReference Include="JetBrains.Annotations"/>
     <PackageReference Include="MessageBox.Avalonia"/>
+    <PackageReference Include="Sentry" />
     <!-- TODO: Abandoned project need to find replacement
     <PackageReference Include="OxyPlot.Avalonia-alpha-2020-04-15"/>
     -->

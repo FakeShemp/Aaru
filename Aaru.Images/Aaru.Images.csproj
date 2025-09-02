@@ -37,6 +37,7 @@
     <PackageReference Include="DotNetZip"/>
     <PackageReference Include="Humanizer"/>
     <PackageReference Include="plist-cil"/>
+    <PackageReference Include="Sentry" />
     <PackageReference Include="SharpCompress"/>
     <PackageReference Include="System.Text.Json"/>
     <PackageReference Include="System.ValueTuple"/>

@@ -41,6 +41,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Win32.Registry"/>
     <PackageReference Include="plist-cil"/>
+    <PackageReference Include="Sentry" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Sentry">
