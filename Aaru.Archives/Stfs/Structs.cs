@@ -6,7 +6,7 @@ public sealed partial class Stfs
 {
 #region Nested type: ConsolePackage
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     struct ConsolePackage
     {
         public PackageMagic Magic;
@@ -48,7 +48,7 @@ public sealed partial class Stfs
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
     struct LocalizedString
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
         public string Name;
     }
 
@@ -96,9 +96,9 @@ public sealed partial class Stfs
         public byte[] Padding;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
         public byte[] DeviceId;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 9)]
         public LocalizedString[] DisplayName;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 9)]
         public LocalizedString[] DisplayDescription;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
         public string PublisherName;

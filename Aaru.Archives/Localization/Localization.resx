@@ -254,4 +254,76 @@
     <data name="Conditions" xml:space="preserve">
         <value>[bold][slateblue1]Conditions:[/][/]</value>
     </data>
+    <data name="Console_package" xml:space="preserve">
+        <value>[bold][blue]Console package:[/][/]</value>
+    </data>
+    <data name="Live_package" xml:space="preserve">
+        <value>[bold][blue]Live! package:[/][/]</value>
+    </data>
+    <data name="Microsoft_package" xml:space="preserve">
+        <value>[bold][blue]Microsoft package:[/][/]</value>
+    </data>
+    <data name="Certificate_owner_console_ID_0_1_2_3_4" xml:space="preserve">
+        <value>[bold][slateblue1]Certificate owner console ID:[/][/] [teal]{0:X2}{1:X2}{2:X2}{3:X2}{4:X2}[/]</value>
+    </data>
+    <data name="Certificate_owner_console_part_number_0" xml:space="preserve">
+        <value>[bold][slateblue1]Certificate owner console part number:[/][/] [teal]{0}[/]</value>
+    </data>
+    <data name="Certificate_owner_console_type_0" xml:space="preserve">
+        <value>[bold][slateblue1]Certificate owner console type:[/][/] [green]{0}[/]</value>
+    </data>
+    <data name="Certificate_date_of_generation_0" xml:space="preserve">
+        <value>[bold][slateblue1]Certificate date of generation:[/][/] [aqua]{0}[/]</value>
+    </data>
+    <data name="Signatures_SHA1_0" xml:space="preserve">
+        <value>[bold][slateblue1]Signature's SHA1:[/][/] [teal]{0}[/]</value>
+    </data>
+    <data name="Header_size_0" xml:space="preserve">
+        <value>[bold][slateblue1]Header size:[/][/] [lime]{0}[/]</value>
+    </data>
+    <data name="Content_type_0" xml:space="preserve">
+        <value>[bold][slateblue1]Content type:[/][/] [green]{0}[/]</value>
+    </data>
+    <data name="Content_size_0" xml:space="preserve">
+        <value>[bold][slateblue1]Content size:[/][/] [lime]{0}[/]</value>
+    </data>
+    <data name="Title_ID_0" xml:space="preserve">
+        <value>[bold][slateblue1]Title ID:[/][/] [teal]{0:X8}[/]</value>
+    </data>
+    <data name="Media_ID_0" xml:space="preserve">
+        <value>[bold][slateblue1]Media ID:[/][/] [teal]{0:X8}[/]</value>
+    </data>
+    <data name="Publisher_name_0" xml:space="preserve">
+        <value>[bold][slateblue1]Publisher name:[/][/] [green]{0}[/]</value>
+    </data>
+    <data name="Title_name_0" xml:space="preserve">
+        <value>[bold][slateblue1]Title name:[/][/] [green]{0}[/]</value>
+    </data>
+    <data name="Metadata_version_0" xml:space="preserve">
+        <value>[bold][slateblue1]Metadata version:[/][/] [teal]{0}[/]</value>
+    </data>
+    <data name="Version_0" xml:space="preserve">
+        <value>[bold][slateblue1]Version:[/][/] [teal]{0}[/]</value>
+    </data>
+    <data name="Base_version_0" xml:space="preserve">
+        <value>[bold][slateblue1]Base version:[/][/] [teal]{0}[/]</value>
+    </data>
+    <data name="Descriptor_type_0" xml:space="preserve">
+        <value>[bold][slateblue1]Descriptor type:[/][/] [teal]{0}[/]</value>
+    </data>
+    <data name="Display_name_0" xml:space="preserve">
+        <value>[bold][slateblue1]Display name:[/][/] [green]{0}[/]</value>
+    </data>
+    <data name="Display_description_0" xml:space="preserve">
+        <value>[bold][slateblue1]Display description:[/][/] [green]{0}[/]</value>
+    </data>
+    <data name="Device_ID_0" xml:space="preserve">
+        <value>[bold][slateblue1]Device ID:[/][/] [teal]{0}[/]</value>
+    </data>
+    <data name="Console_ID_0" xml:space="preserve">
+        <value>[bold][slateblue1]Console ID:[/][/] [teal]{0}[/]</value>
+    </data>
+    <data name="Profile_ID_0" xml:space="preserve">
+        <value>[bold][slateblue1]Profile ID:[/][/] [teal]{0}[/]</value>
+    </data>
 </root>

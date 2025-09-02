@@ -506,5 +506,149 @@ namespace Aaru.Archives {
                 return ResourceManager.GetString("Conditions", resourceCulture);
             }
         }
+        
+        internal static string Console_package {
+            get {
+                return ResourceManager.GetString("Console_package", resourceCulture);
+            }
+        }
+        
+        internal static string Live_package {
+            get {
+                return ResourceManager.GetString("Live_package", resourceCulture);
+            }
+        }
+        
+        internal static string Microsoft_package {
+            get {
+                return ResourceManager.GetString("Microsoft_package", resourceCulture);
+            }
+        }
+        
+        internal static string Certificate_owner_console_ID_0_1_2_3_4 {
+            get {
+                return ResourceManager.GetString("Certificate_owner_console_ID_0_1_2_3_4", resourceCulture);
+            }
+        }
+        
+        internal static string Certificate_owner_console_part_number_0 {
+            get {
+                return ResourceManager.GetString("Certificate_owner_console_part_number_0", resourceCulture);
+            }
+        }
+        
+        internal static string Certificate_owner_console_type_0 {
+            get {
+                return ResourceManager.GetString("Certificate_owner_console_type_0", resourceCulture);
+            }
+        }
+        
+        internal static string Certificate_date_of_generation_0 {
+            get {
+                return ResourceManager.GetString("Certificate_date_of_generation_0", resourceCulture);
+            }
+        }
+        
+        internal static string Signatures_SHA1_0 {
+            get {
+                return ResourceManager.GetString("Signatures_SHA1_0", resourceCulture);
+            }
+        }
+        
+        internal static string Header_size_0 {
+            get {
+                return ResourceManager.GetString("Header_size_0", resourceCulture);
+            }
+        }
+        
+        internal static string Content_type_0 {
+            get {
+                return ResourceManager.GetString("Content_type_0", resourceCulture);
+            }
+        }
+        
+        internal static string Content_size_0 {
+            get {
+                return ResourceManager.GetString("Content_size_0", resourceCulture);
+            }
+        }
+        
+        internal static string Title_ID_0 {
+            get {
+                return ResourceManager.GetString("Title_ID_0", resourceCulture);
+            }
+        }
+        
+        internal static string Media_ID_0 {
+            get {
+                return ResourceManager.GetString("Media_ID_0", resourceCulture);
+            }
+        }
+        
+        internal static string Publisher_name_0 {
+            get {
+                return ResourceManager.GetString("Publisher_name_0", resourceCulture);
+            }
+        }
+        
+        internal static string Title_name_0 {
+            get {
+                return ResourceManager.GetString("Title_name_0", resourceCulture);
+            }
+        }
+        
+        internal static string Metadata_version_0 {
+            get {
+                return ResourceManager.GetString("Metadata_version_0", resourceCulture);
+            }
+        }
+        
+        internal static string Version_0 {
+            get {
+                return ResourceManager.GetString("Version_0", resourceCulture);
+            }
+        }
+        
+        internal static string Base_version_0 {
+            get {
+                return ResourceManager.GetString("Base_version_0", resourceCulture);
+            }
+        }
+        
+        internal static string Descriptor_type_0 {
+            get {
+                return ResourceManager.GetString("Descriptor_type_0", resourceCulture);
+            }
+        }
+        
+        internal static string Display_name_0 {
+            get {
+                return ResourceManager.GetString("Display_name_0", resourceCulture);
+            }
+        }
+        
+        internal static string Display_description_0 {
+            get {
+                return ResourceManager.GetString("Display_description_0", resourceCulture);
+            }
+        }
+        
+        internal static string Device_ID_0 {
+            get {
+                return ResourceManager.GetString("Device_ID_0", resourceCulture);
+            }
+        }
+        
+        internal static string Console_ID_0 {
+            get {
+                return ResourceManager.GetString("Console_ID_0", resourceCulture);
+            }
+        }
+        
+        internal static string Profile_ID_0 {
+            get {
+                return ResourceManager.GetString("Profile_ID_0", resourceCulture);
+            }
+        }
     }
 }

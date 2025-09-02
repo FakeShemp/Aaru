@@ -246,4 +246,76 @@
     <data name="Conditions" xml:space="preserve">
         <value>[bold][slateblue1]Condiciones:[/][/]</value>
     </data>
+    <data name="Base_version_0" xml:space="preserve">
+        <value>[bold][slateblue1]Versión base:[/][/] [teal]{0}[/]</value>
+    </data>
+    <data name="Certificate_date_of_generation_0" xml:space="preserve">
+        <value>[bold][slateblue1]Fecha de generación del certificado:[/][/] [aqua]{0}[/]</value>
+    </data>
+    <data name="Certificate_owner_console_ID_0_1_2_3_4" xml:space="preserve">
+        <value>[bold][slateblue1]ID de consola dueña del certificado:[/][/] [teal]{0:X2}{1:X2}{2:X2}{3:X2}{4:X2}[/]</value>
+    </data>
+    <data name="Certificate_owner_console_part_number_0" xml:space="preserve">
+        <value>[bold][slateblue1]Número de parte de consola dueña del certificado:[/][/] [teal]{0}[/]</value>
+    </data>
+    <data name="Certificate_owner_console_type_0" xml:space="preserve">
+        <value>[bold][slateblue1]Tipo de consola dueña del certificado:[/][/] [green]{0}[/]</value>
+    </data>
+    <data name="Console_ID_0" xml:space="preserve">
+        <value>[bold][slateblue1]ID de consola:[/][/] [teal]{0}[/]</value>
+    </data>
+    <data name="Console_package" xml:space="preserve">
+        <value>[bold][blue]Paquete de consola:[/][/]</value>
+    </data>
+    <data name="Content_size_0" xml:space="preserve">
+        <value>[bold][slateblue1]Tamaño del contenido:[/][/] [lime]{0}[/]</value>
+    </data>
+    <data name="Content_type_0" xml:space="preserve">
+        <value>[bold][slateblue1]Tipo del contenido:[/][/] [green]{0}[/]</value>
+    </data>
+    <data name="Descriptor_type_0" xml:space="preserve">
+        <value>[bold][slateblue1]Tipo del descriptor:[/][/] [teal]{0}[/]</value>
+    </data>
+    <data name="Device_ID_0" xml:space="preserve">
+        <value>[bold][slateblue1]ID del dispositivo:[/][/] [teal]{0}[/]</value>
+    </data>
+    <data name="Display_description_0" xml:space="preserve">
+        <value>[bold][slateblue1]Descripción:[/][/] [green]{0}[/]</value>
+    </data>
+    <data name="Display_name_0" xml:space="preserve">
+        <value>[bold][slateblue1]Nombre:[/][/] [green]{0}[/]</value>
+    </data>
+    <data name="Header_size_0" xml:space="preserve">
+        <value>[bold][slateblue1]Tamaño de cabecera:[/][/] [lime]{0}[/]</value>
+    </data>
+    <data name="Live_package" xml:space="preserve">
+        <value>[bold][blue]Paquete Live!:[/][/]</value>
+    </data>
+    <data name="Media_ID_0" xml:space="preserve">
+        <value>[bold][slateblue1]ID del medio:[/][/] [teal]{0:X8}[/]</value>
+    </data>
+    <data name="Metadata_version_0" xml:space="preserve">
+        <value>[bold][slateblue1]Versión de los metadatos:[/][/] [teal]{0}[/]</value>
+    </data>
+    <data name="Microsoft_package" xml:space="preserve">
+        <value>[bold][blue]Paquete de Microsoft:[/][/]</value>
+    </data>
+    <data name="Profile_ID_0" xml:space="preserve">
+        <value>[bold][slateblue1]ID del perfil:[/][/] [teal]{0}[/]</value>
+    </data>
+    <data name="Publisher_name_0" xml:space="preserve">
+        <value>[bold][slateblue1]Nombre del publicador:[/][/] [green]{0}[/]</value>
+    </data>
+    <data name="Signatures_SHA1_0" xml:space="preserve">
+        <value>[bold][slateblue1]SHA1 de la firma:[/][/] [teal]{0}[/]</value>
+    </data>
+    <data name="Title_name_0" xml:space="preserve">
+        <value>[bold][slateblue1]Título:[/][/] [green]{0}[/]</value>
+    </data>
+    <data name="Title_ID_0" xml:space="preserve">
+        <value>[bold][slateblue1]ID del título:[/][/] [teal]{0:X8}[/]</value>
+    </data>
+    <data name="Version_0" xml:space="preserve">
+        <value>[bold][slateblue1]Versión:[/][/] [teal]{0}[/]</value>
+    </data>
 </root>

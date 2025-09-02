@@ -51,6 +51,7 @@
     <ProjectReference Include="..\Aaru.Helpers\Aaru.Helpers.csproj"/>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Humanizer"/>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
     <PackageReference Include="SharpCompress"/>
   </ItemGroup>

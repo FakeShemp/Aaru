@@ -12,7 +12,6 @@ public sealed partial class Stfs
 {
 #region IArchive Members
 
-
     /// <inheritdoc />
     public ErrorNumber Open(IFilter filter, Encoding encoding) => throw new NotImplementedException();
 
@@ -51,12 +50,6 @@ public sealed partial class Stfs
 
     /// <inheritdoc />
     public ErrorNumber GetEntry(int entryNumber, out IFilter filter) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public void GetInformation(IFilter filter, Encoding encoding, out string information)
-    {
-        throw new NotImplementedException();
-    }
 
 #endregion
 }
