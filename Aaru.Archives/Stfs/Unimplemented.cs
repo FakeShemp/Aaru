@@ -12,8 +12,6 @@ public sealed partial class Stfs
 {
 #region IArchive Members
 
-    /// <inheritdoc />
-    public bool Identify(IFilter filter) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public ErrorNumber Open(IFilter filter, Encoding encoding) => throw new NotImplementedException();
