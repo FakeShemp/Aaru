@@ -150,7 +150,7 @@ public sealed partial class Arc
 
         if((int)_entries[entryNumber].Method >= 20) return ErrorNumber.InvalidArgument;
 
-        if(_entries[entryNumber].Method > Method.Crush) return ErrorNumber.NotSupported;
+        if(_entries[entryNumber].Method > Method.Distill) return ErrorNumber.NotSupported;
 
         Stream stream = new OffsetStream(new NonClosableStream(_stream),
                                          _entries[entryNumber].DataOffset,
@@ -181,6 +181,9 @@ public sealed partial class Arc
 
         if(_entries[entryNumber].Method == Method.Crush)
             stream = new CrushStream(stream, _entries[entryNumber].Uncompressed);
+
+        if(_entries[entryNumber].Method == Method.Distill)
+            stream = new DistillStream(stream, _entries[entryNumber].Uncompressed);
 
         filter = new ZZZNoFilter();
         ErrorNumber errno = filter.Open(stream);
