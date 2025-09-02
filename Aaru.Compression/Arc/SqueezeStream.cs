@@ -4,13 +4,13 @@ using System.Runtime.InteropServices;
 
 namespace Aaru.Compression.Arc;
 
-public partial class PackStream : Stream
+public partial class SqueezeStream : Stream
 {
     readonly byte[] _decoded;
     readonly long   _length;
     long            _position;
 
-    public PackStream(Stream compressedStream, long decompressedLength)
+    public SqueezeStream(Stream compressedStream, long decompressedLength)
     {
         if(compressedStream == null) throw new ArgumentNullException(nameof(compressedStream));
         if(!compressedStream.CanRead) throw new ArgumentException("Stream must be readable", nameof(compressedStream));
@@ -26,7 +26,7 @@ public partial class PackStream : Stream
         nint outLen = (nint)decompressedLength;
 
         // Call native decompressor
-        int err = arc_decompress_pack(inBuf, inBuf.Length, _decoded, ref outLen);
+        int err = arc_decompress_squeeze(inBuf, inBuf.Length, _decoded, ref outLen);
 
         if(err != 0) throw new InvalidOperationException("LH5 decompression failed");
 
@@ -47,7 +47,7 @@ public partial class PackStream : Stream
     }
 
     [LibraryImport("libAaru.Compression.Native")]
-    public static partial int arc_decompress_pack(byte[] in_buf, nint in_len, byte[] out_buf, ref nint out_len);
+    public static partial int arc_decompress_squeeze(byte[] in_buf, nint in_len, byte[] out_buf, ref nint out_len);
 
     public override void Flush()
     {

@@ -3,10 +3,11 @@ using System.IO;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
-using Aaru.Compression;
+using Aaru.Compression.Arc;
 using Aaru.Filters;
 using Aaru.Helpers.IO;
 using FileAttributes = System.IO.FileAttributes;
+using PackStream = Aaru.Compression.Arc.PackStream;
 
 namespace Aaru.Archives;
 
@@ -148,7 +149,7 @@ public sealed partial class Arc
 
         if((int)_entries[entryNumber].Method >= 20) return ErrorNumber.InvalidArgument;
 
-        if(_entries[entryNumber].Method > Method.Pack) return ErrorNumber.NotSupported;
+        if(_entries[entryNumber].Method > Method.Squeeze) return ErrorNumber.NotSupported;
 
         Stream stream = new OffsetStream(new NonClosableStream(_stream),
                                          _entries[entryNumber].DataOffset,
@@ -158,6 +159,9 @@ public sealed partial class Arc
 
         if(_entries[entryNumber].Method == Method.Pack)
             stream = new PackStream(stream, _entries[entryNumber].Uncompressed);
+
+        if(_entries[entryNumber].Method == Method.Squeeze)
+            stream = new SqueezeStream(stream, _entries[entryNumber].Uncompressed);
 
         filter = new ZZZNoFilter();
         ErrorNumber errno = filter.Open(stream);
