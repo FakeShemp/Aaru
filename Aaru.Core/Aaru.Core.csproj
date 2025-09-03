@@ -66,6 +66,7 @@
     <PackageReference Include="Sentry" />
     <PackageReference Include="SkiaSharp"/>
     <PackageReference Include="Spectre.Console"/>
+    <PackageReference Include="Spectre.Console.Json" />
     <PackageReference Include="System.ValueTuple"/>
     <PackageReference Include="System.Collections"/>
     <PackageReference Include="System.Diagnostics.Debug"/>
