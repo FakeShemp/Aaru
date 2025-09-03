@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Aaru.CommonTypes.Enums;
 
 namespace Aaru.Archives;
@@ -69,6 +70,23 @@ public sealed partial class Stfs
         if(entryNumber < 0 || entryNumber >= _entries.Length) return ErrorNumber.OutOfRange;
 
         length = _entries[entryNumber].FileSize;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetAttributes(int entryNumber, out FileAttributes attributes)
+    {
+        attributes = FileAttributes.None;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _entries.Length) return ErrorNumber.OutOfRange;
+
+        if(_entries[entryNumber].IsDirectory)
+            attributes |= FileAttributes.Directory;
+        else
+            attributes |= FileAttributes.Normal;
 
         return ErrorNumber.NoError;
     }
