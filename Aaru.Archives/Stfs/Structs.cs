@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace Aaru.Archives;
@@ -27,6 +28,44 @@ public sealed partial class Stfs
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
         public byte[] Signature;
         public Metadata Metadata;
+    }
+
+#endregion
+
+#region Nested type: FileEntry
+
+    struct FileEntry
+    {
+        public string   Filename;
+        public int      StartingBlock;
+        public int      FileSize;
+        public DateTime LastWrite;
+        public DateTime LastAccess;
+        public bool     IsDirectory;
+    }
+
+#endregion
+
+#region Nested type: FileTableEntry
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    struct FileTableEntry
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x28)]
+        public byte[] Filename;
+        public byte FilenameLength;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public byte[] AllocatedBlocks;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public byte[] AllocatedBlocksCopy;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public byte[] StartingBlock;
+        public short  PathIndicator;
+        public int    FileSize;
+        public ushort LastWriteDate;
+        public ushort LastWriteTime;
+        public ushort LastAccessDate;
+        public ushort LastAccessTime;
     }
 
 #endregion
@@ -126,6 +165,25 @@ public sealed partial class Stfs
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 296)]
         public byte[] Padding;
         public Metadata Metadata;
+    }
+
+#endregion
+
+#region Nested type: VolumeDescriptor
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    struct VolumeDescriptor
+    {
+        public byte  Length;
+        public byte  Reserved;
+        public byte  BlockSeparation;
+        public short FileTableBlockCount;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public byte[] FileTableBlockNumber;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x14)]
+        public byte[] TopHashTableHash;
+        public int TotalAllocatedBlocks;
+        public int TotalUnallocatedBlocks;
     }
 
 #endregion

@@ -1,10 +1,14 @@
 using System;
+using System.IO;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Archives;
 
 public sealed partial class Stfs : IArchive
 {
+    FileEntry[] _entries;
+    Stream      _stream;
+
 #region IArchive Members
 
     /// <inheritdoc />
@@ -14,12 +18,14 @@ public sealed partial class Stfs : IArchive
     /// <inheritdoc />
     public string Author => Authors.NataliaPortillo;
     /// <inheritdoc />
-    public bool Opened { get; }
+    public bool Opened { get; private set; }
     /// <inheritdoc />
-    public ArchiveSupportedFeature ArchiveFeatures => ArchiveSupportedFeature.HasEntryTimestamp |
-                                                      ArchiveSupportedFeature.SupportsFilenames;
+    public ArchiveSupportedFeature ArchiveFeatures => ArchiveSupportedFeature.HasEntryTimestamp      |
+                                                      ArchiveSupportedFeature.SupportsFilenames      |
+                                                      ArchiveSupportedFeature.HasExplicitDirectories |
+                                                      ArchiveSupportedFeature.SupportsSubdirectories;
     /// <inheritdoc />
-    public int NumberOfEntries { get; }
+    public int NumberOfEntries => Opened ? _entries.Length : -1;
 
 #endregion
 }
