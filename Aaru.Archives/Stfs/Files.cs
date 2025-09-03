@@ -46,5 +46,32 @@ public sealed partial class Stfs
         return ErrorNumber.NoSuchFile;
     }
 
+    public ErrorNumber GetCompressedSize(int entryNumber, out long length)
+    {
+        length = -1;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _entries.Length) return ErrorNumber.OutOfRange;
+
+        length = _entries[entryNumber].FileSize;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetUncompressedSize(int entryNumber, out long length)
+    {
+        length = -1;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _entries.Length) return ErrorNumber.OutOfRange;
+
+        length = _entries[entryNumber].FileSize;
+
+        return ErrorNumber.NoError;
+    }
+
 #endregion
 }
