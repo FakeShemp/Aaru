@@ -1,6 +1,8 @@
 using System;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using Aaru.Filters;
 using FileAttributes = System.IO.FileAttributes;
 
 namespace Aaru.Archives;
@@ -123,6 +125,32 @@ public sealed partial class Stfs
             stat.Attributes |= CommonTypes.Structs.FileAttributes.File;
 
         return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetEntry(int entryNumber, out IFilter filter)
+    {
+        filter = null;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _entries.Length) return ErrorNumber.OutOfRange;
+
+        var stream = new StfsStream(_stream,
+                                    _entries[entryNumber].StartingBlock,
+                                    _entries[entryNumber].FileSize,
+                                    _headerSize,
+                                    _blockSeparation,
+                                    _isConsole);
+
+        filter = new ZZZNoFilter();
+        ErrorNumber errno = filter.Open(stream);
+
+        if(errno == ErrorNumber.NoError) return ErrorNumber.NoError;
+
+        stream.Close();
+
+        return errno;
     }
 
 #endregion

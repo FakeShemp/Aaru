@@ -101,6 +101,10 @@ public sealed partial class Stfs
             _entries[i].IsDirectory = (entries[i].FilenameLength & 0x80) > 0;
         }
 
+        _headerSize      = (int)header.Metadata.HeaderSize;
+        _blockSeparation = vd.BlockSeparation;
+        _isConsole       = header.Magic == PackageMagic.Console;
+
         Opened = true;
 
         return ErrorNumber.NoError;

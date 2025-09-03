@@ -6,7 +6,10 @@ namespace Aaru.Archives;
 
 public sealed partial class Stfs : IArchive
 {
+    byte        _blockSeparation;
     FileEntry[] _entries;
+    int         _headerSize;
+    bool        _isConsole;
     Stream      _stream;
 
 #region IArchive Members
