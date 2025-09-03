@@ -128,7 +128,10 @@ Supported disk image formats (read and write)
 Supported archives
 ==================
 
+* ARC (.ARC)
+* PAK (.PAK)
 * Symbian Installation File (.SIS)
+* Xbox 360 Secure Transacted File System (STFS)
 * ZOO (.ZOO)
 
 Supported partitioning schemes
