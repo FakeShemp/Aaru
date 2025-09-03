@@ -86,7 +86,6 @@ public sealed partial class Arc
     /// <inheritdoc />
     public ErrorNumber GetAttributes(int entryNumber, out FileAttributes attributes)
     {
-        // DOS version of ZOO ignores the attributes, so we just say it's a file
         attributes = FileAttributes.None;
 
         if(!Opened) return ErrorNumber.NotOpened;
