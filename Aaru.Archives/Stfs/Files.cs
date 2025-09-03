@@ -1,6 +1,7 @@
 using System;
-using System.IO;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Structs;
+using FileAttributes = System.IO.FileAttributes;
 
 namespace Aaru.Archives;
 
@@ -87,6 +88,39 @@ public sealed partial class Stfs
             attributes |= FileAttributes.Directory;
         else
             attributes |= FileAttributes.Normal;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber Stat(int entryNumber, out FileEntryInfo stat)
+    {
+        stat = null;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _entries.Length) return ErrorNumber.OutOfRange;
+
+        FileEntry entry = _entries[entryNumber];
+
+        stat = new FileEntryInfo
+        {
+            Attributes       = CommonTypes.Structs.FileAttributes.None,
+            Blocks           = entry.FileSize / 4096,
+            BlockSize        = 4096,
+            Length           = entry.FileSize,
+            LastWriteTime    = entry.LastWrite,
+            LastWriteTimeUtc = entry.LastWrite,
+            AccessTime       = entry.LastAccess,
+            AccessTimeUtc    = entry.LastAccess
+        };
+
+        if(entry.FileSize % 4096 != 0) stat.Blocks++;
+
+        if(entry.IsDirectory)
+            stat.Attributes |= CommonTypes.Structs.FileAttributes.Directory;
+        else
+            stat.Attributes |= CommonTypes.Structs.FileAttributes.File;
 
         return ErrorNumber.NoError;
     }
