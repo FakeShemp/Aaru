@@ -12,9 +12,6 @@ public sealed partial class Stfs
 #region IArchive Members
 
     /// <inheritdoc />
-    public ErrorNumber GetFilename(int entryNumber, out string fileName) => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber GetEntryNumber(string fileName, bool caseInsensitiveMatch, out int entryNumber) =>
         throw new NotImplementedException();
 
