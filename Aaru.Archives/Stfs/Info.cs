@@ -119,10 +119,10 @@ public sealed partial class Stfs
         if(header.Metadata.MediaId > 0) sb.AppendFormat(Localization.Media_ID_0, header.Metadata.MediaId).AppendLine();
 
         if(header.Metadata.PublisherName != "")
-            sb.AppendFormat(Localization.Publisher_name_0, header.Metadata.PublisherName).AppendLine();
+            sb.AppendFormat(Localization.Publisher_name_0, Markup.Escape(header.Metadata.PublisherName)).AppendLine();
 
         if(header.Metadata.TitleName != "")
-            sb.AppendFormat(Localization.Title_name_0, header.Metadata.TitleName).AppendLine();
+            sb.AppendFormat(Localization.Title_name_0, Markup.Escape(header.Metadata.TitleName)).AppendLine();
 
         sb.AppendFormat(Localization.Metadata_version_0, header.Metadata.MetadataVersion).AppendLine();
         if(header.Metadata.Version > 0) sb.AppendFormat(Localization.Version_0, header.Metadata.Version).AppendLine();
@@ -134,11 +134,11 @@ public sealed partial class Stfs
 
         foreach(LocalizedString displayName in
                 header.Metadata.DisplayName.Where(displayName => displayName.Name is not ""))
-            sb.AppendFormat(Localization.Display_name_0, displayName.Name).AppendLine();
+            sb.AppendFormat(Localization.Display_name_0, Markup.Escape(displayName.Name)).AppendLine();
 
         foreach(LocalizedString description in
                 header.Metadata.DisplayDescription.Where(description => description.Name is not ""))
-            sb.AppendFormat(Localization.Display_description_0, description.Name).AppendLine();
+            sb.AppendFormat(Localization.Display_description_0, Markup.Escape(description.Name)).AppendLine();
 
         if(header.Metadata.DeviceId.Any(c => c != 0x00))
             sb.AppendFormat(Localization.Device_ID_0,
