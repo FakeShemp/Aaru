@@ -75,12 +75,4 @@
     <PackageReference Include="System.Runtime.Handles"/>
     <PackageReference Include="System.Runtime.InteropServices"/>
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Sentry">
-      <HintPath>..\..\..\..\.nuget\packages\sentry\5.14.1\lib\net9.0\Sentry.dll</HintPath>
-    </Reference>
-    <Reference Include="Spectre.Console.Json">
-      <HintPath>..\..\..\..\.nuget\packages\spectre.console.json\0.50.0\lib\net9.0\Spectre.Console.Json.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>

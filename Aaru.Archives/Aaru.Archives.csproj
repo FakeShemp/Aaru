@@ -66,9 +66,4 @@
       <DependentUpon>Localization.resx</DependentUpon>
     </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Spectre.Console">
-      <HintPath>..\..\..\..\.nuget\packages\spectre.console\0.50.0\lib\net9.0\Spectre.Console.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>

@@ -65,9 +65,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Aaru.Generators\Aaru.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Sentry">
-      <HintPath>..\..\..\..\.nuget\packages\sentry\5.14.1\lib\net9.0\Sentry.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>
