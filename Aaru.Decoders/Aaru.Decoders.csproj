@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Sentry" />
+    <PackageReference Include="Spectre.Console" />
     <PackageReference Include="System.ComponentModel.Annotations"/>
   </ItemGroup>
   <ItemGroup>
