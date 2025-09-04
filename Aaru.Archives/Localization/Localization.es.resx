@@ -318,4 +318,19 @@
     <data name="Version_0" xml:space="preserve">
         <value>[bold][slateblue1]Versión:[/][/] [teal]{0}[/]</value>
     </data>
+    <data name="AMG_archive" xml:space="preserve">
+        <value>[bold][blue]Archivo AMG[/][/]</value>
+    </data>
+    <data name="AMG_version_0_1" xml:space="preserve">
+        <value>[slateblue1]Creado con AMG versión [green]{0}.{1}[/][/]</value>
+    </data>
+    <data name="Archive_comment" xml:space="preserve">
+        <value>[bold][slateblue1]Comentario del archivo:[/][/]</value>
+    </data>
+    <data name="Archive_contains_0_files_for_1_bytes" xml:space="preserve">
+        <value>[slateblue1]El archivo contiene [green]{0}[/] ficheros por [lime]{1}[/] bytes[/]</value>
+    </data>
+    <data name="ARC_archive" xml:space="preserve">
+        <value>[bold][blue]Archivo ARC[/][/]</value>
+    </data>
 </root>

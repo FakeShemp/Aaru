@@ -650,5 +650,35 @@ namespace Aaru.Archives {
                 return ResourceManager.GetString("Profile_ID_0", resourceCulture);
             }
         }
+        
+        internal static string ARC_archive {
+            get {
+                return ResourceManager.GetString("ARC_archive", resourceCulture);
+            }
+        }
+        
+        internal static string AMG_archive {
+            get {
+                return ResourceManager.GetString("AMG_archive", resourceCulture);
+            }
+        }
+        
+        internal static string AMG_version_0_1 {
+            get {
+                return ResourceManager.GetString("AMG_version_0_1", resourceCulture);
+            }
+        }
+        
+        internal static string Archive_contains_0_files_for_1_bytes {
+            get {
+                return ResourceManager.GetString("Archive_contains_0_files_for_1_bytes", resourceCulture);
+            }
+        }
+        
+        internal static string Archive_comment {
+            get {
+                return ResourceManager.GetString("Archive_comment", resourceCulture);
+            }
+        }
     }
 }

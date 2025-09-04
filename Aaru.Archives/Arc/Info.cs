@@ -92,7 +92,7 @@ public sealed partial class Arc
         // Hope for the best
 
         var sb = new StringBuilder();
-        sb.AppendLine("[bold][blue]ARC archive[/][/]");
+        sb.AppendLine(Localization.ARC_archive);
 
         information = sb.ToString();
     }

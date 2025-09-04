@@ -326,4 +326,19 @@
     <data name="Profile_ID_0" xml:space="preserve">
         <value>[bold][slateblue1]Profile ID:[/][/] [teal]{0}[/]</value>
     </data>
+    <data name="ARC_archive" xml:space="preserve">
+        <value>[bold][blue]ARC archive[/][/]</value>
+    </data>
+    <data name="AMG_archive" xml:space="preserve">
+        <value>[bold][blue]AMG archive[/][/]</value>
+    </data>
+    <data name="AMG_version_0_1" xml:space="preserve">
+        <value>[slateblue1]Created with AMG version [green]{0}.{1}[/][/]</value>
+    </data>
+    <data name="Archive_contains_0_files_for_1_bytes" xml:space="preserve">
+        <value>[slateblue1]Archive contains [green]{0}[/] files for [lime]{1}[/] bytes[/]</value>
+    </data>
+    <data name="Archive_comment" xml:space="preserve">
+        <value>[bold][slateblue1]Archive comment:[/][/]</value>
+    </data>
 </root>
