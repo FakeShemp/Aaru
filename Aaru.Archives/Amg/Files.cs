@@ -46,5 +46,33 @@ public sealed partial class Amg
         return ErrorNumber.NoSuchFile;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber GetCompressedSize(int entryNumber, out long length)
+    {
+        length = -1;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _files.Count) return ErrorNumber.OutOfRange;
+
+        length = _files[entryNumber].Compressed;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetUncompressedSize(int entryNumber, out long length)
+    {
+        length = -1;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _files.Count) return ErrorNumber.OutOfRange;
+
+        length = _files[entryNumber].Uncompressed;
+
+        return ErrorNumber.NoError;
+    }
+
 #endregion
 }

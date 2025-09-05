@@ -12,12 +12,6 @@ public sealed partial class Amg
 #region IArchive Members
 
     /// <inheritdoc />
-    public ErrorNumber GetCompressedSize(int entryNumber, out long length) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber GetUncompressedSize(int entryNumber, out long length) => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber GetAttributes(int entryNumber, out FileAttributes attributes) =>
         throw new NotImplementedException();
 
