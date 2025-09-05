@@ -209,6 +209,8 @@ public sealed partial class Arc
             _stream.Position += header.compressed;
         }
 
+        Opened = true;
+
         return ErrorNumber.NoError;
     }
 
