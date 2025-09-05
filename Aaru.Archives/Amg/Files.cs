@@ -1,6 +1,7 @@
 using System;
-using System.IO;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Structs;
+using FileAttributes = System.IO.FileAttributes;
 
 namespace Aaru.Archives;
 
@@ -85,6 +86,44 @@ public sealed partial class Amg
         if(entryNumber < 0 || entryNumber >= _files.Count) return ErrorNumber.OutOfRange;
 
         attributes = _files[entryNumber].Attributes;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber Stat(int entryNumber, out FileEntryInfo stat)
+    {
+        stat = null;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _files.Count) return ErrorNumber.OutOfRange;
+
+        FileEntry entry = _files[entryNumber];
+
+        stat = new FileEntryInfo
+        {
+            Attributes       = CommonTypes.Structs.FileAttributes.File,
+            Blocks           = entry.Uncompressed / 512,
+            BlockSize        = 512,
+            Length           = entry.Uncompressed,
+            LastWriteTime    = entry.LastWrite,
+            LastWriteTimeUtc = entry.LastWrite
+        };
+
+        if(entry.Uncompressed % 512 != 0) stat.Blocks++;
+
+        if(entry.Attributes.HasFlag(FileAttributes.Archive))
+            stat.Attributes |= CommonTypes.Structs.FileAttributes.Archive;
+
+        if(entry.Attributes.HasFlag(FileAttributes.Hidden))
+            stat.Attributes |= CommonTypes.Structs.FileAttributes.Hidden;
+
+        if(entry.Attributes.HasFlag(FileAttributes.ReadOnly))
+            stat.Attributes |= CommonTypes.Structs.FileAttributes.ReadOnly;
+
+        if(entry.Attributes.HasFlag(FileAttributes.System))
+            stat.Attributes |= CommonTypes.Structs.FileAttributes.System;
 
         return ErrorNumber.NoError;
     }
