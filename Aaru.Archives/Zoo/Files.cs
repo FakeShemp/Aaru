@@ -162,6 +162,8 @@ public sealed partial class Zoo
             LastWriteTimeUtc = DateHandlers.DosToDateTime(entry.date, entry.time) // TODO: Handle tz, when not 127
         };
 
+        if(entry.org_size % 512 != 0) stat.Blocks++;
+
         // POSIX permissions, DOS version of ZOO basically ignored the attributes
         if((entry.fattr & 1 << 22) > 0) stat.Mode = entry.fattr & 0x1ff;
 

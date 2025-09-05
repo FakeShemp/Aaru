@@ -118,6 +118,8 @@ public sealed partial class Arc
             LastWriteTimeUtc = entry.LastWriteTime
         };
 
+        if(entry.Uncompressed % 512 != 0) stat.Blocks++;
+
         if(entry.Attributes.HasFlag(FileAttributes.Directory))
             stat.Attributes |= CommonTypes.Structs.FileAttributes.Directory;
         else
