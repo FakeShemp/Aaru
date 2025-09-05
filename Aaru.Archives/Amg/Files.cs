@@ -1,3 +1,4 @@
+using System;
 using Aaru.CommonTypes.Enums;
 
 namespace Aaru.Archives;
@@ -18,6 +19,31 @@ public sealed partial class Amg
         fileName = _files[entryNumber].Filename;
 
         return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetEntryNumber(string fileName, bool caseInsensitiveMatch, out int entryNumber)
+    {
+        entryNumber = -1;
+
+        if(!Opened) return ErrorNumber.NotOpened;
+
+        if(entryNumber < 0 || entryNumber >= _files.Count) return ErrorNumber.OutOfRange;
+
+        StringComparison comparison = caseInsensitiveMatch
+                                          ? StringComparison.CurrentCultureIgnoreCase
+                                          : StringComparison.CurrentCulture;
+
+        for(int i = 0, count = _files.Count; i < count; i++)
+        {
+            if(!_files[i].Filename.Equals(fileName, comparison)) continue;
+
+            entryNumber = i;
+
+            return ErrorNumber.NoError;
+        }
+
+        return ErrorNumber.NoSuchFile;
     }
 
 #endregion
