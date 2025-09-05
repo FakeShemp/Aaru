@@ -1,10 +1,15 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Archives;
 
 public sealed partial class Amg : IArchive
 {
+    List<FileEntry> _files;
+    Stream          _stream;
+
 #region IArchive Members
 
     /// <inheritdoc />
@@ -14,14 +19,14 @@ public sealed partial class Amg : IArchive
     /// <inheritdoc />
     public string Author => Authors.NataliaPortillo;
     /// <inheritdoc />
-    public bool Opened { get; }
+    public bool Opened { get; private set; }
     /// <inheritdoc />
     public ArchiveSupportedFeature ArchiveFeatures => ArchiveSupportedFeature.HasEntryTimestamp   |
                                                       ArchiveSupportedFeature.SupportsCompression |
                                                       ArchiveSupportedFeature.SupportsFilenames   |
                                                       ArchiveSupportedFeature.SupportsSubdirectories;
     /// <inheritdoc />
-    public int NumberOfEntries { get; }
+    public int NumberOfEntries => Opened ? _files.Count : -1;
 
 #endregion
 }
