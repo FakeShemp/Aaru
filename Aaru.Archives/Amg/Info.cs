@@ -13,6 +13,8 @@ public sealed partial class Amg
     /// <inheritdoc />
     public bool Identify(IFilter filter)
     {
+        return false;
+/*
         if(filter.DataForkLength < Marshal.SizeOf<ArcHeader>()) return false;
 
         Stream stream = filter.GetDataForkStream();
@@ -26,6 +28,7 @@ public sealed partial class Amg
 
         // Not a valid magic
         return header.magic == ARC_MAGIC;
+*/
     }
 
     /// <inheritdoc />
