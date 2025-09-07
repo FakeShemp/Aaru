@@ -333,4 +333,13 @@
     <data name="ARC_archive" xml:space="preserve">
         <value>[bold][blue]Archivo ARC[/][/]</value>
     </data>
+    <data name="HA_archive" xml:space="preserve">
+        <value>[bold][blue]Archivo HA[/][/]</value>
+    </data>
+    <data name="Created_with_HA_version_0" xml:space="preserve">
+        <value>[slateblue1]Creado con HA versión [green]{0}[/][/]</value>
+    </data>
+    <data name="Archive_contains_0_files" xml:space="preserve">
+        <value>[slateblue1]El archivo contiene [green]{0}[/] ficheros[/]</value>
+    </data>
 </root>

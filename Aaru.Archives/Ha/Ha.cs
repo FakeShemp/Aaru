@@ -10,7 +10,7 @@ public sealed partial class Ha : IArchive
     /// <inheritdoc />
     public string Name => "HA";
     /// <inheritdoc />
-    public Guid Id { get; }
+    public Guid Id => new("2FB42964-82A0-4819-9C2D-CC2F24E35526");
     /// <inheritdoc />
     public string Author => Authors.NataliaPortillo;
     /// <inheritdoc />

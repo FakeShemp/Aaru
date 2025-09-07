@@ -13,9 +13,6 @@ public sealed partial class Ha
 #region IArchive Members
 
     /// <inheritdoc />
-    public bool Identify(IFilter filter) => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber Open(IFilter filter, Encoding encoding) => throw new NotImplementedException();
 
     /// <inheritdoc />
@@ -53,12 +50,6 @@ public sealed partial class Ha
 
     /// <inheritdoc />
     public ErrorNumber GetEntry(int entryNumber, out IFilter filter) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public void GetInformation(IFilter filter, Encoding encoding, out string information)
-    {
-        throw new NotImplementedException();
-    }
 
 #endregion
 }

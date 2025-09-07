@@ -4,6 +4,7 @@
                         xml:space="preserve">
 	<s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=amg/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=arc/@EntryIndexedValue">True</s:Boolean>
+  <s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=ha/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=localization/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=stfs/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=symbian/@EntryIndexedValue">True</s:Boolean>

@@ -341,4 +341,13 @@
     <data name="Archive_comment" xml:space="preserve">
         <value>[bold][slateblue1]Archive comment:[/][/]</value>
     </data>
+    <data name="HA_archive" xml:space="preserve">
+        <value>[bold][blue]HA archive[/][/]</value>
+    </data>
+    <data name="Created_with_HA_version_0" xml:space="preserve">
+        <value>[slateblue1]Created with HA version [green]{0}[/][/]</value>
+    </data>
+    <data name="Archive_contains_0_files" xml:space="preserve">
+        <value>[slateblue1]Archive contains [green]{0}[/] files[/]</value>
+    </data>
 </root>

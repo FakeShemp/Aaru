@@ -680,5 +680,23 @@ namespace Aaru.Archives {
                 return ResourceManager.GetString("Archive_comment", resourceCulture);
             }
         }
+        
+        internal static string HA_archive {
+            get {
+                return ResourceManager.GetString("HA_archive", resourceCulture);
+            }
+        }
+        
+        internal static string Created_with_HA_version_0 {
+            get {
+                return ResourceManager.GetString("Created_with_HA_version_0", resourceCulture);
+            }
+        }
+        
+        internal static string Archive_contains_0_files {
+            get {
+                return ResourceManager.GetString("Archive_contains_0_files", resourceCulture);
+            }
+        }
     }
 }
