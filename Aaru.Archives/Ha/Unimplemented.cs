@@ -12,10 +12,6 @@ public sealed partial class Ha
 #region IArchive Members
 
     /// <inheritdoc />
-    public ErrorNumber GetEntryNumber(string fileName, bool caseInsensitiveMatch, out int entryNumber) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber GetCompressedSize(int entryNumber, out long length) => throw new NotImplementedException();
 
     /// <inheritdoc />
