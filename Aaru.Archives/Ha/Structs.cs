@@ -1,9 +1,29 @@
+using System;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace Aaru.Archives;
 
 public sealed partial class Ha
 {
+#region Nested type: Entry
+
+    struct Entry
+    {
+        public Method         Method;
+        public uint           Compressed;
+        public uint           Uncompressed;
+        public DateTime       LastWrite;
+        public FileAttributes Attributes;
+        public long           DataOffset;
+        public string         Filename;
+        public ushort         Mode;
+        public ushort         Uid;
+        public ushort         Gid;
+    }
+
+#endregion
+
 #region Nested type: FHeader
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -13,14 +33,12 @@ public sealed partial class Ha
         public readonly byte VerType;
 
         // Compressed length
-        public readonly ushort clen;
+        public readonly uint clen;
 
         // Original length
-        public readonly ushort olen;
+        public readonly uint olen;
 
-        // Unclear if DOS packed date or what
-        public readonly ushort date;
-        public readonly ushort time;
+        public readonly int time;
 
         // CRC32
         public readonly uint crc;
@@ -41,6 +59,19 @@ public sealed partial class Ha
     {
         public readonly ushort magic;
         public readonly ushort count;
+    }
+
+#endregion
+
+#region Nested type: UnixMdi
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    readonly struct UnixMdi
+    {
+        public readonly byte   type;
+        public readonly ushort attr;
+        public readonly ushort user;
+        public readonly ushort group;
     }
 
 #endregion
