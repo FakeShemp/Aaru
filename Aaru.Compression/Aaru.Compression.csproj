@@ -46,6 +46,7 @@
     <Compile Include="Arc\SqueezeStream.cs"/>
     <Compile Include="BZip2.cs"/>
     <Compile Include="FLAC.cs"/>
+    <Compile Include="HaStream.cs"/>
     <Compile Include="Lh5Stream.cs"/>
     <Compile Include="LzdStream.cs"/>
     <Compile Include="LZFSE.cs"/>
@@ -74,7 +75,7 @@
     <PackageReference Include="Aaru.Compression.Native"/>
     <PackageReference Include="DotNetZip"/>
     <PackageReference Include="Newtonsoft.Json"/>
-    <PackageReference Include="Sentry" />
+    <PackageReference Include="Sentry"/>
     <PackageReference Include="SharpCompress"/>
     <PackageReference Include="System.Resources.Extensions"/>
   </ItemGroup>
