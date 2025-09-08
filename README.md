@@ -129,6 +129,7 @@ Supported archives
 ==================
 
 * ARC (.ARC)
+* HA (.HA)
 * PAK (.PAK)
 * Symbian Installation File (.SIS)
 * Xbox 360 Secure Transacted File System (STFS)
