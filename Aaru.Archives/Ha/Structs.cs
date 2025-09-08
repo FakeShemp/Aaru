@@ -17,9 +17,9 @@ public sealed partial class Ha
         public FileAttributes Attributes;
         public long           DataOffset;
         public string         Filename;
-        public ushort         Mode;
-        public ushort         Uid;
-        public ushort         Gid;
+        public ushort?        Mode;
+        public ushort?        Uid;
+        public ushort?        Gid;
     }
 
 #endregion
