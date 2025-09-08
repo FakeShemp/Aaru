@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -16,12 +15,6 @@ public sealed partial class Ha
         throw new NotImplementedException();
 
     /// <inheritdoc />
-    public ErrorNumber ListXAttr(int entryNumber, out List<string> xattrs) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber GetXattr(int entryNumber, string xattr, ref byte[] buffer) =>
-        throw new NotImplementedException();
-
     /// <inheritdoc />
     public ErrorNumber Stat(int entryNumber, out FileEntryInfo stat) => throw new NotImplementedException();
 
