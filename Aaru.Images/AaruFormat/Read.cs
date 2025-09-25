@@ -1166,7 +1166,7 @@ public sealed partial class AaruFormat
                     byte[] tapePartitionBytes = new byte[partitionHeader.length];
                     _imageStream.EnsureRead(tapePartitionBytes, 0, tapePartitionBytes.Length);
 
-                    Span<TapePartitionEntry> tapePartitions =
+                    ReadOnlySpan<TapePartitionEntry> tapePartitions =
                         MemoryMarshal.Cast<byte, TapePartitionEntry>(tapePartitionBytes);
 
                     TapePartitions = [];
@@ -1198,7 +1198,7 @@ public sealed partial class AaruFormat
 
                     byte[] tapeFileBytes = new byte[fileHeader.length];
                     _imageStream.EnsureRead(tapeFileBytes, 0, tapeFileBytes.Length);
-                    Span<TapeFileEntry> tapeFiles = MemoryMarshal.Cast<byte, TapeFileEntry>(tapeFileBytes);
+                    ReadOnlySpan<TapeFileEntry> tapeFiles = MemoryMarshal.Cast<byte, TapeFileEntry>(tapeFileBytes);
                     Files = [];
 
                     foreach(TapeFileEntry file in tapeFiles)

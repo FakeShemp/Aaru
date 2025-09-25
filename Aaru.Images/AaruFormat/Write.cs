@@ -1361,7 +1361,7 @@ public sealed partial class AaruFormat
                         byte[] tapePartitionBytes = new byte[partitionHeader.length];
                         _imageStream.EnsureRead(tapePartitionBytes, 0, tapePartitionBytes.Length);
 
-                        Span<TapePartitionEntry> tapePartitions =
+                        ReadOnlySpan<TapePartitionEntry> tapePartitions =
                             MemoryMarshal.Cast<byte, TapePartitionEntry>(tapePartitionBytes);
 
                         TapePartitions = [];
@@ -1394,7 +1394,7 @@ public sealed partial class AaruFormat
 
                         byte[] tapeFileBytes = new byte[fileHeader.length];
                         _imageStream.EnsureRead(tapeFileBytes, 0, tapeFileBytes.Length);
-                        Span<TapeFileEntry> tapeFiles = MemoryMarshal.Cast<byte, TapeFileEntry>(tapeFileBytes);
+                        ReadOnlySpan<TapeFileEntry> tapeFiles = MemoryMarshal.Cast<byte, TapeFileEntry>(tapeFileBytes);
                         Files = [];
 
                         foreach(TapeFileEntry file in tapeFiles)
@@ -1899,8 +1899,9 @@ public sealed partial class AaruFormat
 
                     // Fill FLAC block
                     if(remaining != 0)
-                        for(int r = 0; r < remaining * 4; r++)
-                            _writingBuffer[_writingBufferPosition + r] = 0;
+                    {
+                        for(int r = 0; r < remaining * 4; r++) _writingBuffer[_writingBufferPosition + r] = 0;
+                    }
 
                     compressedLength = FLAC.EncodeBuffer(_writingBuffer,
                                                          _compressedBuffer,
@@ -2692,8 +2693,9 @@ public sealed partial class AaruFormat
 
                     // Fill FLAC block
                     if(remaining != 0)
-                        for(int r = 0; r < remaining * 4; r++)
-                            _writingBuffer[_writingBufferPosition + r] = 0;
+                    {
+                        for(int r = 0; r < remaining * 4; r++) _writingBuffer[_writingBufferPosition + r] = 0;
+                    }
 
                     compressedLength = FLAC.EncodeBuffer(_writingBuffer,
                                                          _compressedBuffer,

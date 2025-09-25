@@ -166,12 +166,12 @@ public sealed partial class VMware
                     };
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               "{0} {1} {2} \"{3}\" {4}",
-                                               newExtent.Access,
-                                               newExtent.Sectors,
-                                               newExtent.Type,
-                                               newExtent.Filename,
-                                               newExtent.Offset);
+                                      "{0} {1} {2} \"{3}\" {4}",
+                                      newExtent.Access,
+                                      newExtent.Sectors,
+                                      newExtent.Type,
+                                      newExtent.Filename,
+                                      newExtent.Offset);
 
                     _extents.Add(currentSector, newExtent);
                     currentSector += newExtent.Sectors;
@@ -255,12 +255,12 @@ public sealed partial class VMware
                     newExtent.Type = matchExtent.Groups["type"].Value;
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               "{0} {1} {2} \"{3}\" {4}",
-                                               newExtent.Access,
-                                               newExtent.Sectors,
-                                               newExtent.Type,
-                                               newExtent.Filename,
-                                               newExtent.Offset);
+                                      "{0} {1} {2} \"{3}\" {4}",
+                                      newExtent.Access,
+                                      newExtent.Sectors,
+                                      newExtent.Type,
+                                      newExtent.Filename,
+                                      newExtent.Offset);
 
                     _extents.Add(currentSector, newExtent);
                     currentSector += newExtent.Sectors;
@@ -369,9 +369,9 @@ public sealed partial class VMware
             if(extentHdr.capacity < extent.Sectors)
             {
                 AaruLogging.Error(string.Format(Localization
-                                                            .Extent_contains_incorrect_number_of_sectors_0_1_were_expected,
-                                                         extentHdr.capacity,
-                                                         extent.Sectors));
+                                                   .Extent_contains_incorrect_number_of_sectors_0_1_were_expected,
+                                                extentHdr.capacity,
+                                                extent.Sectors));
 
                 return ErrorNumber.InvalidArgument;
             }
@@ -397,7 +397,7 @@ public sealed partial class VMware
         if(oneNoFlat && !vmEHdrSet && !cowD)
         {
             AaruLogging.Error(Localization
-                                          .There_are_sparse_extents_but_there_is_no_header_to_find_the_grain_tables_cannot_proceed);
+                                 .There_are_sparse_extents_but_there_is_no_header_to_find_the_grain_tables_cannot_proceed);
 
             return ErrorNumber.InvalidArgument;
         }
@@ -426,19 +426,13 @@ public sealed partial class VMware
                 AaruLogging.Debug(MODULE_NAME, "vmEHdr.overhead = {0}",         _vmEHdr.overhead);
                 AaruLogging.Debug(MODULE_NAME, "vmEHdr.uncleanShutdown = {0}",  _vmEHdr.uncleanShutdown);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "vmEHdr.singleEndLineChar = 0x{0:X2}",
-                                           _vmEHdr.singleEndLineChar);
+                AaruLogging.Debug(MODULE_NAME, "vmEHdr.singleEndLineChar = 0x{0:X2}", _vmEHdr.singleEndLineChar);
 
                 AaruLogging.Debug(MODULE_NAME, "vmEHdr.nonEndLineChar = 0x{0:X2}", _vmEHdr.nonEndLineChar);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "vmEHdr.doubleEndLineChar1 = 0x{0:X2}",
-                                           _vmEHdr.doubleEndLineChar1);
+                AaruLogging.Debug(MODULE_NAME, "vmEHdr.doubleEndLineChar1 = 0x{0:X2}", _vmEHdr.doubleEndLineChar1);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "vmEHdr.doubleEndLineChar2 = 0x{0:X2}",
-                                           _vmEHdr.doubleEndLineChar2);
+                AaruLogging.Debug(MODULE_NAME, "vmEHdr.doubleEndLineChar2 = 0x{0:X2}", _vmEHdr.doubleEndLineChar2);
 
                 AaruLogging.Debug(MODULE_NAME, "vmEHdr.compression = 0x{0:X4}", _vmEHdr.compression);
 
@@ -471,8 +465,8 @@ public sealed partial class VMware
                 AaruLogging.Debug(MODULE_NAME, "vmCHdr.name = {0}", StringHandlers.CToString(_vmCHdr.name));
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "vmCHdr.description = {0}",
-                                           StringHandlers.CToString(_vmCHdr.description));
+                                  "vmCHdr.description = {0}",
+                                  StringHandlers.CToString(_vmCHdr.description));
 
                 AaruLogging.Debug(MODULE_NAME, "vmCHdr.savedGeneration = {0}", _vmCHdr.savedGeneration);
                 AaruLogging.Debug(MODULE_NAME, "vmCHdr.uncleanShutdown = {0}", _vmCHdr.uncleanShutdown);
@@ -499,10 +493,10 @@ public sealed partial class VMware
             }
 
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization._0_sectors_in_1_grains_in_2_tables,
-                                       _imageInfo.Sectors,
-                                       grains,
-                                       gdEntries);
+                              Localization._0_sectors_in_1_grains_in_2_tables,
+                              _imageInfo.Sectors,
+                              grains,
+                              gdEntries);
 
             Stream gdStream = _gdFilter.GetDataForkStream();
 
@@ -511,7 +505,7 @@ public sealed partial class VMware
             AaruLogging.Debug(MODULE_NAME, Localization.Reading_grain_directory);
             byte[] gdBytes = new byte[gdEntries * 4];
             gdStream.EnsureRead(gdBytes, 0, gdBytes.Length);
-            Span<uint> gd = MemoryMarshal.Cast<byte, uint>(gdBytes);
+            ReadOnlySpan<uint> gd = MemoryMarshal.Cast<byte, uint>(gdBytes);
 
             AaruLogging.Debug(MODULE_NAME, Localization.Reading_grain_tables);
             uint currentGrain = 0;
@@ -559,9 +553,7 @@ public sealed partial class VMware
 
             if(parentError != ErrorNumber.NoError)
             {
-                AaruLogging.Error(string.Format(Localization.Error_0_opening_parent_1,
-                                                         parentError,
-                                                         _parentName));
+                AaruLogging.Error(string.Format(Localization.Error_0_opening_parent_1, parentError, _parentName));
 
                 return parentError;
             }
