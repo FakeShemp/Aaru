@@ -1,2 +1,0 @@
-is_global = true
-dotnet_diagnostic.PH2075.severity = none
