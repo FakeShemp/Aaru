@@ -121,8 +121,7 @@ sealed class ArchiveInfoCommand : Command<ArchiveInfoCommand.Settings>
                     ArchiveInfo.PrintArchiveInfo(archiveFormat, inputFilter, encodingClass);
                 });
 
-                // TODO: Implement
-                //Statistics.AddArchiveFormat(archiveFormat.Format);
+                Statistics.AddArchiveFormat(archiveFormat.Name);
                 Statistics.AddFilter(inputFilter.Name);
             }
             catch(Exception ex)

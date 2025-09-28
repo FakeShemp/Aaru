@@ -140,8 +140,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
 
                 AaruLogging.Debug(MODULE_NAME, UI.Correctly_opened_archive_file);
 
-                // TODO: Implement
-                //Statistics.AddArchiveFormat(archive.Name);
+                Statistics.AddArchiveFormat(archive.Name);
                 Statistics.AddFilter(inputFilter.Name);
             }
             catch(Exception ex)

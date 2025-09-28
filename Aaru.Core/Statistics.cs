@@ -664,4 +664,32 @@ public static class Statistics
             AaruLogging.Exception(ex, Localization.Core.Exception_while_trying_to_save_statistics);
         }
     }
+
+    /// <summary>Ads a new archive to statistics</summary>
+    /// <param name="format">Archive format name</param>
+    public static void AddArchiveFormat(string format)
+    {
+        if(string.IsNullOrWhiteSpace(format)) return;
+
+        if(Settings.Settings.Current.Stats is not { MediaStats: true }) return;
+
+        using var ctx = AaruContext.Create(Settings.Settings.LocalDbPath);
+
+        ctx.Archives.Add(new Archive
+        {
+            Name         = format,
+            Synchronized = false,
+            Count        = 1
+        });
+
+        try
+        {
+            ctx.SaveChanges();
+        }
+        catch(SqliteException ex)
+        {
+            AaruLogging.Debug(MODULE_NAME, Localization.Core.Exception_while_trying_to_save_statistics);
+            AaruLogging.Exception(ex, Localization.Core.Exception_while_trying_to_save_statistics);
+        }
+    }
 }
