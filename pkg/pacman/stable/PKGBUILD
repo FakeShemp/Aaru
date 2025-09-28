@@ -46,15 +46,7 @@ package() {
     # Copy Linux binary
     install -m0755 -g 0 -t "${pkgdir}"/opt/Aaru aaru
 
-    # Copy Linux dependencies
-    install -m0755 -g 0 -t "${pkgdir}"/opt/Aaru *.so
-    install -m0755 -g 0 -t "${pkgdir}"/opt/Aaru createdump
-
-    # Copy .NET dependencies
-    install -m0755 -g 0 -t "${pkgdir}"/opt/Aaru *.dll
-
-    # Copy .NET configuration files
-    install -m0644 -g 0 -t "${pkgdir}"/opt/Aaru *.json
+    cd "${srcdir}"/"${_aarubase}"/bin/Release/${_netcoretarget}/${dotnet_rid}
 
     # Copy documentation files
     install -m0644 -g 0 -t "${pkgdir}"/opt/Aaru *.md
