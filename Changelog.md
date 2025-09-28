@@ -1,3 +1,16 @@
+# [6.0.0-alpha.12] - 2025-09-28
+
+## Added
+
+### - Archives
+
+- Support for AMG archives
+- Support for ARC archives
+- Support for HA archives
+- Support for PAK archives
+- Support for Xbox 360 Secure Transacted File System (STFS) archives
+- Support for ZOO archives
+
 # [6.0.0-alpha.11] - 2025-08-22
 
 ## Added
@@ -2578,6 +2591,8 @@
 - Apple Partition Map (aka APM).
 - Master Boot Record (aka MBR).
 - NeXT disklabels.
+
+[6.0.0-alpha.12]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.12
 
 [6.0.0-alpha.11]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.11
 
