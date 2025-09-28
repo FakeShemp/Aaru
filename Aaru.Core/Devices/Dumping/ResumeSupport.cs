@@ -144,7 +144,7 @@ static class ResumeSupport
 
                 if(oldTry.Software.Name            != "Aaru"              ||
                    oldTry.Software.OperatingSystem != platform.ToString() ||
-                   oldTry.Software.Version         != Version.GetVersion())
+                   oldTry.Software.Version         != Version.GetInformationalVersion())
                     continue;
 
                 if(removable &&

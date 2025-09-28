@@ -166,7 +166,7 @@ public class Remote : IDisposable
         var clientHello = new AaruPacketHello
         {
             application = "Aaru",
-            version     = Version.GetVersion(),
+            version     = Version.GetInformationalVersion(),
             maxProtocol = Consts.MAX_PROTOCOL,
             sysname     = DetectOS.GetPlatformName(DetectOS.GetRealPlatformID(), DetectOS.GetVersion()),
             release     = DetectOS.GetVersion(),

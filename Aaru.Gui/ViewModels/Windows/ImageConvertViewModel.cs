@@ -545,7 +545,7 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
         var metadata = new ImageInfo
         {
             Application           = "Aaru",
-            ApplicationVersion    = Version.GetVersion(),
+            ApplicationVersion    = Version.GetInformationalVersion(),
             Comments              = CommentsText,
             Creator               = CreatorText,
             DriveFirmwareRevision = DriveFirmwareRevisionText,

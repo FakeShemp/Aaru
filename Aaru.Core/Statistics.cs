@@ -80,7 +80,7 @@ public static class Statistics
 
             ctx.Versions.Add(new Version
             {
-                Name         = CommonTypes.Interop.Version.GetVersion(),
+                Name         = CommonTypes.Interop.Version.GetInformationalVersion(),
                 Synchronized = false,
                 Count        = 1
             });

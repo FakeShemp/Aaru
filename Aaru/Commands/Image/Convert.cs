@@ -567,7 +567,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         var imageInfo = new ImageInfo
         {
             Application           = "Aaru",
-            ApplicationVersion    = Version.GetVersion(),
+            ApplicationVersion    = Version.GetInformationalVersion(),
             Comments              = settings.Comments              ?? inputFormat.Info.Comments,
             Creator               = settings.Creator               ?? inputFormat.Info.Creator,
             DriveFirmwareRevision = settings.DriveFirmwareRevision ?? inputFormat.Info.DriveFirmwareRevision,

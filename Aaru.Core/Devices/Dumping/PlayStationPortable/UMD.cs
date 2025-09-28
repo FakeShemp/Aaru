@@ -627,7 +627,7 @@ public partial class Dump
         var metadata = new CommonTypes.Structs.ImageInfo
         {
             Application        = "Aaru",
-            ApplicationVersion = Version.GetVersion(),
+            ApplicationVersion = Version.GetInformationalVersion(),
             MediaPartNumber    = mediaPartNumber
         };
 

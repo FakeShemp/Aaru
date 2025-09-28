@@ -47,6 +47,13 @@ public static class Version
 {
     /// <summary>Gets version string</summary>
     /// <returns>Version</returns>
+    public static string GetInformationalVersion() => typeof(Version).Assembly
+                                                                     .GetCustomAttribute<
+                                                                          AssemblyInformationalVersionAttribute>()
+                                                                    ?.InformationalVersion.Split('+')[0];
+
+    /// <summary>Gets version string</summary>
+    /// <returns>Version</returns>
     public static string GetVersion() => typeof(Version).Assembly.GetName().Version?.ToString();
 
     /// <summary>Gets .NET Core version</summary>

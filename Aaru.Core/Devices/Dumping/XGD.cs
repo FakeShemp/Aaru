@@ -1050,9 +1050,8 @@ partial class Dump
             List<ulong> tmpList = [];
 
             foreach(ulong ur in _resume.BadBlocks)
-            {
-                for(ulong i = ur; i < ur + blocksToRead; i++) tmpList.Add(i);
-            }
+                for(ulong i = ur; i < ur + blocksToRead; i++)
+                    tmpList.Add(i);
 
             tmpList.Sort();
 
@@ -1310,7 +1309,7 @@ partial class Dump
         var metadata = new CommonTypes.Structs.ImageInfo
         {
             Application        = "Aaru",
-            ApplicationVersion = Version.GetVersion()
+            ApplicationVersion = Version.GetInformationalVersion()
         };
 
         if(!outputFormat.SetImageInfo(metadata))

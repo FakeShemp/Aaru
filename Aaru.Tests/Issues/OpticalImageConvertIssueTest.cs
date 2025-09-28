@@ -92,7 +92,7 @@ public abstract class OpticalImageConvertIssueTest
         var metadata = new ImageInfo
         {
             Application           = "Aaru",
-            ApplicationVersion    = Version.GetVersion(),
+            ApplicationVersion    = Version.GetInformationalVersion(),
             Comments              = inputFormat.Info.Comments,
             Creator               = inputFormat.Info.Creator,
             DriveFirmwareRevision = inputFormat.Info.DriveFirmwareRevision,
