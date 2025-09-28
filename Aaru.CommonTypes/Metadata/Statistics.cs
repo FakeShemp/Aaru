@@ -142,6 +142,9 @@ public class StatsDto
 
     /// <summary>Operating systems where a remote application has been running</summary>
     public List<OsStats> RemoteOperatingSystems { get; set; }
+
+    /// <summary>Archive formats</summary>
+    public List<NameValueStats> Archives { get; set; }
 }
 
 /// <summary>Command execution statistics</summary>
