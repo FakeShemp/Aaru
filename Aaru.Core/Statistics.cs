@@ -140,6 +140,10 @@ public static class Statistics
 
             if(nameValueStats?.Count > 0) dto.MediaFormats = nameValueStats;
 
+            AddStats(ctx.Archives, out nameValueStats);
+
+            if(nameValueStats?.Count > 0) dto.Archives = nameValueStats;
+
             AddStats(ctx.Partitions, out nameValueStats);
 
             if(nameValueStats?.Count > 0) dto.Partitions = nameValueStats;
@@ -237,6 +241,7 @@ public static class Statistics
             await UpdateStatsAsync(ctx.Filesystems);
             await UpdateStatsAsync(ctx.Filters);
             await UpdateStatsAsync(ctx.MediaFormats);
+            await UpdateStatsAsync(ctx.Archives);
             await UpdateStatsAsync(ctx.Partitions);
             await UpdateStatsAsync(ctx.Versions);
 
