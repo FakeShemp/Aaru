@@ -46,6 +46,9 @@ public sealed class AaruContext : DbContext
     /// <param name="options">Options</param>
     public AaruContext(DbContextOptions options) : base(options) {}
 
+    /// <summary>Statistics for archives</summary>
+    public DbSet<Archive> Archives { get; set; }
+
     /// <summary>List of known devices</summary>
     public DbSet<Device> Devices { get; set; }
 
