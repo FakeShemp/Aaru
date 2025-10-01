@@ -98,7 +98,9 @@
     <PackageReference Include="System.Runtime.InteropServices"/>
     <PackageReference Include="System.Net.Primitives"/>
     <PackageReference Include="System.IO.FileSystem"/>
-    <PackageReference Update="Packaging.Targets"/>
+    <PackageReference Include="Packaging.Targets">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <PropertyGroup>

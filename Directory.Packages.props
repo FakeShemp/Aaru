@@ -1,4 +1,4 @@
-<Project ToolsVersion="15.0">
+<Project>
   <ItemGroup>
     <PackageVersion Include="Aaru.Checksums.Native" Version="6.0.0-alpha.11"/>
     <PackageVersion Include="Aaru.Compression.Native" Version="6.0.0-alpha.11.4"/>
@@ -70,6 +70,6 @@
     <PackageVersion Include="System.ValueTuple" Version="4.6.1"/>
     <PackageVersion Include="Text.Analyzers" Version="4.14.0"/>
     <PackageVersion Include="Unclassified.NetRevisionTask" Version="0.4.4"/>
-    <PackageVersion Update="Packaging.Targets" Version="0.1.226"/>
+    <PackageVersion Include="Packaging.Targets" Version="0.1.226"/>
   </ItemGroup>
 </Project>
