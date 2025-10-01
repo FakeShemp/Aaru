@@ -1548,7 +1548,7 @@
         <value>[slateblue1]Medio detectado como [fuchsia]MemoryStick Pro Duo[/]...[/]</value>
     </data>
     <data name="Media_geometry_0_cylinders_1_heads_2_sectors_per_track_WithMarkup" xml:space="preserve">
-        <value>[bold][slateblue1]Geometría del medio:[/] [italic][teal]{0}[/] cilindros, [teal]{1}[/] cabezas, [teal]{2}[/] sectores por pista[/]</value>
+        <value>[bold][slateblue1]Geometría del medio:[/] [italic][teal]{0}[/] cilindros, [teal]{1}[/] cabezas, [teal]{2}[/] sectores por pista[/][/]</value>
     </data>
     <data name="Media_has_0_blocks_of_1_bytes_each_for_a_total_of_2" xml:space="preserve">
         <value>[slateblue1]El medio tiene [violet]{0}[/] bloques de [lime]{1}[/] bytes cada uno (para un total de [lime]{2}[/])[/]</value>
