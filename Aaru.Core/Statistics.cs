@@ -151,7 +151,6 @@ public static class Statistics
             AddStats(ctx.Versions, out nameValueStats);
 
             if(nameValueStats?.Count > 0) dto.Versions = nameValueStats;
-            dto.Versions = [];
 
             if(ctx.Medias.Any(c => !c.Synchronized))
             {
@@ -200,20 +199,16 @@ public static class Statistics
 
             AddOperatingSystem(ctx.OperatingSystems, out List<OsStats> osStats);
             if(nameValueStats?.Count > 0) dto.OperatingSystems = osStats;
-            dto.OperatingSystems = [];
 
             AddOperatingSystem(ctx.RemoteApplications, out osStats);
             if(nameValueStats?.Count > 0) dto.RemoteApplications = osStats;
-            dto.RemoteApplications = [];
 
             AddStats(ctx.RemoteArchitectures, out nameValueStats);
 
             if(nameValueStats?.Count > 0) dto.RemoteArchitectures = nameValueStats;
-            dto.RemoteArchitectures = [];
 
             AddOperatingSystem(ctx.RemoteOperatingSystems, out osStats);
             if(nameValueStats?.Count > 0) dto.RemoteOperatingSystems = osStats;
-            dto.RemoteOperatingSystems = [];
 
 #if DEBUG
             Console.WriteLine(Localization.Core.Uploading_statistics);
