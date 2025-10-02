@@ -191,9 +191,9 @@ sealed class PrintHexCommand : Command<PrintHexCommand.Settings>
 
                 if(errno == ErrorNumber.NoError)
                 {
-                    AaruLogging.WriteLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(sector,
-                                                            settings.Width,
-                                                            true)));
+                    AaruLogging.WriteLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(sector, settings.Width, true)
+                                                                .Replace("{", "{{")
+                                                                .Replace("}", "}}")));
                 }
                 else
                     AaruLogging.Error(string.Format(UI.Error_0_reading_sector_1, errno, settings.Start + i));
