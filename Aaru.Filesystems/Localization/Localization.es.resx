@@ -1427,7 +1427,7 @@
     <value>mágico en {1} = 0x{0:X8}</value>
   </data>
     <data name="magic_equals_0_expected_1" xml:space="preserve">
-    <value>mágico = 0x{0:X16) (se esperaba 0x{1:X16})</value>
+    <value>mágico = 0x{0:X16}) (se esperaba 0x{1:X16})</value>
   </data>
     <data name="Magic_one_0_Should_be_0x42465331" xml:space="preserve">
     <value>Mágico 1: 0x{0:X8} (debería ser 0x42465331)</value>
