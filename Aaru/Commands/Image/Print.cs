@@ -208,7 +208,7 @@ sealed class PrintHexCommand : Command<PrintHexCommand.Settings>
     public class Settings : ImageFamily
     {
         [Description("How many sectors to print.")]
-        [DefaultValue(1)]
+        [DefaultValue(1ul)]
         [CommandOption("-l|--length")]
         public ulong Length { get; init; }
         [Description("Print sectors with tags included.")]
@@ -216,11 +216,11 @@ sealed class PrintHexCommand : Command<PrintHexCommand.Settings>
         [CommandOption("-r|--long-sectors")]
         public bool LongSectors { get; init; }
         [Description("Starting sector.")]
-        [DefaultValue(0)]
+        [DefaultValue(0ul)]
         [CommandOption("-s|--start")]
         public ulong Start { get; init; }
         [Description("How many bytes to print per line.")]
-        [DefaultValue(32)]
+        [DefaultValue((ushort)32)]
         [CommandOption("-w|--width")]
         public ushort Width { get; init; }
         [Description("Media image path")]
