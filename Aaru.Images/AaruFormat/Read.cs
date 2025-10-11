@@ -121,6 +121,30 @@ public sealed partial class AaruFormat
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, out byte[] buffer)
+    {
+        MemoryStream ms = new();
+
+        for(uint i = 0; i < length; i++)
+        {
+            ErrorNumber res = ReadSectorLong(sectorAddress + i, out byte[] sectorBuffer);
+
+            if(res != ErrorNumber.NoError)
+            {
+                buffer = ms.ToArray();
+
+                return res;
+            }
+
+            ms.Write(sectorBuffer, 0, sectorBuffer.Length);
+        }
+
+        buffer = ms.ToArray();
+
+        return ErrorNumber.NoError;
+    }
+
 #endregion
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_read_media_tag(void *context, uint8_t *data, const int32_t tag, uint32_t *length)
@@ -150,7 +174,8 @@ public sealed partial class AaruFormat
     private static partial Status aaruf_read_sector_long(IntPtr context, ulong sectorAddress,
                                                          [MarshalAs(UnmanagedType.I4)] bool negative, byte[] data,
                                                          ref uint length, out byte sectorStatus);
- // AARU_EXPORT int32_t AARU_CALL aaruf_read_sector_tag(const void *context, const uint64_t sector_address,
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_read_sector_tag(const void *context, const uint64_t sector_address,
     // const bool negative, uint8_t *buffer, uint32_t *length,
     // const int32_t tag)
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_read_sector_tag", SetLastError = true)]
