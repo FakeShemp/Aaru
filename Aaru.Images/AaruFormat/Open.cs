@@ -53,6 +53,154 @@ public sealed partial class AaruFormat
         _imageInfo.MetadataMediaType    = imageInfo.MetadataMediaType;
 
         // TODO: rest of metadata
+        ret = aaruf_get_media_sequence(_context, out int sequence, out int lastSequence);
+
+        if(ret == Status.Ok)
+        {
+            _imageInfo.LastMediaSequence = lastSequence;
+            _imageInfo.MediaSequence     = sequence;
+        }
+
+        var length = 0;
+        ret = aaruf_get_creator(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_creator(_context, buffer, ref length);
+            if(ret == Status.Ok) _imageInfo.Creator = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_creator(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_creator(_context, buffer, ref length);
+            if(ret == Status.Ok) _imageInfo.Creator = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_comments(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_comments(_context, buffer, ref length);
+            if(ret == Status.Ok) _imageInfo.Comments = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_media_title(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_media_title(_context, buffer, ref length);
+            if(ret == Status.Ok) _imageInfo.MediaTitle = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_media_manufacturer(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_media_manufacturer(_context, buffer, ref length);
+
+            if(ret == Status.Ok)
+                _imageInfo.MediaManufacturer = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_media_model(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_media_model(_context, buffer, ref length);
+            if(ret == Status.Ok) _imageInfo.MediaModel = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_media_serial_number(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_media_serial_number(_context, buffer, ref length);
+
+            if(ret == Status.Ok)
+                _imageInfo.MediaSerialNumber = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_media_barcode(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_media_barcode(_context, buffer, ref length);
+            if(ret == Status.Ok) _imageInfo.MediaBarcode = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_media_part_number(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_media_part_number(_context, buffer, ref length);
+            if(ret == Status.Ok) _imageInfo.MediaPartNumber = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_drive_manufacturer(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_drive_manufacturer(_context, buffer, ref length);
+
+            if(ret == Status.Ok)
+                _imageInfo.DriveManufacturer = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_drive_model(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_drive_model(_context, buffer, ref length);
+            if(ret == Status.Ok) _imageInfo.DriveModel = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_drive_serial_number(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_drive_serial_number(_context, buffer, ref length);
+
+            if(ret == Status.Ok)
+                _imageInfo.DriveSerialNumber = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_drive_firmware_revision(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_drive_firmware_revision(_context, buffer, ref length);
+
+            if(ret == Status.Ok)
+                _imageInfo.DriveFirmwareRevision = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
         // TODO: geometry
         // TODO: metadata from media tags
 
