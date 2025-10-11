@@ -23,9 +23,6 @@ public sealed partial class AaruFormat
 #region IWritableOpticalImage Members
 
     /// <inheritdoc />
-    public bool Identify(IFilter imageFilter) => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber Open(IFilter imageFilter) => throw new NotImplementedException();
 
     /// <inheritdoc />
