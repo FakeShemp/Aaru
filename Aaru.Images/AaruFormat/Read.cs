@@ -45,6 +45,23 @@ public sealed partial class AaruFormat
         return StatusToErrorNumber(res);
     }
 
+    /// <inheritdoc />
+    public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer)
+    {
+        buffer = null;
+        uint length = 0;
+
+        Status res = aaruf_read_track_sector(_context, buffer, sectorAddress, ref length, (byte)track, out _);
+
+        if(res != Status.BufferTooSmall) return StatusToErrorNumber(res);
+
+        buffer = new byte[length];
+
+        res = aaruf_read_track_sector(_context, buffer, sectorAddress, ref length, (byte)track, out _);
+
+        return StatusToErrorNumber(res);
+    }
+
 #endregion
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_read_media_tag(void *context, uint8_t *data, const int32_t tag, uint32_t *length)
@@ -59,4 +76,10 @@ public sealed partial class AaruFormat
     private static partial Status aaruf_read_sector(IntPtr                             context,  ulong    sectorAddress,
                                                     [MarshalAs(UnmanagedType.I4)] bool negative, byte[]   data,
                                                     ref                           uint length,   out byte sectorStatus);
+ // AARU_EXPORT int32_t AARU_CALL aaruf_read_track_sector(void *context, uint8_t *data, const uint64_t sector_address,
+    // uint32_t *length, const uint8_t track, uint8_t *sector_status)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_read_track_sector", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_read_track_sector(IntPtr   context, byte[] data,  ulong    sectorAddress,
+                                                          ref uint length,  byte   track, out byte sectorStatus);
 }

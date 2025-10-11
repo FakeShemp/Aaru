@@ -86,9 +86,6 @@ public sealed partial class AaruFormat
     public bool? VerifySectors(ulong           sectorAddress, uint length, out List<ulong> failingLbas,
                                out List<ulong> unknownLbas) => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer) =>
-        throw new NotImplementedException();
 
     /// <inheritdoc />
     public ErrorNumber ReadSectorTag(ulong sectorAddress, uint track, SectorTagType tag, out byte[] buffer) =>
