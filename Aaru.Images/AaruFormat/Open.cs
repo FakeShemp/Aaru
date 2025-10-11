@@ -201,7 +201,15 @@ public sealed partial class AaruFormat
                 _imageInfo.DriveFirmwareRevision = StringHandlers.CToString(buffer, Encoding.Unicode, true);
         }
 
-        // TODO: geometry
+        ret = aaruf_get_geometry(_context, out uint cylinders, out uint heads, out uint sectorsPerTrack);
+
+        if(ret == Status.Ok)
+        {
+            _imageInfo.Cylinders       = cylinders;
+            _imageInfo.Heads           = heads;
+            _imageInfo.SectorsPerTrack = sectorsPerTrack;
+        }
+
         // TODO: metadata from media tags
 
         return ErrorNumber.NoError;

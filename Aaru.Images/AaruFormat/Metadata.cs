@@ -79,4 +79,11 @@ public sealed partial class AaruFormat
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_drive_firmware_revision", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_get_drive_firmware_revision(IntPtr context, byte[] buffer, ref int length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_get_geometry(const void *context, uint32_t *cylinders, uint32_t *heads,
+    // uint32_t *sectors_per_track)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_geometry", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_get_geometry(IntPtr   context, out uint cylinders, out uint heads,
+                                                     out uint sectorsPerTrack);
 }
