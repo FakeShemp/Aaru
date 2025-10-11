@@ -42,7 +42,7 @@ using Track = Aaru.CommonTypes.Structs.Track;
 
 namespace Aaru.Images;
 
-public sealed partial class AaruFormat
+public sealed partial class AaruFormatOld
 {
 #region IWritableOpticalImage Members
 

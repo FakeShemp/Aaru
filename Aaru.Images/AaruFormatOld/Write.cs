@@ -64,7 +64,7 @@ using TrackType = Aaru.CommonTypes.Enums.TrackType;
 
 namespace Aaru.Images;
 
-public sealed partial class AaruFormat
+public sealed partial class AaruFormatOld
 {
 #region IWritableOpticalImage Members
 
@@ -293,8 +293,8 @@ public sealed partial class AaruFormat
         _header.application             = "Aaru";
         _header.imageMajorVersion       = AARUFMT_VERSION_V1;
         _header.imageMinorVersion       = 0;
-        _header.applicationMajorVersion = (byte)typeof(AaruFormat).Assembly.GetName().Version.Major;
-        _header.applicationMinorVersion = (byte)typeof(AaruFormat).Assembly.GetName().Version.Minor;
+        _header.applicationMajorVersion = (byte)typeof(AaruFormatOld).Assembly.GetName().Version.Major;
+        _header.applicationMinorVersion = (byte)typeof(AaruFormatOld).Assembly.GetName().Version.Minor;
 
         // Initialize tables
         _index                        = [];

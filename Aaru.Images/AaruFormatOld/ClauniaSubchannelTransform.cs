@@ -36,7 +36,7 @@ using Aaru.Logging;
 
 namespace Aaru.Images;
 
-public sealed partial class AaruFormat
+public sealed partial class AaruFormatOld
 {
     static byte[] ClauniaSubchannelTransform(byte[] interleaved)
     {

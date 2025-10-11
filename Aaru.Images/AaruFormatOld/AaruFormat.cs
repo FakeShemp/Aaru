@@ -81,7 +81,7 @@ namespace Aaru.Images;
 
 /// <inheritdoc cref="Aaru.CommonTypes.Interfaces.IWritableOpticalImage" />
 /// <summary>Implements reading and writing AaruFormat media images</summary>
-public sealed partial class AaruFormat : IWritableOpticalImage, IVerifiableImage, IWritableTapeImage
+public sealed partial class AaruFormatOld : IWritableOpticalImage, IVerifiableImage, IWritableTapeImage
 {
     const string MODULE_NAME = "Aaru Format plugin";
     bool         _alreadyWrittenZero;
@@ -165,7 +165,7 @@ public sealed partial class AaruFormat : IWritableOpticalImage, IVerifiableImage
     bool   _writingLong;
     ulong  _writtenSectors;
 
-    public AaruFormat() => _imageInfo = new ImageInfo
+    public AaruFormatOld() => _imageInfo = new ImageInfo
     {
         ReadableSectorTags    = [],
         ReadableMediaTags     = [],

@@ -36,7 +36,7 @@ using Aaru.CommonTypes.Enums;
 
 namespace Aaru.Images;
 
-public sealed partial class AaruFormat
+public sealed partial class AaruFormatOld
 {
     byte[] _eccBTable;
     byte[] _eccFTable;

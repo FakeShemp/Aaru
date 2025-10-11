@@ -34,7 +34,7 @@
 
 namespace Aaru.Images;
 
-public sealed partial class AaruFormat
+public sealed partial class AaruFormatOld
 {
 #region Nested type: BlockType
 

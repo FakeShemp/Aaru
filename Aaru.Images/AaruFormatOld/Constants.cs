@@ -32,7 +32,7 @@
 
 namespace Aaru.Images;
 
-public sealed partial class AaruFormat
+public sealed partial class AaruFormatOld
 {
     /// <summary>Old magic identifier = "DICMFRMT".</summary>
     const ulong DIC_MAGIC = 0x544D52464D434944;
