@@ -51,9 +51,6 @@ public sealed partial class AaruFormat
                        uint   sectorSize) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public bool Close() => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public bool SetMetadata(Metadata metadata) => throw new NotImplementedException();
 
     /// <inheritdoc />
