@@ -9,9 +9,8 @@ namespace Aaru.Images;
 public sealed partial class AaruFormat : IWritableOpticalImage, IVerifiableImage, IWritableTapeImage, IDisposable
 {
     const string MODULE_NAME = "Aaru Format plugin";
-
-    readonly ImageInfo _imageInfo;
-    IntPtr             _context;
+    IntPtr       _context;
+    ImageInfo    _imageInfo;
 
     public AaruFormat() => _imageInfo = new ImageInfo
     {
