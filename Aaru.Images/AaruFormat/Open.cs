@@ -37,8 +37,7 @@ public sealed partial class AaruFormat
 
         Status ret = aaruf_get_image_info(_context, ref imageInfo);
 
-        // TODO: Convert between error codes
-        if(ret != Status.Ok) return (ErrorNumber)ret;
+        if(ret != Status.Ok) return StatusToErrorNumber(ret);
 
         _imageInfo.Application          = StringHandlers.CToString(imageInfo.Application,        Encoding.UTF8);
         _imageInfo.Version              = StringHandlers.CToString(imageInfo.Version,            Encoding.UTF8);
