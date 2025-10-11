@@ -30,9 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System.IO;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Helpers;
 
 namespace Aaru.Images;
 
@@ -41,8 +39,9 @@ public sealed partial class AaruFormatOld
 #region IWritableOpticalImage Members
 
     /// <inheritdoc />
-    public bool Identify(IFilter imageFilter)
-    {
+    public bool Identify(IFilter imageFilter) => false;
+
+    /*
         _imageStream = imageFilter.GetDataForkStream();
         _imageStream.Seek(0, SeekOrigin.Begin);
 
@@ -53,7 +52,7 @@ public sealed partial class AaruFormatOld
         _header = Marshal.ByteArrayToStructureLittleEndian<AaruHeader>(_structureBytes);
 
         return _header.identifier is DIC_MAGIC or AARU_MAGIC && _header.imageMajorVersion <= AARUFMT_VERSION;
-    }
+        */
 
 #endregion
 }
