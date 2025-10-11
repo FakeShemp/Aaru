@@ -70,6 +70,6 @@
     <PackageVersion Include="System.ValueTuple" Version="4.6.1"/>
     <PackageVersion Include="Text.Analyzers" Version="4.14.0"/>
     <PackageVersion Include="Unclassified.NetRevisionTask" Version="0.4.4"/>
-    <PackageVersion Include="Packaging.Targets" Version="0.1.226"/>
+    <PackageVersion Include="Packaging.Targets" Version="0.1.232"/>
   </ItemGroup>
 </Project>
