@@ -36,6 +36,7 @@
     <PackageReference Include="Claunia.RsrcFork"/>
     <PackageReference Include="DotNetZip"/>
     <PackageReference Include="Humanizer"/>
+    <PackageReference Include="libaaruformat" />
     <PackageReference Include="plist-cil"/>
     <PackageReference Include="Sentry" />
     <PackageReference Include="SharpCompress"/>
