@@ -79,6 +79,23 @@ public sealed partial class AaruFormat
         return StatusToErrorNumber(res);
     }
 
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorTag(ulong sectorAddress, SectorTagType tag, out byte[] buffer)
+    {
+        buffer = null;
+        uint length = 0;
+
+        Status res = aaruf_read_sector_tag(_context, sectorAddress, false, buffer, ref length, tag);
+
+        if(res != Status.BufferTooSmall) return StatusToErrorNumber(res);
+
+        buffer = new byte[length];
+
+        res = aaruf_read_sector_tag(_context, sectorAddress, false, buffer, ref length, tag);
+
+        return StatusToErrorNumber(res);
+    }
+
 #endregion
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_read_media_tag(void *context, uint8_t *data, const int32_t tag, uint32_t *length)
@@ -100,11 +117,20 @@ public sealed partial class AaruFormat
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_read_track_sector(IntPtr   context, byte[] data,  ulong    sectorAddress,
                                                           ref uint length,  byte   track, out byte sectorStatus);
- // AARU_EXPORT int32_t AARU_CALL aaruf_read_sector_long(void *context, const uint64_t sector_address, bool negative,
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_read_sector_long(void *context, const uint64_t sector_address, bool negative,
     // uint8_t *data, uint32_t *length, uint8_t *sector_status)
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_read_sector_long", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_read_sector_long(IntPtr context, ulong sectorAddress,
                                                          [MarshalAs(UnmanagedType.I4)] bool negative, byte[] data,
                                                          ref uint length, out byte sectorStatus);
+ // AARU_EXPORT int32_t AARU_CALL aaruf_read_sector_tag(const void *context, const uint64_t sector_address,
+    // const bool negative, uint8_t *buffer, uint32_t *length,
+    // const int32_t tag)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_read_sector_tag", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_read_sector_tag(IntPtr                             context, ulong sectorAddress,
+                                                        [MarshalAs(UnmanagedType.I4)] bool negative, byte[] buffer,
+                                                        ref                           uint length, SectorTagType tag);
 }
