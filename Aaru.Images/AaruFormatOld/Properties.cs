@@ -69,13 +69,13 @@ public sealed partial class AaruFormatOld
     public ImageInfo Info => _imageInfo;
 
     /// <inheritdoc />
-    public string Name => Localization.AaruFormat_Name;
+    public string Name => "Aaru (old)";
 
     /// <inheritdoc />
     public Guid Id => new("49360069-1784-4A2F-B723-0C844D610B0A");
 
     /// <inheritdoc />
-    public string Format => "Aaru";
+    public string Format => "Aaru (old)";
 
     /// <inheritdoc />
     public string Author => Authors.NataliaPortillo;
