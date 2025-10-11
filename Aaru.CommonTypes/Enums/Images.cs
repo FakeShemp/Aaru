@@ -373,37 +373,37 @@ public enum OpticalImageCapabilities : ulong
     /// <summary>Can store CD-V analogue video tracks?</summary>
     CanStoreVideoTracks = 0x02,
     /// <summary>Can store Yellow Book data tracks?</summary>
-    CanStoreDataTracks = 0x03,
+    CanStoreDataTracks = 0x04,
     /// <summary>Can store pregaps without needing to interpret the subchannel?</summary>
-    CanStorePregaps = 0x04,
+    CanStorePregaps = 0x08,
     /// <summary>Can store indexes without needing to interpret the subchannel?</summary>
-    CanStoreIndexes = 0x08,
+    CanStoreIndexes = 0x10,
     /// <summary>Can store raw P to W subchannel data?</summary>
-    CanStoreSubchannelRw = 0x10,
+    CanStoreSubchannelRw = 0x20,
     /// <summary>Can store more than one session?</summary>
-    CanStoreSessions = 0x20,
+    CanStoreSessions = 0x40,
     /// <summary>Can store track ISRCs without needing to interpret the subchannel?</summary>
-    CanStoreIsrc = 0x40,
+    CanStoreIsrc = 0x80,
     /// <summary>Can store Lead-In's CD-TEXT?</summary>
-    CanStoreCdText = 0x80,
+    CanStoreCdText = 0x100,
     /// <summary>Can store the MCN without needing to interpret the subchannel?</summary>
-    CanStoreMcn = 0x100,
+    CanStoreMcn = 0x200,
     /// <summary>Can store the whole 2352 bytes of a sector?</summary>
-    CanStoreRawData = 0x200,
-    /// <summary>Can store more than 1 session in media that is not CD based (DVD et al)?</summary>
-    CanStoreNotCdSessions = 0x2000,
-    /// <summary>Can store more than 1 track in media that is not CD based (DVD et al)?</summary>
-    CanStoreNotCdTracks = 0x4000,
-    /// <summary>Can store hidden tracks with a type different from track 1?</summary>
-    CanStoreHiddenTracks = 0x8000,
+    CanStoreRawData = 0x400,
 
     // TODO: Implement
     /// <summary>Can store scrambled data?</summary>
-    CanStoreScrambledData = 0x400,
+    CanStoreScrambledData = 0x800,
     /// <summary>Can store only the user area of a sector (2048, 2324, etc)?</summary>
-    CanStoreCookedData = 0x800,
+    CanStoreCookedData = 0x1000,
     /// <summary>Can store more than 1 track?</summary>
-    CanStoreMultipleTracks = 0x1000
+    CanStoreMultipleTracks = 0x2000,
+    /// <summary>Can store more than 1 session in media that is not CD based (DVD et al)?</summary>
+    CanStoreNotCdSessions = 0x4000,
+    /// <summary>Can store more than 1 track in media that is not CD based (DVD et al)?</summary>
+    CanStoreNotCdTracks = 0x8000,
+    /// <summary>Can store hidden tracks with a type different from track 1?</summary>
+    CanStoreHiddenTracks = 0x10000
 }
 
 /// <summary>Enumeration of linear memory device types</summary>
