@@ -145,6 +145,30 @@ public sealed partial class AaruFormat
         return ErrorNumber.NoError;
     }
 
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorsTag(ulong sectorAddress, uint length, SectorTagType tag, out byte[] buffer)
+    {
+        MemoryStream ms = new();
+
+        for(uint i = 0; i < length; i++)
+        {
+            ErrorNumber res = ReadSectorTag(sectorAddress + i, tag, out byte[] sectorBuffer);
+
+            if(res != ErrorNumber.NoError)
+            {
+                buffer = ms.ToArray();
+
+                return res;
+            }
+
+            ms.Write(sectorBuffer, 0, sectorBuffer.Length);
+        }
+
+        buffer = ms.ToArray();
+
+        return ErrorNumber.NoError;
+    }
+
 #endregion
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_read_media_tag(void *context, uint8_t *data, const int32_t tag, uint32_t *length)
