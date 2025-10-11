@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Enums;
@@ -94,6 +95,30 @@ public sealed partial class AaruFormat
         res = aaruf_read_sector_tag(_context, sectorAddress, false, buffer, ref length, tag);
 
         return StatusToErrorNumber(res);
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    {
+        MemoryStream ms = new();
+
+        for(uint i = 0; i < length; i++)
+        {
+            ErrorNumber res = ReadSector(sectorAddress + i, out byte[] sectorBuffer);
+
+            if(res != ErrorNumber.NoError)
+            {
+                buffer = ms.ToArray();
+
+                return res;
+            }
+
+            ms.Write(sectorBuffer, 0, sectorBuffer.Length);
+        }
+
+        buffer = ms.ToArray();
+
+        return ErrorNumber.NoError;
     }
 
 #endregion
