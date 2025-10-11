@@ -22,9 +22,6 @@ public sealed partial class AaruFormat
 #region IWritableOpticalImage Members
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer) => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer) =>
         throw new NotImplementedException();
 
