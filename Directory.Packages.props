@@ -49,9 +49,9 @@
     <PackageVersion Include="SkiaSharp" Version="3.119.1"/>
     <PackageVersion Include="SmartAnalyzers.MultithreadingAnalyzer" Version="1.1.31"/>
     <PackageVersion Include="Spectre.Console.Analyzer" Version="1.0.0"/>
-    <PackageVersion Include="Spectre.Console" Version="0.51.1"/>
-    <PackageVersion Include="Spectre.Console.Cli" Version="0.51.1"/>
-    <PackageVersion Include="Spectre.Console.Json" Version="0.51.1"/>
+    <PackageVersion Include="Spectre.Console" Version="0.52.0"/>
+    <PackageVersion Include="Spectre.Console.Cli" Version="0.52.0"/>
+    <PackageVersion Include="Spectre.Console.Json" Version="0.52.0"/>
     <PackageVersion Include="System.Collections" Version="4.3.0"/>
     <PackageVersion Include="System.ComponentModel.Annotations" Version="6.0.0-preview.4.21253.7"/>
     <PackageVersion Include="System.Diagnostics.Debug" Version="4.3.0"/>
