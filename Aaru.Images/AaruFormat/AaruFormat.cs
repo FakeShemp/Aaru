@@ -1,3 +1,4 @@
+using System;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 
@@ -7,7 +8,10 @@ namespace Aaru.Images;
 /// <summary>Implements reading and writing AaruFormat media images</summary>
 public sealed partial class AaruFormat : IWritableOpticalImage, IVerifiableImage, IWritableTapeImage
 {
+    const string MODULE_NAME = "Aaru Format plugin";
+
     readonly ImageInfo _imageInfo;
+    IntPtr             _context;
 
     public AaruFormat() => _imageInfo = new ImageInfo
     {

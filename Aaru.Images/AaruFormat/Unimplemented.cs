@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
-using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using TapeFile = Aaru.CommonTypes.Structs.TapeFile;
 using TapePartition = Aaru.CommonTypes.Structs.TapePartition;
@@ -21,9 +20,6 @@ public sealed partial class AaruFormat
 #endregion
 
 #region IWritableOpticalImage Members
-
-    /// <inheritdoc />
-    public ErrorNumber Open(IFilter imageFilter) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer) => throw new NotImplementedException();
