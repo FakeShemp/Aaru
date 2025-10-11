@@ -210,7 +210,7 @@ public sealed partial class AaruFormat
             _imageInfo.SectorsPerTrack = sectorsPerTrack;
         }
 
-        // TODO: metadata from media tags
+        SetMetadataFromTags();
 
         return ErrorNumber.NoError;
     }
