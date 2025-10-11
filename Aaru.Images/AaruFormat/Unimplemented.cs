@@ -22,9 +22,6 @@ public sealed partial class AaruFormat
 #region IWritableOpticalImage Members
 
     /// <inheritdoc />
-    public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer) => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer) => throw new NotImplementedException();
 
     /// <inheritdoc />
