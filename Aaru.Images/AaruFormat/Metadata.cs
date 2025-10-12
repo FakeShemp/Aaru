@@ -29,6 +29,16 @@ public sealed partial class AaruFormat
         return aaruf_set_aaru_json_metadata(_context, buffer, (ulong)buffer.Length) == Status.Ok;
     }
 
+    /// <inheritdoc />
+    public bool SetGeometry(uint cylinders, uint heads, uint sectorsPerTrack)
+    {
+        _imageInfo.Cylinders       = cylinders;
+        _imageInfo.Heads           = heads;
+        _imageInfo.SectorsPerTrack = sectorsPerTrack;
+
+        return aaruf_set_geometry(_context, cylinders, heads, sectorsPerTrack) == Status.Ok;
+    }
+
 #endregion
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_get_image_info(const void *context, ImageInfo *image_info)
@@ -116,4 +126,10 @@ public sealed partial class AaruFormat
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_aaru_json_metadata", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_set_aaru_json_metadata(IntPtr context, [In] byte[] data, ulong length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_geometry(void *context, const uint32_t cylinders, const uint32_t heads,
+    // const uint32_t sectors_per_track)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_geometry", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_geometry(IntPtr context, uint cylinders, uint heads, uint sectorsPerTrack);
 }

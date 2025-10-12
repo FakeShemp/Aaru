@@ -32,8 +32,6 @@ public sealed partial class AaruFormat
     /// <inheritdoc />
     public bool SetImageInfo(ImageInfo imageInfo) => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public bool SetGeometry(uint cylinders, uint heads, uint sectorsPerTrack) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public bool WriteMediaTag(byte[] data, MediaTagType tag) => throw new NotImplementedException();
