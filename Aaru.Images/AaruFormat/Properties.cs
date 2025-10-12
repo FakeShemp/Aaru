@@ -6,7 +6,6 @@ using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
 using Partition = Aaru.CommonTypes.Partition;
-using Track = Aaru.CommonTypes.Structs.Track;
 
 namespace Aaru.Images;
 
@@ -51,8 +50,6 @@ public sealed partial class AaruFormat
     /// <inheritdoc />
     public List<Partition> Partitions { get; private set; }
 
-    /// <inheritdoc />
-    public List<Track> Tracks { get; private set; }
 
     /// <inheritdoc />
     public List<Session> Sessions { get; private set; }

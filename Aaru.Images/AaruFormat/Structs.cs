@@ -73,4 +73,46 @@ public sealed partial class AaruFormat
     }
 
 #endregion
+
+#region Nested type: TrackEntry
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    struct TrackEntry
+    {
+        /// <summary>
+        ///     Track number (1..99 typical for CD audio/data). 0 may indicate placeholder/non-standard.
+        /// </summary>
+        public byte Sequence;
+        /// <summary>
+        ///     Track type (value from \ref TrackType).
+        /// </summary>
+        public byte Type;
+        /// <summary>
+        ///     Inclusive starting LBA of the track.
+        /// </summary>
+        public long Start;
+        /// <summary>
+        ///     Inclusive ending LBA of the track.
+        /// </summary>
+        public long End;
+        /// <summary>
+        ///     Pre-gap length in sectors preceding track start (0 if none).
+        /// </summary>
+        public long Pregap;
+        /// <summary>
+        ///     Session number (1-based). 1 for single-session discs.
+        /// </summary>
+        public byte Session;
+        /// <summary>
+        ///     ISRC raw 13-byte code (no null terminator). All zeros if not present.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 13)]
+        public byte[] Isrc;
+        /// <summary>
+        ///     Control / attribute bitfield (see file documentation for suggested bit mapping).
+        /// </summary>
+        public byte Flags;
+    }
+
+#endregion
 }
