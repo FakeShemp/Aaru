@@ -34,9 +34,6 @@ public sealed partial class AaruFormat
 
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length) => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public bool WriteSectorsTag(byte[] data, ulong sectorAddress, uint length, SectorTagType tag) =>
         throw new NotImplementedException();
 
