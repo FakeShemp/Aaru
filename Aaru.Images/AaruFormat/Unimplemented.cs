@@ -25,18 +25,11 @@ public sealed partial class AaruFormat
     public bool Create(string path, MediaType mediaType, Dictionary<string, string> options, ulong sectors,
                        uint   sectorSize) => throw new NotImplementedException();
 
-
     /// <inheritdoc />
     public bool SetDumpHardware(List<DumpHardware> dumpHardware) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public bool SetImageInfo(ImageInfo imageInfo) => throw new NotImplementedException();
-
-
-    /// <inheritdoc />
-    public bool WriteSectorsTag(byte[] data, ulong sectorAddress, uint length, SectorTagType tag) =>
-        throw new NotImplementedException();
-
 
     /// <inheritdoc />
     public bool? VerifySector(ulong sectorAddress) => throw new NotImplementedException();
@@ -44,7 +37,6 @@ public sealed partial class AaruFormat
     /// <inheritdoc />
     public bool? VerifySectors(ulong           sectorAddress, uint length, out List<ulong> failingLbas,
                                out List<ulong> unknownLbas) => throw new NotImplementedException();
-
 
     /// <inheritdoc />
     public ErrorNumber ReadSectorTag(ulong sectorAddress, uint track, SectorTagType tag, out byte[] buffer) =>
