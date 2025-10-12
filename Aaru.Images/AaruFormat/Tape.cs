@@ -19,6 +19,16 @@ public sealed partial class AaruFormat
         return res == Status.Ok;
     }
 
+    /// <inheritdoc />
+    public bool AddPartition(TapePartition partition)
+    {
+        Status res = aaruf_set_tape_partition(_context, partition.Number, partition.FirstBlock, partition.LastBlock);
+
+        ErrorMessage = StatusToErrorMessage(res);
+
+        return res == Status.Ok;
+    }
+
 #endregion
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_set_tape_file(void *context, const uint8_t partition, const uint32_t file,
@@ -27,4 +37,10 @@ public sealed partial class AaruFormat
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_set_tape_file(IntPtr context, byte partition, uint file, ulong startingBlock,
                                                       ulong  endingBlock);
+ // AARU_EXPORT int32_t AARU_CALL aaruf_set_tape_partition(void *context, const uint8_t partition,
+    // const uint64_t starting_block, const uint64_t ending_block)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_tape_partition", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_tape_partition(IntPtr context, byte partition, ulong startingBlock,
+                                                           ulong  endingBlock);
 }
