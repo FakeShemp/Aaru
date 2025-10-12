@@ -1,6 +1,8 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Aaru.Checksums;
+using Aaru.CommonTypes.Enums;
 
 namespace Aaru.Images;
 
@@ -16,6 +18,20 @@ public sealed partial class AaruFormat
         ErrorMessage = StatusToErrorMessage(res);
 
         return res == Status.Ok;
+    }
+
+#endregion
+
+#region IWritableOpticalImage Members
+
+    /// <inheritdoc />
+    public bool? VerifySector(ulong sectorAddress)
+    {
+        if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc) return null;
+
+        ErrorNumber errno = ReadSectorLong(sectorAddress, out byte[] buffer);
+
+        return errno != ErrorNumber.NoError ? null : CdChecksums.CheckCdSector(buffer);
     }
 
 #endregion
