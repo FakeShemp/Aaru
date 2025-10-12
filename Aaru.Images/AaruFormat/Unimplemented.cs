@@ -36,8 +36,6 @@ public sealed partial class AaruFormat
     /// <inheritdoc />
     public bool WriteMediaTag(byte[] data, MediaTagType tag) => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public bool WriteSectorLong(byte[] data, ulong sectorAddress) => throw new NotImplementedException();
