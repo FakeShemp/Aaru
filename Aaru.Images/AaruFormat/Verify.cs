@@ -81,6 +81,53 @@ public sealed partial class AaruFormat
 
         return failingLbas.Count <= 0;
     }
+     /// <inheritdoc />
+    public bool? VerifySectors(ulong           sectorAddress, uint length, uint track, out List<ulong> failingLbas,
+                               out List<ulong> unknownLbas)
+    {
+        // Right now only CompactDisc sectors are verifiable
+        if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc || Tracks == null)
+        {
+            failingLbas = [];
+            unknownLbas = [];
+
+            for(ulong i = sectorAddress; i < sectorAddress + length; i++) unknownLbas.Add(i);
+
+            return null;
+        }
+
+        failingLbas = [];
+        unknownLbas = [];
+
+        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, track, out byte[] buffer);
+
+        if(errno != ErrorNumber.NoError) return null;
+
+        var bps    = (int)(buffer.Length / length);
+        var sector = new byte[bps];
+
+        for(var i = 0; i < length; i++)
+        {
+            Array.Copy(buffer, i * bps, sector, 0, bps);
+            bool? sectorStatus = CdChecksums.CheckCdSector(sector);
+
+            switch(sectorStatus)
+            {
+                case null:
+                    unknownLbas.Add((ulong)i + sectorAddress);
+
+                    break;
+                case false:
+                    failingLbas.Add((ulong)i + sectorAddress);
+
+                    break;
+            }
+        }
+
+        if(unknownLbas.Count > 0) return null;
+
+        return failingLbas.Count <= 0;
+    }
 
 #endregion
 

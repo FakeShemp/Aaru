@@ -1,8 +1,10 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Images;
 
@@ -167,6 +169,93 @@ public sealed partial class AaruFormat
         buffer = ms.ToArray();
 
         return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorTag(ulong sectorAddress, uint track, SectorTagType tag, out byte[] buffer)
+    {
+        buffer = null;
+
+        if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc) return ErrorNumber.NotSupported;
+
+        if(Tracks == null) return ErrorNumber.SectorNotFound;
+
+        Track trk = Tracks.FirstOrDefault(t => t.Sequence == track);
+
+        return trk?.Sequence != track
+                   ? ErrorNumber.SectorNotFound
+                   : ReadSectorTag(trk.StartSector + sectorAddress, tag, out buffer);
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, uint track, out byte[] buffer)
+    {
+        buffer = null;
+
+        if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc) return ErrorNumber.NotSupported;
+
+        if(Tracks == null) return ErrorNumber.SectorNotFound;
+
+        Track trk = Tracks.FirstOrDefault(t => t.Sequence == track);
+
+        if(trk?.Sequence != track) return ErrorNumber.SectorNotFound;
+
+        return trk.StartSector + sectorAddress + length > trk.EndSector + 1
+                   ? ErrorNumber.OutOfRange
+                   : ReadSectors(trk.StartSector + sectorAddress, length, out buffer);
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorsTag(ulong      sectorAddress, uint length, uint track, SectorTagType tag,
+                                      out byte[] buffer)
+    {
+        buffer = null;
+
+        if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc) return ErrorNumber.NotSupported;
+
+        if(Tracks == null) return ErrorNumber.SectorNotFound;
+
+        Track trk = Tracks.FirstOrDefault(t => t.Sequence == track);
+
+        return trk?.Sequence != track
+                   ? ErrorNumber.SectorNotFound
+                   : trk.StartSector + sectorAddress + length > trk.EndSector + 1
+                       ? ErrorNumber.OutOfRange
+                       : ReadSectorsTag(trk.StartSector + sectorAddress, length, tag, out buffer);
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer)
+    {
+        buffer = null;
+
+        if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc) return ErrorNumber.NotSupported;
+
+        if(Tracks == null) return ErrorNumber.SectorNotFound;
+
+        Track trk = Tracks.FirstOrDefault(t => t.Sequence == track);
+
+        return trk?.Sequence != track
+                   ? ErrorNumber.SectorNotFound
+                   : ReadSectorLong(trk.StartSector + sectorAddress, out buffer);
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, uint track, out byte[] buffer)
+    {
+        buffer = null;
+
+        if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc) return ErrorNumber.NotSupported;
+
+        if(Tracks == null) return ErrorNumber.SectorNotFound;
+
+        Track trk = Tracks.FirstOrDefault(t => t.Sequence == track);
+
+        return trk?.Sequence != track
+                   ? ErrorNumber.SectorNotFound
+                   : trk.StartSector + sectorAddress + length > trk.EndSector + 1
+                       ? ErrorNumber.OutOfRange
+                       : ReadSectorsLong(trk.StartSector + sectorAddress, length, out buffer);
     }
 
 #endregion

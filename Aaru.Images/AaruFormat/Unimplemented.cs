@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
-using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
 using TapeFile = Aaru.CommonTypes.Structs.TapeFile;
 using TapePartition = Aaru.CommonTypes.Structs.TapePartition;
@@ -23,31 +22,6 @@ public sealed partial class AaruFormat
 
     /// <inheritdoc />
     public bool SetImageInfo(ImageInfo imageInfo) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectorTag(ulong sectorAddress, uint track, SectorTagType tag, out byte[] buffer) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, uint track, out byte[] buffer) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectorsTag(ulong      sectorAddress, uint length, uint track, SectorTagType tag,
-                                      out byte[] buffer) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, uint track, out byte[] buffer) =>
-        throw new NotImplementedException();
-
-
-    /// <inheritdoc />
-    public bool? VerifySectors(ulong           sectorAddress, uint length, uint track, out List<ulong> failingLbas,
-                               out List<ulong> unknownLbas) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public bool SetTracks(List<Track> tracks) => throw new NotImplementedException();
