@@ -37,8 +37,6 @@ public sealed partial class AaruFormat
     /// <inheritdoc />
     public bool IsTape { get; }
 
-    /// <inheritdoc />
-    public bool AddFile(TapeFile file) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public bool AddPartition(TapePartition partition) => throw new NotImplementedException();
