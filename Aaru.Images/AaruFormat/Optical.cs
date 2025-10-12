@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -103,10 +104,78 @@ public sealed partial class AaruFormat
     /// <inheritdoc />
     public List<Track> GetSessionTracks(ushort session) => Tracks?.Where(t => t.Session == session).ToList();
 
+    /// <inheritdoc />
+    public bool SetTracks(List<Track> tracks)
+    {
+        _tracks = tracks;
+        List<TrackEntry> trackEntries = [];
+
+        foreach(Track track in Tracks)
+        {
+            _trackFlags.TryGetValue((byte)track.Sequence, out byte flags);
+            _trackIsrcs.TryGetValue((byte)track.Sequence, out byte[] isrc);
+
+            if((flags & (int)CdFlags.DataTrack) == 0 && track.Type != TrackType.Audio) flags += (byte)CdFlags.DataTrack;
+
+            trackEntries.Add(new TrackEntry
+            {
+                Sequence = (byte)track.Sequence,
+                Type     = (byte)track.Type,
+                Start    = (long)track.StartSector,
+                End      = (long)track.EndSector,
+                Pregap   = (long)track.Pregap,
+                Session  = (byte)track.Session,
+                Isrc     = isrc,
+                Flags    = flags
+            });
+
+            switch(track.Indexes.ContainsKey(0))
+            {
+                case false when track.Pregap > 0:
+                    track.Indexes[0] = (int)track.StartSector;
+                    track.Indexes[1] = (int)(track.StartSector + track.Pregap);
+
+                    break;
+                case false when !track.Indexes.ContainsKey(1):
+                    track.Indexes[0] = (int)track.StartSector;
+
+                    break;
+            }
+        }
+
+        // If there are tracks build the tracks block
+        var blockStream = new MemoryStream();
+
+        foreach(TrackEntry entry in trackEntries)
+        {
+            IntPtr structurePointer = Marshal.AllocHGlobal(Marshal.SizeOf<TrackEntry>());
+
+            var structureBytes = new byte[Marshal.SizeOf<TrackEntry>()];
+            Marshal.StructureToPtr(entry, structurePointer, true);
+
+            Marshal.Copy(structurePointer, structureBytes, 0, structureBytes.Length);
+
+            Marshal.FreeHGlobal(structurePointer);
+            blockStream.Write(structureBytes, 0, structureBytes.Length);
+        }
+
+        byte[] blockBytes = blockStream.ToArray();
+        Status res        = aaruf_set_tracks(_context, blockBytes, trackEntries.Count);
+
+        ErrorMessage = StatusToErrorMessage(res);
+
+        return res == Status.Ok;
+    }
+
 #endregion
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_get_tracks(const void *context, uint8_t *buffer, size_t *length)
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_tracks", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_get_tracks(IntPtr context, byte[] buffer, ref ulong length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_tracks(void *context, TrackEntry *tracks, const int count)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_tracks", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_tracks(IntPtr context, [In] byte[] tracks, int count);
 }
