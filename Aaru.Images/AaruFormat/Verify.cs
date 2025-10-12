@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Aaru.Checksums;
@@ -32,6 +33,53 @@ public sealed partial class AaruFormat
         ErrorNumber errno = ReadSectorLong(sectorAddress, out byte[] buffer);
 
         return errno != ErrorNumber.NoError ? null : CdChecksums.CheckCdSector(buffer);
+    }
+
+    /// <inheritdoc />
+    public bool? VerifySectors(ulong           sectorAddress, uint length, out List<ulong> failingLbas,
+                               out List<ulong> unknownLbas)
+    {
+        failingLbas = [];
+        unknownLbas = [];
+
+        // Right now only CompactDisc sectors are verifiable
+        if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc)
+        {
+            for(ulong i = sectorAddress; i < sectorAddress + length; i++) unknownLbas.Add(i);
+
+            return null;
+        }
+
+        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, out byte[] buffer);
+
+        if(errno != ErrorNumber.NoError) return null;
+
+        var bps    = (int)(buffer.Length / length);
+        var sector = new byte[bps];
+        failingLbas = [];
+        unknownLbas = [];
+
+        for(var i = 0; i < length; i++)
+        {
+            Array.Copy(buffer, i * bps, sector, 0, bps);
+            bool? sectorStatus = CdChecksums.CheckCdSector(sector);
+
+            switch(sectorStatus)
+            {
+                case null:
+                    unknownLbas.Add((ulong)i + sectorAddress);
+
+                    break;
+                case false:
+                    failingLbas.Add((ulong)i + sectorAddress);
+
+                    break;
+            }
+        }
+
+        if(unknownLbas.Count > 0) return null;
+
+        return failingLbas.Count <= 0;
     }
 
 #endregion

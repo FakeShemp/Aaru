@@ -25,10 +25,6 @@ public sealed partial class AaruFormat
     public bool SetImageInfo(ImageInfo imageInfo) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public bool? VerifySectors(ulong           sectorAddress, uint length, out List<ulong> failingLbas,
-                               out List<ulong> unknownLbas) => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber ReadSectorTag(ulong sectorAddress, uint track, SectorTagType tag, out byte[] buffer) =>
         throw new NotImplementedException();
 
