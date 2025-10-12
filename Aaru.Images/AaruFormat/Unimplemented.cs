@@ -12,13 +12,6 @@ namespace Aaru.Images;
 
 public sealed partial class AaruFormat
 {
-#region IVerifiableImage Members
-
-    /// <inheritdoc />
-    public bool? VerifyMediaImage() => throw new NotImplementedException();
-
-#endregion
-
 #region IWritableOpticalImage Members
 
     /// <inheritdoc />
