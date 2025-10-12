@@ -74,6 +74,76 @@ public sealed partial class AaruFormat
 
 #endregion
 
+#region Nested type: DumpHardwareEntry
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    struct DumpHardwareEntry
+    {
+        /// <summary>
+        ///     Length in bytes of manufacturer UTF-8 string.
+        /// </summary>
+        public uint ManufacturerLength;
+        /// <summary>
+        ///     Length in bytes of model UTF-8 string.
+        /// </summary>
+        public uint ModelLength;
+        /// <summary>
+        ///     Length in bytes of revision / hardware revision string.
+        /// </summary>
+        public uint RevisionLength;
+        /// <summary>
+        ///     Length in bytes of firmware version string.
+        /// </summary>
+        public uint FirmwareLength;
+        /// <summary>
+        ///     Length in bytes of device serial number string.
+        /// </summary>
+        public uint SerialLength;
+        /// <summary>
+        ///     Length in bytes of dumping software name string.
+        /// </summary>
+        public uint SoftwareNameLength;
+        /// <summary>
+        ///     Length in bytes of dumping software version string.
+        /// </summary>
+        public uint SoftwareVersionLength;
+        /// <summary>
+        ///     Length in bytes of host operating system string.
+        /// </summary>
+        public uint SoftwareOperatingSystemLength;
+        /// <summary>
+        ///     Number of DumpExtent records following the strings (0 = none).
+        /// </summary>
+        public uint Extents;
+    }
+
+#endregion
+
+#region Nested type: DumpHardwareHeader
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    struct DumpHardwareHeader
+    {
+        /// <summary>
+        ///     Block identifier, must be BlockType::DumpHardwareBlock.
+        /// </summary>
+        public BlockType Identifier;
+        /// <summary>
+        ///     Number of DumpHardwareEntry records that follow.
+        /// </summary>
+        public ushort Entries;
+        /// <summary>
+        ///     Total payload bytes after this header (sum of entries, strings, and extents arrays).
+        /// </summary>
+        public uint Length;
+        /// <summary>
+        ///     CRC64-ECMA of the payload (byte-swapped for legacy v1 images, handled automatically).
+        /// </summary>
+        public ulong Crc64;
+    }
+
+#endregion
+
 #region Nested type: TrackEntry
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
