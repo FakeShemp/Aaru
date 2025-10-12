@@ -25,8 +25,6 @@ public sealed partial class AaruFormat
     public bool Create(string path, MediaType mediaType, Dictionary<string, string> options, ulong sectors,
                        uint   sectorSize) => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public bool SetMetadata(Metadata metadata) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public bool SetDumpHardware(List<DumpHardware> dumpHardware) => throw new NotImplementedException();

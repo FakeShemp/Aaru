@@ -1,11 +1,36 @@
 using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text.Json;
+using Aaru.CommonTypes.AaruMetadata;
 
 namespace Aaru.Images;
 
 public sealed partial class AaruFormat
 {
+#region IWritableOpticalImage Members
+
+    /// <inheritdoc />
+    public bool SetMetadata(Metadata metadata)
+    {
+        var jsonMs = new MemoryStream();
+
+        JsonSerializer.Serialize(jsonMs,
+                                 new MetadataJson
+                                 {
+                                     AaruMetadata = AaruMetadata
+                                 },
+                                 typeof(MetadataJson),
+                                 MetadataJsonContext.Default);
+
+        byte[] buffer = jsonMs.ToArray();
+
+        return aaruf_set_aaru_json_metadata(_context, buffer, (ulong)buffer.Length) == Status.Ok;
+    }
+
+#endregion
+
     // AARU_EXPORT int32_t AARU_CALL aaruf_get_image_info(const void *context, ImageInfo *image_info)
     [DllImport("libaaruformat",
                EntryPoint = "aaruf_get_image_info",
@@ -86,4 +111,9 @@ public sealed partial class AaruFormat
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_get_geometry(IntPtr   context, out uint cylinders, out uint heads,
                                                      out uint sectorsPerTrack);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_aaru_json_metadata(void *context, uint8_t *data, size_t length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_aaru_json_metadata", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_aaru_json_metadata(IntPtr context, [In] byte[] data, ulong length);
 }
