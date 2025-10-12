@@ -34,11 +34,6 @@ public sealed partial class AaruFormat
     public List<TapeFile> Files { get; }
     /// <inheritdoc />
     public List<TapePartition> TapePartitions { get; }
-    /// <inheritdoc />
-    public bool IsTape { get; }
-
-    /// <inheritdoc />
-    public bool SetTape() => throw new NotImplementedException();
 
 #endregion
 }
