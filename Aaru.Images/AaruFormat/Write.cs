@@ -58,6 +58,22 @@ public sealed partial class AaruFormat
         return false;
     }
 
+    /// <inheritdoc />
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
+    {
+        var sectorSize = (uint)(data.Length / length);
+
+        for(uint i = 0; i < length; i++)
+        {
+            var sectorData = new byte[sectorSize];
+            Array.Copy(data, i * sectorSize, sectorData, 0, sectorSize);
+
+            if(!WriteSector(sectorData, sectorAddress + i)) return false;
+        }
+
+        return true;
+    }
+
 #endregion
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_write_sector(void *context, uint64_t sector_address, bool negative,
