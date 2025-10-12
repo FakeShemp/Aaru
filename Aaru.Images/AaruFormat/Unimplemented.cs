@@ -58,11 +58,6 @@ public sealed partial class AaruFormat
     public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, uint track, out byte[] buffer) =>
         throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public List<Track> GetSessionTracks(Session session) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public List<Track> GetSessionTracks(ushort session) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public bool? VerifySectors(ulong           sectorAddress, uint length, uint track, out List<ulong> failingLbas,

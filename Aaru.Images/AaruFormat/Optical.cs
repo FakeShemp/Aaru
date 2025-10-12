@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Enums;
@@ -95,6 +96,12 @@ public sealed partial class AaruFormat
             return _tracks;
         }
     }
+
+    /// <inheritdoc />
+    public List<Track> GetSessionTracks(Session session) => Tracks?.Where(t => t.Session == session.Sequence).ToList();
+
+    /// <inheritdoc />
+    public List<Track> GetSessionTracks(ushort session) => Tracks?.Where(t => t.Session == session).ToList();
 
 #endregion
 
