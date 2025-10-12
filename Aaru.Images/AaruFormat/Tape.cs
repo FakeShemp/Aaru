@@ -12,6 +12,13 @@ public sealed partial class AaruFormat
     /// <inheritdoc />
     public bool AddFile(TapeFile file)
     {
+        if(!IsTape)
+        {
+            ErrorMessage = "Image is not a tape";
+
+            return false;
+        }
+
         Status res = aaruf_set_tape_file(_context, file.Partition, file.File, file.FirstBlock, file.LastBlock);
 
         ErrorMessage = StatusToErrorMessage(res);
@@ -22,6 +29,13 @@ public sealed partial class AaruFormat
     /// <inheritdoc />
     public bool AddPartition(TapePartition partition)
     {
+        if(!IsTape)
+        {
+            ErrorMessage = "Image is not a tape";
+
+            return false;
+        }
+
         Status res = aaruf_set_tape_partition(_context, partition.Number, partition.FirstBlock, partition.LastBlock);
 
         ErrorMessage = StatusToErrorMessage(res);
