@@ -52,6 +52,50 @@ public sealed partial class AaruFormat
                };
     }
 
+    /// <summary>
+    ///     Converts an AaruFormat.Status to a descriptive error message.
+    /// </summary>
+    /// <param name="status">The AaruFormat status to convert</param>
+    /// <returns>A descriptive error message string</returns>
+    static string StatusToErrorMessage(Status status)
+    {
+        return status switch
+               {
+                   Status.Ok                     => "Operation completed successfully.",
+                   Status.NotAaruFormat          => "Input file or stream failed magic or structural validation.",
+                   Status.FileTooSmall           => "File size is insufficient for mandatory header or structures.",
+                   Status.IncompatibleVersion    => "Image uses a newer incompatible on-disk version.",
+                   Status.CannotReadIndex        => "Index block is unreadable, truncated, or has bad identifier.",
+                   Status.SectorOutOfBounds      => "Requested logical sector is outside media bounds.",
+                   Status.CannotReadHeader       => "Failed to read container header.",
+                   Status.CannotReadBlock        => "Generic block read failure (seek or read error).",
+                   Status.UnsupportedCompression => "Block is marked with unsupported compression algorithm.",
+                   Status.NotEnoughMemory        => "Memory allocation failure.",
+                   Status.BufferTooSmall         => "Caller-supplied buffer is insufficient for data.",
+                   Status.MediaTagNotPresent     => "Requested media tag is absent.",
+                   Status.IncorrectMediaType     => "Operation is incompatible with image media type.",
+                   Status.TrackNotFound          => "Referenced track number is not present.",
+                   Status.ReachedUnreachableCode => "Internal logic assertion hit unexpected path.",
+                   Status.InvalidTrackFormat     => "Track metadata is internally inconsistent or malformed.",
+                   Status.SectorTagNotPresent    => "Requested sector tag (e.g., subchannel or prefix) is not stored.",
+                   Status.CannotDecompressBlock  => "Decompression routine failed or size mismatch occurred.",
+                   Status.InvalidBlockCrc        => "CRC64 mismatch indicating corruption.",
+                   Status.CannotCreateFile       => "Output file could not be created or opened for write.",
+                   Status.InvalidAppNameLength   => "Application name field length is invalid (sanity limit exceeded).",
+                   Status.CannotWriteHeader      => "Failure writing container header.",
+                   Status.ReadOnly               => "Operation requires write mode but context is read-only.",
+                   Status.CannotWriteBlockHeader => "Failure writing block header.",
+                   Status.CannotWriteBlockData   => "Failure writing block payload.",
+                   Status.CannotSetDdtEntry      => "Failed to encode or store a DDT entry (overflow or I/O error).",
+                   Status.IncorrectDataSize      => "Data size does not match expected size.",
+                   Status.InvalidTag             => "Invalid or unsupported media or sector tag format.",
+                   Status.TapeFileNotFound       => "Requested tape file number is not present in image.",
+                   Status.TapePartitionNotFound  => "Requested tape partition is not present in image.",
+                   Status.MetadataNotPresent     => "Requested metadata is not present in image.",
+                   _                             => "Unknown error occurred."
+               };
+    }
+
     /// <summary>Checks for media tags that may contain metadata and sets it up if not already set</summary>
     void SetMetadataFromTags()
     {
