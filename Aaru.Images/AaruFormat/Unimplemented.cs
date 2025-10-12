@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
-using Aaru.CommonTypes.Structs;
 using TapeFile = Aaru.CommonTypes.Structs.TapeFile;
 using TapePartition = Aaru.CommonTypes.Structs.TapePartition;
 using Track = Aaru.CommonTypes.Structs.Track;
@@ -19,9 +18,6 @@ public sealed partial class AaruFormat
 
     /// <inheritdoc />
     public bool SetDumpHardware(List<DumpHardware> dumpHardware) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public bool SetImageInfo(ImageInfo imageInfo) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public bool SetTracks(List<Track> tracks) => throw new NotImplementedException();

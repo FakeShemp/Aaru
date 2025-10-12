@@ -2,8 +2,10 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.Json;
 using Aaru.CommonTypes.AaruMetadata;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Images;
 
@@ -37,6 +39,114 @@ public sealed partial class AaruFormat
         _imageInfo.SectorsPerTrack = sectorsPerTrack;
 
         return aaruf_set_geometry(_context, cylinders, heads, sectorsPerTrack) == Status.Ok;
+    }
+
+    /// <inheritdoc />
+    public bool SetImageInfo(ImageInfo imageInfo)
+    {
+        _imageInfo.MediaSequence         = imageInfo.MediaSequence;
+        _imageInfo.LastMediaSequence     = imageInfo.LastMediaSequence;
+        _imageInfo.Creator               = imageInfo.Creator;
+        _imageInfo.Comments              = imageInfo.Comments;
+        _imageInfo.MediaTitle            = imageInfo.MediaTitle;
+        _imageInfo.MediaManufacturer     = imageInfo.MediaManufacturer;
+        _imageInfo.MediaModel            = imageInfo.MediaModel;
+        _imageInfo.MediaSerialNumber     = imageInfo.MediaSerialNumber;
+        _imageInfo.MediaBarcode          = imageInfo.MediaBarcode;
+        _imageInfo.MediaPartNumber       = imageInfo.MediaPartNumber;
+        _imageInfo.DriveManufacturer     = imageInfo.DriveManufacturer;
+        _imageInfo.DriveModel            = imageInfo.DriveModel;
+        _imageInfo.DriveSerialNumber     = imageInfo.DriveSerialNumber;
+        _imageInfo.DriveFirmwareRevision = imageInfo.DriveFirmwareRevision;
+
+        aaruf_set_media_sequence(_context, _imageInfo.MediaSequence, _imageInfo.LastMediaSequence);
+
+        // TODO: Clear fields if empty
+        if(!string.IsNullOrEmpty(_imageInfo.Creator))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.Creator);
+            aaruf_set_creator(_context, buffer, buffer.Length);
+        }
+
+        // TODO: Clear fields if empty
+        if(!string.IsNullOrEmpty(_imageInfo.Comments))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.Comments);
+            aaruf_set_comments(_context, buffer, buffer.Length);
+        }
+
+        // TODO: Clear fields if empty
+        if(!string.IsNullOrEmpty(_imageInfo.MediaTitle))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaTitle);
+            aaruf_set_media_title(_context, buffer, buffer.Length);
+        }
+
+        // TODO: Clear fields if empty
+        if(!string.IsNullOrEmpty(_imageInfo.MediaManufacturer))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaManufacturer);
+            aaruf_set_media_manufacturer(_context, buffer, buffer.Length);
+        }
+
+        // TODO: Clear fields if empty
+        if(!string.IsNullOrEmpty(_imageInfo.MediaModel))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaModel);
+            aaruf_set_media_model(_context, buffer, buffer.Length);
+        }
+
+        // TODO: Clear fields if empty
+        if(!string.IsNullOrEmpty(_imageInfo.MediaSerialNumber))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaSerialNumber);
+            aaruf_set_media_serial_number(_context, buffer, buffer.Length);
+        }
+
+        // TODO: Clear fields if empty
+        if(!string.IsNullOrEmpty(_imageInfo.MediaBarcode))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaBarcode);
+            aaruf_set_media_barcode(_context, buffer, buffer.Length);
+        }
+
+        // TODO: Clear fields if empty
+        if(!string.IsNullOrEmpty(_imageInfo.MediaPartNumber))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaPartNumber);
+            aaruf_set_media_part_number(_context, buffer, buffer.Length);
+        }
+
+        // TODO: Clear fields if empty
+        if(!string.IsNullOrEmpty(_imageInfo.DriveManufacturer))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.DriveManufacturer);
+            aaruf_set_drive_manufacturer(_context, buffer, buffer.Length);
+        }
+
+        // TODO: Clear fields if empty
+        if(!string.IsNullOrEmpty(_imageInfo.DriveModel))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.DriveModel);
+            aaruf_set_drive_model(_context, buffer, buffer.Length);
+        }
+
+        // TODO: Clear fields if empty
+        if(!string.IsNullOrEmpty(_imageInfo.DriveSerialNumber))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.DriveSerialNumber);
+            aaruf_set_drive_serial_number(_context, buffer, buffer.Length);
+        }
+
+        // TODO: Clear fields if empty
+        if(string.IsNullOrEmpty(_imageInfo.DriveFirmwareRevision)) return true;
+
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.DriveFirmwareRevision);
+            aaruf_set_drive_firmware_revision(_context, buffer, buffer.Length);
+        }
+
+        return true;
     }
 
 #endregion
@@ -132,4 +242,71 @@ public sealed partial class AaruFormat
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_geometry", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_set_geometry(IntPtr context, uint cylinders, uint heads, uint sectorsPerTrack);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_media_sequence(void *context, const int32_t sequence,
+    // const int32_t last_sequence)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_media_sequence", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_media_sequence(IntPtr context, int sequence, int lastSequence);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_creator(void *context, const uint8_t *data, const int32_t length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_creator", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_creator(IntPtr context, [In] byte[] data, int length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_comments(void *context, const uint8_t *data, const int32_t length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_comments", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_comments(IntPtr context, [In] byte[] data, int length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_media_title(void *context, const uint8_t *data, const int32_t length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_media_title", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_media_title(IntPtr context, [In] byte[] data, int length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_media_manufacturer(void *context, const uint8_t *data, const int32_t length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_media_manufacturer", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_media_manufacturer(IntPtr context, [In] byte[] data, int length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_media_model(void *context, const uint8_t *data, const int32_t length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_media_model", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_media_model(IntPtr context, [In] byte[] data, int length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_media_serial_number(void *context, const uint8_t *data, const int32_t length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_media_serial_number", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_media_serial_number(IntPtr context, [In] byte[] data, int length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_media_barcode(void *context, const uint8_t *data, const int32_t length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_media_barcode", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_media_barcode(IntPtr context, [In] byte[] data, int length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_media_part_number(void *context, const uint8_t *data, const int32_t length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_media_part_number", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_media_part_number(IntPtr context, [In] byte[] data, int length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_drive_manufacturer(void *context, const uint8_t *data, const int32_t length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_drive_manufacturer", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_drive_manufacturer(IntPtr context, [In] byte[] data, int length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_drive_model(void *context, const uint8_t *data, const int32_t length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_drive_model", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_drive_model(IntPtr context, [In] byte[] data, int length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_drive_serial_number(void *context, const uint8_t *data, const int32_t length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_drive_serial_number", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_drive_serial_number(IntPtr context, [In] byte[] data, int length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_drive_firmware_revision(void *context, const uint8_t *data,
+    // const int32_t length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_drive_firmware_revision", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_drive_firmware_revision(IntPtr context, [In] byte[] data, int length);
 }
