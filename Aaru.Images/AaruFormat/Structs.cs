@@ -144,6 +144,35 @@ public sealed partial class AaruFormat
 
 #endregion
 
+#region Nested type: TapeFileEntry
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    struct TapeFileEntry
+    {
+        /// <summary>
+        ///     File number (unique within the partition). Identifies this file among all files in the same
+        ///     partition. Numbering scheme is tape-format-dependent.
+        /// </summary>
+        public uint File;
+        /// <summary>
+        ///     Partition number containing this file. References a partition defined in the
+        ///     TapePartitionHeader block. Valid range: 0-255.
+        /// </summary>
+        public byte Partition;
+        /// <summary>
+        ///     First block of the file (inclusive). This is the starting block address of the file data.
+        ///     Block addresses are 0-based within the partition.
+        /// </summary>
+        public ulong FirstBlock;
+        /// <summary>
+        ///     Last block of the file (inclusive). This is the ending block address of the file data. Must be
+        ///     ≥ FirstBlock. The file contains all blocks from FirstBlock through LastBlock inclusive.
+        /// </summary>
+        public ulong LastBlock;
+    }
+
+#endregion
+
 #region Nested type: TrackEntry
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
