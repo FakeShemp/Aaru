@@ -101,9 +101,6 @@ public sealed partial class AaruFormat
     public List<DumpHardware> DumpHardware { get; private set; }
 
     /// <inheritdoc />
-    public Metadata AaruMetadata { get; private set; }
-
-    /// <inheritdoc />
     public IEnumerable<MediaTagType> SupportedMediaTags => Enum.GetValues(typeof(MediaTagType)).Cast<MediaTagType>();
 
     /// <inheritdoc />

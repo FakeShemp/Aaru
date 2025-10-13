@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Structs;
+using Aaru.Logging;
 
 namespace Aaru.Images;
 
@@ -147,6 +148,50 @@ public sealed partial class AaruFormat
         }
 
         return true;
+    }
+
+    /// <inheritdoc />
+    public Metadata AaruMetadata
+    {
+        get
+        {
+            ulong  length = 0;
+            Status res    = aaruf_get_aaru_json_metadata(_context, null, ref length);
+
+            if(res != Status.Ok && res != Status.BufferTooSmall)
+            {
+                ErrorMessage = StatusToErrorMessage(res);
+
+                return null;
+            }
+
+            var jsonBytes = new byte[length];
+            res = aaruf_get_aaru_json_metadata(_context, jsonBytes, ref length);
+
+            if(res != Status.Ok)
+            {
+                ErrorMessage = StatusToErrorMessage(res);
+
+                return null;
+            }
+
+            try
+            {
+                Metadata metadata =
+                    (JsonSerializer.Deserialize(jsonBytes, typeof(MetadataJson), MetadataJsonContext.Default) as
+                         MetadataJson)?.AaruMetadata;
+
+                return metadata;
+            }
+            catch(JsonException ex)
+            {
+                AaruLogging.Debug(MODULE_NAME, Localization.Exception_0_processing_Aaru_Metadata_block, ex.Message);
+
+                AaruLogging.Exception(ex, Localization.Exception_0_processing_Aaru_Metadata_block, ex.Message);
+
+                return null;
+            }
+        }
     }
 
 #endregion
@@ -309,4 +354,9 @@ public sealed partial class AaruFormat
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_drive_firmware_revision", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_set_drive_firmware_revision(IntPtr context, [In] byte[] data, int length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_get_aaru_json_metadata(const void *context, uint8_t *buffer, size_t *length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_aaru_json_metadata", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_get_aaru_json_metadata(IntPtr context, byte[] buffer, ref ulong length);
 }
