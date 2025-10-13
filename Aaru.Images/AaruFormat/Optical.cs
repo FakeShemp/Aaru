@@ -99,6 +99,31 @@ public sealed partial class AaruFormat
     }
 
     /// <inheritdoc />
+    public List<Session> Sessions
+    {
+        get
+        {
+            if(Tracks is null) return null;
+
+            List<Session> sessions = [];
+
+            for(var i = 1; i <= Tracks.Max(t => t.Session); i++)
+            {
+                sessions.Add(new Session
+                {
+                    Sequence    = (ushort)i,
+                    StartTrack  = Tracks.Where(t => t.Session == i).Min(t => t.Sequence),
+                    EndTrack    = Tracks.Where(t => t.Session == i).Max(t => t.Sequence),
+                    StartSector = Tracks.Where(t => t.Session == i).Min(t => t.StartSector),
+                    EndSector   = Tracks.Where(t => t.Session == i).Max(t => t.EndSector)
+                });
+            }
+
+            return sessions;
+        }
+    }
+
+    /// <inheritdoc />
     public List<Track> GetSessionTracks(Session session) => Tracks?.Where(t => t.Session == session.Sequence).ToList();
 
     /// <inheritdoc />

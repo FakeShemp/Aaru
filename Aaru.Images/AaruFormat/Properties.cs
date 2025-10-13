@@ -50,10 +50,6 @@ public sealed partial class AaruFormat
     /// <inheritdoc />
     public List<Partition> Partitions { get; private set; }
 
-
-    /// <inheritdoc />
-    public List<Session> Sessions { get; private set; }
-
     /// <inheritdoc />
     public List<DumpHardware> DumpHardware { get; private set; }
 
