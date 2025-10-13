@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Structs;
@@ -54,6 +55,69 @@ public sealed partial class AaruFormat
         return true;
     }
 
+    /// <inheritdoc />
+    public List<TapeFile> Files
+    {
+        get
+        {
+            if(!IsTape)
+            {
+                ErrorMessage = "Image is not a tape";
+
+                return null;
+            }
+
+            nuint  length = 0;
+            Status res    = aaruf_get_all_tape_files(_context, IntPtr.Zero, ref length);
+
+            if(res != Status.Ok && res != Status.BufferTooSmall)
+            {
+                ErrorMessage = StatusToErrorMessage(res);
+
+                return null;
+            }
+
+            IntPtr buffer = Marshal.AllocHGlobal((int)length);
+
+            try
+            {
+                res = aaruf_get_all_tape_files(_context, buffer, ref length);
+
+                if(res != Status.Ok)
+                {
+                    ErrorMessage = StatusToErrorMessage(res);
+
+                    return null;
+                }
+
+                int structSize = Marshal.SizeOf<TapeFileEntry>();
+                int count      = (int)length / structSize;
+
+                List<TapeFile> files = new(count);
+
+                for(var i = 0; i < count; i++)
+                {
+                    var           structPtr = IntPtr.Add(buffer, i * structSize);
+                    TapeFileEntry entry     = Marshal.PtrToStructure<TapeFileEntry>(structPtr);
+
+                    files.Add(new TapeFile
+                    {
+                        File       = entry.File,
+                        Partition  = entry.Partition,
+                        FirstBlock = entry.FirstBlock,
+                        LastBlock  = entry.LastBlock
+                    });
+                }
+
+                return files;
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
+        }
+    }
+
 #endregion
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_set_tape_file(void *context, const uint8_t partition, const uint32_t file,
@@ -69,4 +133,9 @@ public sealed partial class AaruFormat
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_set_tape_partition(IntPtr context, byte partition, ulong startingBlock,
                                                            ulong  endingBlock);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_get_all_tape_files(const void *context, uint8_t *buffer, size_t *length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_all_tape_files", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_get_all_tape_files(IntPtr context, IntPtr buffer, ref nuint length);
 }
