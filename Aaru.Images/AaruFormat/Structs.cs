@@ -173,6 +173,31 @@ public sealed partial class AaruFormat
 
 #endregion
 
+#region Nested type: TapePartitionEntry
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    struct TapePartitionEntry
+    {
+        /// <summary>
+        ///     Partition number (unique identifier for this partition). Identifies this partition among all
+        ///     partitions on the tape. Valid range: 0-255, though most tapes use 0-3.
+        /// </summary>
+        public byte Number;
+        /// <summary>
+        ///     First block in the partition (inclusive). Starting block address for this partition's
+        ///     address space. Often 0, but format-dependent.
+        /// </summary>
+        public ulong FirstBlock;
+        /// <summary>
+        ///     Last block in the partition (inclusive). Ending block address for this partition's address
+        ///     space. Must be ≥ FirstBlock. The partition contains all blocks from FirstBlock through
+        ///     LastBlock inclusive.
+        /// </summary>
+        public ulong LastBlock;
+    }
+
+#endregion
+
 #region Nested type: TrackEntry
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
