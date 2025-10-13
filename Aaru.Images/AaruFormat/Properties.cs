@@ -5,7 +5,9 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
+using Humanizer;
 using Partition = Aaru.CommonTypes.Partition;
+using Track = Aaru.CommonTypes.Structs.Track;
 
 namespace Aaru.Images;
 
@@ -48,7 +50,52 @@ public sealed partial class AaruFormat
     public string Author => Authors.NataliaPortillo;
 
     /// <inheritdoc />
-    public List<Partition> Partitions { get; private set; }
+    public List<Partition> Partitions
+    {
+        get
+        {
+            if(IsTape)
+            {
+                if(TapePartitions is null) return null;
+
+                ulong i = 0;
+
+                return TapePartitions.ConvertAll(part => new Partition
+                {
+                    Start    = part.FirstBlock,
+                    Length   = part.LastBlock - part.FirstBlock + 1,
+                    Scheme   = "Tape",
+                    Sequence = i++,
+                    Type     = "Tape Partition",
+                    Name     = $"Partition {part.Number}"
+                });
+            }
+
+            if(Tracks is null) return null;
+
+            ulong           currentTrackOffset = 0;
+            List<Partition> partitions         = [];
+
+            foreach(Track track in Tracks.OrderBy(t => t.StartSector))
+            {
+                partitions.Add(new Partition
+                {
+                    Sequence = track.Sequence,
+                    Type     = track.Type.Humanize(),
+                    Name     = string.Format(Localization.Track_0, track.Sequence),
+                    Offset   = currentTrackOffset,
+                    Start    = (ulong)track.Indexes[1],
+                    Size     = (track.EndSector - (ulong)track.Indexes[1] + 1) * (ulong)track.BytesPerSector,
+                    Length   = track.EndSector - (ulong)track.Indexes[1] + 1,
+                    Scheme   = Localization.Optical_disc_track
+                });
+
+                currentTrackOffset += (track.EndSector - track.StartSector + 1) * (ulong)track.BytesPerSector;
+            }
+
+            return partitions;
+        }
+    }
 
     /// <inheritdoc />
     public List<DumpHardware> DumpHardware { get; private set; }
