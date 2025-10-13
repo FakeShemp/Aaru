@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Aaru.CommonTypes;
-using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
 using Humanizer;
@@ -96,9 +95,6 @@ public sealed partial class AaruFormat
             return partitions;
         }
     }
-
-    /// <inheritdoc />
-    public List<DumpHardware> DumpHardware { get; private set; }
 
     /// <inheritdoc />
     public IEnumerable<MediaTagType> SupportedMediaTags => Enum.GetValues(typeof(MediaTagType)).Cast<MediaTagType>();

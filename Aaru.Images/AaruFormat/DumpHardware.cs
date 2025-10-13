@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -149,10 +150,159 @@ public sealed partial class AaruFormat
         return res == Status.Ok;
     }
 
+
+    /// <inheritdoc />
+    public List<DumpHardware> DumpHardware
+    {
+        get
+        {
+            nuint  length = 0;
+            Status res    = aaruf_get_dumphw(_context, null, ref length);
+
+            if(res != Status.Ok && res != Status.BufferTooSmall)
+            {
+                ErrorMessage = StatusToErrorMessage(res);
+
+                return null;
+            }
+
+            var buffer = new byte[length];
+            res = aaruf_get_dumphw(_context, buffer, ref length);
+
+            if(res != Status.Ok)
+            {
+                ErrorMessage = StatusToErrorMessage(res);
+
+                return null;
+            }
+
+            var memoryStream   = new MemoryStream(buffer);
+            var structureBytes = new byte[Marshal.SizeOf<DumpHardwareHeader>()];
+            memoryStream.EnsureRead(structureBytes, 0, structureBytes.Length);
+
+            DumpHardwareHeader dumpBlock = Marshal.SpanToStructureLittleEndian<DumpHardwareHeader>(structureBytes);
+
+            if(dumpBlock.Identifier != BlockType.DumpHardwareBlock) return null;
+
+            structureBytes = new byte[dumpBlock.Length];
+            memoryStream.EnsureRead(structureBytes, 0, structureBytes.Length);
+
+            memoryStream.Position -= structureBytes.Length;
+
+            List<DumpHardware> dumpHardware = [];
+
+            for(ushort i = 0; i < dumpBlock.Entries; i++)
+            {
+                structureBytes = new byte[Marshal.SizeOf<DumpHardwareEntry>()];
+                memoryStream.EnsureRead(structureBytes, 0, structureBytes.Length);
+
+                DumpHardwareEntry dumpEntry = Marshal.SpanToStructureLittleEndian<DumpHardwareEntry>(structureBytes);
+
+                var dump = new DumpHardware
+                {
+                    Software = new Software(),
+                    Extents  = []
+                };
+
+                byte[] tmp;
+
+                if(dumpEntry.ManufacturerLength > 0)
+                {
+                    tmp = new byte[dumpEntry.ManufacturerLength - 1];
+                    memoryStream.EnsureRead(tmp, 0, tmp.Length);
+                    memoryStream.Position += 1;
+                    dump.Manufacturer     =  Encoding.UTF8.GetString(tmp);
+                }
+
+                if(dumpEntry.ModelLength > 0)
+                {
+                    tmp = new byte[dumpEntry.ModelLength - 1];
+                    memoryStream.EnsureRead(tmp, 0, tmp.Length);
+                    memoryStream.Position += 1;
+                    dump.Model            =  Encoding.UTF8.GetString(tmp);
+                }
+
+                if(dumpEntry.RevisionLength > 0)
+                {
+                    tmp = new byte[dumpEntry.RevisionLength - 1];
+                    memoryStream.EnsureRead(tmp, 0, tmp.Length);
+                    memoryStream.Position += 1;
+                    dump.Revision         =  Encoding.UTF8.GetString(tmp);
+                }
+
+                if(dumpEntry.FirmwareLength > 0)
+                {
+                    tmp = new byte[dumpEntry.FirmwareLength - 1];
+                    memoryStream.EnsureRead(tmp, 0, tmp.Length);
+                    memoryStream.Position += 1;
+                    dump.Firmware         =  Encoding.UTF8.GetString(tmp);
+                }
+
+                if(dumpEntry.SerialLength > 0)
+                {
+                    tmp = new byte[dumpEntry.SerialLength - 1];
+                    memoryStream.EnsureRead(tmp, 0, tmp.Length);
+                    memoryStream.Position += 1;
+                    dump.Serial           =  Encoding.UTF8.GetString(tmp);
+                }
+
+                if(dumpEntry.SoftwareNameLength > 0)
+                {
+                    tmp = new byte[dumpEntry.SoftwareNameLength - 1];
+                    memoryStream.EnsureRead(tmp, 0, tmp.Length);
+                    memoryStream.Position += 1;
+                    dump.Software.Name    =  Encoding.UTF8.GetString(tmp);
+                }
+
+                if(dumpEntry.SoftwareVersionLength > 0)
+                {
+                    tmp = new byte[dumpEntry.SoftwareVersionLength - 1];
+                    memoryStream.EnsureRead(tmp, 0, tmp.Length);
+                    memoryStream.Position += 1;
+                    dump.Software.Version =  Encoding.UTF8.GetString(tmp);
+                }
+
+                if(dumpEntry.SoftwareOperatingSystemLength > 0)
+                {
+                    tmp = new byte[dumpEntry.SoftwareOperatingSystemLength - 1];
+                    memoryStream.EnsureRead(tmp, 0, tmp.Length);
+                    memoryStream.Position         += 1;
+                    dump.Software.OperatingSystem =  Encoding.UTF8.GetString(tmp);
+                }
+
+                tmp = new byte[16];
+
+                for(uint j = 0; j < dumpEntry.Extents; j++)
+                {
+                    memoryStream.EnsureRead(tmp, 0, tmp.Length);
+
+                    dump.Extents.Add(new Extent
+                    {
+                        Start = BitConverter.ToUInt64(tmp, 0),
+                        End   = BitConverter.ToUInt64(tmp, 8)
+                    });
+                }
+
+                dump.Extents = dump.Extents.OrderBy(t => t.Start).ToList();
+
+                if(dump.Extents.Count > 0) dumpHardware.Add(dump);
+            }
+
+            if(dumpHardware.Count == 0) dumpHardware = null;
+
+            return dumpHardware;
+        }
+    }
+
 #endregion
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_set_dumphw(void *context, uint8_t *data, size_t length)
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_dumphw", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_set_dumphw(IntPtr context, [In] byte[] data, nint length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_get_dumphw(void *context, uint8_t *buffer, size_t *length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_dumphw", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_get_dumphw(IntPtr context, byte[] buffer, ref nuint length);
 }
