@@ -23,7 +23,7 @@ public sealed partial class AaruFormat
         var    dumpMs  = new MemoryStream();
         byte[] structureBytes;
 
-        foreach(DumpHardware dump in DumpHardware)
+        foreach(DumpHardware dump in dumpHardware)
         {
             byte[] dumpManufacturer            = null;
             byte[] dumpModel                   = null;
@@ -131,7 +131,7 @@ public sealed partial class AaruFormat
         var dumpBlock = new DumpHardwareHeader
         {
             Identifier = BlockType.DumpHardwareBlock,
-            Entries    = (ushort)DumpHardware.Count,
+            Entries    = (ushort)dumpHardware.Count,
             Crc64      = Swapping.Swap(BitConverter.ToUInt64(dumpCrc, 0)),
             Length     = (uint)dumpMs.Length
         };
