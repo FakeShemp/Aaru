@@ -143,7 +143,7 @@ public sealed partial class AaruFormat
 
         byte[] blockBytes = blockMs.ToArray();
 
-        Status res = aaruf_set_dumphw(_context, blockBytes, blockBytes.Length);
+        Status res = aaruf_set_dumphw(_context, blockBytes, (nuint)blockBytes.Length);
 
         ErrorMessage = StatusToErrorMessage(res);
 
@@ -299,7 +299,7 @@ public sealed partial class AaruFormat
     // AARU_EXPORT int32_t AARU_CALL aaruf_set_dumphw(void *context, uint8_t *data, size_t length)
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_dumphw", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
-    private static partial Status aaruf_set_dumphw(IntPtr context, [In] byte[] data, nint length);
+    private static partial Status aaruf_set_dumphw(IntPtr context, [In] byte[] data, nuint length);
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_get_dumphw(void *context, uint8_t *buffer, size_t *length)
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_dumphw", SetLastError = true)]

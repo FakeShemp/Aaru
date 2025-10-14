@@ -52,7 +52,7 @@ public sealed partial class AaruFormat
     /// <inheritdoc />
     public bool WriteSectorTag(byte[] data, ulong sectorAddress, SectorTagType tag)
     {
-        Status res = aaruf_write_sector_tag(_context, sectorAddress, false, data, (ulong)data.Length, tag);
+        Status res = aaruf_write_sector_tag(_context, sectorAddress, false, data, (nuint)data.Length, tag);
 
         if(res == Status.Ok) return true;
 
@@ -179,7 +179,7 @@ public sealed partial class AaruFormat
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_write_sector_tag(IntPtr context, ulong sectorAddress,
                                                          [MarshalAs(UnmanagedType.I4)] bool negative, [In] byte[] data,
-                                                         ulong length, SectorTagType tag);
+                                                         nuint length, SectorTagType tag);
 
     // AARU_EXPORT void AARU_CALL *aaruf_create(const char *filepath, const uint32_t media_type, const uint32_t sector_size,
     // const uint64_t user_sectors, const uint64_t negative_sectors,

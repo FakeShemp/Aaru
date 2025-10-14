@@ -25,10 +25,9 @@ public sealed partial class AaruFormat
         {
             if(_tracks is not null) return _tracks;
 
-            byte[] buffer = null;
-            ulong  length = 0;
+            nuint length = 0;
 
-            Status res = aaruf_get_tracks(_context, buffer, ref length);
+            Status res = aaruf_get_tracks(_context, null, ref length);
 
             if(res != Status.BufferTooSmall)
             {
@@ -37,8 +36,8 @@ public sealed partial class AaruFormat
                 return null;
             }
 
-            buffer = new byte[length];
-            res    = aaruf_get_tracks(_context, buffer, ref length);
+            var buffer = new byte[length];
+            res = aaruf_get_tracks(_context, buffer, ref length);
 
             if(res != Status.Ok)
             {
@@ -197,7 +196,7 @@ public sealed partial class AaruFormat
     // AARU_EXPORT int32_t AARU_CALL aaruf_get_tracks(const void *context, uint8_t *buffer, size_t *length)
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_tracks", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
-    private static partial Status aaruf_get_tracks(IntPtr context, byte[] buffer, ref ulong length);
+    private static partial Status aaruf_get_tracks(IntPtr context, byte[] buffer, ref nuint length);
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_set_tracks(void *context, TrackEntry *tracks, const int count)
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_tracks", SetLastError = true)]

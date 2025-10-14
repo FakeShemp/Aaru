@@ -29,7 +29,7 @@ public sealed partial class AaruFormat
 
         byte[] buffer = jsonMs.ToArray();
 
-        return aaruf_set_aaru_json_metadata(_context, buffer, (ulong)buffer.Length) == Status.Ok;
+        return aaruf_set_aaru_json_metadata(_context, buffer, (nuint)buffer.Length) == Status.Ok;
     }
 
     /// <inheritdoc />
@@ -169,7 +169,7 @@ public sealed partial class AaruFormat
     {
         get
         {
-            ulong  length = 0;
+            nuint  length = 0;
             Status res    = aaruf_get_aaru_json_metadata(_context, null, ref length);
 
             if(res != Status.Ok && res != Status.BufferTooSmall)
@@ -294,7 +294,7 @@ public sealed partial class AaruFormat
     // AARU_EXPORT int32_t AARU_CALL aaruf_set_aaru_json_metadata(void *context, uint8_t *data, size_t length)
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_aaru_json_metadata", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
-    private static partial Status aaruf_set_aaru_json_metadata(IntPtr context, [In] byte[] data, ulong length);
+    private static partial Status aaruf_set_aaru_json_metadata(IntPtr context, [In] byte[] data, nuint length);
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_set_geometry(void *context, const uint32_t cylinders, const uint32_t heads,
     // const uint32_t sectors_per_track)
@@ -372,7 +372,7 @@ public sealed partial class AaruFormat
     // AARU_EXPORT int32_t AARU_CALL aaruf_get_aaru_json_metadata(const void *context, uint8_t *buffer, size_t *length)
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_aaru_json_metadata", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
-    private static partial Status aaruf_get_aaru_json_metadata(IntPtr context, byte[] buffer, ref ulong length);
+    private static partial Status aaruf_get_aaru_json_metadata(IntPtr context, byte[] buffer, ref nuint length);
 
     // AARU_EXPORT int32_t AARU_CALL aaruf_clear_media_sequence(void *context)
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_clear_media_sequence", SetLastError = true)]
