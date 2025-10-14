@@ -60,92 +60,106 @@ public sealed partial class AaruFormat
         _imageInfo.DriveSerialNumber     = imageInfo.DriveSerialNumber;
         _imageInfo.DriveFirmwareRevision = imageInfo.DriveFirmwareRevision;
 
-        aaruf_set_media_sequence(_context, _imageInfo.MediaSequence, _imageInfo.LastMediaSequence);
+        if(_imageInfo.MediaSequence != 0 && _imageInfo.LastMediaSequence != 0)
+            aaruf_set_media_sequence(_context, _imageInfo.MediaSequence, _imageInfo.LastMediaSequence);
+        else
+            aaruf_clear_media_sequence(_context);
 
-        // TODO: Clear fields if empty
         if(!string.IsNullOrEmpty(_imageInfo.Creator))
         {
             byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.Creator);
             aaruf_set_creator(_context, buffer, buffer.Length);
         }
+        else
+            aaruf_clear_creator(_context);
 
-        // TODO: Clear fields if empty
         if(!string.IsNullOrEmpty(_imageInfo.Comments))
         {
             byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.Comments);
             aaruf_set_comments(_context, buffer, buffer.Length);
         }
+        else
+            aaruf_clear_comments(_context);
 
-        // TODO: Clear fields if empty
         if(!string.IsNullOrEmpty(_imageInfo.MediaTitle))
         {
             byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaTitle);
             aaruf_set_media_title(_context, buffer, buffer.Length);
         }
+        else
+            aaruf_clear_media_title(_context);
 
-        // TODO: Clear fields if empty
         if(!string.IsNullOrEmpty(_imageInfo.MediaManufacturer))
         {
             byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaManufacturer);
             aaruf_set_media_manufacturer(_context, buffer, buffer.Length);
         }
+        else
+            aaruf_clear_media_manufacturer(_context);
 
-        // TODO: Clear fields if empty
         if(!string.IsNullOrEmpty(_imageInfo.MediaModel))
         {
             byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaModel);
             aaruf_set_media_model(_context, buffer, buffer.Length);
         }
+        else
+            aaruf_clear_media_model(_context);
 
-        // TODO: Clear fields if empty
         if(!string.IsNullOrEmpty(_imageInfo.MediaSerialNumber))
         {
             byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaSerialNumber);
             aaruf_set_media_serial_number(_context, buffer, buffer.Length);
         }
+        else
+            aaruf_clear_media_serial_number(_context);
 
-        // TODO: Clear fields if empty
         if(!string.IsNullOrEmpty(_imageInfo.MediaBarcode))
         {
             byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaBarcode);
             aaruf_set_media_barcode(_context, buffer, buffer.Length);
         }
+        else
+            aaruf_clear_media_barcode(_context);
 
-        // TODO: Clear fields if empty
         if(!string.IsNullOrEmpty(_imageInfo.MediaPartNumber))
         {
             byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaPartNumber);
             aaruf_set_media_part_number(_context, buffer, buffer.Length);
         }
+        else
+            aaruf_clear_media_part_number(_context);
 
-        // TODO: Clear fields if empty
         if(!string.IsNullOrEmpty(_imageInfo.DriveManufacturer))
         {
             byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.DriveManufacturer);
             aaruf_set_drive_manufacturer(_context, buffer, buffer.Length);
         }
+        else
+            aaruf_clear_drive_manufacturer(_context);
 
-        // TODO: Clear fields if empty
         if(!string.IsNullOrEmpty(_imageInfo.DriveModel))
         {
             byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.DriveModel);
             aaruf_set_drive_model(_context, buffer, buffer.Length);
         }
+        else
+            aaruf_clear_drive_model(_context);
 
-        // TODO: Clear fields if empty
         if(!string.IsNullOrEmpty(_imageInfo.DriveSerialNumber))
         {
             byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.DriveSerialNumber);
             aaruf_set_drive_serial_number(_context, buffer, buffer.Length);
         }
+        else
+            aaruf_clear_drive_serial_number(_context);
 
-        // TODO: Clear fields if empty
-        if(string.IsNullOrEmpty(_imageInfo.DriveFirmwareRevision)) return true;
-
+        if(!string.IsNullOrEmpty(_imageInfo.DriveFirmwareRevision))
         {
             byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.DriveFirmwareRevision);
             aaruf_set_drive_firmware_revision(_context, buffer, buffer.Length);
         }
+        else
+            aaruf_clear_drive_firmware_revision(_context);
 
         return true;
     }
@@ -359,4 +373,69 @@ public sealed partial class AaruFormat
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_aaru_json_metadata", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_get_aaru_json_metadata(IntPtr context, byte[] buffer, ref ulong length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_clear_media_sequence(void *context)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_clear_media_sequence", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_clear_media_sequence(IntPtr context);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_clear_creator(void *context)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_clear_creator", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_clear_creator(IntPtr context);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_clear_comments(void *context)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_clear_comments", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_clear_comments(IntPtr context);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_clear_media_title(void *context)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_clear_media_title", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_clear_media_title(IntPtr context);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_clear_media_manufacturer(void *context)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_clear_media_manufacturer", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_clear_media_manufacturer(IntPtr context);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_clear_media_model(void *context)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_clear_media_model", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_clear_media_model(IntPtr context);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_clear_media_serial_number(void *context)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_clear_media_serial_number", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_clear_media_serial_number(IntPtr context);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_clear_media_barcode(void *context)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_clear_media_barcode", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_clear_media_barcode(IntPtr context);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_clear_media_part_number(void *context)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_clear_media_part_number", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_clear_media_part_number(IntPtr context);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_clear_drive_manufacturer(void *context)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_clear_drive_manufacturer", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_clear_drive_manufacturer(IntPtr context);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_clear_drive_model(void *context)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_clear_drive_model", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_clear_drive_model(IntPtr context);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_clear_drive_serial_number(void *context)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_clear_drive_serial_number", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_clear_drive_serial_number(IntPtr context);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_clear_drive_firmware_revision(void *context)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_clear_drive_firmware_revision", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_clear_drive_firmware_revision(IntPtr context);
 }
