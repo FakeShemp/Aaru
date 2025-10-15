@@ -72,8 +72,9 @@
   <Project Path="Aaru.Settings/Aaru.Settings.csproj" />
   <Project Path="Aaru.Tests.Devices/Aaru.Tests.Devices.csproj" />
   <Project Path="Aaru.Tests/Aaru.Tests.csproj" />
+  <Project Path="Aaru.Tui\Aaru.Tui.csproj" Type="Classic C#">
+    <Configuration Solution="Debug|x86" Project="Debug|Any CPU" />
+    <Configuration Solution="Release|x86" Project="Release|Any CPU" />
+  </Project>
   <Project Path="Aaru/Aaru.csproj" />
-  <Properties Name="Performance">
-    <Property Name="HasPerformanceSessions" Value="true" />
-  </Properties>
 </Solution>
