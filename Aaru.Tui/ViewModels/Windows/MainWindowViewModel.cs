@@ -22,10 +22,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     ObservableCollection<FileModel> _files = [];
     [ObservableProperty]
     public string _informationalVersion;
+    [ObservableProperty]
+    public FileModel _selectedFile;
 
     public MainWindowViewModel()
     {
-        ExitCommand = new RelayCommand(Exit);
+        ExitCommand             = new RelayCommand(Exit);
+        OpenSelectedFileCommand = new RelayCommand(OpenSelectedFile, CanOpenSelectedFile);
 
         InformationalVersion =
             Assembly.GetExecutingAssembly()
@@ -35,6 +38,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         Copyright = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright ?? "";
     }
+
+    public ICommand OpenSelectedFileCommand { get; }
 
     public ICommand ExitCommand { get; }
 
@@ -46,32 +51,40 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     public void LoadComplete()
     {
+        LoadFiles();
+    }
+
+    public void LoadFiles()
+    {
         CurrentPath = Directory.GetCurrentDirectory();
+        Files.Clear();
 
         var parentDirectory = new FileModel
         {
             Filename = "..",
-            Path     = Path.GetRelativePath(Directory.GetCurrentDirectory(), ".."),
+            Path     = Path.GetRelativePath(CurrentPath, ".."),
             ForegroundBrush =
                 new SolidColorBrush(Color.Parse(DirColorsParser.Instance.DirectoryColor ??
-                                                DirColorsParser.Instance.NormalColor))
+                                                DirColorsParser.Instance.NormalColor)),
+            IsDirectory = true
         };
 
         Files.Add(parentDirectory);
 
-        foreach(FileModel model in Directory
-                                  .GetDirectories(Directory.GetCurrentDirectory(), "*", SearchOption.TopDirectoryOnly)
-                                  .Select(directory => new FileModel
-                                   {
-                                       Path     = directory,
-                                       Filename = Path.GetFileName(directory),
-                                       ForegroundBrush =
-                                           new SolidColorBrush(Color.Parse(DirColorsParser.Instance.DirectoryColor ??
-                                                                           DirColorsParser.Instance.NormalColor))
-                                   }))
+        foreach(FileModel model in Directory.GetDirectories(CurrentPath, "*", SearchOption.TopDirectoryOnly)
+                                            .Select(directory => new FileModel
+                                             {
+                                                 Path     = directory,
+                                                 Filename = Path.GetFileName(directory),
+                                                 ForegroundBrush =
+                                                     new SolidColorBrush(Color.Parse(DirColorsParser.Instance
+                                                                                .DirectoryColor ??
+                                                                             DirColorsParser.Instance.NormalColor)),
+                                                 IsDirectory = true
+                                             }))
             Files.Add(model);
 
-        foreach(string file in Directory.GetFiles(Directory.GetCurrentDirectory(), "*", SearchOption.TopDirectoryOnly))
+        foreach(string file in Directory.GetFiles(CurrentPath, "*", SearchOption.TopDirectoryOnly))
         {
             var model = new FileModel
             {
@@ -90,4 +103,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             Files.Add(model);
         }
     }
+
+    void OpenSelectedFile()
+    {
+        if(!SelectedFile.IsDirectory) return;
+
+        CurrentPath                  = SelectedFile.Path;
+        Environment.CurrentDirectory = CurrentPath;
+        LoadFiles();
+    }
+
+    bool CanOpenSelectedFile() => SelectedFile != null;
 }

@@ -24,10 +24,12 @@
                 <ListBox Grid.Column="0"
                          ItemsSource="{Binding Files, Mode=OneWay}"
                          BorderThickness="1"
-                         Background="Transparent">
+                         Background="Transparent"
+                         SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
+                         KeyDown="ListBox_OnKeyDown">
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="models:FileModel">
-                            <TextBox Text="{Binding Filename}"
+                            <TextBox Text="{Binding Filename, Mode=OneWay}"
                                      Foreground="{Binding ForegroundBrush, Mode=OneWay}"
                                      Background="Transparent" />
                         </DataTemplate>
@@ -56,10 +58,10 @@
                                 <TextBlock Text="Aaru Data Preservation Suite"
                                            Foreground="Red"
                                            FontWeight="Bold" />
-                                <TextBlock Text="{Binding InformationalVersion}"
+                                <TextBlock Text="{Binding InformationalVersion, Mode=OneWay}"
                                            Foreground="Green"
                                            FontWeight="Bold" />
-                                <TextBlock Text="{Binding Copyright}"
+                                <TextBlock Text="{Binding Copyright, Mode=OneWay}"
                                            Foreground="Blue"
                                            FontWeight="Bold" />
                             </StackPanel>
@@ -75,7 +77,7 @@
                                            Text="Path: "
                                            Foreground="SlateBlue" />
                                 <TextBlock Grid.Column="1"
-                                           Text="{Binding CurrentPath}"
+                                           Text="{Binding CurrentPath, Mode=OneWay}"
                                            Foreground="Green" />
                             </Grid>
                         </Border>
