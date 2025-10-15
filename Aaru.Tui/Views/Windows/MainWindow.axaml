@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:console="https://github.com/jinek/consolonia"
         xmlns:windows="clr-namespace:Aaru.Tui.ViewModels.Windows"
+        xmlns:models="clr-namespace:Aaru.Tui.Models"
         x:Class="Aaru.Tui.Views.Windows.MainWindow"
         RequestedThemeVariant="Dark"
         Title="Aaru">
@@ -22,7 +23,15 @@
             <Grid ColumnDefinitions="*,*">
                 <ListBox Grid.Column="0"
                          ItemsSource="{Binding Files, Mode=OneWay}"
-                         BorderThickness="1">
+                         BorderThickness="1"
+                         Background="Transparent">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="models:FileModel">
+                            <TextBox Text="{Binding Filename}"
+                                     Foreground="{Binding ForegroundBrush, Mode=OneWay}"
+                                     Background="Transparent" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
                     <ListBox.BorderBrush>
                         <console:LineBrush LineStyle="DoubleLine"
                                            Brush="Blue" />
@@ -39,8 +48,15 @@
                         <StackPanel Grid.Row="0"
                                     VerticalAlignment="Top"
                                     HorizontalAlignment="Center">
-                            <TextBlock Text="Aaru Data Preservation Suite" />
-                            <TextBlock Text="{Binding InformationalVersion}" />
+                            <TextBlock Text="Aaru Data Preservation Suite"
+                                       Foreground="Red"
+                                       FontWeight="Bold" />
+                            <TextBlock Text="{Binding InformationalVersion}"
+                                       Foreground="Green"
+                                       FontWeight="Bold" />
+                            <TextBlock Text="{Binding Copyright}"
+                                       Foreground="Blue"
+                                       FontWeight="Bold" />
                         </StackPanel>
                     </Grid>
                 </Border>
