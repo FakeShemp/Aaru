@@ -15,15 +15,14 @@ namespace Aaru.Tui.ViewModels.Windows;
 public sealed partial class MainWindowViewModel : ViewModelBase
 {
     [ObservableProperty]
-    public string _copyright;
+    string _copyright;
     [ObservableProperty]
-    public string _currentPath;
+    string _currentPath;
     [ObservableProperty]
     ObservableCollection<FileModel> _files = [];
     [ObservableProperty]
-    public string _informationalVersion;
-    [ObservableProperty]
-    public FileModel _selectedFile;
+    string _informationalVersion;
+    FileModel? _selectedFile;
 
     public MainWindowViewModel()
     {
@@ -39,9 +38,31 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         Copyright = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright ?? "";
     }
 
-    public ICommand OpenSelectedFileCommand { get; }
+    public FileModel? SelectedFile
+    {
+        get => _selectedFile;
+        set
+        {
+            SetProperty(ref _selectedFile, value);
+            OnPropertyChanged(nameof(IsFileInfoAvailable));
+            OnPropertyChanged(nameof(SelectedFileIsNotDirectory));
+            OnPropertyChanged(nameof(SelectedFileLength));
+            OnPropertyChanged(nameof(SelectedFileCreationTime));
+            OnPropertyChanged(nameof(SelectedFileLastWriteTime));
+            OnPropertyChanged(nameof(SelectedFileAttributes));
+            OnPropertyChanged(nameof(SelectedFileUnixMode));
+        }
+    }
 
-    public ICommand ExitCommand { get; }
+    public ICommand  OpenSelectedFileCommand { get; }
+    public ICommand  ExitCommand { get; }
+    public bool      IsFileInfoAvailable => SelectedFile?.FileInfo != null;
+    public bool      SelectedFileIsNotDirectory => SelectedFile?.IsDirectory == false;
+    public long?     SelectedFileLength => SelectedFile?.IsDirectory == false ? SelectedFile?.FileInfo?.Length : 0;
+    public DateTime? SelectedFileCreationTime => SelectedFile?.FileInfo?.CreationTime;
+    public DateTime? SelectedFileLastWriteTime => SelectedFile?.FileInfo?.LastWriteTime;
+    public string?   SelectedFileAttributes => SelectedFile?.FileInfo?.Attributes.ToString();
+    public string?   SelectedFileUnixMode => SelectedFile?.FileInfo?.UnixFileMode.ToString();
 
     void Exit()
     {
@@ -102,11 +123,18 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
             Files.Add(model);
         }
+
+        _ = Task.Run(Worker);
+    }
+
+    void Worker()
+    {
+        foreach(FileModel file in Files) file.FileInfo = new FileInfo(file.Path);
     }
 
     void OpenSelectedFile()
     {
-        if(!SelectedFile.IsDirectory) return;
+        if(SelectedFile?.IsDirectory != true) return;
 
         CurrentPath                  = SelectedFile.Path;
         Environment.CurrentDirectory = CurrentPath;
