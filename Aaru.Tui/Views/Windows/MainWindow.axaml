@@ -1,0 +1,50 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:console="https://github.com/jinek/consolonia"
+        xmlns:windows="clr-namespace:Aaru.Tui.ViewModels.Windows"
+        x:Class="Aaru.Tui.Views.Windows.MainWindow"
+        RequestedThemeVariant="Dark"
+        Title="Aaru">
+    <Design.DataContext>
+        <windows:MainWindowViewModel />
+    </Design.DataContext>
+    <DockPanel>
+        <Menu DockPanel.Dock="Bottom">
+            <MenuItem Header="F10 Exit"
+                      Command="{Binding ExitCommand, Mode=OneWay}"
+                      HotKey="F10" />
+        </Menu>
+        <Border BorderThickness="1">
+            <Border.BorderBrush>
+                <console:LineBrush LineStyle="DoubleLine"
+                                   Brush="Blue" />
+            </Border.BorderBrush>
+            <Grid ColumnDefinitions="*,*">
+                <ListBox Grid.Column="0"
+                         ItemsSource="{Binding Files, Mode=OneWay}"
+                         BorderThickness="1">
+                    <ListBox.BorderBrush>
+                        <console:LineBrush LineStyle="DoubleLine"
+                                           Brush="Blue" />
+                    </ListBox.BorderBrush>
+                </ListBox>
+                <Border Grid.Column="1"
+                        BorderThickness="1">
+                    <Border.BorderBrush>
+                        <console:LineBrush LineStyle="DoubleLine"
+                                           Brush="Blue" />
+                    </Border.BorderBrush>
+                    <Grid RowDefinitions="*"
+                          VerticalAlignment="Top">
+                        <StackPanel Grid.Row="0"
+                                    VerticalAlignment="Top"
+                                    HorizontalAlignment="Center">
+                            <TextBlock Text="Aaru Data Preservation Suite" />
+                            <TextBlock Text="{Binding InformationalVersion}" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </DockPanel>
+</Window>
