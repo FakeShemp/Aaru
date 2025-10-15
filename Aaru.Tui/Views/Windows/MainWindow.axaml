@@ -43,21 +43,42 @@
                         <console:LineBrush LineStyle="DoubleLine"
                                            Brush="Blue" />
                     </Border.BorderBrush>
-                    <Grid RowDefinitions="*"
+                    <Grid RowDefinitions="*,Auto"
                           VerticalAlignment="Top">
-                        <StackPanel Grid.Row="0"
-                                    VerticalAlignment="Top"
-                                    HorizontalAlignment="Center">
-                            <TextBlock Text="Aaru Data Preservation Suite"
-                                       Foreground="Red"
-                                       FontWeight="Bold" />
-                            <TextBlock Text="{Binding InformationalVersion}"
-                                       Foreground="Green"
-                                       FontWeight="Bold" />
-                            <TextBlock Text="{Binding Copyright}"
-                                       Foreground="Blue"
-                                       FontWeight="Bold" />
-                        </StackPanel>
+                        <Border Grid.Row="0"
+                                BorderThickness="1">
+                            <Border.BorderBrush>
+                                <console:LineBrush LineStyle="DoubleLine"
+                                                   Brush="Blue" />
+                            </Border.BorderBrush>
+                            <StackPanel VerticalAlignment="Top"
+                                        HorizontalAlignment="Center">
+                                <TextBlock Text="Aaru Data Preservation Suite"
+                                           Foreground="Red"
+                                           FontWeight="Bold" />
+                                <TextBlock Text="{Binding InformationalVersion}"
+                                           Foreground="Green"
+                                           FontWeight="Bold" />
+                                <TextBlock Text="{Binding Copyright}"
+                                           Foreground="Blue"
+                                           FontWeight="Bold" />
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Row="1"
+                                BorderThickness="1">
+                            <Border.BorderBrush>
+                                <console:LineBrush LineStyle="DoubleLine"
+                                                   Brush="Blue" />
+                            </Border.BorderBrush>
+                            <Grid ColumnDefinitions="Auto, *">
+                                <TextBlock Grid.Column="0"
+                                           Text="Path: "
+                                           Foreground="SlateBlue" />
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding CurrentPath}"
+                                           Foreground="Green" />
+                            </Grid>
+                        </Border>
                     </Grid>
                 </Border>
             </Grid>

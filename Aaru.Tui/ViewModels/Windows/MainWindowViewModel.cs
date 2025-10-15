@@ -17,6 +17,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     public string _copyright;
     [ObservableProperty]
+    public string _currentPath;
+    [ObservableProperty]
     ObservableCollection<FileModel> _files = [];
     [ObservableProperty]
     public string _informationalVersion;
@@ -44,6 +46,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     public void LoadComplete()
     {
+        CurrentPath = Directory.GetCurrentDirectory();
+
         var parentDirectory = new FileModel
         {
             Filename = "..",
@@ -67,8 +71,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                                    }))
             Files.Add(model);
 
-        foreach(string file in
-                Directory.GetFiles(Directory.GetCurrentDirectory(), "*", SearchOption.TopDirectoryOnly))
+        foreach(string file in Directory.GetFiles(Directory.GetCurrentDirectory(), "*", SearchOption.TopDirectoryOnly))
         {
             var model = new FileModel
             {
