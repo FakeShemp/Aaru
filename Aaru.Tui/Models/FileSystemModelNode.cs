@@ -14,8 +14,9 @@ public class FileSystemModelNode
         SubNodes = subNodes;
     }
 
-    public ObservableCollection<FileSystemModelNode>? SubNodes   { get; set; }
-    public string                                     Title      { get; }
-    public Partition?                                 Partition  { get; set; }
-    public IFilesystem?                               Filesystem { get; set; }
+    public ObservableCollection<FileSystemModelNode>? SubNodes              { get; set; }
+    public string                                     Title                 { get; }
+    public Partition?                                 Partition             { get; set; }
+    public IFilesystem?                               Filesystem            { get; set; }
+    public string?                                    FilesystemInformation { get; set; }
 }

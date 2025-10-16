@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Text;
 using System.Windows.Input;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Interfaces;
@@ -10,6 +11,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Humanizer;
 using Humanizer.Bytes;
+using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Tui.ViewModels.Windows;
 
@@ -20,6 +22,10 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
     readonly Window      _view;
     [ObservableProperty]
     public string _filePath;
+    [ObservableProperty]
+    string _filesystemInformation;
+    [ObservableProperty]
+    bool _isFilesystemInformationVisible;
     [ObservableProperty]
     bool _isPartitionInformationVisible;
     [ObservableProperty]
@@ -95,7 +101,18 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
             else
                 IsPartitionInformationVisible = false;
 
+            if(_selectedNode.Filesystem is not null)
+            {
+                IsFilesystemInformationVisible = true;
+                FilesystemInformation          = _selectedNode.FilesystemInformation ?? "";
+
+                OnPropertyChanged(nameof(FilesystemInformation));
+            }
+            else
+                IsFilesystemInformationVisible = false;
+
             OnPropertyChanged(nameof(IsPartitionInformationVisible));
+            OnPropertyChanged(nameof(IsFilesystemInformationVisible));
         }
     }
 
@@ -166,6 +183,17 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
                     {
                         Filesystem = fs
                     };
+
+                    try
+                    {
+                        fs.GetInformation(_imageFormat, partition, Encoding.ASCII, out string? information, out _);
+
+                        fsNode.FilesystemInformation = information;
+                    }
+                    catch(Exception ex)
+                    {
+                        SentrySdk.CaptureException(ex);
+                    }
 
                     subNodes.Add(fsNode);
                 }

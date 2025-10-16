@@ -133,6 +133,25 @@
                             </Grid>
                         </StackPanel>
                     </Border>
+                    <Border BorderThickness="1"
+                            Grid.Column="1"
+                            IsVisible="{Binding IsFilesystemInformationVisible, Mode=OneWay}">
+                        <Border.BorderBrush>
+                            <brushes:LineBrush LineStyle="DoubleLine"
+                                               Brush="Blue" />
+                        </Border.BorderBrush>
+                        <ScrollViewer>
+                            <StackPanel>
+                                <TextBlock Foreground="SlateBlue"
+                                           Text="Filesystem information"
+                                           HorizontalAlignment="Center" />
+                                <TextBox Background="Transparent"
+                                         TextWrapping="Wrap"
+                                         Text="{Binding FilesystemInformation, Mode=OneWay}"
+                                         IsReadOnly="True" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
                 </Grid>
                 <TextBlock Grid.Row="2"
                            Text="{Binding Status, Mode=OneWay}"
