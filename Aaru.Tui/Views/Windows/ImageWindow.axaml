@@ -1,0 +1,39 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:windows="clr-namespace:Aaru.Tui.ViewModels.Windows"
+        xmlns:brushes="https://github.com/jinek/consolonia"
+        mc:Ignorable="d"
+        d:DesignWidth="800"
+        d:DesignHeight="450"
+        RequestedThemeVariant="Dark"
+        x:Class="Aaru.Tui.Views.Windows.ImageWindow"
+        Title="ImageWindow">
+    <Design.DataContext>
+        <windows:ImageWindowViewModel />
+    </Design.DataContext>
+    <DockPanel>
+        <Menu DockPanel.Dock="Bottom">
+            <MenuItem Header="ESC Back"
+                      Command="{Binding BackCommand, Mode=OneWay}"
+                      HotKey="Escape" />
+            <MenuItem Header="F10 Exit"
+                      Command="{Binding ExitCommand, Mode=OneWay}"
+                      HotKey="F10" />
+        </Menu>
+        <Border BorderThickness="1">
+            <Border.BorderBrush>
+                <brushes:LineBrush LineStyle="DoubleLine"
+                                   Brush="Blue" />
+            </Border.BorderBrush>
+            <Grid RowDefinitions="*,Auto">
+                <Grid ColumnDefinitions="*,*"
+                      Grid.Row="0" />
+                <TextBlock Grid.Row="1"
+                           Text="{Binding Status, Mode=OneWay}"
+                           IsVisible="{Binding IsStatusVisible, Mode=OneWay}" />
+            </Grid>
+        </Border>
+    </DockPanel>
+</Window>

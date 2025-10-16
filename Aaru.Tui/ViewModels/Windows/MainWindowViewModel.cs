@@ -8,6 +8,7 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.Core;
 using Aaru.Helpers;
 using Aaru.Tui.Models;
+using Aaru.Tui.Views.Windows;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
@@ -165,7 +166,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
                 if(imageFormat is null) continue;
 
-                var opened = imageFormat.Open(inputFilter);
+                ErrorNumber opened = imageFormat.Open(inputFilter);
 
                 if(opened != ErrorNumber.NoError) continue;
 
@@ -214,9 +215,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                     sb.AppendLine($"Comments: {imageFormat.Info.Comments}");
 
                 if(imageFormat.Info.MediaSequence != 0 && imageFormat.Info.LastMediaSequence != 0)
+                {
                     sb.AppendLine($"Media is number {imageFormat.Info.MediaSequence}" +
-                                  "\n" +
+                                  "\n"                                                +
                                   $" on a set of {imageFormat.Info.LastMediaSequence} medias");
+                }
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaTitle))
                     sb.AppendLine($"Media title: {imageFormat.Info.MediaTitle}");
@@ -273,6 +276,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 }
 
                 file.Information = sb.ToString();
+
+                file.ImageFormat = imageFormat;
             }
             catch(Exception ex)
             {
@@ -286,11 +291,19 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     void OpenSelectedFile()
     {
-        if(SelectedFile?.IsDirectory != true) return;
+        if(SelectedFile.IsDirectory)
+        {
+            CurrentPath                  = SelectedFile.Path;
+            Environment.CurrentDirectory = CurrentPath;
+            LoadFiles();
+        }
 
-        CurrentPath                  = SelectedFile.Path;
-        Environment.CurrentDirectory = CurrentPath;
-        LoadFiles();
+        if(SelectedFile.ImageFormat is null) return;
+
+        var imageWindow    = new ImageWindow();
+        var imageViewModel = new ImageWindowViewModel(imageWindow, SelectedFile.ImageFormat, SelectedFile.Filename);
+        imageWindow.DataContext = imageViewModel;
+        imageWindow.Show();
     }
 
     bool CanOpenSelectedFile() => SelectedFile != null;
