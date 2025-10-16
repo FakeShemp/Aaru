@@ -27,6 +27,7 @@
 
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Tui.ViewModels.Dialogs;
 using Aaru.Tui.Views.Dialogs;
@@ -53,6 +54,7 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
     long _fileSize;
     [ObservableProperty]
     ObservableCollection<HexViewLine> _lines = [];
+    bool _longMode;
 
     internal HexViewWindowViewModel(Window parent, Window view, IMediaImage imageFormat, string filePath,
                                     ulong  currentSector = 0)
@@ -63,6 +65,7 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
         PreviousSectorCommand = new RelayCommand(PreviousSector);
         GoToCommand           = new AsyncRelayCommand(GoToAsync);
         HelpCommand           = new AsyncRelayCommand(HelpAsync);
+        ToggleLongCommand     = new RelayCommand(ToggleLong);
 
         _parent        = parent;
         _view          = view;
@@ -78,6 +81,19 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
     public ICommand PreviousSectorCommand { get; }
     public ICommand GoToCommand           { get; }
     public ICommand HelpCommand           { get; }
+    public ICommand ToggleLongCommand     { get; }
+
+    void ToggleLong()
+    {
+        _longMode = !_longMode;
+
+        if(_longMode)
+            FilePath += " (Long Mode)";
+        else
+            FilePath = FilePath.Replace(" (Long Mode)", string.Empty);
+
+        LoadSector();
+    }
 
     Task HelpAsync()
     {
@@ -150,7 +166,21 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
     {
         Lines.Clear();
 
-        _imageFormat.ReadSector(CurrentSector, out byte[]? sector);
+        byte[]? sector;
+
+        if(_longMode)
+        {
+            ErrorNumber errno = _imageFormat.ReadSectorLong(CurrentSector, out sector);
+
+            if(errno != ErrorNumber.NoError)
+            {
+                ToggleLong();
+
+                return;
+            }
+        }
+        else
+            _imageFormat.ReadSector(CurrentSector, out sector);
 
         using var stream = new MemoryStream(sector);
         var       buffer = new byte[BYTES_PER_LINE];

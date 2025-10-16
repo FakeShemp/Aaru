@@ -10,7 +10,7 @@
                              d:DesignHeight="450"
                              x:Class="Aaru.Tui.Views.Dialogs.HexViewHelpDialog"
                              Width="40"
-                             Height="10"
+                             Height="11"
                              WindowStartupLocation="CenterScreen"
                              BorderBrush="Blue"
                              CanResize="False"
@@ -68,6 +68,15 @@
                 <TextBlock Grid.Column="1"
                            Foreground="SlateBlue"
                            Text="Go to the specified sector" />
+            </Grid>
+            <Grid ColumnDefinitions="Auto,*"
+                  ColumnSpacing="2">
+                <TextBlock Grid.Column="0"
+                           Foreground="Aqua"
+                           Text="F5 " />
+                <TextBlock Grid.Column="1"
+                           Foreground="SlateBlue"
+                           Text="Toggle long sector mode" />
             </Grid>
             <Grid ColumnDefinitions="Auto,*"
                   ColumnSpacing="2">
