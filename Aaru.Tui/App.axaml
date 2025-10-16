@@ -2,8 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:console="https://github.com/jinek/consolonia"
              x:Class="Aaru.Tui.App"
-             RequestedThemeVariant="Default">
+             RequestedThemeVariant="Dark">
     <Application.Styles>
-        <console:ModernTheme />
+        <console:TurboVisionGrayTheme />
     </Application.Styles>
 </Application>
