@@ -190,7 +190,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
                 sb.AppendLine($"Image without headers is {imageFormat.Info.ImageSize} bytes long");
 
-                sb.AppendLine($"Contains a media of {imageFormat.Info.Sectors} sectors with a maximum sector size of {imageFormat.Info.SectorSize} bytes (if all sectors are of the same size this would be [aqua]{ByteSize.FromBytes(imageFormat.Info.Sectors * imageFormat.Info.SectorSize).Humanize()})");
+                sb.AppendLine($"Contains a media of {imageFormat.Info.Sectors} sectors");
+                sb.AppendLine($"Maximum sector size of {imageFormat.Info.SectorSize} bytes");
+                sb.AppendLine($"Would be {ByteSize.FromBytes(imageFormat.Info.Sectors * imageFormat.Info.SectorSize).Humanize()}");
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.Creator))
                     sb.AppendLine($"Created by: {imageFormat.Info.Creator}");
@@ -201,7 +203,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 if(imageFormat.Info.LastModificationTime != DateTime.MinValue)
                     sb.AppendLine($"Last modified on {imageFormat.Info.LastModificationTime}");
 
-                sb.AppendLine($"Contains a media of type {imageFormat.Info.MediaType} and XML type {imageFormat.Info.MetadataMediaType}");
+                sb.AppendLine($"Contains a media of type {imageFormat.Info.MediaType}");
+                sb.AppendLine($"XML type: {imageFormat.Info.MetadataMediaType}");
 
                 sb.AppendLine(imageFormat.Info.HasPartitions ? "Has partitions" : "Doesn\'t have partitions");
 
@@ -211,7 +214,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                     sb.AppendLine($"Comments: {imageFormat.Info.Comments}");
 
                 if(imageFormat.Info.MediaSequence != 0 && imageFormat.Info.LastMediaSequence != 0)
-                    sb.AppendLine($"Media is number {imageFormat.Info.MediaSequence} on a set of {imageFormat.Info.LastMediaSequence} medias");
+                    sb.AppendLine($"Media is number {imageFormat.Info.MediaSequence}" +
+                                  "\n" +
+                                  $" on a set of {imageFormat.Info.LastMediaSequence} medias");
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaTitle))
                     sb.AppendLine($"Media title: {imageFormat.Info.MediaTitle}");
