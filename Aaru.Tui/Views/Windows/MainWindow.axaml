@@ -11,7 +11,10 @@
     </Design.DataContext>
     <DockPanel>
         <Menu DockPanel.Dock="Bottom">
-            <MenuItem Header="ESC     " />
+            <MenuItem Header="ESC     " /> <MenuItem Header="F1  Help" />
+            <MenuItem Header="F2  ScVw"
+                      Command="{Binding SectorViewCommand, Mode=OneWay}"
+                      HotKey="F2" />
             <MenuItem Header="F10 Exit"
                       Command="{Binding ExitCommand, Mode=OneWay}"
                       HotKey="F10" />

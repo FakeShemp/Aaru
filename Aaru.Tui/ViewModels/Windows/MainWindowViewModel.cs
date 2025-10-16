@@ -42,6 +42,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         _view                   = view;
         ExitCommand             = new RelayCommand(Exit);
+        SectorViewCommand       = new RelayCommand(SectorView);
         OpenSelectedFileCommand = new RelayCommand(OpenSelectedFile, CanOpenSelectedFile);
 
         InformationalVersion =
@@ -74,6 +75,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     public ICommand  OpenSelectedFileCommand { get; }
     public ICommand  ExitCommand { get; }
+    public ICommand  SectorViewCommand { get; }
     public bool      IsFileInfoAvailable => SelectedFile?.FileInfo != null;
     public bool      SelectedFileIsNotDirectory => SelectedFile?.IsDirectory == false;
     public long?     SelectedFileLength => SelectedFile?.IsDirectory == false ? SelectedFile?.FileInfo?.Length : 0;
@@ -84,6 +86,18 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public bool      SelectedFileHasInformation => SelectedFile?.Information != null;
 
     public string? SelectedFileInformation => SelectedFile?.Information;
+
+    void SectorView()
+    {
+        if(SelectedFile?.ImageFormat is null) return;
+
+        var view = new HexViewWindow();
+
+        var vm = new HexViewWindowViewModel(_view, view, SelectedFile.ImageFormat, SelectedFile.Path);
+        view.DataContext = vm;
+        view.Show();
+        _view.Hide();
+    }
 
     void Exit()
     {
@@ -299,6 +313,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             CurrentPath                  = SelectedFile.Path;
             Environment.CurrentDirectory = CurrentPath;
             LoadFiles();
+
+            return;
         }
 
         if(SelectedFile.ImageFormat is null) return;
