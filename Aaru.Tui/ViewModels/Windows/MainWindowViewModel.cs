@@ -35,6 +35,8 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.Core;
 using Aaru.Helpers;
 using Aaru.Tui.Models;
+using Aaru.Tui.ViewModels.Dialogs;
+using Aaru.Tui.Views.Dialogs;
 using Aaru.Tui.Views.Windows;
 using Avalonia;
 using Avalonia.Controls;
@@ -70,6 +72,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         _view                   = view;
         ExitCommand             = new RelayCommand(Exit);
         SectorViewCommand       = new RelayCommand(SectorView);
+        GoToPathCommand         = new AsyncRelayCommand(GoToPathAsync);
         OpenSelectedFileCommand = new RelayCommand(OpenSelectedFile, CanOpenSelectedFile);
 
         InformationalVersion =
@@ -103,6 +106,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public ICommand  OpenSelectedFileCommand { get; }
     public ICommand  ExitCommand { get; }
     public ICommand  SectorViewCommand { get; }
+    public ICommand  GoToPathCommand { get; }
     public bool      IsFileInfoAvailable => SelectedFile?.FileInfo != null;
     public bool      SelectedFileIsNotDirectory => SelectedFile?.IsDirectory == false;
     public long?     SelectedFileLength => SelectedFile?.IsDirectory == false ? SelectedFile?.FileInfo?.Length : 0;
@@ -113,6 +117,30 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public bool      SelectedFileHasInformation => SelectedFile?.Information != null;
 
     public string? SelectedFileInformation => SelectedFile?.Information;
+
+    async Task GoToPathAsync()
+    {
+        var dialog = new GoToPathDialog
+        {
+            DataContext = new GoToPathDialogViewModel(null!)
+        };
+
+        // Set the dialog reference after creation
+        ((GoToPathDialogViewModel)dialog.DataContext!)._dialog = dialog;
+
+        bool? result = await dialog.ShowDialog<bool?>(_view);
+
+        if(result == true)
+        {
+            var viewModel = (GoToPathDialogViewModel)dialog.DataContext;
+
+            if(viewModel.Path is not null && Directory.Exists(viewModel.Path))
+            {
+                Environment.CurrentDirectory = viewModel.Path;
+                LoadFiles();
+            }
+        }
+    }
 
     void SectorView()
     {

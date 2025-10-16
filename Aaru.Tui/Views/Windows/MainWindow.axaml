@@ -15,6 +15,10 @@
             <MenuItem Header="F2  ScVw"
                       Command="{Binding SectorViewCommand, Mode=OneWay}"
                       HotKey="F2" />
+            <MenuItem Header="F3      " />
+            <MenuItem Header="F4  GoTo"
+                      Command="{Binding GoToPathCommand, Mode=OneWay}"
+                      HotKey="F4" />
             <MenuItem Header="F10 Exit"
                       Command="{Binding ExitCommand, Mode=OneWay}"
                       HotKey="F10" />

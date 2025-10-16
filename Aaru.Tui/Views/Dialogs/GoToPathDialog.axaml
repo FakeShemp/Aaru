@@ -1,0 +1,40 @@
+<windowManager:ManagedWindow xmlns="https://github.com/avaloniaui"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                             xmlns:windowManager="clr-namespace:Iciclecreek.Avalonia.WindowManager;assembly=Iciclecreek.Avalonia.WindowManager"
+                             xmlns:brushes="https://github.com/jinek/consolonia"
+                             xmlns:dialogs="clr-namespace:Aaru.Tui.ViewModels.Dialogs"
+                             mc:Ignorable="d"
+                             d:DesignWidth="800"
+                             d:DesignHeight="450"
+                             Width="40"
+                             WindowStartupLocation="CenterScreen"
+                             x:Class="Aaru.Tui.Views.Dialogs.GoToPathDialog"
+                             Title="Go to path">
+    <Design.DataContext>
+        <dialogs:GoToPathDialogViewModel />
+    </Design.DataContext>
+    <Border BorderThickness="1">
+        <Border.BorderBrush>
+            <brushes:LineBrush LineStyle="DoubleLine"
+                               Brush="Blue" />
+        </Border.BorderBrush>
+        <StackPanel>
+            <TextBlock Text="Enter destination path:" />
+            <TextBox Text="{Binding Path, Mode=TwoWay}"
+                     Watermark="Destination path" />
+            <TextBlock Text="{Binding ErrorMessage, Mode=OneWay}"
+                       Foreground="Red"
+                       IsVisible="{Binding HasError, Mode=OneWay}" />
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="1">
+                <Button Content="OK"
+                        Command="{Binding OkCommand, Mode=OneWay}" />
+                <Button Content="Cancel"
+                        Command="{Binding CancelCommand, Mode=OneWay}" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</windowManager:ManagedWindow>
