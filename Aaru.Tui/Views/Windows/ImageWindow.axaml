@@ -27,9 +27,13 @@
                 <brushes:LineBrush LineStyle="DoubleLine"
                                    Brush="Blue" />
             </Border.BorderBrush>
-            <Grid RowDefinitions="*,Auto">
+            <Grid RowDefinitions="Auto,*,Auto">
+                <TextBlock Grid.Row="0"
+                           Text="{Binding FilePath, Mode=OneWay}"
+                           Foreground="Green"
+                           HorizontalAlignment="Center" />
                 <Grid ColumnDefinitions="*,*"
-                      Grid.Row="0">
+                      Grid.Row="1">
                     <TreeView Grid.Column="0"
                               ItemsSource="{Binding Nodes, Mode=OneWay}"
                               BorderThickness="1">
@@ -44,7 +48,7 @@
                         </TreeView.ItemTemplate>
                     </TreeView>
                 </Grid>
-                <TextBlock Grid.Row="1"
+                <TextBlock Grid.Row="2"
                            Text="{Binding Status, Mode=OneWay}"
                            IsVisible="{Binding IsStatusVisible, Mode=OneWay}" />
             </Grid>

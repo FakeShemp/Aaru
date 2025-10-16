@@ -13,10 +13,11 @@ namespace Aaru.Tui.ViewModels.Windows;
 
 public sealed partial class ImageWindowViewModel : ViewModelBase
 {
-    readonly string      _filename;
     readonly IMediaImage _imageFormat;
     readonly Window      _parent;
     readonly Window      _view;
+    [ObservableProperty]
+    public string _filePath;
     [ObservableProperty]
     bool _isStatusVisible;
     [ObservableProperty]
@@ -24,10 +25,10 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
     [ObservableProperty]
     string? _status;
 
-    public ImageWindowViewModel(Window parent, Window view, IMediaImage imageFormat, string filename)
+    public ImageWindowViewModel(Window parent, Window view, IMediaImage imageFormat, string filePath)
     {
         _imageFormat = imageFormat;
-        _filename    = filename;
+        FilePath     = filePath;
         _view        = view;
         _parent      = parent;
 
@@ -60,7 +61,7 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
         IsStatusVisible = true;
         Status          = "Loading partitions...";
 
-        Nodes = new ObservableCollection<FileSystemModelNode>();
+        Nodes = [];
 
         List<Partition>? partitionsList = Core.Partitions.GetAll(_imageFormat);
 
@@ -98,8 +99,11 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
                     if(!plugins.Filesystems.TryGetValue(pluginName, out IFilesystem? fs)) continue;
                     if(fs is null) continue;
 
-                    var fsNode = new FileSystemModelNode(fs.Name);
-                    fsNode.Filesystem = fs;
+                    var fsNode = new FileSystemModelNode(fs.Name)
+                    {
+                        Filesystem = fs
+                    };
+
                     subNodes.Add(fsNode);
                 }
 

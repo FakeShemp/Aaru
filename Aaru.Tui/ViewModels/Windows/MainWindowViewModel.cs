@@ -305,8 +305,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         var imageWindow = new ImageWindow();
 
-        var imageViewModel =
-            new ImageWindowViewModel(_view, imageWindow, SelectedFile.ImageFormat, SelectedFile.Filename);
+        var imageViewModel = new ImageWindowViewModel(_view, imageWindow, SelectedFile.ImageFormat, SelectedFile.Path);
 
         imageWindow.DataContext = imageViewModel;
         imageWindow.Show();

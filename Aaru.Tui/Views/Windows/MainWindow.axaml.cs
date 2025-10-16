@@ -5,7 +5,7 @@ using Avalonia.Interactivity;
 
 namespace Aaru.Tui.Views.Windows;
 
-public class MainWindow : Window
+public partial class MainWindow : Window
 {
     public MainWindow()
     {
