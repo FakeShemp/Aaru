@@ -1,15 +1,15 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:Aaru.Tui.ViewModels.Dialogs"
-        xmlns:brushes="https://github.com/jinek/consolonia"
-        Width="40"
-        Height="8"
-        x:Class="Aaru.Tui.Views.Dialogs.GoToSectorDialog"
-        x:DataType="vm:GoToSectorDialogViewModel"
-        Title="Go to Sector"
-        WindowStartupLocation="CenterScreen"
-        RequestedThemeVariant="Dark"
-        CanResize="False">
+<windowManager:ManagedWindow xmlns="https://github.com/avaloniaui"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                             xmlns:vm="using:Aaru.Tui.ViewModels.Dialogs"
+                             xmlns:brushes="https://github.com/jinek/consolonia"
+                             xmlns:windowManager="clr-namespace:Iciclecreek.Avalonia.WindowManager;assembly=Iciclecreek.Avalonia.WindowManager"
+                             Width="40"
+                             Height="8"
+                             x:Class="Aaru.Tui.Views.Dialogs.GoToSectorDialog"
+                             x:DataType="vm:GoToSectorDialogViewModel"
+                             Title="Go to Sector"
+                             WindowStartupLocation="CenterScreen"
+                             CanResize="False">
     <Design.DataContext>
         <vm:GoToSectorDialogViewModel />
     </Design.DataContext>
@@ -20,7 +20,7 @@
         </Border.BorderBrush>
         <StackPanel>
             <TextBlock Text="Enter sector number:" />
-            <TextBox Text="{Binding SectorNumber, Mode=OneWay}"
+            <TextBox Text="{Binding SectorNumber, Mode=TwoWay}"
                      Watermark="Sector number" />
             <TextBlock Text="{Binding ErrorMessage, Mode=OneWay}"
                        Foreground="Red"
@@ -35,4 +35,4 @@
             </StackPanel>
         </StackPanel>
     </Border>
-</Window>
+</windowManager:ManagedWindow>

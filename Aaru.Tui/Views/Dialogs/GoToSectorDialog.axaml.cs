@@ -25,11 +25,11 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using Avalonia.Controls;
+using Iciclecreek.Avalonia.WindowManager;
 
 namespace Aaru.Tui.Views.Dialogs;
 
-public partial class GoToSectorDialog : Window
+public partial class GoToSectorDialog : ManagedWindow
 {
     public GoToSectorDialog()
     {

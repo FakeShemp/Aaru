@@ -26,27 +26,24 @@
 // ****************************************************************************/
 
 using System.Windows.Input;
-using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Iciclecreek.Avalonia.WindowManager;
 
 namespace Aaru.Tui.ViewModels.Dialogs;
 
 public sealed partial class GoToSectorDialogViewModel : ViewModelBase
 {
-    readonly ulong  _maxSector;
-    internal Window _dialog = null!;
-
+    readonly ulong         _maxSector;
+    internal ManagedWindow _dialog = null!;
     [ObservableProperty]
     string _errorMessage = string.Empty;
-
     [ObservableProperty]
     bool _hasError;
-
     [ObservableProperty]
     string _sectorNumber = string.Empty;
 
-    public GoToSectorDialogViewModel(Window dialog, ulong maxSector)
+    public GoToSectorDialogViewModel(ManagedWindow dialog, ulong maxSector)
     {
         _dialog       = dialog;
         _maxSector    = maxSector;
