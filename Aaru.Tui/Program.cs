@@ -71,6 +71,8 @@ public static class Program
         catch(Exception ex)
         {
             SentrySdk.CaptureException(ex);
+
+            return -1;
         }
     }
 
