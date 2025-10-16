@@ -73,6 +73,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         ExitCommand             = new RelayCommand(Exit);
         SectorViewCommand       = new RelayCommand(SectorView);
         GoToPathCommand         = new AsyncRelayCommand(GoToPathAsync);
+        HelpCommand             = new AsyncRelayCommand(HelpAsync);
         OpenSelectedFileCommand = new RelayCommand(OpenSelectedFile, CanOpenSelectedFile);
 
         InformationalVersion =
@@ -107,6 +108,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public ICommand  ExitCommand { get; }
     public ICommand  SectorViewCommand { get; }
     public ICommand  GoToPathCommand { get; }
+    public ICommand  HelpCommand { get; }
     public bool      IsFileInfoAvailable => SelectedFile?.FileInfo != null;
     public bool      SelectedFileIsNotDirectory => SelectedFile?.IsDirectory == false;
     public long?     SelectedFileLength => SelectedFile?.IsDirectory == false ? SelectedFile?.FileInfo?.Length : 0;
@@ -117,6 +119,19 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public bool      SelectedFileHasInformation => SelectedFile?.Information != null;
 
     public string? SelectedFileInformation => SelectedFile?.Information;
+
+    Task HelpAsync()
+    {
+        var dialog = new MainHelpDialog
+        {
+            DataContext = new MainHelpDialogViewModel(null!)
+        };
+
+        // Set the dialog reference after creation
+        ((MainHelpDialogViewModel)dialog.DataContext!)._dialog = dialog;
+
+        return dialog.ShowDialog(_view);
+    }
 
     async Task GoToPathAsync()
     {
