@@ -60,10 +60,18 @@ public static class Program
         });
 
         SentrySdk.ConfigureScope(scope => scope.SetExtra("Args", Environment.GetCommandLineArgs()));
+
         // There are too many places that depend on this being inited to be sure all are covered, so init it here.
         PluginBase.Init();
 
-        return BuildAvaloniaApp().StartWithConsoleLifetime(args);
+        try
+        {
+            return BuildAvaloniaApp().StartWithConsoleLifetime(args);
+        }
+        catch(Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+        }
     }
 
     public static AppBuilder BuildAvaloniaApp() =>
