@@ -29,6 +29,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Tui.ViewModels.Dialogs;
+using Aaru.Tui.Views.Dialogs;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -61,6 +62,7 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
         NextSectorCommand     = new RelayCommand(NextSector);
         PreviousSectorCommand = new RelayCommand(PreviousSector);
         GoToCommand           = new AsyncRelayCommand(GoToAsync);
+        HelpCommand           = new AsyncRelayCommand(HelpAsync);
 
         _parent        = parent;
         _view          = view;
@@ -75,6 +77,20 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
     public ICommand NextSectorCommand     { get; }
     public ICommand PreviousSectorCommand { get; }
     public ICommand GoToCommand           { get; }
+    public ICommand HelpCommand           { get; }
+
+    Task HelpAsync()
+    {
+        var dialog = new HexViewHelpDialog
+        {
+            DataContext = new HexViewHelpDialogViewModel(null!)
+        };
+
+        // Set the dialog reference after creation
+        ((HexViewHelpDialogViewModel)dialog.DataContext!)._dialog = dialog;
+
+        return dialog.ShowDialog(_view);
+    }
 
     async Task GoToAsync()
     {

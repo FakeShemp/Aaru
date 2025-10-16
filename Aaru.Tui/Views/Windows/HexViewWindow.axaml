@@ -12,7 +12,9 @@
             <MenuItem Header="ESC Back"
                       HotKey="Escape"
                       Command="{Binding BackCommand, Mode=OneWay}" />
-            <MenuItem Header="F1  Help" />
+            <MenuItem Header="F1  Help"
+                      Command="{Binding HelpCommand, Mode=OneWay}"
+                      HotKey="F1" />
             <MenuItem Header="F2  Next"
                       Command="{Binding NextSectorCommand, Mode=OneWay}"
                       HotKey="F2" />
@@ -22,9 +24,6 @@
             <MenuItem Header="F4  GoTo"
                       Command="{Binding GoToCommand, Mode=OneWay}"
                       HotKey="F4" />
-            <MenuItem Header="F5  Save"
-                      Command="{Binding SaveCommand, Mode=OneWay}"
-                      HotKey="F5" />
             <MenuItem Header="F10 Exit"
                       HotKey="F10"
                       Command="{Binding ExitCommand, Mode=OneWay}" />
