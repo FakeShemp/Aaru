@@ -1,0 +1,166 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:windows="clr-namespace:Aaru.Tui.ViewModels.Windows"
+        xmlns:brushes="https://github.com/jinek/consolonia"
+        mc:Ignorable="d"
+        d:DesignWidth="800"
+        d:DesignHeight="450"
+        RequestedThemeVariant="Dark"
+        x:Class="Aaru.Tui.Views.Windows.ImageWindow"
+        Title="ImageWindow">
+    <Design.DataContext>
+        <windows:ImageWindowViewModel />
+    </Design.DataContext>
+    <DockPanel>
+        <Menu DockPanel.Dock="Bottom">
+            <MenuItem Header="ESC Back"
+                      Command="{Binding BackCommand, Mode=OneWay}"
+                      HotKey="Escape" />
+            <MenuItem Header="F1  Help" />
+            <MenuItem Header="F2  ScVw"
+                      Command="{Binding SectorViewCommand, Mode=OneWay}"
+                      HotKey="F2" />
+            <MenuItem Header="F10 Exit"
+                      Command="{Binding ExitCommand, Mode=OneWay}"
+                      HotKey="F10" />
+        </Menu>
+        <Border BorderThickness="1">
+            <Border.BorderBrush>
+                <brushes:LineBrush LineStyle="DoubleLine"
+                                   Brush="Blue" />
+            </Border.BorderBrush>
+            <Grid RowDefinitions="Auto,*,Auto">
+                <TextBlock Grid.Row="0"
+                           Text="{Binding FilePath, Mode=OneWay}"
+                           Foreground="Green"
+                           HorizontalAlignment="Center" />
+                <Grid ColumnDefinitions="*,*"
+                      Grid.Row="1">
+                    <TreeView Grid.Column="0"
+                              ItemsSource="{Binding Nodes, Mode=OneWay}"
+                              BorderThickness="1"
+                              SelectedItem="{Binding SelectedNode, Mode=TwoWay}">
+                        <TreeView.BorderBrush>
+                            <brushes:LineBrush LineStyle="DoubleLine"
+                                               Brush="Blue" />
+                        </TreeView.BorderBrush>
+                        <TreeView.ItemTemplate>
+                            <TreeDataTemplate ItemsSource="{Binding SubNodes, Mode=OneWay}">
+                                <TextBlock Text="{Binding Title, Mode=OneWay}" />
+                            </TreeDataTemplate>
+                        </TreeView.ItemTemplate>
+                    </TreeView>
+                    <Border BorderThickness="1"
+                            Grid.Column="1"
+                            IsVisible="{Binding IsPartitionInformationVisible, Mode=OneWay}">
+                        <Border.BorderBrush>
+                            <brushes:LineBrush LineStyle="DoubleLine"
+                                               Brush="Blue" />
+                        </Border.BorderBrush>
+                        <StackPanel HorizontalAlignment="Stretch">
+                            <TextBlock Text="Partition information"
+                                       Foreground="SlateBlue"
+                                       HorizontalAlignment="Center" />
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Sequence: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="LawnGreen"
+                                           Text="{Binding PartitionSequence, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Name: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="DarkGreen"
+                                           Text="{Binding PartitionName, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Type: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="Olive"
+                                           Text="{Binding PartitionType, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Starting sector: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="Violet"
+                                           Text="{Binding PartitionStart, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Offset: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="Lime"
+                                           Text="{Binding PartitionOffset, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Length: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="Violet"
+                                           Text="{Binding PartitionLength, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Size: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="Lime"
+                                           Text="{Binding PartitionSize, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Scheme: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="Purple"
+                                           Text="{Binding PartitionScheme, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Description: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="Fuchsia"
+                                           Text="{Binding PartitionDescription, Mode=OneWay}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                    <Border BorderThickness="1"
+                            Grid.Column="1"
+                            IsVisible="{Binding IsFilesystemInformationVisible, Mode=OneWay}">
+                        <Border.BorderBrush>
+                            <brushes:LineBrush LineStyle="DoubleLine"
+                                               Brush="Blue" />
+                        </Border.BorderBrush>
+                        <ScrollViewer>
+                            <StackPanel>
+                                <TextBlock Foreground="SlateBlue"
+                                           Text="Filesystem information"
+                                           HorizontalAlignment="Center" />
+                                <TextBox Background="Transparent"
+                                         TextWrapping="Wrap"
+                                         Text="{Binding FilesystemInformation, Mode=OneWay}"
+                                         IsReadOnly="True" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+                <TextBlock Grid.Row="2"
+                           Text="{Binding Status, Mode=OneWay}"
+                           IsVisible="{Binding IsStatusVisible, Mode=OneWay}" />
+            </Grid>
+        </Border>
+    </DockPanel>
+</Window>
