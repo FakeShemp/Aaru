@@ -1,11 +1,13 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.Tui.ViewModels.Dialogs;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using GoToSectorDialog = Aaru.Tui.Views.Dialogs.GoToSectorDialog;
 
 namespace Aaru.Tui.ViewModels.Windows;
 
@@ -31,6 +33,7 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
         BackCommand           = new RelayCommand(Back);
         NextSectorCommand     = new RelayCommand(NextSector);
         PreviousSectorCommand = new RelayCommand(PreviousSector);
+        GoToCommand           = new AsyncRelayCommand(GoToAsync);
 
         _parent        = parent;
         _view          = view;
@@ -44,6 +47,31 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
     public ICommand ExitCommand           { get; }
     public ICommand NextSectorCommand     { get; }
     public ICommand PreviousSectorCommand { get; }
+    public ICommand GoToCommand           { get; }
+
+    async Task GoToAsync()
+    {
+        var dialog = new GoToSectorDialog
+        {
+            DataContext = new GoToSectorDialogViewModel(null!, _imageFormat.Info.Sectors - 1)
+        };
+
+        // Set the dialog reference after creation
+        ((GoToSectorDialogViewModel)dialog.DataContext!)._dialog = dialog;
+
+        bool? result = await dialog.ShowDialog<bool?>(_view);
+
+        if(result == true)
+        {
+            var viewModel = (GoToSectorDialogViewModel)dialog.DataContext;
+
+            if(viewModel.Result.HasValue)
+            {
+                CurrentSector = viewModel.Result.Value;
+                LoadSector();
+            }
+        }
+    }
 
     void PreviousSector()
     {

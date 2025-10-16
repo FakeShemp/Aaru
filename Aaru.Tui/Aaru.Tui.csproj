@@ -19,6 +19,9 @@
     <Compile Update="Views\Windows\HexViewWindow.axaml.cs">
       <DependentUpon>HexViewWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\Dialogs\GoToSectorDialog.axaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

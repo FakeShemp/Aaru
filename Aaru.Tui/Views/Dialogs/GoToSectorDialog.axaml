@@ -1,0 +1,38 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Aaru.Tui.ViewModels.Dialogs"
+        xmlns:brushes="https://github.com/jinek/consolonia"
+        Width="40"
+        Height="8"
+        x:Class="Aaru.Tui.Views.Dialogs.GoToSectorDialog"
+        x:DataType="vm:GoToSectorDialogViewModel"
+        Title="Go to Sector"
+        WindowStartupLocation="CenterScreen"
+        RequestedThemeVariant="Dark"
+        CanResize="False">
+    <Design.DataContext>
+        <vm:GoToSectorDialogViewModel />
+    </Design.DataContext>
+    <Border BorderThickness="1">
+        <Border.BorderBrush>
+            <brushes:LineBrush LineStyle="DoubleLine"
+                               Brush="Blue" />
+        </Border.BorderBrush>
+        <StackPanel>
+            <TextBlock Text="Enter sector number:" />
+            <TextBox Text="{Binding SectorNumber, Mode=OneWay}"
+                     Watermark="Sector number" />
+            <TextBlock Text="{Binding ErrorMessage, Mode=OneWay}"
+                       Foreground="Red"
+                       IsVisible="{Binding HasError, Mode=OneWay}" />
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="1">
+                <Button Content="OK"
+                        Command="{Binding OkCommand, Mode=OneWay}" />
+                <Button Content="Cancel"
+                        Command="{Binding CancelCommand, Mode=OneWay}" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>
