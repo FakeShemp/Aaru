@@ -18,7 +18,9 @@
             <MenuItem Header="ESC Back"
                       Command="{Binding BackCommand, Mode=OneWay}"
                       HotKey="Escape" />
-            <MenuItem Header="F1  Help" />
+            <MenuItem Header="F1  Help"
+                      Command="{Binding HelpCommand, Mode=OneWay}"
+                      HotKey="F1" />
             <MenuItem Header="F2  ScVw"
                       Command="{Binding SectorViewCommand, Mode=OneWay}"
                       HotKey="F2" />

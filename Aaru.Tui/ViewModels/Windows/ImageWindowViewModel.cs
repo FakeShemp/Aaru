@@ -31,6 +31,8 @@ using System.Windows.Input;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Tui.Models;
+using Aaru.Tui.ViewModels.Dialogs;
+using Aaru.Tui.Views.Dialogs;
 using Aaru.Tui.Views.Windows;
 using Avalonia;
 using Avalonia.Controls;
@@ -91,6 +93,7 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
 
         ExitCommand       = new RelayCommand(Exit);
         BackCommand       = new RelayCommand(Back);
+        HelpCommand       = new AsyncRelayCommand(HelpAsync);
         SectorViewCommand = new RelayCommand(SectorView);
     }
 
@@ -146,6 +149,7 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
     }
 
     public ICommand BackCommand       { get; }
+    public ICommand HelpCommand       { get; }
     public ICommand ExitCommand       { get; }
     public ICommand SectorViewCommand { get; }
 
@@ -176,6 +180,19 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
     public void LoadComplete()
     {
         _ = Task.Run(Worker);
+    }
+
+    Task HelpAsync()
+    {
+        var dialog = new ImageHelpDialog
+        {
+            DataContext = new ImageHelpDialogViewModel(null!)
+        };
+
+        // Set the dialog reference after creation
+        ((ImageHelpDialogViewModel)dialog.DataContext!)._dialog = dialog;
+
+        return dialog.ShowDialog(_view);
     }
 
     void Worker()

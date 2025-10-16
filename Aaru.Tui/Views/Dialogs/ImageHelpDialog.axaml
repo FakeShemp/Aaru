@@ -1,0 +1,71 @@
+<windowManager:ManagedWindow xmlns="https://github.com/avaloniaui"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                             xmlns:windowManager="clr-namespace:Iciclecreek.Avalonia.WindowManager;assembly=Iciclecreek.Avalonia.WindowManager"
+                             xmlns:dialogs="clr-namespace:Aaru.Tui.ViewModels.Dialogs"
+                             xmlns:brushes="https://github.com/jinek/consolonia"
+                             mc:Ignorable="d"
+                             d:DesignWidth="800"
+                             d:DesignHeight="450"
+                             x:Class="Aaru.Tui.Views.Dialogs.ImageHelpDialog"
+                             Width="40"
+                             Height="8"
+                             WindowStartupLocation="CenterScreen"
+                             BorderBrush="Blue"
+                             CanResize="False"
+                             Title="Help">
+    <Design.DataContext>
+        <dialogs:ImageHelpDialogViewModel />
+    </Design.DataContext>
+    <Border BorderThickness="1">
+        <Border.BorderBrush>
+            <brushes:LineBrush LineStyle="DoubleLine"
+                               Brush="Blue" />
+        </Border.BorderBrush>
+        <StackPanel>
+            <Grid ColumnDefinitions="Auto,*"
+                  ColumnSpacing="2">
+                <TextBlock Grid.Column="0"
+                           Foreground="Aqua"
+                           Text="ESC" />
+                <TextBlock Grid.Column="1"
+                           Foreground="SlateBlue"
+                           Text="Go back to previous window" />
+            </Grid>
+            <Grid ColumnDefinitions="Auto,*"
+                  ColumnSpacing="2">
+                <TextBlock Grid.Column="0"
+                           Foreground="Aqua"
+                           Text="F1 " />
+                <TextBlock Grid.Column="1"
+                           Foreground="SlateBlue"
+                           Text="Shows this help" />
+            </Grid>
+            <Grid ColumnDefinitions="Auto,*"
+                  ColumnSpacing="2">
+                <TextBlock Grid.Column="0"
+                           Foreground="Aqua"
+                           Text="F2 " />
+                <TextBlock Grid.Column="1"
+                           Foreground="SlateBlue"
+                           Text="Sector viewer" />
+            </Grid>
+            <Grid ColumnDefinitions="Auto,*"
+                  ColumnSpacing="2">
+                <TextBlock Grid.Column="0"
+                           Foreground="Aqua"
+                           Text="F10" />
+                <TextBlock Grid.Column="1"
+                           Foreground="SlateBlue"
+                           Text="Exits the application" />
+            </Grid>
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="1">
+                <Button Content="OK"
+                        Command="{Binding OkCommand, Mode=OneWay}" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</windowManager:ManagedWindow>
