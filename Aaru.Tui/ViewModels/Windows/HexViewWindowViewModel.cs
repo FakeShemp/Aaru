@@ -27,9 +27,10 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
     internal HexViewWindowViewModel(Window parent, Window view, IMediaImage imageFormat, string filePath,
                                     ulong  currentSector = 0)
     {
-        ExitCommand       = new RelayCommand(Exit);
-        BackCommand       = new RelayCommand(Back);
-        NextSectorCommand = new RelayCommand(NextSector);
+        ExitCommand           = new RelayCommand(Exit);
+        BackCommand           = new RelayCommand(Back);
+        NextSectorCommand     = new RelayCommand(NextSector);
+        PreviousSectorCommand = new RelayCommand(PreviousSector);
 
         _parent        = parent;
         _view          = view;
@@ -39,9 +40,18 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
         LoadSector();
     }
 
-    public ICommand BackCommand       { get; }
-    public ICommand ExitCommand       { get; }
-    public ICommand NextSectorCommand { get; }
+    public ICommand BackCommand           { get; }
+    public ICommand ExitCommand           { get; }
+    public ICommand NextSectorCommand     { get; }
+    public ICommand PreviousSectorCommand { get; }
+
+    void PreviousSector()
+    {
+        if(CurrentSector <= 0) return;
+
+        CurrentSector--;
+        LoadSector();
+    }
 
     void NextSector()
     {
