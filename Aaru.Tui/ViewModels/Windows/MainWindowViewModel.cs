@@ -10,6 +10,7 @@ using Aaru.Helpers;
 using Aaru.Tui.Models;
 using Aaru.Tui.Views.Windows;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -22,6 +23,7 @@ namespace Aaru.Tui.ViewModels.Windows;
 
 public sealed partial class MainWindowViewModel : ViewModelBase
 {
+    readonly Window _view;
     [ObservableProperty]
     string _copyright;
     [ObservableProperty]
@@ -36,8 +38,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     string _status;
 
-    public MainWindowViewModel()
+    public MainWindowViewModel(Window view)
     {
+        _view                   = view;
         ExitCommand             = new RelayCommand(Exit);
         OpenSelectedFileCommand = new RelayCommand(OpenSelectedFile, CanOpenSelectedFile);
 
@@ -300,10 +303,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         if(SelectedFile.ImageFormat is null) return;
 
-        var imageWindow    = new ImageWindow();
-        var imageViewModel = new ImageWindowViewModel(imageWindow, SelectedFile.ImageFormat, SelectedFile.Filename);
+        var imageWindow = new ImageWindow();
+
+        var imageViewModel =
+            new ImageWindowViewModel(_view, imageWindow, SelectedFile.ImageFormat, SelectedFile.Filename);
+
         imageWindow.DataContext = imageViewModel;
         imageWindow.Show();
+        _view.Hide();
     }
 
     bool CanOpenSelectedFile() => SelectedFile != null;

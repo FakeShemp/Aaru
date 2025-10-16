@@ -16,10 +16,12 @@ public class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         if(ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime)
-            desktopLifetime.MainWindow = new MainWindow
-            {
-                DataContext = new MainWindowViewModel()
-            };
+        {
+            var mainWindow = new MainWindow();
+            var vm         = new MainWindowViewModel(mainWindow);
+            mainWindow.DataContext     = vm;
+            desktopLifetime.MainWindow = mainWindow;
+        }
 
         base.OnFrameworkInitializationCompleted();
     }

@@ -15,6 +15,7 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
 {
     readonly string      _filename;
     readonly IMediaImage _imageFormat;
+    readonly Window      _parent;
     readonly Window      _view;
     [ObservableProperty]
     bool _isStatusVisible;
@@ -23,11 +24,12 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
     [ObservableProperty]
     string? _status;
 
-    public ImageWindowViewModel(Window view, IMediaImage imageFormat, string filename)
+    public ImageWindowViewModel(Window parent, Window view, IMediaImage imageFormat, string filename)
     {
         _imageFormat = imageFormat;
         _filename    = filename;
         _view        = view;
+        _parent      = parent;
 
         ExitCommand = new RelayCommand(Exit);
         BackCommand = new RelayCommand(Back);
@@ -38,6 +40,7 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
 
     void Back()
     {
+        _parent.Show();
         _view.Close();
     }
 
@@ -73,12 +76,35 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
 
         var sequence = 0;
 
+        Status = "Loading filesystems...";
+
+        PluginRegister plugins = PluginRegister.Singleton;
+
         foreach(Partition partition in partitionsList)
         {
             var node = new FileSystemModelNode(partition.Name ?? $"Partition {sequence}")
             {
                 Partition = partition
             };
+
+            Core.Filesystems.Identify(_imageFormat, out List<string>? idPlugins, partition);
+
+            if(idPlugins.Count > 0)
+            {
+                var subNodes = new ObservableCollection<FileSystemModelNode>();
+
+                foreach(string pluginName in idPlugins)
+                {
+                    if(!plugins.Filesystems.TryGetValue(pluginName, out IFilesystem? fs)) continue;
+                    if(fs is null) continue;
+
+                    var fsNode = new FileSystemModelNode(fs.Name);
+                    fsNode.Filesystem = fs;
+                    subNodes.Add(fsNode);
+                }
+
+                node.SubNodes = subNodes;
+            }
 
             Nodes.Add(node);
             sequence++;

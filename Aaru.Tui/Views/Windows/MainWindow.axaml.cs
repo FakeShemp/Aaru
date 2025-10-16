@@ -5,12 +5,14 @@ using Avalonia.Interactivity;
 
 namespace Aaru.Tui.Views.Windows;
 
-public partial class MainWindow : Window
+public class MainWindow : Window
 {
     public MainWindow()
     {
         InitializeComponent();
     }
+
+    public MainWindow(object? dataContext) : this() => DataContext = dataContext;
 
     private void ListBox_OnKeyDown(object sender, KeyEventArgs e)
     {
