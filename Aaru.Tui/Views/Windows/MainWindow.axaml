@@ -45,7 +45,7 @@
                         <console:LineBrush LineStyle="DoubleLine"
                                            Brush="Blue" />
                     </Border.BorderBrush>
-                    <Grid RowDefinitions="*,Auto,Auto"
+                    <Grid RowDefinitions="Auto,Auto,Auto,*"
                           VerticalAlignment="Top">
                         <Border Grid.Row="0"
                                 BorderThickness="1">
@@ -135,6 +135,23 @@
                                                Foreground="Aqua" />
                                 </Grid>
                             </Grid>
+                        </Border>
+                        <Border Grid.Row="3"
+                                IsVisible="{Binding SelectedFileHasInformation, Mode=OneWay}"
+                                BorderThickness="1">
+                            <Border.BorderBrush>
+                                <console:LineBrush LineStyle="DoubleLine"
+                                                   Brush="Blue" />
+                            </Border.BorderBrush>
+                            <ScrollViewer>
+                                <StackPanel VerticalAlignment="Top"
+                                            HorizontalAlignment="Center">
+                                    <TextBlock Text="Image information"
+                                               Foreground="SlateBlue"
+                                               FontWeight="Bold" />
+                                    <TextBlock Text="{Binding SelectedFileInformation, Mode=OneWay}" />
+                                </StackPanel>
+                            </ScrollViewer>
                         </Border>
                     </Grid>
                 </Border>

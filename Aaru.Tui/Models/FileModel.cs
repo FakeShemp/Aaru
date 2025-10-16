@@ -9,4 +9,5 @@ public class FileModel
     public IBrush    ForegroundBrush { get; set; }
     public bool      IsDirectory     { get; set; }
     public FileInfo? FileInfo        { get; set; }
+    public string?   Information     { get; set; }
 }
