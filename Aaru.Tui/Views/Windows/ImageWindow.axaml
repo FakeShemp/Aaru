@@ -36,7 +36,8 @@
                       Grid.Row="1">
                     <TreeView Grid.Column="0"
                               ItemsSource="{Binding Nodes, Mode=OneWay}"
-                              BorderThickness="1">
+                              BorderThickness="1"
+                              SelectedItem="{Binding SelectedNode, Mode=TwoWay}">
                         <TreeView.BorderBrush>
                             <brushes:LineBrush LineStyle="DoubleLine"
                                                Brush="Blue" />
@@ -47,6 +48,91 @@
                             </TreeDataTemplate>
                         </TreeView.ItemTemplate>
                     </TreeView>
+                    <Border BorderThickness="1"
+                            Grid.Column="1"
+                            IsVisible="{Binding IsPartitionInformationVisible, Mode=OneWay}">
+                        <Border.BorderBrush>
+                            <brushes:LineBrush LineStyle="DoubleLine"
+                                               Brush="Blue" />
+                        </Border.BorderBrush>
+                        <StackPanel HorizontalAlignment="Stretch">
+                            <TextBlock Text="Partition information"
+                                       Foreground="SlateBlue"
+                                       HorizontalAlignment="Center" />
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Sequence: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="LawnGreen"
+                                           Text="{Binding PartitionSequence, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Name: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="DarkGreen"
+                                           Text="{Binding PartitionName, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Type: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="Olive"
+                                           Text="{Binding PartitionType, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Starting sector: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="Violet"
+                                           Text="{Binding PartitionStart, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Offset: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="Lime"
+                                           Text="{Binding PartitionOffset, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Length: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="Violet"
+                                           Text="{Binding PartitionLength, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Size: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="Lime"
+                                           Text="{Binding PartitionSize, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Scheme: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="Purple"
+                                           Text="{Binding PartitionScheme, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0"
+                                           Foreground="SlateBlue"
+                                           Text="Description: " />
+                                <TextBlock Grid.Column="1"
+                                           Foreground="Fuchsia"
+                                           Text="{Binding PartitionDescription, Mode=OneWay}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
                 </Grid>
                 <TextBlock Grid.Row="2"
                            Text="{Binding Status, Mode=OneWay}"

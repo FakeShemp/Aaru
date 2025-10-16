@@ -8,6 +8,8 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Humanizer;
+using Humanizer.Bytes;
 
 namespace Aaru.Tui.ViewModels.Windows;
 
@@ -19,9 +21,30 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
     [ObservableProperty]
     public string _filePath;
     [ObservableProperty]
+    bool _isPartitionInformationVisible;
+    [ObservableProperty]
     bool _isStatusVisible;
     [ObservableProperty]
     ObservableCollection<FileSystemModelNode> _nodes;
+    [ObservableProperty]
+    string _partitionDescription;
+    [ObservableProperty]
+    string _partitionLength;
+    [ObservableProperty]
+    string _partitionName;
+    [ObservableProperty]
+    string _partitionOffset;
+    [ObservableProperty]
+    string _partitionScheme;
+    [ObservableProperty]
+    string _partitionSequence;
+    [ObservableProperty]
+    string _partitionSize;
+    [ObservableProperty]
+    string _partitionStart;
+    [ObservableProperty]
+    string _partitionType;
+    FileSystemModelNode? _selectedNode;
     [ObservableProperty]
     string? _status;
 
@@ -34,6 +57,46 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
 
         ExitCommand = new RelayCommand(Exit);
         BackCommand = new RelayCommand(Back);
+    }
+
+    public FileSystemModelNode? SelectedNode
+    {
+        get => _selectedNode;
+        set
+        {
+            SetProperty(ref _selectedNode, value);
+
+            if(_selectedNode is null) return;
+
+            if(_selectedNode.Partition is not null)
+            {
+                IsPartitionInformationVisible = true;
+
+                PartitionSequence    = _selectedNode.Partition.Value.Sequence.ToString();
+                PartitionName        = _selectedNode.Partition.Value.Name;
+                PartitionType        = _selectedNode.Partition.Value.Type;
+                PartitionStart       = _selectedNode.Partition.Value.Start.ToString();
+                PartitionOffset      = ByteSize.FromBytes(_selectedNode.Partition.Value.Offset).Humanize();
+                PartitionLength      = $"{_selectedNode.Partition.Value.Length} sectors";
+                PartitionSize        = ByteSize.FromBytes(_selectedNode.Partition.Value.Size).Humanize();
+                PartitionScheme      = _selectedNode.Partition.Value.Scheme;
+                PartitionDescription = _selectedNode.Partition.Value.Description;
+
+                OnPropertyChanged(nameof(PartitionSequence));
+                OnPropertyChanged(nameof(PartitionName));
+                OnPropertyChanged(nameof(PartitionType));
+                OnPropertyChanged(nameof(PartitionStart));
+                OnPropertyChanged(nameof(PartitionOffset));
+                OnPropertyChanged(nameof(PartitionLength));
+                OnPropertyChanged(nameof(PartitionSize));
+                OnPropertyChanged(nameof(PartitionScheme));
+                OnPropertyChanged(nameof(PartitionDescription));
+            }
+            else
+                IsPartitionInformationVisible = false;
+
+            OnPropertyChanged(nameof(IsPartitionInformationVisible));
+        }
     }
 
     public ICommand BackCommand { get; }
