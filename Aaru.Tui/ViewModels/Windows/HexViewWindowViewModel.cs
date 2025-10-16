@@ -12,10 +12,11 @@ namespace Aaru.Tui.ViewModels.Windows;
 public sealed partial class HexViewWindowViewModel : ViewModelBase
 {
     private const int         BYTES_PER_LINE = 16;
-    readonly      ulong       _currentSector;
     readonly      IMediaImage _imageFormat;
     readonly      Window      _parent;
     readonly      Window      _view;
+    [ObservableProperty]
+    ulong _currentSector;
     [ObservableProperty]
     string _filePath;
     [ObservableProperty]
@@ -26,18 +27,31 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
     internal HexViewWindowViewModel(Window parent, Window view, IMediaImage imageFormat, string filePath,
                                     ulong  currentSector = 0)
     {
-        ExitCommand = new RelayCommand(Exit);
-        BackCommand = new RelayCommand(Back);
+        ExitCommand       = new RelayCommand(Exit);
+        BackCommand       = new RelayCommand(Back);
+        NextSectorCommand = new RelayCommand(NextSector);
 
         _parent        = parent;
         _view          = view;
         _imageFormat   = imageFormat;
         _currentSector = currentSector;
         FilePath       = filePath;
+        LoadSector();
     }
 
-    public ICommand BackCommand { get; }
-    public ICommand ExitCommand { get; }
+    public ICommand BackCommand       { get; }
+    public ICommand ExitCommand       { get; }
+    public ICommand NextSectorCommand { get; }
+
+    void NextSector()
+    {
+        if(CurrentSector >= _imageFormat.Info.Sectors - 1) return;
+
+        CurrentSector++;
+
+        LoadSector();
+    }
+
 
     void Back()
     {
@@ -53,7 +67,9 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
 
     void LoadSector()
     {
-        _imageFormat.ReadSector(_currentSector, out byte[]? sector);
+        Lines.Clear();
+
+        _imageFormat.ReadSector(CurrentSector, out byte[]? sector);
 
         using var stream = new MemoryStream(sector);
         var       buffer = new byte[BYTES_PER_LINE];
@@ -78,10 +94,7 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
         }
     }
 
-    public void LoadComplete()
-    {
-        LoadSector();
-    }
+    public void LoadComplete() {}
 }
 
 public sealed class HexViewLine

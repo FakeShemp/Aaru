@@ -12,6 +12,19 @@
             <MenuItem Header="ESC Back"
                       HotKey="Escape"
                       Command="{Binding BackCommand, Mode=OneWay}" />
+            <MenuItem Header="F1  Help" />
+            <MenuItem Header="F2  Next"
+                      Command="{Binding NextSectorCommand, Mode=OneWay}"
+                      HotKey="F2" />
+            <MenuItem Header="F3  Prev"
+                      Command="{Binding PreviousSectorCommand, Mode=OneWay}"
+                      HotKey="F3" />
+            <MenuItem Header="F4  GoTo"
+                      Command="{Binding GoToCommand, Mode=OneWay}"
+                      HotKey="F4" />
+            <MenuItem Header="F5  Save"
+                      Command="{Binding SaveCommand, Mode=OneWay}"
+                      HotKey="F5" />
             <MenuItem Header="F10 Exit"
                       HotKey="F10"
                       Command="{Binding ExitCommand, Mode=OneWay}" />
@@ -21,7 +34,7 @@
                 <console:LineBrush LineStyle="DoubleLine"
                                    Brush="Blue" />
             </Border.BorderBrush>
-            <Grid RowDefinitions="Auto,Auto,*">
+            <Grid RowDefinitions="Auto,Auto,*,Auto">
                 <TextBlock Grid.Row="0"
                            Foreground="Green"
                            Text="{Binding FilePath, Mode=OneWay}" />
@@ -73,6 +86,13 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </ScrollViewer>
+                <StackPanel Orientation="Horizontal"
+                            Grid.Row="3">
+                    <TextBlock Foreground="SlateBlue"
+                               Text="Current sector: " />
+                    <TextBlock Foreground="Lime"
+                               Text="{Binding CurrentSector, Mode=OneWay}" />
+                </StackPanel>
             </Grid>
         </Border>
     </DockPanel>
