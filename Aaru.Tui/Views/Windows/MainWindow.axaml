@@ -91,7 +91,7 @@
                                     <console:LineBrush LineStyle="DoubleLine"
                                                        Brush="Blue" />
                                 </Border.BorderBrush>
-                                <Grid RowDefinitions="Auto, *, *, *, *, *">
+                                <Grid RowDefinitions="Auto, *, *, *, *">
                                     <TextBlock Text="File information"
                                                Grid.Row="0"
                                                HorizontalAlignment="Center"
@@ -111,7 +111,7 @@
                                                    Text="Creation time: " />
                                         <TextBlock Grid.Column="1"
                                                    Text="{Binding SelectedFileCreationTime, Mode=OneWay}"
-                                                   Foreground="Aqua" />
+                                                   Foreground="Yellow" />
                                     </Grid>
                                     <Grid ColumnDefinitions="Auto, *"
                                           Grid.Row="3">
@@ -119,24 +119,30 @@
                                                    Text="Last write time: " />
                                         <TextBlock Grid.Column="1"
                                                    Text="{Binding SelectedFileLastWriteTime, Mode=OneWay}"
-                                                   Foreground="Aqua" />
+                                                   Foreground="Yellow" />
                                     </Grid>
-                                    <Grid ColumnDefinitions="Auto, *"
-                                          Grid.Row="4">
-                                        <TextBlock Grid.Column="0"
-                                                   Text="Attributes: " />
-                                        <TextBlock Grid.Column="1"
-                                                   Text="{Binding SelectedFileAttributes, Mode=OneWay}"
-                                                   Foreground="Aqua" />
-                                    </Grid>
-                                    <Grid ColumnDefinitions="Auto, *"
-                                          Grid.Row="5">
-                                        <TextBlock Grid.Column="0"
-                                                   Text="Mode: " />
-                                        <TextBlock Grid.Column="1"
-                                                   Text="{Binding SelectedFileUnixMode, Mode=OneWay}"
-                                                   Foreground="Aqua" />
-                                    </Grid>
+                                    <OnPlatform>
+                                        <OnPlatform.Windows>
+                                            <Grid ColumnDefinitions="Auto, *"
+                                                  Grid.Row="4">
+                                                <TextBlock Grid.Column="0"
+                                                           Text="Attributes: " />
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding SelectedFileAttributes, Mode=OneWay}"
+                                                           Foreground="Green" />
+                                            </Grid>
+                                        </OnPlatform.Windows>
+                                        <OnPlatform.Default>
+                                            <Grid ColumnDefinitions="Auto, *"
+                                                  Grid.Row="4">
+                                                <TextBlock Grid.Column="0"
+                                                           Text="Mode: " />
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding SelectedFileUnixMode, Mode=OneWay}"
+                                                           Foreground="Green" />
+                                            </Grid>
+                                        </OnPlatform.Default>
+                                    </OnPlatform>
                                 </Grid>
                             </Border>
                             <Border Grid.Row="3"
