@@ -12,10 +12,10 @@ namespace Aaru.Tui.ViewModels.Windows;
 public sealed partial class HexViewWindowViewModel : ViewModelBase
 {
     private const int         BYTES_PER_LINE = 16;
+    readonly      ulong       _currentSector;
     readonly      IMediaImage _imageFormat;
     readonly      Window      _parent;
     readonly      Window      _view;
-    readonly      ulong       _currentSector;
     [ObservableProperty]
     string _filePath;
     [ObservableProperty]
@@ -23,7 +23,8 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
     [ObservableProperty]
     ObservableCollection<HexViewLine> _lines = [];
 
-    internal HexViewWindowViewModel(Window parent, Window view, IMediaImage imageFormat, string filePath)
+    internal HexViewWindowViewModel(Window parent, Window view, IMediaImage imageFormat, string filePath,
+                                    ulong  currentSector = 0)
     {
         ExitCommand = new RelayCommand(Exit);
         BackCommand = new RelayCommand(Back);
@@ -31,7 +32,7 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
         _parent        = parent;
         _view          = view;
         _imageFormat   = imageFormat;
-        _currentSector = 0;
+        _currentSector = currentSector;
         FilePath       = filePath;
     }
 
@@ -83,7 +84,7 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
     }
 }
 
-sealed class HexViewLine
+public sealed class HexViewLine
 {
     internal long   Offset { get; init; }
     internal byte[] Bytes  { get; init; }

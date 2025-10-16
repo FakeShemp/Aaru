@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Tui.Models;
+using Aaru.Tui.Views.Windows;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -61,8 +62,9 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
         _view        = view;
         _parent      = parent;
 
-        ExitCommand = new RelayCommand(Exit);
-        BackCommand = new RelayCommand(Back);
+        ExitCommand       = new RelayCommand(Exit);
+        BackCommand       = new RelayCommand(Back);
+        SectorViewCommand = new RelayCommand(SectorView);
     }
 
     public FileSystemModelNode? SelectedNode
@@ -74,7 +76,7 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
 
             if(_selectedNode is null) return;
 
-            if(_selectedNode.Partition is not null)
+            if(_selectedNode.Partition is not null && _selectedNode.Filesystem is null)
             {
                 IsPartitionInformationVisible = true;
 
@@ -116,8 +118,21 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
         }
     }
 
-    public ICommand BackCommand { get; }
-    public ICommand ExitCommand { get; }
+    public ICommand BackCommand       { get; }
+    public ICommand ExitCommand       { get; }
+    public ICommand SectorViewCommand { get; }
+
+    void SectorView()
+    {
+        if(SelectedNode?.Partition is null) return;
+
+        var view = new HexViewWindow();
+
+        var vm = new HexViewWindowViewModel(_view, view, _imageFormat, FilePath, SelectedNode.Partition.Value.Start);
+        view.DataContext = vm;
+        view.Show();
+        _view.Hide();
+    }
 
     void Back()
     {
@@ -181,6 +196,7 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
 
                     var fsNode = new FileSystemModelNode(fs.Name)
                     {
+                        Partition  = partition,
                         Filesystem = fs
                     };
 

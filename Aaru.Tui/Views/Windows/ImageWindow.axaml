@@ -18,6 +18,10 @@
             <MenuItem Header="ESC Back"
                       Command="{Binding BackCommand, Mode=OneWay}"
                       HotKey="Escape" />
+            <MenuItem Header="F1  Help" />
+            <MenuItem Header="F2  ScVw"
+                      Command="{Binding SectorViewCommand, Mode=OneWay}"
+                      HotKey="F2" />
             <MenuItem Header="F10 Exit"
                       Command="{Binding ExitCommand, Mode=OneWay}"
                       HotKey="F10" />
