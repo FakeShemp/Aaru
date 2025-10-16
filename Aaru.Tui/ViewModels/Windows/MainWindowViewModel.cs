@@ -29,7 +29,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     ObservableCollection<FileModel> _files = [];
     [ObservableProperty]
     string _informationalVersion;
+    [ObservableProperty]
+    bool _isStatusVisible;
     FileModel? _selectedFile;
+    [ObservableProperty]
+    string _status;
 
     public MainWindowViewModel()
     {
@@ -43,6 +47,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             "?.?.?";
 
         Copyright = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright ?? "";
+        Status    = "Loading...";
     }
 
     public FileModel? SelectedFile
@@ -89,7 +94,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     public void LoadFiles()
     {
-        CurrentPath = Directory.GetCurrentDirectory();
+        IsStatusVisible = true;
+        Status          = "Loading...";
+        CurrentPath     = Directory.GetCurrentDirectory();
         Files.Clear();
 
         var parentDirectory = new FileModel
@@ -141,6 +148,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     void Worker()
     {
+        IsStatusVisible = true;
+        Status          = "Loading file information...";
+
         foreach(FileModel file in Files)
         {
             try
@@ -260,6 +270,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 SentrySdk.CaptureException(ex);
             }
         }
+
+        Status          = "Done.";
+        IsStatusVisible = false;
     }
 
     void OpenSelectedFile()
