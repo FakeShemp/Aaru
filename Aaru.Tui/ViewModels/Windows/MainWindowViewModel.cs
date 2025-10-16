@@ -277,7 +277,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
                 file.Information = sb.ToString();
 
-                file.ImageFormat = imageFormat;
+                file.ImageFormat = imageFormat as IMediaImage;
             }
             catch(Exception ex)
             {

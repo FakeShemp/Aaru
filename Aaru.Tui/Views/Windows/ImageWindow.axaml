@@ -29,7 +29,21 @@
             </Border.BorderBrush>
             <Grid RowDefinitions="*,Auto">
                 <Grid ColumnDefinitions="*,*"
-                      Grid.Row="0" />
+                      Grid.Row="0">
+                    <TreeView Grid.Column="0"
+                              ItemsSource="{Binding Nodes, Mode=OneWay}"
+                              BorderThickness="1">
+                        <TreeView.BorderBrush>
+                            <brushes:LineBrush LineStyle="DoubleLine"
+                                               Brush="Blue" />
+                        </TreeView.BorderBrush>
+                        <TreeView.ItemTemplate>
+                            <TreeDataTemplate ItemsSource="{Binding SubNodes, Mode=OneWay}">
+                                <TextBlock Text="{Binding Title, Mode=OneWay}" />
+                            </TreeDataTemplate>
+                        </TreeView.ItemTemplate>
+                    </TreeView>
+                </Grid>
                 <TextBlock Grid.Row="1"
                            Text="{Binding Status, Mode=OneWay}"
                            IsVisible="{Binding IsStatusVisible, Mode=OneWay}" />
