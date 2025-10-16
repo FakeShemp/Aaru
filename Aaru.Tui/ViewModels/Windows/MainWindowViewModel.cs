@@ -165,6 +165,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
                 if(imageFormat is null) continue;
 
+                var opened = imageFormat.Open(inputFilter);
+
+                if(opened != ErrorNumber.NoError) continue;
+
                 StringBuilder sb = new();
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.Version))
