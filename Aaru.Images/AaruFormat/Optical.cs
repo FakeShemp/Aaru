@@ -134,6 +134,9 @@ public sealed partial class AaruFormat
         _tracks = tracks;
         List<TrackEntry> trackEntries = [];
 
+        _trackFlags ??= [];
+        _trackIsrcs ??= [];
+
         foreach(Track track in Tracks)
         {
             _trackFlags.TryGetValue((byte)track.Sequence, out byte flags);
