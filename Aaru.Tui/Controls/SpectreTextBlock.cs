@@ -38,7 +38,6 @@ using Avalonia.Media;
 
 namespace Aaru.Tui.Controls;
 
-// TODO: Nested colors don't apply correctly
 public partial class SpectreTextBlock : TextBlock
 {
     // Matches color formats like:
@@ -117,7 +116,10 @@ public partial class SpectreTextBlock : TextBlock
             if(isInsideTag) continue;
 
             // Find which markup tags apply to this content segment
-            var applicableMarkups = markups.Where(m => m.OpenTagEnd <= start && m.CloseTagStart >= end).ToList();
+            var applicableMarkups = markups.Where(m => m.OpenTagEnd <= start && m.CloseTagStart >= end)
+                                           .OrderBy(m => m.Start)        // Outermost first (earliest start)
+                                           .ThenByDescending(m => m.End) // Then by latest end
+                                           .ToList();
 
             var run = new Run(Text.Substring(start, end - start));
 
@@ -136,14 +138,14 @@ public partial class SpectreTextBlock : TextBlock
                 string  foreground = match.Groups["fg"].Value;
                 string? background = match.Groups["bg"].Success ? match.Groups["bg"].Value : null;
 
-                // Apply foreground color
+                // Apply foreground color (inner tags will override outer tags)
                 if(!string.IsNullOrEmpty(foreground))
                 {
                     IBrush? fgBrush                    = ParseColor(foreground);
                     if(fgBrush != null) run.Foreground = fgBrush;
                 }
 
-                // Apply background color
+                // Apply background color (inner tags will override outer tags)
                 if(string.IsNullOrEmpty(background)) continue;
 
                 IBrush? bgBrush = ParseColor(background);

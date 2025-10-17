@@ -260,14 +260,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 StringBuilder sb = new();
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.Version))
-                    sb.AppendLine($"[bold][#875fff]Format:[/][/] [italic][#af8787]{imageFormat.Format}[/][/] [#875fff]version[/] [#af8787]{imageFormat.Info.Version}[/]");
+                    sb.AppendLine($"[bold][#875fff]Format:[/] [italic][#af8787]{imageFormat.Format}[/][/] version [#af8787]{imageFormat.Info.Version}[/][/]");
                 else
-                    sb.AppendLine($"[bold][#875fff]Format:[/][/] [italic][#af8787]{imageFormat.Format}[/][/]");
+                    sb.AppendLine($"[bold][#875fff]Format:[/] [italic][#af8787]{imageFormat.Format}[/][/][/]");
 
                 switch(string.IsNullOrWhiteSpace(imageFormat.Info.Application))
                 {
                     case false when !string.IsNullOrWhiteSpace(imageFormat.Info.ApplicationVersion):
-                        sb.AppendLine($"[#875fff]Was created with[/] [italic][#af8787]{imageFormat.Info.Application}[/][/] [#875fff]version[/] [italic][#af8787]{imageFormat.Info.ApplicationVersion}[/][/]");
+                        sb.AppendLine($"[#875fff]Was created with [italic][#af8787]{imageFormat.Info.Application}[/][/] version [italic][#af8787]{imageFormat.Info.ApplicationVersion}[/][/][/]");
 
                         break;
                     case false:
@@ -276,11 +276,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                         break;
                 }
 
-                sb.AppendLine($"[#875fff]Image without headers is[/] [lime]{imageFormat.Info.ImageSize}[/] [#875fff]bytes long[/]");
+                sb.AppendLine($"[#875fff]Image without headers is [lime]{imageFormat.Info.ImageSize}[/] bytes long[/]");
 
-                sb.AppendLine($"[#875fff]Contains a media of[/] [lime]{imageFormat.Info.Sectors}[/] [#875fff]sectors[/]");
-                sb.AppendLine($"[#875fff]Maximum sector size of[/] [teal]{imageFormat.Info.SectorSize}[/] [#875fff]bytes[/]");
-                sb.AppendLine($"[#875fff]Would be[/] [aqua]{ByteSize.FromBytes(imageFormat.Info.Sectors * imageFormat.Info.SectorSize).Humanize()}[/]");
+                sb.AppendLine($"[#875fff]Contains a media of [lime]{imageFormat.Info.Sectors}[/] sectors[/]");
+                sb.AppendLine($"[#875fff]Maximum sector size of [teal]{imageFormat.Info.SectorSize}[/] bytes[/]");
+                sb.AppendLine($"[#875fff]Would be [aqua]{ByteSize.FromBytes(imageFormat.Info.Sectors * imageFormat.Info.SectorSize).Humanize()}[/][/]");
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.Creator))
                     sb.AppendLine($"[bold][#875fff]Created by:[/][/] [green]{imageFormat.Info.Creator}[/]");
@@ -307,9 +307,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
                 if(imageFormat.Info.MediaSequence != 0 && imageFormat.Info.LastMediaSequence != 0)
                 {
-                    sb.AppendLine($"[#875fff]Media is number[/] [teal]{imageFormat.Info.MediaSequence}[/]" +
-                                  "\n"                                                                     +
-                                  $" [#875fff]on a set of[/] [teal]{imageFormat.Info.LastMediaSequence}[/] [#875fff]medias[/]");
+                    sb.AppendLine($"[#875fff]Media is number [teal]{imageFormat.Info.MediaSequence}[/]" +
+                                  "\n"                                                                  +
+                                  $" on a set of [teal]{imageFormat.Info.LastMediaSequence}[/] medias[/]");
                 }
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaTitle))
@@ -346,7 +346,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                    imageFormat.Info is { Heads: > 0, SectorsPerTrack: > 0 }            &&
                    imageFormat.Info.MetadataMediaType != MetadataMediaType.OpticalDisc &&
                    imageFormat is not ITapeImage { IsTape: true })
-                    sb.AppendLine($"[bold][#875fff]Media geometry:[/][/] [italic][teal]{imageFormat.Info.Cylinders}[/] [#875fff]cylinders,[/] [teal]{imageFormat.Info.Heads}[/] [#875fff]heads,[/] [teal]{imageFormat.Info.SectorsPerTrack}[/] [#875fff]sectors per track[/][/]");
+                    sb.AppendLine($"[bold][#875fff]Media geometry:[/] [italic][teal]{imageFormat.Info.Cylinders}[/] cylinders, [teal]{imageFormat.Info.Heads}[/] heads, [teal]{imageFormat.Info.SectorsPerTrack}[/] sectors per track[/][/][/]");
 
                 if(imageFormat.Info.ReadableMediaTags is { Count: > 0 })
                 {
