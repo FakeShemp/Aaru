@@ -3,6 +3,7 @@
         xmlns:console="https://github.com/jinek/consolonia"
         xmlns:windows="clr-namespace:Aaru.Tui.ViewModels.Windows"
         xmlns:models="clr-namespace:Aaru.Tui.Models"
+        xmlns:controls="clr-namespace:Aaru.Tui.Controls"
         x:Class="Aaru.Tui.Views.Windows.MainWindow"
         RequestedThemeVariant="Dark"
         Title="Aaru">
@@ -169,8 +170,10 @@
                                                    Foreground="SlateBlue"
                                                    FontWeight="Bold"
                                                    HorizontalAlignment="Center" />
-                                        <TextBlock Text="{Binding SelectedFileInformation, Mode=OneWay}"
-                                                   HorizontalAlignment="Left" />
+                                        <controls:SpectreTextBlock
+                                            Text="{Binding SelectedFileInformation, Mode=OneWay}"
+                                            HorizontalAlignment="Left"
+                                            TextWrapping="Wrap" />
                                     </StackPanel>
                                 </ScrollViewer>
                             </Border>

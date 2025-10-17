@@ -38,6 +38,7 @@ using Avalonia.Media;
 
 namespace Aaru.Tui.Controls;
 
+// TODO: Nested colors don't apply correctly
 public partial class SpectreTextBlock : TextBlock
 {
     // Matches color formats like:

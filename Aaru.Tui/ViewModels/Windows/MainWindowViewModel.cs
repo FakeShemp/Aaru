@@ -260,104 +260,110 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 StringBuilder sb = new();
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.Version))
-                    sb.AppendLine($"Format: {imageFormat.Format} version {imageFormat.Info.Version}");
+                    sb.AppendLine($"[bold][#875fff]Format:[/][/] [italic][#af8787]{imageFormat.Format}[/][/] [#875fff]version[/] [#af8787]{imageFormat.Info.Version}[/]");
                 else
-                    sb.AppendLine($"Format: {imageFormat.Format}");
+                    sb.AppendLine($"[bold][#875fff]Format:[/][/] [italic][#af8787]{imageFormat.Format}[/][/]");
 
                 switch(string.IsNullOrWhiteSpace(imageFormat.Info.Application))
                 {
                     case false when !string.IsNullOrWhiteSpace(imageFormat.Info.ApplicationVersion):
-                        sb.AppendLine($"Was created with {imageFormat.Info.Application} version {imageFormat.Info.ApplicationVersion}");
+                        sb.AppendLine($"[#875fff]Was created with[/] [italic][#af8787]{imageFormat.Info.Application}[/][/] [#875fff]version[/] [italic][#af8787]{imageFormat.Info.ApplicationVersion}[/][/]");
 
                         break;
                     case false:
-                        sb.AppendLine($"Was created with {imageFormat.Info.Application}");
+                        sb.AppendLine($"[#875fff]Was created with[/] [italic][#af8787]{imageFormat.Info.Application}[/][/]");
 
                         break;
                 }
 
-                sb.AppendLine($"Image without headers is {imageFormat.Info.ImageSize} bytes long");
+                sb.AppendLine($"[#875fff]Image without headers is[/] [lime]{imageFormat.Info.ImageSize}[/] [#875fff]bytes long[/]");
 
-                sb.AppendLine($"Contains a media of {imageFormat.Info.Sectors} sectors");
-                sb.AppendLine($"Maximum sector size of {imageFormat.Info.SectorSize} bytes");
-                sb.AppendLine($"Would be {ByteSize.FromBytes(imageFormat.Info.Sectors * imageFormat.Info.SectorSize).Humanize()}");
+                sb.AppendLine($"[#875fff]Contains a media of[/] [lime]{imageFormat.Info.Sectors}[/] [#875fff]sectors[/]");
+                sb.AppendLine($"[#875fff]Maximum sector size of[/] [teal]{imageFormat.Info.SectorSize}[/] [#875fff]bytes[/]");
+                sb.AppendLine($"[#875fff]Would be[/] [aqua]{ByteSize.FromBytes(imageFormat.Info.Sectors * imageFormat.Info.SectorSize).Humanize()}[/]");
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.Creator))
-                    sb.AppendLine($"Created by: {imageFormat.Info.Creator}");
+                    sb.AppendLine($"[bold][#875fff]Created by:[/][/] [green]{imageFormat.Info.Creator}[/]");
 
                 if(imageFormat.Info.CreationTime != DateTime.MinValue)
-                    sb.AppendLine($"Created on {imageFormat.Info.CreationTime}");
+                    sb.AppendLine($"[#875fff]Created on[/] [#afd700]{imageFormat.Info.CreationTime}[/]");
 
                 if(imageFormat.Info.LastModificationTime != DateTime.MinValue)
-                    sb.AppendLine($"Last modified on {imageFormat.Info.LastModificationTime}");
+                    sb.AppendLine($"[#875fff]Last modified on[/] [#afd700]{imageFormat.Info.LastModificationTime}[/]");
 
-                sb.AppendLine($"Contains a media of type {imageFormat.Info.MediaType}");
-                sb.AppendLine($"XML type: {imageFormat.Info.MetadataMediaType}");
+                sb.AppendLine($"[#875fff]Contains a media of type[/] [italic][fuchsia]{imageFormat.Info.MediaType}[/][/]");
+                sb.AppendLine($"[#875fff]XML type:[/] [italic][#af8787]{imageFormat.Info.MetadataMediaType}[/][/]");
 
-                sb.AppendLine(imageFormat.Info.HasPartitions ? "Has partitions" : "Doesn\'t have partitions");
+                sb.AppendLine(imageFormat.Info.HasPartitions
+                                  ? "[green]Has partitions[/]"
+                                  : "[red]Doesn\'t have partitions[/]");
 
-                sb.AppendLine(imageFormat.Info.HasSessions ? "Has sessions" : "Doesn\'t have sessions");
+                sb.AppendLine(imageFormat.Info.HasSessions
+                                  ? "[green]Has sessions[/]"
+                                  : "[red]Doesn\'t have sessions[/]");
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.Comments))
-                    sb.AppendLine($"Comments: {imageFormat.Info.Comments}");
+                    sb.AppendLine($"[bold][#875fff]Comments:[/][/] {imageFormat.Info.Comments}");
 
                 if(imageFormat.Info.MediaSequence != 0 && imageFormat.Info.LastMediaSequence != 0)
                 {
-                    sb.AppendLine($"Media is number {imageFormat.Info.MediaSequence}" +
-                                  "\n"                                                +
-                                  $" on a set of {imageFormat.Info.LastMediaSequence} medias");
+                    sb.AppendLine($"[#875fff]Media is number[/] [teal]{imageFormat.Info.MediaSequence}[/]" +
+                                  "\n"                                                                     +
+                                  $" [#875fff]on a set of[/] [teal]{imageFormat.Info.LastMediaSequence}[/] [#875fff]medias[/]");
                 }
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaTitle))
-                    sb.AppendLine($"Media title: {imageFormat.Info.MediaTitle}");
+                    sb.AppendLine($"[bold][#875fff]Media title:[/][/] [italic]{imageFormat.Info.MediaTitle}[/]");
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaManufacturer))
-                    sb.AppendLine($"Media manufacturer: {imageFormat.Info.MediaManufacturer}");
+                    sb.AppendLine($"[bold][#875fff]Media manufacturer:[/][/] [italic]{imageFormat.Info.MediaManufacturer}[/]");
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaModel))
-                    sb.AppendLine($"Media model: {imageFormat.Info.MediaModel}");
+                    sb.AppendLine($"[bold][#875fff]Media model:[/][/] [italic]{imageFormat.Info.MediaModel}[/]");
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaSerialNumber))
-                    sb.AppendLine($"Media serial number: {imageFormat.Info.MediaSerialNumber}");
+                    sb.AppendLine($"[bold][#875fff]Media serial number:[/][/] [italic]{imageFormat.Info.MediaSerialNumber}[/]");
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaBarcode))
-                    sb.AppendLine($"Media barcode: {imageFormat.Info.MediaBarcode}");
+                    sb.AppendLine($"[bold][#875fff]Media barcode:[/][/] [italic]{imageFormat.Info.MediaBarcode}[/]");
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaPartNumber))
-                    sb.AppendLine($"Media part number: {imageFormat.Info.MediaPartNumber}");
+                    sb.AppendLine($"[bold][#875fff]Media part number:[/][/] [italic]{imageFormat.Info.MediaPartNumber}[/]");
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveManufacturer))
-                    sb.AppendLine($"Drive manufacturer: {imageFormat.Info.DriveManufacturer}");
+                    sb.AppendLine($"[bold][#875fff]Drive manufacturer:[/][/] [italic]{imageFormat.Info.DriveManufacturer}[/]");
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveModel))
-                    sb.AppendLine($"Drive model: {imageFormat.Info.DriveModel}");
+                    sb.AppendLine($"[bold][#875fff]Drive model:[/][/] [italic]{imageFormat.Info.DriveModel}[/]");
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveSerialNumber))
-                    sb.AppendLine($"Drive serial number: {imageFormat.Info.DriveSerialNumber}");
+                    sb.AppendLine($"[bold][#875fff]Drive serial number:[/][/] [italic]{imageFormat.Info.DriveSerialNumber}[/]");
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveFirmwareRevision))
-                    sb.AppendLine($"Drive firmware info: {imageFormat.Info.DriveFirmwareRevision}");
+                    sb.AppendLine($"[bold][#875fff]Drive firmware info:[/][/] [italic]{imageFormat.Info.DriveFirmwareRevision}[/]");
 
                 if(imageFormat.Info.Cylinders > 0                                      &&
                    imageFormat.Info is { Heads: > 0, SectorsPerTrack: > 0 }            &&
                    imageFormat.Info.MetadataMediaType != MetadataMediaType.OpticalDisc &&
                    imageFormat is not ITapeImage { IsTape: true })
-                    sb.AppendLine($"Media geometry: {imageFormat.Info.Cylinders} cylinders, {imageFormat.Info.Heads} heads, {imageFormat.Info.SectorsPerTrack} sectors per track");
+                    sb.AppendLine($"[bold][#875fff]Media geometry:[/][/] [italic][teal]{imageFormat.Info.Cylinders}[/] [#875fff]cylinders,[/] [teal]{imageFormat.Info.Heads}[/] [#875fff]heads,[/] [teal]{imageFormat.Info.SectorsPerTrack}[/] [#875fff]sectors per track[/][/]");
 
                 if(imageFormat.Info.ReadableMediaTags is { Count: > 0 })
                 {
-                    sb.AppendLine($"Contains {imageFormat.Info.ReadableMediaTags.Count} readable media tags:");
+                    sb.AppendLine($"[bold][blue]Contains[/] [teal]{imageFormat.Info.ReadableMediaTags.Count}[/] [blue]readable media tags:[/][/]");
 
-                    foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.Order()) sb.Append($"{tag} ");
+                    foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.Order())
+                        sb.Append($"[italic][#af8787]{tag}[/][/] ");
 
                     sb.AppendLine();
                 }
 
                 if(imageFormat.Info.ReadableSectorTags is { Count: > 0 })
                 {
-                    sb.AppendLine($"Contains {imageFormat.Info.ReadableSectorTags.Count} readable sector tags:");
+                    sb.AppendLine($"[bold][blue]Contains [teal]{imageFormat.Info.ReadableSectorTags.Count}[/] [blue]readable sector tags:[/][/]");
 
-                    foreach(SectorTagType tag in imageFormat.Info.ReadableSectorTags.Order()) sb.Append($"{tag} ");
+                    foreach(SectorTagType tag in imageFormat.Info.ReadableSectorTags.Order())
+                        sb.Append($"[italic][#af8787]{tag}[/][/] ");
 
                     sb.AppendLine();
                 }
