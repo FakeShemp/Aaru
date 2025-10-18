@@ -325,7 +325,7 @@ public sealed partial class AppleMFS
                                                              _volMdb.drAlBlSt                            +
                                                              _partitionStart,
                                                              (uint)_sectorsPerBlock,
-                                                             SectorTagType.AppleSectorTag,
+                                                             SectorTagType.AppleSonyTag,
                                                              out byte[] sectors)
                                     : _device.ReadSectors((ulong)((nextBlock - 2) * _sectorsPerBlock) +
                                                           _volMdb.drAlBlSt                            +

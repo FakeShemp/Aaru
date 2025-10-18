@@ -220,12 +220,13 @@ public sealed partial class LisaFS
         if(!_mounted || !_debug) return ErrorNumber.AccessDenied;
 
         if(fileId is > 4 or <= 0)
-            if(fileId != FILEID_BOOT_SIGNED && fileId != FILEID_LOADER_SIGNED)
-                return ErrorNumber.InvalidArgument;
+        {
+            if(fileId != FILEID_BOOT_SIGNED && fileId != FILEID_LOADER_SIGNED) return ErrorNumber.InvalidArgument;
+        }
 
         if(_systemFileCache.TryGetValue(fileId, out buf) && !tags) return ErrorNumber.NoError;
 
-        int count = 0;
+        var count = 0;
 
         if(fileId == FILEID_SRECORD)
         {
@@ -242,7 +243,7 @@ public sealed partial class LisaFS
 
             errno = _device.ReadSectorsTag(_mddf.mddf_block + _volumePrefix + _mddf.srec_ptr,
                                            _mddf.srec_len,
-                                           SectorTagType.AppleSectorTag,
+                                           SectorTagType.AppleSonyTag,
                                            out buf);
 
             return errno != ErrorNumber.NoError ? errno : ErrorNumber.NoError;
@@ -253,7 +254,7 @@ public sealed partial class LisaFS
         // Should be enough to check 100 sectors?
         for(ulong i = 0; i < 100; i++)
         {
-            errno = _device.ReadSectorTag(i, SectorTagType.AppleSectorTag, out byte[] tag);
+            errno = _device.ReadSectorTag(i, SectorTagType.AppleSonyTag, out byte[] tag);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -269,7 +270,7 @@ public sealed partial class LisaFS
         // Should be enough to check 100 sectors?
         for(ulong i = 0; i < 100; i++)
         {
-            errno = _device.ReadSectorTag(i, SectorTagType.AppleSectorTag, out byte[] tag);
+            errno = _device.ReadSectorTag(i, SectorTagType.AppleSonyTag, out byte[] tag);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -279,7 +280,7 @@ public sealed partial class LisaFS
 
             errno = !tags
                         ? _device.ReadSector(i, out byte[] sector)
-                        : _device.ReadSectorTag(i, SectorTagType.AppleSectorTag, out sector);
+                        : _device.ReadSectorTag(i, SectorTagType.AppleSonyTag, out sector);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -408,11 +409,11 @@ public sealed partial class LisaFS
         else
             sectorSize = (int)_device.Info.SectorSize;
 
-        byte[] temp = new byte[file.length * sectorSize];
+        var temp = new byte[file.length * sectorSize];
 
-        int offset = 0;
+        var offset = 0;
 
-        for(int i = 0; i < file.extents.Length; i++)
+        for(var i = 0; i < file.extents.Length; i++)
         {
             ErrorNumber errno = !tags
                                     ? _device.ReadSectors((ulong)file.extents[i].start +
@@ -424,7 +425,7 @@ public sealed partial class LisaFS
                                                              _mddf.mddf_block             +
                                                              _volumePrefix,
                                                              (uint)file.extents[i].length,
-                                                             SectorTagType.AppleSectorTag,
+                                                             SectorTagType.AppleSonyTag,
                                                              out sector);
 
             if(errno != ErrorNumber.NoError) return errno;
@@ -436,8 +437,9 @@ public sealed partial class LisaFS
         if(!tags)
         {
             if(_fileSizeCache.TryGetValue(fileId, out int realSize))
-                if(realSize > temp.Length)
-                    AaruLogging.Error(Localization.File_0_gets_truncated, fileId);
+            {
+                if(realSize > temp.Length) AaruLogging.Error(Localization.File_0_gets_truncated, fileId);
+            }
 
             buf = temp;
 
@@ -521,7 +523,7 @@ public sealed partial class LisaFS
             }
         }
 
-        for(int lvl = 0; lvl < pathElements.Length; lvl++)
+        for(var lvl = 0; lvl < pathElements.Length; lvl++)
         {
             string wantedFilename = pathElements[0].Replace('-', '/');
 

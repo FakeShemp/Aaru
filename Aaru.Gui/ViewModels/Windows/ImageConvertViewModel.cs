@@ -329,7 +329,7 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
     [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void DoWork(object plugin)
     {
-        bool warning = false;
+        var warning = false;
 
         if(plugin is not IWritableImage outputFormat)
         {
@@ -382,7 +382,9 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
                 {
                     switch(tag)
                     {
-                        case SectorTagType.AppleSectorTag:
+                        case SectorTagType.AppleSonyTag:
+                        case SectorTagType.AppleProfileTag:
+                        case SectorTagType.PriamDataTowerTag:
                         case SectorTagType.CdSectorSync:
                         case SectorTagType.CdSectorHeader:
                         case SectorTagType.CdSectorSubHeader:
@@ -407,7 +409,9 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
                 {
                     switch(tag)
                     {
-                        case SectorTagType.AppleSectorTag:
+                        case SectorTagType.AppleSonyTag:
+                        case SectorTagType.AppleProfileTag:
+                        case SectorTagType.PriamDataTowerTag:
                         case SectorTagType.CdSectorSync:
                         case SectorTagType.CdSectorHeader:
                         case SectorTagType.CdSectorSubHeader:
@@ -908,7 +912,9 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
             {
                 switch(tag)
                 {
-                    case SectorTagType.AppleSectorTag:
+                    case SectorTagType.AppleSonyTag:
+                    case SectorTagType.AppleProfileTag:
+                    case SectorTagType.PriamDataTowerTag:
                     case SectorTagType.CdSectorSync:
                     case SectorTagType.CdSectorHeader:
                     case SectorTagType.CdSectorSubHeader:
@@ -1328,7 +1334,9 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
             {
                 switch(tag)
                 {
-                    case SectorTagType.AppleSectorTag:
+                    case SectorTagType.AppleSonyTag:
+                    case SectorTagType.AppleProfileTag:
+                    case SectorTagType.PriamDataTowerTag:
                     case SectorTagType.CdSectorSync:
                     case SectorTagType.CdSectorHeader:
                     case SectorTagType.CdSectorSubHeader:

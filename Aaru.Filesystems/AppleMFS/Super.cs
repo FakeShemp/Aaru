@@ -84,7 +84,7 @@ public sealed partial class AppleMFS
         _volMdb.drNxtFNum  = BigEndianBitConverter.ToUInt32(_mdbBlocks, 0x01E);
         _volMdb.drFreeBks  = BigEndianBitConverter.ToUInt16(_mdbBlocks, 0x022);
         _volMdb.drVNSiz    = _mdbBlocks[0x024];
-        byte[] variableSize = new byte[_volMdb.drVNSiz + 1];
+        var variableSize = new byte[_volMdb.drVNSiz + 1];
         Array.Copy(_mdbBlocks, 0x024, variableSize, 0, _volMdb.drVNSiz + 1);
         _volMdb.drVN = StringHandlers.PascalToString(variableSize, _encoding);
 
@@ -105,10 +105,10 @@ public sealed partial class AppleMFS
         _blockMapBytes = new byte[bytesInBlockMap];
         Array.Copy(wholeMdb, BYTES_BEFORE_BLOCK_MAP, _blockMapBytes, 0, _blockMapBytes.Length);
 
-        int offset = 0;
+        var offset = 0;
         _blockMap = new uint[_volMdb.drNmAlBlks + 2 + 1];
 
-        for(int i = 2; i < _volMdb.drNmAlBlks + 2; i += 8)
+        for(var i = 2; i < _volMdb.drNmAlBlks + 2; i += 8)
         {
             uint tmp1 = 0;
             uint tmp2 = 0;
@@ -141,19 +141,19 @@ public sealed partial class AppleMFS
             offset += 12;
         }
 
-        if(_device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSectorTag))
+        if(_device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSonyTag))
         {
-            _device.ReadSectorTag(2 + _partitionStart, SectorTagType.AppleSectorTag, out _mdbTags);
-            _device.ReadSectorTag(0 + _partitionStart, SectorTagType.AppleSectorTag, out _bootTags);
+            _device.ReadSectorTag(2 + _partitionStart, SectorTagType.AppleSonyTag, out _mdbTags);
+            _device.ReadSectorTag(0 + _partitionStart, SectorTagType.AppleSonyTag, out _bootTags);
 
             _device.ReadSectorsTag(_volMdb.drDirSt + _partitionStart,
                                    _volMdb.drBlLen,
-                                   SectorTagType.AppleSectorTag,
+                                   SectorTagType.AppleSonyTag,
                                    out _directoryTags);
 
             _device.ReadSectorsTag(_partitionStart + 2,
                                    (uint)sectorsInWholeMdb,
-                                   SectorTagType.AppleSectorTag,
+                                   SectorTagType.AppleSonyTag,
                                    out _bitmapTags);
         }
 
@@ -163,7 +163,7 @@ public sealed partial class AppleMFS
 
         _mounted = true;
 
-        ushort bbSig = BigEndianBitConverter.ToUInt16(_bootBlocks, 0x000);
+        var bbSig = BigEndianBitConverter.ToUInt16(_bootBlocks, 0x000);
 
         if(bbSig != AppleCommon.BB_MAGIC) _bootBlocks = null;
 

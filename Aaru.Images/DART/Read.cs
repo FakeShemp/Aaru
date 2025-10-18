@@ -58,7 +58,7 @@ public sealed partial class Dart
         if(stream.Length < 84) return ErrorNumber.InvalidArgument;
 
         stream.Seek(0, SeekOrigin.Begin);
-        byte[] headerB = new byte[Marshal.SizeOf<Header>()];
+        var headerB = new byte[Marshal.SizeOf<Header>()];
 
         stream.EnsureRead(headerB, 0, Marshal.SizeOf<Header>());
         Header header = Marshal.ByteArrayToStructureBigEndian<Header>(headerB);
@@ -103,12 +103,12 @@ public sealed partial class Dart
 
         if(stream.Length > expectedMaxSize) return ErrorNumber.InvalidArgument;
 
-        short[] bLength =
+        var bLength =
             new short[header.srcType is DISK_MAC_HD or DISK_DOS_HD ? BLOCK_ARRAY_LEN_HIGH : BLOCK_ARRAY_LEN_LOW];
 
-        for(int i = 0; i < bLength.Length; i++)
+        for(var i = 0; i < bLength.Length; i++)
         {
-            byte[] tmpShort = new byte[2];
+            var tmpShort = new byte[2];
             stream.EnsureRead(tmpShort, 0, 2);
             bLength[i] = BigEndianBitConverter.ToInt16(tmpShort, 0);
         }
@@ -120,7 +120,7 @@ public sealed partial class Dart
         {
             if(l == 0) continue;
 
-            byte[] buffer = new byte[BUFFER_SIZE];
+            var buffer = new byte[BUFFER_SIZE];
 
             if(l == -1)
             {
@@ -159,7 +159,7 @@ public sealed partial class Dart
 
         if(header.srcType is DISK_LISA or DISK_MAC or DISK_APPLE2)
         {
-            _imageInfo.ReadableSectorTags.Add(SectorTagType.AppleSectorTag);
+            _imageInfo.ReadableSectorTags.Add(SectorTagType.AppleSonyTag);
             _tagCache = tagMs.ToArray();
         }
 
@@ -183,8 +183,8 @@ public sealed partial class Dart
                         string release = null;
                         string pre     = null;
 
-                        string major = $"{version.MajorVersion}";
-                        string minor = $".{version.MinorVersion / 10}";
+                        var major = $"{version.MajorVersion}";
+                        var minor = $".{version.MinorVersion / 10}";
 
                         if(version.MinorVersion % 10 > 0) release = $".{version.MinorVersion % 10}";
 
@@ -330,7 +330,7 @@ public sealed partial class Dart
     {
         buffer = null;
 
-        if(tag != SectorTagType.AppleSectorTag) return ErrorNumber.NotSupported;
+        if(tag != SectorTagType.AppleSonyTag) return ErrorNumber.NotSupported;
 
         if(_tagCache == null || _tagCache.Length == 0) return ErrorNumber.NoData;
 
@@ -362,7 +362,7 @@ public sealed partial class Dart
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        errno = ReadSectorsTag(sectorAddress, length, SectorTagType.AppleSectorTag, out byte[] tags);
+        errno = ReadSectorsTag(sectorAddress, length, SectorTagType.AppleSonyTag, out byte[] tags);
 
         if(errno != ErrorNumber.NoError) return errno;
 

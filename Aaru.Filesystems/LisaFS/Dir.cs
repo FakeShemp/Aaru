@@ -151,7 +151,7 @@ public sealed partial class LisaFS
 
             if(error != ErrorNumber.NoError) return error;
 
-            int                  offset    = 0;
+            var                  offset    = 0;
             List<CatalogEntryV2> catalogV2 = [];
 
             // For each entry on the catalog
@@ -210,7 +210,7 @@ public sealed partial class LisaFS
         // If root catalog is not pointed in MDDF (unchecked) maybe it's always following S-Records File?
         for(ulong i = 0; i < _device.Info.Sectors; i++)
         {
-            errno = _device.ReadSectorTag(i, SectorTagType.AppleSectorTag, out byte[] tag);
+            errno = _device.ReadSectorTag(i, SectorTagType.AppleSonyTag, out byte[] tag);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -234,7 +234,7 @@ public sealed partial class LisaFS
         while(prevCatalogPointer != 0xFFFFFFFF)
         {
             errno = _device.ReadSectorTag(prevCatalogPointer + _mddf.mddf_block + _volumePrefix,
-                                          SectorTagType.AppleSectorTag,
+                                          SectorTagType.AppleSonyTag,
                                           out byte[] tag);
 
             if(errno != ErrorNumber.NoError) return errno;
@@ -260,7 +260,7 @@ public sealed partial class LisaFS
         while(nextCatalogPointer != 0xFFFFFFFF)
         {
             errno = _device.ReadSectorTag(nextCatalogPointer + _mddf.mddf_block + _volumePrefix,
-                                          SectorTagType.AppleSectorTag,
+                                          SectorTagType.AppleSonyTag,
                                           out byte[] tag);
 
             if(errno != ErrorNumber.NoError) return errno;
@@ -282,7 +282,7 @@ public sealed partial class LisaFS
         // Foreach catalog block
         foreach(byte[] buf in catalogBlocks)
         {
-            int offset = 0;
+            var offset = 0;
 
             // Traverse all entries
             while(offset + 64 <= buf.Length)

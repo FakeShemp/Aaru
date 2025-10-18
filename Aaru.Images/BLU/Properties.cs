@@ -74,7 +74,7 @@ public sealed partial class Blu
     /// <inheritdoc />
     public IEnumerable<SectorTagType> SupportedSectorTags => new[]
     {
-        SectorTagType.AppleSectorTag
+        SectorTagType.AppleSonyTag
     };
 
     /// <inheritdoc />

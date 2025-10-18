@@ -103,10 +103,10 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                              .BeEquivalentTo(test.Tracks.Select(s => s.Pregap),
                                              string.Format(Localization.Track_pregap_0, testFile));
 
-                        int trackNo = 0;
+                        var trackNo = 0;
 
-                        byte?[] flags           = new byte?[image.Tracks.Count];
-                        ulong   latestEndSector = 0;
+                        var   flags           = new byte?[image.Tracks.Count];
+                        ulong latestEndSector = 0;
 
                         foreach(Track currentTrack in image.Tracks)
                         {
@@ -240,8 +240,8 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                         else
                             sectorsToDo = (uint)(trackSectors - doneSectors);
 
-                        bool useNotLong = false;
-                        bool result     = false;
+                        var useNotLong = false;
+                        var result     = false;
 
                         if(useLong)
                         {
@@ -298,7 +298,7 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                 Dictionary<byte, int>    smallestPregapLbaPerTrack = new();
                 var                      tracks                    = new Track[inputFormat.Tracks.Count];
 
-                for(int i = 0; i < tracks.Length; i++)
+                for(var i = 0; i < tracks.Length; i++)
                 {
                     tracks[i] = new Track
                     {
@@ -359,7 +359,9 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                 {
                     switch(tag)
                     {
-                        case SectorTagType.AppleSectorTag:
+                        case SectorTagType.AppleSonyTag:
+                        case SectorTagType.AppleProfileTag:
+                        case SectorTagType.PriamDataTowerTag:
                         case SectorTagType.CdSectorSync:
                         case SectorTagType.CdSectorHeader:
                         case SectorTagType.CdSectorSubHeader:
@@ -632,10 +634,10 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                              .BeEquivalentTo(test.Tracks.Select(s => s.Pregap),
                                              string.Format(Localization.Track_pregap_output_0, testFile));
 
-                        int trackNo = 0;
+                        var trackNo = 0;
 
-                        byte?[] flags           = new byte?[image.Tracks.Count];
-                        ulong   latestEndSector = 0;
+                        var   flags           = new byte?[image.Tracks.Count];
+                        ulong latestEndSector = 0;
 
                         foreach(Track currentTrack in image.Tracks)
                         {

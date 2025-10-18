@@ -496,7 +496,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
             return (int)ErrorNumber.UnsupportedMedia;
         }
 
-        bool ret = false;
+        var ret = false;
 
         if(inputTape?.IsTape == true && outputTape != null)
         {
@@ -544,7 +544,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
             AaruLogging.ErrorWriteLine("Output format does not support sessions, this will end in a loss of data, continuing...");*/
         }
 
-        bool created = false;
+        var created = false;
 
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {
@@ -700,8 +700,8 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                                                           doneSectors + sectorsToDo + track.StartSector,
                                                                           track.Sequence);
 
-                                    bool useNotLong = false;
-                                    bool result     = false;
+                                    var useNotLong = false;
+                                    var result     = false;
 
                                     if(useLong)
                                     {
@@ -969,7 +969,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
             Dictionary<byte, int>    smallestPregapLbaPerTrack = new();
             var                      tracks                    = new Track[inputOptical.Tracks.Count];
 
-            for(int i = 0; i < tracks.Length; i++)
+            for(var i = 0; i < tracks.Length; i++)
             {
                 tracks[i] = new Track
                 {
@@ -1028,7 +1028,9 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
             {
                 switch(tag)
                 {
-                    case SectorTagType.AppleSectorTag:
+                    case SectorTagType.AppleSonyTag:
+                    case SectorTagType.AppleProfileTag:
+                    case SectorTagType.PriamDataTowerTag:
                     case SectorTagType.CdSectorSync:
                     case SectorTagType.CdSectorHeader:
                     case SectorTagType.CdSectorSubHeader:
@@ -1524,7 +1526,9 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                             {
                                 switch(tag)
                                 {
-                                    case SectorTagType.AppleSectorTag:
+                                    case SectorTagType.AppleSonyTag:
+                                    case SectorTagType.AppleProfileTag:
+                                    case SectorTagType.PriamDataTowerTag:
                                     case SectorTagType.CdSectorSync:
                                     case SectorTagType.CdSectorHeader:
                                     case SectorTagType.CdSectorSubHeader:
@@ -1728,7 +1732,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
             if(ret) AaruLogging.WriteLine(UI.Written_Aaru_Metadata_to_output_image);
         }
 
-        bool closed = false;
+        var closed = false;
 
         Core.Spectre.ProgressSingleSpinner(ctx =>
         {

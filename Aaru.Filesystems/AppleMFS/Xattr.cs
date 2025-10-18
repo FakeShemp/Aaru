@@ -69,7 +69,7 @@ public sealed partial class AppleMFS
                string.Compare(path, "$Boot",   StringComparison.InvariantCulture) == 0 ||
                string.Compare(path, "$MDB",    StringComparison.InvariantCulture) == 0)
             {
-                if(_device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSectorTag))
+                if(_device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSonyTag))
                     xattrs.Add("com.apple.macintosh.tags");
 
                 return ErrorNumber.NoError;
@@ -84,13 +84,13 @@ public sealed partial class AppleMFS
         {
             xattrs.Add("com.apple.ResourceFork");
 
-            if(_debug && _device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSectorTag))
+            if(_debug && _device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSonyTag))
                 xattrs.Add("com.apple.ResourceFork.tags");
         }
 
         xattrs.Add("com.apple.FinderInfo");
 
-        if(_debug && _device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSectorTag) && entry.flLgLen > 0)
+        if(_debug && _device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSonyTag) && entry.flLgLen > 0)
             xattrs.Add("com.apple.macintosh.tags");
 
         xattrs.Sort();
@@ -120,7 +120,7 @@ public sealed partial class AppleMFS
                string.Compare(path, "$Boot",   StringComparison.InvariantCulture) == 0 ||
                string.Compare(path, "$MDB",    StringComparison.InvariantCulture) == 0)
             {
-                if(_device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSectorTag) &&
+                if(_device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSonyTag) &&
                    string.Compare(xattr, "com.apple.macintosh.tags", StringComparison.InvariantCulture) == 0)
                 {
                     if(string.Compare(path, "$", StringComparison.InvariantCulture) == 0)
@@ -185,8 +185,8 @@ public sealed partial class AppleMFS
             return ErrorNumber.NoError;
         }
 
-        if(!_debug                                                                 ||
-           !_device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSectorTag) ||
+        if(!_debug                                                               ||
+           !_device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSonyTag) ||
            string.Compare(xattr, "com.apple.macintosh.tags", StringComparison.InvariantCulture) != 0)
             return ErrorNumber.NoSuchExtendedAttribute;
 

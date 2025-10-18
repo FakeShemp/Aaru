@@ -148,8 +148,8 @@ public abstract class OpticalImageConvertIssueTest
                 else
                     sectorsToDo = (uint)(trackSectors - doneSectors);
 
-                bool useNotLong = false;
-                bool result     = false;
+                var useNotLong = false;
+                var result     = false;
 
                 if(UseLong)
                 {
@@ -200,7 +200,7 @@ public abstract class OpticalImageConvertIssueTest
         Dictionary<byte, int>    smallestPregapLbaPerTrack = new();
         var                      tracks                    = new Track[inputOptical.Tracks.Count];
 
-        for(int i = 0; i < tracks.Length; i++)
+        for(var i = 0; i < tracks.Length; i++)
         {
             tracks[i] = new Track
             {
@@ -258,7 +258,9 @@ public abstract class OpticalImageConvertIssueTest
         {
             switch(tag)
             {
-                case SectorTagType.AppleSectorTag:
+                case SectorTagType.AppleSonyTag:
+                case SectorTagType.AppleProfileTag:
+                case SectorTagType.PriamDataTowerTag:
                 case SectorTagType.CdSectorSync:
                 case SectorTagType.CdSectorHeader:
                 case SectorTagType.CdSectorSubHeader:

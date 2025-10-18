@@ -70,7 +70,7 @@ public sealed partial class DiskCopy42
     /// <inheritdoc />
     public IEnumerable<SectorTagType> SupportedSectorTags => new[]
     {
-        SectorTagType.AppleSectorTag
+        SectorTagType.AppleSonyTag
     };
 
     /// <inheritdoc />

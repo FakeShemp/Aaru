@@ -47,7 +47,7 @@ public sealed partial class LisaFS
     /// <inheritdoc />
     public bool Identify(IMediaImage imagePlugin, Partition partition)
     {
-        if(imagePlugin.Info.ReadableSectorTags?.Contains(SectorTagType.AppleSectorTag) != true) return false;
+        if(imagePlugin.Info.ReadableSectorTags?.Contains(SectorTagType.AppleSonyTag) != true) return false;
 
         // Minimal LisaOS disk is 3.5" single sided double density, 800 sectors
         if(imagePlugin.Info.Sectors < 800) return false;
@@ -55,9 +55,9 @@ public sealed partial class LisaFS
         int beforeMddf = -1;
 
         // LisaOS searches sectors until tag tells MDDF resides there, so we'll search 100 sectors
-        for(int i = 0; i < 100; i++)
+        for(var i = 0; i < 100; i++)
         {
-            ErrorNumber errno = imagePlugin.ReadSectorTag((ulong)i, SectorTagType.AppleSectorTag, out byte[] tag);
+            ErrorNumber errno = imagePlugin.ReadSectorTag((ulong)i, SectorTagType.AppleSonyTag, out byte[] tag);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -90,8 +90,8 @@ public sealed partial class LisaFS
             AaruLogging.Debug(MODULE_NAME, "mddf.vol_size - 1 = {0}",     infoMddf.volsize_minus_one);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "mddf.vol_size - mddf.mddf_block -1 = {0}",
-                                       infoMddf.volsize_minus_mddf_minus_one);
+                              "mddf.vol_size - mddf.mddf_block -1 = {0}",
+                              infoMddf.volsize_minus_mddf_minus_one);
 
             AaruLogging.Debug(MODULE_NAME, "Disk sector = {0} bytes",    imagePlugin.Info.SectorSize);
             AaruLogging.Debug(MODULE_NAME, "mddf.blocksize = {0} bytes", infoMddf.blocksize);
@@ -124,7 +124,7 @@ public sealed partial class LisaFS
         metadata    = new FileSystem();
         var sb = new StringBuilder();
 
-        if(imagePlugin.Info.ReadableSectorTags?.Contains(SectorTagType.AppleSectorTag) != true) return;
+        if(imagePlugin.Info.ReadableSectorTags?.Contains(SectorTagType.AppleSonyTag) != true) return;
 
         // Minimal LisaOS disk is 3.5" single sided double density, 800 sectors
         if(imagePlugin.Info.Sectors < 800) return;
@@ -132,9 +132,9 @@ public sealed partial class LisaFS
         int beforeMddf = -1;
 
         // LisaOS searches sectors until tag tells MDDF resides there, so we'll search 100 sectors
-        for(int i = 0; i < 100; i++)
+        for(var i = 0; i < 100; i++)
         {
-            ErrorNumber errno = imagePlugin.ReadSectorTag((ulong)i, SectorTagType.AppleSectorTag, out byte[] tag);
+            ErrorNumber errno = imagePlugin.ReadSectorTag((ulong)i, SectorTagType.AppleSonyTag, out byte[] tag);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -150,8 +150,8 @@ public sealed partial class LisaFS
 
             if(errno != ErrorNumber.NoError) continue;
 
-            var    infoMddf = new MDDF();
-            byte[] pString  = new byte[33];
+            var infoMddf = new MDDF();
+            var pString  = new byte[33];
 
             infoMddf.fsversion = BigEndianBitConverter.ToUInt16(sector, 0x00);
             infoMddf.volid     = BigEndianBitConverter.ToUInt64(sector, 0x02);
@@ -166,7 +166,7 @@ public sealed partial class LisaFS
             infoMddf.unknown2       = sector[0x4F];
             infoMddf.machine_id     = BigEndianBitConverter.ToUInt32(sector, 0x50);
             infoMddf.master_copy_id = BigEndianBitConverter.ToUInt32(sector, 0x54);
-            uint lisaTime = BigEndianBitConverter.ToUInt32(sector, 0x58);
+            var lisaTime = BigEndianBitConverter.ToUInt32(sector, 0x58);
             infoMddf.dtvc                         = DateHandlers.LisaToDateTime(lisaTime);
             lisaTime                              = BigEndianBitConverter.ToUInt32(sector, 0x5C);
             infoMddf.dtcc                         = DateHandlers.LisaToDateTime(lisaTime);
@@ -272,9 +272,9 @@ public sealed partial class LisaFS
             AaruLogging.Debug(MODULE_NAME, "mddf.unknown38 = 0x{0:X8} ({0})", infoMddf.unknown38);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "mddf.unknown_timestamp = 0x{0:X8} ({0}, {1})",
-                                       infoMddf.unknown_timestamp,
-                                       DateHandlers.LisaToDateTime(infoMddf.unknown_timestamp));
+                              "mddf.unknown_timestamp = 0x{0:X8} ({0}, {1})",
+                              infoMddf.unknown_timestamp,
+                              DateHandlers.LisaToDateTime(infoMddf.unknown_timestamp));
 
             if(infoMddf.mddf_block != i - beforeMddf) return;
 

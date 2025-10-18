@@ -88,8 +88,8 @@ public enum TrackSubchannelType : byte
 /// <summary>Metadata present for each sector (aka, "tag").</summary>
 public enum SectorTagType
 {
-    /// <summary>Apple's GCR sector tags, 12 bytes</summary>
-    AppleSectorTag = 0,
+    /// <summary>Apple's Sony GCR sector tags, 12 bytes</summary>
+    AppleSonyTag = 0,
     /// <summary>Sync frame from CD sector, 12 bytes</summary>
     CdSectorSync = 1,
     /// <summary>CD sector header, 4 bytes</summary>
@@ -127,7 +127,11 @@ public enum SectorTagType
     /// <summary>DVD sector ID error detection, 2 bytes</summary>
     DvdSectorIed = 18,
     /// <summary>DVD sector EDC, 4 bytes</summary>
-    DvdSectorEdc = 19
+    DvdSectorEdc = 19,
+    /// <summary>Apple's Profile sector tag, 20 bytes</summary>
+    AppleProfileTag = 20,
+    /// <summary>Priam Data Tower sector tag, 24 bytes</summary>
+    PriamDataTowerTag = 21
 }
 
 /// <summary>Metadata present for each media.</summary>

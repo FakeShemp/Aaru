@@ -54,8 +54,8 @@ public sealed partial class DiskCopy42
     {
         Stream stream = imageFilter.GetDataForkStream();
         stream.Seek(0, SeekOrigin.Begin);
-        byte[] buffer  = new byte[0x58];
-        byte[] pString = new byte[64];
+        var buffer  = new byte[0x58];
+        var pString = new byte[64];
         stream.EnsureRead(buffer, 0, 0x58);
         IsWriting = false;
 
@@ -154,7 +154,7 @@ public sealed partial class DiskCopy42
                 return ErrorNumber.NotSupported;
             }
 
-            imageInfo.ReadableSectorTags.Add(SectorTagType.AppleSectorTag);
+            imageInfo.ReadableSectorTags.Add(SectorTagType.AppleSonyTag);
         }
 
         imageInfo.ImageSize            = imageInfo.Sectors * imageInfo.SectorSize + imageInfo.Sectors * bptag;
@@ -185,8 +185,8 @@ public sealed partial class DiskCopy42
 
         if(imageInfo.MediaType == MediaType.AppleFileWare)
         {
-            byte[] data = new byte[header.DataSize];
-            byte[] tags = new byte[header.TagSize];
+            var data = new byte[header.DataSize];
+            var tags = new byte[header.TagSize];
 
             twiggyCache     = new byte[header.DataSize];
             twiggyCacheTags = new byte[header.TagSize];
@@ -200,8 +200,8 @@ public sealed partial class DiskCopy42
             tagStream.Seek(tagOffset, SeekOrigin.Begin);
             tagStream.EnsureRead(tags, 0, (int)header.TagSize);
 
-            ushort mfsMagic     = BigEndianBitConverter.ToUInt16(data, data.Length / 2 + 0x400);
-            ushort mfsAllBlocks = BigEndianBitConverter.ToUInt16(data, data.Length / 2 + 0x412);
+            var mfsMagic     = BigEndianBitConverter.ToUInt16(data, data.Length / 2 + 0x400);
+            var mfsAllBlocks = BigEndianBitConverter.ToUInt16(data, data.Length / 2 + 0x412);
 
             // Detect a Macintosh Twiggy
             if(mfsMagic == 0xD2D7 && mfsAllBlocks == 422)
@@ -219,10 +219,10 @@ public sealed partial class DiskCopy42
                 Array.Copy(data, 0, twiggyCache,     0, header.DataSize / 2);
                 Array.Copy(tags, 0, twiggyCacheTags, 0, header.TagSize  / 2);
 
-                int copiedSectors = 0;
-                int sectorsToCopy = 0;
+                var copiedSectors = 0;
+                var sectorsToCopy = 0;
 
-                for(int i = 0; i < 46; i++)
+                for(var i = 0; i < 46; i++)
                 {
                     sectorsToCopy = i switch
                                     {
@@ -272,8 +272,8 @@ public sealed partial class DiskCopy42
                         string release = null;
                         string pre     = null;
 
-                        string major = $"{version.MajorVersion}";
-                        string minor = $".{version.MinorVersion / 10}";
+                        var major = $"{version.MajorVersion}";
+                        var minor = $".{version.MinorVersion / 10}";
 
                         if(version.MinorVersion % 10 > 0) release = $".{version.MinorVersion % 10}";
 
@@ -437,7 +437,7 @@ public sealed partial class DiskCopy42
     {
         buffer = null;
 
-        if(tag != SectorTagType.AppleSectorTag) return ErrorNumber.NotSupported;
+        if(tag != SectorTagType.AppleSonyTag) return ErrorNumber.NotSupported;
 
         if(header.TagSize == 0) return ErrorNumber.NoData;
 
@@ -476,7 +476,7 @@ public sealed partial class DiskCopy42
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        errno = ReadSectorsTag(sectorAddress, length, SectorTagType.AppleSectorTag, out byte[] tags);
+        errno = ReadSectorsTag(sectorAddress, length, SectorTagType.AppleSonyTag, out byte[] tags);
 
         if(errno != ErrorNumber.NoError) return errno;
 

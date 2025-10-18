@@ -57,7 +57,7 @@ public sealed partial class Blu
             DeviceName = new byte[0x0D]
         };
 
-        byte[] header = new byte[0x17];
+        var header = new byte[0x17];
         stream.EnsureRead(header, 0, 0x17);
         Array.Copy(header, 0, _imageHeader.DeviceName, 0, 0x0D);
         _imageHeader.DeviceType    = BigEndianBitConverter.ToUInt32(header, 0x0C) & 0x00FFFFFF;
@@ -65,17 +65,16 @@ public sealed partial class Blu
         _imageHeader.BytesPerBlock = BigEndianBitConverter.ToUInt16(header, 0x15);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "ImageHeader.deviceName = \"{0}\"",
-                                   StringHandlers.CToString(_imageHeader.DeviceName));
+                          "ImageHeader.deviceName = \"{0}\"",
+                          StringHandlers.CToString(_imageHeader.DeviceName));
 
         AaruLogging.Debug(MODULE_NAME, "ImageHeader.deviceType = {0}",    _imageHeader.DeviceType);
         AaruLogging.Debug(MODULE_NAME, "ImageHeader.deviceBlock = {0}",   _imageHeader.DeviceBlocks);
         AaruLogging.Debug(MODULE_NAME, "ImageHeader.bytesPerBlock = {0}", _imageHeader.BytesPerBlock);
 
-        for(int i = 0; i < 0xD; i++)
-        {
-            if(_imageHeader.DeviceName[i] < 0x20) return ErrorNumber.InvalidArgument;
-        }
+        for(var i = 0; i < 0xD; i++)
+            if(_imageHeader.DeviceName[i] < 0x20)
+                return ErrorNumber.InvalidArgument;
 
         if((_imageHeader.BytesPerBlock & 0xFE00) != 0x200) return ErrorNumber.InvalidArgument;
 
@@ -88,7 +87,7 @@ public sealed partial class Blu
         _imageInfo.Sectors   = _imageHeader.DeviceBlocks;
         _imageInfo.ImageSize = _imageHeader.DeviceBlocks * _imageHeader.BytesPerBlock;
         _bptag               = _imageHeader.BytesPerBlock - 0x200;
-        byte[] hdrTag = new byte[_bptag];
+        var hdrTag = new byte[_bptag];
         Array.Copy(header, 0x200, hdrTag, 0, _bptag);
 
         switch(StringHandlers.CToString(_imageHeader.DeviceName))
@@ -147,7 +146,7 @@ public sealed partial class Blu
 
         _imageInfo.MetadataMediaType = MetadataMediaType.BlockMedia;
 
-        if(_bptag > 0) _imageInfo.ReadableSectorTags.Add(SectorTagType.AppleSectorTag);
+        if(_bptag > 0) _imageInfo.ReadableSectorTags.Add(SectorTagType.AppleSonyTag);
 
         AaruLogging.Verbose(Localization.BLU_image_contains_a_disk_of_type_0, _imageInfo.MediaType);
 
@@ -177,9 +176,9 @@ public sealed partial class Blu
         Stream stream = _bluImageFilter.GetDataForkStream();
         stream.Seek((long)((sectorAddress + 1) * _imageHeader.BytesPerBlock), SeekOrigin.Begin);
 
-        for(int i = 0; i < length; i++)
+        for(var i = 0; i < length; i++)
         {
-            byte[] sector = new byte[read];
+            var sector = new byte[read];
             stream.EnsureRead(sector, 0, read);
             ms.Write(sector, 0, read);
             stream.Seek(skip, SeekOrigin.Current);
@@ -195,7 +194,7 @@ public sealed partial class Blu
     {
         buffer = null;
 
-        if(tag != SectorTagType.AppleSectorTag) return ErrorNumber.NotSupported;
+        if(tag != SectorTagType.AppleSonyTag) return ErrorNumber.NotSupported;
 
         if(_bptag == 0) return ErrorNumber.NoData;
 
@@ -210,10 +209,10 @@ public sealed partial class Blu
         Stream stream = _bluImageFilter.GetDataForkStream();
         stream.Seek((long)((sectorAddress + 1) * _imageHeader.BytesPerBlock), SeekOrigin.Begin);
 
-        for(int i = 0; i < length; i++)
+        for(var i = 0; i < length; i++)
         {
             stream.Seek(seek, SeekOrigin.Current);
-            byte[] sector = new byte[read];
+            var sector = new byte[read];
             stream.EnsureRead(sector, 0, read);
             ms.Write(sector, 0, read);
         }

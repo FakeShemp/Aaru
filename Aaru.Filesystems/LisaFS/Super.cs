@@ -57,7 +57,7 @@ public sealed partial class LisaFS
             // Lisa OS is unable to work on disks without tags.
             // This code is designed like that.
             // However with some effort the code may be modified to ignore them.
-            if(_device.Info.ReadableSectorTags?.Contains(SectorTagType.AppleSectorTag) != true)
+            if(_device.Info.ReadableSectorTags?.Contains(SectorTagType.AppleSonyTag) != true)
             {
                 AaruLogging.Debug(MODULE_NAME, Localization.Underlying_device_does_not_support_Lisa_tags);
 
@@ -78,7 +78,7 @@ public sealed partial class LisaFS
             // LisaOS searches sectors until tag tells MDDF resides there, so we'll search 100 sectors
             for(ulong i = 0; i < 100; i++)
             {
-                ErrorNumber errno = _device.ReadSectorTag(i, SectorTagType.AppleSectorTag, out byte[] tag);
+                ErrorNumber errno = _device.ReadSectorTag(i, SectorTagType.AppleSonyTag, out byte[] tag);
 
                 if(errno != ErrorNumber.NoError) continue;
 
@@ -97,7 +97,7 @@ public sealed partial class LisaFS
                 if(errno != ErrorNumber.NoError) return errno;
 
                 _mddf = new MDDF();
-                byte[] pString = new byte[33];
+                var pString = new byte[33];
 
                 _mddf.fsversion = BigEndianBitConverter.ToUInt16(sector, 0x00);
                 _mddf.volid     = BigEndianBitConverter.ToUInt64(sector, 0x02);
@@ -112,7 +112,7 @@ public sealed partial class LisaFS
                 _mddf.unknown2       = sector[0x4F];
                 _mddf.machine_id     = BigEndianBitConverter.ToUInt32(sector, 0x50);
                 _mddf.master_copy_id = BigEndianBitConverter.ToUInt32(sector, 0x54);
-                uint lisaTime = BigEndianBitConverter.ToUInt32(sector, 0x58);
+                var lisaTime = BigEndianBitConverter.ToUInt32(sector, 0x58);
                 _mddf.dtvc                         = DateHandlers.LisaToDateTime(lisaTime);
                 lisaTime                           = BigEndianBitConverter.ToUInt32(sector, 0x5C);
                 _mddf.dtcc                         = DateHandlers.LisaToDateTime(lisaTime);
@@ -209,8 +209,7 @@ public sealed partial class LisaFS
 
                         break;
                     default:
-                        AaruLogging.Error(Localization.Cannot_mount_LisaFS_version_0,
-                                                   _mddf.fsversion.ToString());
+                        AaruLogging.Error(Localization.Cannot_mount_LisaFS_version_0, _mddf.fsversion.ToString());
 
                         return ErrorNumber.NotSupported;
                 }
@@ -253,9 +252,7 @@ public sealed partial class LisaFS
 
                 if(error != ErrorNumber.NoError)
                 {
-                    AaruLogging.Debug(MODULE_NAME,
-                                               Localization.Cannot_read_Catalog_File_error_0,
-                                               error.ToString());
+                    AaruLogging.Debug(MODULE_NAME, Localization.Cannot_read_Catalog_File_error_0, error.ToString());
 
                     _mounted = false;
 

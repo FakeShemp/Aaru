@@ -71,11 +71,11 @@ public sealed partial class LisaFS
         // This code just allow to ignore that corruption by searching the Extents File using sector tags
         if(ptr >= _device.Info.Sectors)
         {
-            bool found = false;
+            var found = false;
 
             for(ulong i = 0; i < _device.Info.Sectors; i++)
             {
-                errno = _device.ReadSectorTag(i, SectorTagType.AppleSectorTag, out tag);
+                errno = _device.ReadSectorTag(i, SectorTagType.AppleSonyTag, out tag);
 
                 if(errno != ErrorNumber.NoError) continue;
 
@@ -93,7 +93,7 @@ public sealed partial class LisaFS
         }
 
         // Checks that the sector tag indicates its the Extents File we are searching for
-        errno = _device.ReadSectorTag(ptr, SectorTagType.AppleSectorTag, out tag);
+        errno = _device.ReadSectorTag(ptr, SectorTagType.AppleSonyTag, out tag);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -150,7 +150,7 @@ public sealed partial class LisaFS
         file.LisaInfo  = new byte[128];
         Array.Copy(sector, 0x180, file.LisaInfo, 0, 128);
 
-        int extentsCount = 0;
+        var extentsCount = 0;
         int extentsOffset;
 
         if(_mddf.fsversion == LISA_V1)
@@ -166,7 +166,7 @@ public sealed partial class LisaFS
             extentsOffset = 0x88;
         }
 
-        for(int j = 0; j < 41; j++)
+        for(var j = 0; j < 41; j++)
         {
             if(BigEndianBitConverter.ToInt16(sector, extentsOffset + j * 6 + 4) == 0) break;
 
@@ -175,7 +175,7 @@ public sealed partial class LisaFS
 
         file.extents = new Extent[extentsCount];
 
-        for(int j = 0; j < extentsCount; j++)
+        for(var j = 0; j < extentsCount; j++)
         {
             file.extents[j] = new Extent
             {
@@ -193,9 +193,9 @@ public sealed partial class LisaFS
         AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].filenameLen = {1}", fileId, file.filenameLen);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "ExtentFile[{0}].filename = {1}",
-                                   fileId,
-                                   StringHandlers.CToString(file.filename, _encoding));
+                          "ExtentFile[{0}].filename = {1}",
+                          fileId,
+                          StringHandlers.CToString(file.filename, _encoding));
 
         AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown1 = 0x{1:X4}",  fileId, file.unknown1);
         AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].file_uid = 0x{1:X16}", fileId, file.file_uid);
@@ -218,20 +218,20 @@ public sealed partial class LisaFS
         AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].open = {1}",           fileId, file.open      > 0);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "ExtentFile[{0}].unknown5 = 0x{1:X2}{2:X2}{3:X2}{4:X2}{5:X2}{6:X2}{7:X2}{8:X2}{9:X2}" +
-                                   "{10:X2}{11:X2}",
-                                   fileId,
-                                   file.unknown5[0],
-                                   file.unknown5[1],
-                                   file.unknown5[2],
-                                   file.unknown5[3],
-                                   file.unknown5[4],
-                                   file.unknown5[5],
-                                   file.unknown5[6],
-                                   file.unknown5[7],
-                                   file.unknown5[8],
-                                   file.unknown5[9],
-                                   file.unknown5[10]);
+                          "ExtentFile[{0}].unknown5 = 0x{1:X2}{2:X2}{3:X2}{4:X2}{5:X2}{6:X2}{7:X2}{8:X2}{9:X2}" +
+                          "{10:X2}{11:X2}",
+                          fileId,
+                          file.unknown5[0],
+                          file.unknown5[1],
+                          file.unknown5[2],
+                          file.unknown5[3],
+                          file.unknown5[4],
+                          file.unknown5[5],
+                          file.unknown5[6],
+                          file.unknown5[7],
+                          file.unknown5[8],
+                          file.unknown5[9],
+                          file.unknown5[10]);
 
         AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].release = {1}", fileId, file.release);
         AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].build = {1}",   fileId, file.build);
@@ -241,62 +241,56 @@ public sealed partial class LisaFS
         AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].revision = {1}",      fileId, file.revision);
         AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown6 = 0x{1:X4}", fileId, file.unknown6);
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "ExtentFile[{0}].password_valid = {1}",
-                                   fileId,
-                                   file.password_valid > 0);
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].password_valid = {1}", fileId, file.password_valid > 0);
+
+        AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].password = {1}", fileId, _encoding.GetString(file.password));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "ExtentFile[{0}].password = {1}",
-                                   fileId,
-                                   _encoding.GetString(file.password));
-
-        AaruLogging.Debug(MODULE_NAME,
-                                   "ExtentFile[{0}].unknown7 = 0x{1:X2}{2:X2}{3:X2}",
-                                   fileId,
-                                   file.unknown7[0],
-                                   file.unknown7[1],
-                                   file.unknown7[2]);
+                          "ExtentFile[{0}].unknown7 = 0x{1:X2}{2:X2}{3:X2}",
+                          fileId,
+                          file.unknown7[0],
+                          file.unknown7[1],
+                          file.unknown7[2]);
 
         AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].overhead = {1}", fileId, file.overhead);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "ExtentFile[{0}].unknown8 = 0x{1:X2}{2:X2}{3:X2}{4:X2}{5:X2}{6:X2}{7:X2}{8:X2}{9:X2}" +
-                                   "{10:X2}{11:X2}{12:X2}{13:X2}{14:X2}{15:X2}{16:X2}",
-                                   fileId,
-                                   file.unknown8[0],
-                                   file.unknown8[1],
-                                   file.unknown8[2],
-                                   file.unknown8[3],
-                                   file.unknown8[4],
-                                   file.unknown8[5],
-                                   file.unknown8[6],
-                                   file.unknown8[7],
-                                   file.unknown8[8],
-                                   file.unknown8[9],
-                                   file.unknown8[10],
-                                   file.unknown8[11],
-                                   file.unknown8[12],
-                                   file.unknown8[13],
-                                   file.unknown8[14],
-                                   file.unknown8[15]);
+                          "ExtentFile[{0}].unknown8 = 0x{1:X2}{2:X2}{3:X2}{4:X2}{5:X2}{6:X2}{7:X2}{8:X2}{9:X2}" +
+                          "{10:X2}{11:X2}{12:X2}{13:X2}{14:X2}{15:X2}{16:X2}",
+                          fileId,
+                          file.unknown8[0],
+                          file.unknown8[1],
+                          file.unknown8[2],
+                          file.unknown8[3],
+                          file.unknown8[4],
+                          file.unknown8[5],
+                          file.unknown8[6],
+                          file.unknown8[7],
+                          file.unknown8[8],
+                          file.unknown8[9],
+                          file.unknown8[10],
+                          file.unknown8[11],
+                          file.unknown8[12],
+                          file.unknown8[13],
+                          file.unknown8[14],
+                          file.unknown8[15]);
 
         AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].length = {1}",        fileId, file.length);
         AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown9 = 0x{1:X8}", fileId, file.unknown9);
 
-        for(int ext = 0; ext < file.extents.Length; ext++)
+        for(var ext = 0; ext < file.extents.Length; ext++)
         {
             AaruLogging.Debug(MODULE_NAME,
-                                       "ExtentFile[{0}].extents[{1}].start = {2}",
-                                       fileId,
-                                       ext,
-                                       file.extents[ext].start);
+                              "ExtentFile[{0}].extents[{1}].start = {2}",
+                              fileId,
+                              ext,
+                              file.extents[ext].start);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "ExtentFile[{0}].extents[{1}].length = {2}",
-                                       fileId,
-                                       ext,
-                                       file.extents[ext].length);
+                              "ExtentFile[{0}].extents[{1}].length = {2}",
+                              fileId,
+                              ext,
+                              file.extents[ext].length);
         }
 
         AaruLogging.Debug(MODULE_NAME, "ExtentFile[{0}].unknown10 = 0x{1:X4}", fileId, file.unknown10);
@@ -321,7 +315,7 @@ public sealed partial class LisaFS
         // Each entry takes 14 bytes
         _srecords = new SRecord[sectors.Length / 14];
 
-        for(int s = 0; s < _srecords.Length; s++)
+        for(var s = 0; s < _srecords.Length; s++)
         {
             _srecords[s] = new SRecord
             {
