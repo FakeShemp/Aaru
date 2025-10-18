@@ -4,9 +4,6 @@ Aaru
 
 Copyright © 2011-2025 Natalia Portillo <claunia@claunia.com>
 
-[![Build Status](https://dev.azure.com/Aaru-dps/aaru/_apis/build/status/aaru-dps.Aaru?branchName=master)](https://dev.azure.com/Aaru-dps/aaru/_build/latest?definitionId=7&branchName=master)
-[![Build Status](https://travis-ci.org/aaru-dps/Aaru.svg?branch=master)](https://travis-ci.org/github/aaru-dps/Aaru)
-[![Build status](https://ci.appveyor.com/api/projects/status/vim4c8h028pn5oys?svg=true)](https://ci.appveyor.com/project/claunia/aaru)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fclaunia%2FDiscImageChef.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fclaunia%2FDiscImageChef?ref=badge_shield)
 
 You can see user documentation [here](https://www.aaru.app)
@@ -28,7 +25,7 @@ Stable releases in [Github](https://github.com/aaru-dps/Aaru/releases).
 
 System requirements
 ===================
-Aaru is created using .NET 7 and can be compiled with all the major IDEs. To run it you require to use one of the stable
+Aaru is created using .NET 10 and can be compiled with all the major IDEs. To run it you require to use one of the stable
 releases, or build it yourself.
 
 Usage
