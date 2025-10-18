@@ -132,7 +132,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
                           ByteSize.FromBytes(imageFormat.Info.Sectors * imageFormat.Info.SectorSize).Humanize());
 
         MediaTypeText = string.Format(Localization.Core.Contains_a_media_of_type_0_and_XML_type_1,
-                                      imageFormat.Info.MediaType,
+                                      imageFormat.Info.MediaType.Humanize(),
                                       imageFormat.Info.MetadataMediaType);
 
         HasPartitionsText = imageFormat.Info.HasPartitions ? UI.Has_partitions : UI.Doesnt_have_partitions;
@@ -314,7 +314,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
 
                 if(dataLen + 2 != toc.Length)
                 {
-                    byte[] tmp = new byte[toc.Length + 2];
+                    var tmp = new byte[toc.Length + 2];
                     Array.Copy(toc, 0, tmp, 2, toc.Length);
                     tmp[0] = (byte)((toc.Length & 0xFF00) >> 8);
                     tmp[1] = (byte)(toc.Length & 0xFF);
@@ -335,7 +335,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
 
                 if(dataLen + 2 != fullToc.Length)
                 {
-                    byte[] tmp = new byte[fullToc.Length + 2];
+                    var tmp = new byte[fullToc.Length + 2];
                     Array.Copy(fullToc, 0, tmp, 2, fullToc.Length);
                     tmp[0]  = (byte)((fullToc.Length & 0xFF00) >> 8);
                     tmp[1]  = (byte)(fullToc.Length & 0xFF);
@@ -356,7 +356,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
 
                 if(dataLen + 2 != pma.Length)
                 {
-                    byte[] tmp = new byte[pma.Length + 2];
+                    var tmp = new byte[pma.Length + 2];
                     Array.Copy(pma, 0, tmp, 2, pma.Length);
                     tmp[0] = (byte)((pma.Length & 0xFF00) >> 8);
                     tmp[1] = (byte)(pma.Length & 0xFF);
@@ -375,7 +375,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
 
                 if(dataLen + 4 != atip.Length)
                 {
-                    byte[] tmp = new byte[atip.Length + 4];
+                    var tmp = new byte[atip.Length + 4];
                     Array.Copy(atip, 0, tmp, 4, atip.Length);
                     tmp[0] = (byte)((atip.Length & 0xFF000000) >> 24);
                     tmp[1] = (byte)((atip.Length & 0xFF0000)   >> 16);
@@ -398,7 +398,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
 
                 if(dataLen + 4 != cdtext.Length)
                 {
-                    byte[] tmp = new byte[cdtext.Length + 4];
+                    var tmp = new byte[cdtext.Length + 4];
                     Array.Copy(cdtext, 0, tmp, 4, cdtext.Length);
                     tmp[0] = (byte)((cdtext.Length & 0xFF000000) >> 24);
                     tmp[1] = (byte)((cdtext.Length & 0xFF0000)   >> 16);
@@ -695,9 +695,8 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Sessions is { Count: > 0 })
-                {
-                    foreach(Session session in opticalMediaImage.Sessions) Sessions.Add(session);
-                }
+                    foreach(Session session in opticalMediaImage.Sessions)
+                        Sessions.Add(session);
             }
             catch(Exception ex)
             {
@@ -707,9 +706,8 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Tracks is { Count: > 0 })
-                {
-                    foreach(Track track in opticalMediaImage.Tracks) Tracks.Add(track);
-                }
+                    foreach(Track track in opticalMediaImage.Tracks)
+                        Tracks.Add(track);
             }
             catch(Exception ex)
             {

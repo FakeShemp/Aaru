@@ -116,7 +116,7 @@ public static class ImageInfo
             AaruLogging.WriteLine(Localization.Core.Last_modified_on_0, imageFormat.Info.LastModificationTime);
 
         AaruLogging.WriteLine(Localization.Core.Contains_a_media_of_type_0_and_XML_type_1_WithMarkup,
-                              imageFormat.Info.MediaType,
+                              imageFormat.Info.MediaType.Humanize(),
                               imageFormat.Info.MetadataMediaType);
 
         AaruLogging.WriteLine(imageFormat.Info.HasPartitions
@@ -444,7 +444,7 @@ public static class ImageInfo
 
                 if(dataLen + 2 != toc.Length)
                 {
-                    byte[] tmp = new byte[toc.Length + 2];
+                    var tmp = new byte[toc.Length + 2];
                     Array.Copy(toc, 0, tmp, 2, toc.Length);
                     tmp[0] = (byte)((toc.Length & 0xFF00) >> 8);
                     tmp[1] = (byte)(toc.Length & 0xFF);
@@ -467,7 +467,7 @@ public static class ImageInfo
 
                 if(dataLen + 2 != pma.Length)
                 {
-                    byte[] tmp = new byte[pma.Length + 2];
+                    var tmp = new byte[pma.Length + 2];
                     Array.Copy(pma, 0, tmp, 2, pma.Length);
                     tmp[0] = (byte)((pma.Length & 0xFF00) >> 8);
                     tmp[1] = (byte)(pma.Length & 0xFF);
@@ -492,7 +492,7 @@ public static class ImageInfo
 
                 if(dataLen + 4 != atip.Length)
                 {
-                    byte[] tmp = new byte[atip.Length + 4];
+                    var tmp = new byte[atip.Length + 4];
                     Array.Copy(atip, 0, tmp, 4, atip.Length);
                     tmp[0] = (byte)((atip.Length & 0xFF000000) >> 24);
                     tmp[1] = (byte)((atip.Length & 0xFF0000)   >> 16);
@@ -519,7 +519,7 @@ public static class ImageInfo
 
                 if(dataLen + 4 != cdtext.Length)
                 {
-                    byte[] tmp = new byte[cdtext.Length + 4];
+                    var tmp = new byte[cdtext.Length + 4];
                     Array.Copy(cdtext, 0, tmp, 4, cdtext.Length);
                     tmp[0] = (byte)((cdtext.Length & 0xFF000000) >> 24);
                     tmp[1] = (byte)((cdtext.Length & 0xFF0000)   >> 16);

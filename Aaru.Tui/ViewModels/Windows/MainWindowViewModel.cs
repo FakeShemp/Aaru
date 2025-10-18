@@ -291,7 +291,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 if(imageFormat.Info.LastModificationTime != DateTime.MinValue)
                     sb.AppendLine($"[#875fff]Last modified on[/] [#afd700]{imageFormat.Info.LastModificationTime}[/]");
 
-                sb.AppendLine($"[#875fff]Contains a media of type[/] [italic][fuchsia]{imageFormat.Info.MediaType}[/][/]");
+                sb.AppendLine($"[#875fff]Contains a media of type[/] [italic][fuchsia]{imageFormat.Info.MediaType.Humanize()}[/][/]");
                 sb.AppendLine($"[#875fff]XML type:[/] [italic][#af8787]{imageFormat.Info.MetadataMediaType}[/][/]");
 
                 sb.AppendLine(imageFormat.Info.HasPartitions

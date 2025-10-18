@@ -47,6 +47,7 @@ using Aaru.Decoders.DVD;
 using Aaru.Decoders.SCSI;
 using Aaru.Helpers;
 using Aaru.Logging;
+using Humanizer;
 using Schemas;
 using Sentry;
 using DMI = Aaru.Decoders.Xbox.DMI;
@@ -372,8 +373,8 @@ public sealed partial class ZZZRawImage
 
         if(_imageInfo.ImageSize % 2352 == 0 || _imageInfo.ImageSize % 2448 == 0)
         {
-            byte[] sync   = new byte[12];
-            byte[] header = new byte[4];
+            var sync   = new byte[12];
+            var header = new byte[4];
             stream.Seek(0, SeekOrigin.Begin);
             stream.EnsureRead(sync,   0, 12);
             stream.EnsureRead(header, 0, 4);
@@ -419,7 +420,7 @@ public sealed partial class ZZZRawImage
                 if(filter is null) continue;
 
                 AaruLogging.Debug(MODULE_NAME, Localization.Found_media_tag_0, sidecar.tag);
-                byte[] data = new byte[filter.DataForkLength];
+                var data = new byte[filter.DataForkLength];
                 filter.GetDataForkStream().EnsureRead(data, 0, data.Length);
                 _mediaTags.Add(sidecar.tag, data);
             }
@@ -1175,7 +1176,7 @@ public sealed partial class ZZZRawImage
             _imageInfo.HasPartitions = true;
         }
 
-        AaruLogging.Verbose(Localization.Raw_disk_image_contains_a_disk_of_type_0, _imageInfo.MediaType);
+        AaruLogging.Verbose(Localization.Raw_disk_image_contains_a_disk_of_type_0, _imageInfo.MediaType.Humanize());
 
         try
         {
@@ -1339,9 +1340,9 @@ public sealed partial class ZZZRawImage
 
             buffer = br.ReadBytes((int)((sectorSize + sectorSkip) * length));
 
-            for(int i = 0; i < length; i++)
+            for(var i = 0; i < length; i++)
             {
-                byte[] sector = new byte[sectorSize];
+                var sector = new byte[sectorSize];
                 Array.Copy(buffer, (sectorSize + sectorSkip) * i, sector, 0, sectorSize);
                 sector = Sector.GetUserDataFromMode2(sector);
                 mode2Ms.Write(sector, 0, sector.Length);
@@ -1353,7 +1354,7 @@ public sealed partial class ZZZRawImage
             buffer = br.ReadBytes((int)(sectorSize * length));
         else
         {
-            for(int i = 0; i < length; i++)
+            for(var i = 0; i < length; i++)
             {
                 if(_rawDvd)
                 {
@@ -1671,7 +1672,7 @@ public sealed partial class ZZZRawImage
             buffer = br.ReadBytes((int)(sectorSize * length));
         else
         {
-            for(int i = 0; i < length; i++)
+            for(var i = 0; i < length; i++)
             {
                 br.BaseStream.Seek(sectorOffset, SeekOrigin.Current);
                 byte[] sector = br.ReadBytes((int)sectorSize);
@@ -1699,7 +1700,7 @@ public sealed partial class ZZZRawImage
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
-        uint sectorSize = 2352u;
+        var sectorSize = 2352u;
 
         if(_toastXa) sectorSize = 2056u;
 
@@ -1720,9 +1721,9 @@ public sealed partial class ZZZRawImage
         {
             buffer = new byte[2352 * length];
 
-            for(int i = 0; i < length; i++)
+            for(var i = 0; i < length; i++)
             {
-                byte[] fullSector = new byte[2352];
+                var fullSector = new byte[2352];
                 stream.EnsureRead(fullSector, 16, (int)sectorSize);
                 SectorBuilder sb = new();
                 sb.ReconstructPrefix(ref fullSector, TrackType.CdMode2Form1, (long)(sectorAddress + length));
@@ -1732,7 +1733,7 @@ public sealed partial class ZZZRawImage
         }
         else if(_rawDvd)
         {
-            for(int i = 0; i < length; i++)
+            for(var i = 0; i < length; i++)
             {
                 byte[]      sector = br.ReadBytes((int)sectorSize);
                 ErrorNumber error  = _decoding.Scramble(sector, out byte[] scrambled);
@@ -1746,7 +1747,7 @@ public sealed partial class ZZZRawImage
             buffer = br.ReadBytes((int)(sectorSize * length));
         else
         {
-            for(int i = 0; i < length; i++)
+            for(var i = 0; i < length; i++)
             {
                 byte[] sector = br.ReadBytes((int)sectorSize);
                 br.BaseStream.Seek(sectorSkip, SeekOrigin.Current);
