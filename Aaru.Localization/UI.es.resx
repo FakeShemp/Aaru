@@ -3071,4 +3071,7 @@ Probadores:
     <data name="Error_connecting_to_host" xml:space="preserve">
         <value>[red]Error al conectar al servidor.[/]</value>
     </data>
+    <data name="Running_in_0_architecture" xml:space="preserve">
+        <value>Ejecutándose en arquitectura {0}</value>
+    </data>
 </root>

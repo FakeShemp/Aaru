@@ -4831,6 +4831,15 @@ namespace Aaru.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Media identified as.
+        /// </summary>
+        public static string Media_identified_as {
+            get {
+                return ResourceManager.GetString("Media_identified_as", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [slateblue1]Media identified as [fuchsia]{0}[/].[/].
         /// </summary>
         public static string Media_identified_as_0 {

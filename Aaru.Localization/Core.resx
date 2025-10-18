@@ -3514,4 +3514,7 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <data name="XML_type_0" xml:space="preserve">
         <value>[slateblue1]XML type:[/] [italic][rosybrown]{0}[/][/]</value>
     </data>
+    <data name="Media_identified_as" xml:space="preserve">
+        <value>Media identified as</value>
+    </data>
 </root>
