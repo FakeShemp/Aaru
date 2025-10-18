@@ -5,6 +5,7 @@
                              xmlns:windows="clr-namespace:Aaru.Tui.ViewModels.Windows"
                              xmlns:brushes="https://github.com/jinek/consolonia"
                              xmlns:windowManager="clr-namespace:Iciclecreek.Avalonia.WindowManager;assembly=Iciclecreek.Avalonia.WindowManager"
+                             xmlns:localization="clr-namespace:Aaru.Tui.Localization"
                              mc:Ignorable="d"
                              d:DesignWidth="800"
                              d:DesignHeight="450"
@@ -16,14 +17,14 @@
     </Design.DataContext>
     <DockPanel>
         <Menu DockPanel.Dock="Bottom">
-            <MenuItem Header="ESC Back"
+            <MenuItem Header="{x:Static localization:Resources.Back_Header}"
                       Command="{Binding BackCommand, Mode=OneWay}"
                       HotKey="Escape" />
-            <MenuItem Header="F1  Help"
+            <MenuItem Header="{x:Static localization:Resources.Help_Header}"
                       Command="{Binding HelpCommand, Mode=OneWay}"
                       HotKey="F1" />
             <MenuItem Header="F2      " />
-            <MenuItem Header="F10 Exit"
+            <MenuItem Header="{x:Static localization:Resources.Exit_Header}"
                       Command="{Binding ExitCommand, Mode=OneWay}"
                       HotKey="F10" />
         </Menu>
@@ -61,77 +62,86 @@
                                                Brush="Blue" />
                         </Border.BorderBrush>
                         <StackPanel HorizontalAlignment="Stretch">
-                            <TextBlock Text="Partition information"
+                            <TextBlock Text="{x:Static localization:Resources.PartitionInformation_Text}"
                                        Foreground="SlateBlue"
                                        HorizontalAlignment="Center" />
-                            <Grid ColumnDefinitions="Auto,*">
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="1">
                                 <TextBlock Grid.Column="0"
                                            Foreground="SlateBlue"
-                                           Text="Sequence: " />
+                                           Text="{x:Static localization:Resources.PartitionSequence_Text}" />
                                 <TextBlock Grid.Column="1"
                                            Foreground="LawnGreen"
                                            Text="{Binding PartitionSequence, Mode=OneWay}" />
                             </Grid>
-                            <Grid ColumnDefinitions="Auto,*">
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="1">
                                 <TextBlock Grid.Column="0"
                                            Foreground="SlateBlue"
-                                           Text="Name: " />
+                                           Text="{x:Static localization:Resources.PartitionName_Text}" />
                                 <TextBlock Grid.Column="1"
                                            Foreground="DarkGreen"
                                            Text="{Binding PartitionName, Mode=OneWay}" />
                             </Grid>
-                            <Grid ColumnDefinitions="Auto,*">
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="1">
                                 <TextBlock Grid.Column="0"
                                            Foreground="SlateBlue"
-                                           Text="Type: " />
+                                           Text="{x:Static localization:Resources.PartitionType_Text}" />
                                 <TextBlock Grid.Column="1"
                                            Foreground="Olive"
                                            Text="{Binding PartitionType, Mode=OneWay}" />
                             </Grid>
-                            <Grid ColumnDefinitions="Auto,*">
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="1">
                                 <TextBlock Grid.Column="0"
                                            Foreground="SlateBlue"
-                                           Text="Starting sector: " />
+                                           Text="{x:Static localization:Resources.PartitionStartingSector_Text}" />
                                 <TextBlock Grid.Column="1"
                                            Foreground="Violet"
                                            Text="{Binding PartitionStart, Mode=OneWay}" />
                             </Grid>
-                            <Grid ColumnDefinitions="Auto,*">
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="1">
                                 <TextBlock Grid.Column="0"
                                            Foreground="SlateBlue"
-                                           Text="Offset: " />
+                                           Text="{x:Static localization:Resources.PartitionOffset_Text}" />
                                 <TextBlock Grid.Column="1"
                                            Foreground="Lime"
                                            Text="{Binding PartitionOffset, Mode=OneWay}" />
                             </Grid>
-                            <Grid ColumnDefinitions="Auto,*">
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="1">
                                 <TextBlock Grid.Column="0"
                                            Foreground="SlateBlue"
-                                           Text="Length: " />
+                                           Text="{x:Static localization:Resources.PartitionLength_Text}" />
                                 <TextBlock Grid.Column="1"
                                            Foreground="Violet"
                                            Text="{Binding PartitionLength, Mode=OneWay}" />
                             </Grid>
-                            <Grid ColumnDefinitions="Auto,*">
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="1">
                                 <TextBlock Grid.Column="0"
                                            Foreground="SlateBlue"
-                                           Text="Size: " />
+                                           Text="{x:Static localization:Resources.PartitionSize_Text}" />
                                 <TextBlock Grid.Column="1"
                                            Foreground="Lime"
                                            Text="{Binding PartitionSize, Mode=OneWay}" />
                             </Grid>
-                            <Grid ColumnDefinitions="Auto,*">
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="1">
                                 <TextBlock Grid.Column="0"
                                            Foreground="SlateBlue"
-                                           Text="Scheme: " />
+                                           Text="{x:Static localization:Resources.PartitionScheme_Text}" />
                                 <TextBlock Grid.Column="1"
                                            Foreground="Purple"
                                            Text="{Binding PartitionScheme, Mode=OneWay}" />
                             </Grid>
-                            <Grid ColumnDefinitions="Auto,*">
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="1">
                                 <TextBlock Grid.Column="0"
                                            Foreground="SlateBlue"
-                                           Text="Description: " />
+                                           Text="{x:Static localization:Resources.PartitionDescription_Text}" />
                                 <TextBlock Grid.Column="1"
                                            Foreground="Fuchsia"
                                            Text="{Binding PartitionDescription, Mode=OneWay}" />
@@ -148,7 +158,7 @@
                         <ScrollViewer>
                             <StackPanel>
                                 <TextBlock Foreground="SlateBlue"
-                                           Text="Filesystem information"
+                                           Text="{x:Static localization:Resources.FilesystemInformation_Text}"
                                            HorizontalAlignment="Center" />
                                 <TextBox Background="Transparent"
                                          TextWrapping="Wrap"

@@ -86,9 +86,9 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
         _longMode = !_longMode;
 
         if(_longMode)
-            FilePath += " (Long Mode)";
+            FilePath += Localization.Resources.Long_Mode;
         else
-            FilePath = FilePath.Replace(" (Long Mode)", string.Empty);
+            FilePath = FilePath.Replace(Localization.Resources.Long_Mode, string.Empty);
 
         LoadSector();
     }

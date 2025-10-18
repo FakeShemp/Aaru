@@ -3,6 +3,7 @@
                              xmlns:console="https://github.com/jinek/consolonia"
                              xmlns:windows="clr-namespace:Aaru.Tui.ViewModels.Windows"
                              xmlns:windowManager="clr-namespace:Iciclecreek.Avalonia.WindowManager;assembly=Iciclecreek.Avalonia.WindowManager"
+                             xmlns:localization="clr-namespace:Aaru.Tui.Localization"
                              x:Class="Aaru.Tui.Views.Windows.HexViewWindow"
                              WindowState="FullScreen"
                              CanResize="False">
@@ -11,25 +12,25 @@
     </Design.DataContext>
     <DockPanel>
         <Menu DockPanel.Dock="Bottom">
-            <MenuItem Header="ESC Back"
+            <MenuItem Header="{x:Static localization:Resources.Back_Header}"
                       HotKey="Escape"
                       Command="{Binding BackCommand, Mode=OneWay}" />
-            <MenuItem Header="F1  Help"
+            <MenuItem Header="{x:Static localization:Resources.Help_Header}"
                       Command="{Binding HelpCommand, Mode=OneWay}"
                       HotKey="F1" />
-            <MenuItem Header="F2  Next"
+            <MenuItem Header="{x:Static localization:Resources.Next_Header}"
                       Command="{Binding NextSectorCommand, Mode=OneWay}"
                       HotKey="F2" />
-            <MenuItem Header="F3  Prev"
+            <MenuItem Header="{x:Static localization:Resources.Prev_Header}"
                       Command="{Binding PreviousSectorCommand, Mode=OneWay}"
                       HotKey="F3" />
-            <MenuItem Header="F4  GoTo"
+            <MenuItem Header="{x:Static localization:Resources.GoTo_Header}"
                       Command="{Binding GoToCommand, Mode=OneWay}"
                       HotKey="F4" />
-            <MenuItem Header="F5  Long"
+            <MenuItem Header="{x:Static localization:Resources.Long_Header}"
                       Command="{Binding ToggleLongCommand, Mode=OneWay}"
                       HotKey="F5" />
-            <MenuItem Header="F10 Exit"
+            <MenuItem Header="{x:Static localization:Resources.Exit_Header}"
                       HotKey="F10"
                       Command="{Binding ExitCommand, Mode=OneWay}" />
         </Menu>
@@ -46,7 +47,7 @@
                 <Grid Grid.Row="1"
                       ColumnDefinitions="Auto,*,Auto">
                     <TextBlock Grid.Column="0"
-                               Text="Offset"
+                               Text="{x:Static localization:Resources.Offset_Text}"
                                HorizontalAlignment="Left"
                                Foreground="Cyan"
                                FontWeight="Bold" />
@@ -56,7 +57,7 @@
                                Foreground="Cyan"
                                FontWeight="Bold" />
                     <TextBlock Grid.Column="2"
-                               Text="ASCII          "
+                               Text="{x:Static localization:Resources.ASCII_Text"
                                HorizontalAlignment="Left"
                                Foreground="Cyan"
                                FontWeight="Bold" />
@@ -93,7 +94,7 @@
                 <StackPanel Orientation="Horizontal"
                             Grid.Row="3">
                     <TextBlock Foreground="SlateBlue"
-                               Text="Current sector: " />
+                               Text="{x:Static localization:Resources.CurrentSector_Text}" />
                     <TextBlock Foreground="Lime"
                                Text="{Binding CurrentSector, Mode=OneWay}" />
                 </StackPanel>

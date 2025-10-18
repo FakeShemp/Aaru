@@ -3499,4 +3499,19 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <data name="Cartridge_has_0_bytes_1" xml:space="preserve">
         <value>[slateblue1]Cartridge has [lime]{0} bytes[/] ([lime]{1}[/]).[/]</value>
     </data>
+    <data name="Contains_a_media_of_0_sectors" xml:space="preserve">
+        <value>[slateblue1]Contains a media of [lime]{0}[/] sectors[/]</value>
+    </data>
+    <data name="Maximum_sector_size_of_0_bytes" xml:space="preserve">
+        <value>[slateblue1]Maximum sector size of [teal]{0}[/] bytes[/]</value>
+    </data>
+    <data name="Would_be_0_humanized" xml:space="preserve">
+        <value>[slateblue1]Would be [aqua]{0}[/][/]</value>
+    </data>
+    <data name="Contains_a_media_of_type_0" xml:space="preserve">
+        <value>[slateblue1]Contains a media of type[/] [italic][fuchsia]{0}[/][/]</value>
+    </data>
+    <data name="XML_type_0" xml:space="preserve">
+        <value>[slateblue1]XML type:[/] [italic][rosybrown]{0}[/][/]</value>
+    </data>
 </root>

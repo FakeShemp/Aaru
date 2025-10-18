@@ -106,12 +106,15 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
             {
                 IsPartitionInformationVisible = true;
 
-                PartitionSequence    = _selectedNode.Partition.Value.Sequence.ToString();
-                PartitionName        = _selectedNode.Partition.Value.Name;
-                PartitionType        = _selectedNode.Partition.Value.Type;
-                PartitionStart       = _selectedNode.Partition.Value.Start.ToString();
-                PartitionOffset      = ByteSize.FromBytes(_selectedNode.Partition.Value.Offset).Humanize();
-                PartitionLength      = $"{_selectedNode.Partition.Value.Length} sectors";
+                PartitionSequence = _selectedNode.Partition.Value.Sequence.ToString();
+                PartitionName     = _selectedNode.Partition.Value.Name;
+                PartitionType     = _selectedNode.Partition.Value.Type;
+                PartitionStart    = _selectedNode.Partition.Value.Start.ToString();
+                PartitionOffset   = ByteSize.FromBytes(_selectedNode.Partition.Value.Offset).Humanize();
+
+                PartitionLength =
+                    string.Format(Localization.Resources._0_sectors, _selectedNode.Partition.Value.Length);
+
                 PartitionSize        = ByteSize.FromBytes(_selectedNode.Partition.Value.Size).Humanize();
                 PartitionScheme      = _selectedNode.Partition.Value.Scheme;
                 PartitionDescription = _selectedNode.Partition.Value.Description;
@@ -180,7 +183,7 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
     void Worker()
     {
         IsStatusVisible = true;
-        Status          = "Loading partitions...";
+        Status          = Localization.Resources.Loading_partitions;
 
         Nodes = [];
 
@@ -190,7 +193,7 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
         {
             partitionsList.Add(new Partition
             {
-                Name   = Localization.Core.Whole_device,
+                Name   = Aaru.Localization.Core.Whole_device,
                 Length = _imageFormat.Info.Sectors,
                 Size   = _imageFormat.Info.Sectors * _imageFormat.Info.SectorSize
             });
@@ -198,13 +201,14 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
 
         var sequence = 0;
 
-        Status = "Loading filesystems...";
+        Status = Localization.Resources.Loading_filesystems;
 
         PluginRegister plugins = PluginRegister.Singleton;
 
         foreach(Partition partition in partitionsList)
         {
-            var node = new FileSystemModelNode(partition.Name ?? $"Partition {sequence}")
+            var node = new FileSystemModelNode(partition.Name ??
+                                               string.Format(Localization.Resources.Partition_0, sequence))
             {
                 Partition = partition
             };
@@ -247,7 +251,7 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
             sequence++;
         }
 
-        Status          = "Done.";
+        Status          = Localization.Resources.Done;
         IsStatusVisible = false;
     }
 }

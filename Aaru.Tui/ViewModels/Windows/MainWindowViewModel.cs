@@ -46,6 +46,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Humanizer;
 using Humanizer.Bytes;
+using Spectre.Console;
 using Color = Avalonia.Media.Color;
 
 namespace Aaru.Tui.ViewModels.Windows;
@@ -83,7 +84,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             "?.?.?";
 
         Copyright = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright ?? "";
-        Status    = "Loading...";
+        Status    = Localization.Resources.Loading;
     }
 
     public FileModel? SelectedFile
@@ -182,7 +183,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public void LoadFiles()
     {
         IsStatusVisible = true;
-        Status          = "Loading...";
+        Status          = Localization.Resources.Loading;
         CurrentPath     = Directory.GetCurrentDirectory();
         Files.Clear();
 
@@ -236,7 +237,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     void Worker()
     {
         IsStatusVisible = true;
-        Status          = "Loading file information...";
+        Status          = Localization.Resources.Loading_file_information;
 
         foreach(FileModel file in Files)
         {
@@ -259,110 +260,189 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 StringBuilder sb = new();
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.Version))
-                    sb.AppendLine($"[bold][#875fff]Format:[/] [italic][#af8787]{imageFormat.Format}[/][/] version [#af8787]{imageFormat.Info.Version}[/][/]");
+                {
+                    sb.AppendFormat(Aaru.Localization.Core.Format_0_version_1_WithMarkup,
+                                    Markup.Escape(imageFormat.Format),
+                                    Markup.Escape(imageFormat.Info.Version))
+                      .AppendLine();
+                }
                 else
-                    sb.AppendLine($"[bold][#875fff]Format:[/] [italic][#af8787]{imageFormat.Format}[/][/][/]");
+                    sb.AppendFormat(Aaru.Localization.Core.Format_0_WithMarkup, Markup.Escape(imageFormat.Format))
+                      .AppendLine();
 
                 switch(string.IsNullOrWhiteSpace(imageFormat.Info.Application))
                 {
                     case false when !string.IsNullOrWhiteSpace(imageFormat.Info.ApplicationVersion):
-                        sb.AppendLine($"[#875fff]Was created with [italic][#af8787]{imageFormat.Info.Application}[/][/] version [italic][#af8787]{imageFormat.Info.ApplicationVersion}[/][/][/]");
+                        sb.AppendFormat(Aaru.Localization.Core.Was_created_with_0_version_1_WithMarkup,
+                                        Markup.Escape(imageFormat.Info.Application),
+                                        Markup.Escape(imageFormat.Info.ApplicationVersion))
+                          .AppendLine();
 
                         break;
                     case false:
-                        sb.AppendLine($"[#875fff]Was created with[/] [italic][#af8787]{imageFormat.Info.Application}[/][/]");
+                        sb.AppendFormat(Aaru.Localization.Core.Was_created_with_0_WithMarkup,
+                                        Markup.Escape(imageFormat.Info.Application))
+                          .AppendLine();
 
                         break;
                 }
 
-                sb.AppendLine($"[#875fff]Image without headers is [lime]{imageFormat.Info.ImageSize}[/] bytes long[/]");
+                sb.AppendFormat(Aaru.Localization.Core.Image_without_headers_is_0_bytes_long,
+                                imageFormat.Info.ImageSize)
+                  .AppendLine();
 
-                sb.AppendLine($"[#875fff]Contains a media of [lime]{imageFormat.Info.Sectors}[/] sectors[/]");
-                sb.AppendLine($"[#875fff]Maximum sector size of [teal]{imageFormat.Info.SectorSize}[/] bytes[/]");
-                sb.AppendLine($"[#875fff]Would be [aqua]{ByteSize.FromBytes(imageFormat.Info.Sectors * imageFormat.Info.SectorSize).Humanize()}[/][/]");
+                sb.AppendFormat(Aaru.Localization.Core.Contains_a_media_of_0_sectors, imageFormat.Info.Sectors)
+                  .AppendLine();
+
+                sb.AppendFormat(Aaru.Localization.Core.Maximum_sector_size_of_0_bytes, imageFormat.Info.SectorSize)
+                  .AppendLine();
+
+                sb.AppendFormat(Aaru.Localization.Core.Would_be_0_humanized,
+                                ByteSize.FromBytes(imageFormat.Info.Sectors * imageFormat.Info.SectorSize).Humanize())
+                  .AppendLine();
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.Creator))
-                    sb.AppendLine($"[bold][#875fff]Created by:[/][/] [green]{imageFormat.Info.Creator}[/]");
+                    sb.AppendFormat(Aaru.Localization.Core.Created_by_0_WithMarkup,
+                                    Markup.Escape(imageFormat.Info.Creator))
+                      .AppendLine();
 
                 if(imageFormat.Info.CreationTime != DateTime.MinValue)
-                    sb.AppendLine($"[#875fff]Created on[/] [#afd700]{imageFormat.Info.CreationTime}[/]");
+                    sb.AppendFormat(Aaru.Localization.Core.Created_on_0, imageFormat.Info.CreationTime).AppendLine();
 
                 if(imageFormat.Info.LastModificationTime != DateTime.MinValue)
-                    sb.AppendLine($"[#875fff]Last modified on[/] [#afd700]{imageFormat.Info.LastModificationTime}[/]");
+                    sb.AppendFormat(Aaru.Localization.Core.Last_modified_on_0, imageFormat.Info.LastModificationTime)
+                      .AppendLine();
 
-                sb.AppendLine($"[#875fff]Contains a media of type[/] [italic][fuchsia]{imageFormat.Info.MediaType.Humanize()}[/][/]");
-                sb.AppendLine($"[#875fff]XML type:[/] [italic][#af8787]{imageFormat.Info.MetadataMediaType}[/][/]");
+                sb.AppendFormat(Aaru.Localization.Core.Contains_a_media_of_type_0,
+                                imageFormat.Info.MediaType.Humanize())
+                  .AppendLine();
+
+                sb.AppendFormat(Aaru.Localization.Core.XML_type_0, imageFormat.Info.MetadataMediaType).AppendLine();
 
                 sb.AppendLine(imageFormat.Info.HasPartitions
-                                  ? "[green]Has partitions[/]"
-                                  : "[red]Doesn\'t have partitions[/]");
+                                  ? Aaru.Localization.Core.Has_partitions
+                                  : Aaru.Localization.Core.Doesnt_have_partitions);
 
                 sb.AppendLine(imageFormat.Info.HasSessions
-                                  ? "[green]Has sessions[/]"
-                                  : "[red]Doesn\'t have sessions[/]");
+                                  ? Aaru.Localization.Core.Has_sessions
+                                  : Aaru.Localization.Core.Doesnt_have_sessions);
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.Comments))
-                    sb.AppendLine($"[bold][#875fff]Comments:[/][/] {imageFormat.Info.Comments}");
+                    sb.AppendFormat(Aaru.Localization.Core.Comments_0_WithMarkup,
+                                    Markup.Escape(imageFormat.Info.Comments))
+                      .AppendLine();
 
                 if(imageFormat.Info.MediaSequence != 0 && imageFormat.Info.LastMediaSequence != 0)
                 {
-                    sb.AppendLine($"[#875fff]Media is number [teal]{imageFormat.Info.MediaSequence}[/]" +
-                                  "\n"                                                                  +
-                                  $" on a set of [teal]{imageFormat.Info.LastMediaSequence}[/] medias[/]");
+                    sb.AppendFormat(Aaru.Localization.Core.Media_is_number_0_on_a_set_of_1_medias,
+                                    imageFormat.Info.MediaSequence,
+                                    imageFormat.Info.LastMediaSequence)
+                      .AppendLine();
                 }
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaTitle))
-                    sb.AppendLine($"[bold][#875fff]Media title:[/][/] [italic]{imageFormat.Info.MediaTitle}[/]");
+                {
+                    sb.AppendFormat(Aaru.Localization.Core.Media_title_0_WithMarkup,
+                                    Markup.Escape(imageFormat.Info.MediaTitle))
+                      .AppendLine();
+                }
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaManufacturer))
-                    sb.AppendLine($"[bold][#875fff]Media manufacturer:[/][/] [italic]{imageFormat.Info.MediaManufacturer}[/]");
+                {
+                    sb.AppendFormat(Aaru.Localization.Core.Media_manufacturer_0_WithMarkup,
+                                    Markup.Escape(imageFormat.Info.MediaManufacturer))
+                      .AppendLine();
+                }
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaModel))
-                    sb.AppendLine($"[bold][#875fff]Media model:[/][/] [italic]{imageFormat.Info.MediaModel}[/]");
+                {
+                    sb.AppendFormat(Aaru.Localization.Core.Media_model_0_WithMarkup,
+                                    Markup.Escape(imageFormat.Info.MediaModel))
+                      .AppendLine();
+                }
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaSerialNumber))
-                    sb.AppendLine($"[bold][#875fff]Media serial number:[/][/] [italic]{imageFormat.Info.MediaSerialNumber}[/]");
+                {
+                    sb.AppendFormat(Aaru.Localization.Core.Media_serial_number_0_WithMarkup,
+                                    Markup.Escape(imageFormat.Info.MediaSerialNumber))
+                      .AppendLine();
+                }
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaBarcode))
-                    sb.AppendLine($"[bold][#875fff]Media barcode:[/][/] [italic]{imageFormat.Info.MediaBarcode}[/]");
+                {
+                    sb.AppendFormat(Aaru.Localization.Core.Media_barcode_0_WithMarkup,
+                                    Markup.Escape(imageFormat.Info.MediaBarcode))
+                      .AppendLine();
+                }
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaPartNumber))
-                    sb.AppendLine($"[bold][#875fff]Media part number:[/][/] [italic]{imageFormat.Info.MediaPartNumber}[/]");
+                {
+                    sb.AppendFormat(Aaru.Localization.Core.Media_part_number_0_WithMarkup,
+                                    Markup.Escape(imageFormat.Info.MediaPartNumber))
+                      .AppendLine();
+                }
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveManufacturer))
-                    sb.AppendLine($"[bold][#875fff]Drive manufacturer:[/][/] [italic]{imageFormat.Info.DriveManufacturer}[/]");
+                {
+                    sb.AppendFormat(Aaru.Localization.Core.Drive_manufacturer_0_WithMarkup,
+                                    Markup.Escape(imageFormat.Info.DriveManufacturer))
+                      .AppendLine();
+                }
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveModel))
-                    sb.AppendLine($"[bold][#875fff]Drive model:[/][/] [italic]{imageFormat.Info.DriveModel}[/]");
+                {
+                    sb.AppendFormat(Aaru.Localization.Core.Drive_model_0_WithMarkup,
+                                    Markup.Escape(imageFormat.Info.DriveModel))
+                      .AppendLine();
+                }
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveSerialNumber))
-                    sb.AppendLine($"[bold][#875fff]Drive serial number:[/][/] [italic]{imageFormat.Info.DriveSerialNumber}[/]");
+                {
+                    sb.AppendFormat(Aaru.Localization.Core.Drive_serial_number_0_WithMarkup,
+                                    Markup.Escape(imageFormat.Info.DriveSerialNumber))
+                      .AppendLine();
+                }
 
                 if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveFirmwareRevision))
-                    sb.AppendLine($"[bold][#875fff]Drive firmware info:[/][/] [italic]{imageFormat.Info.DriveFirmwareRevision}[/]");
+                {
+                    sb.AppendFormat(Aaru.Localization.Core.Drive_firmware_info_0_WithMarkup,
+                                    Markup.Escape(imageFormat.Info.DriveFirmwareRevision))
+                      .AppendLine();
+                }
 
                 if(imageFormat.Info.Cylinders > 0                                      &&
                    imageFormat.Info is { Heads: > 0, SectorsPerTrack: > 0 }            &&
                    imageFormat.Info.MetadataMediaType != MetadataMediaType.OpticalDisc &&
                    imageFormat is not ITapeImage { IsTape: true })
-                    sb.AppendLine($"[bold][#875fff]Media geometry:[/] [italic][teal]{imageFormat.Info.Cylinders}[/] cylinders, [teal]{imageFormat.Info.Heads}[/] heads, [teal]{imageFormat.Info.SectorsPerTrack}[/] sectors per track[/][/][/]");
+                {
+                    sb.AppendFormat(Aaru.Localization.Core
+                                        .Media_geometry_0_cylinders_1_heads_2_sectors_per_track_WithMarkup,
+                                    imageFormat.Info.Cylinders,
+                                    imageFormat.Info.Heads,
+                                    imageFormat.Info.SectorsPerTrack)
+                      .AppendLine();
+                }
 
                 if(imageFormat.Info.ReadableMediaTags is { Count: > 0 })
                 {
-                    sb.AppendLine($"[bold][blue]Contains[/] [teal]{imageFormat.Info.ReadableMediaTags.Count}[/] [blue]readable media tags:[/][/]");
+                    sb.AppendFormat(Aaru.Localization.Core.Contains_0_readable_media_tags_WithMarkup,
+                                    imageFormat.Info.ReadableMediaTags.Count)
+                      .AppendLine();
 
                     foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.Order())
-                        sb.Append($"[italic][#af8787]{tag}[/][/] ");
+                        sb.Append($"[italic][rosybrown]{Markup.Escape(tag.ToString())}[/][/] ");
 
                     sb.AppendLine();
                 }
 
                 if(imageFormat.Info.ReadableSectorTags is { Count: > 0 })
                 {
-                    sb.AppendLine($"[bold][blue]Contains [teal]{imageFormat.Info.ReadableSectorTags.Count}[/] [blue]readable sector tags:[/][/]");
+                    sb.AppendFormat(Aaru.Localization.Core.Contains_0_readable_sector_tags_WithMarkup,
+                                    imageFormat.Info.ReadableSectorTags.Count)
+                      .AppendLine();
 
                     foreach(SectorTagType tag in imageFormat.Info.ReadableSectorTags.Order())
-                        sb.Append($"[italic][#af8787]{tag}[/][/] ");
+                        sb.Append($"[italic][rosybrown]{Markup.Escape(tag.ToString())}[/][/] ");
 
                     sb.AppendLine();
                 }
@@ -377,7 +457,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             }
         }
 
-        Status          = "Done.";
+        Status          = Localization.Resources.Done;
         IsStatusVisible = false;
     }
 

@@ -57,7 +57,7 @@ public sealed partial class GoToPathDialogViewModel : ViewModelBase
         if(string.IsNullOrWhiteSpace(Path))
         {
             HasError     = true;
-            ErrorMessage = "Path cannot be empty";
+            ErrorMessage = Localization.Resources.Path_cannot_be_empty;
 
             return;
         }
@@ -65,7 +65,7 @@ public sealed partial class GoToPathDialogViewModel : ViewModelBase
         if(!Directory.Exists(Path))
         {
             HasError     = true;
-            ErrorMessage = "Path does not exist";
+            ErrorMessage = Localization.Resources.Path_does_not_exist;
 
             return;
         }

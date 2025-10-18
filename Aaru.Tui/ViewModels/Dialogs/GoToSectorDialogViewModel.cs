@@ -60,7 +60,7 @@ public sealed partial class GoToSectorDialogViewModel : ViewModelBase
     {
         if(!ulong.TryParse((string?)SectorNumber, out ulong sector))
         {
-            ErrorMessage = "Please enter a valid number.";
+            ErrorMessage = Localization.Resources.Please_enter_a_valid_number;
             HasError     = true;
 
             return;
@@ -68,8 +68,10 @@ public sealed partial class GoToSectorDialogViewModel : ViewModelBase
 
         if(sector > _maxSector)
         {
-            ErrorMessage = $"Sector number must be less than or equal to {_maxSector}.";
-            HasError     = true;
+            ErrorMessage = string.Format(Localization.Resources.Sector_number_must_be_less_than_or_equal_to_0,
+                                         _maxSector);
+
+            HasError = true;
 
             return;
         }

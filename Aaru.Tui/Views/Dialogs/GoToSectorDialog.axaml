@@ -3,11 +3,12 @@
                              xmlns:vm="using:Aaru.Tui.ViewModels.Dialogs"
                              xmlns:brushes="https://github.com/jinek/consolonia"
                              xmlns:windowManager="clr-namespace:Iciclecreek.Avalonia.WindowManager;assembly=Iciclecreek.Avalonia.WindowManager"
+                             xmlns:localization="clr-namespace:Aaru.Tui.Localization"
                              Width="40"
                              Height="8"
                              x:Class="Aaru.Tui.Views.Dialogs.GoToSectorDialog"
                              x:DataType="vm:GoToSectorDialogViewModel"
-                             Title="Go to Sector"
+                             Title="{x:Static localization:Resources.GoToSector_Title}"
                              WindowStartupLocation="CenterScreen"
                              CanResize="False">
     <Design.DataContext>
@@ -19,18 +20,18 @@
                                Brush="Blue" />
         </Border.BorderBrush>
         <StackPanel>
-            <TextBlock Text="Enter sector number:" />
+            <TextBlock Text="{x:Static localization:Resources.SectorNumber_Text}" />
             <TextBox Text="{Binding SectorNumber, Mode=TwoWay}"
-                     Watermark="Sector number" />
+                     Watermark="{x:Static localization:Resources.SectorNumber_Watermark}" />
             <TextBlock Text="{Binding ErrorMessage, Mode=OneWay}"
                        Foreground="Red"
                        IsVisible="{Binding HasError, Mode=OneWay}" />
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Spacing="1">
-                <Button Content="OK"
+                <Button Content="{x:Static localization:Resources.OkButton_Content}"
                         Command="{Binding OkCommand, Mode=OneWay}" />
-                <Button Content="Cancel"
+                <Button Content="{x:Static localization:Resources.CancelButton_Content}"
                         Command="{Binding CancelCommand, Mode=OneWay}" />
             </StackPanel>
         </StackPanel>

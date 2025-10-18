@@ -4,6 +4,7 @@
         xmlns:windows="clr-namespace:Aaru.Tui.ViewModels.Windows"
         xmlns:models="clr-namespace:Aaru.Tui.Models"
         xmlns:controls="clr-namespace:Aaru.Tui.Controls"
+        xmlns:localization="clr-namespace:Aaru.Tui.Localization"
         x:Class="Aaru.Tui.Views.Windows.MainWindow"
         RequestedThemeVariant="Dark"
         Title="Aaru">
@@ -13,17 +14,17 @@
     <DockPanel>
         <Menu DockPanel.Dock="Bottom">
             <MenuItem Header="ESC     " />
-            <MenuItem Header="F1  Help"
+            <MenuItem Header="{x:Static localization:Resources.Help_Header}"
                       Command="{Binding HelpCommand, Mode=OneWay}"
                       HotKey="F1" />
-            <MenuItem Header="F2  ScVw"
+            <MenuItem Header="{x:Static localization:Resources.SectorViewer_Header}"
                       Command="{Binding SectorViewCommand, Mode=OneWay}"
                       HotKey="F2" />
             <MenuItem Header="F3      " />
-            <MenuItem Header="F4  GoTo"
+            <MenuItem Header="{x:Static localization:Resources.GoTo_Header}"
                       Command="{Binding GoToPathCommand, Mode=OneWay}"
                       HotKey="F4" />
-            <MenuItem Header="F10 Exit"
+            <MenuItem Header="{x:Static localization:Resources.Exit_Header}"
                       Command="{Binding ExitCommand, Mode=OneWay}"
                       HotKey="F10" />
         </Menu>
@@ -103,31 +104,34 @@
                                                        Brush="Blue" />
                                 </Border.BorderBrush>
                                 <Grid RowDefinitions="Auto, *, *, *, *">
-                                    <TextBlock Text="File information"
+                                    <TextBlock Text="{x:Static localization:Resources.FileInformation_Text}"
                                                Grid.Row="0"
                                                HorizontalAlignment="Center"
                                                Foreground="SlateBlue" />
                                     <Grid ColumnDefinitions="Auto, *"
                                           Grid.Row="1"
+                                          ColumnSpacing="1"
                                           IsVisible="{Binding SelectedFileIsNotDirectory, Mode=OneWay}">
                                         <TextBlock Grid.Column="0"
-                                                   Text="Length: " />
+                                                   Text="{x:Static localization:Resources.FileLength_Text}" />
                                         <TextBlock Grid.Column="1"
                                                    Text="{Binding SelectedFileLength, Mode=OneWay}"
                                                    Foreground="Aqua" />
                                     </Grid>
                                     <Grid ColumnDefinitions="Auto, *"
-                                          Grid.Row="2">
+                                          Grid.Row="2"
+                                          ColumnSpacing="1">
                                         <TextBlock Grid.Column="0"
-                                                   Text="Creation time: " />
+                                                   Text="{x:Static localization:Resources.FileCreationTime_Text}" />
                                         <TextBlock Grid.Column="1"
                                                    Text="{Binding SelectedFileCreationTime, Mode=OneWay}"
                                                    Foreground="Yellow" />
                                     </Grid>
                                     <Grid ColumnDefinitions="Auto, *"
-                                          Grid.Row="3">
+                                          Grid.Row="3"
+                                          ColumnSpacing="1">
                                         <TextBlock Grid.Column="0"
-                                                   Text="Last write time: " />
+                                                   Text="{x:Static localization:Resources.FileLastWriteTime_Text}" />
                                         <TextBlock Grid.Column="1"
                                                    Text="{Binding SelectedFileLastWriteTime, Mode=OneWay}"
                                                    Foreground="Yellow" />
@@ -135,9 +139,10 @@
                                     <OnPlatform>
                                         <OnPlatform.Windows>
                                             <Grid ColumnDefinitions="Auto, *"
-                                                  Grid.Row="4">
+                                                  Grid.Row="4"
+                                                  ColumnSpacing="1">
                                                 <TextBlock Grid.Column="0"
-                                                           Text="Attributes: " />
+                                                           Text="{x:Static localization:Resources.FileAttributes_Text}" />
                                                 <TextBlock Grid.Column="1"
                                                            Text="{Binding SelectedFileAttributes, Mode=OneWay}"
                                                            Foreground="Green" />
@@ -145,9 +150,10 @@
                                         </OnPlatform.Windows>
                                         <OnPlatform.Default>
                                             <Grid ColumnDefinitions="Auto, *"
-                                                  Grid.Row="4">
+                                                  Grid.Row="4"
+                                                  ColumnSpacing="1">
                                                 <TextBlock Grid.Column="0"
-                                                           Text="Mode: " />
+                                                           Text="{x:Static localization:Resources.FileMode_Text}" />
                                                 <TextBlock Grid.Column="1"
                                                            Text="{Binding SelectedFileUnixMode, Mode=OneWay}"
                                                            Foreground="Green" />
@@ -166,7 +172,7 @@
                                 <ScrollViewer>
                                     <StackPanel VerticalAlignment="Top"
                                                 HorizontalAlignment="Stretch">
-                                        <TextBlock Text="Image information"
+                                        <TextBlock Text="{x:Static localization:Resources.FileInformation_Text}"
                                                    Foreground="SlateBlue"
                                                    FontWeight="Bold"
                                                    HorizontalAlignment="Center" />

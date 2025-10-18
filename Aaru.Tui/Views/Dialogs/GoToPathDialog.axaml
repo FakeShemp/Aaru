@@ -5,13 +5,14 @@
                              xmlns:windowManager="clr-namespace:Iciclecreek.Avalonia.WindowManager;assembly=Iciclecreek.Avalonia.WindowManager"
                              xmlns:brushes="https://github.com/jinek/consolonia"
                              xmlns:dialogs="clr-namespace:Aaru.Tui.ViewModels.Dialogs"
+                             xmlns:localization="clr-namespace:Aaru.Tui.Localization"
                              mc:Ignorable="d"
                              d:DesignWidth="800"
                              d:DesignHeight="450"
                              Width="40"
                              WindowStartupLocation="CenterScreen"
                              x:Class="Aaru.Tui.Views.Dialogs.GoToPathDialog"
-                             Title="Go to path">
+                             Title="{x:Static localization:Resources.GoToPath_Title}">
     <Design.DataContext>
         <dialogs:GoToPathDialogViewModel />
     </Design.DataContext>
@@ -21,18 +22,18 @@
                                Brush="Blue" />
         </Border.BorderBrush>
         <StackPanel>
-            <TextBlock Text="Enter destination path:" />
+            <TextBlock Text="{x:Static localization:Resources.DestinationPath_Text}" />
             <TextBox Text="{Binding Path, Mode=TwoWay}"
-                     Watermark="Destination path" />
+                     Watermark="{x:Static localization:Resources.DestinationPath_Watermark}" />
             <TextBlock Text="{Binding ErrorMessage, Mode=OneWay}"
                        Foreground="Red"
                        IsVisible="{Binding HasError, Mode=OneWay}" />
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Spacing="1">
-                <Button Content="OK"
+                <Button Content="{x:Static localization:Resources.OkButton_Content}"
                         Command="{Binding OkCommand, Mode=OneWay}" />
-                <Button Content="Cancel"
+                <Button Content="{x:Static localization:Resources.CancelButton_Content}"
                         Command="{Binding CancelCommand, Mode=OneWay}" />
             </StackPanel>
         </StackPanel>
