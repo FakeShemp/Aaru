@@ -25,11 +25,11 @@
     <PackageVersion Include="MessageBox.Avalonia" Version="3.2.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0-rc.1.25451.107" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.0-rc.1.25451.107" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0-rc.1.25451.107" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0-rc.1.25451.107" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0-rc.1.25451.107" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0-rc.2.25502.107" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.0-rc.2.25502.107" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0-rc.2.25502.107" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0-rc.2.25502.107" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0-rc.2.25502.107" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
     <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.14.15" />
     <PackageVersion Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
@@ -60,16 +60,16 @@
     <PackageVersion Include="System.Diagnostics.Debug" Version="4.3.0" />
     <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.IO.FileSystem" Version="4.3.0" />
-    <PackageVersion Include="System.Management" Version="10.0.0-rc.1.25451.107" />
+    <PackageVersion Include="System.Management" Version="10.0.0-rc.2.25502.107" />
     <PackageVersion Include="System.Memory" Version="4.6.3" />
     <PackageVersion Include="System.Net.Primitives" Version="4.3.1" />
-    <PackageVersion Include="System.Resources.Extensions" Version="10.0.0-rc.1.25451.107" />
+    <PackageVersion Include="System.Resources.Extensions" Version="10.0.0-rc.2.25502.107" />
     <PackageVersion Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageVersion Include="System.Runtime.Handles" Version="4.3.0" />
     <PackageVersion Include="System.Runtime.InteropServices" Version="4.3.0" />
     <PackageVersion Include="System.Security.Principal.Windows" Version="6.0.0-preview.5.21301.5" />
-    <PackageVersion Include="System.Text.Encoding.CodePages" Version="10.0.0-rc.1.25451.107" />
-    <PackageVersion Include="System.Text.Json" Version="10.0.0-rc.1.25451.107" />
+    <PackageVersion Include="System.Text.Encoding.CodePages" Version="10.0.0-rc.2.25502.107" />
+    <PackageVersion Include="System.Text.Json" Version="10.0.0-rc.2.25502.107" />
     <PackageVersion Include="System.ValueTuple" Version="4.6.1" />
     <PackageVersion Include="Text.Analyzers" Version="4.14.0" />
     <PackageVersion Include="Unclassified.NetRevisionTask" Version="0.4.4" />
