@@ -44,7 +44,4 @@
     <None Remove="dir_colors"/>
     <EmbeddedResource Include="dir_colors"/>
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="System.Memory"/>
-  </ItemGroup>
 </Project>

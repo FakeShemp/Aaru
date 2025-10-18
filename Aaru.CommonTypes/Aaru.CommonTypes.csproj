@@ -37,7 +37,6 @@
     <PackageReference Include="Sentry" />
     <PackageReference Include="System.ComponentModel.Annotations"/>
     <PackageReference Include="System.Security.Principal.Windows"/>
-    <PackageReference Include="System.Text.Json"/>
     <PackageReference Include="System.ValueTuple"/>
   </ItemGroup>
   <ItemGroup>

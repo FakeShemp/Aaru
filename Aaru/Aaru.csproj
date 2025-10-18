@@ -87,17 +87,6 @@
     <PackageReference Include="Spectre.Console"/>
     <PackageReference Include="Spectre.Console.Cli"/>
     <PackageReference Include="Spectre.Console.Json"/>
-    <PackageReference Include="System.Text.Encoding.CodePages"/>
-    <PackageReference Include="System.Text.Json"/>
-    <PackageReference Include="System.ValueTuple"/>
-    <PackageReference Include="System.Collections"/>
-    <PackageReference Include="System.Diagnostics.Debug"/>
-    <PackageReference Include="System.IO.FileSystem.Primitives"/>
-    <PackageReference Include="System.Runtime.Extensions"/>
-    <PackageReference Include="System.Runtime.Handles"/>
-    <PackageReference Include="System.Runtime.InteropServices"/>
-    <PackageReference Include="System.Net.Primitives"/>
-    <PackageReference Include="System.IO.FileSystem"/>
     <PackageReference Include="Packaging.Targets">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

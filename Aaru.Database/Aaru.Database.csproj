@@ -41,7 +41,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite"/>
-    <PackageReference Include="System.Text.Json"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Aaru.CommonTypes\Aaru.CommonTypes.csproj"/>
