@@ -46,15 +46,6 @@
                   ColumnSpacing="2">
                 <TextBlock Grid.Column="0"
                            Foreground="Aqua"
-                           Text="F2 " />
-                <TextBlock Grid.Column="1"
-                           Foreground="SlateBlue"
-                           Text="Sector viewer" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto,*"
-                  ColumnSpacing="2">
-                <TextBlock Grid.Column="0"
-                           Foreground="Aqua"
                            Text="F10" />
                 <TextBlock Grid.Column="1"
                            Foreground="SlateBlue"

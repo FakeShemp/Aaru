@@ -1,9 +1,11 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:console="https://github.com/jinek/consolonia"
-        xmlns:windows="clr-namespace:Aaru.Tui.ViewModels.Windows"
-        x:Class="Aaru.Tui.Views.Windows.HexViewWindow"
-        RequestedThemeVariant="Dark">
+<windowManager:ManagedWindow xmlns="https://github.com/avaloniaui"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                             xmlns:console="https://github.com/jinek/consolonia"
+                             xmlns:windows="clr-namespace:Aaru.Tui.ViewModels.Windows"
+                             xmlns:windowManager="clr-namespace:Iciclecreek.Avalonia.WindowManager;assembly=Iciclecreek.Avalonia.WindowManager"
+                             x:Class="Aaru.Tui.Views.Windows.HexViewWindow"
+                             WindowState="FullScreen"
+                             CanResize="False">
     <Design.DataContext>
         <windows:HexViewWindowViewModel />
     </Design.DataContext>
@@ -98,4 +100,4 @@
             </Grid>
         </Border>
     </DockPanel>
-</Window>
+</windowManager:ManagedWindow>

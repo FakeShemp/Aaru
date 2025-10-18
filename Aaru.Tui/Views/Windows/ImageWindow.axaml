@@ -1,15 +1,16 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:windows="clr-namespace:Aaru.Tui.ViewModels.Windows"
-        xmlns:brushes="https://github.com/jinek/consolonia"
-        mc:Ignorable="d"
-        d:DesignWidth="800"
-        d:DesignHeight="450"
-        RequestedThemeVariant="Dark"
-        x:Class="Aaru.Tui.Views.Windows.ImageWindow"
-        Title="ImageWindow">
+<windowManager:ManagedWindow xmlns="https://github.com/avaloniaui"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                             xmlns:windows="clr-namespace:Aaru.Tui.ViewModels.Windows"
+                             xmlns:brushes="https://github.com/jinek/consolonia"
+                             xmlns:windowManager="clr-namespace:Iciclecreek.Avalonia.WindowManager;assembly=Iciclecreek.Avalonia.WindowManager"
+                             mc:Ignorable="d"
+                             d:DesignWidth="800"
+                             d:DesignHeight="450"
+                             WindowState="FullScreen"
+                             CanResize="False"
+                             x:Class="Aaru.Tui.Views.Windows.ImageWindow">
     <Design.DataContext>
         <windows:ImageWindowViewModel />
     </Design.DataContext>
@@ -21,9 +22,7 @@
             <MenuItem Header="F1  Help"
                       Command="{Binding HelpCommand, Mode=OneWay}"
                       HotKey="F1" />
-            <MenuItem Header="F2  ScVw"
-                      Command="{Binding SectorViewCommand, Mode=OneWay}"
-                      HotKey="F2" />
+            <MenuItem Header="F2      " />
             <MenuItem Header="F10 Exit"
                       Command="{Binding ExitCommand, Mode=OneWay}"
                       HotKey="F10" />
@@ -165,4 +164,4 @@
             </Grid>
         </Border>
     </DockPanel>
-</Window>
+</windowManager:ManagedWindow>

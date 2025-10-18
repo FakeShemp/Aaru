@@ -26,12 +26,12 @@
 // ****************************************************************************/
 
 using Aaru.Tui.ViewModels.Windows;
-using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Iciclecreek.Avalonia.WindowManager;
 
 namespace Aaru.Tui.Views.Windows;
 
-public partial class HexViewWindow : Window
+public partial class HexViewWindow : ManagedWindow
 {
     public HexViewWindow()
     {

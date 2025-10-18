@@ -32,20 +32,19 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.Tui.ViewModels.Dialogs;
 using Aaru.Tui.Views.Dialogs;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Iciclecreek.Avalonia.WindowManager;
 using GoToSectorDialog = Aaru.Tui.Views.Dialogs.GoToSectorDialog;
 
 namespace Aaru.Tui.ViewModels.Windows;
 
 public sealed partial class HexViewWindowViewModel : ViewModelBase
 {
-    private const int         BYTES_PER_LINE = 16;
-    readonly      IMediaImage _imageFormat;
-    readonly      Window      _parent;
-    readonly      Window      _view;
+    private const int           BYTES_PER_LINE = 16;
+    readonly      IMediaImage   _imageFormat;
+    readonly      ManagedWindow _view;
     [ObservableProperty]
     ulong _currentSector;
     [ObservableProperty]
@@ -56,8 +55,8 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
     ObservableCollection<HexViewLine> _lines = [];
     bool _longMode;
 
-    internal HexViewWindowViewModel(Window parent, Window view, IMediaImage imageFormat, string filePath,
-                                    ulong  currentSector = 0)
+    internal HexViewWindowViewModel(ManagedWindow view, IMediaImage imageFormat, string filePath,
+                                    ulong         currentSector = 0)
     {
         ExitCommand           = new RelayCommand(Exit);
         BackCommand           = new RelayCommand(Back);
@@ -67,7 +66,6 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
         HelpCommand           = new AsyncRelayCommand(HelpAsync);
         ToggleLongCommand     = new RelayCommand(ToggleLong);
 
-        _parent        = parent;
         _view          = view;
         _imageFormat   = imageFormat;
         _currentSector = currentSector;
@@ -152,7 +150,6 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
 
     void Back()
     {
-        _parent.Show();
         _view.Close();
     }
 

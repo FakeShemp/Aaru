@@ -163,10 +163,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         var view = new HexViewWindow();
 
-        var vm = new HexViewWindowViewModel(_view, view, SelectedFile.ImageFormat, SelectedFile.Path);
+        var vm = new HexViewWindowViewModel(view, SelectedFile.ImageFormat, SelectedFile.Path);
         view.DataContext = vm;
         view.Show();
-        _view.Hide();
     }
 
     void Exit()
@@ -397,11 +396,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         var imageWindow = new ImageWindow();
 
-        var imageViewModel = new ImageWindowViewModel(_view, imageWindow, SelectedFile.ImageFormat, SelectedFile.Path);
+        var imageViewModel = new ImageWindowViewModel(imageWindow, SelectedFile.ImageFormat, SelectedFile.Path);
 
         imageWindow.DataContext = imageViewModel;
         imageWindow.Show();
-        _view.Hide();
     }
 
     bool CanOpenSelectedFile() => SelectedFile != null;

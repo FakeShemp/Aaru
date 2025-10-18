@@ -33,23 +33,21 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.Tui.Models;
 using Aaru.Tui.ViewModels.Dialogs;
 using Aaru.Tui.Views.Dialogs;
-using Aaru.Tui.Views.Windows;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Humanizer;
 using Humanizer.Bytes;
+using Iciclecreek.Avalonia.WindowManager;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Tui.ViewModels.Windows;
 
 public sealed partial class ImageWindowViewModel : ViewModelBase
 {
-    readonly IMediaImage _imageFormat;
-    readonly Window      _parent;
-    readonly Window      _view;
+    readonly IMediaImage   _imageFormat;
+    readonly ManagedWindow _view;
     [ObservableProperty]
     public string _filePath;
     [ObservableProperty]
@@ -84,17 +82,15 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
     [ObservableProperty]
     string? _status;
 
-    public ImageWindowViewModel(Window parent, Window view, IMediaImage imageFormat, string filePath)
+    public ImageWindowViewModel(ManagedWindow view, IMediaImage imageFormat, string filePath)
     {
         _imageFormat = imageFormat;
         FilePath     = filePath;
         _view        = view;
-        _parent      = parent;
 
-        ExitCommand       = new RelayCommand(Exit);
-        BackCommand       = new RelayCommand(Back);
-        HelpCommand       = new AsyncRelayCommand(HelpAsync);
-        SectorViewCommand = new RelayCommand(SectorView);
+        ExitCommand = new RelayCommand(Exit);
+        BackCommand = new RelayCommand(Back);
+        HelpCommand = new AsyncRelayCommand(HelpAsync);
     }
 
     public FileSystemModelNode? SelectedNode
@@ -148,26 +144,12 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
         }
     }
 
-    public ICommand BackCommand       { get; }
-    public ICommand HelpCommand       { get; }
-    public ICommand ExitCommand       { get; }
-    public ICommand SectorViewCommand { get; }
-
-    void SectorView()
-    {
-        if(SelectedNode?.Partition is null) return;
-
-        var view = new HexViewWindow();
-
-        var vm = new HexViewWindowViewModel(_view, view, _imageFormat, FilePath, SelectedNode.Partition.Value.Start);
-        view.DataContext = vm;
-        view.Show();
-        _view.Hide();
-    }
+    public ICommand BackCommand { get; }
+    public ICommand HelpCommand { get; }
+    public ICommand ExitCommand { get; }
 
     void Back()
     {
-        _parent.Show();
         _view.Close();
     }
 
