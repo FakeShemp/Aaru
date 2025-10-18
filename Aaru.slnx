@@ -7,9 +7,7 @@
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
     <File Path=".globalconfig" />
-    <File Path=".travis.yml" />
     <File Path="Aaru.sln.DotSettings" />
-    <File Path="azure-pipelines.yml" />
     <File Path="build.sh" />
     <File Path="Changelog.md" />
     <File Path="codealike.json" />
