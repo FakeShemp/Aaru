@@ -98,7 +98,7 @@ public static class Partitions
         }
 
         // Getting all partitions at start of device
-        if(!checkedLocations.Contains(0))
+        if(!checkedLocations.Contains(0) && image.Info.Sectors > 0)
         {
             foreach(IPartition plugin in plugins.Partitions.Values)
             {

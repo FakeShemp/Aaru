@@ -92,6 +92,7 @@ public sealed partial class AaruFormat
                    Status.TapeFileNotFound       => "Requested tape file number is not present in image.",
                    Status.TapePartitionNotFound  => "Requested tape partition is not present in image.",
                    Status.MetadataNotPresent     => "Requested metadata is not present in image.",
+                   Status.FluxDataNotFound       => "Requested flux data is not present in image.",
                    _                             => "Unknown error occurred."
                };
     }

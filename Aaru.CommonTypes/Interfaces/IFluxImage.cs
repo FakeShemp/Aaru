@@ -36,8 +36,10 @@
 // Copyright © 2011-2026 Rebecca Wallander
 // ****************************************************************************/
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.CommonTypes.Interfaces;
 
@@ -127,4 +129,12 @@ public interface IFluxImage : IBaseImage
     /// <param name="track">Physical track (position of the heads over the floppy media, 0-based)</param>
     /// <param name="length">The number of captures</param>
     ErrorNumber SubTrackLength(uint head, ushort track, out byte length);
+
+    /// <summary>
+    ///     Returns a list of all flux captures in the image. This provides a convenient way to enumerate all captures
+    ///     without needing to know the geometry ahead of time.
+    /// </summary>
+    /// <param name="captures">List of all flux captures in the image, or null if an error occurred</param>
+    /// <returns>Error number</returns>
+    ErrorNumber GetAllFluxCaptures(out List<FluxCapture> captures);
 }

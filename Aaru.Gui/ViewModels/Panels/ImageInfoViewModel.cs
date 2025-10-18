@@ -31,6 +31,7 @@
 // ****************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
@@ -38,6 +39,7 @@ using System.Windows.Input;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
 using Aaru.Decoders.CD;
 using Aaru.Decoders.DVD;
@@ -815,6 +817,19 @@ public sealed class ImageInfoViewModel : ViewModelBase
             }
         }
 
+        if(imageFormat is IFluxImage fluxImage)
+        {
+            ErrorNumber fluxError = fluxImage.GetAllFluxCaptures(out List<FluxCapture> fluxCaptures);
+            
+            if(fluxError == ErrorNumber.NoError && fluxCaptures is { Count: > 0 })
+            {
+                FluxInfo = new FluxInfo
+                {
+                    DataContext = new FluxInfoViewModel(fluxCaptures)
+                };
+            }
+        }
+
         if(imageFormat.DumpHardware is null) return;
 
         foreach(DumpHardware dump in imageFormat.DumpHardware)
@@ -845,6 +860,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
     public XboxInfo                                XboxInfo                  { get; }
     public PcmciaInfo                              PcmciaInfo                { get; }
     public SdMmcInfo                               SdMmcInfo                 { get; }
+    public FluxInfo                                FluxInfo                  { get; }
     public IImage                                  MediaLogo                 { get; }
     public string                                  ImagePathText             { get; }
     public string                                  FilterText                { get; }

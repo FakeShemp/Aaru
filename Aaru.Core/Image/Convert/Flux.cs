@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Structs;
 
 namespace Aaru.Core.Image;
 
@@ -9,42 +11,33 @@ public partial class Convert
     // TODO: Add progress reporting
     ErrorNumber ConvertFlux(IFluxImage inputFlux, IWritableFluxImage outputFlux)
     {
-        for(ushort track = 0; track < inputFlux.Info.Cylinders; track++)
+        ErrorNumber error = inputFlux.GetAllFluxCaptures(out List<FluxCapture> captures);
+
+        if(error != ErrorNumber.NoError) return error;
+
+        if(captures is null || captures.Count == 0) return ErrorNumber.NoError;
+
+        foreach(FluxCapture capture in captures)
         {
-            for(uint head = 0; head < inputFlux.Info.Heads; head++)
-            {
-                ErrorNumber error = inputFlux.SubTrackLength(head, track, out byte subTrackLen);
+            error = inputFlux.ReadFluxCapture(capture.Head,
+                                              capture.Track,
+                                              capture.SubTrack,
+                                              capture.CaptureIndex,
+                                              out ulong indexResolution,
+                                              out ulong dataResolution,
+                                              out byte[] indexBuffer,
+                                              out byte[] dataBuffer);
 
-                if(error != ErrorNumber.NoError) continue;
+            if(error != ErrorNumber.NoError) continue;
 
-                for(byte subTrackIndex = 0; subTrackIndex < subTrackLen; subTrackIndex++)
-                {
-                    error = inputFlux.CapturesLength(head, track, subTrackIndex, out uint capturesLen);
-
-                    if(error != ErrorNumber.NoError) continue;
-
-                    for(uint captureIndex = 0; captureIndex < capturesLen; captureIndex++)
-                    {
-                        inputFlux.ReadFluxCapture(head,
-                                                  track,
-                                                  subTrackIndex,
-                                                  captureIndex,
-                                                  out ulong indexResolution,
-                                                  out ulong dataResolution,
-                                                  out byte[] indexBuffer,
-                                                  out byte[] dataBuffer);
-
-                        outputFlux.WriteFluxCapture(indexResolution,
-                                                    dataResolution,
-                                                    indexBuffer,
-                                                    dataBuffer,
-                                                    head,
-                                                    track,
-                                                    subTrackIndex,
-                                                    captureIndex);
-                    }
-                }
-            }
+            outputFlux.WriteFluxCapture(indexResolution,
+                                        dataResolution,
+                                        indexBuffer,
+                                        dataBuffer,
+                                        capture.Head,
+                                        capture.Track,
+                                        capture.SubTrack,
+                                        capture.CaptureIndex);
         }
 
         return ErrorNumber.NoError;
