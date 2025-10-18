@@ -57,7 +57,7 @@
                                Foreground="Cyan"
                                FontWeight="Bold" />
                     <TextBlock Grid.Column="2"
-                               Text="{x:Static localization:Resources.ASCII_Text"
+                               Text="{x:Static localization:Resources.ASCII_Text}"
                                HorizontalAlignment="Left"
                                Foreground="Cyan"
                                FontWeight="Bold" />
