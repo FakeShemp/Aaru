@@ -34,6 +34,7 @@ public class LoggingInterceptor : ICommandInterceptor
         LoggerConfiguration loggerConfig = new LoggerConfiguration().MinimumLevel.ControlledBy(_levelSwitch)
                                                                     .Enrich.FromLogContext()
                                                                     .WriteTo.Logger(lc => lc
+                                                                        .Filter.ByExcluding(e => e.Level == LogEventLevel.Information)
                                                                         .WriteTo.Spectre(renderTextAsMarkup: true)
                                                                         .WriteTo.Sentry(o =>
                                                                          {
