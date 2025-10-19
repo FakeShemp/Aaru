@@ -185,8 +185,8 @@ public sealed class Spiral : IMediaGraph
 
         // Draw the Lead-In
         _leadInPoints = GetSpiralPoints(center,
-                                        informationAreaStartDiameter / 2,
                                         leadInEndDiameter            / 2,
+                                        informationAreaStartDiameter / 2,
                                         _gdrom ? a : a * 1.5f);
 
         var path = new SKPath();
@@ -527,10 +527,13 @@ public sealed class Spiral : IMediaGraph
         if(pointsPerSector > 0)
         {
             long firstPoint = (long)sector * pointsPerSector;
+            long lastPoint  = Math.Min(firstPoint + pointsPerSector, points.Count);
+
+            if(firstPoint >= points.Count) return;
 
             path.MoveTo(points[(int)firstPoint]);
 
-            for(var i = (int)firstPoint; i < firstPoint + pointsPerSector; i++) path.LineTo(points[i]);
+            for(var i = (int)firstPoint; i < lastPoint; i++) path.LineTo(points[i]);
 
             _canvas.DrawPath(path, paint);
 
@@ -584,10 +587,13 @@ public sealed class Spiral : IMediaGraph
         if(pointsPerSector > 0)
         {
             long firstPoint = (long)sector * pointsPerSector;
+            long lastPoint  = Math.Min(firstPoint + pointsPerSector, _leadInPoints.Count);
+
+            if(firstPoint >= _leadInPoints.Count) return;
 
             path.MoveTo(_leadInPoints[(int)firstPoint]);
 
-            for(var i = (int)firstPoint; i < firstPoint + pointsPerSector; i++) path.LineTo(_leadInPoints[i]);
+            for(var i = (int)firstPoint; i < lastPoint; i++) path.LineTo(_leadInPoints[i]);
 
             _canvas.DrawPath(path, paint);
 
@@ -659,7 +665,7 @@ public sealed class Spiral : IMediaGraph
     /// <param name="CenterHole">Diameter of the hole at the center</param>
     /// <param name="ClampingMinimum">Diameter of the clamping area</param>
     /// <param name="InformationAreaStart">Diameter at which the information area starts</param>
-    /// <param name="LeadInEnd">Diameter at which the Lead-In starts</param>
+    /// <param name="LeadInEnd">Diameter at which the Lead-In ends</param>
     /// <param name="InformationAreaEnd">Diameter at which the information area ends</param>
     /// <param name="RecordableInformationStart">Diameter at which the information specific to recordable media starts</param>
     /// <param name="RecordableInformationEnd">Diameter at which the information specific to recordable media starts</param>
