@@ -282,8 +282,8 @@
         <value>[slateblue1]Writing metadata sidecar[/]</value>
     </data>
     <data name="Cannot_create_a_sidecar_from_a_directory" xml:space="preserve">
-    <value>Cannot create a sidecar from a directory.</value>
-  </data>
+        <value>[red]Cannot create a sidecar from a directory.[/]</value>
+    </data>
     <data name="Stack_trace_0" xml:space="preserve">
     <value>Stack trace: {0}</value>
   </data>
@@ -636,8 +636,8 @@
     <value>{0} sectors</value>
   </data>
     <data name="Aborting" xml:space="preserve">
-    <value>Aborting...</value>
-  </data>
+        <value>[red]Aborting...[/]</value>
+    </data>
     <data name="Setting_speed_to_8x_for_CD_i_Ready_reading_as_audio" xml:space="preserve">
         <value>[slateblue1]Setting speed to [teal]8x[/] for [green]CD-i Ready[/] reading as audio.[/]</value>
     </data>
@@ -754,8 +754,8 @@
         <value>[olive]Output format does not support pregaps, this may end in a loss of data, continuing...[/]</value>
     </data>
     <data name="Cannot_dump_blank_media" xml:space="preserve">
-    <value>Cannot dump blank media.</value>
-  </data>
+        <value>[red]Cannot dump blank media.[/]</value>
+    </data>
     <data name="Could_not_process_resume_file_not_continuing" xml:space="preserve">
         <value>[red]Could not process resume file, not continuing...[/]</value>
     </data>
@@ -1042,8 +1042,8 @@
         <value>[slateblue1]Track [teal]{0}[/] pregap is [violet]{1}[/] sectors[/]</value>
     </data>
     <data name="_0_sectors_at_the_end_of_the_disc_are_unreadable" xml:space="preserve">
-    <value>{0} sectors at the end of the disc are unreadable. This is normal in CD-R(W) discs as these sectors are created by burning software as part of the recording process. Empty ones will be generated and stored in the image.</value>
-  </data>
+        <value>[olive][green]{0}[/] sectors at the end of the disc are unreadable. This is normal in CD-R(W) discs as these sectors are created by burning software as part of the recording process. Empty ones will be generated and stored in the image.[/]</value>
+    </data>
     <data name="Checking_if_drive_supports_full_raw_subchannel_reading" xml:space="preserve">
         <value>[slateblue1]Checking if drive supports full raw subchannel reading...[/]</value>
     </data>
@@ -1327,8 +1327,8 @@
     <value>Scanning for {0} blank blocks starting in block {1}</value>
   </data>
     <data name="Cannot_dump_empty_media" xml:space="preserve">
-    <value>Cannot dump empty media!</value>
-  </data>
+        <value>[red]Cannot dump empty media![/]</value>
+    </data>
     <data name="Found_blank_block_0" xml:space="preserve">
     <value>Found blank block {0}.</value>
   </data>
@@ -1378,8 +1378,8 @@
     <value>[slateblue1]Device in database since [yellow3]{0}[/].[/]</value>
   </data>
     <data name="Could_not_detect_image_format" xml:space="preserve">
-    <value>Could not detect image format.</value>
-  </data>
+        <value>[red]Could not detect image format.[/]</value>
+    </data>
     <data name="Device_reports_current_profile_is_0" xml:space="preserve">
         <value>[slateblue1]Device reports current profile is [teal]0x{0:X4}[/][/]</value>
     </data>
@@ -1390,14 +1390,14 @@
         <value>[slateblue1]Reading [italic]Physical Format Information[/][/]</value>
     </data>
     <data name="Dumping_Nintendo_GameCube_or_Wii_discs_is_not_yet_implemented" xml:space="preserve">
-    <value>Dumping Nintendo GameCube or Wii discs is not yet implemented.</value>
-  </data>
+        <value>[red]Dumping Nintendo GameCube or Wii discs is not yet implemented.[/]</value>
+    </data>
     <data name="Reading_Disc_Manufacturing_Information" xml:space="preserve">
         <value>[slateblue1]Reading [italic]Disc Manufacturing Information[/][/]</value>
     </data>
     <data name="Dumping_Xbox_Game_Discs_requires_a_drive_with_Kreon_firmware" xml:space="preserve">
-    <value>Dumping Xbox Game Discs requires a drive with Kreon firmware.</value>
-  </data>
+        <value>[red]Dumping Xbox Game Discs requires a drive with Kreon firmware.[/]</value>
+    </data>
     <data name="Reading_Lead_in_Copyright_Information" xml:space="preserve">
         <value>[slateblue1]Reading [italic]Lead-in Copyright Information[/].[/]</value>
     </data>
@@ -1424,8 +1424,8 @@
         <value>[red]Disc and drive regions do not match. The dump will be incorrect[/]</value>
     </data>
     <data name="Decrypting_disc_key" xml:space="preserve">
-    <value>Decrypting disc key.</value>
-  </data>
+        <value>[green]Decrypting disc key.[/]</value>
+    </data>
     <data name="Decryption_of_disc_key_succeeded" xml:space="preserve">
         <value>[green]Decryption of disc key succeeded.[/]</value>
     </data>
@@ -1605,8 +1605,8 @@
         <value>[red]Drive could not go back one block. Sense follows...[/]</value>
     </data>
     <data name="Cannot_read_device_dont_know_why_exiting" xml:space="preserve">
-    <value>Cannot read device, don't know why, exiting...</value>
-  </data>
+        <value>[red]Cannot read device, don't know why, exiting...[/]</value>
+    </data>
     <data name="Positioning_tape_to_block_1" xml:space="preserve">
         <value>[slateblue1]Positioning tape to block [lime]1[/].[/]</value>
     </data>
@@ -1661,8 +1661,8 @@
         <value>[olive]Blank block found, end of tape?...[/]</value>
     </data>
     <data name="Changed_to_file_0_at_block_1" xml:space="preserve">
-    <value>Changed to file {0} at block {1}</value>
-  </data>
+        <value>[slateblue1]Changed to file [teal]{0}[/] at block [violet]{1}[/][/]</value>
+    </data>
     <data name="Drive_could_not_read_block_0_Sense_cannot_be_decoded_look_at_log_for_dump" xml:space="preserve">
         <value>[red]Drive could not read block [lime]{0}[/]. Sense cannot be decoded, look at log for dump...[/]</value>
     </data>
@@ -1677,14 +1677,14 @@
         <value>[red]Drive could not read block [lime]{0}[/]. Sense follows...[/]</value>
     </data>
     <data name="Could_not_check_current_position_continuing" xml:space="preserve">
-    <value>Could not check current position, continuing.</value>
-  </data>
+        <value>[olive]Could not check current position, continuing.[/]</value>
+    </data>
     <data name="Current_position_is_not_as_expected_continuing" xml:space="preserve">
-    <value>Current position is not as expected, continuing.</value>
-  </data>
+        <value>[olive]Current position is not as expected, continuing.[/]</value>
+    </data>
     <data name="Cannot_position_tape_to_block_0" xml:space="preserve">
-    <value>Cannot position tape to block {0}.</value>
-  </data>
+        <value>[red]Cannot position tape to block [lime]{0}[/].[/]</value>
+    </data>
     <data name="Block_0_could_not_be_read" xml:space="preserve">
     <value>Block {0} could not be read.</value>
   </data>
@@ -1692,8 +1692,8 @@
         <value>[red]Because of the commands sent to a device, dumping XGD must be done with administrative privileges. Cannot continue.[/]</value>
     </data>
     <data name="Cannot_dump_XGD_without_administrative_privileges" xml:space="preserve">
-    <value>Cannot dump XGD without administrative privileges.</value>
-  </data>
+        <value>[red]Cannot dump XGD without administrative privileges.[/]</value>
+    </data>
     <data name="Cannot_get_disc_capacity" xml:space="preserve">
         <value>[red]Cannot get disc capacity.[/]</value>
     </data>
@@ -1785,8 +1785,8 @@
         <value>[slateblue1]Real layer break: [lime]{0}[/][/]</value>
     </data>
     <data name="Cannot_read_medium_aborting_scan" xml:space="preserve">
-    <value>Cannot read medium, aborting scan...</value>
-  </data>
+        <value>[red]Cannot read medium, aborting scan...[/]</value>
+    </data>
     <data name="Using_SCSI_READ_12_command" xml:space="preserve">
         <value>[slateblue1]Using [fuchsia]SCSI READ (12)[/] command.[/]</value>
     </data>
@@ -1873,8 +1873,8 @@
     <value>Have you previously tried with a GD-ROM disc and did the computer hang or crash? (Y/N): </value>
   </data>
     <data name="Ejecting_disc" xml:space="preserve">
-    <value>Ejecting disc...</value>
-  </data>
+        <value>[green]Ejecting disc...[/]</value>
+    </data>
     <data name="Please_insert_trap_disc_inside" xml:space="preserve">
     <value>Please insert trap disc inside...</value>
   </data>
@@ -1891,8 +1891,8 @@
     <value>Could not decode TOC...</value>
   </data>
     <data name="Cannot_find_lead_out" xml:space="preserve">
-    <value>Cannot find lead-out...</value>
-  </data>
+        <value>[red]Cannot find lead-out...[/]</value>
+    </data>
     <data name="Trap_disc_shows_0_sectors" xml:space="preserve">
     <value>Trap disc shows {0} sectors...</value>
   </data>
@@ -2326,11 +2326,11 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Unknown device type {0}.</value>
   </data>
     <data name="Device_needs_48_bit_LBA_commands_but_I_cant_issue_them_Aborting" xml:space="preserve">
-    <value>Device needs 48-bit LBA commands but I can't issue them... Aborting.</value>
-  </data>
+        <value>[red]Device needs 48-bit LBA commands but I can't issue them... Aborting.[/]</value>
+    </data>
     <data name="Device_needs_28_bit_LBA_commands_but_I_cant_issue_them_Aborting" xml:space="preserve">
-    <value>Device needs 28-bit LBA commands but I can't issue them... Aborting.</value>
-  </data>
+        <value>[red]Device needs 28-bit LBA commands but I can't issue them... Aborting.[/]</value>
+    </data>
     <data name="Device_needs_CHS_commands_but_I_cant_issue_them_Aborting" xml:space="preserve">
         <value>[red]Device needs CHS commands but I can't issue them... Aborting.[/]</value>
     </data>
@@ -2755,8 +2755,8 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Blu-ray type set to "BDU", setting disc type to Ultra HD Blu-ray.</value>
   </data>
     <data name="Could_not_find_VideoNow_Color_frame_offset" xml:space="preserve">
-    <value>Could not find VideoNow Color frame offset, dump may not be correct.</value>
-  </data>
+        <value>[olive]Could not find VideoNow Color frame offset, dump may not be correct.[/]</value>
+    </data>
     <data name="VideoNow_Color_frame_is_offset_0_bytes" xml:space="preserve">
     <value>VideoNow Color frame is offset {0} bytes.</value>
   </data>
@@ -3009,8 +3009,8 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
         <value>[slateblue1]Hashing file byte [lime]{0}[/] of [violet]{1}[/][/]</value>
     </data>
     <data name="Track_0_of_1" xml:space="preserve">
-    <value>Track {0} of {1}</value>
-  </data>
+        <value>[slateblue1]Track [teal]{0}[/] of [aqua]{1}[/][/]</value>
+    </data>
     <data name="Hashing_subchannel_sector_0_of_1" xml:space="preserve">
         <value>[slateblue1]Hashing subchannel sector [lime]{0}[/] of [violet]{1}[/][/]</value>
     </data>
@@ -3087,8 +3087,8 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>The specified device is in use by another process.</value>
   </data>
     <data name="Cannot_open_the_device_in_writable_mode_as_needed_by_some_commands" xml:space="preserve">
-    <value>Cannot open the device in writable mode, as needed by some commands.</value>
-  </data>
+        <value>[red]Cannot open the device in writable mode, as needed by some commands.[/]</value>
+    </data>
     <data name="Tried_to_open_a_file_instead_of_a_device" xml:space="preserve">
     <value>Tried to open a file instead of a device.</value>
   </data>
@@ -3135,8 +3135,8 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Uploading device report</value>
   </data>
     <data name="Creating_main_database" xml:space="preserve">
-    <value>Creating main database</value>
-  </data>
+        <value>[slateblue1]Creating main database[/]</value>
+    </data>
     <data name="Updating_main_database" xml:space="preserve">
     <value>Updating main database</value>
   </data>
@@ -3147,35 +3147,35 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Error {0} when trying to get updated entities.</value>
   </data>
     <data name="Adding_USB_vendors" xml:space="preserve">
-    <value>Adding USB vendors</value>
-  </data>
+        <value>[slateblue1]Adding USB vendors[/]</value>
+    </data>
     <data name="Added_0_usb_vendors" xml:space="preserve">
-    <value>Added {0} USB vendors</value>
-  </data>
+        <value>[slateblue1]Added [green]{0}[/] USB vendors[/]</value>
+    </data>
     <data name="Adding_USB_products" xml:space="preserve">
-    <value>Adding USB products</value>
-  </data>
+        <value>[slateblue1]Adding USB products[/]</value>
+    </data>
     <data name="Added_0_usb_products" xml:space="preserve">
-    <value>Added {0} USB products</value>
-  </data>
+        <value>[slateblue1]Added [green]{0}[/] USB products[/]</value>
+    </data>
     <data name="Adding_CompactDisc_read_offsets" xml:space="preserve">
-    <value>Adding CompactDisc read offsets</value>
-  </data>
+        <value>[slateblue1]Adding CompactDisc read offsets[/]</value>
+    </data>
     <data name="Added_0_CompactDisc_read_offsets" xml:space="preserve">
-    <value>Added {0} CompactDisc read offsets</value>
-  </data>
+        <value>[slateblue1]Added [green]{0}[/] CompactDisc read offsets[/]</value>
+    </data>
     <data name="Adding_known_devices" xml:space="preserve">
-    <value>Adding known devices</value>
-  </data>
+        <value>[slateblue1]Adding known devices[/]</value>
+    </data>
     <data name="Added_0_known_devices" xml:space="preserve">
-    <value>Added {0} known devices</value>
-  </data>
+        <value>[slateblue1]Added [green]{0}[/] known devices[/]</value>
+    </data>
     <data name="Adding_known_iNES_NES_2_0_headers" xml:space="preserve">
-    <value>Adding known iNES/NES 2.0 headers</value>
-  </data>
+        <value>[slateblue1]Adding known iNES/NES 2.0 headers[/]</value>
+    </data>
     <data name="Added_0_known_iNES_NES_2_0_headers" xml:space="preserve">
-    <value>Added {0} known iNES/NES 2.0 headers</value>
-  </data>
+        <value>[slateblue1]Added [green]{0}[/] known iNES/NES 2.0 headers[/]</value>
+    </data>
     <data name="Updating_USB_vendors" xml:space="preserve">
     <value>Updating USB vendors</value>
   </data>

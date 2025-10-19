@@ -20,8 +20,8 @@
         <value>[red]¡Abortado![/]</value>
     </data>
     <data name="Aborting" xml:space="preserve">
-    <value>Abortando...</value>
-  </data>
+        <value>[red]Abortando...[/]</value>
+    </data>
     <data name="Access_time_is_fast" xml:space="preserve">
         <value>[slateblue1]El tiempo de acceso es rápido[/]</value>
     </data>
@@ -29,38 +29,38 @@
         <value>[slateblue1]El tiempo de acceso es lento[/]</value>
     </data>
     <data name="Added_0_CompactDisc_read_offsets" xml:space="preserve">
-    <value>Añadidos {0} desplazamientos de lectura de CompactDisc</value>
-  </data>
+        <value>[slateblue1]Añadidos [green]{0}[/] desplazamientos de lectura de CompactDisc[/]</value>
+    </data>
     <data name="Added_0_known_devices" xml:space="preserve">
-    <value>Añadidos {0} dispositivos conocidos</value>
-  </data>
+        <value>[slateblue1]Añadidos [green]{0}[/] dispositivos conocidos[/]</value>
+    </data>
     <data name="Added_0_known_iNES_NES_2_0_headers" xml:space="preserve">
-    <value>Añadidas {0} cabeceras de iNES/NES 2.0 conocidas</value>
-  </data>
+        <value>[slateblue1]Añadidas [green]{0}[/] cabeceras de iNES/NES 2.0 conocidas[/]</value>
+    </data>
     <data name="Added_0_usb_products" xml:space="preserve">
-    <value>Añadidos {0} productos USB</value>
-  </data>
+        <value>[slateblue1]Añadidos [green]{0}[/] productos USB[/]</value>
+    </data>
     <data name="Added_0_usb_vendors" xml:space="preserve">
-    <value>Añadidos {0} fabricantes USB</value>
-  </data>
+        <value>[slateblue1]Añadidos [green]{0}[/] fabricantes USB[/]</value>
+    </data>
     <data name="Adding_CD_i_Ready_hole_from_LBA_0_to_1_inclusive" xml:space="preserve">
     <value>Añadido el agujero de CD-i Ready desde el LBA {0} hasta el {1} inclusivos.</value>
   </data>
     <data name="Adding_CompactDisc_read_offsets" xml:space="preserve">
-    <value>Añadiendo desplazamientos de lectura de CompactDisc</value>
-  </data>
+        <value>[slateblue1]Añadiendo desplazamientos de lectura de CompactDisc[/]</value>
+    </data>
     <data name="Adding_known_devices" xml:space="preserve">
-    <value>Añadiendo dispositivos conocidos</value>
-  </data>
+        <value>[slateblue1]Añadiendo dispositivos conocidos[/]</value>
+    </data>
     <data name="Adding_known_iNES_NES_2_0_headers" xml:space="preserve">
-    <value>Añadiendo cabeceras de iNES/NES 2.0 conocidas</value>
-  </data>
+        <value>[slateblue1]Añadiendo cabeceras de iNES/NES 2.0 conocidas[/]</value>
+    </data>
     <data name="Adding_USB_products" xml:space="preserve">
-    <value>Añadiendo productos USB</value>
-  </data>
+        <value>[slateblue1]Añadiendo productos USB[/]</value>
+    </data>
     <data name="Adding_USB_vendors" xml:space="preserve">
-    <value>Añadiendo fabricantes USB</value>
-  </data>
+        <value>[slateblue1]Añadiendo fabricantes USB[/]</value>
+    </data>
     <data name="All_Q_empty_for_LBA_0" xml:space="preserve">
     <value>Todo el Q está vacío para el LBA {0}</value>
   </data>
@@ -167,8 +167,8 @@
         <value>[slateblue1]Calculando [italic]huecos anteriores[/], puede tomar [italic]algún tiempo[/]...[/]</value>
     </data>
     <data name="Cannot_create_a_sidecar_from_a_directory" xml:space="preserve">
-    <value>No se puede crear un sidecar de un directorio.</value>
-  </data>
+        <value>[red]No se puede crear un sidecar de un directorio.[/]</value>
+    </data>
     <data name="Cannot_decode_PFI" xml:space="preserve">
         <value>[red]No se pudo descodificar el PFI.[/]</value>
     </data>
@@ -179,17 +179,17 @@
         <value>[red]No se puede volcar una cinta vacía...[/]</value>
     </data>
     <data name="Cannot_dump_blank_media" xml:space="preserve">
-    <value>No se puede volcar un medio en blanco.</value>
-  </data>
+        <value>[red]No se puede volcar un medio en blanco.[/]</value>
+    </data>
     <data name="Cannot_dump_empty_media" xml:space="preserve">
-    <value>¡No se puede volcar un medio vacío!</value>
-  </data>
+        <value>[red]¡No se puede volcar un medio vacío![/]</value>
+    </data>
     <data name="Cannot_dump_XGD_without_administrative_privileges" xml:space="preserve">
-    <value>No se puede volcar un XGD sin privilegios administrativos.</value>
-  </data>
+        <value>[red]No se puede volcar un XGD sin privilegios administrativos.[/]</value>
+    </data>
     <data name="Cannot_find_lead_out" xml:space="preserve">
-    <value>No se pudo encontrar el lead-out.</value>
-  </data>
+        <value>[red]No se pudo encontrar el lead-out.[/]</value>
+    </data>
     <data name="Cannot_get_disc_capacity" xml:space="preserve">
         <value>[red]No se pudo obtener la capacidad del disco.[/]</value>
     </data>
@@ -209,20 +209,20 @@
         <value>[red]No se pudo bloquear la unidad, no se continuará.[/]</value>
     </data>
     <data name="Cannot_open_the_device_in_writable_mode_as_needed_by_some_commands" xml:space="preserve">
-    <value>No se pudo abrir el dispositivo en modo de escritura, necesario por algunos comandos.</value>
-  </data>
+        <value>[red]No se pudo abrir el dispositivo en modo de escritura, necesario por algunos comandos.[/]</value>
+    </data>
     <data name="Cannot_position_tape_to_block_0" xml:space="preserve">
-    <value>No se pudo posicionar la cinta en el bloque {0}.</value>
-  </data>
+        <value>[red]No se pudo posicionar la cinta en el bloque [lime]{0}[/].[/]</value>
+    </data>
     <data name="Cannot_read_device_dont_know_why_exiting" xml:space="preserve">
-    <value>No se pudo leer del dispositivo por una razón desconocida, saliendo...</value>
-  </data>
+        <value>[red]No se pudo leer del dispositivo por una razón desconocida, saliendo...[/]</value>
+    </data>
     <data name="Cannot_read_from_disc_not_continuing" xml:space="preserve">
         <value>[red]No se pudo leer del disco, no se continuará...[/]</value>
     </data>
     <data name="Cannot_read_medium_aborting_scan" xml:space="preserve">
-    <value>No se pudo leer el medio, abortando escaneo...</value>
-  </data>
+        <value>[red]No se pudo leer el medio, abortando escaneo...[/]</value>
+    </data>
     <data name="Cannot_read_RAW_TOC_requesting_processed_one" xml:space="preserve">
         <value>[red]No se pudo leer la [italic]TOC sin procesar[/], solicitando una procesada...[/]</value>
     </data>
@@ -311,8 +311,8 @@
         <value>[slateblue1]Velocidad de escritura de CD limitada a [teal]{0}x[/][/]</value>
     </data>
     <data name="Changed_to_file_0_at_block_1" xml:space="preserve">
-    <value>Cambió al fichero {0} en el bloque {1}</value>
-  </data>
+        <value>[slateblue1]Cambió al fichero [teal]{0}[/] en el bloque [violet]{1}[/][/]</value>
+    </data>
     <data name="Checking_filesystems" xml:space="preserve">
         <value>[slateblue1]Comprobando sistemas de ficheros...[/]</value>
     </data>
@@ -413,8 +413,8 @@
         <value>[slateblue1]Se reintentó con éxito la llave de título [lime]{0}[/] en el paso [teal]{1}[/].[/]</value>
     </data>
     <data name="Could_not_check_current_position_continuing" xml:space="preserve">
-    <value>No se pudo detectar la posición actual, continuando.</value>
-  </data>
+        <value>[olive]No se pudo detectar la posición actual, continuando.[/]</value>
+    </data>
     <data name="Could_not_check_current_position_unable_to_resume_Dumping_from_the_start" xml:space="preserve">
         <value>[olive]No se pudo detectar la posición actual, no se puede resumir. Volcando desde el principio.[/]</value>
     </data>
@@ -439,8 +439,8 @@
     <value>No se pudo detectar si el subcanal la unidad lo devuelve en BCD o no, los huecos anteriores no se pueden calcular, el volcado podría ser incorrecto...</value>
   </data>
     <data name="Could_not_detect_image_format" xml:space="preserve">
-    <value>No se pudo detectar el formato de la imagen.</value>
-  </data>
+        <value>[red]No se pudo detectar el formato de la imagen.[/]</value>
+    </data>
     <data name="Could_not_find_Lead_Out_if_you_want_to_continue_use_force_option" xml:space="preserve">
         <value>[red]No se pudo encontrar el [italic]Lead-Out[/], si desea continuar use la opcón "force" y se continuará hasta los [lime]360000[/] sectores...[/]</value>
     </data>
@@ -448,8 +448,8 @@
     <value>No se pudo encontrar la segunda sesión. ¿Introdujo el tipo correcto de disco?</value>
   </data>
     <data name="Could_not_find_VideoNow_Color_frame_offset" xml:space="preserve">
-    <value>No se pudo encontrar el desplazamiento del fotograma de VideoNow Color, el volcado podría ser incorrecto.</value>
-  </data>
+        <value>[olive]No se pudo encontrar el desplazamiento del fotograma de VideoNow Color, el volcado podría ser incorrecto.[/]</value>
+    </data>
     <data name="Could_not_get_a_working_read_command" xml:space="preserve">
         <value>[red]¡No se pudo encontrar un comando de lectura que funcione![/]</value>
     </data>
@@ -512,14 +512,14 @@
     <value>Creado por: {0}</value>
   </data>
     <data name="Created_by_0_WithMarkup" xml:space="preserve">
-        <value>[slateblue1][bold]Creador por:[/][/] [green]{0}[/]</value>
+        <value>[slateblue1][bold]Creado por:[/][/] [green]{0}[/]</value>
     </data>
     <data name="Created_on_0" xml:space="preserve">
         <value>[slateblue1]Creado el[/] [yellow3]{0}[/]</value>
     </data>
     <data name="Creating_main_database" xml:space="preserve">
-    <value>Creando base de datos principal.</value>
-  </data>
+        <value>[slateblue1]Creando base de datos principal.[/]</value>
+    </data>
     <data name="Creating_sidecar" xml:space="preserve">
         <value>[slateblue1]Creando sidecar.[/]</value>
     </data>
@@ -533,8 +533,8 @@
     <value>CSD obtenido correctamente...</value>
   </data>
     <data name="Current_position_is_not_as_expected_continuing" xml:space="preserve">
-    <value>La posición actual no es la esperada, continuando.</value>
-  </data>
+        <value>[olive]La posición actual no es la esperada, continuando.[/]</value>
+    </data>
     <data name="Current_position_is_not_as_expected_unable_to_resume_Dumping_from_the_start" xml:space="preserve">
         <value>[olive]La posición actual no es la esperada, no se puede resumir. Volcando desde el inicio.[/]</value>
     </data>
@@ -561,8 +561,8 @@
         <value>[slateblue1]Descodificando el Sector de Seguridad de Xbox.[/]</value>
     </data>
     <data name="Decrypting_disc_key" xml:space="preserve">
-    <value>Desencriptando llave del disco.</value>
-  </data>
+        <value>[green]Desencriptando llave del disco.[/]</value>
+    </data>
     <data name="Decryption_of_disc_key_failed" xml:space="preserve">
         <value>[red]Falló la desencriptación de la llave del disco.[/]</value>
     </data>
@@ -631,11 +631,11 @@
     <value>El tamaño mínimo de un bloque del dispositivo es de {0} bytes</value>
   </data>
     <data name="Device_needs_28_bit_LBA_commands_but_I_cant_issue_them_Aborting" xml:space="preserve">
-    <value>El dispositivo necesita comandos LBA de 28-bits pero no podemos mandárselos... Abortando.</value>
-  </data>
+        <value>[red]El dispositivo necesita comandos LBA de 28-bits pero no podemos mandárselos... Abortando.[/]</value>
+    </data>
     <data name="Device_needs_48_bit_LBA_commands_but_I_cant_issue_them_Aborting" xml:space="preserve">
-    <value>El dispositivo necesita comandos LBA de 48-bits pero no podemos mandárselos... Abortando.</value>
-  </data>
+        <value>[red]El dispositivo necesita comandos LBA de 48-bits pero no podemos mandárselos... Abortando.[/]</value>
+    </data>
     <data name="Device_needs_a_block_size_granularity_of_pow_0_1_bytes" xml:space="preserve">
     <value>El dispositivo necesita un tamaño de bloque con una granularidad de 2^{0} ({1} bytes)</value>
   </data>
@@ -923,14 +923,14 @@
         <value>[red]Volcar un [green]CD-i Ready[/] requiere que la imagen destino soporte sectores largos.[/]</value>
     </data>
     <data name="Dumping_Nintendo_GameCube_or_Wii_discs_is_not_yet_implemented" xml:space="preserve">
-    <value>El volcado de discos de Nintendo GameCube o Wii no está implementado todavía.</value>
-  </data>
+        <value>[red]El volcado de discos de Nintendo GameCube o Wii no está implementado todavía.[/]</value>
+    </data>
     <data name="Dumping_progress_log" xml:space="preserve">
     <value>################# Registro de progreso del volcado #################</value>
   </data>
     <data name="Dumping_Xbox_Game_Discs_requires_a_drive_with_Kreon_firmware" xml:space="preserve">
-    <value>Volcar discos de Xbox requiere una unidad con firmware Kreon.</value>
-  </data>
+        <value>[red]Volcar discos de Xbox requiere una unidad con firmware Kreon.[/]</value>
+    </data>
     <data name="Dump_Ata_Output_format_does_not_support_ATA_IDENTIFY_" xml:space="preserve">
     <value>El formato de salida no soporta ATA IDENTIFY.</value>
   </data>
@@ -962,8 +962,8 @@
         <value>[bold][blue]Información del formato físico del DVD-R contenida en la imagen:[/][/]</value>
     </data>
     <data name="Ejecting_disc" xml:space="preserve">
-    <value>Expulsando disco...</value>
-  </data>
+        <value>[green]Expulsando disco...[/]</value>
+    </data>
     <data name="Enabling_skipping_CD_i_Ready_hole_because_drive_returns_data_as_audio" xml:space="preserve">
         <value>[olive]Activando la omisión del agujero de CD-i Ready porque la unidad devuelve los datos como audio.[/]</value>
     </data>
@@ -1409,7 +1409,7 @@
         <value>[slateblue1]Calculando el hash de los sectores...[/]</value>
     </data>
     <data name="Hashing_sector_0_of_1" xml:space="preserve">
-        <value>[slateblue1]Calculando el hash del sector [lime]{0}[/] de [violet]{1}[/]</value>
+        <value>[slateblue1]Calculando el hash del sector [lime]{0}[/] de [violet]{1}[/][/]</value>
     </data>
     <data name="Hashing_subchannel_sector_0_of_1" xml:space="preserve">
         <value>[slateblue1]Calculando el hash del subcanal del sector [lime]{0}[/] de [violet]{1}[/][/]</value>
@@ -2939,8 +2939,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
         <value>[slateblue1]La pista [teal]{0}[/] es modo desconocido [teal]{1}[/][/]</value>
     </data>
     <data name="Track_0_of_1" xml:space="preserve">
-    <value>Pista {0} de {1}</value>
-  </data>
+        <value>[slateblue1]Pista [teal]{0}[/] de [aqua]{1}[/][/]</value>
+    </data>
     <data name="Track_0_pregap_is_1_sectors" xml:space="preserve">
         <value>[slateblue1]El hueco anterior de la pista [teal]{0}[/] tiene [violet]{1}[/] sectores[/]</value>
     </data>
@@ -3428,8 +3428,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>{0} sectores</value>
   </data>
     <data name="_0_sectors_at_the_end_of_the_disc_are_unreadable" xml:space="preserve">
-    <value>No se pudieron leer {0} sectores al final del disco. Esto es normal en los CD-R(W) ya que esos sectores se crean por el software de grabación como parte de esta. Se generarán y guardarán en la imagen sectores vacíos.</value>
-  </data>
+        <value>[olive]No se pudieron leer [green]{0}[/] sectores al final del disco. Esto es normal en los CD-R(W) ya que esos sectores se crean por el software de grabación como parte de esta. Se generarán y guardarán en la imagen sectores vacíos.[/]</value>
+    </data>
     <data name="_0_sectors_could_not_be_read" xml:space="preserve">
         <value>[maroon]No se pudieron leer {0} sectores[/]</value>
     </data>
