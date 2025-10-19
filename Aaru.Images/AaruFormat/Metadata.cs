@@ -12,204 +12,6 @@ namespace Aaru.Images;
 
 public sealed partial class AaruFormat
 {
-#region IWritableOpticalImage Members
-
-    /// <inheritdoc />
-    public bool SetMetadata(Metadata metadata)
-    {
-        var jsonMs = new MemoryStream();
-
-        JsonSerializer.Serialize(jsonMs,
-                                 new MetadataJson
-                                 {
-                                     AaruMetadata = AaruMetadata
-                                 },
-                                 typeof(MetadataJson),
-                                 MetadataJsonContext.Default);
-
-        byte[] buffer = jsonMs.ToArray();
-
-        return aaruf_set_aaru_json_metadata(_context, buffer, (nuint)buffer.Length) == Status.Ok;
-    }
-
-    /// <inheritdoc />
-    public bool SetGeometry(uint cylinders, uint heads, uint sectorsPerTrack)
-    {
-        _imageInfo.Cylinders       = cylinders;
-        _imageInfo.Heads           = heads;
-        _imageInfo.SectorsPerTrack = sectorsPerTrack;
-
-        return aaruf_set_geometry(_context, cylinders, heads, sectorsPerTrack) == Status.Ok;
-    }
-
-    /// <inheritdoc />
-    public bool SetImageInfo(ImageInfo imageInfo)
-    {
-        _imageInfo.MediaSequence         = imageInfo.MediaSequence;
-        _imageInfo.LastMediaSequence     = imageInfo.LastMediaSequence;
-        _imageInfo.Creator               = imageInfo.Creator;
-        _imageInfo.Comments              = imageInfo.Comments;
-        _imageInfo.MediaTitle            = imageInfo.MediaTitle;
-        _imageInfo.MediaManufacturer     = imageInfo.MediaManufacturer;
-        _imageInfo.MediaModel            = imageInfo.MediaModel;
-        _imageInfo.MediaSerialNumber     = imageInfo.MediaSerialNumber;
-        _imageInfo.MediaBarcode          = imageInfo.MediaBarcode;
-        _imageInfo.MediaPartNumber       = imageInfo.MediaPartNumber;
-        _imageInfo.DriveManufacturer     = imageInfo.DriveManufacturer;
-        _imageInfo.DriveModel            = imageInfo.DriveModel;
-        _imageInfo.DriveSerialNumber     = imageInfo.DriveSerialNumber;
-        _imageInfo.DriveFirmwareRevision = imageInfo.DriveFirmwareRevision;
-
-        if(_imageInfo.MediaSequence != 0 && _imageInfo.LastMediaSequence != 0)
-            aaruf_set_media_sequence(_context, _imageInfo.MediaSequence, _imageInfo.LastMediaSequence);
-        else
-            aaruf_clear_media_sequence(_context);
-
-        if(!string.IsNullOrEmpty(_imageInfo.Creator))
-        {
-            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.Creator);
-            aaruf_set_creator(_context, buffer, buffer.Length);
-        }
-        else
-            aaruf_clear_creator(_context);
-
-        if(!string.IsNullOrEmpty(_imageInfo.Comments))
-        {
-            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.Comments);
-            aaruf_set_comments(_context, buffer, buffer.Length);
-        }
-        else
-            aaruf_clear_comments(_context);
-
-        if(!string.IsNullOrEmpty(_imageInfo.MediaTitle))
-        {
-            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaTitle);
-            aaruf_set_media_title(_context, buffer, buffer.Length);
-        }
-        else
-            aaruf_clear_media_title(_context);
-
-        if(!string.IsNullOrEmpty(_imageInfo.MediaManufacturer))
-        {
-            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaManufacturer);
-            aaruf_set_media_manufacturer(_context, buffer, buffer.Length);
-        }
-        else
-            aaruf_clear_media_manufacturer(_context);
-
-        if(!string.IsNullOrEmpty(_imageInfo.MediaModel))
-        {
-            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaModel);
-            aaruf_set_media_model(_context, buffer, buffer.Length);
-        }
-        else
-            aaruf_clear_media_model(_context);
-
-        if(!string.IsNullOrEmpty(_imageInfo.MediaSerialNumber))
-        {
-            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaSerialNumber);
-            aaruf_set_media_serial_number(_context, buffer, buffer.Length);
-        }
-        else
-            aaruf_clear_media_serial_number(_context);
-
-        if(!string.IsNullOrEmpty(_imageInfo.MediaBarcode))
-        {
-            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaBarcode);
-            aaruf_set_media_barcode(_context, buffer, buffer.Length);
-        }
-        else
-            aaruf_clear_media_barcode(_context);
-
-        if(!string.IsNullOrEmpty(_imageInfo.MediaPartNumber))
-        {
-            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaPartNumber);
-            aaruf_set_media_part_number(_context, buffer, buffer.Length);
-        }
-        else
-            aaruf_clear_media_part_number(_context);
-
-        if(!string.IsNullOrEmpty(_imageInfo.DriveManufacturer))
-        {
-            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.DriveManufacturer);
-            aaruf_set_drive_manufacturer(_context, buffer, buffer.Length);
-        }
-        else
-            aaruf_clear_drive_manufacturer(_context);
-
-        if(!string.IsNullOrEmpty(_imageInfo.DriveModel))
-        {
-            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.DriveModel);
-            aaruf_set_drive_model(_context, buffer, buffer.Length);
-        }
-        else
-            aaruf_clear_drive_model(_context);
-
-        if(!string.IsNullOrEmpty(_imageInfo.DriveSerialNumber))
-        {
-            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.DriveSerialNumber);
-            aaruf_set_drive_serial_number(_context, buffer, buffer.Length);
-        }
-        else
-            aaruf_clear_drive_serial_number(_context);
-
-        if(!string.IsNullOrEmpty(_imageInfo.DriveFirmwareRevision))
-        {
-            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.DriveFirmwareRevision);
-            aaruf_set_drive_firmware_revision(_context, buffer, buffer.Length);
-        }
-        else
-            aaruf_clear_drive_firmware_revision(_context);
-
-        return true;
-    }
-
-    /// <inheritdoc />
-    public Metadata AaruMetadata
-    {
-        get
-        {
-            nuint  length = 0;
-            Status res    = aaruf_get_aaru_json_metadata(_context, null, ref length);
-
-            if(res != Status.Ok && res != Status.BufferTooSmall)
-            {
-                ErrorMessage = StatusToErrorMessage(res);
-
-                return null;
-            }
-
-            var jsonBytes = new byte[length];
-            res = aaruf_get_aaru_json_metadata(_context, jsonBytes, ref length);
-
-            if(res != Status.Ok)
-            {
-                ErrorMessage = StatusToErrorMessage(res);
-
-                return null;
-            }
-
-            try
-            {
-                Metadata metadata =
-                    (JsonSerializer.Deserialize(jsonBytes, typeof(MetadataJson), MetadataJsonContext.Default) as
-                         MetadataJson)?.AaruMetadata;
-
-                return metadata;
-            }
-            catch(JsonException ex)
-            {
-                AaruLogging.Debug(MODULE_NAME, Localization.Exception_0_processing_Aaru_Metadata_block, ex.Message);
-
-                AaruLogging.Exception(ex, Localization.Exception_0_processing_Aaru_Metadata_block, ex.Message);
-
-                return null;
-            }
-        }
-    }
-
-#endregion
-
     // AARU_EXPORT int32_t AARU_CALL aaruf_get_image_info(const void *context, ImageInfo *image_info)
     [DllImport("libaaruformat",
                EntryPoint = "aaruf_get_image_info",
@@ -438,4 +240,212 @@ public sealed partial class AaruFormat
     [LibraryImport("libaaruformat", EntryPoint = "aaruf_clear_drive_firmware_revision", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_clear_drive_firmware_revision(IntPtr context);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_get_readable_sector_tags(const void *context, uint8_t *buffer, size_t *length);
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_readable_sector_tags", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_get_readable_sector_tags(IntPtr context, byte[] buffer, ref nuint length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_get_readable_media_tags(const void *context, uint8_t *buffer, size_t *length);
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_readable_media_tags", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_get_readable_media_tags(IntPtr context, byte[] buffer, ref nuint length);
+
+#region IWritableOpticalImage Members
+
+    /// <inheritdoc />
+    public bool SetMetadata(Metadata metadata)
+    {
+        var jsonMs = new MemoryStream();
+
+        JsonSerializer.Serialize(jsonMs,
+                                 new MetadataJson
+                                 {
+                                     AaruMetadata = AaruMetadata
+                                 },
+                                 typeof(MetadataJson),
+                                 MetadataJsonContext.Default);
+
+        byte[] buffer = jsonMs.ToArray();
+
+        return aaruf_set_aaru_json_metadata(_context, buffer, (nuint)buffer.Length) == Status.Ok;
+    }
+
+    /// <inheritdoc />
+    public bool SetGeometry(uint cylinders, uint heads, uint sectorsPerTrack)
+    {
+        _imageInfo.Cylinders       = cylinders;
+        _imageInfo.Heads           = heads;
+        _imageInfo.SectorsPerTrack = sectorsPerTrack;
+
+        return aaruf_set_geometry(_context, cylinders, heads, sectorsPerTrack) == Status.Ok;
+    }
+
+    /// <inheritdoc />
+    public bool SetImageInfo(ImageInfo imageInfo)
+    {
+        _imageInfo.MediaSequence         = imageInfo.MediaSequence;
+        _imageInfo.LastMediaSequence     = imageInfo.LastMediaSequence;
+        _imageInfo.Creator               = imageInfo.Creator;
+        _imageInfo.Comments              = imageInfo.Comments;
+        _imageInfo.MediaTitle            = imageInfo.MediaTitle;
+        _imageInfo.MediaManufacturer     = imageInfo.MediaManufacturer;
+        _imageInfo.MediaModel            = imageInfo.MediaModel;
+        _imageInfo.MediaSerialNumber     = imageInfo.MediaSerialNumber;
+        _imageInfo.MediaBarcode          = imageInfo.MediaBarcode;
+        _imageInfo.MediaPartNumber       = imageInfo.MediaPartNumber;
+        _imageInfo.DriveManufacturer     = imageInfo.DriveManufacturer;
+        _imageInfo.DriveModel            = imageInfo.DriveModel;
+        _imageInfo.DriveSerialNumber     = imageInfo.DriveSerialNumber;
+        _imageInfo.DriveFirmwareRevision = imageInfo.DriveFirmwareRevision;
+
+        if(_imageInfo.MediaSequence != 0 && _imageInfo.LastMediaSequence != 0)
+            aaruf_set_media_sequence(_context, _imageInfo.MediaSequence, _imageInfo.LastMediaSequence);
+        else
+            aaruf_clear_media_sequence(_context);
+
+        if(!string.IsNullOrEmpty(_imageInfo.Creator))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.Creator);
+            aaruf_set_creator(_context, buffer, buffer.Length);
+        }
+        else
+            aaruf_clear_creator(_context);
+
+        if(!string.IsNullOrEmpty(_imageInfo.Comments))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.Comments);
+            aaruf_set_comments(_context, buffer, buffer.Length);
+        }
+        else
+            aaruf_clear_comments(_context);
+
+        if(!string.IsNullOrEmpty(_imageInfo.MediaTitle))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaTitle);
+            aaruf_set_media_title(_context, buffer, buffer.Length);
+        }
+        else
+            aaruf_clear_media_title(_context);
+
+        if(!string.IsNullOrEmpty(_imageInfo.MediaManufacturer))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaManufacturer);
+            aaruf_set_media_manufacturer(_context, buffer, buffer.Length);
+        }
+        else
+            aaruf_clear_media_manufacturer(_context);
+
+        if(!string.IsNullOrEmpty(_imageInfo.MediaModel))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaModel);
+            aaruf_set_media_model(_context, buffer, buffer.Length);
+        }
+        else
+            aaruf_clear_media_model(_context);
+
+        if(!string.IsNullOrEmpty(_imageInfo.MediaSerialNumber))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaSerialNumber);
+            aaruf_set_media_serial_number(_context, buffer, buffer.Length);
+        }
+        else
+            aaruf_clear_media_serial_number(_context);
+
+        if(!string.IsNullOrEmpty(_imageInfo.MediaBarcode))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaBarcode);
+            aaruf_set_media_barcode(_context, buffer, buffer.Length);
+        }
+        else
+            aaruf_clear_media_barcode(_context);
+
+        if(!string.IsNullOrEmpty(_imageInfo.MediaPartNumber))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.MediaPartNumber);
+            aaruf_set_media_part_number(_context, buffer, buffer.Length);
+        }
+        else
+            aaruf_clear_media_part_number(_context);
+
+        if(!string.IsNullOrEmpty(_imageInfo.DriveManufacturer))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.DriveManufacturer);
+            aaruf_set_drive_manufacturer(_context, buffer, buffer.Length);
+        }
+        else
+            aaruf_clear_drive_manufacturer(_context);
+
+        if(!string.IsNullOrEmpty(_imageInfo.DriveModel))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.DriveModel);
+            aaruf_set_drive_model(_context, buffer, buffer.Length);
+        }
+        else
+            aaruf_clear_drive_model(_context);
+
+        if(!string.IsNullOrEmpty(_imageInfo.DriveSerialNumber))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.DriveSerialNumber);
+            aaruf_set_drive_serial_number(_context, buffer, buffer.Length);
+        }
+        else
+            aaruf_clear_drive_serial_number(_context);
+
+        if(!string.IsNullOrEmpty(_imageInfo.DriveFirmwareRevision))
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(_imageInfo.DriveFirmwareRevision);
+            aaruf_set_drive_firmware_revision(_context, buffer, buffer.Length);
+        }
+        else
+            aaruf_clear_drive_firmware_revision(_context);
+
+        return true;
+    }
+
+    /// <inheritdoc />
+    public Metadata AaruMetadata
+    {
+        get
+        {
+            nuint  length = 0;
+            Status res    = aaruf_get_aaru_json_metadata(_context, null, ref length);
+
+            if(res != Status.Ok && res != Status.BufferTooSmall)
+            {
+                ErrorMessage = StatusToErrorMessage(res);
+
+                return null;
+            }
+
+            var jsonBytes = new byte[length];
+            res = aaruf_get_aaru_json_metadata(_context, jsonBytes, ref length);
+
+            if(res != Status.Ok)
+            {
+                ErrorMessage = StatusToErrorMessage(res);
+
+                return null;
+            }
+
+            try
+            {
+                Metadata metadata =
+                    (JsonSerializer.Deserialize(jsonBytes, typeof(MetadataJson), MetadataJsonContext.Default) as
+                         MetadataJson)?.AaruMetadata;
+
+                return metadata;
+            }
+            catch(JsonException ex)
+            {
+                AaruLogging.Debug(MODULE_NAME, Localization.Exception_0_processing_Aaru_Metadata_block, ex.Message);
+
+                AaruLogging.Exception(ex, Localization.Exception_0_processing_Aaru_Metadata_block, ex.Message);
+
+                return null;
+            }
+        }
+    }
+
+#endregion
 }

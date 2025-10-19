@@ -52,7 +52,36 @@ public sealed partial class AaruFormat
         _imageInfo.Sectors              = imageInfo.Sectors;
         _imageInfo.MetadataMediaType    = imageInfo.MetadataMediaType;
 
-        // TODO: rest of metadata
+        nuint sizet_length = 0;
+
+        ret = aaruf_get_readable_sector_tags(_context, null, ref sizet_length);
+
+        if(ret != Status.BufferTooSmall) return StatusToErrorNumber(ret);
+        var sectorTagsBuffer = new byte[sizet_length];
+        ret = aaruf_get_readable_sector_tags(_context, sectorTagsBuffer, ref sizet_length);
+
+        if(ret != Status.Ok) return StatusToErrorNumber(ret);
+
+        // Convert array of booleans to List of enums
+        for(nuint i = 0; i < sizet_length; i++)
+            if(sectorTagsBuffer[i] != 0)
+                _imageInfo.ReadableSectorTags.Add((SectorTagType)i);
+
+        sizet_length = 0;
+        ret          = aaruf_get_readable_media_tags(_context, null, ref sizet_length);
+
+        if(ret != Status.BufferTooSmall) return StatusToErrorNumber(ret);
+
+        var mediaTagsBuffer = new byte[sizet_length];
+        ret = aaruf_get_readable_media_tags(_context, mediaTagsBuffer, ref sizet_length);
+
+        if(ret != Status.Ok) return StatusToErrorNumber(ret);
+
+        // Convert array of booleans to List of enums
+        for(nuint i = 0; i < sizet_length; i++)
+            if(mediaTagsBuffer[i] != 0)
+                _imageInfo.ReadableMediaTags.Add((MediaTagType)i);
+
         ret = aaruf_get_media_sequence(_context, out int sequence, out int lastSequence);
 
         if(ret == Status.Ok)
