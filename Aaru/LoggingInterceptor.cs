@@ -34,7 +34,8 @@ public class LoggingInterceptor : ICommandInterceptor
         LoggerConfiguration loggerConfig = new LoggerConfiguration().MinimumLevel.ControlledBy(_levelSwitch)
                                                                     .Enrich.FromLogContext()
                                                                     .WriteTo.Logger(lc => lc
-                                                                        .Filter.ByExcluding(e => e.Level == LogEventLevel.Information)
+                                                                        .Filter.ByExcluding(e =>
+                                                                             e.Level == LogEventLevel.Information)
                                                                         .WriteTo.Spectre(renderTextAsMarkup: true)
                                                                         .WriteTo.Sentry(o =>
                                                                          {
@@ -59,7 +60,7 @@ public class LoggingInterceptor : ICommandInterceptor
                                        .WriteTo.Logger(lc => lc.Enrich.With<StripMarkupEnricher>()
                                                                .WriteTo.File(global.LogFile,
                                                                              outputTemplate:
-                                                                             "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {CleanMessage:lj}{NewLine}{Exception}"));
+                                                                             "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {CleanMessage:lj}{NewLine}{Exception:lj}"));
         }
 
         Log.Logger = loggerConfig.CreateLogger();

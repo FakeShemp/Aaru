@@ -146,8 +146,30 @@ class MainClass
             AaruLogging.DebugEvent += (module, format, objects) =>
                 Log.Debug(string.Format($"[blue]({module})[/] {format}", objects));
 
-            AaruLogging.WriteExceptionEvent += Log.Error;
-            AaruLogging.InformationEvent    += Log.Information;
+            AaruLogging.WriteExceptionEvent += (ex, message, objects) =>
+            {
+                // Display exception on console
+                AnsiConsole.WriteException(ex);
+
+                // Also display the message if provided
+                if(!string.IsNullOrEmpty(message))
+                {
+                    if(objects == null || objects.Length == 0)
+                        AnsiConsole.MarkupLine(message);
+                    else
+                        AnsiConsole.MarkupLine(string.Format(message, objects));
+                }
+
+                // Log to file with full exception details
+                if(string.IsNullOrEmpty(message))
+                    Log.Error(ex, "Exception occurred");
+                else if(objects == null || objects.Length == 0)
+                    Log.Error(ex, message);
+                else
+                    Log.Error(ex, message, objects);
+            };
+
+            AaruLogging.InformationEvent += Log.Information;
 
             Settings.Settings.LoadSettings();
 
@@ -221,7 +243,7 @@ class MainClass
 
             await ctx.SaveChangesAsync();
 
-            bool mainDbUpdate = false;
+            var mainDbUpdate = false;
 
             if(!File.Exists(Settings.Settings.MainDbPath))
             {
