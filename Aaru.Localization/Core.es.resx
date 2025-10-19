@@ -1079,8 +1079,8 @@
     <value>¡FALLO!</value>
   </data>
     <data name="Failed_crossing_into_Lead_Out" xml:space="preserve">
-    <value>No se pudo cruzar al Lead-Out, el volcado puede no ser correcto.</value>
-  </data>
+        <value>[olive]No se pudo cruzar al Lead-Out, el volcado puede no ser correcto.[/]</value>
+    </data>
     <data name="Fastest_speed_burst_0" xml:space="preserve">
         <value>[slateblue1]Ráfaga de velocidad más rápida: [aqua]{0}[/].[/]</value>
     </data>
@@ -1232,11 +1232,11 @@
     <value>Encontrado paquete RW de MIDI, estableciendo el tipo como CD+MIDI.</value>
   </data>
     <data name="Found_new_ISRC_0_for_track_1" xml:space="preserve">
-    <value>Encontrado nuevo ISRC {0} para la pista {1}.</value>
-  </data>
+        <value>[slateblue1]Encontrado nuevo [italic]ISRC[/] [italic][navy]{0}[/][/] para la pista [teal]{1}[/].[/]</value>
+    </data>
     <data name="Found_new_MCN_0" xml:space="preserve">
-    <value>Encontrado nuevo MCN {0}.</value>
-  </data>
+        <value>[slateblue1]Encontrado nuevo [italic]MCN[/] [italic][teal]{0}[/][/].[/]</value>
+    </data>
     <data name="Found_Opera_filesystem" xml:space="preserve">
     <value>Encontrado sistema de ficheros Opera, estableciendo el tipo como 3DO.</value>
   </data>
@@ -1331,8 +1331,8 @@
     <value>Generando subcanales...</value>
   </data>
     <data name="Generating_subchannel_for_sector_0" xml:space="preserve">
-    <value>Generando subcanal del sector {0}...</value>
-  </data>
+        <value>[olive]Generando subcanal del sector [violet]{0}[/]...[/]</value>
+    </data>
     <data name="Getting_disc_size" xml:space="preserve">
         <value>[slateblue1]Obteniendo tamaño del disco.[/]</value>
     </data>
@@ -1358,8 +1358,8 @@
     <value>Obtenidas {0} hijas</value>
   </data>
     <data name="Got_0_first_track_pregap_sectors" xml:space="preserve">
-    <value>Obtenidos {0} sectores de hueco anterior a la primera pista.</value>
-  </data>
+        <value>[slateblue1]Obtenidos [violet]{0}[/] sectores de hueco anterior a la primera pista.[/]</value>
+    </data>
     <data name="Got_0_parents" xml:space="preserve">
     <value>Obtenidas {0} madres</value>
   </data>
@@ -2175,8 +2175,8 @@
         <value>[slateblue1]Leyendo la FAT...[/]</value>
     </data>
     <data name="Reading_first_track_pregap" xml:space="preserve">
-    <value>Leyendo el hueco anterior a la primera pista</value>
-  </data>
+        <value>[slateblue1]Leyendo el hueco anterior a la primera pista[/]</value>
+    </data>
     <data name="Reading_game_partition" xml:space="preserve">
         <value>[slateblue1]Leyendo partición del juego.[/]</value>
     </data>
@@ -2660,7 +2660,7 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
         <value>[slateblue1]Estableciendo índice [green]{0}[/] para la pista [teal]{1}[/] en el LBA [lime]{2}[/].[/]</value>
     </data>
     <data name="Setting_ISRC_for_track_0_to_1" xml:space="preserve">
-        <value>[slateblue1]Estableciendo ISRC para la pista [teal]{0}[/] como [italic][navy]{1}[/][/][/]</value>
+        <value>[slateblue1]Estableciendo [italic]ISRC[/] para la pista [teal]{0}[/] como [italic][navy]{1}[/][/][/]</value>
     </data>
     <data name="Setting_speed_to_0_x" xml:space="preserve">
         <value>[slateblue1]Estableciendo la velocidad a [teal]{0}x[/].[/]</value>
@@ -2942,8 +2942,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>Pista {0} de {1}</value>
   </data>
     <data name="Track_0_pregap_is_1_sectors" xml:space="preserve">
-    <value>El hueco anterior de la pista {0} tiene {1} sectores</value>
-  </data>
+        <value>[slateblue1]El hueco anterior de la pista [teal]{0}[/] tiene [violet]{1}[/] sectores[/]</value>
+    </data>
     <data name="Track_0_starts_at_LBA_1_and_ends_at_LBA_2" xml:space="preserve">
         <value>[slateblue1]La pista [teal]{0}[/] empieza en el LBA [lime]{1}[/] y termina en el [lime]{2}[/][/]</value>
     </data>
@@ -3137,8 +3137,8 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <value>Intentando obtener SCR...</value>
   </data>
     <data name="Trying_to_read_first_track_pregap_sector_0_1" xml:space="preserve">
-    <value>Intentando leer el sector {0} en el hueco anterior a la pista 1 del CD ({1})</value>
-  </data>
+        <value>[slateblue1]Intentando leer el sector [lime]{0}[/] en el hueco anterior a la pista 1 del CD ([aqua]{1}[/])[/]</value>
+    </data>
     <data name="Try_to_find_SCSI_READ_LONG_size" xml:space="preserve">
     <value>La unidad soporta el comando SCSI READ LONG pero no consigo encontrar el tamaño correcto. ¿Quiere que lo intente? (Puede tardar horas)</value>
   </data>

@@ -667,8 +667,8 @@
         <value>[slateblue1]Skipping [violet]{0}[/] blocks from errored block [lime]{1}[/].[/]</value>
     </data>
     <data name="Failed_crossing_into_Lead_Out" xml:space="preserve">
-    <value>Failed crossing into Lead-Out, dump may not be correct.</value>
-  </data>
+        <value>[olive]Failed crossing into Lead-Out, dump may not be correct.[/]</value>
+    </data>
     <data name="Raw_CD_dumping_not_yet_implemented" xml:space="preserve">
     <value>Raw CD dumping not yet implemented</value>
   </data>
@@ -909,7 +909,7 @@
     <value>[red]Sector [teal]{0}[/] could not be read.[/]</value>
   </data>
     <data name="Setting_ISRC_for_track_0_to_1" xml:space="preserve">
-        <value>[slateblue1]Setting ISRC for track [teal]{0}[/] to [italic][navy]{1}[/][/][/]</value>
+        <value>[slateblue1]Setting [italic]ISRC[/] for track [teal]{0}[/] to [italic][navy]{1}[/][/][/]</value>
     </data>
     <data name="Setting_disc_Media_Catalogue_Number_to_0" xml:space="preserve">
         <value>[slateblue1]Setting disc Media Catalogue Number to [teal]{0}[/][/]</value>
@@ -975,14 +975,14 @@
     <value>Reading sector {0} at lead-out ({1})</value>
   </data>
     <data name="Reading_first_track_pregap" xml:space="preserve">
-    <value>Reading first track pregap</value>
-  </data>
+        <value>[slateblue1]Reading first track pregap[/]</value>
+    </data>
     <data name="Trying_to_read_first_track_pregap_sector_0_1" xml:space="preserve">
-    <value>Trying to read first track pregap sector {0} ({1})</value>
-  </data>
+        <value>[slateblue1]Trying to read first track pregap sector [lime]{0}[/] ([aqua]{1}[/])[/]</value>
+    </data>
     <data name="Got_0_first_track_pregap_sectors" xml:space="preserve">
-    <value>Got {0} first track pregap sectors.</value>
-  </data>
+        <value>[slateblue1]Got [violet]{0}[/] first track pregap sectors.[/]</value>
+    </data>
     <data name="Subchannel_is_BCD" xml:space="preserve">
     <value>Subchannel is BCD</value>
   </data>
@@ -1039,8 +1039,8 @@
     <value>Pregap for track {0}: {1}</value>
   </data>
     <data name="Track_0_pregap_is_1_sectors" xml:space="preserve">
-    <value>Track {0} pregap is {1} sectors</value>
-  </data>
+        <value>[slateblue1]Track [teal]{0}[/] pregap is [violet]{1}[/] sectors[/]</value>
+    </data>
     <data name="_0_sectors_at_the_end_of_the_disc_are_unreadable" xml:space="preserve">
     <value>{0} sectors at the end of the disc are unreadable. This is normal in CD-R(W) discs as these sectors are created by burning software as part of the recording process. Empty ones will be generated and stored in the image.</value>
   </data>
@@ -2925,14 +2925,14 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
 {0}</value>
   </data>
     <data name="Found_new_ISRC_0_for_track_1" xml:space="preserve">
-    <value>Found new ISRC {0} for track {1}.</value>
-  </data>
+        <value>[slateblue1]Found new [italic]ISRC[/] [italic][navy]{0}[/][/] for track [teal]{1}[/].[/]</value>
+    </data>
     <data name="ISRC_for_track_0_changed_from_1_to_2" xml:space="preserve">
     <value>ISRC for track {0} changed from {1} to {2}.</value>
   </data>
     <data name="Found_new_MCN_0" xml:space="preserve">
-    <value>Found new MCN {0}.</value>
-  </data>
+        <value>[slateblue1]Found new [italic]MCN[/] [italic][teal]{0}[/][/].[/]</value>
+    </data>
     <data name="MCN_changed_from_0_to_1" xml:space="preserve">
     <value>MCN changed from {0} to {1}.</value>
   </data>
@@ -2943,8 +2943,8 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
         <value>[slateblue1]Setting index [green]{0}[/] for track [teal]{1}[/] to LBA [lime]{2}[/].[/]</value>
     </data>
     <data name="Generating_subchannel_for_sector_0" xml:space="preserve">
-    <value>Generating subchannel for sector {0}...</value>
-  </data>
+        <value>[olive]Generating subchannel for sector [violet]{0}[/]...[/]</value>
+    </data>
     <data name="Hashing_media_tags" xml:space="preserve">
         <value>[slateblue1]Hashing media tags...[/]</value>
     </data>
