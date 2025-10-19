@@ -33,11 +33,7 @@ public class LoggingInterceptor : ICommandInterceptor
         // Configure Serilog
         LoggerConfiguration loggerConfig = new LoggerConfiguration().MinimumLevel.ControlledBy(_levelSwitch)
                                                                     .Enrich.FromLogContext()
-                                                                    .WriteTo.Logger(lc => lc.Filter
-                                                                        .ByIncludingOnly(e =>
-                                                                             e.Level is LogEventLevel.Debug
-                                                                              or LogEventLevel.Verbose
-                                                                              or LogEventLevel.Error)
+                                                                    .WriteTo.Logger(lc => lc
                                                                         .WriteTo.Spectre(renderTextAsMarkup: true)
                                                                         .WriteTo.Sentry(o =>
                                                                          {
