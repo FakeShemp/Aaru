@@ -109,6 +109,11 @@ public sealed partial class AaruFormat
         /// </summary>
         Ok = 0,
         /// <summary>
+        ///     Sector has not been dumped.
+        ///     &lt;remarks&gt;AARUF_STATUS_SECTOR_NOT_DUMPED&lt;/remarks&gt;
+        /// </summary>
+        SectorNotDumped = 1,
+        /// <summary>
         ///     Input file/stream failed magic or structural validation.
         ///     &lt;remarks&gt;AARUF_ERROR_NOT_AARUFORMAT&lt;/remarks&gt;
         /// </summary>
