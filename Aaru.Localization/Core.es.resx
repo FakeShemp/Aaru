@@ -1800,11 +1800,11 @@
         <value>[slateblue1]La lectura del subcanal PQ está soportada...[/]</value>
     </data>
     <data name="Pregap_for_track_0_1" xml:space="preserve">
-    <value>Hueco anterior de la pista {0}: {1}</value>
-  </data>
+        <value>[slateblue1]Hueco anterior de la pista [teal]{0}[/]: [violet]{1}[/][/]</value>
+    </data>
     <data name="Pregap_for_track_0_set_to_1_sectors" xml:space="preserve">
-    <value>Estableciendo el hueco anterior de la pista {0} en {1} sectores.</value>
-  </data>
+        <value>[slateblue1]Estableciendo el hueco anterior de la pista [teal]{0}[/] en [violet]{1}[/] sectores.[/]</value>
+    </data>
     <data name="Press_any_key_to_continue" xml:space="preserve">
     <value>Pulse cualquier tecla para continuar...</value>
   </data>

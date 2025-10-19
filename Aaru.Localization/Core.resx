@@ -1036,8 +1036,8 @@
     <value>Invalid Q position for LBA {0}, got {1}</value>
   </data>
     <data name="Pregap_for_track_0_1" xml:space="preserve">
-    <value>Pregap for track {0}: {1}</value>
-  </data>
+        <value>[slateblue1]Pregap for track [teal]{0}[/]: [violet]{1}[/][/]</value>
+    </data>
     <data name="Track_0_pregap_is_1_sectors" xml:space="preserve">
         <value>[slateblue1]Track [teal]{0}[/] pregap is [violet]{1}[/] sectors[/]</value>
     </data>
@@ -2937,8 +2937,8 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>MCN changed from {0} to {1}.</value>
   </data>
     <data name="Pregap_for_track_0_set_to_1_sectors" xml:space="preserve">
-    <value>Pregap for track {0} set to {1} sectors.</value>
-  </data>
+        <value>[slateblue1]Pregap for track [teal]{0}[/] set to [violet]{1}[/] sectors.[/]</value>
+    </data>
     <data name="Setting_index_0_for_track_1_to_LBA_2" xml:space="preserve">
         <value>[slateblue1]Setting index [green]{0}[/] for track [teal]{1}[/] to LBA [lime]{2}[/].[/]</value>
     </data>

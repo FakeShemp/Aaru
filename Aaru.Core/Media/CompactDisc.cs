@@ -1532,7 +1532,7 @@ public static class CompactDisc
                                    sector,
                                    (long)blocks);
 
-            AaruLogging.WriteLine($"Generating subchannel for sector {sector}.");
+            AaruLogging.WriteLine(string.Format(Localization.Core.Generating_subchannel_for_sector_0, sector));
 
             byte[] sub = Subchannel.Generate(sector, track?.Sequence ?? 0, (int)pregap, (int)trackStart, flags, index);
 
