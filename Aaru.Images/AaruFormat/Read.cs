@@ -176,7 +176,7 @@ public sealed partial class AaruFormat
 
         Status res = aaruf_read_sector_tag(_context, sectorAddress, false, buffer, ref length, tag);
 
-        if(res != Status.BufferTooSmall) return StatusToErrorNumber(res);
+        if(res != Status.BufferTooSmall && res != Status.IncorrectDataSize) return StatusToErrorNumber(res);
 
         buffer = new byte[length];
 
