@@ -210,7 +210,7 @@ public sealed partial class AaruFormat
         /// <summary>
         ///     Track type (value from \ref TrackType).
         /// </summary>
-        public byte Type;
+        public TrackType Type;
         /// <summary>
         ///     Inclusive starting LBA of the track.
         /// </summary>
@@ -230,8 +230,8 @@ public sealed partial class AaruFormat
         /// <summary>
         ///     ISRC raw 13-byte code (no null terminator). All zeros if not present.
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 13)]
-        public byte[] Isrc;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 13)]
+        public string Isrc;
         /// <summary>
         ///     Control / attribute bitfield (see file documentation for suggested bit mapping).
         /// </summary>

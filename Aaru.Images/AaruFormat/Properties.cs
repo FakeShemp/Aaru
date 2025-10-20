@@ -83,9 +83,9 @@ public sealed partial class AaruFormat
                     Type     = track.Type.Humanize(),
                     Name     = string.Format(Localization.Track_0, track.Sequence),
                     Offset   = currentTrackOffset,
-                    Start    = track.StartSector,
-                    Size     = (track.EndSector - track.StartSector + 1) * (ulong)track.BytesPerSector,
-                    Length   = track.EndSector - track.StartSector + 1,
+                    Start    = (ulong)track.Indexes[1],
+                    Size     = (track.EndSector - (ulong)track.Indexes[1] + 1) * (ulong)track.BytesPerSector,
+                    Length   = track.EndSector - (ulong)track.Indexes[1] + 1,
                     Scheme   = Localization.Optical_disc_track
                 });
 

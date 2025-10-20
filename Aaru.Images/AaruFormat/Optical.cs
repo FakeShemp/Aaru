@@ -12,9 +12,18 @@ namespace Aaru.Images;
 public sealed partial class AaruFormat
 {
     Dictionary<int, byte>   _trackFlags;
-    Dictionary<int, byte[]> _trackIsrcs;
+    Dictionary<int, string> _trackIsrcs;
+    List<Track>             _tracks;
 
-    List<Track> _tracks;
+    // AARU_EXPORT int32_t AARU_CALL aaruf_get_tracks(const void *context, uint8_t *buffer, size_t *length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_tracks", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_get_tracks(IntPtr context, byte[] buffer, ref nuint length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_tracks(void *context, TrackEntry *tracks, const int count)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_tracks", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_tracks(IntPtr context, [In] byte[] tracks, int count);
 
 #region IWritableOpticalImage Members
 
@@ -68,7 +77,7 @@ public sealed partial class AaruFormat
                     var track = new Track
                     {
                         Sequence    = entry.Sequence,
-                        Type        = (TrackType)entry.Type,
+                        Type        = entry.Type,
                         StartSector = (ulong)entry.Start,
                         EndSector   = (ulong)entry.End,
                         Pregap      = (ulong)entry.Pregap,
@@ -76,10 +85,19 @@ public sealed partial class AaruFormat
                         FileType    = "BINARY"
                     };
 
-                    _trackIsrcs[entry.Sequence] = entry.Isrc;
+                    _tracks.Add(track);
+
+                    if(entry.Type == TrackType.Data) continue;
+
                     _trackFlags[entry.Sequence] = entry.Flags;
 
-                    _tracks.Add(track);
+                    if(!string.IsNullOrEmpty(entry.Isrc)) _trackIsrcs[entry.Sequence] = entry.Isrc;
+
+                    if(_trackFlags.Count > 0 && !_imageInfo.ReadableSectorTags.Contains(SectorTagType.CdTrackFlags))
+                        _imageInfo.ReadableSectorTags.Add(SectorTagType.CdTrackFlags);
+
+                    if(_trackIsrcs.Count > 0 && !_imageInfo.ReadableSectorTags.Contains(SectorTagType.CdTrackIsrc))
+                        _imageInfo.ReadableSectorTags.Add(SectorTagType.CdTrackIsrc);
                 }
             }
             catch
@@ -91,6 +109,53 @@ public sealed partial class AaruFormat
             finally
             {
                 Marshal.FreeHGlobal(ptr);
+            }
+
+            if(_tracks is null) return _tracks;
+
+            foreach(Track track in Tracks.OrderBy(t => t.StartSector))
+            {
+                switch(track.Sequence)
+                {
+                    case 0:
+                        track.Pregap     = 150;
+                        track.Indexes[0] = -150;
+                        track.Indexes[1] = (int)track.StartSector;
+
+                        continue;
+                    case 1 when Tracks.All(t => t.Sequence != 0):
+                        track.Pregap     = 150;
+                        track.Indexes[0] = -150;
+                        track.Indexes[1] = (int)track.StartSector;
+
+                        continue;
+                }
+
+                if(track.Pregap > 0)
+                {
+                    track.Indexes[0] = (int)track.StartSector;
+                    track.Indexes[1] = (int)(track.StartSector + track.Pregap);
+                }
+                else
+                    track.Indexes[1] = (int)track.StartSector;
+            }
+
+            Track[] tracks = Tracks.ToArray();
+
+            foreach(Track trk in tracks)
+            {
+                ReadSector(trk.StartSector, out byte[] sector);
+                trk.BytesPerSector = sector?.Length ?? (trk.Type == TrackType.Audio ? 2352 : 2048);
+
+                ErrorNumber errno = ReadSectorLong(trk.StartSector, out byte[] longSector);
+
+                if(errno == ErrorNumber.NoError)
+                    trk.RawBytesPerSector = longSector.Length;
+                else
+                    trk.RawBytesPerSector = sector?.Length ?? (trk.Type == TrackType.Audio ? 2352 : 2048);
+
+                if(_imageInfo.ReadableSectorTags.Contains(SectorTagType.CdSectorSubchannel))
+                    trk.SubchannelType = TrackSubchannelType.Raw;
             }
 
             return _tracks;
@@ -111,10 +176,10 @@ public sealed partial class AaruFormat
                 sessions.Add(new Session
                 {
                     Sequence    = (ushort)i,
-                    StartTrack  = Tracks.Where(t => t.Session == i).Min(t => t.Sequence),
-                    EndTrack    = Tracks.Where(t => t.Session == i).Max(t => t.Sequence),
-                    StartSector = Tracks.Where(t => t.Session == i).Min(t => t.StartSector),
-                    EndSector   = Tracks.Where(t => t.Session == i).Max(t => t.EndSector)
+                    StartTrack  = Tracks.Where(t => t.Session == i).Min(static t => t.Sequence),
+                    EndTrack    = Tracks.Where(t => t.Session == i).Max(static t => t.Sequence),
+                    StartSector = Tracks.Where(t => t.Session == i).Min(static t => t.StartSector),
+                    EndSector   = Tracks.Where(t => t.Session == i).Max(static t => t.EndSector)
                 });
             }
 
@@ -140,14 +205,14 @@ public sealed partial class AaruFormat
         foreach(Track track in Tracks)
         {
             _trackFlags.TryGetValue((byte)track.Sequence, out byte flags);
-            _trackIsrcs.TryGetValue((byte)track.Sequence, out byte[] isrc);
+            _trackIsrcs.TryGetValue((byte)track.Sequence, out string isrc);
 
             if((flags & (int)CdFlags.DataTrack) == 0 && track.Type != TrackType.Audio) flags += (byte)CdFlags.DataTrack;
 
             trackEntries.Add(new TrackEntry
             {
                 Sequence = (byte)track.Sequence,
-                Type     = (byte)track.Type,
+                Type     = track.Type,
                 Start    = (long)track.StartSector,
                 End      = (long)track.EndSector,
                 Pregap   = (long)track.Pregap,
@@ -195,14 +260,4 @@ public sealed partial class AaruFormat
     }
 
 #endregion
-
-    // AARU_EXPORT int32_t AARU_CALL aaruf_get_tracks(const void *context, uint8_t *buffer, size_t *length)
-    [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_tracks", SetLastError = true)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
-    private static partial Status aaruf_get_tracks(IntPtr context, byte[] buffer, ref nuint length);
-
-    // AARU_EXPORT int32_t AARU_CALL aaruf_set_tracks(void *context, TrackEntry *tracks, const int count)
-    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_tracks", SetLastError = true)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
-    private static partial Status aaruf_set_tracks(IntPtr context, [In] byte[] tracks, int count);
 }
