@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
 
@@ -138,6 +139,39 @@ public sealed partial class AaruFormat
     public ErrorNumber ReadSectorTag(ulong sectorAddress, SectorTagType tag, out byte[] buffer)
     {
         buffer = null;
+
+        switch(tag)
+        {
+            // Due to how we cache the tracks, we need to handle ISRC tags ourselves
+            case SectorTagType.CdTrackIsrc when _trackIsrcs != null:
+            {
+                if(_trackIsrcs.TryGetValue((int)sectorAddress, out string isrc))
+                {
+                    buffer = new byte[13];
+                    byte[] isrcBytes = Encoding.UTF8.GetBytes(isrc ?? "");
+                    Array.Copy(isrcBytes, 0, buffer, 0, Math.Min(isrcBytes.Length, 13));
+
+                    return ErrorNumber.NoError;
+                }
+
+                break;
+            }
+
+            // Due to how we cache the tracks, we need to handle Track Flags ourselves
+            case SectorTagType.CdTrackFlags when _trackFlags != null:
+            {
+                if(_trackFlags.TryGetValue((int)sectorAddress, out byte flags))
+                {
+                    buffer    = new byte[1];
+                    buffer[0] = flags;
+
+                    return ErrorNumber.NoError;
+                }
+
+                break;
+            }
+        }
+
         uint length = 0;
 
         Status res = aaruf_read_sector_tag(_context, sectorAddress, false, buffer, ref length, tag);
