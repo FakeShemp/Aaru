@@ -32,6 +32,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
@@ -44,29 +45,30 @@ public sealed partial class Dump
 #region Nested type: DInode
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct DInode
+    [SwapEndian]
+    partial struct DInode
     {
-        public readonly ushort di_mode;      /*   0: IFMT, permissions; see below. */
-        public readonly short  di_nlink;     /*   2: File link count. */
-        public readonly int    inumber;      /*   4: Lfs: inode number. */
-        public readonly ulong  di_size;      /*   8: File byte count. */
-        public readonly int    di_atime;     /*  16: Last access time. */
-        public readonly int    di_atimensec; /*  20: Last access time. */
-        public readonly int    di_mtime;     /*  24: Last modified time. */
-        public readonly int    di_mtimensec; /*  28: Last modified time. */
-        public readonly int    di_ctime;     /*  32: Last inode change time. */
-        public readonly int    di_ctimensec; /*  36: Last inode change time. */
+        public ushort di_mode;      /*   0: IFMT, permissions; see below. */
+        public short  di_nlink;     /*   2: File link count. */
+        public int    inumber;      /*   4: Lfs: inode number. */
+        public ulong  di_size;      /*   8: File byte count. */
+        public int    di_atime;     /*  16: Last access time. */
+        public int    di_atimensec; /*  20: Last access time. */
+        public int    di_mtime;     /*  24: Last modified time. */
+        public int    di_mtimensec; /*  28: Last modified time. */
+        public int    di_ctime;     /*  32: Last inode change time. */
+        public int    di_ctimensec; /*  36: Last inode change time. */
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = NDADDR)]
-        public readonly int[] di_db; /*  40: Direct disk blocks. */
+        public int[] di_db; /*  40: Direct disk blocks. */
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = NIADDR)]
-        public readonly int[] di_ib;    /*  88: Indirect disk blocks. */
-        public readonly uint di_flags;  /* 100: Status flags (chflags). */
-        public readonly uint di_blocks; /* 104: Blocks actually held. */
-        public readonly int  di_gen;    /* 108: Generation number. */
-        public readonly uint di_uid;    /* 112: File owner. */
-        public readonly uint di_gid;    /* 116: File group. */
+        public int[] di_ib;    /*  88: Indirect disk blocks. */
+        public uint di_flags;  /* 100: Status flags (chflags). */
+        public uint di_blocks; /* 104: Blocks actually held. */
+        public int  di_gen;    /* 108: Generation number. */
+        public uint di_uid;    /* 112: File owner. */
+        public uint di_gid;    /* 116: File group. */
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public readonly int[] di_spare; /* 120: Reserved; currently unused */
+        public int[] di_spare; /* 120: Reserved; currently unused */
     }
 
 #endregion
@@ -74,37 +76,38 @@ public sealed partial class Dump
 #region Nested type: s_spcl
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct s_spcl
+    [SwapEndian]
+    partial struct s_spcl
     {
-        public readonly int    c_type;     /* record type (see below) */
-        public readonly int    c_date;     /* date of this dump */
-        public readonly int    c_ddate;    /* date of previous dump */
-        public readonly int    c_volume;   /* dump volume number */
-        public readonly int    c_tapea;    /* logical block of this record */
-        public readonly uint   c_inumber;  /* number of inode */
-        public readonly int    c_magic;    /* magic number (see above) */
-        public readonly int    c_checksum; /* record checksum */
-        public readonly DInode c_dinode;   /* ownership and mode of inode */
-        public readonly int    c_count;    /* number of valid c_addr entries */
+        public int    c_type;     /* record type (see below) */
+        public int    c_date;     /* date of this dump */
+        public int    c_ddate;    /* date of previous dump */
+        public int    c_volume;   /* dump volume number */
+        public int    c_tapea;    /* logical block of this record */
+        public uint   c_inumber;  /* number of inode */
+        public int    c_magic;    /* magic number (see above) */
+        public int    c_checksum; /* record checksum */
+        public DInode c_dinode;   /* ownership and mode of inode */
+        public int    c_count;    /* number of valid c_addr entries */
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = TP_NINDIR)]
-        public readonly byte[] c_addr; /* 1 => data; 0 => hole in inode */
+        public byte[] c_addr; /* 1 => data; 0 => hole in inode */
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = LBLSIZE)]
-        public readonly byte[] c_label; /* dump label */
-        public readonly int c_level;    /* level of this dump */
+        public byte[] c_label; /* dump label */
+        public int c_level;    /* level of this dump */
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = NAMELEN)]
-        public readonly byte[] c_filesys; /* name of dumpped file system */
+        public byte[] c_filesys; /* name of dumpped file system */
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = NAMELEN)]
-        public readonly byte[] c_dev; /* name of dumpped device */
+        public byte[] c_dev; /* name of dumpped device */
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = NAMELEN)]
-        public readonly byte[] c_host;    /* name of dumpped host */
-        public readonly int  c_flags;     /* additional information */
-        public readonly int  c_firstrec;  /* first record on volume */
-        public readonly long c_ndate;     /* date of this dump */
-        public readonly long c_nddate;    /* date of previous dump */
-        public readonly long c_ntapea;    /* logical block of this record */
-        public readonly long c_nfirstrec; /* first record on volume */
+        public byte[] c_host;    /* name of dumpped host */
+        public int  c_flags;     /* additional information */
+        public int  c_firstrec;  /* first record on volume */
+        public long c_ndate;     /* date of this dump */
+        public long c_nddate;    /* date of previous dump */
+        public long c_ntapea;    /* logical block of this record */
+        public long c_nfirstrec; /* first record on volume */
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public readonly int[] c_spare; /* reserved for future uses */
+        public int[] c_spare; /* reserved for future uses */
     }
 
 #endregion
@@ -113,21 +116,22 @@ public sealed partial class Dump
 
     // 32-bit AIX format record
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct spcl_aix
+    [SwapEndian]
+    partial struct spcl_aix
     {
         /// <summary>Record type</summary>
-        public readonly int c_type;
+        public int c_type;
         /// <summary>Dump date</summary>
-        public readonly int c_date;
+        public int c_date;
         /// <summary>Previous dump date</summary>
-        public readonly int c_ddate;
+        public int c_ddate;
         /// <summary>Dump volume number</summary>
-        public readonly int c_volume;
+        public int c_volume;
         /// <summary>Logical block of this record</summary>
-        public readonly int c_tapea;
-        public readonly uint c_inumber;
-        public readonly uint c_magic;
-        public readonly int  c_checksum;
+        public int c_tapea;
+        public uint c_inumber;
+        public uint c_magic;
+        public int  c_checksum;
 
         // Unneeded for now
         /*
