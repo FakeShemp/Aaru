@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
@@ -38,22 +39,23 @@ public sealed partial class LIF
 #region Nested type: SystemBlock
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct SystemBlock
+    [SwapEndian]
+    partial struct SystemBlock
     {
-        public readonly ushort magic;
+        public ushort magic;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
-        public readonly byte[] volumeLabel;
-        public readonly uint   directoryStart;
-        public readonly ushort lifId;
-        public readonly ushort unused;
-        public readonly uint   directorySize;
-        public readonly ushort lifVersion;
-        public readonly ushort unused2;
-        public readonly uint   tracks;
-        public readonly uint   heads;
-        public readonly uint   sectors;
+        public byte[] volumeLabel;
+        public uint   directoryStart;
+        public ushort lifId;
+        public ushort unused;
+        public uint   directorySize;
+        public ushort lifVersion;
+        public ushort unused2;
+        public uint   tracks;
+        public uint   heads;
+        public uint   sectors;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
-        public readonly byte[] creationDate;
+        public byte[] creationDate;
     }
 
 #endregion
