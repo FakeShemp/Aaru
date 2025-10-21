@@ -37,6 +37,7 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
@@ -47,7 +48,7 @@ namespace Aaru.Filters;
 /// <inheritdoc />
 /// <summary>Decodes PCExchange files</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
-public sealed class PcExchange : IFilter
+public sealed partial class PcExchange : IFilter
 {
     const string FILE_ID     = "FILEID.DAT";
     const string FINDER_INFO = "FINDER.DAT";
@@ -136,7 +137,7 @@ public sealed class PcExchange : IFilter
             var datEntry  = new Entry();
             var datEntryB = new byte[Marshal.SizeOf(datEntry)];
             finderDatStream.EnsureRead(datEntryB, 0, Marshal.SizeOf(datEntry));
-            datEntry = Helpers.Marshal.ByteArrayToStructureBigEndian<Entry>(datEntryB);
+            datEntry = Helpers.Marshal.ByteArrayToStructureBigEndianGenerated<Entry>(datEntryB);
 
             // TODO: Add support for encoding on filters
             string macName = StringHandlers.PascalToString(datEntry.macName, Encoding.GetEncoding("macintosh"));
@@ -193,7 +194,7 @@ public sealed class PcExchange : IFilter
             var datEntry  = new Entry();
             var datEntryB = new byte[Marshal.SizeOf(datEntry)];
             finderDatStream.EnsureRead(datEntryB, 0, Marshal.SizeOf(datEntry));
-            datEntry = Helpers.Marshal.ByteArrayToStructureBigEndian<Entry>(datEntryB);
+            datEntry = Helpers.Marshal.ByteArrayToStructureBigEndianGenerated<Entry>(datEntryB);
 
             string macName = StringHandlers.PascalToString(datEntry.macName, Encoding.GetEncoding("macintosh"));
 
@@ -247,40 +248,41 @@ public sealed class PcExchange : IFilter
 #region Nested type: Entry
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Entry
+    [SwapEndian]
+    struct Entry
     {
         /// <summary>
         ///     Name in Macintosh. If PCExchange version supports FAT's LFN they are the same. Illegal characters for FAT get
         ///     substituted with '_' both here and in FAT's LFN entry.
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public readonly byte[] macName;
+        public byte[] macName;
         /// <summary>File type</summary>
-        public readonly uint type;
+        public uint type;
         /// <summary>File creator</summary>
-        public readonly uint creator;
+        public uint creator;
         /// <summary>Finder flags</summary>
-        public readonly ushort fdFlags;
+        public ushort fdFlags;
         /// <summary>File's icon vertical position within its window</summary>
-        public readonly ushort verticalPosition;
+        public ushort verticalPosition;
         /// <summary>File's icon horizontal position within its window</summary>
-        public readonly ushort horizontalPosition;
+        public ushort horizontalPosition;
         /// <summary>Unknown, all bytes are empty but last, except in volume's label entry</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
-        public readonly byte[] unknown1;
+        public byte[] unknown1;
         /// <summary>File's creation date</summary>
-        public readonly uint creationDate;
+        public uint creationDate;
         /// <summary>File's modification date</summary>
-        public readonly uint modificationDate;
+        public uint modificationDate;
         /// <summary>File's last backup date</summary>
-        public readonly uint backupDate;
+        public uint backupDate;
         /// <summary>Unknown, but is unique, starts 0x7FFFFFFF and counts in reverse. Probably file ID for alias look up?</summary>
-        public readonly uint unknown2;
+        public uint unknown2;
         /// <summary>Name as in FAT entry (not LFN). Resource fork file is always using this name, never LFN.</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 11)]
-        public readonly byte[] dosName;
+        public byte[] dosName;
         /// <summary>Unknown, flags?</summary>
-        public readonly byte unknown3;
+        public byte unknown3;
     }
 
 #endregion
