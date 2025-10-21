@@ -36,6 +36,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 using Aaru.CommonTypes;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
@@ -49,7 +50,7 @@ namespace Aaru.Partitions;
 /// <inheritdoc />
 /// <summary>Implements decoding of the Apple Partition Map</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
-public sealed class AppleMap : IPartition
+public sealed partial class AppleMap : IPartition
 {
     /// <summary>"ER", driver descriptor magic</summary>
     const ushort DDM_MAGIC = 0x4552;
@@ -91,7 +92,7 @@ public sealed class AppleMap : IPartition
         {
             case 256:
             {
-                byte[] tmp = new byte[512];
+                var tmp = new byte[512];
                 Array.Copy(ddmSector, 0, tmp, 0, 256);
                 ddmSector  = tmp;
                 maxDrivers = 29;
@@ -102,7 +103,8 @@ public sealed class AppleMap : IPartition
                 return false;
         }
 
-        AppleDriverDescriptorMap ddm = Marshal.ByteArrayToStructureBigEndian<AppleDriverDescriptorMap>(ddmSector);
+        AppleDriverDescriptorMap ddm =
+            Marshal.ByteArrayToStructureBigEndianGenerated<AppleDriverDescriptorMap>(ddmSector);
 
         AaruLogging.Debug(MODULE_NAME, "ddm.sbSig = 0x{0:X4}",  ddm.sbSig);
         AaruLogging.Debug(MODULE_NAME, "ddm.sbBlockSize = {0}", ddm.sbBlockSize);
@@ -120,11 +122,11 @@ public sealed class AppleMap : IPartition
             {
                 ddm.sbMap = new AppleDriverEntry[ddm.sbDrvrCount];
 
-                for(int i = 0; i < ddm.sbDrvrCount; i++)
+                for(var i = 0; i < ddm.sbDrvrCount; i++)
                 {
-                    byte[] tmp = new byte[8];
+                    var tmp = new byte[8];
                     Array.Copy(ddmSector, 18 + i * 8, tmp, 0, 8);
-                    ddm.sbMap[i] = Marshal.ByteArrayToStructureBigEndian<AppleDriverEntry>(tmp);
+                    ddm.sbMap[i] = Marshal.ByteArrayToStructureBigEndianGenerated<AppleDriverEntry>(tmp);
 
                     AaruLogging.Debug(MODULE_NAME, "ddm.sbMap[{1}].ddBlock = {0}", ddm.sbMap[i].ddBlock, i);
 
@@ -158,33 +160,24 @@ public sealed class AppleMap : IPartition
         if(errno != ErrorNumber.NoError) return false;
 
         AppleOldDevicePartitionMap oldMap =
-            Marshal.ByteArrayToStructureBigEndian<AppleOldDevicePartitionMap>(partSector);
+            Marshal.ByteArrayToStructureBigEndianGenerated<AppleOldDevicePartitionMap>(partSector);
 
         // This is the easy one, no sector size mixing
         if(oldMap.pdSig == APM_MAGIC_OLD)
         {
-            for(int i = 2; i < partSector.Length; i += 12)
+            for(var i = 2; i < partSector.Length; i += 12)
             {
-                byte[] tmp = new byte[12];
+                var tmp = new byte[12];
                 Array.Copy(partSector, i, tmp, 0, 12);
 
                 AppleMapOldPartitionEntry oldEntry =
-                    Marshal.ByteArrayToStructureBigEndian<AppleMapOldPartitionEntry>(tmp);
+                    Marshal.ByteArrayToStructureBigEndianGenerated<AppleMapOldPartitionEntry>(tmp);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "old_map.sbMap[{1}].pdStart = {0}",
-                                           oldEntry.pdStart,
-                                           (i - 2) / 12);
+                AaruLogging.Debug(MODULE_NAME, "old_map.sbMap[{1}].pdStart = {0}", oldEntry.pdStart, (i - 2) / 12);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "old_map.sbMap[{1}].pdSize = {0}",
-                                           oldEntry.pdSize,
-                                           (i - 2) / 12);
+                AaruLogging.Debug(MODULE_NAME, "old_map.sbMap[{1}].pdSize = {0}", oldEntry.pdSize, (i - 2) / 12);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "old_map.sbMap[{1}].pdFSID = 0x{0:X8}",
-                                           oldEntry.pdFSID,
-                                           (i - 2) / 12);
+                AaruLogging.Debug(MODULE_NAME, "old_map.sbMap[{1}].pdFSID = 0x{0:X8}", oldEntry.pdFSID, (i - 2) / 12);
 
                 if(oldEntry is { pdSize: 0, pdFSID: 0 })
                 {
@@ -221,9 +214,9 @@ public sealed class AppleMap : IPartition
         // If sector is bigger than 512
         if(ddmSector.Length > 512)
         {
-            byte[] tmp = new byte[512];
+            var tmp = new byte[512];
             Array.Copy(ddmSector, 512, tmp, 0, 512);
-            entry = Marshal.ByteArrayToStructureBigEndian<AppleMapPartitionEntry>(tmp);
+            entry = Marshal.ByteArrayToStructureBigEndianGenerated<AppleMapPartitionEntry>(tmp);
 
             // Check for a partition entry that's 512-byte aligned
             if(entry.signature == APM_MAGIC)
@@ -236,7 +229,7 @@ public sealed class AppleMap : IPartition
             }
             else
             {
-                entry = Marshal.ByteArrayToStructureBigEndian<AppleMapPartitionEntry>(partSector);
+                entry = Marshal.ByteArrayToStructureBigEndianGenerated<AppleMapPartitionEntry>(partSector);
 
                 if(entry.signature == APM_MAGIC)
                 {
@@ -252,7 +245,7 @@ public sealed class AppleMap : IPartition
         }
         else
         {
-            entry = Marshal.ByteArrayToStructureBigEndian<AppleMapPartitionEntry>(partSector);
+            entry = Marshal.ByteArrayToStructureBigEndianGenerated<AppleMapPartitionEntry>(partSector);
 
             if(entry.signature == APM_MAGIC)
             {
@@ -275,15 +268,15 @@ public sealed class AppleMap : IPartition
         AaruLogging.Debug(MODULE_NAME, "skip_ddm = {0}",        skipDdm);
         AaruLogging.Debug(MODULE_NAME, "sectors_to_read = {0}", sectorsToRead);
 
-        byte[] copy = new byte[entries.Length - skipDdm];
+        var copy = new byte[entries.Length - skipDdm];
         Array.Copy(entries, skipDdm, copy, 0, copy.Length);
         entries = copy;
 
-        for(int i = 0; i < entryCount; i++)
+        for(var i = 0; i < entryCount; i++)
         {
-            byte[] tmp = new byte[entrySize];
+            var tmp = new byte[entrySize];
             Array.Copy(entries, i * entrySize, tmp, 0, entrySize);
-            entry = Marshal.ByteArrayToStructureBigEndian<AppleMapPartitionEntry>(tmp);
+            entry = Marshal.ByteArrayToStructureBigEndianGenerated<AppleMapPartitionEntry>(tmp);
 
             if(entry.signature != APM_MAGIC) continue;
 
@@ -293,15 +286,9 @@ public sealed class AppleMap : IPartition
             AaruLogging.Debug(MODULE_NAME, "dpme[{0}].start = {1}",          i, entry.start);
             AaruLogging.Debug(MODULE_NAME, "dpme[{0}].sectors = {1}",        i, entry.sectors);
 
-            AaruLogging.Debug(MODULE_NAME,
-                                       "dpme[{0}].name = \"{1}\"",
-                                       i,
-                                       StringHandlers.CToString(entry.name));
+            AaruLogging.Debug(MODULE_NAME, "dpme[{0}].name = \"{1}\"", i, StringHandlers.CToString(entry.name));
 
-            AaruLogging.Debug(MODULE_NAME,
-                                       "dpme[{0}].type = \"{1}\"",
-                                       i,
-                                       StringHandlers.CToString(entry.type));
+            AaruLogging.Debug(MODULE_NAME, "dpme[{0}].type = \"{1}\"", i, StringHandlers.CToString(entry.type));
 
             AaruLogging.Debug(MODULE_NAME, "dpme[{0}].first_data_block = {1}", i, entry.first_data_block);
 
@@ -323,9 +310,9 @@ public sealed class AppleMap : IPartition
             AaruLogging.Debug(MODULE_NAME, "dpme[{0}].checksum = 0x{1:X8}", i, entry.checksum);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "dpme[{0}].processor = \"{1}\"",
-                                       i,
-                                       StringHandlers.CToString(entry.processor));
+                              "dpme[{0}].processor = \"{1}\"",
+                              i,
+                              StringHandlers.CToString(entry.processor));
 
             var flags = (AppleMapFlags)entry.flags;
 
@@ -388,9 +375,9 @@ public sealed class AppleMap : IPartition
             else if(partition.Start < imagePlugin.Info.Sectors)
             {
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Cutting_last_partition_end_0_to_media_size_1,
-                                           partition.End,
-                                           imagePlugin.Info.Sectors - 1);
+                                  Localization.Cutting_last_partition_end_0_to_media_size_1,
+                                  partition.End,
+                                  imagePlugin.Info.Sectors - 1);
 
                 partition.Length = imagePlugin.Info.Sectors - partition.Start;
                 partitions.Add(partition);
@@ -399,9 +386,9 @@ public sealed class AppleMap : IPartition
             else
             {
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Not_adding_partition_because_start_0_is_outside_media_size_1,
-                                           partition.Start,
-                                           imagePlugin.Info.Sectors - 1);
+                                  Localization.Not_adding_partition_because_start_0_is_outside_media_size_1,
+                                  partition.Start,
+                                  imagePlugin.Info.Sectors - 1);
             }
         }
 
@@ -413,22 +400,23 @@ public sealed class AppleMap : IPartition
 #region Nested type: AppleDriverDescriptorMap
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct AppleDriverDescriptorMap
+    [SwapEndian]
+    partial struct AppleDriverDescriptorMap
     {
         /// <summary>Signature <see cref="DDM_MAGIC" /></summary>
-        public readonly ushort sbSig;
+        public ushort sbSig;
         /// <summary>Bytes per sector</summary>
-        public readonly ushort sbBlockSize;
+        public ushort sbBlockSize;
         /// <summary>Sectors of the disk</summary>
-        public readonly uint sbBlocks;
+        public uint sbBlocks;
         /// <summary>Device type</summary>
-        public readonly ushort sbDevType;
+        public ushort sbDevType;
         /// <summary>Device ID</summary>
-        public readonly ushort sbDevId;
+        public ushort sbDevId;
         /// <summary>Reserved</summary>
-        public readonly uint sbData;
+        public uint sbData;
         /// <summary>Number of entries of the driver descriptor</summary>
-        public readonly ushort sbDrvrCount;
+        public ushort sbDrvrCount;
         /// <summary>Entries of the driver descriptor</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 61)]
         public AppleDriverEntry[] sbMap;
@@ -439,14 +427,15 @@ public sealed class AppleMap : IPartition
 #region Nested type: AppleDriverEntry
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct AppleDriverEntry
+    [SwapEndian]
+    partial struct AppleDriverEntry
     {
         /// <summary>First sector of the driver</summary>
-        public readonly uint ddBlock;
+        public uint ddBlock;
         /// <summary>Size in 512bytes sectors of the driver</summary>
-        public readonly ushort ddSize;
+        public ushort ddSize;
         /// <summary>Operating system (MacOS = 1)</summary>
-        public readonly ushort ddType;
+        public ushort ddType;
     }
 
 #endregion
@@ -487,14 +476,15 @@ public sealed class AppleMap : IPartition
 #region Nested type: AppleMapOldPartitionEntry
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct AppleMapOldPartitionEntry
+    [SwapEndian]
+    partial struct AppleMapOldPartitionEntry
     {
         /// <summary>First sector of the partition</summary>
-        public readonly uint pdStart;
+        public uint pdStart;
         /// <summary>Number of sectors of the partition</summary>
-        public readonly uint pdSize;
+        public uint pdSize;
         /// <summary>Partition type</summary>
-        public readonly uint pdFSID;
+        public uint pdFSID;
     }
 
 #endregion
@@ -502,50 +492,51 @@ public sealed class AppleMap : IPartition
 #region Nested type: AppleMapPartitionEntry
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct AppleMapPartitionEntry
+    [SwapEndian]
+    partial struct AppleMapPartitionEntry
     {
         /// <summary>Signature <see cref="APM_MAGIC" /></summary>
-        public readonly ushort signature;
+        public ushort signature;
         /// <summary>Reserved</summary>
-        public readonly ushort reserved1;
+        public ushort reserved1;
         /// <summary>Number of entries on the partition map, each one sector</summary>
-        public readonly uint entries;
+        public uint entries;
         /// <summary>First sector of the partition</summary>
-        public readonly uint start;
+        public uint start;
         /// <summary>Number of sectos of the partition</summary>
-        public readonly uint sectors;
+        public uint sectors;
         /// <summary>Partition name, 32 bytes, null-padded</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public readonly byte[] name;
+        public byte[] name;
         /// <summary>Partition type. 32 bytes, null-padded</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public readonly byte[] type;
+        public byte[] type;
         /// <summary>First sector of the data area</summary>
-        public readonly uint first_data_block;
+        public uint first_data_block;
         /// <summary>Number of sectors of the data area</summary>
-        public readonly uint data_sectors;
+        public uint data_sectors;
         /// <summary>Partition flags</summary>
-        public readonly uint flags;
+        public uint flags;
         /// <summary>First sector of the boot code</summary>
-        public readonly uint first_boot_block;
+        public uint first_boot_block;
         /// <summary>Size in bytes of the boot code</summary>
-        public readonly uint boot_size;
+        public uint boot_size;
         /// <summary>Load address of the boot code</summary>
-        public readonly uint load_address;
+        public uint load_address;
         /// <summary>Load address of the boot code</summary>
-        public readonly uint load_address2;
+        public uint load_address2;
         /// <summary>Entry point of the boot code</summary>
-        public readonly uint entry_point;
+        public uint entry_point;
         /// <summary>Entry point of the boot code</summary>
-        public readonly uint entry_point2;
+        public uint entry_point2;
         /// <summary>Boot code checksum</summary>
-        public readonly uint checksum;
+        public uint checksum;
         /// <summary>Processor type, 16 bytes, null-padded</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] processor;
+        public byte[] processor;
         /// <summary>Boot arguments</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public readonly uint[] boot_arguments;
+        public uint[] boot_arguments;
     }
 
 #endregion
@@ -553,13 +544,14 @@ public sealed class AppleMap : IPartition
 #region Nested type: AppleOldDevicePartitionMap
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct AppleOldDevicePartitionMap
+    [SwapEndian]
+    partial struct AppleOldDevicePartitionMap
     {
         /// <summary>Signature <see cref="APM_MAGIC_OLD" /></summary>
-        public readonly ushort pdSig;
+        public ushort pdSig;
         /// <summary>Entries of the driver descriptor</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 42)]
-        public readonly AppleMapOldPartitionEntry[] pdMap;
+        public AppleMapOldPartitionEntry[] pdMap;
     }
 
 #endregion
