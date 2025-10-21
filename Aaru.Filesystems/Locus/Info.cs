@@ -66,7 +66,7 @@ public sealed partial class Locus
 
         for(ulong location = 0; location <= 8; location++)
         {
-            uint sbSize = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
+            var sbSize = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
 
             if(Marshal.SizeOf<Superblock>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
@@ -103,7 +103,7 @@ public sealed partial class Locus
 
         for(ulong location = 0; location <= 8; location++)
         {
-            uint sbSize = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
+            var sbSize = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
 
             if(Marshal.SizeOf<Superblock>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
@@ -128,7 +128,7 @@ public sealed partial class Locus
         // Numerical arrays are not important for information so no need to swap them
         if(locusSb.s_magic is LOCUS_CIGAM or LOCUS_CIGAM_OLD)
         {
-            locusSb         = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
+            locusSb         = Marshal.ByteArrayToStructureBigEndianGenerated<Superblock>(sector);
             locusSb.s_flags = (Flags)Swapping.Swap((ushort)locusSb.s_flags);
         }
 

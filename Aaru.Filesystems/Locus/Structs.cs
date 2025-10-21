@@ -30,6 +30,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 using commitcnt_t = int;
 
 // Disk address
@@ -124,57 +125,58 @@ public sealed partial class Locus
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct Superblock
+    [SwapEndian]
+    partial struct Superblock
     {
-        public readonly uint s_magic; /* identifies this as a locus filesystem */
+        public uint s_magic; /* identifies this as a locus filesystem */
         /* defined as a constant below */
-        public readonly gfs_t   s_gfs;   /* global filesystem number */
-        public readonly daddr_t s_fsize; /* size in blocks of entire volume */
+        public gfs_t   s_gfs;   /* global filesystem number */
+        public daddr_t s_fsize; /* size in blocks of entire volume */
         /* several ints for replicated filesystems */
-        public readonly commitcnt_t s_lwm; /* all prior commits propagated */
-        public readonly commitcnt_t s_hwm; /* highest commit propagated */
+        public commitcnt_t s_lwm; /* all prior commits propagated */
+        public commitcnt_t s_hwm; /* highest commit propagated */
         /* oldest committed version in the list.
          * llst mod NCMTLST is the offset of commit #llst in the list,
          * which wraps around from there.
          */
-        public readonly commitcnt_t s_llst;
-        public readonly fstore_t s_fstore; /* filesystem storage bit mask; if the
+        public commitcnt_t s_llst;
+        public fstore_t s_fstore; /* filesystem storage bit mask; if the
                    filsys is replicated and this is not a
                    primary or backbone copy, this bit mask
                    determines which files are stored */
 
-        public readonly time_t  s_time;  /* last super block update */
-        public readonly daddr_t s_tfree; /* total free blocks*/
+        public time_t  s_time;  /* last super block update */
+        public daddr_t s_tfree; /* total free blocks*/
 
-        public readonly ino_t   s_isize;   /* size in blocks of i-list */
-        public readonly short   s_nfree;   /* number of addresses in s_free */
+        public ino_t   s_isize;   /* size in blocks of i-list */
+        public short   s_nfree;   /* number of addresses in s_free */
         public          Flags   s_flags;   /* filsys flags, defined below */
-        public readonly ino_t   s_tinode;  /* total free inodes */
-        public readonly ino_t   s_lasti;   /* start place for circular search */
-        public readonly ino_t   s_nbehind; /* est # free inodes before s_lasti */
-        public readonly pckno_t s_gfspack; /* global filesystem pack number */
-        public readonly short   s_ninode;  /* number of i-nodes in s_inode */
+        public ino_t   s_tinode;  /* total free inodes */
+        public ino_t   s_lasti;   /* start place for circular search */
+        public ino_t   s_nbehind; /* est # free inodes before s_lasti */
+        public pckno_t s_gfspack; /* global filesystem pack number */
+        public short   s_ninode;  /* number of i-nodes in s_inode */
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public readonly short[] s_dinfo; /* interleave stuff */
+        public short[] s_dinfo; /* interleave stuff */
 
         //#define s_m s_dinfo[0]
         //#define s_skip  s_dinfo[0]      /* AIX defines  */
         //#define s_n s_dinfo[1]
         //#define s_cyl   s_dinfo[1]      /* AIX defines  */
-        public readonly byte    s_flock;   /* lock during free list manipulation */
-        public readonly byte    s_ilock;   /* lock during i-list manipulation */
-        public readonly byte    s_fmod;    /* super block modified flag */
-        public readonly Version s_version; /* version of the data format in fs. */
+        public byte    s_flock;   /* lock during free list manipulation */
+        public byte    s_ilock;   /* lock during i-list manipulation */
+        public byte    s_fmod;    /* super block modified flag */
+        public Version s_version; /* version of the data format in fs. */
         /*  defined below. */
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public readonly byte[] s_fsmnt; /* name of this file system */
+        public byte[] s_fsmnt; /* name of this file system */
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public readonly byte[] s_fpack; /* name of this physical volume */
+        public byte[] s_fpack; /* name of this physical volume */
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = NICINOD)]
-        public readonly ino_t[] s_inode; /* free i-node list */
+        public ino_t[] s_inode; /* free i-node list */
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = NICFREE)]
-        public readonly daddr_t[] su_free; /* free block list for non-replicated filsys */
-        public readonly byte s_byteorder;  /* byte order of integers */
+        public daddr_t[] su_free; /* free block list for non-replicated filsys */
+        public byte s_byteorder;  /* byte order of integers */
     }
 
 #endregion
