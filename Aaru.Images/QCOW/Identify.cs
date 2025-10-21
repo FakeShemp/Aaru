@@ -50,7 +50,7 @@ public sealed partial class Qcow
 
         var qHdrB = new byte[48];
         stream.EnsureRead(qHdrB, 0, 48);
-        _qHdr = Marshal.SpanToStructureBigEndian<Header>(qHdrB);
+        _qHdr = Marshal.SpanToStructureBigEndianGenerated<Header>(qHdrB);
 
         return _qHdr is { magic: QCOW_MAGIC, version: QCOW_VERSION };
     }
