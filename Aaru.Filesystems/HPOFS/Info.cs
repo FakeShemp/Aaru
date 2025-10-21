@@ -90,9 +90,13 @@ public sealed partial class HPOFS
 
         if(errno != ErrorNumber.NoError) return;
 
-        BiosParameterBlock     bpb = Marshal.ByteArrayToStructureLittleEndian<BiosParameterBlock>(hpofsBpbSector);
-        MediaInformationBlock  mib = Marshal.ByteArrayToStructureBigEndian<MediaInformationBlock>(medInfoSector);
-        VolumeInformationBlock vib = Marshal.ByteArrayToStructureBigEndian<VolumeInformationBlock>(volInfoSector);
+        BiosParameterBlock bpb = Marshal.ByteArrayToStructureLittleEndian<BiosParameterBlock>(hpofsBpbSector);
+
+        MediaInformationBlock mib =
+            Marshal.ByteArrayToStructureBigEndianGenerated<MediaInformationBlock>(medInfoSector);
+
+        VolumeInformationBlock vib =
+            Marshal.ByteArrayToStructureBigEndianGenerated<VolumeInformationBlock>(volInfoSector);
 
         AaruLogging.Debug(MODULE_NAME, "bpb.oem_name = \"{0}\"", StringHandlers.CToString(bpb.oem_name));
 
@@ -114,14 +118,12 @@ public sealed partial class HPOFS
         AaruLogging.Debug(MODULE_NAME, "bpb.serial_no = 0x{0:X8}", bpb.serial_no);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "bpb.volume_label = \"{0}\"",
-                                   StringHandlers.SpacePaddedToString(bpb.volume_label));
+                          "bpb.volume_label = \"{0}\"",
+                          StringHandlers.SpacePaddedToString(bpb.volume_label));
 
         AaruLogging.Debug(MODULE_NAME, "bpb.fs_type = \"{0}\"", StringHandlers.CToString(bpb.fs_type));
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "bpb.boot_code is empty? = {0}",
-                                   ArrayHelpers.ArrayIsNullOrEmpty(bpb.boot_code));
+        AaruLogging.Debug(MODULE_NAME, "bpb.boot_code is empty? = {0}", ArrayHelpers.ArrayIsNullOrEmpty(bpb.boot_code));
 
         AaruLogging.Debug(MODULE_NAME, "bpb.unknown = {0}",     bpb.unknown);
         AaruLogging.Debug(MODULE_NAME, "bpb.unknown2 = {0}",    bpb.unknown2);
@@ -129,18 +131,16 @@ public sealed partial class HPOFS
         AaruLogging.Debug(MODULE_NAME, "mib.blockId = \"{0}\"", StringHandlers.CToString(mib.blockId));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "mib.volumeLabel = \"{0}\"",
-                                   StringHandlers.SpacePaddedToString(mib.volumeLabel));
+                          "mib.volumeLabel = \"{0}\"",
+                          StringHandlers.SpacePaddedToString(mib.volumeLabel));
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "mib.comment = \"{0}\"",
-                                   StringHandlers.SpacePaddedToString(mib.comment));
+        AaruLogging.Debug(MODULE_NAME, "mib.comment = \"{0}\"", StringHandlers.SpacePaddedToString(mib.comment));
 
         AaruLogging.Debug(MODULE_NAME, "mib.serial = 0x{0:X8}", mib.serial);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "mib.creationTimestamp = {0}",
-                                   DateHandlers.DosToDateTime(mib.creationDate, mib.creationTime));
+                          "mib.creationTimestamp = {0}",
+                          DateHandlers.DosToDateTime(mib.creationDate, mib.creationTime));
 
         AaruLogging.Debug(MODULE_NAME, "mib.codepageType = {0}", mib.codepageType);
         AaruLogging.Debug(MODULE_NAME, "mib.codepage = {0}",     mib.codepage);
@@ -156,35 +156,25 @@ public sealed partial class HPOFS
         AaruLogging.Debug(MODULE_NAME, "mib.unknown5 = {0}",     mib.unknown5);
         AaruLogging.Debug(MODULE_NAME, "mib.unknown6 = {0}",     mib.unknown6);
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "mib.filler is empty? = {0}",
-                                   ArrayHelpers.ArrayIsNullOrEmpty(mib.filler));
+        AaruLogging.Debug(MODULE_NAME, "mib.filler is empty? = {0}", ArrayHelpers.ArrayIsNullOrEmpty(mib.filler));
 
         AaruLogging.Debug(MODULE_NAME, "vib.blockId = \"{0}\"", StringHandlers.CToString(vib.blockId));
         AaruLogging.Debug(MODULE_NAME, "vib.unknown = {0}",     vib.unknown);
         AaruLogging.Debug(MODULE_NAME, "vib.unknown2 = {0}",    vib.unknown2);
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "vib.unknown3 is empty? = {0}",
-                                   ArrayHelpers.ArrayIsNullOrEmpty(vib.unknown3));
+        AaruLogging.Debug(MODULE_NAME, "vib.unknown3 is empty? = {0}", ArrayHelpers.ArrayIsNullOrEmpty(vib.unknown3));
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "vib.unknown4 = \"{0}\"",
-                                   StringHandlers.SpacePaddedToString(vib.unknown4));
+        AaruLogging.Debug(MODULE_NAME, "vib.unknown4 = \"{0}\"", StringHandlers.SpacePaddedToString(vib.unknown4));
 
         AaruLogging.Debug(MODULE_NAME, "vib.owner = \"{0}\"", StringHandlers.SpacePaddedToString(vib.owner));
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "vib.unknown5 = \"{0}\"",
-                                   StringHandlers.SpacePaddedToString(vib.unknown5));
+        AaruLogging.Debug(MODULE_NAME, "vib.unknown5 = \"{0}\"", StringHandlers.SpacePaddedToString(vib.unknown5));
 
         AaruLogging.Debug(MODULE_NAME, "vib.unknown6 = {0}",    vib.unknown6);
         AaruLogging.Debug(MODULE_NAME, "vib.percentFull = {0}", vib.percentFull);
         AaruLogging.Debug(MODULE_NAME, "vib.unknown7 = {0}",    vib.unknown7);
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "vib.filler is empty? = {0}",
-                                   ArrayHelpers.ArrayIsNullOrEmpty(vib.filler));
+        AaruLogging.Debug(MODULE_NAME, "vib.filler is empty? = {0}", ArrayHelpers.ArrayIsNullOrEmpty(vib.filler));
 
         sb.AppendLine(Localization.HPOFS_Name);
         sb.AppendFormat(Localization.OEM_name_0, StringHandlers.SpacePaddedToString(bpb.oem_name)).AppendLine();

@@ -28,6 +28,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
@@ -271,52 +272,53 @@ public sealed partial class HPOFS
 
     /// <summary>Media Information Block, at sector 13, big-endian</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct MediaInformationBlock
+    [SwapEndian]
+    partial struct MediaInformationBlock
     {
         /// <summary>Block identifier "MEDINFO "</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public readonly byte[] blockId;
+        public byte[] blockId;
         /// <summary>Volume label</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public readonly byte[] volumeLabel;
+        public byte[] volumeLabel;
         /// <summary>Volume comment</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 160)]
-        public readonly byte[] comment;
+        public byte[] comment;
         /// <summary>Volume serial number</summary>
-        public readonly uint serial;
+        public uint serial;
         /// <summary>Volume creation date, DOS format</summary>
-        public readonly ushort creationDate;
+        public ushort creationDate;
         /// <summary>Volume creation time, DOS format</summary>
-        public readonly ushort creationTime;
+        public ushort creationTime;
         /// <summary>Codepage type: 1 ASCII, 2 EBCDIC</summary>
-        public readonly ushort codepageType;
+        public ushort codepageType;
         /// <summary>Codepage</summary>
-        public readonly ushort codepage;
+        public ushort codepage;
         /// <summary>RPS level</summary>
-        public readonly uint rps;
+        public uint rps;
         /// <summary>Coincides with bytes per sector, and bytes per cluster, need more media</summary>
-        public readonly ushort bps;
+        public ushort bps;
         /// <summary>Coincides with bytes per sector, and bytes per cluster, need more media</summary>
-        public readonly ushort bpc;
+        public ushort bpc;
         /// <summary>Unknown, empty</summary>
-        public readonly uint unknown2;
+        public uint unknown2;
         /// <summary>Sectors (or clusters)</summary>
-        public readonly uint sectors;
+        public uint sectors;
         /// <summary>Unknown, coincides with bps but changing it makes nothing</summary>
-        public readonly uint unknown3;
+        public uint unknown3;
         /// <summary>Empty?</summary>
-        public readonly ulong unknown4;
+        public ulong unknown4;
         /// <summary>Format major version</summary>
-        public readonly ushort major;
+        public ushort major;
         /// <summary>Format minor version</summary>
-        public readonly ushort minor;
+        public ushort minor;
         /// <summary>Empty?</summary>
-        public readonly uint unknown5;
+        public uint unknown5;
         /// <summary>Unknown, non-empty</summary>
-        public readonly uint unknown6;
+        public uint unknown6;
         /// <summary>Empty</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 260)]
-        public readonly byte[] filler;
+        public byte[] filler;
     }
 
 #endregion
@@ -354,40 +356,41 @@ public sealed partial class HPOFS
 
     /// <summary>Volume Information Block, at sector 14, big-endian</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct VolumeInformationBlock
+    [SwapEndian]
+    partial struct VolumeInformationBlock
     {
         /// <summary>Block identifier "VOLINFO "</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public readonly byte[] blockId;
+        public byte[] blockId;
         /// <summary>Unknown</summary>
-        public readonly uint unknown;
+        public uint unknown;
         /// <summary>Unknown</summary>
-        public readonly uint unknown2;
+        public uint unknown2;
         /// <summary>Some kind of counter</summary>
-        public readonly uint dir_intent_cnt;
+        public uint dir_intent_cnt;
         /// <summary>Some kind of counter, another</summary>
-        public readonly uint dir_update_cnt;
+        public uint dir_update_cnt;
         /// <summary>Unknown</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 22)]
-        public readonly byte[] unknown3;
+        public byte[] unknown3;
         /// <summary>Unknown, space-padded string</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public readonly byte[] unknown4;
+        public byte[] unknown4;
         /// <summary>Owner, space-padded string</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public readonly byte[] owner;
+        public byte[] owner;
         /// <summary>Unknown, space-padded string</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] unknown5;
+        public byte[] unknown5;
         /// <summary>Unknown, empty?</summary>
-        public readonly uint unknown6;
+        public uint unknown6;
         /// <summary>Maximum percent full</summary>
-        public readonly ushort percentFull;
+        public ushort percentFull;
         /// <summary>Unknown, empty?</summary>
-        public readonly ushort unknown7;
+        public ushort unknown7;
         /// <summary>Empty</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 384)]
-        public readonly byte[] filler;
+        public byte[] filler;
     }
 
 #endregion
