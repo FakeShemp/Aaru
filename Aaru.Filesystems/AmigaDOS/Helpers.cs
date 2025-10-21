@@ -40,7 +40,7 @@ public sealed partial class AmigaDOSPlugin
         var tmp = new byte[228];
         Array.Copy(block, 0,                  tmp, 0,  24);
         Array.Copy(block, block.Length - 200, tmp, 28, 200);
-        RootBlock root = Marshal.ByteArrayToStructureBigEndian<RootBlock>(tmp);
+        RootBlock root = Marshal.ByteArrayToStructureBigEndianGenerated<RootBlock>(tmp);
         root.hashTable = new uint[(block.Length - 224) / 4];
 
         for(var i = 0; i < root.hashTable.Length; i++)

@@ -60,7 +60,7 @@ public sealed partial class AmigaDOSPlugin
 
         if(errno != ErrorNumber.NoError) return false;
 
-        BootBlock bblk = Marshal.ByteArrayToStructureBigEndian<BootBlock>(sector);
+        BootBlock bblk = Marshal.ByteArrayToStructureBigEndianGenerated<BootBlock>(sector);
 
         // AROS boot floppies...
         if(sector.Length               >= 512      &&
@@ -73,7 +73,7 @@ public sealed partial class AmigaDOSPlugin
 
             if(errno != ErrorNumber.NoError) return false;
 
-            bblk = Marshal.ByteArrayToStructureBigEndian<BootBlock>(sector);
+            bblk = Marshal.ByteArrayToStructureBigEndianGenerated<BootBlock>(sector);
         }
 
         // Not FFS or MuFS?
@@ -124,7 +124,7 @@ public sealed partial class AmigaDOSPlugin
             AaruLogging.Debug(MODULE_NAME, "rblk.hashTableSize = {0}", rblk.hashTableSize);
 
             uint blockSize       = (rblk.hashTableSize + 56) * 4;
-            uint sectorsPerBlock = (uint)(blockSize / sector.Length);
+            var  sectorsPerBlock = (uint)(blockSize / sector.Length);
 
             AaruLogging.Debug(MODULE_NAME, "blockSize = {0}",       blockSize);
             AaruLogging.Debug(MODULE_NAME, "sectorsPerBlock = {0}", sectorsPerBlock);
@@ -166,7 +166,7 @@ public sealed partial class AmigaDOSPlugin
 
         if(errno != ErrorNumber.NoError) return;
 
-        BootBlock bootBlk = Marshal.ByteArrayToStructureBigEndian<BootBlock>(bootBlockSectors);
+        BootBlock bootBlk = Marshal.ByteArrayToStructureBigEndianGenerated<BootBlock>(bootBlockSectors);
         bootBlk.bootCode = new byte[bootBlockSectors.Length - 12];
         Array.Copy(bootBlockSectors, 12, bootBlk.bootCode, 0, bootBlk.bootCode.Length);
         bootBlockSectors[4] = bootBlockSectors[5] = bootBlockSectors[6] = bootBlockSectors[7] = 0;
@@ -192,7 +192,7 @@ public sealed partial class AmigaDOSPlugin
         var    rootBlk         = new RootBlock();
         byte[] rootBlockSector = null;
 
-        bool rootFound = false;
+        var  rootFound = false;
         uint blockSize = 0;
 
         // So to handle even number of sectors
@@ -214,7 +214,7 @@ public sealed partial class AmigaDOSPlugin
             AaruLogging.Debug(MODULE_NAME, "rootBlk.hashTableSize = {0}", rootBlk.hashTableSize);
 
             blockSize = (rootBlk.hashTableSize + 56) * 4;
-            uint sectorsPerBlock = (uint)(blockSize / rootBlockSector.Length);
+            var sectorsPerBlock = (uint)(blockSize / rootBlockSector.Length);
 
             AaruLogging.Debug(MODULE_NAME, "blockSize = {0}",       blockSize);
             AaruLogging.Debug(MODULE_NAME, "sectorsPerBlock = {0}", sectorsPerBlock);

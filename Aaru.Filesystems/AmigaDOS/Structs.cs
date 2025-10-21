@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
@@ -38,14 +39,15 @@ public sealed partial class AmigaDOSPlugin
 
     /// <summary>Boot block, first 2 sectors</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct BootBlock
+    [SwapEndian]
+    partial struct BootBlock
     {
         /// <summary>Offset 0x00, "DOSx" disk type</summary>
-        public readonly uint diskType;
+        public uint diskType;
         /// <summary>Offset 0x04, Checksum</summary>
-        public readonly uint checksum;
+        public uint checksum;
         /// <summary>Offset 0x08, Pointer to root block, mostly invalid</summary>
-        public readonly uint root_ptr;
+        public uint root_ptr;
         /// <summary>Offset 0x0C, Boot code, til completion. Size is intentionally incorrect to allow marshaling to work.</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
         public byte[] bootCode;
@@ -56,18 +58,19 @@ public sealed partial class AmigaDOSPlugin
 #region Nested type: RootBlock
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct RootBlock
+    [SwapEndian]
+    partial struct RootBlock
     {
         /// <summary>Offset 0x00, block type, value = T_HEADER (2)</summary>
         public uint type;
         /// <summary>Offset 0x04, unused</summary>
-        public readonly uint headerKey;
+        public uint headerKey;
         /// <summary>Offset 0x08, unused</summary>
-        public readonly uint highSeq;
+        public uint highSeq;
         /// <summary>Offset 0x0C, longs used by hash table</summary>
         public uint hashTableSize;
         /// <summary>Offset 0x10, unused</summary>
-        public readonly uint firstData;
+        public uint firstData;
         /// <summary>Offset 0x14, Rootblock checksum</summary>
         public uint checksum;
         /// <summary>
@@ -77,45 +80,45 @@ public sealed partial class AmigaDOSPlugin
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
         public uint[] hashTable;
         /// <summary>Offset 0x18+hashTableSize*4+0, bitmap flag, 0xFFFFFFFF if valid</summary>
-        public readonly uint bitmapFlag;
+        public uint bitmapFlag;
         /// <summary>Offset 0x18+hashTableSize*4+4, bitmap pages, 25 entries</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 25)]
-        public readonly uint[] bitmapPages;
+        public uint[] bitmapPages;
         /// <summary>Offset 0x18+hashTableSize*4+104, pointer to bitmap extension block</summary>
-        public readonly uint bitmapExtensionBlock;
+        public uint bitmapExtensionBlock;
         /// <summary>Offset 0x18+hashTableSize*4+108, last root alteration days since 1978/01/01</summary>
-        public readonly uint rDays;
+        public uint rDays;
         /// <summary>Offset 0x18+hashTableSize*4+112, last root alteration minutes past midnight</summary>
-        public readonly uint rMins;
+        public uint rMins;
         /// <summary>Offset 0x18+hashTableSize*4+116, last root alteration ticks (1/50 secs)</summary>
-        public readonly uint rTicks;
+        public uint rTicks;
         /// <summary>Offset 0x18+hashTableSize*4+120, disk name, pascal string, 31 bytes</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 31)]
-        public readonly byte[] diskName;
+        public byte[] diskName;
         /// <summary>Offset 0x18+hashTableSize*4+151, unused</summary>
-        public readonly byte padding;
+        public byte padding;
         /// <summary>Offset 0x18+hashTableSize*4+152, unused</summary>
-        public readonly uint reserved1;
+        public uint reserved1;
         /// <summary>Offset 0x18+hashTableSize*4+156, unused</summary>
-        public readonly uint reserved2;
+        public uint reserved2;
         /// <summary>Offset 0x18+hashTableSize*4+160, last disk alteration days since 1978/01/01</summary>
-        public readonly uint vDays;
+        public uint vDays;
         /// <summary>Offset 0x18+hashTableSize*4+164, last disk alteration minutes past midnight</summary>
-        public readonly uint vMins;
+        public uint vMins;
         /// <summary>Offset 0x18+hashTableSize*4+168, last disk alteration ticks (1/50 secs)</summary>
-        public readonly uint vTicks;
+        public uint vTicks;
         /// <summary>Offset 0x18+hashTableSize*4+172, filesystem creation days since 1978/01/01</summary>
-        public readonly uint cDays;
+        public uint cDays;
         /// <summary>Offset 0x18+hashTableSize*4+176, filesystem creation minutes since 1978/01/01</summary>
-        public readonly uint cMins;
+        public uint cMins;
         /// <summary>Offset 0x18+hashTableSize*4+180, filesystem creation ticks since 1978/01/01</summary>
-        public readonly uint cTicks;
+        public uint cTicks;
         /// <summary>Offset 0x18+hashTableSize*4+184, unused</summary>
-        public readonly uint nextHash;
+        public uint nextHash;
         /// <summary>Offset 0x18+hashTableSize*4+188, unused</summary>
-        public readonly uint parentDir;
+        public uint parentDir;
         /// <summary>Offset 0x18+hashTableSize*4+192, first directory cache block</summary>
-        public readonly uint extension;
+        public uint extension;
         /// <summary>Offset 0x18+hashTableSize*4+196, block secondary type = ST_ROOT (1)</summary>
         public uint sec_type;
     }
