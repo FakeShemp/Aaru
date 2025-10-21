@@ -61,7 +61,7 @@ public sealed partial class UNICOS
 
         if(sector.Length < Marshal.SizeOf<Superblock>()) return false;
 
-        Superblock unicosSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
+        Superblock unicosSb = Marshal.ByteArrayToStructureBigEndianGenerated<Superblock>(sector);
 
         AaruLogging.Debug(MODULE_NAME, Localization.magic_equals_0_expected_1, unicosSb.s_magic, UNICOS_MAGIC);
 
@@ -88,7 +88,7 @@ public sealed partial class UNICOS
 
         if(sector.Length < Marshal.SizeOf<Superblock>()) return;
 
-        Superblock unicosSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
+        Superblock unicosSb = Marshal.ByteArrayToStructureBigEndianGenerated<Superblock>(sector);
 
         if(unicosSb.s_magic != UNICOS_MAGIC) return;
 
