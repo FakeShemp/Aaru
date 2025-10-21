@@ -76,12 +76,6 @@ public sealed partial class SGI : IPartition
 
         Label dvh = Marshal.ByteArrayToStructureBigEndian<Label>(sector);
 
-        for(var i = 0; i < dvh.volume.Length; i++)
-            dvh.volume[i] = (Volume)Marshal.SwapStructureMembersEndian(dvh.volume[i]);
-
-        for(var i = 0; i < dvh.partitions.Length; i++)
-            dvh.partitions[i] = (Partition)Marshal.SwapStructureMembersEndian(dvh.partitions[i]);
-
         AaruLogging.Debug(MODULE_NAME, Localization.dvh_magic_equals_0_X8_should_be_1_X8, dvh.magic, SGI_MAGIC);
 
         if(dvh.magic != SGI_MAGIC) return false;
