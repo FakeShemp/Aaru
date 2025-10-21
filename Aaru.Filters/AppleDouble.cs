@@ -35,6 +35,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
@@ -46,7 +47,7 @@ namespace Aaru.Filters;
 /// <inheritdoc />
 /// <summary>Decodes AppleDouble files</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
-public sealed class AppleDouble : IFilter
+public sealed partial class AppleDouble : IFilter
 {
     const    uint   MAGIC          = 0x00051607;
     const    uint   VERSION        = 0x00010000;
@@ -171,7 +172,7 @@ public sealed class AppleDouble : IFilter
             {
                 var prodosB = new byte[26];
                 prodosStream.EnsureRead(prodosB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndian<Header>(prodosB);
+                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(prodosB);
                 prodosStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) return true;
@@ -187,7 +188,7 @@ public sealed class AppleDouble : IFilter
             {
                 var unixB = new byte[26];
                 unixStream.EnsureRead(unixB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndian<Header>(unixB);
+                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(unixB);
                 unixStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) return true;
@@ -203,7 +204,7 @@ public sealed class AppleDouble : IFilter
             {
                 var dosB = new byte[26];
                 dosStream.EnsureRead(dosB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndian<Header>(dosB);
+                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(dosB);
                 dosStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) return true;
@@ -219,7 +220,7 @@ public sealed class AppleDouble : IFilter
             {
                 var doslB = new byte[26];
                 doslStream.EnsureRead(doslB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndian<Header>(doslB);
+                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(doslB);
                 doslStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) return true;
@@ -235,7 +236,7 @@ public sealed class AppleDouble : IFilter
             {
                 var netatalkB = new byte[26];
                 netatalkStream.EnsureRead(netatalkB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndian<Header>(netatalkB);
+                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(netatalkB);
                 netatalkStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) return true;
@@ -251,7 +252,7 @@ public sealed class AppleDouble : IFilter
             {
                 var daveB = new byte[26];
                 daveStream.EnsureRead(daveB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndian<Header>(daveB);
+                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(daveB);
                 daveStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) return true;
@@ -267,7 +268,7 @@ public sealed class AppleDouble : IFilter
             {
                 var osxB = new byte[26];
                 osxStream.EnsureRead(osxB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndian<Header>(osxB);
+                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(osxB);
                 osxStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) return true;
@@ -283,7 +284,7 @@ public sealed class AppleDouble : IFilter
 
         var unarB = new byte[26];
         unarStream.EnsureRead(unarB, 0, 26);
-        _header = Marshal.ByteArrayToStructureBigEndian<Header>(unarB);
+        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(unarB);
         unarStream.Close();
 
         return _header is { magic: MAGIC, version: VERSION or VERSION2 };
@@ -341,7 +342,7 @@ public sealed class AppleDouble : IFilter
             {
                 var prodosB = new byte[26];
                 prodosStream.EnsureRead(prodosB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndian<Header>(prodosB);
+                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(prodosB);
                 prodosStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) _headerPath = proDosAppleDouble;
@@ -357,7 +358,7 @@ public sealed class AppleDouble : IFilter
             {
                 var unixB = new byte[26];
                 unixStream.EnsureRead(unixB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndian<Header>(unixB);
+                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(unixB);
                 unixStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) _headerPath = unixAppleDouble;
@@ -373,7 +374,7 @@ public sealed class AppleDouble : IFilter
             {
                 var dosB = new byte[26];
                 dosStream.EnsureRead(dosB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndian<Header>(dosB);
+                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(dosB);
                 dosStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) _headerPath = dosAppleDouble;
@@ -389,7 +390,7 @@ public sealed class AppleDouble : IFilter
             {
                 var doslB = new byte[26];
                 doslStream.EnsureRead(doslB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndian<Header>(doslB);
+                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(doslB);
                 doslStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) _headerPath = dosAppleDoubleLower;
@@ -405,7 +406,7 @@ public sealed class AppleDouble : IFilter
             {
                 var netatalkB = new byte[26];
                 netatalkStream.EnsureRead(netatalkB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndian<Header>(netatalkB);
+                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(netatalkB);
                 netatalkStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) _headerPath = netatalkAppleDouble;
@@ -421,7 +422,7 @@ public sealed class AppleDouble : IFilter
             {
                 var daveB = new byte[26];
                 daveStream.EnsureRead(daveB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndian<Header>(daveB);
+                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(daveB);
                 daveStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) _headerPath = daveAppleDouble;
@@ -437,7 +438,7 @@ public sealed class AppleDouble : IFilter
             {
                 var osxB = new byte[26];
                 osxStream.EnsureRead(osxB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndian<Header>(osxB);
+                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(osxB);
                 osxStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) _headerPath = osxAppleDouble;
@@ -453,7 +454,7 @@ public sealed class AppleDouble : IFilter
             {
                 var unarB = new byte[26];
                 unarStream.EnsureRead(unarB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndian<Header>(unarB);
+                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(unarB);
                 unarStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) _headerPath = unArAppleDouble;
@@ -468,7 +469,7 @@ public sealed class AppleDouble : IFilter
 
         var hdrB = new byte[26];
         fs.EnsureRead(hdrB, 0, 26);
-        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
 
         var entries = new Entry[_header.entries];
 
@@ -476,7 +477,7 @@ public sealed class AppleDouble : IFilter
         {
             var entry = new byte[12];
             fs.EnsureRead(entry, 0, 12);
-            entries[i] = Marshal.ByteArrayToStructureBigEndian<Entry>(entry);
+            entries[i] = Marshal.ByteArrayToStructureBigEndianGenerated<Entry>(entry);
         }
 
         CreationTime  = DateTime.UtcNow;
@@ -494,7 +495,7 @@ public sealed class AppleDouble : IFilter
                     var datesB = new byte[16];
                     fs.EnsureRead(datesB, 0, 16);
 
-                    FileDates dates = Marshal.ByteArrayToStructureBigEndian<FileDates>(datesB);
+                    FileDates dates = Marshal.ByteArrayToStructureBigEndianGenerated<FileDates>(datesB);
 
                     CreationTime  = DateHandlers.UnixUnsignedToDateTime(dates.creationDate);
                     LastWriteTime = DateHandlers.UnixUnsignedToDateTime(dates.modificationDate);
@@ -507,28 +508,29 @@ public sealed class AppleDouble : IFilter
 
                     if(_macintoshHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        MacFileInfo macinfo = Marshal.ByteArrayToStructureBigEndian<MacFileInfo>(finfo);
+                        MacFileInfo macinfo = Marshal.ByteArrayToStructureBigEndianGenerated<MacFileInfo>(finfo);
 
                         CreationTime  = DateHandlers.MacToDateTime(macinfo.creationDate);
                         LastWriteTime = DateHandlers.MacToDateTime(macinfo.modificationDate);
                     }
                     else if(_proDosHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        ProDOSFileInfo prodosinfo = Marshal.ByteArrayToStructureBigEndian<ProDOSFileInfo>(finfo);
+                        ProDOSFileInfo prodosinfo =
+                            Marshal.ByteArrayToStructureBigEndianGenerated<ProDOSFileInfo>(finfo);
 
                         CreationTime  = DateHandlers.MacToDateTime(prodosinfo.creationDate);
                         LastWriteTime = DateHandlers.MacToDateTime(prodosinfo.modificationDate);
                     }
                     else if(_unixHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        UnixFileInfo unixinfo = Marshal.ByteArrayToStructureBigEndian<UnixFileInfo>(finfo);
+                        UnixFileInfo unixinfo = Marshal.ByteArrayToStructureBigEndianGenerated<UnixFileInfo>(finfo);
 
                         CreationTime  = DateHandlers.UnixUnsignedToDateTime(unixinfo.creationDate);
                         LastWriteTime = DateHandlers.UnixUnsignedToDateTime(unixinfo.modificationDate);
                     }
                     else if(_dosHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        DOSFileInfo dosinfo = Marshal.ByteArrayToStructureBigEndian<DOSFileInfo>(finfo);
+                        DOSFileInfo dosinfo = Marshal.ByteArrayToStructureBigEndianGenerated<DOSFileInfo>(finfo);
 
                         LastWriteTime = DateHandlers.DosToDateTime(dosinfo.modificationDate, dosinfo.modificationTime);
                     }
@@ -564,11 +566,12 @@ public sealed class AppleDouble : IFilter
 #region Nested type: DOSFileInfo
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct DOSFileInfo
+    [SwapEndian]
+    struct DOSFileInfo
     {
-        public readonly ushort modificationDate;
-        public readonly ushort modificationTime;
-        public readonly ushort attributes;
+        public ushort modificationDate;
+        public ushort modificationTime;
+        public ushort attributes;
     }
 
 #endregion
@@ -576,11 +579,12 @@ public sealed class AppleDouble : IFilter
 #region Nested type: Entry
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
     struct Entry
     {
-        public          uint id;
-        public readonly uint offset;
-        public          uint length;
+        public uint id;
+        public uint offset;
+        public uint length;
     }
 
 #endregion
@@ -612,12 +616,13 @@ public sealed class AppleDouble : IFilter
 #region Nested type: FileDates
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct FileDates
+    [SwapEndian]
+    struct FileDates
     {
-        public readonly uint creationDate;
-        public readonly uint modificationDate;
-        public readonly uint backupDate;
-        public readonly uint accessDate;
+        public uint creationDate;
+        public uint modificationDate;
+        public uint backupDate;
+        public uint accessDate;
     }
 
 #endregion
@@ -625,13 +630,14 @@ public sealed class AppleDouble : IFilter
 #region Nested type: Header
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Header
+    [SwapEndian]
+    struct Header
     {
-        public readonly uint magic;
-        public readonly uint version;
+        public uint magic;
+        public uint version;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] homeFilesystem;
-        public readonly ushort entries;
+        public byte[] homeFilesystem;
+        public ushort entries;
     }
 
 #endregion
@@ -639,12 +645,13 @@ public sealed class AppleDouble : IFilter
 #region Nested type: MacFileInfo
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct MacFileInfo
+    [SwapEndian]
+    struct MacFileInfo
     {
-        public readonly uint creationDate;
-        public readonly uint modificationDate;
-        public readonly uint backupDate;
-        public readonly uint accessDate;
+        public uint creationDate;
+        public uint modificationDate;
+        public uint backupDate;
+        public uint accessDate;
     }
 
 #endregion
@@ -652,14 +659,15 @@ public sealed class AppleDouble : IFilter
 #region Nested type: ProDOSFileInfo
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct ProDOSFileInfo
+    [SwapEndian]
+    struct ProDOSFileInfo
     {
-        public readonly uint   creationDate;
-        public readonly uint   modificationDate;
-        public readonly uint   backupDate;
-        public readonly ushort access;
-        public readonly ushort fileType;
-        public readonly uint   auxType;
+        public uint   creationDate;
+        public uint   modificationDate;
+        public uint   backupDate;
+        public ushort access;
+        public ushort fileType;
+        public uint   auxType;
     }
 
 #endregion
@@ -667,11 +675,12 @@ public sealed class AppleDouble : IFilter
 #region Nested type: UnixFileInfo
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct UnixFileInfo
+    [SwapEndian]
+    struct UnixFileInfo
     {
-        public readonly uint creationDate;
-        public readonly uint accessDate;
-        public readonly uint modificationDate;
+        public uint creationDate;
+        public uint accessDate;
+        public uint modificationDate;
     }
 
 #endregion
