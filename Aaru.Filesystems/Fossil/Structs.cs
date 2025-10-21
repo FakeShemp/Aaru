@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
@@ -37,22 +38,23 @@ public sealed partial class Fossil
 #region Nested type: Header
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Header
+    [SwapEndian]
+    partial struct Header
     {
         /// <summary>Magic number</summary>
-        public readonly uint magic;
+        public uint magic;
         /// <summary>Header version</summary>
-        public readonly ushort version;
+        public ushort version;
         /// <summary>Block size</summary>
-        public readonly ushort blockSize;
+        public ushort blockSize;
         /// <summary>Block containing superblock</summary>
-        public readonly uint super;
+        public uint super;
         /// <summary>Block containing labels</summary>
-        public readonly uint label;
+        public uint label;
         /// <summary>Where do data blocks start</summary>
-        public readonly uint data;
+        public uint data;
         /// <summary>How many data blocks does it have</summary>
-        public readonly uint end;
+        public uint end;
     }
 
 #endregion
@@ -60,30 +62,31 @@ public sealed partial class Fossil
 #region Nested type: SuperBlock
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct SuperBlock
+    [SwapEndian]
+    partial struct SuperBlock
     {
         /// <summary>Magic number</summary>
-        public readonly uint magic;
+        public uint magic;
         /// <summary>Header version</summary>
-        public readonly ushort version;
+        public ushort version;
         /// <summary>file system low epoch</summary>
-        public readonly uint epochLow;
+        public uint epochLow;
         /// <summary>file system high(active) epoch</summary>
-        public readonly uint epochHigh;
+        public uint epochHigh;
         /// <summary>next qid to allocate</summary>
-        public readonly ulong qid;
+        public ulong qid;
         /// <summary>data block number: root of active file system</summary>
-        public readonly int active;
+        public int active;
         /// <summary>data block number: root of next file system to archive</summary>
-        public readonly int next;
+        public int next;
         /// <summary>data block number: root of file system currently being archived</summary>
-        public readonly int current;
+        public int current;
         /// <summary>Venti score of last successful archive</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
-        public readonly byte[] last;
+        public byte[] last;
         /// <summary>name of file system(just a comment)</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
-        public readonly byte[] name;
+        public byte[] name;
     }
 
 #endregion
