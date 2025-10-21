@@ -234,6 +234,69 @@ public class SwapEndianGenerator : IIncrementalGenerator
     private static (string code, bool usesEnumHelper) GenerateSwapCode(string      typeName, string fieldName,
                                                                        ITypeSymbol typeSymbol)
     {
+        // Check for arrays BEFORE cleaning the type name
+        if(typeName.Contains("["))
+        {
+            // Handle array types
+            string elementType = typeName.Substring(0, typeName.IndexOf('[')).Trim();
+
+            return elementType switch
+                   {
+                       "short" or "Int16" => ($$"""
+                                                        for (int i = 0; i < result.{{fieldName}}.Length; i++)
+                                                            result.{{fieldName}}[i] = (short)((result.{{fieldName}}[i] << 8) | ((result.{{fieldName}}[i] >> 8) & 0xFF));
+                                                """, false),
+
+                       "ushort" or "UInt16" => ($$"""
+                                                          for (int i = 0; i < result.{{fieldName}}.Length; i++)
+                                                              result.{{fieldName}}[i] = (ushort)((result.{{fieldName}}[i] << 8) | (result.{{fieldName}}[i] >> 8));
+                                                  """, false),
+
+                       "int" or "Int32" => ($$"""
+                                                      for (int i = 0; i < result.{{fieldName}}.Length; i++)
+                                                      {
+                                                          var temp = result.{{fieldName}}[i];
+                                                          temp = (int)((temp << 8) & 0xFF00FF00 | ((uint)temp >> 8) & 0xFF00FF);
+                                                          result.{{fieldName}}[i] = (int)(((uint)temp << 16) | ((uint)temp >> 16) & 0xFFFF);
+                                                      }
+                                              """, false),
+
+                       "uint" or "UInt32" => ($$"""
+                                                        for (int i = 0; i < result.{{fieldName}}.Length; i++)
+                                                        {
+                                                            var temp = result.{{fieldName}}[i];
+                                                            temp = (temp << 8) & 0xFF00FF00 | (temp >> 8) & 0xFF00FF;
+                                                            result.{{fieldName}}[i] = (temp << 16) | (temp >> 16);
+                                                        }
+                                                """, false),
+
+                       "long" or "Int64" => ($$"""
+                                                       for (int i = 0; i < result.{{fieldName}}.Length; i++)
+                                                       {
+                                                           var temp = result.{{fieldName}}[i];
+                                                           temp = (temp & 0x00000000FFFFFFFF) << 32 | (long)(((ulong)temp & 0xFFFFFFFF00000000) >> 32);
+                                                           temp = (temp & 0x0000FFFF0000FFFF) << 16 | (long)(((ulong)temp & 0xFFFF0000FFFF0000) >> 16);
+                                                           result.{{fieldName}}[i] = (temp & 0x00FF00FF00FF00FF) << 8 | (long)(((ulong)temp & 0xFF00FF00FF00FF00) >> 8);
+                                                       }
+                                               """, false),
+
+                       "ulong" or "UInt64" => ($$"""
+                                                         for (int i = 0; i < result.{{fieldName}}.Length; i++)
+                                                         {
+                                                             var temp = result.{{fieldName}}[i];
+                                                             temp = (temp & 0x00000000FFFFFFFF) << 32 | (temp & 0xFFFFFFFF00000000) >> 32;
+                                                             temp = (temp & 0x0000FFFF0000FFFF) << 16 | (temp & 0xFFFF0000FFFF0000) >> 16;
+                                                             result.{{fieldName}}[i] = (temp & 0x00FF00FF00FF00FF) << 8 | (temp & 0xFF00FF00FF00FF00) >> 8;
+                                                         }
+                                                 """, false),
+
+                       "byte" or "Byte" or "sbyte" or "SByte" =>
+                           ($"        // {fieldName} - no swap needed for byte array", false),
+
+                       _ => ($"        // TODO: Implement array swap for {fieldName} (type: {elementType}[])", false)
+                   };
+        }
+
         // Remove array brackets and modifiers for type checking
         string cleanTypeName = typeName.TrimEnd('[', ']', '?').Trim();
 
@@ -292,7 +355,6 @@ public class SwapEndianGenerator : IIncrementalGenerator
 
                           "Guid" => $"        // TODO: Implement GUID swap for {fieldName}",
 
-                          _ when typeName.Contains("[") => $"        // TODO: Implement array swap for {fieldName}",
 
                           _ => null
                       };
