@@ -88,7 +88,7 @@ public sealed partial class CBM
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            Header cbmHdr = Marshal.ByteArrayToStructureBigEndian<Header>(_diskHeader);
+            Header cbmHdr = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(_diskHeader);
 
             if(cbmHdr.diskDosVersion != 0x44 || cbmHdr is not { dosVersion: 0x33, diskVersion: 0x44 })
                 return ErrorNumber.InvalidArgument;
@@ -126,7 +126,7 @@ public sealed partial class CBM
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            BAM cbmBam = Marshal.ByteArrayToStructureBigEndian<BAM>(_bam);
+            BAM cbmBam = Marshal.ByteArrayToStructureBigEndianGenerated<BAM>(_bam);
 
             if(cbmBam is not ({ dosVersion: 0x41, doubleSided   : 0x00 or 0x80 }
                           and { unused1   : 0x00, directoryTrack: 0x12 }))
@@ -143,7 +143,7 @@ public sealed partial class CBM
 
         ulong nextLba                  = rootLba;
         var   rootMs                   = new MemoryStream();
-        bool  relativeFileWarningShown = false;
+        var   relativeFileWarningShown = false;
 
         do
         {
@@ -180,7 +180,7 @@ public sealed partial class CBM
 
         // As this filesystem comes in (by nowadays standards) very small sizes, we can cache all files
         _cache = new Dictionary<string, CachedFile>();
-        int   offset = 0;
+        var   offset = 0;
         ulong fileId = 0;
 
         if(_debug)
@@ -228,7 +228,7 @@ public sealed partial class CBM
 
         while(offset < _root.Length)
         {
-            DirectoryEntry dirEntry = Marshal.ByteArrayToStructureBigEndian<DirectoryEntry>(_root, offset, 32);
+            DirectoryEntry dirEntry = Marshal.ByteArrayToStructureBigEndianGenerated<DirectoryEntry>(_root, offset, 32);
 
             if(dirEntry.fileType == 0)
             {
@@ -240,10 +240,9 @@ public sealed partial class CBM
             _statfs.Files++;
             _statfs.FreeFiles--;
 
-            for(int i = 0; i < dirEntry.name.Length; i++)
-            {
-                if(dirEntry.name[i] == 0xA0) dirEntry.name[i] = 0;
-            }
+            for(var i = 0; i < dirEntry.name.Length; i++)
+                if(dirEntry.name[i] == 0xA0)
+                    dirEntry.name[i] = 0;
 
             string name = StringHandlers.CToString(dirEntry.name, encoding);
 

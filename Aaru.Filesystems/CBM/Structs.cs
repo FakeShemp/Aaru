@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Interfaces;
 using FileAttributes = Aaru.CommonTypes.Structs.FileAttributes;
 
@@ -39,46 +40,47 @@ public sealed partial class CBM
 #region Nested type: BAM
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct BAM
+    [SwapEndian]
+    partial struct BAM
     {
         /// <summary>Track where directory starts</summary>
-        public readonly byte directoryTrack;
+        public byte directoryTrack;
         /// <summary>Sector where directory starts</summary>
-        public readonly byte directorySector;
+        public byte directorySector;
         /// <summary>Disk DOS version, 0x41</summary>
-        public readonly byte dosVersion;
+        public byte dosVersion;
         /// <summary>Set to 0x80 if 1571, 0x00 if not</summary>
-        public readonly byte doubleSided;
+        public byte doubleSided;
         /// <summary>Block allocation map</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 140)]
-        public readonly byte[] bam;
+        public byte[] bam;
         /// <summary>Disk name</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] name;
+        public byte[] name;
         /// <summary>Filled with 0xA0</summary>
-        public readonly ushort fill1;
+        public ushort fill1;
         /// <summary>Disk ID</summary>
-        public readonly ushort diskId;
+        public ushort diskId;
         /// <summary>Filled with 0xA0</summary>
-        public readonly byte fill2;
+        public byte fill2;
         /// <summary>DOS type</summary>
-        public readonly ushort dosType;
+        public ushort dosType;
         /// <summary>Filled with 0xA0</summary>
-        public readonly uint fill3;
+        public uint fill3;
         /// <summary>Unused</summary>
-        public readonly byte unused1;
+        public byte unused1;
         /// <summary>Block allocation map for Dolphin DOS extended tracks</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
-        public readonly byte[] dolphinBam;
+        public byte[] dolphinBam;
         /// <summary>Block allocation map for Speed DOS extended tracks</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
-        public readonly byte[] speedBam;
+        public byte[] speedBam;
         /// <summary>Unused</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 9)]
-        public readonly byte[] unused2;
+        public byte[] unused2;
         /// <summary>Free sector count for second side in 1571</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 9)]
-        public readonly byte[] freeCount;
+        public byte[] freeCount;
     }
 
 #endregion
@@ -138,22 +140,23 @@ public sealed partial class CBM
 #region Nested type: DirectoryEntry
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct DirectoryEntry
+    [SwapEndian]
+    partial struct DirectoryEntry
     {
-        public readonly byte nextDirBlockTrack;
-        public readonly byte nextDirBlockSector;
-        public readonly byte fileType;
-        public readonly byte firstFileBlockTrack;
-        public readonly byte firstFileBlockSector;
+        public byte nextDirBlockTrack;
+        public byte nextDirBlockSector;
+        public byte fileType;
+        public byte firstFileBlockTrack;
+        public byte firstFileBlockSector;
         /// <summary>Filename</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] name;
-        public readonly byte  firstSideBlockTrack;
-        public readonly byte  firstSideBlockSector;
-        public readonly uint  unused;
-        public readonly byte  replacementTrack;
-        public readonly byte  replacementSector;
-        public readonly short blocks;
+        public byte[] name;
+        public byte  firstSideBlockTrack;
+        public byte  firstSideBlockSector;
+        public uint  unused;
+        public byte  replacementTrack;
+        public byte  replacementSector;
+        public short blocks;
     }
 
 #endregion
@@ -161,31 +164,32 @@ public sealed partial class CBM
 #region Nested type: Header
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Header
+    [SwapEndian]
+    partial struct Header
     {
         /// <summary>Track where directory starts</summary>
-        public readonly byte directoryTrack;
+        public byte directoryTrack;
         /// <summary>Sector where directory starts</summary>
-        public readonly byte directorySector;
+        public byte directorySector;
         /// <summary>Disk DOS version, 0x44</summary>
-        public readonly byte diskDosVersion;
+        public byte diskDosVersion;
         /// <summary>Unusued</summary>
-        public readonly byte unused1;
+        public byte unused1;
         /// <summary>Disk name</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] name;
+        public byte[] name;
         /// <summary>Filled with 0xA0</summary>
-        public readonly ushort fill1;
+        public ushort fill1;
         /// <summary>Disk ID</summary>
-        public readonly ushort diskId;
+        public ushort diskId;
         /// <summary>Filled with 0xA0</summary>
-        public readonly byte fill2;
+        public byte fill2;
         /// <summary>DOS version ('3')</summary>
-        public readonly byte dosVersion;
+        public byte dosVersion;
         /// <summary>Disk version ('D')</summary>
-        public readonly byte diskVersion;
+        public byte diskVersion;
         /// <summary>Filled with 0xA0</summary>
-        public readonly short fill3;
+        public short fill3;
     }
 
 #endregion
