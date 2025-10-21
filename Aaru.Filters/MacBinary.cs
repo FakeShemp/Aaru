@@ -60,7 +60,7 @@ public sealed partial class MacBinary : IFilter
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Header
+    partial struct Header
     {
         /// <summary>0x00, MacBinary version, 0</summary>
         public byte version;
