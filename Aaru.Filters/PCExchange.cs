@@ -249,7 +249,7 @@ public sealed partial class PcExchange : IFilter
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Entry
+    partial struct Entry
     {
         /// <summary>
         ///     Name in Macintosh. If PCExchange version supports FAT's LFN they are the same. Illegal characters for FAT get
