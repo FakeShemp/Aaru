@@ -99,7 +99,7 @@ public partial class GameBoy : IByteAddressableImage
             MetadataMediaType    = MetadataMediaType.LinearMedia
         };
 
-        Header header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(_data, 0x100, Marshal.SizeOf<Header>());
+        Header header = Marshal.ByteArrayToStructureBigEndian<Header>(_data, 0x100, Marshal.SizeOf<Header>());
 
         var name = new byte[(header.Name[^1] & 0x80) == 0x80 ? 15 : 16];
         Array.Copy(header.Name, 0, name, 0, name.Length);
@@ -265,7 +265,7 @@ public partial class GameBoy : IByteAddressableImage
             return ErrorNumber.NotOpened;
         }
 
-        Header header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(_data, 0x100, Marshal.SizeOf<Header>());
+        Header header = Marshal.ByteArrayToStructureBigEndian<Header>(_data, 0x100, Marshal.SizeOf<Header>());
 
         var    hasMapper          = false;
         var    hasSaveRam         = false;

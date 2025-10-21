@@ -207,7 +207,7 @@ public partial class Nintendo64 : IByteAddressableImage
             _data = tmp;
         }
 
-        Header   header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(_data, 0, Marshal.SizeOf<Header>());
+        Header   header = Marshal.ByteArrayToStructureBigEndian<Header>(_data, 0, Marshal.SizeOf<Header>());
         Encoding encoding;
 
         try
@@ -306,7 +306,7 @@ public partial class Nintendo64 : IByteAddressableImage
         LinearMemoryType saveType   = LinearMemoryType.Unknown;
         ulong            saveLength = 0;
 
-        Header header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(_data, 0, Marshal.SizeOf<Header>());
+        Header header = Marshal.ByteArrayToStructureBigEndian<Header>(_data, 0, Marshal.SizeOf<Header>());
 
         switch((char)header.CartridgeType)
         {

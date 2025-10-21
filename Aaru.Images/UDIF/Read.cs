@@ -65,7 +65,7 @@ public sealed partial class Udif
         var footerB = new byte[Marshal.SizeOf<Footer>()];
 
         stream.EnsureRead(footerB, 0, Marshal.SizeOf<Footer>());
-        _footer = Marshal.ByteArrayToStructureBigEndianGenerated<Footer>(footerB);
+        _footer = Marshal.ByteArrayToStructureBigEndian<Footer>(footerB);
 
         if(_footer.signature != UDIF_SIGNATURE)
         {
@@ -73,7 +73,7 @@ public sealed partial class Udif
             footerB = new byte[Marshal.SizeOf<Footer>()];
 
             stream.EnsureRead(footerB, 0, Marshal.SizeOf<Footer>());
-            _footer = Marshal.ByteArrayToStructureBigEndianGenerated<Footer>(footerB);
+            _footer = Marshal.ByteArrayToStructureBigEndian<Footer>(footerB);
 
             if(_footer.signature != UDIF_SIGNATURE)
             {
@@ -335,7 +335,7 @@ public sealed partial class Udif
         {
             var bHdrB = new byte[Marshal.SizeOf<BlockHeader>()];
             Array.Copy(blkxBytes, 0, bHdrB, 0, Marshal.SizeOf<BlockHeader>());
-            BlockHeader bHdr = Marshal.ByteArrayToStructureBigEndianGenerated<BlockHeader>(bHdrB);
+            BlockHeader bHdr = Marshal.ByteArrayToStructureBigEndian<BlockHeader>(bHdrB);
 
             AaruLogging.Debug(MODULE_NAME, "bHdr.signature = 0x{0:X8}",  bHdr.signature);
             AaruLogging.Debug(MODULE_NAME, "bHdr.version = {0}",         bHdr.version);
@@ -371,7 +371,7 @@ public sealed partial class Udif
                            0,
                            Marshal.SizeOf<BlockChunk>());
 
-                BlockChunk bChnk = Marshal.ByteArrayToStructureBigEndianGenerated<BlockChunk>(bChnkB);
+                BlockChunk bChnk = Marshal.ByteArrayToStructureBigEndian<BlockChunk>(bChnkB);
 
                 AaruLogging.Debug(MODULE_NAME, "bHdr.chunk[{0}].type = 0x{1:X8}", i, bChnk.type);
                 AaruLogging.Debug(MODULE_NAME, "bHdr.chunk[{0}].comment = {1}",   i, bChnk.comment);

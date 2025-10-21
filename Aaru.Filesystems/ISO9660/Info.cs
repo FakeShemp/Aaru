@@ -185,7 +185,7 @@ public sealed partial class ISO9660
                     if(highSierraInfo)
                         hsvd = Marshal.ByteArrayToStructureLittleEndian<HighSierraPrimaryVolumeDescriptor>(vdSector);
                     else if(cdiInfo)
-                        fsvd = Marshal.ByteArrayToStructureBigEndianGenerated<FileStructureVolumeDescriptor>(vdSector);
+                        fsvd = Marshal.ByteArrayToStructureBigEndian<FileStructureVolumeDescriptor>(vdSector);
                     else
                         pvd = Marshal.ByteArrayToStructureLittleEndian<PrimaryVolumeDescriptor>(vdSector);
 
@@ -319,7 +319,7 @@ public sealed partial class ISO9660
 
                     if(Marshal.SizeOf<CdromXa>() + saOff <= saLen)
                     {
-                        CdromXa xa = Marshal.ByteArrayToStructureBigEndianGenerated<CdromXa>(sa);
+                        CdromXa xa = Marshal.ByteArrayToStructureBigEndian<CdromXa>(sa);
 
                         if(xa.signature == XA_MAGIC)
                         {
@@ -397,7 +397,7 @@ public sealed partial class ISO9660
                                         Array.Copy(sa, saOff, ce, 0, ce.Length);
 
                                         ContinuationArea ca =
-                                            Marshal.ByteArrayToStructureBigEndianGenerated<ContinuationArea>(ce);
+                                            Marshal.ByteArrayToStructureBigEndian<ContinuationArea>(ce);
 
                                         contareas.Add(ca);
 
@@ -515,7 +515,7 @@ public sealed partial class ISO9660
 
             foreach(byte[] erb in refareas)
             {
-                ReferenceArea er    = Marshal.ByteArrayToStructureBigEndianGenerated<ReferenceArea>(erb);
+                ReferenceArea er    = Marshal.ByteArrayToStructureBigEndian<ReferenceArea>(erb);
                 string        extId = encoding.GetString(erb, Marshal.SizeOf<ReferenceArea>(), er.id_len);
 
                 string extDes = encoding.GetString(erb, Marshal.SizeOf<ReferenceArea>() + er.id_len, er.des_len);

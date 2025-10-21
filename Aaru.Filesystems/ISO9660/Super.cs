@@ -182,7 +182,7 @@ public sealed partial class ISO9660
                     if(_highSierra)
                         hsvd = Marshal.ByteArrayToStructureLittleEndian<HighSierraPrimaryVolumeDescriptor>(vdSector);
                     else if(_cdi)
-                        fsvd = Marshal.ByteArrayToStructureBigEndianGenerated<FileStructureVolumeDescriptor>(vdSector);
+                        fsvd = Marshal.ByteArrayToStructureBigEndian<FileStructureVolumeDescriptor>(vdSector);
                     else
                         pvd = Marshal.ByteArrayToStructureLittleEndian<PrimaryVolumeDescriptor>(vdSector);
 
@@ -423,7 +423,7 @@ public sealed partial class ISO9660
             if(errno != ErrorNumber.NoError) return errno;
 
             CdiDirectoryRecord rootEntry =
-                Marshal.ByteArrayToStructureBigEndianGenerated<CdiDirectoryRecord>(firstRootSector);
+                Marshal.ByteArrayToStructureBigEndian<CdiDirectoryRecord>(firstRootSector);
 
             rootSize = rootEntry.size;
 

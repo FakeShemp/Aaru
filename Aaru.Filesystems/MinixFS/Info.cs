@@ -224,7 +224,7 @@ public sealed partial class MinixFS
         {
             SuperBlock3 mnxSb = littleEndian
                                     ? Marshal.ByteArrayToStructureLittleEndian<SuperBlock3>(minixSbSector)
-                                    : Marshal.ByteArrayToStructureBigEndianGenerated<SuperBlock3>(minixSbSector);
+                                    : Marshal.ByteArrayToStructureBigEndian<SuperBlock3>(minixSbSector);
 
             if(magic != MINIX3_MAGIC && magic != MINIX3_CIGAM) mnxSb.s_blocksize = 1024;
 
@@ -268,7 +268,7 @@ public sealed partial class MinixFS
         {
             SuperBlock mnxSb = littleEndian
                                    ? Marshal.ByteArrayToStructureLittleEndian<SuperBlock>(minixSbSector)
-                                   : Marshal.ByteArrayToStructureBigEndianGenerated<SuperBlock>(minixSbSector);
+                                   : Marshal.ByteArrayToStructureBigEndian<SuperBlock>(minixSbSector);
 
             sb.AppendLine(minixVersion);
             sb.AppendFormat(Localization._0_chars_in_filename, filenamesize).AppendLine();

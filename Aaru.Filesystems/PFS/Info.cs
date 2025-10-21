@@ -68,7 +68,7 @@ public sealed partial class PFS
 
         if(errno != ErrorNumber.NoError) return;
 
-        RootBlock rootBlock = Marshal.ByteArrayToStructureBigEndianGenerated<RootBlock>(rootBlockSector);
+        RootBlock rootBlock = Marshal.ByteArrayToStructureBigEndian<RootBlock>(rootBlockSector);
 
         var sbInformation = new StringBuilder();
         metadata = new FileSystem();

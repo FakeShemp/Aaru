@@ -233,7 +233,7 @@ public sealed partial class MacBinary : IFilter
 
         var hdrB = new byte[128];
         Array.Copy(buffer, 0, hdrB, 0, 128);
-        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
 
         return _header.magic == MAGIC ||
                _header.version     == 0             &&
@@ -252,7 +252,7 @@ public sealed partial class MacBinary : IFilter
         var hdrB = new byte[128];
         stream.Seek(0, SeekOrigin.Begin);
         stream.EnsureRead(hdrB, 0, 128);
-        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
 
         return _header.magic == MAGIC ||
                _header.version     == 0             &&
@@ -274,7 +274,7 @@ public sealed partial class MacBinary : IFilter
 
         var hdrB = new byte[128];
         fstream.EnsureRead(hdrB, 0, 128);
-        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
 
         fstream.Close();
 
@@ -295,7 +295,7 @@ public sealed partial class MacBinary : IFilter
 
         var hdrB = new byte[128];
         ms.EnsureRead(hdrB, 0, 128);
-        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
 
         uint blocks = 1;
         blocks += (uint)(_header.secondaryHeaderLength / 128);
@@ -327,7 +327,7 @@ public sealed partial class MacBinary : IFilter
 
         var hdrB = new byte[128];
         stream.EnsureRead(hdrB, 0, 128);
-        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
 
         uint blocks = 1;
         blocks += (uint)(_header.secondaryHeaderLength / 128);
@@ -360,7 +360,7 @@ public sealed partial class MacBinary : IFilter
 
         var hdrB = new byte[128];
         fs.EnsureRead(hdrB, 0, 128);
-        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
 
         uint blocks = 1;
         blocks += (uint)(_header.secondaryHeaderLength / 128);

@@ -137,7 +137,7 @@ public sealed partial class PcExchange : IFilter
             var datEntry  = new Entry();
             var datEntryB = new byte[Marshal.SizeOf(datEntry)];
             finderDatStream.EnsureRead(datEntryB, 0, Marshal.SizeOf(datEntry));
-            datEntry = Helpers.Marshal.ByteArrayToStructureBigEndianGenerated<Entry>(datEntryB);
+            datEntry = Helpers.Marshal.ByteArrayToStructureBigEndian<Entry>(datEntryB);
 
             // TODO: Add support for encoding on filters
             string macName = StringHandlers.PascalToString(datEntry.macName, Encoding.GetEncoding("macintosh"));
@@ -194,7 +194,7 @@ public sealed partial class PcExchange : IFilter
             var datEntry  = new Entry();
             var datEntryB = new byte[Marshal.SizeOf(datEntry)];
             finderDatStream.EnsureRead(datEntryB, 0, Marshal.SizeOf(datEntry));
-            datEntry = Helpers.Marshal.ByteArrayToStructureBigEndianGenerated<Entry>(datEntryB);
+            datEntry = Helpers.Marshal.ByteArrayToStructureBigEndian<Entry>(datEntryB);
 
             string macName = StringHandlers.PascalToString(datEntry.macName, Encoding.GetEncoding("macintosh"));
 

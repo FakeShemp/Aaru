@@ -119,8 +119,8 @@ public sealed partial class VTOC : IPartition
         }
         else
         {
-            pd    = Marshal.ByteArrayToStructureBigEndianGenerated<PDInfo>(pdsector);
-            pdold = Marshal.ByteArrayToStructureBigEndianGenerated<PDInfoOld>(pdsector);
+            pd    = Marshal.ByteArrayToStructureBigEndian<PDInfo>(pdsector);
+            pdold = Marshal.ByteArrayToStructureBigEndian<PDInfoOld>(pdsector);
         }
 
         AaruLogging.Debug(MODULE_NAME, "pdinfo.driveid = {0}", pd.driveid);
@@ -186,7 +186,7 @@ public sealed partial class VTOC : IPartition
                 vtoc = Marshal.ByteArrayToStructureLittleEndian<Vtoc>(vtocsector);
             else
             {
-                vtoc = Marshal.ByteArrayToStructureBigEndianGenerated<Vtoc>(vtocsector);
+                vtoc = Marshal.ByteArrayToStructureBigEndian<Vtoc>(vtocsector);
 
                 for(var i = 0; i < vtoc.v_part.Length; i++)
                 {
@@ -213,7 +213,7 @@ public sealed partial class VTOC : IPartition
                     vtocOld = Marshal.ByteArrayToStructureLittleEndian<VTocOld>(vtocsector);
                 else
                 {
-                    vtocOld = Marshal.ByteArrayToStructureBigEndianGenerated<VTocOld>(vtocsector);
+                    vtocOld = Marshal.ByteArrayToStructureBigEndian<VTocOld>(vtocsector);
 
                     for(var i = 0; i < vtocOld.v_part.Length; i++)
                     {
@@ -266,7 +266,7 @@ public sealed partial class VTOC : IPartition
                     vtoc = Marshal.ByteArrayToStructureLittleEndian<Vtoc>(vtocsector);
                 else
                 {
-                    vtoc = Marshal.ByteArrayToStructureBigEndianGenerated<Vtoc>(vtocsector);
+                    vtoc = Marshal.ByteArrayToStructureBigEndian<Vtoc>(vtocsector);
 
                     for(var i = 0; i < vtoc.v_part.Length; i++)
                     {

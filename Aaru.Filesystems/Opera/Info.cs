@@ -74,7 +74,7 @@ public sealed partial class OperaFS
 
         if(errno != ErrorNumber.NoError) return;
 
-        SuperBlock sb = Marshal.ByteArrayToStructureBigEndianGenerated<SuperBlock>(sbSector);
+        SuperBlock sb = Marshal.ByteArrayToStructureBigEndian<SuperBlock>(sbSector);
 
         if(sb.record_type != 1 || sb.record_version != 1) return;
 

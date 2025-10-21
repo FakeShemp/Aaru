@@ -132,7 +132,7 @@ public sealed partial class BeFS
 
         besb = littleEndian
                    ? Marshal.ByteArrayToStructureLittleEndian<SuperBlock>(sbSector)
-                   : Marshal.ByteArrayToStructureBigEndianGenerated<SuperBlock>(sbSector);
+                   : Marshal.ByteArrayToStructureBigEndian<SuperBlock>(sbSector);
 
         sb.AppendLine(littleEndian ? Localization.Little_endian_BeFS : Localization.Big_endian_BeFS);
 

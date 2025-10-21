@@ -85,7 +85,7 @@ public sealed partial class Ndif
         {
             if(bcem.Length < 128) return ErrorNumber.InvalidArgument;
 
-            _header = Marshal.ByteArrayToStructureBigEndianGenerated<ChunkHeader>(bcem);
+            _header = Marshal.ByteArrayToStructureBigEndian<ChunkHeader>(bcem);
 
             AaruLogging.Debug(MODULE_NAME, "footer.type = {0}",   _header.version);
             AaruLogging.Debug(MODULE_NAME, "footer.driver = {0}", _header.driver);

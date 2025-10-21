@@ -59,7 +59,7 @@ public sealed partial class AppleMFS
             entry.flTyp = _directoryBlocks[offset + 1];
 
             entry.flUsrWds =
-                Marshal.ByteArrayToStructureBigEndianGenerated<AppleCommon.FInfo>(_directoryBlocks, offset + 2, 16);
+                Marshal.ByteArrayToStructureBigEndian<AppleCommon.FInfo>(_directoryBlocks, offset + 2, 16);
 
             entry.flFlNum  = BigEndianBitConverter.ToUInt32(_directoryBlocks, offset + 18);
             entry.flStBlk  = BigEndianBitConverter.ToUInt16(_directoryBlocks, offset + 22);

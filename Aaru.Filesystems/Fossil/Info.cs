@@ -53,7 +53,7 @@ public sealed partial class Fossil
 
         if(errno != ErrorNumber.NoError) return false;
 
-        Header hdr = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(sector);
+        Header hdr = Marshal.ByteArrayToStructureBigEndian<Header>(sector);
 
         AaruLogging.Debug(MODULE_NAME, Localization.magic_at_0_expected_1, hdr.magic, FOSSIL_HDR_MAGIC);
 
@@ -77,7 +77,7 @@ public sealed partial class Fossil
 
         if(errno != ErrorNumber.NoError) return;
 
-        Header hdr = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(sector);
+        Header hdr = Marshal.ByteArrayToStructureBigEndian<Header>(sector);
 
         AaruLogging.Debug(MODULE_NAME, Localization.magic_at_0_expected_1, hdr.magic, FOSSIL_HDR_MAGIC);
 
@@ -103,7 +103,7 @@ public sealed partial class Fossil
         if(sbLocation <= partition.End)
         {
             imagePlugin.ReadSector(sbLocation, out sector);
-            SuperBlock fsb = Marshal.ByteArrayToStructureBigEndianGenerated<SuperBlock>(sector);
+            SuperBlock fsb = Marshal.ByteArrayToStructureBigEndian<SuperBlock>(sector);
 
             AaruLogging.Debug(MODULE_NAME, Localization.magic_0_expected_1, fsb.magic, FOSSIL_SB_MAGIC);
 

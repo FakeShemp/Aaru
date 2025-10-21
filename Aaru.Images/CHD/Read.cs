@@ -84,7 +84,7 @@ public sealed partial class Chd
         {
             case 1:
             {
-                HeaderV1 hdrV1 = Marshal.ByteArrayToStructureBigEndianGenerated<HeaderV1>(buffer);
+                HeaderV1 hdrV1 = Marshal.ByteArrayToStructureBigEndian<HeaderV1>(buffer);
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV1.tag = \"{0}\"", Encoding.ASCII.GetString(hdrV1.tag));
 
@@ -159,7 +159,7 @@ public sealed partial class Chd
 
             case 2:
             {
-                HeaderV2 hdrV2 = Marshal.ByteArrayToStructureBigEndianGenerated<HeaderV2>(buffer);
+                HeaderV2 hdrV2 = Marshal.ByteArrayToStructureBigEndian<HeaderV2>(buffer);
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV2.tag = \"{0}\"", Encoding.ASCII.GetString(hdrV2.tag));
 
@@ -237,7 +237,7 @@ public sealed partial class Chd
 
             case 3:
             {
-                HeaderV3 hdrV3 = Marshal.ByteArrayToStructureBigEndianGenerated<HeaderV3>(buffer);
+                HeaderV3 hdrV3 = Marshal.ByteArrayToStructureBigEndian<HeaderV3>(buffer);
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV3.tag = \"{0}\"", Encoding.ASCII.GetString(hdrV3.tag));
 
@@ -293,7 +293,7 @@ public sealed partial class Chd
 
             case 4:
             {
-                HeaderV4 hdrV4 = Marshal.ByteArrayToStructureBigEndianGenerated<HeaderV4>(buffer);
+                HeaderV4 hdrV4 = Marshal.ByteArrayToStructureBigEndian<HeaderV4>(buffer);
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV4.tag = \"{0}\"", Encoding.ASCII.GetString(hdrV4.tag));
 
@@ -348,7 +348,7 @@ public sealed partial class Chd
 
                 return ErrorNumber.NotImplemented;
 
-                HeaderV5 hdrV5 = Marshal.ByteArrayToStructureBigEndianGenerated<HeaderV5>(buffer);
+                HeaderV5 hdrV5 = Marshal.ByteArrayToStructureBigEndian<HeaderV5>(buffer);
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV5.tag = \"{0}\"", Encoding.ASCII.GetString(hdrV5.tag));
 
@@ -477,7 +477,7 @@ public sealed partial class Chd
                 var hdrBytes = new byte[16];
                 stream.Seek((long)nextMetaOff, SeekOrigin.Begin);
                 stream.EnsureRead(hdrBytes, 0, hdrBytes.Length);
-                MetadataHeader header = Marshal.ByteArrayToStructureBigEndianGenerated<MetadataHeader>(hdrBytes);
+                MetadataHeader header = Marshal.ByteArrayToStructureBigEndian<MetadataHeader>(hdrBytes);
                 var            meta   = new byte[header.flagsAndLength & 0xFFFFFF];
                 stream.EnsureRead(meta, 0, meta.Length);
 

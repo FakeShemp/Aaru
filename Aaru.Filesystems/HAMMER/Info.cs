@@ -84,7 +84,7 @@ public sealed partial class HAMMER
 
         SuperBlock superBlock = magic == HAMMER_FSBUF_VOLUME
                                     ? Marshal.ByteArrayToStructureLittleEndian<SuperBlock>(sbSector)
-                                    : Marshal.ByteArrayToStructureBigEndianGenerated<SuperBlock>(sbSector);
+                                    : Marshal.ByteArrayToStructureBigEndian<SuperBlock>(sbSector);
 
         sb.AppendLine(Localization.HAMMER_filesystem);
 

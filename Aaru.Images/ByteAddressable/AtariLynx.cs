@@ -103,7 +103,7 @@ public partial class AtariLynx : IByteAddressableImage
             MetadataMediaType    = MetadataMediaType.LinearMedia
         };
 
-        HandyHeader header = Marshal.ByteArrayToStructureBigEndianGenerated<HandyHeader>(headerBytes, 0, 64);
+        HandyHeader header = Marshal.ByteArrayToStructureBigEndian<HandyHeader>(headerBytes, 0, 64);
 
         if(header.Version != 256) return ErrorNumber.NotSupported;
 

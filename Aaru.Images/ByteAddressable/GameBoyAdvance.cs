@@ -98,7 +98,7 @@ public partial class GameBoyAdvance : IByteAddressableImage
             MetadataMediaType    = MetadataMediaType.LinearMedia
         };
 
-        Header header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(_data, 0, Marshal.SizeOf<Header>());
+        Header header = Marshal.ByteArrayToStructureBigEndian<Header>(_data, 0, Marshal.SizeOf<Header>());
 
         _imageInfo.MediaTitle = StringHandlers.CToString(header.Name);
 

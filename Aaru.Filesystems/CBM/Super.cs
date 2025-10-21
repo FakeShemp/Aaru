@@ -88,7 +88,7 @@ public sealed partial class CBM
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            Header cbmHdr = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(_diskHeader);
+            Header cbmHdr = Marshal.ByteArrayToStructureBigEndian<Header>(_diskHeader);
 
             if(cbmHdr.diskDosVersion != 0x44 || cbmHdr is not { dosVersion: 0x33, diskVersion: 0x44 })
                 return ErrorNumber.InvalidArgument;
@@ -126,7 +126,7 @@ public sealed partial class CBM
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            BAM cbmBam = Marshal.ByteArrayToStructureBigEndianGenerated<BAM>(_bam);
+            BAM cbmBam = Marshal.ByteArrayToStructureBigEndian<BAM>(_bam);
 
             if(cbmBam is not ({ dosVersion: 0x41, doubleSided   : 0x00 or 0x80 }
                           and { unused1   : 0x00, directoryTrack: 0x12 }))
@@ -228,7 +228,7 @@ public sealed partial class CBM
 
         while(offset < _root.Length)
         {
-            DirectoryEntry dirEntry = Marshal.ByteArrayToStructureBigEndianGenerated<DirectoryEntry>(_root, offset, 32);
+            DirectoryEntry dirEntry = Marshal.ByteArrayToStructureBigEndian<DirectoryEntry>(_root, offset, 32);
 
             if(dirEntry.fileType == 0)
             {

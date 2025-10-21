@@ -104,7 +104,7 @@ public sealed partial class AppleMap : IPartition
         }
 
         AppleDriverDescriptorMap ddm =
-            Marshal.ByteArrayToStructureBigEndianGenerated<AppleDriverDescriptorMap>(ddmSector);
+            Marshal.ByteArrayToStructureBigEndian<AppleDriverDescriptorMap>(ddmSector);
 
         AaruLogging.Debug(MODULE_NAME, "ddm.sbSig = 0x{0:X4}",  ddm.sbSig);
         AaruLogging.Debug(MODULE_NAME, "ddm.sbBlockSize = {0}", ddm.sbBlockSize);
@@ -126,7 +126,7 @@ public sealed partial class AppleMap : IPartition
                 {
                     var tmp = new byte[8];
                     Array.Copy(ddmSector, 18 + i * 8, tmp, 0, 8);
-                    ddm.sbMap[i] = Marshal.ByteArrayToStructureBigEndianGenerated<AppleDriverEntry>(tmp);
+                    ddm.sbMap[i] = Marshal.ByteArrayToStructureBigEndian<AppleDriverEntry>(tmp);
 
                     AaruLogging.Debug(MODULE_NAME, "ddm.sbMap[{1}].ddBlock = {0}", ddm.sbMap[i].ddBlock, i);
 
@@ -160,7 +160,7 @@ public sealed partial class AppleMap : IPartition
         if(errno != ErrorNumber.NoError) return false;
 
         AppleOldDevicePartitionMap oldMap =
-            Marshal.ByteArrayToStructureBigEndianGenerated<AppleOldDevicePartitionMap>(partSector);
+            Marshal.ByteArrayToStructureBigEndian<AppleOldDevicePartitionMap>(partSector);
 
         // This is the easy one, no sector size mixing
         if(oldMap.pdSig == APM_MAGIC_OLD)
@@ -171,7 +171,7 @@ public sealed partial class AppleMap : IPartition
                 Array.Copy(partSector, i, tmp, 0, 12);
 
                 AppleMapOldPartitionEntry oldEntry =
-                    Marshal.ByteArrayToStructureBigEndianGenerated<AppleMapOldPartitionEntry>(tmp);
+                    Marshal.ByteArrayToStructureBigEndian<AppleMapOldPartitionEntry>(tmp);
 
                 AaruLogging.Debug(MODULE_NAME, "old_map.sbMap[{1}].pdStart = {0}", oldEntry.pdStart, (i - 2) / 12);
 
@@ -216,7 +216,7 @@ public sealed partial class AppleMap : IPartition
         {
             var tmp = new byte[512];
             Array.Copy(ddmSector, 512, tmp, 0, 512);
-            entry = Marshal.ByteArrayToStructureBigEndianGenerated<AppleMapPartitionEntry>(tmp);
+            entry = Marshal.ByteArrayToStructureBigEndian<AppleMapPartitionEntry>(tmp);
 
             // Check for a partition entry that's 512-byte aligned
             if(entry.signature == APM_MAGIC)
@@ -229,7 +229,7 @@ public sealed partial class AppleMap : IPartition
             }
             else
             {
-                entry = Marshal.ByteArrayToStructureBigEndianGenerated<AppleMapPartitionEntry>(partSector);
+                entry = Marshal.ByteArrayToStructureBigEndian<AppleMapPartitionEntry>(partSector);
 
                 if(entry.signature == APM_MAGIC)
                 {
@@ -245,7 +245,7 @@ public sealed partial class AppleMap : IPartition
         }
         else
         {
-            entry = Marshal.ByteArrayToStructureBigEndianGenerated<AppleMapPartitionEntry>(partSector);
+            entry = Marshal.ByteArrayToStructureBigEndian<AppleMapPartitionEntry>(partSector);
 
             if(entry.signature == APM_MAGIC)
             {
@@ -276,7 +276,7 @@ public sealed partial class AppleMap : IPartition
         {
             var tmp = new byte[entrySize];
             Array.Copy(entries, i * entrySize, tmp, 0, entrySize);
-            entry = Marshal.ByteArrayToStructureBigEndianGenerated<AppleMapPartitionEntry>(tmp);
+            entry = Marshal.ByteArrayToStructureBigEndian<AppleMapPartitionEntry>(tmp);
 
             if(entry.signature != APM_MAGIC) continue;
 

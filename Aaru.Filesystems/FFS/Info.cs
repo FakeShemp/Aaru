@@ -220,7 +220,7 @@ public sealed partial class FFSPlugin
 
         SuperBlock sb = Marshal.ByteArrayToStructureLittleEndian<SuperBlock>(ufs_sb_sectors);
 
-        SuperBlock bs_sfu = Marshal.ByteArrayToStructureBigEndianGenerated<SuperBlock>(ufs_sb_sectors);
+        SuperBlock bs_sfu = Marshal.ByteArrayToStructureBigEndian<SuperBlock>(ufs_sb_sectors);
 
         if(bs_sfu.fs_magic == UFS_MAGIC     && sb.fs_magic == UFS_CIGAM    ||
            bs_sfu.fs_magic == UFS_MAGIC_BW  && sb.fs_magic == UFS_CIGAM_BW ||

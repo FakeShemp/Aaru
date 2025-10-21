@@ -93,10 +93,10 @@ public sealed partial class HPOFS
         BiosParameterBlock bpb = Marshal.ByteArrayToStructureLittleEndian<BiosParameterBlock>(hpofsBpbSector);
 
         MediaInformationBlock mib =
-            Marshal.ByteArrayToStructureBigEndianGenerated<MediaInformationBlock>(medInfoSector);
+            Marshal.ByteArrayToStructureBigEndian<MediaInformationBlock>(medInfoSector);
 
         VolumeInformationBlock vib =
-            Marshal.ByteArrayToStructureBigEndianGenerated<VolumeInformationBlock>(volInfoSector);
+            Marshal.ByteArrayToStructureBigEndian<VolumeInformationBlock>(volInfoSector);
 
         AaruLogging.Debug(MODULE_NAME, "bpb.oem_name = \"{0}\"", StringHandlers.CToString(bpb.oem_name));
 

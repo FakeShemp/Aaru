@@ -225,7 +225,7 @@ public partial class SegaMegaDrive : IByteAddressableImage
         }
 
         SegaHeader header =
-            Marshal.ByteArrayToStructureBigEndianGenerated<SegaHeader>(_data, 0x100, Marshal.SizeOf<SegaHeader>());
+            Marshal.ByteArrayToStructureBigEndian<SegaHeader>(_data, 0x100, Marshal.SizeOf<SegaHeader>());
 
         Encoding encoding;
 
@@ -540,7 +540,7 @@ public partial class SegaMegaDrive : IByteAddressableImage
         }
 
         SegaHeader header =
-            Marshal.ByteArrayToStructureBigEndianGenerated<SegaHeader>(_data, 0x100, Marshal.SizeOf<SegaHeader>());
+            Marshal.ByteArrayToStructureBigEndian<SegaHeader>(_data, 0x100, Marshal.SizeOf<SegaHeader>());
 
         bool extraRam = header.ExtraRamPresent[0] == 0x52 && header.ExtraRamPresent[1] == 0x41;
 

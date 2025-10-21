@@ -89,7 +89,7 @@ public sealed partial class Xbox : IPartition
         if(errno != ErrorNumber.NoError || sector.Length < 512) return false;
 
         Xbox360DevKitPartitionTable table =
-            Marshal.ByteArrayToStructureBigEndianGenerated<Xbox360DevKitPartitionTable>(sector);
+            Marshal.ByteArrayToStructureBigEndian<Xbox360DevKitPartitionTable>(sector);
 
         if(table.magic                             == XBOX360_DEVKIT_MAGIC     &&
            table.contentOff   + table.contentLen   <= imagePlugin.Info.Sectors &&

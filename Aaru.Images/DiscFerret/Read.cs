@@ -66,7 +66,7 @@ public sealed partial class DiscFerret
 
             var blk = new byte[Marshal.SizeOf<BlockHeader>()];
             stream.EnsureRead(blk, 0, Marshal.SizeOf<BlockHeader>());
-            BlockHeader blockHeader = Marshal.ByteArrayToStructureBigEndianGenerated<BlockHeader>(blk);
+            BlockHeader blockHeader = Marshal.ByteArrayToStructureBigEndian<BlockHeader>(blk);
 
             AaruLogging.Debug(MODULE_NAME, "block@{0}.cylinder = {1}", thisOffset, blockHeader.cylinder);
 

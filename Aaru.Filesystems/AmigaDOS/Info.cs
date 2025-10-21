@@ -60,7 +60,7 @@ public sealed partial class AmigaDOSPlugin
 
         if(errno != ErrorNumber.NoError) return false;
 
-        BootBlock bblk = Marshal.ByteArrayToStructureBigEndianGenerated<BootBlock>(sector);
+        BootBlock bblk = Marshal.ByteArrayToStructureBigEndian<BootBlock>(sector);
 
         // AROS boot floppies...
         if(sector.Length               >= 512      &&
@@ -73,7 +73,7 @@ public sealed partial class AmigaDOSPlugin
 
             if(errno != ErrorNumber.NoError) return false;
 
-            bblk = Marshal.ByteArrayToStructureBigEndianGenerated<BootBlock>(sector);
+            bblk = Marshal.ByteArrayToStructureBigEndian<BootBlock>(sector);
         }
 
         // Not FFS or MuFS?
@@ -166,7 +166,7 @@ public sealed partial class AmigaDOSPlugin
 
         if(errno != ErrorNumber.NoError) return;
 
-        BootBlock bootBlk = Marshal.ByteArrayToStructureBigEndianGenerated<BootBlock>(bootBlockSectors);
+        BootBlock bootBlk = Marshal.ByteArrayToStructureBigEndian<BootBlock>(bootBlockSectors);
         bootBlk.bootCode = new byte[bootBlockSectors.Length - 12];
         Array.Copy(bootBlockSectors, 12, bootBlk.bootCode, 0, bootBlk.bootCode.Length);
         bootBlockSectors[4] = bootBlockSectors[5] = bootBlockSectors[6] = bootBlockSectors[7] = 0;

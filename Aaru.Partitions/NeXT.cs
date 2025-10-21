@@ -119,10 +119,10 @@ public sealed partial class NeXTDisklabel : IPartition
 
         if(errno != ErrorNumber.NoError) return false;
 
-        Label label    = Marshal.ByteArrayToStructureBigEndianGenerated<Label>(labelSector);
+        Label label    = Marshal.ByteArrayToStructureBigEndian<Label>(labelSector);
         var   disktabB = new byte[498];
         Array.Copy(labelSector, 44, disktabB, 0, 498);
-        label.dl_dt              = Marshal.ByteArrayToStructureBigEndianGenerated<DiskTab>(disktabB);
+        label.dl_dt              = Marshal.ByteArrayToStructureBigEndian<DiskTab>(disktabB);
         label.dl_dt.d_partitions = new Entry[8];
 
         AaruLogging.Debug(MODULE_NAME, "label.dl_version = 0x{0:X8}", label.dl_version);
@@ -169,7 +169,7 @@ public sealed partial class NeXTDisklabel : IPartition
         {
             var partB = new byte[44];
             Array.Copy(labelSector, 44 + 146 + 44 * i, partB, 0, 44);
-            label.dl_dt.d_partitions[i] = Marshal.ByteArrayToStructureBigEndianGenerated<Entry>(partB);
+            label.dl_dt.d_partitions[i] = Marshal.ByteArrayToStructureBigEndian<Entry>(partB);
 
             AaruLogging.Debug(MODULE_NAME,
                               "label.dl_dt.d_partitions[{0}].p_base = {1}",

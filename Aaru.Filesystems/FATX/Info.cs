@@ -48,7 +48,7 @@ public sealed partial class XboxFatPlugin
 
         if(errno != ErrorNumber.NoError) return false;
 
-        Superblock sb = Marshal.ByteArrayToStructureBigEndianGenerated<Superblock>(sector);
+        Superblock sb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
 
         return sb.magic is FATX_MAGIC or FATX_CIGAM;
     }
@@ -68,7 +68,7 @@ public sealed partial class XboxFatPlugin
 
         if(errno != ErrorNumber.NoError) return;
 
-        Superblock fatxSb = Marshal.ByteArrayToStructureBigEndianGenerated<Superblock>(sector);
+        Superblock fatxSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
 
         if(fatxSb.magic == FATX_CIGAM)
         {

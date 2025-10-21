@@ -26,7 +26,7 @@ public sealed partial class Stfs
 
         stream.ReadExactly(hdr, 0, hdr.Length);
 
-        RemotePackage header = Marshal.ByteArrayToStructureBigEndianGenerated<RemotePackage>(hdr);
+        RemotePackage header = Marshal.ByteArrayToStructureBigEndian<RemotePackage>(hdr);
 
         if(header.Magic is not (PackageMagic.Console or PackageMagic.Live or PackageMagic.Microsoft)) return false;
 
@@ -51,7 +51,7 @@ public sealed partial class Stfs
         // Reverse positions that hold UTF16-BE strings
         ReverseShorts(hdr, 0x0411, 0x1300);
 
-        RemotePackage header = Marshal.ByteArrayToStructureBigEndianGenerated<RemotePackage>(hdr);
+        RemotePackage header = Marshal.ByteArrayToStructureBigEndian<RemotePackage>(hdr);
 
         if(header.Magic is not (PackageMagic.Console or PackageMagic.Live or PackageMagic.Microsoft)) return;
 
@@ -78,7 +78,7 @@ public sealed partial class Stfs
 
         if(header.Magic == PackageMagic.Console)
         {
-            ConsolePackage consolePackage = Marshal.ByteArrayToStructureBigEndianGenerated<ConsolePackage>(hdr);
+            ConsolePackage consolePackage = Marshal.ByteArrayToStructureBigEndian<ConsolePackage>(hdr);
 
             sb.AppendFormat(Localization.Certificate_owner_console_ID_0_1_2_3_4,
                             consolePackage.CertificateOwnerConsoleId[0],

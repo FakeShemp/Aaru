@@ -99,7 +99,7 @@ public sealed partial class Human68K : IPartition
 
         if(errno != ErrorNumber.NoError) return false;
 
-        Table table = Marshal.ByteArrayToStructureBigEndianGenerated<Table>(sector);
+        Table table = Marshal.ByteArrayToStructureBigEndian<Table>(sector);
 
         AaruLogging.Debug(MODULE_NAME, "table.magic = {0:X4}", table.magic);
 

@@ -174,7 +174,7 @@ public sealed partial class AppleHFSPlus
         Array.Copy(vhSector, 0x400, tmp, 0, 0x400);
         vhSector = tmp;
 
-        vh = Marshal.ByteArrayToStructureBigEndianGenerated<VolumeHeader>(vhSector);
+        vh = Marshal.ByteArrayToStructureBigEndian<VolumeHeader>(vhSector);
 
         if(vh.version is 4 or 5)
         {

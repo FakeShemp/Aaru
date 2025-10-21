@@ -121,13 +121,13 @@ public sealed partial class Dump
            newHdr.c_magic == UFS2_CIGAM)
         {
             if(newHdr.c_magic == OFS_CIGAM || newHdr.c_magic == NFS_CIGAM || newHdr.c_magic == UFS2_CIGAM)
-                newHdr = Marshal.ByteArrayToStructureBigEndianGenerated<s_spcl>(sector);
+                newHdr = Marshal.ByteArrayToStructureBigEndian<s_spcl>(sector);
         }
         else if(aixHdr.c_magic is XIX_MAGIC or XIX_CIGAM)
         {
             useAix = true;
 
-            if(aixHdr.c_magic == XIX_CIGAM) aixHdr = Marshal.ByteArrayToStructureBigEndianGenerated<spcl_aix>(sector);
+            if(aixHdr.c_magic == XIX_CIGAM) aixHdr = Marshal.ByteArrayToStructureBigEndian<spcl_aix>(sector);
         }
         else if(oldHdr.c_magic == OFS_MAGIC)
         {

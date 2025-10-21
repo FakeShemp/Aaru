@@ -108,7 +108,7 @@ public sealed partial class Chd
             case 3:
                 var entryBytes = new byte[16];
                 Array.Copy(_hunkMap, (int)(hunkNo * 16), entryBytes, 0, 16);
-                MapEntryV3 entry = Marshal.ByteArrayToStructureBigEndianGenerated<MapEntryV3>(entryBytes);
+                MapEntryV3 entry = Marshal.ByteArrayToStructureBigEndian<MapEntryV3>(entryBytes);
 
                 switch((EntryFlagsV3)(entry.flags & 0x0F))
                 {

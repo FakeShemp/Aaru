@@ -43,7 +43,7 @@ public sealed partial class ISO9660
         var off = 0;
 
         PathTableEntry entry =
-            Marshal.ByteArrayToStructureBigEndianGenerated<PathTableEntry>(data, off, Marshal.SizeOf<PathTableEntry>());
+            Marshal.ByteArrayToStructureBigEndian<PathTableEntry>(data, off, Marshal.SizeOf<PathTableEntry>());
 
         if(entry.name_len                         != 1                                ||
            entry.parent_dirno                     != 1                                ||
@@ -53,7 +53,7 @@ public sealed partial class ISO9660
 
         while(off < data.Length)
         {
-            entry = Marshal.ByteArrayToStructureBigEndianGenerated<PathTableEntry>(data,
+            entry = Marshal.ByteArrayToStructureBigEndian<PathTableEntry>(data,
                 off,
                 Marshal.SizeOf<PathTableEntry>());
 
@@ -90,7 +90,7 @@ public sealed partial class ISO9660
         while(off < data.Length)
         {
             HighSierraPathTableEntry entry =
-                Marshal.ByteArrayToStructureBigEndianGenerated<HighSierraPathTableEntry>(data,
+                Marshal.ByteArrayToStructureBigEndian<HighSierraPathTableEntry>(data,
                     off,
                     Marshal.SizeOf<HighSierraPathTableEntry>());
 

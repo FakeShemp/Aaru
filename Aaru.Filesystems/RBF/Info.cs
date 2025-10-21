@@ -69,8 +69,8 @@ public sealed partial class RBF
 
             if(sector.Length < Marshal.SizeOf<IdSector>()) return false;
 
-            IdSector    rbfSb     = Marshal.ByteArrayToStructureBigEndianGenerated<IdSector>(sector);
-            NewIdSector rbf9000Sb = Marshal.ByteArrayToStructureBigEndianGenerated<NewIdSector>(sector);
+            IdSector    rbfSb     = Marshal.ByteArrayToStructureBigEndian<IdSector>(sector);
+            NewIdSector rbf9000Sb = Marshal.ByteArrayToStructureBigEndian<NewIdSector>(sector);
 
             AaruLogging.Debug(MODULE_NAME,
                                        Localization.magic_at_0_equals_1_or_2_expected_3_or_4,
@@ -115,8 +115,8 @@ public sealed partial class RBF
 
             if(sector.Length < Marshal.SizeOf<IdSector>()) return;
 
-            rbfSb     = Marshal.ByteArrayToStructureBigEndianGenerated<IdSector>(sector);
-            rbf9000Sb = Marshal.ByteArrayToStructureBigEndianGenerated<NewIdSector>(sector);
+            rbfSb     = Marshal.ByteArrayToStructureBigEndian<IdSector>(sector);
+            rbf9000Sb = Marshal.ByteArrayToStructureBigEndian<NewIdSector>(sector);
 
             AaruLogging.Debug(MODULE_NAME,
                                        Localization.magic_at_0_equals_1_or_2_expected_3_or_4,

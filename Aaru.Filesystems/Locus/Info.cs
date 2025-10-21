@@ -128,7 +128,7 @@ public sealed partial class Locus
         // Numerical arrays are not important for information so no need to swap them
         if(locusSb.s_magic is LOCUS_CIGAM or LOCUS_CIGAM_OLD)
         {
-            locusSb         = Marshal.ByteArrayToStructureBigEndianGenerated<Superblock>(sector);
+            locusSb         = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
             locusSb.s_flags = (Flags)Swapping.Swap((ushort)locusSb.s_flags);
         }
 

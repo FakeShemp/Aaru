@@ -130,7 +130,7 @@ public sealed partial class XboxFatPlugin
                                             ? Marshal.ByteArrayToStructureLittleEndian<DirectoryEntry>(directoryBuffer,
                                                 pos,
                                                 Marshal.SizeOf<DirectoryEntry>())
-                                            : Marshal.ByteArrayToStructureBigEndianGenerated<DirectoryEntry>(directoryBuffer,
+                                            : Marshal.ByteArrayToStructureBigEndian<DirectoryEntry>(directoryBuffer,
                                                 pos,
                                                 Marshal.SizeOf<DirectoryEntry>());
 

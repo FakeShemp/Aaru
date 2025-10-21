@@ -23,7 +23,7 @@ public sealed partial class Stfs
 
         _stream.ReadExactly(hdr, 0, hdr.Length);
 
-        RemotePackage header = Marshal.ByteArrayToStructureBigEndianGenerated<RemotePackage>(hdr);
+        RemotePackage header = Marshal.ByteArrayToStructureBigEndian<RemotePackage>(hdr);
 
         if(header.Magic is not (PackageMagic.Console or PackageMagic.Live or PackageMagic.Microsoft))
             return ErrorNumber.InvalidArgument;
@@ -56,7 +56,7 @@ public sealed partial class Stfs
 
         do
         {
-            FileTableEntry entry = Marshal.ByteArrayToStructureBigEndianGenerated<FileTableEntry>(buffer, in_pos, entrySize);
+            FileTableEntry entry = Marshal.ByteArrayToStructureBigEndian<FileTableEntry>(buffer, in_pos, entrySize);
 
             if(entry.FilenameLength == 0) break;
 

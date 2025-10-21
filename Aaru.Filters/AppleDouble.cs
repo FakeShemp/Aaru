@@ -172,7 +172,7 @@ public sealed partial class AppleDouble : IFilter
             {
                 var prodosB = new byte[26];
                 prodosStream.EnsureRead(prodosB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(prodosB);
+                _header = Marshal.ByteArrayToStructureBigEndian<Header>(prodosB);
                 prodosStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) return true;
@@ -188,7 +188,7 @@ public sealed partial class AppleDouble : IFilter
             {
                 var unixB = new byte[26];
                 unixStream.EnsureRead(unixB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(unixB);
+                _header = Marshal.ByteArrayToStructureBigEndian<Header>(unixB);
                 unixStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) return true;
@@ -204,7 +204,7 @@ public sealed partial class AppleDouble : IFilter
             {
                 var dosB = new byte[26];
                 dosStream.EnsureRead(dosB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(dosB);
+                _header = Marshal.ByteArrayToStructureBigEndian<Header>(dosB);
                 dosStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) return true;
@@ -220,7 +220,7 @@ public sealed partial class AppleDouble : IFilter
             {
                 var doslB = new byte[26];
                 doslStream.EnsureRead(doslB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(doslB);
+                _header = Marshal.ByteArrayToStructureBigEndian<Header>(doslB);
                 doslStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) return true;
@@ -236,7 +236,7 @@ public sealed partial class AppleDouble : IFilter
             {
                 var netatalkB = new byte[26];
                 netatalkStream.EnsureRead(netatalkB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(netatalkB);
+                _header = Marshal.ByteArrayToStructureBigEndian<Header>(netatalkB);
                 netatalkStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) return true;
@@ -252,7 +252,7 @@ public sealed partial class AppleDouble : IFilter
             {
                 var daveB = new byte[26];
                 daveStream.EnsureRead(daveB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(daveB);
+                _header = Marshal.ByteArrayToStructureBigEndian<Header>(daveB);
                 daveStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) return true;
@@ -268,7 +268,7 @@ public sealed partial class AppleDouble : IFilter
             {
                 var osxB = new byte[26];
                 osxStream.EnsureRead(osxB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(osxB);
+                _header = Marshal.ByteArrayToStructureBigEndian<Header>(osxB);
                 osxStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) return true;
@@ -284,7 +284,7 @@ public sealed partial class AppleDouble : IFilter
 
         var unarB = new byte[26];
         unarStream.EnsureRead(unarB, 0, 26);
-        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(unarB);
+        _header = Marshal.ByteArrayToStructureBigEndian<Header>(unarB);
         unarStream.Close();
 
         return _header is { magic: MAGIC, version: VERSION or VERSION2 };
@@ -342,7 +342,7 @@ public sealed partial class AppleDouble : IFilter
             {
                 var prodosB = new byte[26];
                 prodosStream.EnsureRead(prodosB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(prodosB);
+                _header = Marshal.ByteArrayToStructureBigEndian<Header>(prodosB);
                 prodosStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) _headerPath = proDosAppleDouble;
@@ -358,7 +358,7 @@ public sealed partial class AppleDouble : IFilter
             {
                 var unixB = new byte[26];
                 unixStream.EnsureRead(unixB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(unixB);
+                _header = Marshal.ByteArrayToStructureBigEndian<Header>(unixB);
                 unixStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) _headerPath = unixAppleDouble;
@@ -374,7 +374,7 @@ public sealed partial class AppleDouble : IFilter
             {
                 var dosB = new byte[26];
                 dosStream.EnsureRead(dosB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(dosB);
+                _header = Marshal.ByteArrayToStructureBigEndian<Header>(dosB);
                 dosStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) _headerPath = dosAppleDouble;
@@ -390,7 +390,7 @@ public sealed partial class AppleDouble : IFilter
             {
                 var doslB = new byte[26];
                 doslStream.EnsureRead(doslB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(doslB);
+                _header = Marshal.ByteArrayToStructureBigEndian<Header>(doslB);
                 doslStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) _headerPath = dosAppleDoubleLower;
@@ -406,7 +406,7 @@ public sealed partial class AppleDouble : IFilter
             {
                 var netatalkB = new byte[26];
                 netatalkStream.EnsureRead(netatalkB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(netatalkB);
+                _header = Marshal.ByteArrayToStructureBigEndian<Header>(netatalkB);
                 netatalkStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) _headerPath = netatalkAppleDouble;
@@ -422,7 +422,7 @@ public sealed partial class AppleDouble : IFilter
             {
                 var daveB = new byte[26];
                 daveStream.EnsureRead(daveB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(daveB);
+                _header = Marshal.ByteArrayToStructureBigEndian<Header>(daveB);
                 daveStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) _headerPath = daveAppleDouble;
@@ -438,7 +438,7 @@ public sealed partial class AppleDouble : IFilter
             {
                 var osxB = new byte[26];
                 osxStream.EnsureRead(osxB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(osxB);
+                _header = Marshal.ByteArrayToStructureBigEndian<Header>(osxB);
                 osxStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) _headerPath = osxAppleDouble;
@@ -454,7 +454,7 @@ public sealed partial class AppleDouble : IFilter
             {
                 var unarB = new byte[26];
                 unarStream.EnsureRead(unarB, 0, 26);
-                _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(unarB);
+                _header = Marshal.ByteArrayToStructureBigEndian<Header>(unarB);
                 unarStream.Close();
 
                 if(_header is { magic: MAGIC, version: VERSION or VERSION2 }) _headerPath = unArAppleDouble;
@@ -469,7 +469,7 @@ public sealed partial class AppleDouble : IFilter
 
         var hdrB = new byte[26];
         fs.EnsureRead(hdrB, 0, 26);
-        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
 
         var entries = new Entry[_header.entries];
 
@@ -477,7 +477,7 @@ public sealed partial class AppleDouble : IFilter
         {
             var entry = new byte[12];
             fs.EnsureRead(entry, 0, 12);
-            entries[i] = Marshal.ByteArrayToStructureBigEndianGenerated<Entry>(entry);
+            entries[i] = Marshal.ByteArrayToStructureBigEndian<Entry>(entry);
         }
 
         CreationTime  = DateTime.UtcNow;
@@ -495,7 +495,7 @@ public sealed partial class AppleDouble : IFilter
                     var datesB = new byte[16];
                     fs.EnsureRead(datesB, 0, 16);
 
-                    FileDates dates = Marshal.ByteArrayToStructureBigEndianGenerated<FileDates>(datesB);
+                    FileDates dates = Marshal.ByteArrayToStructureBigEndian<FileDates>(datesB);
 
                     CreationTime  = DateHandlers.UnixUnsignedToDateTime(dates.creationDate);
                     LastWriteTime = DateHandlers.UnixUnsignedToDateTime(dates.modificationDate);
@@ -508,7 +508,7 @@ public sealed partial class AppleDouble : IFilter
 
                     if(_macintoshHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        MacFileInfo macinfo = Marshal.ByteArrayToStructureBigEndianGenerated<MacFileInfo>(finfo);
+                        MacFileInfo macinfo = Marshal.ByteArrayToStructureBigEndian<MacFileInfo>(finfo);
 
                         CreationTime  = DateHandlers.MacToDateTime(macinfo.creationDate);
                         LastWriteTime = DateHandlers.MacToDateTime(macinfo.modificationDate);
@@ -516,21 +516,21 @@ public sealed partial class AppleDouble : IFilter
                     else if(_proDosHome.SequenceEqual(_header.homeFilesystem))
                     {
                         ProDOSFileInfo prodosinfo =
-                            Marshal.ByteArrayToStructureBigEndianGenerated<ProDOSFileInfo>(finfo);
+                            Marshal.ByteArrayToStructureBigEndian<ProDOSFileInfo>(finfo);
 
                         CreationTime  = DateHandlers.MacToDateTime(prodosinfo.creationDate);
                         LastWriteTime = DateHandlers.MacToDateTime(prodosinfo.modificationDate);
                     }
                     else if(_unixHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        UnixFileInfo unixinfo = Marshal.ByteArrayToStructureBigEndianGenerated<UnixFileInfo>(finfo);
+                        UnixFileInfo unixinfo = Marshal.ByteArrayToStructureBigEndian<UnixFileInfo>(finfo);
 
                         CreationTime  = DateHandlers.UnixUnsignedToDateTime(unixinfo.creationDate);
                         LastWriteTime = DateHandlers.UnixUnsignedToDateTime(unixinfo.modificationDate);
                     }
                     else if(_dosHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        DOSFileInfo dosinfo = Marshal.ByteArrayToStructureBigEndianGenerated<DOSFileInfo>(finfo);
+                        DOSFileInfo dosinfo = Marshal.ByteArrayToStructureBigEndian<DOSFileInfo>(finfo);
 
                         LastWriteTime = DateHandlers.DosToDateTime(dosinfo.modificationDate, dosinfo.modificationTime);
                     }

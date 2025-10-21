@@ -59,7 +59,7 @@ public sealed partial class Qcow2
 
         var qHdrB = new byte[Marshal.SizeOf<Header>()];
         stream.EnsureRead(qHdrB, 0, Marshal.SizeOf<Header>());
-        _qHdr = Marshal.SpanToStructureBigEndianGenerated<Header>(qHdrB);
+        _qHdr = Marshal.SpanToStructureBigEndian<Header>(qHdrB);
 
         AaruLogging.Debug(MODULE_NAME, "qHdr.magic = 0x{0:X8}",            _qHdr.magic);
         AaruLogging.Debug(MODULE_NAME, "qHdr.version = {0}",               _qHdr.version);

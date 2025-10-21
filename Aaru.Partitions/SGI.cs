@@ -74,7 +74,7 @@ public sealed partial class SGI : IPartition
 
         if(errno != ErrorNumber.NoError || sector.Length < 512) return false;
 
-        Label dvh = Marshal.ByteArrayToStructureBigEndianGenerated<Label>(sector);
+        Label dvh = Marshal.ByteArrayToStructureBigEndian<Label>(sector);
 
         for(var i = 0; i < dvh.volume.Length; i++)
             dvh.volume[i] = (Volume)Marshal.SwapStructureMembersEndian(dvh.volume[i]);

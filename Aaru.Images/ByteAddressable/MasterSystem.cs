@@ -140,7 +140,7 @@ public partial class MasterSystem : IByteAddressableImage
         };
 
         Header header =
-            Marshal.ByteArrayToStructureBigEndianGenerated<Header>(_data, headerPosition, Marshal.SizeOf<Header>());
+            Marshal.ByteArrayToStructureBigEndian<Header>(_data, headerPosition, Marshal.SizeOf<Header>());
 
         var sb = new StringBuilder();
 

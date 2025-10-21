@@ -55,7 +55,7 @@ public sealed partial class ISO9660
         while(entryOff + _cdiDirectoryRecordSize < data.Length)
         {
             CdiDirectoryRecord record =
-                Marshal.ByteArrayToStructureBigEndianGenerated<CdiDirectoryRecord>(data,
+                Marshal.ByteArrayToStructureBigEndian<CdiDirectoryRecord>(data,
                     entryOff,
                     _cdiDirectoryRecordSize);
 
@@ -107,7 +107,7 @@ public sealed partial class ISO9660
             if(systemAreaStart % 2 != 0) systemAreaStart++;
 
             entry.CdiSystemArea =
-                Marshal.ByteArrayToStructureBigEndianGenerated<CdiSystemArea>(data,
+                Marshal.ByteArrayToStructureBigEndian<CdiSystemArea>(data,
                                                                               systemAreaStart,
                                                                               _cdiSystemAreaSize);
 
@@ -459,7 +459,7 @@ public sealed partial class ISO9660
                             break;
                         case AppleId.HFS:
                             AppleHFSSystemUse appleHfsSystemUse =
-                                Marshal.ByteArrayToStructureBigEndianGenerated<AppleHFSSystemUse>(data,
+                                Marshal.ByteArrayToStructureBigEndian<AppleHFSSystemUse>(data,
                                     systemAreaOff,
                                     Marshal.SizeOf<AppleHFSSystemUse>());
 
@@ -500,7 +500,7 @@ public sealed partial class ISO9660
                         case AppleOldId.TypeCreator:
                         case AppleOldId.TypeCreatorBundle:
                             AppleHFSTypeCreatorSystemUse appleHfsTypeCreatorSystemUse =
-                                Marshal.ByteArrayToStructureBigEndianGenerated<AppleHFSTypeCreatorSystemUse>(data,
+                                Marshal.ByteArrayToStructureBigEndian<AppleHFSTypeCreatorSystemUse>(data,
                                     systemAreaOff,
                                     Marshal.SizeOf<AppleHFSTypeCreatorSystemUse>());
 
@@ -520,7 +520,7 @@ public sealed partial class ISO9660
                         case AppleOldId.TypeCreatorIcon:
                         case AppleOldId.TypeCreatorIconBundle:
                             AppleHFSIconSystemUse appleHfsIconSystemUse =
-                                Marshal.ByteArrayToStructureBigEndianGenerated<AppleHFSIconSystemUse>(data,
+                                Marshal.ByteArrayToStructureBigEndian<AppleHFSIconSystemUse>(data,
                                     systemAreaOff,
                                     Marshal.SizeOf<AppleHFSIconSystemUse>());
 
@@ -540,7 +540,7 @@ public sealed partial class ISO9660
                             break;
                         case AppleOldId.HFS:
                             AppleHFSOldSystemUse appleHfsSystemUse =
-                                Marshal.ByteArrayToStructureBigEndianGenerated<AppleHFSOldSystemUse>(data,
+                                Marshal.ByteArrayToStructureBigEndian<AppleHFSOldSystemUse>(data,
                                     systemAreaOff,
                                     Marshal.SizeOf<AppleHFSOldSystemUse>());
 
@@ -567,7 +567,7 @@ public sealed partial class ISO9660
 
                     break;
                 case XA_MAGIC:
-                    entry.XA = Marshal.ByteArrayToStructureBigEndianGenerated<CdromXa>(data,
+                    entry.XA = Marshal.ByteArrayToStructureBigEndian<CdromXa>(data,
                         systemAreaOff,
                         Marshal.SizeOf<CdromXa>());
 
@@ -579,7 +579,7 @@ public sealed partial class ISO9660
                 case AAIP_MAGIC:
                 case AMIGA_MAGIC:
                     AmigaEntry amiga =
-                        Marshal.ByteArrayToStructureBigEndianGenerated<AmigaEntry>(data,
+                        Marshal.ByteArrayToStructureBigEndian<AmigaEntry>(data,
                             systemAreaOff,
                             Marshal.SizeOf<AmigaEntry>());
 
@@ -588,7 +588,7 @@ public sealed partial class ISO9660
                     if(amiga.flags.HasFlag(AmigaFlags.Protection))
                     {
                         entry.AmigaProtection =
-                            Marshal.ByteArrayToStructureBigEndianGenerated<AmigaProtection>(data,
+                            Marshal.ByteArrayToStructureBigEndian<AmigaProtection>(data,
                                 systemAreaOff + Marshal.SizeOf<AmigaEntry>(),
                                 Marshal.SizeOf<AmigaProtection>());
 
@@ -995,7 +995,7 @@ public sealed partial class ISO9660
             if(errno != ErrorNumber.NoError) continue;
 
             CdiDirectoryRecord record =
-                Marshal.ByteArrayToStructureBigEndianGenerated<CdiDirectoryRecord>(sector,
+                Marshal.ByteArrayToStructureBigEndian<CdiDirectoryRecord>(sector,
                     tEntry.XattrLength,
                     _cdiDirectoryRecordSize);
 
@@ -1020,7 +1020,7 @@ public sealed partial class ISO9660
             if(systemAreaStart % 2 != 0) systemAreaStart++;
 
             entry.CdiSystemArea =
-                Marshal.ByteArrayToStructureBigEndianGenerated<CdiSystemArea>(sector,
+                Marshal.ByteArrayToStructureBigEndian<CdiSystemArea>(sector,
                                                                               systemAreaStart,
                                                                               _cdiSystemAreaSize);
 
