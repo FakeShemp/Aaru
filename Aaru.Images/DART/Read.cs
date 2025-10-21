@@ -61,7 +61,7 @@ public sealed partial class Dart
         var headerB = new byte[Marshal.SizeOf<Header>()];
 
         stream.EnsureRead(headerB, 0, Marshal.SizeOf<Header>());
-        Header header = Marshal.ByteArrayToStructureBigEndian<Header>(headerB);
+        Header header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(headerB);
 
         if(header.srcCmp > COMPRESS_NONE) return ErrorNumber.NotSupported;
 

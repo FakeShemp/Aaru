@@ -31,6 +31,7 @@
 // ****************************************************************************/
 
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Images;
 
@@ -39,11 +40,12 @@ public sealed partial class Dart
 #region Nested type: Header
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct Header
+    [SwapEndian]
+    partial struct Header
     {
-        public readonly byte  srcCmp;
-        public readonly byte  srcType;
-        public readonly short srcSize;
+        public byte  srcCmp;
+        public byte  srcType;
+        public short srcSize;
     }
 
 #endregion
