@@ -36,6 +36,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 using Aaru.CommonTypes;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
@@ -47,7 +48,7 @@ namespace Aaru.Partitions;
 /// <inheritdoc />
 /// <summary>Implements decoding of Sun disklabels</summary>
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public sealed class SunDisklabel : IPartition
+public sealed partial class SunDisklabel : IPartition
 {
     /// <summary>Sun disklabel magic number</summary>
     const ushort DKL_MAGIC = 0xDABE;
@@ -152,18 +153,28 @@ public sealed class SunDisklabel : IPartition
         if(!useDkl && !useDkl8 && !useDkl16) return false;
 
         if(useDkl16 && dkl16.dkl_magic == DKL_CIGAM)
-            dkl16 = SwapDiskLabel(dkl16);
+        {
+            AaruLogging.Debug(MODULE_NAME, Localization.Swapping_dk_label16);
+            dkl16 = dkl16.SwapEndian();
+        }
         else if(useDkl8 && dkl8.dkl_magic == DKL_CIGAM)
-            dkl8                                          = SwapDiskLabel(dkl8);
-        else if(useDkl && dkl.dkl_magic == DKL_CIGAM) dkl = SwapDiskLabel(dkl);
+        {
+            AaruLogging.Debug(MODULE_NAME, Localization.Swapping_dk_label8);
+            dkl8 = dkl8.SwapEndian();
+        }
+        else if(useDkl && dkl.dkl_magic == DKL_CIGAM)
+        {
+            AaruLogging.Debug(MODULE_NAME, Localization.Swapping_dk_label);
+            dkl = dkl.SwapEndian();
+        }
 
         if(useDkl)
         {
             ulong sectorsPerCylinder = (ulong)(dkl.dkl_nsect * dkl.dkl_nhead);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "dkl.dkl_asciilabel = \"{0}\"",
-                                       StringHandlers.CToString(dkl.dkl_asciilabel));
+                              "dkl.dkl_asciilabel = \"{0}\"",
+                              StringHandlers.CToString(dkl.dkl_asciilabel));
 
             AaruLogging.Debug(MODULE_NAME, "dkl.dkl_rpm = {0}",    dkl.dkl_rpm);
             AaruLogging.Debug(MODULE_NAME, "dkl.dkl_pcyl = {0}",   dkl.dkl_pcyl);
@@ -180,10 +191,7 @@ public sealed class SunDisklabel : IPartition
 
             for(int i = 0; i < NDKMAP; i++)
             {
-                AaruLogging.Debug(MODULE_NAME,
-                                           "dkl.dkl_map[{0}].dkl_cylno = {1}",
-                                           i,
-                                           dkl.dkl_map[i].dkl_cylno);
+                AaruLogging.Debug(MODULE_NAME, "dkl.dkl_map[{0}].dkl_cylno = {1}", i, dkl.dkl_map[i].dkl_cylno);
 
                 AaruLogging.Debug(MODULE_NAME, "dkl.dkl_map[{0}].dkl_nblk = {1}", i, dkl.dkl_map[i].dkl_nblk);
             }
@@ -217,14 +225,14 @@ public sealed class SunDisklabel : IPartition
             ulong sectorsPerCylinder = (ulong)(dkl8.dkl_nsect * dkl8.dkl_nhead);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "dkl8.dkl_asciilabel = \"{0}\"",
-                                       StringHandlers.CToString(dkl8.dkl_asciilabel));
+                              "dkl8.dkl_asciilabel = \"{0}\"",
+                              StringHandlers.CToString(dkl8.dkl_asciilabel));
 
             AaruLogging.Debug(MODULE_NAME, "dkl8.dkl_vtoc.v_version = {0}", dkl8.dkl_vtoc.v_version);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "dkl8.dkl_vtoc.v_volume = \"{0}\"",
-                                       StringHandlers.CToString(dkl8.dkl_vtoc.v_volume));
+                              "dkl8.dkl_vtoc.v_volume = \"{0}\"",
+                              StringHandlers.CToString(dkl8.dkl_vtoc.v_volume));
 
             AaruLogging.Debug(MODULE_NAME, "dkl8.dkl_vtoc.v_nparts = {0}",      dkl8.dkl_vtoc.v_nparts);
             AaruLogging.Debug(MODULE_NAME, "dkl8.dkl_vtoc.v_sanity = 0x{0:X8}", dkl8.dkl_vtoc.v_sanity);
@@ -245,32 +253,26 @@ public sealed class SunDisklabel : IPartition
 
             for(int i = 0; i < NDKMAP; i++)
             {
-                AaruLogging.Debug(MODULE_NAME,
-                                           "dkl8.dkl_map[{0}].dkl_cylno = {1}",
-                                           i,
-                                           dkl8.dkl_map[i].dkl_cylno);
+                AaruLogging.Debug(MODULE_NAME, "dkl8.dkl_map[{0}].dkl_cylno = {1}", i, dkl8.dkl_map[i].dkl_cylno);
+
+                AaruLogging.Debug(MODULE_NAME, "dkl8.dkl_map[{0}].dkl_nblk = {1}", i, dkl8.dkl_map[i].dkl_nblk);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "dkl8.dkl_map[{0}].dkl_nblk = {1}",
-                                           i,
-                                           dkl8.dkl_map[i].dkl_nblk);
+                                  "dkl8.dkl_vtoc.v_part[{0}].p_tag = {1} ({2})",
+                                  i,
+                                  dkl8.dkl_vtoc.v_part[i].p_tag,
+                                  (ushort)dkl8.dkl_vtoc.v_part[i].p_tag);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "dkl8.dkl_vtoc.v_part[{0}].p_tag = {1} ({2})",
-                                           i,
-                                           dkl8.dkl_vtoc.v_part[i].p_tag,
-                                           (ushort)dkl8.dkl_vtoc.v_part[i].p_tag);
+                                  "dkl8.dkl_vtoc.v_part[{0}].p_flag = {1} ({2})",
+                                  i,
+                                  dkl8.dkl_vtoc.v_part[i].p_flag,
+                                  (ushort)dkl8.dkl_vtoc.v_part[i].p_flag);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "dkl8.dkl_vtoc.v_part[{0}].p_flag = {1} ({2})",
-                                           i,
-                                           dkl8.dkl_vtoc.v_part[i].p_flag,
-                                           (ushort)dkl8.dkl_vtoc.v_part[i].p_flag);
-
-                AaruLogging.Debug(MODULE_NAME,
-                                           "dkl8.dkl_vtoc.v_timestamp[{0}] = {1}",
-                                           i,
-                                           DateHandlers.UnixToDateTime(dkl8.dkl_vtoc.v_timestamp[i]));
+                                  "dkl8.dkl_vtoc.v_timestamp[{0}] = {1}",
+                                  i,
+                                  DateHandlers.UnixToDateTime(dkl8.dkl_vtoc.v_timestamp[i]));
             }
 
             AaruLogging.Debug(MODULE_NAME, "dkl8.dkl_magic = 0x{0:X4}", dkl8.dkl_magic);
@@ -317,15 +319,15 @@ public sealed class SunDisklabel : IPartition
             AaruLogging.Debug(MODULE_NAME, "dkl16.dkl_vtoc.v_version = {0}",     dkl16.dkl_vtoc.v_version);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "dkl16.dkl_vtoc.v_volume = \"{0}\"",
-                                       StringHandlers.CToString(dkl16.dkl_vtoc.v_volume));
+                              "dkl16.dkl_vtoc.v_volume = \"{0}\"",
+                              StringHandlers.CToString(dkl16.dkl_vtoc.v_volume));
 
             AaruLogging.Debug(MODULE_NAME, "dkl16.dkl_vtoc.v_sectorsz = {0}", dkl16.dkl_vtoc.v_sectorsz);
             AaruLogging.Debug(MODULE_NAME, "dkl16.dkl_vtoc.v_nparts = {0}",   dkl16.dkl_vtoc.v_nparts);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "dkl16.dkl_vtoc.v_asciilabel = \"{0}\"",
-                                       StringHandlers.CToString(dkl16.dkl_vtoc.v_asciilabel));
+                              "dkl16.dkl_vtoc.v_asciilabel = \"{0}\"",
+                              StringHandlers.CToString(dkl16.dkl_vtoc.v_asciilabel));
 
             AaruLogging.Debug(MODULE_NAME, "dkl16.dkl_pcyl = {0}",   dkl16.dkl_pcyl);
             AaruLogging.Debug(MODULE_NAME, "dkl16.dkl_ncyl = {0}",   dkl16.dkl_ncyl);
@@ -345,31 +347,31 @@ public sealed class SunDisklabel : IPartition
             for(int i = 0; i < NDKMAP16; i++)
             {
                 AaruLogging.Debug(MODULE_NAME,
-                                           "dkl16.dkl_vtoc.v_part[{0}].p_start = {1}",
-                                           i,
-                                           dkl16.dkl_vtoc.v_part[i].p_start);
+                                  "dkl16.dkl_vtoc.v_part[{0}].p_start = {1}",
+                                  i,
+                                  dkl16.dkl_vtoc.v_part[i].p_start);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "dkl16.dkl_vtoc.v_part[{0}].p_size = {1}",
-                                           i,
-                                           dkl16.dkl_vtoc.v_part[i].p_size);
+                                  "dkl16.dkl_vtoc.v_part[{0}].p_size = {1}",
+                                  i,
+                                  dkl16.dkl_vtoc.v_part[i].p_size);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "dkl16.dkl_vtoc.v_part[{0}].p_tag = {1} ({2})",
-                                           i,
-                                           dkl16.dkl_vtoc.v_part[i].p_tag,
-                                           (ushort)dkl16.dkl_vtoc.v_part[i].p_tag);
+                                  "dkl16.dkl_vtoc.v_part[{0}].p_tag = {1} ({2})",
+                                  i,
+                                  dkl16.dkl_vtoc.v_part[i].p_tag,
+                                  (ushort)dkl16.dkl_vtoc.v_part[i].p_tag);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "dkl16.dkl_vtoc.v_part[{0}].p_flag = {1} ({2})",
-                                           i,
-                                           dkl16.dkl_vtoc.v_part[i].p_flag,
-                                           (ushort)dkl16.dkl_vtoc.v_part[i].p_flag);
+                                  "dkl16.dkl_vtoc.v_part[{0}].p_flag = {1} ({2})",
+                                  i,
+                                  dkl16.dkl_vtoc.v_part[i].p_flag,
+                                  (ushort)dkl16.dkl_vtoc.v_part[i].p_flag);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "dkl16.dkl_vtoc.v_timestamp[{0}] = {1}",
-                                           i,
-                                           DateHandlers.UnixToDateTime(dkl16.dkl_vtoc.v_timestamp[i]));
+                                  "dkl16.dkl_vtoc.v_timestamp[{0}] = {1}",
+                                  i,
+                                  DateHandlers.UnixToDateTime(dkl16.dkl_vtoc.v_timestamp[i]));
             }
 
             AaruLogging.Debug(MODULE_NAME, "dkl16.dkl_magic = 0x{0:X4}", dkl16.dkl_magic);
@@ -418,68 +420,6 @@ public sealed class SunDisklabel : IPartition
 
 #endregion
 
-    static dk_label SwapDiskLabel(dk_label label)
-    {
-        AaruLogging.Debug(MODULE_NAME, Localization.Swapping_dk_label);
-        label = (dk_label)Marshal.SwapStructureMembersEndian(label);
-
-        for(int i = 0; i < label.dkl_map.Length; i++)
-            label.dkl_map[i] = (dk_map)Marshal.SwapStructureMembersEndian(label.dkl_map[i]);
-
-        return label;
-    }
-
-    static dk_label8 SwapDiskLabel(dk_label8 label)
-    {
-        AaruLogging.Debug(MODULE_NAME, Localization.Swapping_dk_label8);
-        label = (dk_label8)Marshal.SwapStructureMembersEndian(label);
-
-        for(int i = 0; i < label.dkl_map.Length; i++)
-            label.dkl_map[i] = (dk_map)Marshal.SwapStructureMembersEndian(label.dkl_map[i]);
-
-        for(int i = 0; i < label.dkl_vtoc.v_bootinfo.Length; i++)
-            label.dkl_vtoc.v_bootinfo[i] = Swapping.Swap(label.dkl_vtoc.v_bootinfo[i]);
-
-        for(int i = 0; i < label.dkl_vtoc.v_part.Length; i++)
-        {
-            label.dkl_vtoc.v_part[i].p_flag = (SunFlags)Swapping.Swap((ushort)label.dkl_vtoc.v_part[i].p_flag);
-            label.dkl_vtoc.v_part[i].p_tag  = (SunTag)Swapping.Swap((ushort)label.dkl_vtoc.v_part[i].p_tag);
-        }
-
-        for(int i = 0; i < label.dkl_vtoc.v_timestamp.Length; i++)
-            label.dkl_vtoc.v_timestamp[i] = Swapping.Swap(label.dkl_vtoc.v_timestamp[i]);
-
-        for(int i = 0; i < label.dkl_vtoc.v_reserved.Length; i++)
-            label.dkl_vtoc.v_reserved[i] = Swapping.Swap(label.dkl_vtoc.v_reserved[i]);
-
-        return label;
-    }
-
-    static dk_label16 SwapDiskLabel(dk_label16 label)
-    {
-        AaruLogging.Debug(MODULE_NAME, Localization.Swapping_dk_label16);
-        label = (dk_label16)Marshal.SwapStructureMembersEndian(label);
-
-        for(int i = 0; i < label.dkl_vtoc.v_bootinfo.Length; i++)
-            label.dkl_vtoc.v_bootinfo[i] = Swapping.Swap(label.dkl_vtoc.v_bootinfo[i]);
-
-        for(int i = 0; i < label.dkl_vtoc.v_part.Length; i++)
-        {
-            label.dkl_vtoc.v_part[i].p_flag  = (SunFlags)Swapping.Swap((ushort)label.dkl_vtoc.v_part[i].p_flag);
-            label.dkl_vtoc.v_part[i].p_tag   = (SunTag)Swapping.Swap((ushort)label.dkl_vtoc.v_part[i].p_tag);
-            label.dkl_vtoc.v_part[i].p_size  = Swapping.Swap(label.dkl_vtoc.v_part[i].p_size);
-            label.dkl_vtoc.v_part[i].p_start = Swapping.Swap(label.dkl_vtoc.v_part[i].p_start);
-        }
-
-        for(int i = 0; i < label.dkl_vtoc.v_timestamp.Length; i++)
-            label.dkl_vtoc.v_timestamp[i] = Swapping.Swap(label.dkl_vtoc.v_timestamp[i]);
-
-        for(int i = 0; i < label.dkl_vtoc.v_reserved.Length; i++)
-            label.dkl_vtoc.v_reserved[i] = Swapping.Swap(label.dkl_vtoc.v_reserved[i]);
-
-        return label;
-    }
-
     static string SunFlagsToString(SunFlags flags)
     {
         var sb = new StringBuilder();
@@ -524,45 +464,46 @@ public sealed class SunDisklabel : IPartition
 
     /// <summary>SunOS disk label</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct dk_label
+    [SwapEndian]
+    partial struct dk_label
     {
         /// <summary>Informative string</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = LEN_DKL_ASCII)]
-        public readonly byte[] dkl_asciilabel;
+        public byte[] dkl_asciilabel;
         /// <summary>Padding</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = LEN_DKL_PAD)]
-        public readonly byte[] dkl_pad;
+        public byte[] dkl_pad;
         /// <summary>rotations per minute</summary>
-        public readonly ushort dkl_rpm;
+        public ushort dkl_rpm;
         /// <summary># physical cylinders</summary>
-        public readonly ushort dkl_pcyl;
+        public ushort dkl_pcyl;
         /// <summary>alternates per cylinder</summary>
-        public readonly ushort dkl_apc;
+        public ushort dkl_apc;
         /// <summary>size of gap 1</summary>
-        public readonly ushort dkl_gap1;
+        public ushort dkl_gap1;
         /// <summary>size of gap 2</summary>
-        public readonly ushort dkl_gap2;
+        public ushort dkl_gap2;
         /// <summary>interleave factor</summary>
-        public readonly ushort dkl_intrlv;
+        public ushort dkl_intrlv;
         /// <summary># of data cylinders</summary>
-        public readonly ushort dkl_ncyl;
+        public ushort dkl_ncyl;
         /// <summary># of alternate cylinders</summary>
-        public readonly ushort dkl_acyl;
+        public ushort dkl_acyl;
         /// <summary># of heads in this partition</summary>
-        public readonly ushort dkl_nhead;
+        public ushort dkl_nhead;
         /// <summary># of 512 byte sectors per track</summary>
-        public readonly ushort dkl_nsect;
+        public ushort dkl_nsect;
         /// <summary>identifies proper label location</summary>
-        public readonly ushort dkl_bhead;
+        public ushort dkl_bhead;
         /// <summary>physical partition #</summary>
-        public readonly ushort dkl_ppart;
+        public ushort dkl_ppart;
         /// <summary>Logical partitions</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = NDKMAP)]
-        public readonly dk_map[] dkl_map;
+        public dk_map[] dkl_map;
         /// <summary>identifies this label format</summary>
-        public readonly ushort dkl_magic;
+        public ushort dkl_magic;
         /// <summary>xor checksum of sector</summary>
-        public readonly ushort dkl_cksum;
+        public ushort dkl_cksum;
     }
 
 #endregion
@@ -570,44 +511,45 @@ public sealed class SunDisklabel : IPartition
 #region Nested type: dk_label16
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct dk_label16
+    [SwapEndian]
+    partial struct dk_label16
     {
         /// <summary>vtoc inclusions from AT&amp;T SVr4</summary>
-        public readonly dk_vtoc16 dkl_vtoc;
+        public dk_vtoc16 dkl_vtoc;
         /// <summary># of physical cylinders</summary>
-        public readonly uint dkl_pcyl;
+        public uint dkl_pcyl;
         /// <summary># of data cylinders</summary>
-        public readonly uint dkl_ncyl;
+        public uint dkl_ncyl;
         /// <summary># of alternate cylinders</summary>
-        public readonly ushort dkl_acyl;
+        public ushort dkl_acyl;
         /// <summary>cyl offset (for fixed head area)</summary>
-        public readonly ushort dkl_bcyl;
+        public ushort dkl_bcyl;
         /// <summary># of heads</summary>
-        public readonly uint dkl_nhead;
+        public uint dkl_nhead;
         /// <summary># of data sectors per track</summary>
-        public readonly uint dkl_nsect;
+        public uint dkl_nsect;
         /// <summary>interleave factor</summary>
-        public readonly ushort dkl_intrlv;
+        public ushort dkl_intrlv;
         /// <summary>skew factor</summary>
-        public readonly ushort dkl_skew;
+        public ushort dkl_skew;
         /// <summary>alternates per cyl (SCSI only)  </summary>
-        public readonly ushort dkl_apc;
+        public ushort dkl_apc;
         /// <summary>revolutions per minute</summary>
-        public readonly ushort dkl_rpm;
+        public ushort dkl_rpm;
         /// <summary># sectors to skip, writes</summary>
-        public readonly ushort dkl_write_reinstruct;
+        public ushort dkl_write_reinstruct;
         /// <summary># sectors to skip, reads </summary>
-        public readonly ushort dkl_read_reinstruct;
+        public ushort dkl_read_reinstruct;
         /// <summary>for compatible expansion</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public readonly ushort[] dkl_extra;
+        public ushort[] dkl_extra;
         /// <summary>unused part of 512 bytes</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = LEN_DKL_PAD16)]
-        public readonly byte[] dkl_pad;
+        public byte[] dkl_pad;
         /// <summary>identifies this label format</summary>
-        public readonly ushort dkl_magic;
+        public ushort dkl_magic;
         /// <summary>xor checksum of sector</summary>
-        public readonly ushort dkl_cksum;
+        public ushort dkl_cksum;
     }
 
 #endregion
@@ -615,51 +557,52 @@ public sealed class SunDisklabel : IPartition
 #region Nested type: dk_label8
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct dk_label8
+    [SwapEndian]
+    partial struct dk_label8
     {
         /// <summary>for compatibility</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = LEN_DKL_ASCII)]
-        public readonly byte[] dkl_asciilabel;
+        public byte[] dkl_asciilabel;
         /// <summary>vtoc inclusions from AT&amp;T SVr4</summary>
-        public readonly dk_vtoc8 dkl_vtoc;
+        public dk_vtoc8 dkl_vtoc;
         /// <summary># sectors to skip, writes</summary>
-        public readonly ushort dkl_write_reinstruct;
+        public ushort dkl_write_reinstruct;
         /// <summary># sectors to skip, reads</summary>
-        public readonly ushort dkl_read_reinstruct;
+        public ushort dkl_read_reinstruct;
         /// <summary>unused part of 512 bytes</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = LEN_DKL_PAD8)]
-        public readonly byte[] dkl_pad;
+        public byte[] dkl_pad;
         /// <summary>rotations per minute</summary>
-        public readonly ushort dkl_rpm;
+        public ushort dkl_rpm;
         /// <summary># physical cylinders</summary>
-        public readonly ushort dkl_pcyl;
+        public ushort dkl_pcyl;
         /// <summary>alternates per cylinder</summary>
-        public readonly ushort dkl_apc;
+        public ushort dkl_apc;
         /// <summary>obsolete</summary>
-        public readonly ushort dkl_obs1;
+        public ushort dkl_obs1;
         /// <summary>obsolete</summary>
-        public readonly ushort dkl_obs2;
+        public ushort dkl_obs2;
         /// <summary>interleave factor</summary>
-        public readonly ushort dkl_intrlv;
+        public ushort dkl_intrlv;
         /// <summary># of data cylinders</summary>
-        public readonly ushort dkl_ncyl;
+        public ushort dkl_ncyl;
         /// <summary># of alternate cylinders</summary>
-        public readonly ushort dkl_acyl;
+        public ushort dkl_acyl;
         /// <summary># of heads in this partition</summary>
-        public readonly ushort dkl_nhead;
+        public ushort dkl_nhead;
         /// <summary># of 512 byte sectors per track</summary>
-        public readonly ushort dkl_nsect;
+        public ushort dkl_nsect;
         /// <summary>obsolete</summary>
-        public readonly ushort dkl_obs3;
+        public ushort dkl_obs3;
         /// <summary>obsolete</summary>
-        public readonly ushort dkl_obs4;
+        public ushort dkl_obs4;
         /// <summary>logical partition headers</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = NDKMAP)]
-        public readonly dk_map[] dkl_map;
+        public dk_map[] dkl_map;
         /// <summary>identifies this label format</summary>
-        public readonly ushort dkl_magic;
+        public ushort dkl_magic;
         /// <summary>xor checksum of sector</summary>
-        public readonly ushort dkl_cksum;
+        public ushort dkl_cksum;
     }
 
 #endregion
@@ -668,12 +611,13 @@ public sealed class SunDisklabel : IPartition
 
     /// <summary>SunOS logical partitions</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct dk_map
+    [SwapEndian]
+    partial struct dk_map
     {
         /// <summary>starting cylinder</summary>
-        public readonly int dkl_cylno;
+        public int dkl_cylno;
         /// <summary>number of blocks</summary>
-        public readonly int dkl_nblk;
+        public int dkl_nblk;
     }
 
 #endregion
@@ -682,7 +626,8 @@ public sealed class SunDisklabel : IPartition
 
     /// <summary>Solaris logical partition for small disk label</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct dk_map2
+    [SwapEndian]
+    partial struct dk_map2
     {
         /// <summary> ID tag of partition</summary>
         public SunTag p_tag;
@@ -695,34 +640,35 @@ public sealed class SunDisklabel : IPartition
 #region Nested type: dk_vtoc16
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct dk_vtoc16
+    [SwapEndian]
+    partial struct dk_vtoc16
     {
         /// <summary>info needed by mboot</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        public readonly uint[] v_bootinfo;
+        public uint[] v_bootinfo;
         /// <summary>to verify vtoc sanity</summary>
-        public readonly uint v_sanity;
+        public uint v_sanity;
         /// <summary>layout version</summary>
-        public readonly uint v_version;
+        public uint v_version;
         /// <summary>volume name</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = LEN_DKL_VVOL)]
-        public readonly byte[] v_volume;
+        public byte[] v_volume;
         /// <summary>sector size in bytes</summary>
-        public readonly ushort v_sectorsz;
+        public ushort v_sectorsz;
         /// <summary>number of partitions</summary>
-        public readonly ushort v_nparts;
+        public ushort v_nparts;
         /// <summary>free space</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 10)]
-        public readonly uint[] v_reserved;
+        public uint[] v_reserved;
         /// <summary>partition headers</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = NDKMAP16)]
-        public readonly dkl_partition[] v_part;
+        public dkl_partition[] v_part;
         /// <summary>partition timestamp</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = NDKMAP16)]
-        public readonly int[] v_timestamp;
+        public int[] v_timestamp;
         /// <summary>for compatibility</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = LEN_DKL_ASCII)]
-        public readonly byte[] v_asciilabel;
+        public byte[] v_asciilabel;
     }
 
 #endregion
@@ -730,31 +676,32 @@ public sealed class SunDisklabel : IPartition
 #region Nested type: dk_vtoc8
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct dk_vtoc8
+    [SwapEndian]
+    partial struct dk_vtoc8
     {
         /// <summary> layout version</summary>
-        public readonly uint v_version;
+        public uint v_version;
         /// <summary> volume name</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = LEN_DKL_VVOL)]
-        public readonly byte[] v_volume;
+        public byte[] v_volume;
         /// <summary> number of partitions </summary>
-        public readonly ushort v_nparts;
+        public ushort v_nparts;
         /// <summary> partition hdrs, sec 2</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = NDKMAP)]
-        public readonly dk_map2[] v_part;
+        public dk_map2[] v_part;
         /// <summary>Alignment</summary>
-        public readonly ushort padding;
+        public ushort padding;
         /// <summary> info needed by mboot</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        public readonly uint[] v_bootinfo;
+        public uint[] v_bootinfo;
         /// <summary> to verify vtoc sanity</summary>
-        public readonly uint v_sanity;
+        public uint v_sanity;
         /// <summary> free space</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 10)]
-        public readonly uint[] v_reserved;
+        public uint[] v_reserved;
         /// <summary> partition timestamp</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = NDKMAP)]
-        public readonly int[] v_timestamp;
+        public int[] v_timestamp;
     }
 
 #endregion
@@ -763,7 +710,8 @@ public sealed class SunDisklabel : IPartition
 
     /// <summary>Solaris logical partition</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct dkl_partition
+    [SwapEndian]
+    partial struct dkl_partition
     {
         /// <summary>ID tag of partition</summary>
         public SunTag p_tag;
