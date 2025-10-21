@@ -29,6 +29,7 @@
 // ReSharper disable UnusedType.Local
 
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
@@ -40,12 +41,13 @@ public sealed partial class PFS
 
     /// <summary>Boot block, first 2 sectors</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct BootBlock
+    [SwapEndian]
+    partial struct BootBlock
     {
         /// <summary>"PFS\1" disk type</summary>
-        public readonly uint diskType;
+        public uint diskType;
         /// <summary>Boot code, til completion</summary>
-        public readonly byte[] bootCode;
+        public byte[] bootCode;
     }
 
 #endregion
@@ -53,49 +55,50 @@ public sealed partial class PFS
 #region Nested type: RootBlock
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct RootBlock
+    [SwapEndian]
+    partial struct RootBlock
     {
         /// <summary>Disk type</summary>
-        public readonly uint diskType;
+        public uint diskType;
         /// <summary>Options</summary>
-        public readonly uint options;
+        public uint options;
         /// <summary>Current datestamp</summary>
-        public readonly uint datestamp;
+        public uint datestamp;
         /// <summary>Volume creation day</summary>
-        public readonly ushort creationday;
+        public ushort creationday;
         /// <summary>Volume creation minute</summary>
-        public readonly ushort creationminute;
+        public ushort creationminute;
         /// <summary>Volume creation tick</summary>
-        public readonly ushort creationtick;
+        public ushort creationtick;
         /// <summary>AmigaDOS protection bits</summary>
-        public readonly ushort protection;
+        public ushort protection;
         /// <summary>Volume label (Pascal string)</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public readonly byte[] diskname;
+        public byte[] diskname;
         /// <summary>Last reserved block</summary>
-        public readonly uint lastreserved;
+        public uint lastreserved;
         /// <summary>First reserved block</summary>
-        public readonly uint firstreserved;
+        public uint firstreserved;
         /// <summary>Free reserved blocks</summary>
-        public readonly uint reservedfree;
+        public uint reservedfree;
         /// <summary>Size of reserved blocks in bytes</summary>
-        public readonly ushort reservedblocksize;
+        public ushort reservedblocksize;
         /// <summary>Blocks in rootblock, including bitmap</summary>
-        public readonly ushort rootblockclusters;
+        public ushort rootblockclusters;
         /// <summary>Free blocks</summary>
-        public readonly uint blocksfree;
+        public uint blocksfree;
         /// <summary>Blocks that must be always free</summary>
-        public readonly uint alwaysfree;
+        public uint alwaysfree;
         /// <summary>Current bitmapfield number for allocation</summary>
-        public readonly uint rovingPointer;
+        public uint rovingPointer;
         /// <summary>Pointer to deldir</summary>
-        public readonly uint delDirPtr;
+        public uint delDirPtr;
         /// <summary>Disk size in sectors</summary>
-        public readonly uint diskSize;
+        public uint diskSize;
         /// <summary>Rootblock extension</summary>
-        public readonly uint extension;
+        public uint extension;
         /// <summary>Unused</summary>
-        public readonly uint unused;
+        public uint unused;
     }
 
 #endregion
