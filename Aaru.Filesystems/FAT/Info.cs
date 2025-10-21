@@ -82,7 +82,7 @@ public sealed partial class FAT
 
         if(errno != ErrorNumber.NoError) return false;
 
-        HumanParameterBlock humanBpb = Marshal.ByteArrayToStructureBigEndian<HumanParameterBlock>(bpbSector);
+        HumanParameterBlock humanBpb = Marshal.ByteArrayToStructureBigEndianGenerated<HumanParameterBlock>(bpbSector);
 
         ulong expectedClusters = humanBpb.bpc > 0 ? partition.Size / humanBpb.bpc : 0;
 

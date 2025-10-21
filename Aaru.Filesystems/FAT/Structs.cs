@@ -30,6 +30,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
@@ -942,35 +943,36 @@ public sealed partial class FAT
 
     /// <summary>Human68k Parameter Block, big endian, 512 bytes even on 256 bytes/sector.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct HumanParameterBlock
+    [SwapEndian]
+    partial struct HumanParameterBlock
     {
         /// <summary>68k bra.S</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public readonly byte[] jump;
+        public byte[] jump;
         /// <summary>OEM Name, 16 bytes, space-padded</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] oem_name;
+        public byte[] oem_name;
         /// <summary>Bytes per cluster</summary>
-        public readonly ushort bpc;
+        public ushort bpc;
         /// <summary>Unknown, seen 1, 2 and 16</summary>
-        public readonly byte unknown1;
+        public byte unknown1;
         /// <summary>Unknown, always 512?</summary>
-        public readonly ushort unknown2;
+        public ushort unknown2;
         /// <summary>Unknown, always 1?</summary>
-        public readonly byte unknown3;
+        public byte unknown3;
         /// <summary>Number of entries on root directory</summary>
-        public readonly ushort root_ent;
+        public ushort root_ent;
         /// <summary>Clusters, set to 0 if more than 65536</summary>
-        public readonly ushort clusters;
+        public ushort clusters;
         /// <summary>Media descriptor</summary>
-        public readonly byte media;
+        public byte media;
         /// <summary>Clusters per FAT, set to 0</summary>
-        public readonly byte cpfat;
+        public byte cpfat;
         /// <summary>Clustersin volume</summary>
-        public readonly uint big_clusters;
+        public uint big_clusters;
         /// <summary>Boot code.</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 478)]
-        public readonly byte[] boot_code;
+        public byte[] boot_code;
     }
 
 #endregion

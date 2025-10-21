@@ -49,7 +49,7 @@ public sealed partial class FAT
         andosOemCorrect = false;
         bootable        = false;
 
-        humanBpb = Marshal.ByteArrayToStructureBigEndian<HumanParameterBlock>(bpbSector);
+        humanBpb = Marshal.ByteArrayToStructureBigEndianGenerated<HumanParameterBlock>(bpbSector);
         atariBpb = Marshal.ByteArrayToStructureLittleEndian<AtariParameterBlock>(bpbSector);
 
         ulong expectedClusters = humanBpb.bpc > 0 ? partition.Size / humanBpb.bpc : 0;
