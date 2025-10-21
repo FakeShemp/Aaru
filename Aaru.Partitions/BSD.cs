@@ -36,6 +36,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
@@ -47,7 +48,7 @@ namespace Aaru.Partitions;
 /// <inheritdoc />
 /// <summary>Implements decoding of BSD disklabels</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
-public sealed class BSD : IPartition
+public sealed partial class BSD : IPartition
 {
     const uint DISK_MAGIC = 0x82564557;
     const uint DISK_CIGAM = 0x57455682;
@@ -99,12 +100,12 @@ public sealed class BSD : IPartition
                 dl = Marshal.ByteArrayToStructureLittleEndian<DiskLabel>(sector);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization
-                                              .BSD_GetInformation_dl_magic_on_sector_0_at_offset_1_equals_2_X8_expected_3_X8,
-                                           location + sectorOffset,
-                                           offset,
-                                           dl.d_magic,
-                                           DISK_MAGIC);
+                                  Localization
+                                     .BSD_GetInformation_dl_magic_on_sector_0_at_offset_1_equals_2_X8_expected_3_X8,
+                                  location + sectorOffset,
+                                  offset,
+                                  dl.d_magic,
+                                  DISK_MAGIC);
 
                 if((dl.d_magic != DISK_MAGIC || dl.d_magic2 != DISK_MAGIC) &&
                    (dl.d_magic != DISK_CIGAM || dl.d_magic2 != DISK_CIGAM))
@@ -120,7 +121,7 @@ public sealed class BSD : IPartition
 
         if(!found) return false;
 
-        if(dl is { d_magic: DISK_CIGAM, d_magic2: DISK_CIGAM }) dl = SwapDiskLabel(dl);
+        if(dl is { d_magic: DISK_CIGAM, d_magic2: DISK_CIGAM }) dl = dl.SwapEndian();
 
         AaruLogging.Debug(MODULE_NAME, "dl.d_type = {0}",           dl.d_type);
         AaruLogging.Debug(MODULE_NAME, "dl.d_subtype = {0}",        dl.d_subtype);
@@ -168,9 +169,9 @@ public sealed class BSD : IPartition
             AaruLogging.Debug(MODULE_NAME, "dl.d_partitions[i].p_size = {0}", dl.d_partitions[i].p_size);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "dl.d_partitions[i].p_fstype = {0} ({1})",
-                                       dl.d_partitions[i].p_fstype,
-                                       FSTypeToString(dl.d_partitions[i].p_fstype));
+                              "dl.d_partitions[i].p_fstype = {0} ({1})",
+                              dl.d_partitions[i].p_fstype,
+                              FSTypeToString(dl.d_partitions[i].p_fstype));
 
             var part = new Partition
             {
@@ -241,37 +242,24 @@ public sealed class BSD : IPartition
                };
     }
 
-    static DiskLabel SwapDiskLabel(DiskLabel dl)
-    {
-        dl = (DiskLabel)Marshal.SwapStructureMembersEndian(dl);
-
-        for(int i = 0; i < dl.d_drivedata.Length; i++) dl.d_drivedata[i] = Swapping.Swap(dl.d_drivedata[i]);
-
-        for(int i = 0; i < dl.d_spare.Length; i++) dl.d_spare[i] = Swapping.Swap(dl.d_spare[i]);
-
-        for(int i = 0; i < dl.d_partitions.Length; i++)
-            dl.d_partitions[i] = (BSDPartition)Marshal.SwapStructureMembersEndian(dl.d_partitions[i]);
-
-        return dl;
-    }
-
 #region Nested type: BSDPartition
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct BSDPartition
+    [SwapEndian]
+    partial struct BSDPartition
     {
         /// <summary>Sectors in partition</summary>
-        public readonly uint p_size;
+        public uint p_size;
         /// <summary>Starting sector</summary>
-        public readonly uint p_offset;
+        public uint p_offset;
         /// <summary>Fragment size</summary>
-        public readonly uint p_fsize;
+        public uint p_fsize;
         /// <summary>Filesystem type, <see cref="fsType" /></summary>
-        public readonly fsType p_fstype;
+        public fsType p_fstype;
         /// <summary>Fragment size</summary>
-        public readonly byte p_frag;
+        public byte p_frag;
         /// <summary>Cylinder per group</summary>
-        public readonly ushort p_cpg;
+        public ushort p_cpg;
     }
 
 #endregion
@@ -302,77 +290,78 @@ public sealed class BSD : IPartition
 #region Nested type: DiskLabel
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct DiskLabel
+    [SwapEndian]
+    partial struct DiskLabel
     {
         /// <summary>
         ///     <see cref="BSD.DISK_MAGIC" />
         /// </summary>
-        public readonly uint d_magic;
+        public uint d_magic;
         /// <summary>
         ///     <see cref="dType" />
         /// </summary>
-        public readonly dType d_type;
+        public dType d_type;
         /// <summary>Disk subtype</summary>
-        public readonly ushort d_subtype;
+        public ushort d_subtype;
         /// <summary>Type name</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] d_typename;
+        public byte[] d_typename;
         /// <summary>Pack identifier</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] d_packname;
+        public byte[] d_packname;
         /// <summary>Bytes per sector</summary>
-        public readonly uint d_secsize;
+        public uint d_secsize;
         /// <summary>Sectors per track</summary>
-        public readonly uint d_nsectors;
+        public uint d_nsectors;
         /// <summary>Tracks per cylinder</summary>
-        public readonly uint d_ntracks;
+        public uint d_ntracks;
         /// <summary>Cylinders per unit</summary>
-        public readonly uint d_ncylinders;
+        public uint d_ncylinders;
         /// <summary>Sectors per cylinder</summary>
-        public readonly uint d_secpercyl;
+        public uint d_secpercyl;
         /// <summary>Sectors per unit</summary>
-        public readonly uint d_secperunit;
+        public uint d_secperunit;
         /// <summary>Spare sectors per track</summary>
-        public readonly ushort d_sparespertrack;
+        public ushort d_sparespertrack;
         /// <summary>Spare sectors per cylinder</summary>
-        public readonly ushort d_sparespercyl;
+        public ushort d_sparespercyl;
         /// <summary>Alternate cylinders</summary>
-        public readonly uint d_acylinders;
+        public uint d_acylinders;
         /// <summary>Rotational speed</summary>
-        public readonly ushort d_rpm;
+        public ushort d_rpm;
         /// <summary>Hardware sector interleave</summary>
-        public readonly ushort d_interleave;
+        public ushort d_interleave;
         /// <summary>Sector 0 skew per track</summary>
-        public readonly ushort d_trackskew;
+        public ushort d_trackskew;
         /// <summary>Sector 0 sker per cylinder</summary>
-        public readonly ushort d_cylskeew;
+        public ushort d_cylskeew;
         /// <summary>Head switch time in microseconds</summary>
-        public readonly uint d_headswitch;
+        public uint d_headswitch;
         /// <summary>Track to track seek in microseconds</summary>
-        public readonly uint d_trkseek;
+        public uint d_trkseek;
         /// <summary>
         ///     <see cref="dFlags" />
         /// </summary>
-        public readonly dFlags d_flags;
+        public dFlags d_flags;
         /// <summary>Drive-specific information</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
-        public readonly uint[] d_drivedata;
+        public uint[] d_drivedata;
         /// <summary>Reserved</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
-        public readonly uint[] d_spare;
+        public uint[] d_spare;
         /// <summary><see cref="BSD.DISK_MAGIC" /> again</summary>
-        public readonly uint d_magic2;
+        public uint d_magic2;
         /// <summary>XOR of data</summary>
-        public readonly ushort d_checksum;
+        public ushort d_checksum;
         /// <summary>How many partitions</summary>
-        public readonly ushort d_npartitions;
+        public ushort d_npartitions;
         /// <summary>Size of boot area in bytes</summary>
-        public readonly uint d_bbsize;
+        public uint d_bbsize;
         /// <summary>Maximum size of superblock in bytes</summary>
-        public readonly uint d_sbsize;
+        public uint d_sbsize;
         /// <summary>Partitions</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 22)]
-        public readonly BSDPartition[] d_partitions;
+        public BSDPartition[] d_partitions;
     }
 
 #endregion
