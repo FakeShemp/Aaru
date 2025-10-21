@@ -155,7 +155,7 @@ public sealed partial class AppleHFS
                 return;
         }
 
-        MasterDirectoryBlock mdb = Marshal.ByteArrayToStructureBigEndian<MasterDirectoryBlock>(mdbSector);
+        MasterDirectoryBlock mdb = Marshal.ByteArrayToStructureBigEndianGenerated<MasterDirectoryBlock>(mdbSector);
 
         sb.AppendLine(Localization.Name_Apple_Hierarchical_File_System);
         sb.AppendLine();
