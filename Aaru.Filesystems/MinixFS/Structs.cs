@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
@@ -39,28 +40,29 @@ public sealed partial class MinixFS
 
     /// <summary>Superblock for Minix v1 and V2 filesystems</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct SuperBlock
+    [SwapEndian]
+    partial struct SuperBlock
     {
         /// <summary>0x00, inodes on volume</summary>
-        public readonly ushort s_ninodes;
+        public ushort s_ninodes;
         /// <summary>0x02, zones on volume</summary>
-        public readonly ushort s_nzones;
+        public ushort s_nzones;
         /// <summary>0x04, blocks on inode map</summary>
-        public readonly short s_imap_blocks;
+        public short s_imap_blocks;
         /// <summary>0x06, blocks on zone map</summary>
-        public readonly short s_zmap_blocks;
+        public short s_zmap_blocks;
         /// <summary>0x08, first data zone</summary>
-        public readonly ushort s_firstdatazone;
+        public ushort s_firstdatazone;
         /// <summary>0x0A, log2 of blocks/zone</summary>
-        public readonly short s_log_zone_size;
+        public short s_log_zone_size;
         /// <summary>0x0C, max file size</summary>
-        public readonly uint s_max_size;
+        public uint s_max_size;
         /// <summary>0x10, magic</summary>
-        public readonly ushort s_magic;
+        public ushort s_magic;
         /// <summary>0x12, filesystem state</summary>
-        public readonly ushort s_state;
+        public ushort s_state;
         /// <summary>0x14, number of zones</summary>
-        public readonly uint s_zones;
+        public uint s_zones;
     }
 
 #endregion
@@ -69,34 +71,35 @@ public sealed partial class MinixFS
 
     /// <summary>Superblock for Minix v3 filesystems</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct SuperBlock3
+    [SwapEndian]
+    partial struct SuperBlock3
     {
         /// <summary>0x00, inodes on volume</summary>
-        public readonly uint s_ninodes;
+        public uint s_ninodes;
         /// <summary>0x02, old zones on volume</summary>
-        public readonly ushort s_nzones;
+        public ushort s_nzones;
         /// <summary>0x06, blocks on inode map</summary>
-        public readonly ushort s_imap_blocks;
+        public ushort s_imap_blocks;
         /// <summary>0x08, blocks on zone map</summary>
-        public readonly ushort s_zmap_blocks;
+        public ushort s_zmap_blocks;
         /// <summary>0x0A, first data zone</summary>
-        public readonly ushort s_firstdatazone;
+        public ushort s_firstdatazone;
         /// <summary>0x0C, log2 of blocks/zone</summary>
-        public readonly ushort s_log_zone_size;
+        public ushort s_log_zone_size;
         /// <summary>0x0E, padding</summary>
-        public readonly ushort s_pad1;
+        public ushort s_pad1;
         /// <summary>0x10, max file size</summary>
-        public readonly uint s_max_size;
+        public uint s_max_size;
         /// <summary>0x14, number of zones</summary>
-        public readonly uint s_zones;
+        public uint s_zones;
         /// <summary>0x18, magic</summary>
-        public readonly ushort s_magic;
+        public ushort s_magic;
         /// <summary>0x1A, padding</summary>
-        public readonly ushort s_pad2;
+        public ushort s_pad2;
         /// <summary>0x1C, bytes in a block</summary>
         public ushort s_blocksize;
         /// <summary>0x1E, on-disk structures version</summary>
-        public readonly byte s_disk_version;
+        public byte s_disk_version;
     }
 
 #endregion
