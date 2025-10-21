@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Marshal = Aaru.Helpers.Marshal;
@@ -44,7 +45,7 @@ namespace Aaru.Partitions;
 /// <inheritdoc />
 /// <summary>Implements decoding of Xbox partitions</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
-public sealed class Xbox : IPartition
+public sealed partial class Xbox : IPartition
 {
     const uint XBOX_CIGAM                  = 0x46415458;
     const uint XBOX_MAGIC                  = 0x58544146;
@@ -87,7 +88,8 @@ public sealed class Xbox : IPartition
 
         if(errno != ErrorNumber.NoError || sector.Length < 512) return false;
 
-        Xbox360DevKitPartitionTable table = Marshal.ByteArrayToStructureBigEndian<Xbox360DevKitPartitionTable>(sector);
+        Xbox360DevKitPartitionTable table =
+            Marshal.ByteArrayToStructureBigEndianGenerated<Xbox360DevKitPartitionTable>(sector);
 
         if(table.magic                             == XBOX360_DEVKIT_MAGIC     &&
            table.contentOff   + table.contentLen   <= imagePlugin.Info.Sectors &&
@@ -269,14 +271,15 @@ public sealed class Xbox : IPartition
 #region Nested type: Xbox360DevKitPartitionTable
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct Xbox360DevKitPartitionTable
+    [SwapEndian]
+    partial struct Xbox360DevKitPartitionTable
     {
-        public readonly uint magic;
-        public readonly uint unknown;
-        public readonly uint contentOff;
-        public readonly uint contentLen;
-        public readonly uint dashboardOff;
-        public readonly uint dashboardLen;
+        public uint magic;
+        public uint unknown;
+        public uint contentOff;
+        public uint contentLen;
+        public uint dashboardOff;
+        public uint dashboardLen;
     }
 
 #endregion

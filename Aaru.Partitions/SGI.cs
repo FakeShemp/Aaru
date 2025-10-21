@@ -34,6 +34,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
@@ -48,7 +49,7 @@ namespace Aaru.Partitions;
 /// <inheritdoc />
 /// <summary>Implements decoding of the SGI Disk Volume Header</summary>
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public sealed class SGI : IPartition
+public sealed partial class SGI : IPartition
 {
     const int    SGI_MAGIC   = 0x0BE5A941;
     const string MODULE_NAME = "SGI Volume Header plugin";
@@ -73,18 +74,15 @@ public sealed class SGI : IPartition
 
         if(errno != ErrorNumber.NoError || sector.Length < 512) return false;
 
-        Label dvh = Marshal.ByteArrayToStructureBigEndian<Label>(sector);
+        Label dvh = Marshal.ByteArrayToStructureBigEndianGenerated<Label>(sector);
 
-        for(int i = 0; i < dvh.volume.Length; i++)
+        for(var i = 0; i < dvh.volume.Length; i++)
             dvh.volume[i] = (Volume)Marshal.SwapStructureMembersEndian(dvh.volume[i]);
 
-        for(int i = 0; i < dvh.partitions.Length; i++)
+        for(var i = 0; i < dvh.partitions.Length; i++)
             dvh.partitions[i] = (Partition)Marshal.SwapStructureMembersEndian(dvh.partitions[i]);
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   Localization.dvh_magic_equals_0_X8_should_be_1_X8,
-                                   dvh.magic,
-                                   SGI_MAGIC);
+        AaruLogging.Debug(MODULE_NAME, Localization.dvh_magic_equals_0_X8_should_be_1_X8, dvh.magic, SGI_MAGIC);
 
         if(dvh.magic != SGI_MAGIC) return false;
 
@@ -97,9 +95,7 @@ public sealed class SGI : IPartition
         AaruLogging.Debug(MODULE_NAME, "dvh.device_params.dp_gap1 = {0}", dvh.device_params.dp_gap1);
         AaruLogging.Debug(MODULE_NAME, "dvh.device_params.dp_gap2 = {0}", dvh.device_params.dp_gap2);
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "dvh.device_params.dp_spares_cyl = {0}",
-                                   dvh.device_params.dp_spares_cyl);
+        AaruLogging.Debug(MODULE_NAME, "dvh.device_params.dp_spares_cyl = {0}", dvh.device_params.dp_spares_cyl);
 
         AaruLogging.Debug(MODULE_NAME, "dvh.device_params.dp_cyls = {0}",  dvh.device_params.dp_cyls);
         AaruLogging.Debug(MODULE_NAME, "dvh.device_params.dp_shd0 = {0}",  dvh.device_params.dp_shd0);
@@ -113,9 +109,7 @@ public sealed class SGI : IPartition
 
         AaruLogging.Debug(MODULE_NAME, "dvh.device_params.dp_secbytes = {0}", dvh.device_params.dp_secbytes);
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "dvh.device_params.dp_interleave = {0}",
-                                   dvh.device_params.dp_interleave);
+        AaruLogging.Debug(MODULE_NAME, "dvh.device_params.dp_interleave = {0}", dvh.device_params.dp_interleave);
 
         AaruLogging.Debug(MODULE_NAME, "dvh.device_params.dp_flags = {0}", dvh.device_params.dp_flags);
 
@@ -135,17 +129,11 @@ public sealed class SGI : IPartition
 
         ulong counter = 0;
 
-        for(int i = 0; i < dvh.partitions.Length; i++)
+        for(var i = 0; i < dvh.partitions.Length; i++)
         {
-            AaruLogging.Debug(MODULE_NAME,
-                                       "dvh.partitions[{0}].num_blocks = {1}",
-                                       i,
-                                       dvh.partitions[i].num_blocks);
+            AaruLogging.Debug(MODULE_NAME, "dvh.partitions[{0}].num_blocks = {1}", i, dvh.partitions[i].num_blocks);
 
-            AaruLogging.Debug(MODULE_NAME,
-                                       "dvh.partitions[{0}].first_block = {1}",
-                                       i,
-                                       dvh.partitions[i].first_block);
+            AaruLogging.Debug(MODULE_NAME, "dvh.partitions[{0}].first_block = {1}", i, dvh.partitions[i].first_block);
 
             AaruLogging.Debug(MODULE_NAME, "dvh.partitions[{0}].type = {1}", i, dvh.partitions[i].type);
 
@@ -195,7 +183,9 @@ public sealed class SGI : IPartition
 
 #region Nested type: DeviceParameters
 
-    struct DeviceParameters
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct DeviceParameters
     {
         public byte   dp_skew;
         public byte   dp_gap1;
@@ -227,20 +217,21 @@ public sealed class SGI : IPartition
 #region Nested type: Label
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Label
+    [SwapEndian]
+    partial struct Label
     {
-        public readonly uint  magic;
-        public readonly short root_part_num;
-        public readonly short swap_part_num;
+        public uint  magic;
+        public short root_part_num;
+        public short swap_part_num;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] boot_file;
-        public readonly DeviceParameters device_params;
+        public byte[] boot_file;
+        public DeviceParameters device_params;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 15)]
-        public readonly Volume[] volume;
+        public Volume[] volume;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly Partition[] partitions;
-        public readonly uint csum;
-        public readonly uint padding;
+        public Partition[] partitions;
+        public uint csum;
+        public uint padding;
     }
 
 #endregion
@@ -248,11 +239,12 @@ public sealed class SGI : IPartition
 #region Nested type: Partition
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct Partition
+    [SwapEndian]
+    partial struct Partition
     {
-        public readonly uint    num_blocks;
-        public readonly uint    first_block;
-        public readonly SGIType type;
+        public uint    num_blocks;
+        public uint    first_block;
+        public SGIType type;
     }
 
 #endregion
@@ -285,12 +277,13 @@ public sealed class SGI : IPartition
 #region Nested type: Volume
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Volume
+    [SwapEndian]
+    partial struct Volume
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public readonly byte[] name;
-        public readonly uint block_num;
-        public readonly uint num_bytes;
+        public byte[] name;
+        public uint block_num;
+        public uint num_bytes;
     }
 
 #endregion
