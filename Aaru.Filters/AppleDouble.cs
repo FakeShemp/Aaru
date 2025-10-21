@@ -567,7 +567,7 @@ public sealed partial class AppleDouble : IFilter
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct DOSFileInfo
+    partial struct DOSFileInfo
     {
         public ushort modificationDate;
         public ushort modificationTime;
@@ -580,7 +580,7 @@ public sealed partial class AppleDouble : IFilter
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Entry
+    partial struct Entry
     {
         public uint id;
         public uint offset;
@@ -617,7 +617,7 @@ public sealed partial class AppleDouble : IFilter
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct FileDates
+    partial struct FileDates
     {
         public uint creationDate;
         public uint modificationDate;
@@ -631,7 +631,7 @@ public sealed partial class AppleDouble : IFilter
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct Header
+    partial struct Header
     {
         public uint magic;
         public uint version;
@@ -646,7 +646,7 @@ public sealed partial class AppleDouble : IFilter
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct MacFileInfo
+    partial struct MacFileInfo
     {
         public uint creationDate;
         public uint modificationDate;
@@ -660,7 +660,7 @@ public sealed partial class AppleDouble : IFilter
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct ProDOSFileInfo
+    partial struct ProDOSFileInfo
     {
         public uint   creationDate;
         public uint   modificationDate;
@@ -676,7 +676,7 @@ public sealed partial class AppleDouble : IFilter
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SwapEndian]
-    struct UnixFileInfo
+    partial struct UnixFileInfo
     {
         public uint creationDate;
         public uint accessDate;
