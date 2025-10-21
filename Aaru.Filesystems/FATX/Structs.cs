@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Interfaces;
 
 namespace Aaru.Filesystems;
@@ -36,20 +37,21 @@ public sealed partial class XboxFatPlugin
 #region Nested type: DirectoryEntry
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct DirectoryEntry
+    [SwapEndian]
+    partial struct DirectoryEntry
     {
-        public readonly byte       filenameSize;
-        public readonly Attributes attributes;
+        public byte       filenameSize;
+        public Attributes attributes;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAX_FILENAME)]
-        public readonly byte[] filename;
-        public readonly uint   firstCluster;
-        public readonly uint   length;
-        public readonly ushort lastWrittenTime;
-        public readonly ushort lastWrittenDate;
-        public readonly ushort lastAccessTime;
-        public readonly ushort lastAccessDate;
-        public readonly ushort creationTime;
-        public readonly ushort creationDate;
+        public byte[] filename;
+        public uint   firstCluster;
+        public uint   length;
+        public ushort lastWrittenTime;
+        public ushort lastWrittenDate;
+        public ushort lastAccessTime;
+        public ushort lastAccessDate;
+        public ushort creationTime;
+        public ushort creationDate;
     }
 
 #endregion
@@ -96,16 +98,17 @@ public sealed partial class XboxFatPlugin
 #region Nested type: Superblock
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Superblock
+    [SwapEndian]
+    partial struct Superblock
     {
-        public readonly uint magic;
-        public readonly uint id;
-        public readonly uint sectorsPerCluster;
-        public readonly uint rootDirectoryCluster;
+        public uint magic;
+        public uint id;
+        public uint sectorsPerCluster;
+        public uint rootDirectoryCluster;
 
         // TODO: Undetermined size
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public readonly byte[] volumeLabel;
+        public byte[] volumeLabel;
     }
 
 #endregion

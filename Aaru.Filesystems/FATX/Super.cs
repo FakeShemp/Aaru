@@ -69,7 +69,7 @@ public sealed partial class XboxFatPlugin
 
         if(_superblock.magic == FATX_CIGAM)
         {
-            _superblock   = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
+            _superblock   = Marshal.ByteArrayToStructureBigEndianGenerated<Superblock>(sector);
             _littleEndian = false;
         }
 
@@ -233,7 +233,7 @@ public sealed partial class XboxFatPlugin
                                        ? Marshal.ByteArrayToStructureLittleEndian<DirectoryEntry>(rootDirectoryBuffer,
                                            pos,
                                            Marshal.SizeOf<DirectoryEntry>())
-                                       : Marshal.ByteArrayToStructureBigEndian<DirectoryEntry>(rootDirectoryBuffer,
+                                       : Marshal.ByteArrayToStructureBigEndianGenerated<DirectoryEntry>(rootDirectoryBuffer,
                                            pos,
                                            Marshal.SizeOf<DirectoryEntry>());
 
