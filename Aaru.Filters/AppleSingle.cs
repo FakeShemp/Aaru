@@ -35,6 +35,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
@@ -46,7 +47,7 @@ namespace Aaru.Filters;
 /// <inheritdoc />
 /// <summary>Decodes AppleSingle files</summary>
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
-public sealed class AppleSingle : IFilter
+public sealed partial class AppleSingle : IFilter
 {
     const    uint   MAGIC          = 0x00051600;
     const    uint   VERSION        = 0x00010000;
@@ -164,7 +165,7 @@ public sealed class AppleSingle : IFilter
 
         var hdrB = new byte[26];
         Array.Copy(buffer, 0, hdrB, 0, 26);
-        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
 
         return _header is { magic: MAGIC, version: VERSION or VERSION2 };
     }
@@ -177,7 +178,7 @@ public sealed class AppleSingle : IFilter
         var hdrB = new byte[26];
         stream.Seek(0, SeekOrigin.Begin);
         stream.EnsureRead(hdrB, 0, 26);
-        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
 
         return _header is { magic: MAGIC, version: VERSION or VERSION2 };
     }
@@ -193,7 +194,7 @@ public sealed class AppleSingle : IFilter
 
         var hdrB = new byte[26];
         fstream.EnsureRead(hdrB, 0, 26);
-        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
 
         fstream.Close();
 
@@ -208,7 +209,7 @@ public sealed class AppleSingle : IFilter
 
         var hdrB = new byte[26];
         ms.EnsureRead(hdrB, 0, 26);
-        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
 
         var entries = new Entry[_header.entries];
 
@@ -216,7 +217,7 @@ public sealed class AppleSingle : IFilter
         {
             var entry = new byte[12];
             ms.EnsureRead(entry, 0, 12);
-            entries[i] = Marshal.ByteArrayToStructureBigEndian<Entry>(entry);
+            entries[i] = Marshal.ByteArrayToStructureBigEndianGenerated<Entry>(entry);
         }
 
         CreationTime  = DateTime.UtcNow;
@@ -235,7 +236,7 @@ public sealed class AppleSingle : IFilter
                     var datesB = new byte[16];
                     ms.EnsureRead(datesB, 0, 16);
 
-                    FileDates dates = Marshal.ByteArrayToStructureBigEndian<FileDates>(datesB);
+                    FileDates dates = Marshal.ByteArrayToStructureBigEndianGenerated<FileDates>(datesB);
 
                     CreationTime  = DateHandlers.UnixUnsignedToDateTime(dates.creationDate);
                     LastWriteTime = DateHandlers.UnixUnsignedToDateTime(dates.modificationDate);
@@ -248,28 +249,29 @@ public sealed class AppleSingle : IFilter
 
                     if(_macintoshHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        MacFileInfo macinfo = Marshal.ByteArrayToStructureBigEndian<MacFileInfo>(finfo);
+                        MacFileInfo macinfo = Marshal.ByteArrayToStructureBigEndianGenerated<MacFileInfo>(finfo);
 
                         CreationTime  = DateHandlers.MacToDateTime(macinfo.creationDate);
                         LastWriteTime = DateHandlers.MacToDateTime(macinfo.modificationDate);
                     }
                     else if(_proDosHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        ProDOSFileInfo prodosinfo = Marshal.ByteArrayToStructureBigEndian<ProDOSFileInfo>(finfo);
+                        ProDOSFileInfo prodosinfo =
+                            Marshal.ByteArrayToStructureBigEndianGenerated<ProDOSFileInfo>(finfo);
 
                         CreationTime  = DateHandlers.MacToDateTime(prodosinfo.creationDate);
                         LastWriteTime = DateHandlers.MacToDateTime(prodosinfo.modificationDate);
                     }
                     else if(_unixHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        UnixFileInfo unixinfo = Marshal.ByteArrayToStructureBigEndian<UnixFileInfo>(finfo);
+                        UnixFileInfo unixinfo = Marshal.ByteArrayToStructureBigEndianGenerated<UnixFileInfo>(finfo);
 
                         CreationTime  = DateHandlers.UnixUnsignedToDateTime(unixinfo.creationDate);
                         LastWriteTime = DateHandlers.UnixUnsignedToDateTime(unixinfo.modificationDate);
                     }
                     else if(_dosHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        DOSFileInfo dosinfo = Marshal.ByteArrayToStructureBigEndian<DOSFileInfo>(finfo);
+                        DOSFileInfo dosinfo = Marshal.ByteArrayToStructureBigEndianGenerated<DOSFileInfo>(finfo);
 
                         LastWriteTime = DateHandlers.DosToDateTime(dosinfo.modificationDate, dosinfo.modificationTime);
                     }
@@ -296,7 +298,7 @@ public sealed class AppleSingle : IFilter
 
         var hdrB = new byte[26];
         stream.EnsureRead(hdrB, 0, 26);
-        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
 
         var entries = new Entry[_header.entries];
 
@@ -304,7 +306,7 @@ public sealed class AppleSingle : IFilter
         {
             var entry = new byte[12];
             stream.EnsureRead(entry, 0, 12);
-            entries[i] = Marshal.ByteArrayToStructureBigEndian<Entry>(entry);
+            entries[i] = Marshal.ByteArrayToStructureBigEndianGenerated<Entry>(entry);
         }
 
         CreationTime  = DateTime.UtcNow;
@@ -323,7 +325,7 @@ public sealed class AppleSingle : IFilter
                     var datesB = new byte[16];
                     stream.EnsureRead(datesB, 0, 16);
 
-                    FileDates dates = Marshal.ByteArrayToStructureBigEndian<FileDates>(datesB);
+                    FileDates dates = Marshal.ByteArrayToStructureBigEndianGenerated<FileDates>(datesB);
 
                     CreationTime  = DateHandlers.MacToDateTime(dates.creationDate);
                     LastWriteTime = DateHandlers.MacToDateTime(dates.modificationDate);
@@ -336,28 +338,29 @@ public sealed class AppleSingle : IFilter
 
                     if(_macintoshHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        MacFileInfo macinfo = Marshal.ByteArrayToStructureBigEndian<MacFileInfo>(finfo);
+                        MacFileInfo macinfo = Marshal.ByteArrayToStructureBigEndianGenerated<MacFileInfo>(finfo);
 
                         CreationTime  = DateHandlers.MacToDateTime(macinfo.creationDate);
                         LastWriteTime = DateHandlers.MacToDateTime(macinfo.modificationDate);
                     }
                     else if(_proDosHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        ProDOSFileInfo prodosinfo = Marshal.ByteArrayToStructureBigEndian<ProDOSFileInfo>(finfo);
+                        ProDOSFileInfo prodosinfo =
+                            Marshal.ByteArrayToStructureBigEndianGenerated<ProDOSFileInfo>(finfo);
 
                         CreationTime  = DateHandlers.MacToDateTime(prodosinfo.creationDate);
                         LastWriteTime = DateHandlers.MacToDateTime(prodosinfo.modificationDate);
                     }
                     else if(_unixHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        UnixFileInfo unixinfo = Marshal.ByteArrayToStructureBigEndian<UnixFileInfo>(finfo);
+                        UnixFileInfo unixinfo = Marshal.ByteArrayToStructureBigEndianGenerated<UnixFileInfo>(finfo);
 
                         CreationTime  = DateHandlers.UnixUnsignedToDateTime(unixinfo.creationDate);
                         LastWriteTime = DateHandlers.UnixUnsignedToDateTime(unixinfo.modificationDate);
                     }
                     else if(_dosHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        DOSFileInfo dosinfo = Marshal.ByteArrayToStructureBigEndian<DOSFileInfo>(finfo);
+                        DOSFileInfo dosinfo = Marshal.ByteArrayToStructureBigEndianGenerated<DOSFileInfo>(finfo);
 
                         LastWriteTime = DateHandlers.DosToDateTime(dosinfo.modificationDate, dosinfo.modificationTime);
                     }
@@ -385,7 +388,7 @@ public sealed class AppleSingle : IFilter
 
         var hdrB = new byte[26];
         fs.EnsureRead(hdrB, 0, 26);
-        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
 
         var entries = new Entry[_header.entries];
 
@@ -393,7 +396,7 @@ public sealed class AppleSingle : IFilter
         {
             var entry = new byte[12];
             fs.EnsureRead(entry, 0, 12);
-            entries[i] = Marshal.ByteArrayToStructureBigEndian<Entry>(entry);
+            entries[i] = Marshal.ByteArrayToStructureBigEndianGenerated<Entry>(entry);
         }
 
         CreationTime  = DateTime.UtcNow;
@@ -412,7 +415,7 @@ public sealed class AppleSingle : IFilter
                     var datesB = new byte[16];
                     fs.EnsureRead(datesB, 0, 16);
 
-                    FileDates dates = Marshal.ByteArrayToStructureBigEndian<FileDates>(datesB);
+                    FileDates dates = Marshal.ByteArrayToStructureBigEndianGenerated<FileDates>(datesB);
 
                     CreationTime  = DateHandlers.MacToDateTime(dates.creationDate);
                     LastWriteTime = DateHandlers.MacToDateTime(dates.modificationDate);
@@ -425,28 +428,29 @@ public sealed class AppleSingle : IFilter
 
                     if(_macintoshHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        MacFileInfo macinfo = Marshal.ByteArrayToStructureBigEndian<MacFileInfo>(finfo);
+                        MacFileInfo macinfo = Marshal.ByteArrayToStructureBigEndianGenerated<MacFileInfo>(finfo);
 
                         CreationTime  = DateHandlers.MacToDateTime(macinfo.creationDate);
                         LastWriteTime = DateHandlers.MacToDateTime(macinfo.modificationDate);
                     }
                     else if(_proDosHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        ProDOSFileInfo prodosinfo = Marshal.ByteArrayToStructureBigEndian<ProDOSFileInfo>(finfo);
+                        ProDOSFileInfo prodosinfo =
+                            Marshal.ByteArrayToStructureBigEndianGenerated<ProDOSFileInfo>(finfo);
 
                         CreationTime  = DateHandlers.MacToDateTime(prodosinfo.creationDate);
                         LastWriteTime = DateHandlers.MacToDateTime(prodosinfo.modificationDate);
                     }
                     else if(_unixHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        UnixFileInfo unixinfo = Marshal.ByteArrayToStructureBigEndian<UnixFileInfo>(finfo);
+                        UnixFileInfo unixinfo = Marshal.ByteArrayToStructureBigEndianGenerated<UnixFileInfo>(finfo);
 
                         CreationTime  = DateHandlers.UnixUnsignedToDateTime(unixinfo.creationDate);
                         LastWriteTime = DateHandlers.UnixUnsignedToDateTime(unixinfo.modificationDate);
                     }
                     else if(_dosHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        DOSFileInfo dosinfo = Marshal.ByteArrayToStructureBigEndian<DOSFileInfo>(finfo);
+                        DOSFileInfo dosinfo = Marshal.ByteArrayToStructureBigEndianGenerated<DOSFileInfo>(finfo);
 
                         LastWriteTime = DateHandlers.DosToDateTime(dosinfo.modificationDate, dosinfo.modificationTime);
                     }
@@ -495,11 +499,12 @@ public sealed class AppleSingle : IFilter
 #region Nested type: DOSFileInfo
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct DOSFileInfo
+    [SwapEndian]
+    struct DOSFileInfo
     {
-        public readonly ushort modificationDate;
-        public readonly ushort modificationTime;
-        public readonly ushort attributes;
+        public ushort modificationDate;
+        public ushort modificationTime;
+        public ushort attributes;
     }
 
 #endregion
@@ -507,11 +512,12 @@ public sealed class AppleSingle : IFilter
 #region Nested type: Entry
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Entry
+    [SwapEndian]
+    struct Entry
     {
-        public readonly uint id;
-        public readonly uint offset;
-        public readonly uint length;
+        public uint id;
+        public uint offset;
+        public uint length;
     }
 
 #endregion
@@ -519,12 +525,13 @@ public sealed class AppleSingle : IFilter
 #region Nested type: FileDates
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct FileDates
+    [SwapEndian]
+    struct FileDates
     {
-        public readonly uint creationDate;
-        public readonly uint modificationDate;
-        public readonly uint backupDate;
-        public readonly uint accessDate;
+        public uint creationDate;
+        public uint modificationDate;
+        public uint backupDate;
+        public uint accessDate;
     }
 
 #endregion
@@ -532,13 +539,14 @@ public sealed class AppleSingle : IFilter
 #region Nested type: Header
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Header
+    [SwapEndian]
+    struct Header
     {
-        public readonly uint magic;
-        public readonly uint version;
+        public uint magic;
+        public uint version;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] homeFilesystem;
-        public readonly ushort entries;
+        public byte[] homeFilesystem;
+        public ushort entries;
     }
 
 #endregion
@@ -546,12 +554,13 @@ public sealed class AppleSingle : IFilter
 #region Nested type: MacFileInfo
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct MacFileInfo
+    [SwapEndian]
+    struct MacFileInfo
     {
-        public readonly uint creationDate;
-        public readonly uint modificationDate;
-        public readonly uint backupDate;
-        public readonly uint accessDate;
+        public uint creationDate;
+        public uint modificationDate;
+        public uint backupDate;
+        public uint accessDate;
     }
 
 #endregion
@@ -559,14 +568,15 @@ public sealed class AppleSingle : IFilter
 #region Nested type: ProDOSFileInfo
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct ProDOSFileInfo
+    [SwapEndian]
+    struct ProDOSFileInfo
     {
-        public readonly uint   creationDate;
-        public readonly uint   modificationDate;
-        public readonly uint   backupDate;
-        public readonly ushort access;
-        public readonly ushort fileType;
-        public readonly uint   auxType;
+        public uint   creationDate;
+        public uint   modificationDate;
+        public uint   backupDate;
+        public ushort access;
+        public ushort fileType;
+        public uint   auxType;
     }
 
 #endregion
@@ -574,11 +584,12 @@ public sealed class AppleSingle : IFilter
 #region Nested type: UnixFileInfo
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct UnixFileInfo
+    [SwapEndian]
+    struct UnixFileInfo
     {
-        public readonly uint creationDate;
-        public readonly uint accessDate;
-        public readonly uint modificationDate;
+        public uint creationDate;
+        public uint accessDate;
+        public uint modificationDate;
     }
 
 #endregion
