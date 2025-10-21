@@ -34,6 +34,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
@@ -45,7 +46,7 @@ namespace Aaru.Filters;
 // TODO: Interpret fdScript
 /// <inheritdoc />
 /// <summary>Decodes MacBinary files</summary>
-public sealed class MacBinary : IFilter
+public sealed partial class MacBinary : IFilter
 {
     const uint MAGIC = 0x6D42494E;
     byte[]     _bytes;
@@ -54,6 +55,83 @@ public sealed class MacBinary : IFilter
     bool       _isBytes, _isStream, _isPath;
     long       _rsrcForkOff;
     Stream     _stream;
+
+#region Nested type: Header
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    struct Header
+    {
+        /// <summary>0x00, MacBinary version, 0</summary>
+        public byte version;
+        /// <summary>0x01, Str63 Pascal filename</summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+        public byte[] filename;
+        /// <summary>0x41, File type</summary>
+        public uint type;
+        /// <summary>0x45, File creator</summary>
+        public uint creator;
+        /// <summary>0x49, High byte of Finder flags</summary>
+        public byte finderFlags;
+        /// <summary>0x4A, Must be 0</summary>
+        public byte zero1;
+        /// <summary>0x4B, File's icon vertical position within its window</summary>
+        public ushort verticalPosition;
+        /// <summary>0x4D, File's icon horizontal position within its window</summary>
+        public ushort horizontalPosition;
+        /// <summary>0x4F, File's window or folder ID</summary>
+        public short windowID;
+        /// <summary>0x51, Protected flag</summary>
+        public byte protect;
+        /// <summary>0x52, Must be 0</summary>
+        public byte zero2;
+        /// <summary>0x53, Size of data fork</summary>
+        public uint dataLength;
+        /// <summary>0x57, Size of resource fork</summary>
+        public uint resourceLength;
+        /// <summary>0x5B, File's creation time</summary>
+        public uint creationTime;
+        /// <summary>0x5F, File's last modified time</summary>
+        public uint modificationTime;
+        /// <summary>0x63, Length of Get Info comment</summary>
+        public ushort commentLength;
+        /// <summary>0x65, Low byte of Finder flags</summary>
+        public byte finderFlags2;
+
+#region MacBinary III
+
+        /// <summary>0x66, magic identifier, "mBIN"</summary>
+        public uint magic;
+        /// <summary>0x6A, fdScript from fxInfo, identifies codepage of filename</summary>
+        public byte fdScript;
+        /// <summary>0x6B, fdXFlags from fxInfo, extended Mac OS 8 finder flags</summary>
+        public byte fdXFlags;
+
+#endregion MacBinary III
+
+        /// <summary>0x6C, unused</summary>
+        public ulong reserved;
+        /// <summary>0x74, Total unpacked files</summary>
+        public uint totalPackedFiles;
+
+#region MacBinary II
+
+        /// <summary>0x78, Length of secondary header</summary>
+        public ushort secondaryHeaderLength;
+        /// <summary>0x7A, version number of MacBinary that wrote this file, starts at 129</summary>
+        public byte version2;
+        /// <summary>0x7B, version number of MacBinary required to open this file, starts at 129</summary>
+        public byte minVersion;
+        /// <summary>0x7C, CRC of previous bytes</summary>
+        public short crc;
+
+#endregion MacBinary II
+
+        /// <summary>0x7E, Reserved for computer type and OS ID</summary>
+        public short computerID;
+    }
+
+#endregion
 
 #region IFilter Members
 
@@ -155,7 +233,7 @@ public sealed class MacBinary : IFilter
 
         var hdrB = new byte[128];
         Array.Copy(buffer, 0, hdrB, 0, 128);
-        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
 
         return _header.magic == MAGIC ||
                _header.version     == 0             &&
@@ -174,7 +252,7 @@ public sealed class MacBinary : IFilter
         var hdrB = new byte[128];
         stream.Seek(0, SeekOrigin.Begin);
         stream.EnsureRead(hdrB, 0, 128);
-        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
 
         return _header.magic == MAGIC ||
                _header.version     == 0             &&
@@ -196,7 +274,7 @@ public sealed class MacBinary : IFilter
 
         var hdrB = new byte[128];
         fstream.EnsureRead(hdrB, 0, 128);
-        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
 
         fstream.Close();
 
@@ -217,7 +295,7 @@ public sealed class MacBinary : IFilter
 
         var hdrB = new byte[128];
         ms.EnsureRead(hdrB, 0, 128);
-        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
 
         uint blocks = 1;
         blocks += (uint)(_header.secondaryHeaderLength / 128);
@@ -249,7 +327,7 @@ public sealed class MacBinary : IFilter
 
         var hdrB = new byte[128];
         stream.EnsureRead(hdrB, 0, 128);
-        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
 
         uint blocks = 1;
         blocks += (uint)(_header.secondaryHeaderLength / 128);
@@ -282,7 +360,7 @@ public sealed class MacBinary : IFilter
 
         var hdrB = new byte[128];
         fs.EnsureRead(hdrB, 0, 128);
-        _header = Marshal.ByteArrayToStructureBigEndian<Header>(hdrB);
+        _header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(hdrB);
 
         uint blocks = 1;
         blocks += (uint)(_header.secondaryHeaderLength / 128);
@@ -305,82 +383,6 @@ public sealed class MacBinary : IFilter
         BasePath = path;
 
         return ErrorNumber.NoError;
-    }
-
-#endregion
-
-#region Nested type: Header
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct Header
-    {
-        /// <summary>0x00, MacBinary version, 0</summary>
-        public readonly byte version;
-        /// <summary>0x01, Str63 Pascal filename</summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
-        public readonly byte[] filename;
-        /// <summary>0x41, File type</summary>
-        public readonly uint type;
-        /// <summary>0x45, File creator</summary>
-        public readonly uint creator;
-        /// <summary>0x49, High byte of Finder flags</summary>
-        public readonly byte finderFlags;
-        /// <summary>0x4A, Must be 0</summary>
-        public readonly byte zero1;
-        /// <summary>0x4B, File's icon vertical position within its window</summary>
-        public readonly ushort verticalPosition;
-        /// <summary>0x4D, File's icon horizontal position within its window</summary>
-        public readonly ushort horizontalPosition;
-        /// <summary>0x4F, File's window or folder ID</summary>
-        public readonly short windowID;
-        /// <summary>0x51, Protected flag</summary>
-        public readonly byte protect;
-        /// <summary>0x52, Must be 0</summary>
-        public readonly byte zero2;
-        /// <summary>0x53, Size of data fork</summary>
-        public readonly uint dataLength;
-        /// <summary>0x57, Size of resource fork</summary>
-        public readonly uint resourceLength;
-        /// <summary>0x5B, File's creation time</summary>
-        public readonly uint creationTime;
-        /// <summary>0x5F, File's last modified time</summary>
-        public readonly uint modificationTime;
-        /// <summary>0x63, Length of Get Info comment</summary>
-        public readonly ushort commentLength;
-        /// <summary>0x65, Low byte of Finder flags</summary>
-        public readonly byte finderFlags2;
-
-#region MacBinary III
-
-        /// <summary>0x66, magic identifier, "mBIN"</summary>
-        public readonly uint magic;
-        /// <summary>0x6A, fdScript from fxInfo, identifies codepage of filename</summary>
-        public readonly byte fdScript;
-        /// <summary>0x6B, fdXFlags from fxInfo, extended Mac OS 8 finder flags</summary>
-        public readonly byte fdXFlags;
-
-#endregion MacBinary III
-
-        /// <summary>0x6C, unused</summary>
-        public readonly ulong reserved;
-        /// <summary>0x74, Total unpacked files</summary>
-        public readonly uint totalPackedFiles;
-
-#region MacBinary II
-
-        /// <summary>0x78, Length of secondary header</summary>
-        public readonly ushort secondaryHeaderLength;
-        /// <summary>0x7A, version number of MacBinary that wrote this file, starts at 129</summary>
-        public readonly byte version2;
-        /// <summary>0x7B, version number of MacBinary required to open this file, starts at 129</summary>
-        public readonly byte minVersion;
-        /// <summary>0x7C, CRC of previous bytes</summary>
-        public readonly short crc;
-
-#endregion MacBinary II
-
-        /// <summary>0x7E, Reserved for computer type and OS ID</summary>
-        public readonly short computerID;
     }
 
 #endregion
