@@ -105,9 +105,6 @@ public sealed partial class Human68K : IPartition
 
         if(table.magic != X68K_MAGIC) return false;
 
-        for(var i = 0; i < table.entries.Length; i++)
-            table.entries[i] = (Entry)Marshal.SwapStructureMembersEndian(table.entries[i]);
-
         AaruLogging.Debug(MODULE_NAME, "table.size = {0:X4}",    table.size);
         AaruLogging.Debug(MODULE_NAME, "table.size2 = {0:X4}",   table.size2);
         AaruLogging.Debug(MODULE_NAME, "table.unknown = {0:X4}", table.unknown);
