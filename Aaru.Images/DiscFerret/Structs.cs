@@ -31,6 +31,7 @@
 // ****************************************************************************/
 
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Images;
 
@@ -39,12 +40,13 @@ public sealed partial class DiscFerret
 #region Nested type: BlockHeader
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct BlockHeader
+    [SwapEndian]
+    partial struct BlockHeader
     {
-        public readonly ushort cylinder;
-        public readonly ushort head;
-        public readonly ushort sector;
-        public readonly uint   length;
+        public ushort cylinder;
+        public ushort head;
+        public ushort sector;
+        public uint   length;
     }
 
 #endregion

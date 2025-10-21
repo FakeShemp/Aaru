@@ -47,10 +47,10 @@ public sealed partial class DiscFerret
     /// <inheritdoc />
     public ErrorNumber Open(IFilter imageFilter)
     {
-        byte[] magicB = new byte[4];
+        var    magicB = new byte[4];
         Stream stream = imageFilter.GetDataForkStream();
         stream.EnsureRead(magicB, 0, 4);
-        uint magic = BitConverter.ToUInt32(magicB, 0);
+        var magic = BitConverter.ToUInt32(magicB, 0);
 
         if(magic != DFI_MAGIC && magic != DFI_MAGIC2) return ErrorNumber.InvalidArgument;
 
@@ -64,9 +64,9 @@ public sealed partial class DiscFerret
         {
             long thisOffset = stream.Position;
 
-            byte[] blk = new byte[Marshal.SizeOf<BlockHeader>()];
+            var blk = new byte[Marshal.SizeOf<BlockHeader>()];
             stream.EnsureRead(blk, 0, Marshal.SizeOf<BlockHeader>());
-            BlockHeader blockHeader = Marshal.ByteArrayToStructureBigEndian<BlockHeader>(blk);
+            BlockHeader blockHeader = Marshal.ByteArrayToStructureBigEndianGenerated<BlockHeader>(blk);
 
             AaruLogging.Debug(MODULE_NAME, "block@{0}.cylinder = {1}", thisOffset, blockHeader.cylinder);
 
