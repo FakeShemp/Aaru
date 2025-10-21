@@ -32,7 +32,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -116,20 +115,13 @@ public static class Marshal
     /// <typeparam name="T">Type of the structure to marshal</typeparam>
     /// <returns>The binary data marshalled in a structure with the specified type</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T ByteArrayToStructurePdpEndian<T>(byte[] bytes) where T : struct
+    public static T ByteArrayToStructurePdpEndian<T>(byte[] bytes) where T : struct, ISwapPdpEndian<T>
     {
-        {
-            var ptr = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+        T str = ByteArrayToStructureLittleEndian<T>(bytes);
 
-            object str =
-                (T)(System.Runtime.InteropServices.Marshal.PtrToStructure(ptr.AddrOfPinnedObject(), typeof(T)) ??
-                    default(T));
-
-            ptr.Free();
-
-            return (T)SwapStructureMembersEndianPdp(str);
-        }
+        return str.SwapPdpEndian();
     }
+
 
     /// <summary>Marshal PDP-11 binary data to a structure</summary>
     /// <param name="bytes">Byte array containing the binary data</param>
@@ -138,7 +130,8 @@ public static class Marshal
     /// <typeparam name="T">Type of the structure to marshal</typeparam>
     /// <returns>The binary data marshalled in a structure with the specified type</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T ByteArrayToStructurePdpEndian<T>(byte[] bytes, int start, int length) where T : struct
+    public static T ByteArrayToStructurePdpEndian<T>(byte[] bytes, int start, int length)
+        where T : struct, ISwapPdpEndian<T>
     {
         Span<byte> span = bytes;
 
@@ -210,11 +203,11 @@ public static class Marshal
     /// <typeparam name="T">Type of the structure to marshal</typeparam>
     /// <returns>The binary data marshalled in a structure with the specified type</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T SpanToStructurePdpEndian<T>(ReadOnlySpan<byte> bytes) where T : struct
+    public static T SpanToStructurePdpEndian<T>(ReadOnlySpan<byte> bytes) where T : struct, ISwapPdpEndian<T>
     {
-        object str = SpanToStructureLittleEndian<T>(bytes);
+        T str = SpanToStructureLittleEndian<T>(bytes);
 
-        return (T)SwapStructureMembersEndianPdp(str);
+        return str.SwapPdpEndian();
     }
 
     /// <summary>
@@ -227,59 +220,12 @@ public static class Marshal
     /// <typeparam name="T">Type of the structure to marshal</typeparam>
     /// <returns>The binary data marshalled in a structure with the specified type</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T SpanToStructurePdpEndian<T>(ReadOnlySpan<byte> bytes, int start, int length) where T : struct
+    public static T SpanToStructurePdpEndian<T>(ReadOnlySpan<byte> bytes, int start, int length)
+        where T : struct, ISwapPdpEndian<T>
     {
-        object str = SpanToStructureLittleEndian<T>(bytes.Slice(start, length));
+        T str = SpanToStructureLittleEndian<T>(bytes.Slice(start, length));
 
-        return (T)SwapStructureMembersEndianPdp(str);
-    }
-
-    /// <summary>Swaps all fields in an structure considering them to follow PDP endian conventions</summary>
-    /// <param name="str">Source structure</param>
-    /// <returns>Resulting structure</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static object SwapStructureMembersEndianPdp(object str)
-    {
-        Type        t         = str.GetType();
-        FieldInfo[] fieldInfo = t.GetFields();
-
-        foreach(FieldInfo fi in fieldInfo)
-        {
-            if(fi.FieldType == typeof(short)  ||
-               fi.FieldType == typeof(long)   ||
-               fi.FieldType == typeof(ushort) ||
-               fi.FieldType == typeof(ulong)  ||
-               fi.FieldType == typeof(float)  ||
-               fi.FieldType == typeof(double) ||
-               fi.FieldType == typeof(byte)   ||
-               fi.FieldType == typeof(sbyte)  ||
-               fi.FieldType == typeof(Guid))
-            {
-                // Do nothing
-            }
-            else if(fi.FieldType == typeof(int) ||
-                    fi.FieldType.IsEnum && fi.FieldType.GetEnumUnderlyingType() == typeof(int))
-            {
-                var x = (int)(fi.GetValue(str) ?? default(int));
-                fi.SetValue(str, (x & 0xffffu) << 16 | (x & 0xffff0000u) >> 16);
-            }
-            else if(fi.FieldType == typeof(uint) ||
-                    fi.FieldType.IsEnum && fi.FieldType.GetEnumUnderlyingType() == typeof(uint))
-            {
-                var x = (uint)(fi.GetValue(str) ?? default(uint));
-                fi.SetValue(str, (x & 0xffffu) << 16 | (x & 0xffff0000u) >> 16);
-            }
-
-            // TODO: Swap arrays
-            else if(fi.FieldType.IsValueType && fi.FieldType is { IsEnum: false, IsArray: false })
-            {
-                object obj  = fi.GetValue(str);
-                object strc = SwapStructureMembersEndianPdp(obj);
-                fi.SetValue(str, strc);
-            }
-        }
-
-        return str;
+        return str.SwapPdpEndian();
     }
 
     /// <summary>Marshal a structure to little-endian binary data</summary>
