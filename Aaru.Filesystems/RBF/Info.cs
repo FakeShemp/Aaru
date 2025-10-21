@@ -131,7 +131,7 @@ public sealed partial class RBF
 
         if(rbfSb.dd_sync != RBF_SYNC && rbf9000Sb.rid_sync != RBF_SYNC && rbf9000Sb.rid_sync != RBF_CNYS) return;
 
-        if(rbf9000Sb.rid_sync == RBF_CNYS) rbf9000Sb = (NewIdSector)Marshal.SwapStructureMembersEndian(rbf9000Sb);
+        if(rbf9000Sb.rid_sync == RBF_CNYS) rbf9000Sb = rbf9000Sb.SwapEndian();
 
         var sb = new StringBuilder();
 
