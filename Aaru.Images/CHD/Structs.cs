@@ -32,6 +32,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Images;
 
@@ -63,35 +64,36 @@ public sealed partial class Chd
     // Hunks are represented in a 64 bit integer with 44 bit as offset, 20 bits as length
     // Sectors are fixed at 512 bytes/sector
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct HeaderV1
+    [SwapEndian]
+    partial struct HeaderV1
     {
         /// <summary>Magic identifier, 'MComprHD'</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public readonly byte[] tag;
+        public byte[] tag;
         /// <summary>Length of header</summary>
-        public readonly uint length;
+        public uint length;
         /// <summary>Image format version</summary>
-        public readonly uint version;
+        public uint version;
         /// <summary>Image flags, <see cref="Flags" /></summary>
-        public readonly uint flags;
+        public uint flags;
         /// <summary>Compression algorithm, <see cref="Compression" /></summary>
-        public readonly uint compression;
+        public uint compression;
         /// <summary>Sectors per hunk</summary>
-        public readonly uint hunksize;
+        public uint hunksize;
         /// <summary>Total # of hunk in image</summary>
-        public readonly uint totalhunks;
+        public uint totalhunks;
         /// <summary>Cylinders on disk</summary>
-        public readonly uint cylinders;
+        public uint cylinders;
         /// <summary>Heads per cylinder</summary>
-        public readonly uint heads;
+        public uint heads;
         /// <summary>Sectors per track</summary>
-        public readonly uint sectors;
+        public uint sectors;
         /// <summary>MD5 of raw data</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] md5;
+        public byte[] md5;
         /// <summary>MD5 of parent file</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] parentmd5;
+        public byte[] parentmd5;
     }
 
 #endregion
@@ -100,37 +102,38 @@ public sealed partial class Chd
 
     // Hunks are represented in a 64 bit integer with 44 bit as offset, 20 bits as length
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct HeaderV2
+    [SwapEndian]
+    partial struct HeaderV2
     {
         /// <summary>Magic identifier, 'MComprHD'</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public readonly byte[] tag;
+        public byte[] tag;
         /// <summary>Length of header</summary>
-        public readonly uint length;
+        public uint length;
         /// <summary>Image format version</summary>
-        public readonly uint version;
+        public uint version;
         /// <summary>Image flags, <see cref="Flags" /></summary>
-        public readonly uint flags;
+        public uint flags;
         /// <summary>Compression algorithm, <see cref="Compression" /></summary>
-        public readonly uint compression;
+        public uint compression;
         /// <summary>Sectors per hunk</summary>
-        public readonly uint hunksize;
+        public uint hunksize;
         /// <summary>Total # of hunk in image</summary>
-        public readonly uint totalhunks;
+        public uint totalhunks;
         /// <summary>Cylinders on disk</summary>
-        public readonly uint cylinders;
+        public uint cylinders;
         /// <summary>Heads per cylinder</summary>
-        public readonly uint heads;
+        public uint heads;
         /// <summary>Sectors per track</summary>
-        public readonly uint sectors;
+        public uint sectors;
         /// <summary>MD5 of raw data</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] md5;
+        public byte[] md5;
         /// <summary>MD5 of parent file</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] parentmd5;
+        public byte[] parentmd5;
         /// <summary>Bytes per sector</summary>
-        public readonly uint seclen;
+        public uint seclen;
     }
 
 #endregion
@@ -138,39 +141,40 @@ public sealed partial class Chd
 #region Nested type: HeaderV3
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct HeaderV3
+    [SwapEndian]
+    partial struct HeaderV3
     {
         /// <summary>Magic identifier, 'MComprHD'</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public readonly byte[] tag;
+        public byte[] tag;
         /// <summary>Length of header</summary>
-        public readonly uint length;
+        public uint length;
         /// <summary>Image format version</summary>
-        public readonly uint version;
+        public uint version;
         /// <summary>Image flags, <see cref="Flags" /></summary>
-        public readonly uint flags;
+        public uint flags;
         /// <summary>Compression algorithm, <see cref="Compression" /></summary>
-        public readonly uint compression;
+        public uint compression;
         /// <summary>Total # of hunk in image</summary>
-        public readonly uint totalhunks;
+        public uint totalhunks;
         /// <summary>Total bytes in image</summary>
-        public readonly ulong logicalbytes;
+        public ulong logicalbytes;
         /// <summary>Offset to first metadata blob</summary>
-        public readonly ulong metaoffset;
+        public ulong metaoffset;
         /// <summary>MD5 of raw data</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] md5;
+        public byte[] md5;
         /// <summary>MD5 of parent file</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] parentmd5;
+        public byte[] parentmd5;
         /// <summary>Bytes per hunk</summary>
-        public readonly uint hunkbytes;
+        public uint hunkbytes;
         /// <summary>SHA1 of raw data</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
-        public readonly byte[] sha1;
+        public byte[] sha1;
         /// <summary>SHA1 of parent file</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
-        public readonly byte[] parentsha1;
+        public byte[] parentsha1;
     }
 
 #endregion
@@ -178,36 +182,37 @@ public sealed partial class Chd
 #region Nested type: HeaderV4
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct HeaderV4
+    [SwapEndian]
+    partial struct HeaderV4
     {
         /// <summary>Magic identifier, 'MComprHD'</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public readonly byte[] tag;
+        public byte[] tag;
         /// <summary>Length of header</summary>
-        public readonly uint length;
+        public uint length;
         /// <summary>Image format version</summary>
-        public readonly uint version;
+        public uint version;
         /// <summary>Image flags, <see cref="Flags" /></summary>
-        public readonly uint flags;
+        public uint flags;
         /// <summary>Compression algorithm, <see cref="Compression" /></summary>
-        public readonly uint compression;
+        public uint compression;
         /// <summary>Total # of hunk in image</summary>
-        public readonly uint totalhunks;
+        public uint totalhunks;
         /// <summary>Total bytes in image</summary>
-        public readonly ulong logicalbytes;
+        public ulong logicalbytes;
         /// <summary>Offset to first metadata blob</summary>
-        public readonly ulong metaoffset;
+        public ulong metaoffset;
         /// <summary>Bytes per hunk</summary>
-        public readonly uint hunkbytes;
+        public uint hunkbytes;
         /// <summary>SHA1 of raw+meta data</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
-        public readonly byte[] sha1;
+        public byte[] sha1;
         /// <summary>SHA1 of parent file</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
-        public readonly byte[] parentsha1;
+        public byte[] parentsha1;
         /// <summary>SHA1 of raw data</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
-        public readonly byte[] rawsha1;
+        public byte[] rawsha1;
     }
 
 #endregion
@@ -215,42 +220,43 @@ public sealed partial class Chd
 #region Nested type: HeaderV5
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct HeaderV5
+    [SwapEndian]
+    partial struct HeaderV5
     {
         /// <summary>Magic identifier, 'MComprHD'</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public readonly byte[] tag;
+        public byte[] tag;
         /// <summary>Length of header</summary>
-        public readonly uint length;
+        public uint length;
         /// <summary>Image format version</summary>
-        public readonly uint version;
+        public uint version;
         /// <summary>Compressor 0</summary>
-        public readonly uint compressor0;
+        public uint compressor0;
         /// <summary>Compressor 1</summary>
-        public readonly uint compressor1;
+        public uint compressor1;
         /// <summary>Compressor 2</summary>
-        public readonly uint compressor2;
+        public uint compressor2;
         /// <summary>Compressor 3</summary>
-        public readonly uint compressor3;
+        public uint compressor3;
         /// <summary>Total bytes in image</summary>
-        public readonly ulong logicalbytes;
+        public ulong logicalbytes;
         /// <summary>Offset to hunk map</summary>
-        public readonly ulong mapoffset;
+        public ulong mapoffset;
         /// <summary>Offset to first metadata blob</summary>
-        public readonly ulong metaoffset;
+        public ulong metaoffset;
         /// <summary>Bytes per hunk</summary>
-        public readonly uint hunkbytes;
+        public uint hunkbytes;
         /// <summary>Bytes per unit within hunk</summary>
-        public readonly uint unitbytes;
+        public uint unitbytes;
         /// <summary>SHA1 of raw data</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
-        public readonly byte[] rawsha1;
+        public byte[] rawsha1;
         /// <summary>SHA1 of raw+meta data</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
-        public readonly byte[] sha1;
+        public byte[] sha1;
         /// <summary>SHA1 of parent file</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
-        public readonly byte[] parentsha1;
+        public byte[] parentsha1;
     }
 
 #endregion
@@ -280,18 +286,19 @@ public sealed partial class Chd
 #region Nested type: MapEntryV3
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct MapEntryV3
+    [SwapEndian]
+    partial struct MapEntryV3
     {
         /// <summary>Offset to hunk from start of image</summary>
-        public readonly ulong offset;
+        public ulong offset;
         /// <summary>CRC32 of uncompressed hunk</summary>
-        public readonly uint crc;
+        public uint crc;
         /// <summary>Lower 16 bits of length</summary>
-        public readonly ushort lengthLsb;
+        public ushort lengthLsb;
         /// <summary>Upper 8 bits of length</summary>
-        public readonly byte length;
+        public byte length;
         /// <summary>Hunk flags</summary>
-        public readonly byte flags;
+        public byte flags;
     }
 
 #endregion
@@ -312,11 +319,12 @@ public sealed partial class Chd
 #region Nested type: MetadataHeader
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct MetadataHeader
+    [SwapEndian]
+    partial struct MetadataHeader
     {
-        public readonly uint  tag;
-        public readonly uint  flagsAndLength;
-        public readonly ulong next;
+        public uint  tag;
+        public uint  flagsAndLength;
+        public ulong next;
     }
 
 #endregion

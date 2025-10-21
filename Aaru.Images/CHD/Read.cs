@@ -60,18 +60,18 @@ public sealed partial class Chd
     {
         Stream stream = imageFilter.GetDataForkStream();
         stream.Seek(0, SeekOrigin.Begin);
-        byte[] magic = new byte[8];
+        var magic = new byte[8];
         stream.EnsureRead(magic, 0, 8);
 
         if(!_chdTag.SequenceEqual(magic)) return ErrorNumber.InvalidArgument;
 
         // Read length
-        byte[] buffer = new byte[4];
+        var buffer = new byte[4];
         stream.EnsureRead(buffer, 0, 4);
-        uint length = BitConverter.ToUInt32(buffer.Reverse().ToArray(), 0);
+        var length = BitConverter.ToUInt32(buffer.Reverse().ToArray(), 0);
         buffer = new byte[4];
         stream.EnsureRead(buffer, 0, 4);
-        uint version = BitConverter.ToUInt32(buffer.Reverse().ToArray(), 0);
+        var version = BitConverter.ToUInt32(buffer.Reverse().ToArray(), 0);
 
         buffer = new byte[length];
         stream.Seek(0, SeekOrigin.Begin);
@@ -84,7 +84,7 @@ public sealed partial class Chd
         {
             case 1:
             {
-                HeaderV1 hdrV1 = Marshal.ByteArrayToStructureBigEndian<HeaderV1>(buffer);
+                HeaderV1 hdrV1 = Marshal.ByteArrayToStructureBigEndianGenerated<HeaderV1>(buffer);
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV1.tag = \"{0}\"", Encoding.ASCII.GetString(hdrV1.tag));
 
@@ -94,29 +94,29 @@ public sealed partial class Chd
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV1.compression = {0}", (Compression)hdrV1.compression);
 
-                AaruLogging.Debug(MODULE_NAME, "hdrV1.hunksize = {0}", hdrV1.hunksize);
+                AaruLogging.Debug(MODULE_NAME, "hdrV1.hunksize = {0}",   hdrV1.hunksize);
                 AaruLogging.Debug(MODULE_NAME, "hdrV1.totalhunks = {0}", hdrV1.totalhunks);
-                AaruLogging.Debug(MODULE_NAME, "hdrV1.cylinders = {0}", hdrV1.cylinders);
-                AaruLogging.Debug(MODULE_NAME, "hdrV1.heads = {0}", hdrV1.heads);
-                AaruLogging.Debug(MODULE_NAME, "hdrV1.sectors = {0}", hdrV1.sectors);
-                AaruLogging.Debug(MODULE_NAME, "hdrV1.md5 = {0}", ArrayHelpers.ByteArrayToHex(hdrV1.md5));
+                AaruLogging.Debug(MODULE_NAME, "hdrV1.cylinders = {0}",  hdrV1.cylinders);
+                AaruLogging.Debug(MODULE_NAME, "hdrV1.heads = {0}",      hdrV1.heads);
+                AaruLogging.Debug(MODULE_NAME, "hdrV1.sectors = {0}",    hdrV1.sectors);
+                AaruLogging.Debug(MODULE_NAME, "hdrV1.md5 = {0}",        ArrayHelpers.ByteArrayToHex(hdrV1.md5));
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "hdrV1.parentmd5 = {0}",
-                                           ArrayHelpers.ArrayIsNullOrEmpty(hdrV1.parentmd5)
-                                               ? "null"
-                                               : ArrayHelpers.ByteArrayToHex(hdrV1.parentmd5));
+                                  "hdrV1.parentmd5 = {0}",
+                                  ArrayHelpers.ArrayIsNullOrEmpty(hdrV1.parentmd5)
+                                      ? "null"
+                                      : ArrayHelpers.ByteArrayToHex(hdrV1.parentmd5));
 
                 AaruLogging.Debug(MODULE_NAME, Localization.Reading_Hunk_map);
 
                 hunkMapStopwatch.Restart();
                 _hunkTable = new ulong[hdrV1.totalhunks];
 
-                uint hunkSectorCount = (uint)Math.Ceiling((double)hdrV1.totalhunks * 8 / 512);
+                var hunkSectorCount = (uint)Math.Ceiling((double)hdrV1.totalhunks * 8 / 512);
 
-                byte[] hunkSectorBytes = new byte[512];
+                var hunkSectorBytes = new byte[512];
 
-                for(int i = 0; i < hunkSectorCount; i++)
+                for(var i = 0; i < hunkSectorCount; i++)
                 {
                     stream.EnsureRead(hunkSectorBytes, 0, 512);
 
@@ -135,9 +135,7 @@ public sealed partial class Chd
 
                 hunkMapStopwatch.Stop();
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Took_0_seconds,
-                                           hunkMapStopwatch.Elapsed.TotalSeconds);
+                AaruLogging.Debug(MODULE_NAME, Localization.Took_0_seconds, hunkMapStopwatch.Elapsed.TotalSeconds);
 
                 _imageInfo.MediaType         = MediaType.GENERIC_HDD;
                 _imageInfo.Sectors           = hdrV1.hunksize * hdrV1.totalhunks;
@@ -161,7 +159,7 @@ public sealed partial class Chd
 
             case 2:
             {
-                HeaderV2 hdrV2 = Marshal.ByteArrayToStructureBigEndian<HeaderV2>(buffer);
+                HeaderV2 hdrV2 = Marshal.ByteArrayToStructureBigEndianGenerated<HeaderV2>(buffer);
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV2.tag = \"{0}\"", Encoding.ASCII.GetString(hdrV2.tag));
 
@@ -171,18 +169,18 @@ public sealed partial class Chd
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV2.compression = {0}", (Compression)hdrV2.compression);
 
-                AaruLogging.Debug(MODULE_NAME, "hdrV2.hunksize = {0}", hdrV2.hunksize);
+                AaruLogging.Debug(MODULE_NAME, "hdrV2.hunksize = {0}",   hdrV2.hunksize);
                 AaruLogging.Debug(MODULE_NAME, "hdrV2.totalhunks = {0}", hdrV2.totalhunks);
-                AaruLogging.Debug(MODULE_NAME, "hdrV2.cylinders = {0}", hdrV2.cylinders);
-                AaruLogging.Debug(MODULE_NAME, "hdrV2.heads = {0}", hdrV2.heads);
-                AaruLogging.Debug(MODULE_NAME, "hdrV2.sectors = {0}", hdrV2.sectors);
-                AaruLogging.Debug(MODULE_NAME, "hdrV2.md5 = {0}", ArrayHelpers.ByteArrayToHex(hdrV2.md5));
+                AaruLogging.Debug(MODULE_NAME, "hdrV2.cylinders = {0}",  hdrV2.cylinders);
+                AaruLogging.Debug(MODULE_NAME, "hdrV2.heads = {0}",      hdrV2.heads);
+                AaruLogging.Debug(MODULE_NAME, "hdrV2.sectors = {0}",    hdrV2.sectors);
+                AaruLogging.Debug(MODULE_NAME, "hdrV2.md5 = {0}",        ArrayHelpers.ByteArrayToHex(hdrV2.md5));
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "hdrV2.parentmd5 = {0}",
-                                           ArrayHelpers.ArrayIsNullOrEmpty(hdrV2.parentmd5)
-                                               ? "null"
-                                               : ArrayHelpers.ByteArrayToHex(hdrV2.parentmd5));
+                                  "hdrV2.parentmd5 = {0}",
+                                  ArrayHelpers.ArrayIsNullOrEmpty(hdrV2.parentmd5)
+                                      ? "null"
+                                      : ArrayHelpers.ByteArrayToHex(hdrV2.parentmd5));
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV2.seclen = {0}", hdrV2.seclen);
 
@@ -192,11 +190,11 @@ public sealed partial class Chd
                 _hunkTable = new ulong[hdrV2.totalhunks];
 
                 // How many sectors uses the BAT
-                uint hunkSectorCount = (uint)Math.Ceiling((double)hdrV2.totalhunks * 8 / 512);
+                var hunkSectorCount = (uint)Math.Ceiling((double)hdrV2.totalhunks * 8 / 512);
 
-                byte[] hunkSectorBytes = new byte[512];
+                var hunkSectorBytes = new byte[512];
 
-                for(int i = 0; i < hunkSectorCount; i++)
+                for(var i = 0; i < hunkSectorCount; i++)
                 {
                     stream.EnsureRead(hunkSectorBytes, 0, 512);
 
@@ -215,9 +213,7 @@ public sealed partial class Chd
 
                 hunkMapStopwatch.Stop();
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Took_0_seconds,
-                                           hunkMapStopwatch.Elapsed.TotalSeconds);
+                AaruLogging.Debug(MODULE_NAME, Localization.Took_0_seconds, hunkMapStopwatch.Elapsed.TotalSeconds);
 
                 _imageInfo.MediaType         = MediaType.GENERIC_HDD;
                 _imageInfo.Sectors           = hdrV2.hunksize * hdrV2.totalhunks;
@@ -241,7 +237,7 @@ public sealed partial class Chd
 
             case 3:
             {
-                HeaderV3 hdrV3 = Marshal.ByteArrayToStructureBigEndian<HeaderV3>(buffer);
+                HeaderV3 hdrV3 = Marshal.ByteArrayToStructureBigEndianGenerated<HeaderV3>(buffer);
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV3.tag = \"{0}\"", Encoding.ASCII.GetString(hdrV3.tag));
 
@@ -251,26 +247,26 @@ public sealed partial class Chd
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV3.compression = {0}", (Compression)hdrV3.compression);
 
-                AaruLogging.Debug(MODULE_NAME, "hdrV3.totalhunks = {0}", hdrV3.totalhunks);
+                AaruLogging.Debug(MODULE_NAME, "hdrV3.totalhunks = {0}",   hdrV3.totalhunks);
                 AaruLogging.Debug(MODULE_NAME, "hdrV3.logicalbytes = {0}", hdrV3.logicalbytes);
-                AaruLogging.Debug(MODULE_NAME, "hdrV3.metaoffset = {0}", hdrV3.metaoffset);
-                AaruLogging.Debug(MODULE_NAME, "hdrV3.md5 = {0}", ArrayHelpers.ByteArrayToHex(hdrV3.md5));
+                AaruLogging.Debug(MODULE_NAME, "hdrV3.metaoffset = {0}",   hdrV3.metaoffset);
+                AaruLogging.Debug(MODULE_NAME, "hdrV3.md5 = {0}",          ArrayHelpers.ByteArrayToHex(hdrV3.md5));
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "hdrV3.parentmd5 = {0}",
-                                           ArrayHelpers.ArrayIsNullOrEmpty(hdrV3.parentmd5)
-                                               ? "null"
-                                               : ArrayHelpers.ByteArrayToHex(hdrV3.parentmd5));
+                                  "hdrV3.parentmd5 = {0}",
+                                  ArrayHelpers.ArrayIsNullOrEmpty(hdrV3.parentmd5)
+                                      ? "null"
+                                      : ArrayHelpers.ByteArrayToHex(hdrV3.parentmd5));
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV3.hunkbytes = {0}", hdrV3.hunkbytes);
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV3.sha1 = {0}", ArrayHelpers.ByteArrayToHex(hdrV3.sha1));
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "hdrV3.parentsha1 = {0}",
-                                           ArrayHelpers.ArrayIsNullOrEmpty(hdrV3.parentsha1)
-                                               ? "null"
-                                               : ArrayHelpers.ByteArrayToHex(hdrV3.parentsha1));
+                                  "hdrV3.parentsha1 = {0}",
+                                  ArrayHelpers.ArrayIsNullOrEmpty(hdrV3.parentsha1)
+                                      ? "null"
+                                      : ArrayHelpers.ByteArrayToHex(hdrV3.parentsha1));
 
                 AaruLogging.Debug(MODULE_NAME, Localization.Reading_Hunk_map);
                 hunkMapStopwatch.Restart();
@@ -280,9 +276,7 @@ public sealed partial class Chd
 
                 hunkMapStopwatch.Stop();
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Took_0_seconds,
-                                           hunkMapStopwatch.Elapsed.TotalSeconds);
+                AaruLogging.Debug(MODULE_NAME, Localization.Took_0_seconds, hunkMapStopwatch.Elapsed.TotalSeconds);
 
                 nextMetaOff = hdrV3.metaoffset;
 
@@ -299,7 +293,7 @@ public sealed partial class Chd
 
             case 4:
             {
-                HeaderV4 hdrV4 = Marshal.ByteArrayToStructureBigEndian<HeaderV4>(buffer);
+                HeaderV4 hdrV4 = Marshal.ByteArrayToStructureBigEndianGenerated<HeaderV4>(buffer);
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV4.tag = \"{0}\"", Encoding.ASCII.GetString(hdrV4.tag));
 
@@ -317,14 +311,12 @@ public sealed partial class Chd
                 AaruLogging.Debug(MODULE_NAME, "hdrV4.sha1 = {0}", ArrayHelpers.ByteArrayToHex(hdrV4.sha1));
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "hdrV4.parentsha1 = {0}",
-                                           ArrayHelpers.ArrayIsNullOrEmpty(hdrV4.parentsha1)
-                                               ? "null"
-                                               : ArrayHelpers.ByteArrayToHex(hdrV4.parentsha1));
+                                  "hdrV4.parentsha1 = {0}",
+                                  ArrayHelpers.ArrayIsNullOrEmpty(hdrV4.parentsha1)
+                                      ? "null"
+                                      : ArrayHelpers.ByteArrayToHex(hdrV4.parentsha1));
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "hdrV4.rawsha1 = {0}",
-                                           ArrayHelpers.ByteArrayToHex(hdrV4.rawsha1));
+                AaruLogging.Debug(MODULE_NAME, "hdrV4.rawsha1 = {0}", ArrayHelpers.ByteArrayToHex(hdrV4.rawsha1));
 
                 AaruLogging.Debug(MODULE_NAME, Localization.Reading_Hunk_map);
                 hunkMapStopwatch.Restart();
@@ -334,9 +326,7 @@ public sealed partial class Chd
 
                 hunkMapStopwatch.Stop();
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Took_0_seconds,
-                                           hunkMapStopwatch.Elapsed.TotalSeconds);
+                AaruLogging.Debug(MODULE_NAME, Localization.Took_0_seconds, hunkMapStopwatch.Elapsed.TotalSeconds);
 
                 nextMetaOff = hdrV4.metaoffset;
 
@@ -358,7 +348,7 @@ public sealed partial class Chd
 
                 return ErrorNumber.NotImplemented;
 
-                HeaderV5 hdrV5 = Marshal.ByteArrayToStructureBigEndian<HeaderV5>(buffer);
+                HeaderV5 hdrV5 = Marshal.ByteArrayToStructureBigEndianGenerated<HeaderV5>(buffer);
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV5.tag = \"{0}\"", Encoding.ASCII.GetString(hdrV5.tag));
 
@@ -366,20 +356,20 @@ public sealed partial class Chd
                 AaruLogging.Debug(MODULE_NAME, "hdrV5.version = {0}",      hdrV5.version);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "hdrV5.compressor0 = \"{0}\"",
-                                           Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(hdrV5.compressor0)));
+                                  "hdrV5.compressor0 = \"{0}\"",
+                                  Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(hdrV5.compressor0)));
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "hdrV5.compressor1 = \"{0}\"",
-                                           Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(hdrV5.compressor1)));
+                                  "hdrV5.compressor1 = \"{0}\"",
+                                  Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(hdrV5.compressor1)));
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "hdrV5.compressor2 = \"{0}\"",
-                                           Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(hdrV5.compressor2)));
+                                  "hdrV5.compressor2 = \"{0}\"",
+                                  Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(hdrV5.compressor2)));
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "hdrV5.compressor3 = \"{0}\"",
-                                           Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(hdrV5.compressor3)));
+                                  "hdrV5.compressor3 = \"{0}\"",
+                                  Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(hdrV5.compressor3)));
 
                 AaruLogging.Debug(MODULE_NAME, "hdrV5.logicalbytes = {0}", hdrV5.logicalbytes);
                 AaruLogging.Debug(MODULE_NAME, "hdrV5.mapoffset = {0}",    hdrV5.mapoffset);
@@ -390,14 +380,12 @@ public sealed partial class Chd
                 AaruLogging.Debug(MODULE_NAME, "hdrV5.sha1 = {0}", ArrayHelpers.ByteArrayToHex(hdrV5.sha1));
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "hdrV5.parentsha1 = {0}",
-                                           ArrayHelpers.ArrayIsNullOrEmpty(hdrV5.parentsha1)
-                                               ? "null"
-                                               : ArrayHelpers.ByteArrayToHex(hdrV5.parentsha1));
+                                  "hdrV5.parentsha1 = {0}",
+                                  ArrayHelpers.ArrayIsNullOrEmpty(hdrV5.parentsha1)
+                                      ? "null"
+                                      : ArrayHelpers.ByteArrayToHex(hdrV5.parentsha1));
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "hdrV5.rawsha1 = {0}",
-                                           ArrayHelpers.ByteArrayToHex(hdrV5.rawsha1));
+                AaruLogging.Debug(MODULE_NAME, "hdrV5.rawsha1 = {0}", ArrayHelpers.ByteArrayToHex(hdrV5.rawsha1));
 
                 // TODO: Implement compressed CHD v5
                 if(hdrV5.compressor0 == 0)
@@ -407,13 +395,13 @@ public sealed partial class Chd
 
                     _hunkTableSmall = new uint[hdrV5.logicalbytes / hdrV5.hunkbytes];
 
-                    uint hunkSectorCount = (uint)Math.Ceiling((double)_hunkTableSmall.Length * 4 / 512);
+                    var hunkSectorCount = (uint)Math.Ceiling((double)_hunkTableSmall.Length * 4 / 512);
 
-                    byte[] hunkSectorBytes = new byte[512];
+                    var hunkSectorBytes = new byte[512];
 
                     stream.Seek((long)hdrV5.mapoffset, SeekOrigin.Begin);
 
-                    for(int i = 0; i < hunkSectorCount; i++)
+                    for(var i = 0; i < hunkSectorCount; i++)
                     {
                         stream.EnsureRead(hunkSectorBytes, 0, 512);
 
@@ -440,9 +428,7 @@ public sealed partial class Chd
 
                     hunkMapStopwatch.Stop();
 
-                    AaruLogging.Debug(MODULE_NAME,
-                                               Localization.Took_0_seconds,
-                                               hunkMapStopwatch.Elapsed.TotalSeconds);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Took_0_seconds, hunkMapStopwatch.Elapsed.TotalSeconds);
                 }
                 else
                 {
@@ -488,16 +474,16 @@ public sealed partial class Chd
 
             while(nextMetaOff > 0)
             {
-                byte[] hdrBytes = new byte[16];
+                var hdrBytes = new byte[16];
                 stream.Seek((long)nextMetaOff, SeekOrigin.Begin);
                 stream.EnsureRead(hdrBytes, 0, hdrBytes.Length);
-                MetadataHeader header = Marshal.ByteArrayToStructureBigEndian<MetadataHeader>(hdrBytes);
-                byte[]         meta   = new byte[header.flagsAndLength & 0xFFFFFF];
+                MetadataHeader header = Marshal.ByteArrayToStructureBigEndianGenerated<MetadataHeader>(hdrBytes);
+                var            meta   = new byte[header.flagsAndLength & 0xFFFFFF];
                 stream.EnsureRead(meta, 0, meta.Length);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Found_metadata_0_,
-                                           Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(header.tag)));
+                                  Localization.Found_metadata_0_,
+                                  Encoding.ASCII.GetString(BigEndianBitConverter.GetBytes(header.tag)));
 
                 switch(header.tag)
                 {
@@ -506,7 +492,7 @@ public sealed partial class Chd
                         if(_isCdrom || _isGdrom)
                         {
                             AaruLogging.Error(Localization
-                                                          .Image_cannot_be_a_hard_disk_and_a_CGD_ROM_at_the_same_time_aborting);
+                                                 .Image_cannot_be_a_hard_disk_and_a_CGD_ROM_at_the_same_time_aborting);
 
                             return ErrorNumber.NotSupported;
                         }
@@ -531,7 +517,7 @@ public sealed partial class Chd
                         if(_isHdd)
                         {
                             AaruLogging.Error(Localization
-                                                          .Image_cannot_be_a_hard_disk_and_a_CD_ROM_at_the_same_time_aborting);
+                                                 .Image_cannot_be_a_hard_disk_and_a_CD_ROM_at_the_same_time_aborting);
 
                             return ErrorNumber.NotSupported;
                         }
@@ -539,12 +525,12 @@ public sealed partial class Chd
                         if(_isGdrom)
                         {
                             AaruLogging.Error(Localization
-                                                          .Image_cannot_be_a_GD_ROM_and_a_CD_ROM_at_the_same_time_aborting);
+                                                 .Image_cannot_be_a_GD_ROM_and_a_CD_ROM_at_the_same_time_aborting);
 
                             return ErrorNumber.NotSupported;
                         }
 
-                        uint chdTracksNumber = BigEndianBitConverter.ToUInt32(meta, 0);
+                        var chdTracksNumber = BigEndianBitConverter.ToUInt32(meta, 0);
 
                         // Byteswapped
                         if(chdTracksNumber > 99) chdTracksNumber = BigEndianBitConverter.ToUInt32(meta, 0);
@@ -613,7 +599,7 @@ public sealed partial class Chd
                                 default:
                                 {
                                     AaruLogging.Error(string.Format(Localization.Unsupported_track_type_0,
-                                                                             chdTrack.type));
+                                                                    chdTrack.type));
 
                                     return ErrorNumber.NotSupported;
                                 }
@@ -640,7 +626,7 @@ public sealed partial class Chd
                                 default:
                                 {
                                     AaruLogging.Error(string.Format(Localization.Unsupported_subchannel_type_0,
-                                                                             chdTrack.type));
+                                                                    chdTrack.type));
 
                                     return ErrorNumber.NotSupported;
                                 }
@@ -671,7 +657,7 @@ public sealed partial class Chd
                         if(_isHdd)
                         {
                             AaruLogging.Error(Localization
-                                                          .Image_cannot_be_a_hard_disk_and_a_CD_ROM_at_the_same_time_aborting);
+                                                 .Image_cannot_be_a_hard_disk_and_a_CD_ROM_at_the_same_time_aborting);
 
                             return ErrorNumber.NotSupported;
                         }
@@ -679,7 +665,7 @@ public sealed partial class Chd
                         if(_isGdrom)
                         {
                             AaruLogging.Error(Localization
-                                                          .Image_cannot_be_a_GD_ROM_and_a_CD_ROM_at_the_same_time_aborting);
+                                                 .Image_cannot_be_a_GD_ROM_and_a_CD_ROM_at_the_same_time_aborting);
 
                             return ErrorNumber.NotSupported;
                         }
@@ -692,8 +678,8 @@ public sealed partial class Chd
                         {
                             _isCdrom = true;
 
-                            uint   trackNo   = uint.Parse(chtrMatch.Groups["track"].Value);
-                            uint   frames    = uint.Parse(chtrMatch.Groups["frames"].Value);
+                            var    trackNo   = uint.Parse(chtrMatch.Groups["track"].Value);
+                            var    frames    = uint.Parse(chtrMatch.Groups["frames"].Value);
                             string subtype   = chtrMatch.Groups["sub_type"].Value;
                             string tracktype = chtrMatch.Groups["track_type"].Value;
 
@@ -759,8 +745,7 @@ public sealed partial class Chd
                                     break;
                                 default:
                                 {
-                                    AaruLogging.Error(string.Format(Localization.Unsupported_track_type_0,
-                                                                             tracktype));
+                                    AaruLogging.Error(string.Format(Localization.Unsupported_track_type_0, tracktype));
 
                                     return ErrorNumber.NotSupported;
                                 }
@@ -787,7 +772,7 @@ public sealed partial class Chd
                                 default:
                                 {
                                     AaruLogging.Error(string.Format(Localization.Unsupported_subchannel_type_0,
-                                                                             subtype));
+                                                                    subtype));
 
                                     return ErrorNumber.NotSupported;
                                 }
@@ -817,7 +802,7 @@ public sealed partial class Chd
                         if(_isHdd)
                         {
                             AaruLogging.Error(Localization
-                                                          .Image_cannot_be_a_hard_disk_and_a_CD_ROM_at_the_same_time_aborting);
+                                                 .Image_cannot_be_a_hard_disk_and_a_CD_ROM_at_the_same_time_aborting);
 
                             return ErrorNumber.NotSupported;
                         }
@@ -825,7 +810,7 @@ public sealed partial class Chd
                         if(_isGdrom)
                         {
                             AaruLogging.Error(Localization
-                                                          .Image_cannot_be_a_GD_ROM_and_a_CD_ROM_at_the_same_time_aborting);
+                                                 .Image_cannot_be_a_GD_ROM_and_a_CD_ROM_at_the_same_time_aborting);
 
                             return ErrorNumber.NotSupported;
                         }
@@ -838,12 +823,12 @@ public sealed partial class Chd
                         {
                             _isCdrom = true;
 
-                            uint   trackNo   = uint.Parse(cht2Match.Groups["track"].Value);
-                            uint   frames    = uint.Parse(cht2Match.Groups["frames"].Value);
+                            var    trackNo   = uint.Parse(cht2Match.Groups["track"].Value);
+                            var    frames    = uint.Parse(cht2Match.Groups["frames"].Value);
                             string subtype   = cht2Match.Groups["sub_type"].Value;
                             string trackType = cht2Match.Groups["track_type"].Value;
 
-                            uint pregap = uint.Parse(cht2Match.Groups["pregap"].Value);
+                            var pregap = uint.Parse(cht2Match.Groups["pregap"].Value);
 
                             // What is this, really? Same as track type?
                             string pregapType = cht2Match.Groups["pgtype"].Value;
@@ -855,7 +840,7 @@ public sealed partial class Chd
                             // or of any data track followed by an audio track, according to Yellow Book.
                             // It is indistinguishable from normal data.
                             // TODO: Does CHD store it, or like CDRWin, ignores it?
-                            uint postgap = uint.Parse(cht2Match.Groups["postgap"].Value);
+                            var postgap = uint.Parse(cht2Match.Groups["postgap"].Value);
 
                             if(trackNo != currentTrack)
                             {
@@ -919,8 +904,7 @@ public sealed partial class Chd
                                     break;
                                 default:
                                 {
-                                    AaruLogging.Error(string.Format(Localization.Unsupported_track_type_0,
-                                                                             trackType));
+                                    AaruLogging.Error(string.Format(Localization.Unsupported_track_type_0, trackType));
 
                                     return ErrorNumber.NotSupported;
                                 }
@@ -947,7 +931,7 @@ public sealed partial class Chd
                                 default:
                                 {
                                     AaruLogging.Error(string.Format(Localization.Unsupported_subchannel_type_0,
-                                                                             subtype));
+                                                                    subtype));
 
                                     return ErrorNumber.NotSupported;
                                 }
@@ -1003,7 +987,7 @@ public sealed partial class Chd
                         if(_isHdd)
                         {
                             AaruLogging.Error(Localization
-                                                          .Image_cannot_be_a_hard_disk_and_a_GD_ROM_at_the_same_time_aborting);
+                                                 .Image_cannot_be_a_hard_disk_and_a_GD_ROM_at_the_same_time_aborting);
 
                             return ErrorNumber.NotSupported;
                         }
@@ -1011,7 +995,7 @@ public sealed partial class Chd
                         if(_isCdrom)
                         {
                             AaruLogging.Error(Localization
-                                                          .Image_cannot_be_a_CD_ROM_and_a_GD_ROM_at_the_same_time_aborting);
+                                                 .Image_cannot_be_a_CD_ROM_and_a_GD_ROM_at_the_same_time_aborting);
 
                             return ErrorNumber.NotSupported;
                         }
@@ -1024,17 +1008,17 @@ public sealed partial class Chd
                         {
                             _isGdrom = true;
 
-                            uint   trackNo   = uint.Parse(chgdMatch.Groups["track"].Value);
-                            uint   frames    = uint.Parse(chgdMatch.Groups["frames"].Value);
+                            var    trackNo   = uint.Parse(chgdMatch.Groups["track"].Value);
+                            var    frames    = uint.Parse(chgdMatch.Groups["frames"].Value);
                             string subtype   = chgdMatch.Groups["sub_type"].Value;
                             string trackType = chgdMatch.Groups["track_type"].Value;
 
                             // TODO: Check pregap, postgap and pad behaviour
-                            uint   pregap        = uint.Parse(chgdMatch.Groups["pregap"].Value);
+                            var    pregap        = uint.Parse(chgdMatch.Groups["pregap"].Value);
                             string pregapType    = chgdMatch.Groups["pgtype"].Value;
                             string pregapSubType = chgdMatch.Groups["pgsub"].Value;
-                            uint   postgap       = uint.Parse(chgdMatch.Groups["postgap"].Value);
-                            uint   pad           = uint.Parse(chgdMatch.Groups["pad"].Value);
+                            var    postgap       = uint.Parse(chgdMatch.Groups["postgap"].Value);
+                            var    pad           = uint.Parse(chgdMatch.Groups["pad"].Value);
 
                             if(trackNo != currentTrack)
                             {
@@ -1098,8 +1082,7 @@ public sealed partial class Chd
                                     break;
                                 default:
                                 {
-                                    AaruLogging.Error(string.Format(Localization.Unsupported_track_type_0,
-                                                                             trackType));
+                                    AaruLogging.Error(string.Format(Localization.Unsupported_track_type_0, trackType));
 
                                     return ErrorNumber.NotSupported;
                                 }
@@ -1126,7 +1109,7 @@ public sealed partial class Chd
                                 default:
                                 {
                                     AaruLogging.Error(string.Format(Localization.Unsupported_subchannel_type_0,
-                                                                             subtype));
+                                                                    subtype));
 
                                     return ErrorNumber.NotSupported;
                                 }
@@ -1408,7 +1391,7 @@ public sealed partial class Chd
         }
 
         uint sectorOffset;
-        bool mode2 = false;
+        var  mode2 = false;
 
         switch(track.Type)
         {
@@ -1488,7 +1471,7 @@ public sealed partial class Chd
             buffer = Sector.GetUserDataFromMode2(sector);
         else if(track.Type == TrackType.Audio && _swapAudio)
         {
-            for(int i = 0; i < 2352; i += 2)
+            for(var i = 0; i < 2352; i += 2)
             {
                 buffer[i + 1] = sector[i];
                 buffer[i]     = sector[i + 1];
@@ -1753,7 +1736,7 @@ public sealed partial class Chd
 
         if(track.Type == TrackType.Audio && _swapAudio)
         {
-            for(int i = 0; i < 2352; i += 2)
+            for(var i = 0; i < 2352; i += 2)
             {
                 buffer[i + 1] = sector[i];
                 buffer[i]     = sector[i + 1];
@@ -1764,7 +1747,7 @@ public sealed partial class Chd
 
         if(track.Type == TrackType.Audio && _swapAudio)
         {
-            for(int i = 0; i < 2352; i += 2)
+            for(var i = 0; i < 2352; i += 2)
             {
                 buffer[i + 1] = sector[i];
                 buffer[i]     = sector[i + 1];
@@ -1840,7 +1823,7 @@ public sealed partial class Chd
         if(!_sectorCache.TryGetValue(sectorAddress, out byte[] sector))
         {
             track = GetTrack(sectorAddress);
-            uint sectorSize = (uint)track.RawBytesPerSector;
+            var sectorSize = (uint)track.RawBytesPerSector;
 
             ulong hunkNo = sectorAddress              / _sectorsPerHunk;
             ulong secOff = sectorAddress * sectorSize % (_sectorsPerHunk * sectorSize);
@@ -1861,7 +1844,7 @@ public sealed partial class Chd
 
         if(track.Type == TrackType.Audio && _swapAudio)
         {
-            for(int i = 0; i < 2352; i += 2)
+            for(var i = 0; i < 2352; i += 2)
             {
                 buffer[i + 1] = sector[i];
                 buffer[i]     = sector[i + 1];
@@ -1874,7 +1857,7 @@ public sealed partial class Chd
         {
             case TrackType.CdMode1 when track.RawBytesPerSector == 2048:
             {
-                byte[] fullSector = new byte[2352];
+                var fullSector = new byte[2352];
 
                 Array.Copy(buffer, 0, fullSector, 16, 2048);
                 _sectorBuilder.ReconstructPrefix(ref fullSector, TrackType.CdMode1, (long)sectorAddress);
@@ -1886,7 +1869,7 @@ public sealed partial class Chd
             }
             case TrackType.CdMode2Form1 when track.RawBytesPerSector == 2048:
             {
-                byte[] fullSector = new byte[2352];
+                var fullSector = new byte[2352];
 
                 Array.Copy(buffer, 0, fullSector, 24, 2048);
                 _sectorBuilder.ReconstructPrefix(ref fullSector, TrackType.CdMode2Form1, (long)sectorAddress);
@@ -1898,7 +1881,7 @@ public sealed partial class Chd
             }
             case TrackType.CdMode2Form1 when track.RawBytesPerSector == 2324:
             {
-                byte[] fullSector = new byte[2352];
+                var fullSector = new byte[2352];
 
                 Array.Copy(buffer, 0, fullSector, 24, 2324);
                 _sectorBuilder.ReconstructPrefix(ref fullSector, TrackType.CdMode2Form2, (long)sectorAddress);
@@ -1910,7 +1893,7 @@ public sealed partial class Chd
             }
             case TrackType.CdMode2Formless when track.RawBytesPerSector == 2336:
             {
-                byte[] fullSector = new byte[2352];
+                var fullSector = new byte[2352];
 
                 _sectorBuilder.ReconstructPrefix(ref fullSector, TrackType.CdMode2Formless, (long)sectorAddress);
                 Array.Copy(buffer, 0, fullSector, 16, 2336);
