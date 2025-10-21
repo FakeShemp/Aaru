@@ -38,6 +38,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -51,7 +52,7 @@ namespace Aaru.Images;
 /// <inheritdoc />
 /// <summary>Implements support for Sega Mega Drive, 32X, Genesis and Pico cartridge dumps</summary>
 [SuppressMessage("ReSharper", "UnusedType.Global")]
-public class SegaMegaDrive : IByteAddressableImage
+public partial class SegaMegaDrive : IByteAddressableImage
 {
     byte[]    _data;
     Stream    _dataStream;
@@ -101,7 +102,7 @@ public class SegaMegaDrive : IByteAddressableImage
 
         if(stream.Length % 512 != 0) return false;
 
-        byte[] buffer = new byte[4];
+        var buffer = new byte[4];
 
         stream.Position = 256;
         stream.EnsureRead(buffer, 0, 4);
@@ -142,7 +143,7 @@ public class SegaMegaDrive : IByteAddressableImage
 
         if(stream.Length % 512 != 0) return ErrorNumber.InvalidArgument;
 
-        byte[] buffer = new byte[4];
+        var buffer = new byte[4];
 
         stream.Position = 256;
         stream.EnsureRead(buffer, 0, 4);
@@ -190,15 +191,15 @@ public class SegaMegaDrive : IByteAddressableImage
         // Interleaves every 16KiB
         if(_smd)
         {
-            byte[] tmp     = new byte[_data.Length];
-            byte[] bankIn  = new byte[16384];
-            byte[] bankOut = new byte[16384];
+            var tmp     = new byte[_data.Length];
+            var bankIn  = new byte[16384];
+            var bankOut = new byte[16384];
 
-            for(int b = 0; b < _data.Length / 16384; b++)
+            for(var b = 0; b < _data.Length / 16384; b++)
             {
                 Array.Copy(_data, b * 16384, bankIn, 0, 16384);
 
-                for(int i = 0; i < 8192; i++)
+                for(var i = 0; i < 8192; i++)
                 {
                     bankOut[i * 2 + 1] = bankIn[i];
                     bankOut[i * 2]     = bankIn[i + 8192];
@@ -211,10 +212,10 @@ public class SegaMegaDrive : IByteAddressableImage
         }
         else if(_interleaved)
         {
-            byte[] tmp  = new byte[_data.Length];
-            int    half = _data.Length / 2;
+            var tmp  = new byte[_data.Length];
+            int half = _data.Length / 2;
 
-            for(int i = 0; i < half; i++)
+            for(var i = 0; i < half; i++)
             {
                 tmp[i * 2]     = _data[i];
                 tmp[i * 2 + 1] = _data[i + half];
@@ -224,7 +225,7 @@ public class SegaMegaDrive : IByteAddressableImage
         }
 
         SegaHeader header =
-            Marshal.ByteArrayToStructureBigEndian<SegaHeader>(_data, 0x100, Marshal.SizeOf<SegaHeader>());
+            Marshal.ByteArrayToStructureBigEndianGenerated<SegaHeader>(_data, 0x100, Marshal.SizeOf<SegaHeader>());
 
         Encoding encoding;
 
@@ -404,10 +405,10 @@ public class SegaMegaDrive : IByteAddressableImage
 
         if(_interleaved)
         {
-            byte[] tmp  = new byte[_data.Length];
-            int    half = _data.Length / 2;
+            var tmp  = new byte[_data.Length];
+            int half = _data.Length / 2;
 
-            for(int i = 0; i < half; i++)
+            for(var i = 0; i < half; i++)
             {
                 tmp[i]        = _data[i * 2];
                 tmp[i + half] = _data[i * 2 + 1];
@@ -432,15 +433,15 @@ public class SegaMegaDrive : IByteAddressableImage
 
             _dataStream.Write(smdHeader, 0, smdHeader.Length);
 
-            byte[] tmp     = new byte[_data.Length];
-            byte[] bankIn  = new byte[16384];
-            byte[] bankOut = new byte[16384];
+            var tmp     = new byte[_data.Length];
+            var bankIn  = new byte[16384];
+            var bankOut = new byte[16384];
 
-            for(int b = 0; b < _data.Length / 16384; b++)
+            for(var b = 0; b < _data.Length / 16384; b++)
             {
                 Array.Copy(_data, b * 16384, bankIn, 0, 16384);
 
-                for(int i = 0; i < 8192; i++)
+                for(var i = 0; i < 8192; i++)
                 {
                     bankOut[i] = bankIn[i * 2 + 1];
                     bankOut[i                 + 8192] = bankIn[i * 2];
@@ -539,7 +540,7 @@ public class SegaMegaDrive : IByteAddressableImage
         }
 
         SegaHeader header =
-            Marshal.ByteArrayToStructureBigEndian<SegaHeader>(_data, 0x100, Marshal.SizeOf<SegaHeader>());
+            Marshal.ByteArrayToStructureBigEndianGenerated<SegaHeader>(_data, 0x100, Marshal.SizeOf<SegaHeader>());
 
         bool extraRam = header.ExtraRamPresent[0] == 0x52 && header.ExtraRamPresent[1] == 0x41;
 
@@ -732,8 +733,8 @@ public class SegaMegaDrive : IByteAddressableImage
             return ErrorNumber.ReadOnly;
         }
 
-        bool foundRom     = false;
-        bool foundSaveRam = false;
+        var foundRom     = false;
+        var foundSaveRam = false;
 
         // Sanitize
         foreach(LinearMemoryDevice map in mappings.Devices)
@@ -848,9 +849,8 @@ public class SegaMegaDrive : IByteAddressableImage
 #region Nested type: SegaHeader
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
-    [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Local")]
-    struct SegaHeader
+    [SwapEndian]
+    partial struct SegaHeader
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 15)]
         public byte[] SystemType;

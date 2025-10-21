@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -16,7 +17,7 @@ using Marshal = Aaru.Helpers.Marshal;
 namespace Aaru.Images;
 
 [SuppressMessage("ReSharper", "UnusedType.Global")]
-public class MasterSystem : IByteAddressableImage
+public partial class MasterSystem : IByteAddressableImage
 {
     byte[]    _data;
     Stream    _dataStream;
@@ -61,9 +62,9 @@ public class MasterSystem : IByteAddressableImage
         if(stream.Length % 8192 != 0) return false;
 
         stream.Position = 0x7ff0;
-        byte[] magicBytes = new byte[8];
+        var magicBytes = new byte[8];
         stream.EnsureRead(magicBytes, 0, 8);
-        ulong magic = BitConverter.ToUInt64(magicBytes, 0);
+        var magic = BitConverter.ToUInt64(magicBytes, 0);
 
         if(magic == 0x4147455320524D54) return true;
 
@@ -95,9 +96,9 @@ public class MasterSystem : IByteAddressableImage
         int headerPosition;
 
         stream.Position = 0x7ff0;
-        byte[] magicBytes = new byte[8];
+        var magicBytes = new byte[8];
         stream.EnsureRead(magicBytes, 0, 8);
-        ulong magic = BitConverter.ToUInt64(magicBytes, 0);
+        var magic = BitConverter.ToUInt64(magicBytes, 0);
 
         if(magic != 0x0B000DCC6666EDCE)
             headerPosition = 0x7ff0;
@@ -138,7 +139,8 @@ public class MasterSystem : IByteAddressableImage
             MetadataMediaType    = MetadataMediaType.LinearMedia
         };
 
-        Header header = Marshal.ByteArrayToStructureBigEndian<Header>(_data, headerPosition, Marshal.SizeOf<Header>());
+        Header header =
+            Marshal.ByteArrayToStructureBigEndianGenerated<Header>(_data, headerPosition, Marshal.SizeOf<Header>());
 
         var sb = new StringBuilder();
 
@@ -456,7 +458,7 @@ public class MasterSystem : IByteAddressableImage
             return ErrorNumber.ReadOnly;
         }
 
-        bool foundRom = false;
+        var foundRom = false;
 
         // Sanitize
         foreach(LinearMemoryDevice map in mappings.Devices)
@@ -567,9 +569,8 @@ public class MasterSystem : IByteAddressableImage
 #region Nested type: Header
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Local")]
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
-    struct Header
+    [SwapEndian]
+    partial struct Header
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
         public byte[] Signature;

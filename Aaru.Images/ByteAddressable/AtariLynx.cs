@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -16,7 +17,7 @@ using Marshal = Aaru.Helpers.Marshal;
 namespace Aaru.Images;
 
 [SuppressMessage("ReSharper", "UnusedType.Global")]
-public class AtariLynx : IByteAddressableImage
+public partial class AtariLynx : IByteAddressableImage
 {
     byte[]    _data;
     Stream    _dataStream;
@@ -59,9 +60,9 @@ public class AtariLynx : IByteAddressableImage
         if((stream.Length - 64) % 65536 != 0) return false;
 
         stream.Position = 0;
-        byte[] magicBytes = new byte[4];
+        var magicBytes = new byte[4];
         stream.EnsureRead(magicBytes, 0, 4);
-        uint magic = BitConverter.ToUInt32(magicBytes, 0);
+        var magic = BitConverter.ToUInt32(magicBytes, 0);
 
         // "LYNX"
         return magic == 0x584E594C;
@@ -78,13 +79,13 @@ public class AtariLynx : IByteAddressableImage
         if((stream.Length - 64) % 65536 != 0) return ErrorNumber.InvalidArgument;
 
         stream.Position = 0x0;
-        byte[] magicBytes = new byte[4];
+        var magicBytes = new byte[4];
         stream.EnsureRead(magicBytes, 0, 4);
-        uint magic = BitConverter.ToUInt32(magicBytes, 0);
+        var magic = BitConverter.ToUInt32(magicBytes, 0);
 
         if(magic != 0x584E594C) return ErrorNumber.InvalidArgument;
 
-        byte[] headerBytes = new byte[64];
+        var headerBytes = new byte[64];
         stream.Position = 0;
         stream.EnsureRead(headerBytes, 0, 64);
 
@@ -102,7 +103,7 @@ public class AtariLynx : IByteAddressableImage
             MetadataMediaType    = MetadataMediaType.LinearMedia
         };
 
-        HandyHeader header = Marshal.ByteArrayToStructureBigEndian<HandyHeader>(headerBytes, 0, 64);
+        HandyHeader header = Marshal.ByteArrayToStructureBigEndianGenerated<HandyHeader>(headerBytes, 0, 64);
 
         if(header.Version != 256) return ErrorNumber.NotSupported;
 
@@ -405,7 +406,7 @@ public class AtariLynx : IByteAddressableImage
             return ErrorNumber.ReadOnly;
         }
 
-        bool foundRom = false;
+        var foundRom = false;
 
         // Sanitize
         foreach(LinearMemoryDevice map in mappings.Devices)
@@ -516,9 +517,8 @@ public class AtariLynx : IByteAddressableImage
 #region Nested type: HandyHeader
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
-    [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Local")]
-    struct HandyHeader
+    [SwapEndian]
+    partial struct HandyHeader
     {
         public uint  Magic;
         public short Bank0Length;

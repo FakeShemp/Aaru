@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -16,7 +17,7 @@ using Marshal = Aaru.Helpers.Marshal;
 namespace Aaru.Images;
 
 [SuppressMessage("ReSharper", "UnusedType.Global")]
-public class GameBoyAdvance : IByteAddressableImage
+public partial class GameBoyAdvance : IByteAddressableImage
 {
     byte[]    _data;
     Stream    _dataStream;
@@ -59,9 +60,9 @@ public class GameBoyAdvance : IByteAddressableImage
         if(stream.Length % 32768 != 0) return false;
 
         stream.Position = 4;
-        byte[] magicBytes = new byte[8];
+        var magicBytes = new byte[8];
         stream.EnsureRead(magicBytes, 0, 8);
-        ulong magic = BitConverter.ToUInt64(magicBytes, 0);
+        var magic = BitConverter.ToUInt64(magicBytes, 0);
 
         return magic == 0x21A29A6951AEFF24;
     }
@@ -77,9 +78,9 @@ public class GameBoyAdvance : IByteAddressableImage
         if(stream.Length % 512 != 0) return ErrorNumber.InvalidArgument;
 
         stream.Position = 4;
-        byte[] magicBytes = new byte[8];
+        var magicBytes = new byte[8];
         stream.EnsureRead(magicBytes, 0, 8);
-        ulong magic = BitConverter.ToUInt64(magicBytes, 0);
+        var magic = BitConverter.ToUInt64(magicBytes, 0);
 
         if(magic != 0x21A29A6951AEFF24) return ErrorNumber.InvalidArgument;
 
@@ -97,7 +98,7 @@ public class GameBoyAdvance : IByteAddressableImage
             MetadataMediaType    = MetadataMediaType.LinearMedia
         };
 
-        Header header = Marshal.ByteArrayToStructureBigEndian<Header>(_data, 0, Marshal.SizeOf<Header>());
+        Header header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(_data, 0, Marshal.SizeOf<Header>());
 
         _imageInfo.MediaTitle = StringHandlers.CToString(header.Name);
 
@@ -353,8 +354,8 @@ public class GameBoyAdvance : IByteAddressableImage
             return ErrorNumber.ReadOnly;
         }
 
-        bool foundRom     = false;
-        bool foundSaveRam = false;
+        var foundRom     = false;
+        var foundSaveRam = false;
 
         // Sanitize
         foreach(LinearMemoryDevice map in mappings.Devices)
@@ -469,9 +470,8 @@ public class GameBoyAdvance : IByteAddressableImage
 #region Nested type: Header
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
-    [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Local")]
-    struct Header
+    [SwapEndian]
+    partial struct Header
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public byte[] EntryPoint;

@@ -38,6 +38,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -51,7 +52,7 @@ namespace Aaru.Images;
 /// <inheritdoc />
 /// <summary>Implements support for Nintendo 64 cartridge dumps</summary>
 [SuppressMessage("ReSharper", "UnusedType.Global")]
-public class Nintendo64 : IByteAddressableImage
+public partial class Nintendo64 : IByteAddressableImage
 {
     byte[]    _data;
     Stream    _dataStream;
@@ -100,9 +101,9 @@ public class Nintendo64 : IByteAddressableImage
         if(stream.Length % 512 != 0) return false;
 
         stream.Position = 0;
-        byte[] magicBytes = new byte[4];
+        var magicBytes = new byte[4];
         stream.EnsureRead(magicBytes, 0, 4);
-        uint magic = BitConverter.ToUInt32(magicBytes, 0);
+        var magic = BitConverter.ToUInt32(magicBytes, 0);
 
         return magic switch
                {
@@ -129,9 +130,9 @@ public class Nintendo64 : IByteAddressableImage
         if(stream.Length % 512 != 0) return ErrorNumber.InvalidArgument;
 
         stream.Position = 0;
-        byte[] magicBytes = new byte[4];
+        var magicBytes = new byte[4];
         stream.EnsureRead(magicBytes, 0, 4);
-        uint magic = BitConverter.ToUInt32(magicBytes, 0);
+        var magic = BitConverter.ToUInt32(magicBytes, 0);
 
         switch(magic)
         {
@@ -180,9 +181,9 @@ public class Nintendo64 : IByteAddressableImage
 
         if(_littleEndian)
         {
-            byte[] tmp = new byte[_data.Length];
+            var tmp = new byte[_data.Length];
 
-            for(int i = 0; i < _data.Length; i += 4)
+            for(var i = 0; i < _data.Length; i += 4)
             {
                 tmp[i] = _data[i + 3];
                 tmp[i            + 1] = _data[i + 2];
@@ -195,9 +196,9 @@ public class Nintendo64 : IByteAddressableImage
 
         if(_interleaved)
         {
-            byte[] tmp = new byte[_data.Length];
+            var tmp = new byte[_data.Length];
 
-            for(int i = 0; i < _data.Length; i += 2)
+            for(var i = 0; i < _data.Length; i += 2)
             {
                 tmp[i] = _data[i + 1];
                 tmp[i            + 1] = _data[i];
@@ -206,7 +207,7 @@ public class Nintendo64 : IByteAddressableImage
             _data = tmp;
         }
 
-        Header   header = Marshal.ByteArrayToStructureBigEndian<Header>(_data, 0, Marshal.SizeOf<Header>());
+        Header   header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(_data, 0, Marshal.SizeOf<Header>());
         Encoding encoding;
 
         try
@@ -305,7 +306,7 @@ public class Nintendo64 : IByteAddressableImage
         LinearMemoryType saveType   = LinearMemoryType.Unknown;
         ulong            saveLength = 0;
 
-        Header header = Marshal.ByteArrayToStructureBigEndian<Header>(_data, 0, Marshal.SizeOf<Header>());
+        Header header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(_data, 0, Marshal.SizeOf<Header>());
 
         switch((char)header.CartridgeType)
         {
@@ -676,8 +677,8 @@ public class Nintendo64 : IByteAddressableImage
             return ErrorNumber.ReadOnly;
         }
 
-        bool foundRom     = false;
-        bool foundSaveRam = false;
+        var foundRom     = false;
+        var foundSaveRam = false;
 
         // Sanitize
         foreach(LinearMemoryDevice map in mappings.Devices)
@@ -840,9 +841,9 @@ public class Nintendo64 : IByteAddressableImage
 
         if(_interleaved)
         {
-            byte[] tmp = new byte[_data.Length];
+            var tmp = new byte[_data.Length];
 
-            for(int i = 0; i < _data.Length; i += 2)
+            for(var i = 0; i < _data.Length; i += 2)
             {
                 tmp[i] = _data[i + 1];
                 tmp[i            + 1] = _data[i];
@@ -900,30 +901,30 @@ public class Nintendo64 : IByteAddressableImage
 #region Nested type: Header
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
-    struct Header
+    [SwapEndian]
+    partial struct Header
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public readonly byte[] Validation;
-        public readonly byte Compression;
-        public readonly byte Padding1;
-        public readonly uint ClockRate;
-        public readonly uint ProgramCounter;
-        public readonly uint ReleaseAddress;
-        public readonly uint Crc1;
-        public readonly uint Crc2;
+        public byte[] Validation;
+        public byte Compression;
+        public byte Padding1;
+        public uint ClockRate;
+        public uint ProgramCounter;
+        public uint ReleaseAddress;
+        public uint Crc1;
+        public uint Crc2;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public readonly byte[] Padding2;
+        public byte[] Padding2;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
-        public readonly byte[] Name;
+        public byte[] Name;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 7)]
-        public readonly byte[] Padding3;
+        public byte[] Padding3;
         /// <summary>'N' for cart, 'D' for 64DD, 'C' for expandable cart, 'E' for 64DD expansion, 'Z' for Aleck64</summary>
-        public readonly byte CartridgeType;
+        public byte CartridgeType;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public readonly byte[] CartridgeId;
-        public readonly byte CountryCode;
-        public readonly byte Version;
+        public byte[] CartridgeId;
+        public byte CountryCode;
+        public byte Version;
     }
 
 #endregion

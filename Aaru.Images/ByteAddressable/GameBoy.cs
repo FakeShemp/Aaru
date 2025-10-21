@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
@@ -16,7 +17,7 @@ using Marshal = Aaru.Helpers.Marshal;
 namespace Aaru.Images;
 
 [SuppressMessage("ReSharper", "UnusedType.Global")]
-public class GameBoy : IByteAddressableImage
+public partial class GameBoy : IByteAddressableImage
 {
     byte[]    _data;
     Stream    _dataStream;
@@ -59,9 +60,9 @@ public class GameBoy : IByteAddressableImage
         if(stream.Length % 32768 != 0) return false;
 
         stream.Position = 0x104;
-        byte[] magicBytes = new byte[8];
+        var magicBytes = new byte[8];
         stream.EnsureRead(magicBytes, 0, 8);
-        ulong magic = BitConverter.ToUInt64(magicBytes, 0);
+        var magic = BitConverter.ToUInt64(magicBytes, 0);
 
         return magic == 0x0B000DCC6666EDCE;
     }
@@ -77,9 +78,9 @@ public class GameBoy : IByteAddressableImage
         if(stream.Length % 512 != 0) return ErrorNumber.InvalidArgument;
 
         stream.Position = 0x104;
-        byte[] magicBytes = new byte[8];
+        var magicBytes = new byte[8];
         stream.EnsureRead(magicBytes, 0, 8);
-        ulong magic = BitConverter.ToUInt64(magicBytes, 0);
+        var magic = BitConverter.ToUInt64(magicBytes, 0);
 
         if(magic != 0x0B000DCC6666EDCE) return ErrorNumber.InvalidArgument;
 
@@ -98,9 +99,9 @@ public class GameBoy : IByteAddressableImage
             MetadataMediaType    = MetadataMediaType.LinearMedia
         };
 
-        Header header = Marshal.ByteArrayToStructureBigEndian<Header>(_data, 0x100, Marshal.SizeOf<Header>());
+        Header header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(_data, 0x100, Marshal.SizeOf<Header>());
 
-        byte[] name = new byte[(header.Name[^1] & 0x80) == 0x80 ? 15 : 16];
+        var name = new byte[(header.Name[^1] & 0x80) == 0x80 ? 15 : 16];
         Array.Copy(header.Name, 0, name, 0, name.Length);
 
         _imageInfo.MediaTitle = StringHandlers.CToString(name);
@@ -264,10 +265,10 @@ public class GameBoy : IByteAddressableImage
             return ErrorNumber.NotOpened;
         }
 
-        Header header = Marshal.ByteArrayToStructureBigEndian<Header>(_data, 0x100, Marshal.SizeOf<Header>());
+        Header header = Marshal.ByteArrayToStructureBigEndianGenerated<Header>(_data, 0x100, Marshal.SizeOf<Header>());
 
-        bool   hasMapper          = false;
-        bool   hasSaveRam         = false;
+        var    hasMapper          = false;
+        var    hasSaveRam         = false;
         string mapperManufacturer = null;
         string mapperName         = null;
 
@@ -486,7 +487,7 @@ public class GameBoy : IByteAddressableImage
 
         if(header.SramSize > 0) hasSaveRam = true;
 
-        int devices = 1;
+        var devices = 1;
 
         if(hasSaveRam) devices++;
 
@@ -618,9 +619,9 @@ public class GameBoy : IByteAddressableImage
             return ErrorNumber.ReadOnly;
         }
 
-        bool foundRom     = false;
-        bool foundSaveRam = false;
-        bool foundMapper  = false;
+        var foundRom     = false;
+        var foundSaveRam = false;
+        var foundMapper  = false;
 
         // Sanitize
         foreach(LinearMemoryDevice map in mappings.Devices)
@@ -1030,8 +1031,8 @@ public class GameBoy : IByteAddressableImage
 #region Nested type: Header
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Local")]
-    struct Header
+    [SwapEndian]
+    partial struct Header
     {
         /// <summary>Usually 0x00 (NOP)</summary>
         public byte Opcode1;
