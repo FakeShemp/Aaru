@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
@@ -38,56 +39,57 @@ public sealed partial class RBF
 
     /// <summary>Identification sector. Wherever the sector this resides on, becomes LSN 0.</summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct IdSector
+    [SwapEndian]
+    partial struct IdSector
     {
         /// <summary>Sectors on disk</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        public readonly byte[] dd_tot;
+        public byte[] dd_tot;
         /// <summary>Tracks</summary>
-        public readonly byte dd_tks;
+        public byte dd_tks;
         /// <summary>Bytes in allocation map</summary>
-        public readonly ushort dd_map;
+        public ushort dd_map;
         /// <summary>Sectors per cluster</summary>
-        public readonly ushort dd_bit;
+        public ushort dd_bit;
         /// <summary>LSN of root directory</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        public readonly byte[] dd_dir;
+        public byte[] dd_dir;
         /// <summary>Owner ID</summary>
-        public readonly ushort dd_own;
+        public ushort dd_own;
         /// <summary>Attributes</summary>
-        public readonly byte dd_att;
+        public byte dd_att;
         /// <summary>Disk ID</summary>
-        public readonly ushort dd_dsk;
+        public ushort dd_dsk;
         /// <summary>Format byte</summary>
-        public readonly byte dd_fmt;
+        public byte dd_fmt;
         /// <summary>Sectors per track</summary>
-        public readonly ushort dd_spt;
+        public ushort dd_spt;
         /// <summary>Reserved</summary>
-        public readonly ushort dd_res;
+        public ushort dd_res;
         /// <summary>LSN of boot file</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        public readonly byte[] dd_bt;
+        public byte[] dd_bt;
         /// <summary>Size of boot file</summary>
-        public readonly ushort dd_bsz;
+        public ushort dd_bsz;
         /// <summary>Creation date</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
-        public readonly byte[] dd_dat;
+        public byte[] dd_dat;
         /// <summary>Volume name</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public readonly byte[] dd_nam;
+        public byte[] dd_nam;
         /// <summary>Path options</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public readonly byte[] dd_opt;
+        public byte[] dd_opt;
         /// <summary>Reserved</summary>
-        public readonly byte reserved;
+        public byte reserved;
         /// <summary>Magic number</summary>
-        public readonly uint dd_sync;
+        public uint dd_sync;
         /// <summary>LSN of allocation map</summary>
-        public readonly uint dd_maplsn;
+        public uint dd_maplsn;
         /// <summary>Size of an LSN</summary>
-        public readonly ushort dd_lsnsize;
+        public ushort dd_lsnsize;
         /// <summary>Version ID</summary>
-        public readonly ushort dd_versid;
+        public ushort dd_versid;
     }
 
 #endregion
@@ -99,56 +101,57 @@ public sealed partial class RBF
     ///     big or little endian.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct NewIdSector
+    [SwapEndian]
+    partial struct NewIdSector
     {
         /// <summary>Magic number</summary>
-        public readonly uint rid_sync;
+        public uint rid_sync;
         /// <summary>Disk ID</summary>
-        public readonly uint rid_diskid;
+        public uint rid_diskid;
         /// <summary>Sectors on disk</summary>
-        public readonly uint rid_totblocks;
+        public uint rid_totblocks;
         /// <summary>Cylinders</summary>
-        public readonly ushort rid_cylinders;
+        public ushort rid_cylinders;
         /// <summary>Sectors in cylinder 0</summary>
-        public readonly ushort rid_cyl0size;
+        public ushort rid_cyl0size;
         /// <summary>Sectors per cylinder</summary>
-        public readonly ushort rid_cylsize;
+        public ushort rid_cylsize;
         /// <summary>Heads</summary>
-        public readonly ushort rid_heads;
+        public ushort rid_heads;
         /// <summary>Bytes per sector</summary>
-        public readonly ushort rid_blocksize;
+        public ushort rid_blocksize;
         /// <summary>Disk format</summary>
-        public readonly ushort rid_format;
+        public ushort rid_format;
         /// <summary>Flags</summary>
-        public readonly ushort rid_flags;
+        public ushort rid_flags;
         /// <summary>Padding</summary>
-        public readonly ushort rid_unused1;
+        public ushort rid_unused1;
         /// <summary>Sector of allocation bitmap</summary>
-        public readonly uint rid_bitmap;
+        public uint rid_bitmap;
         /// <summary>Sector of debugger FD</summary>
-        public readonly uint rid_firstboot;
+        public uint rid_firstboot;
         /// <summary>Sector of bootfile FD</summary>
-        public readonly uint rid_bootfile;
+        public uint rid_bootfile;
         /// <summary>Sector of root directory FD</summary>
-        public readonly uint rid_rootdir;
+        public uint rid_rootdir;
         /// <summary>Group owner of media</summary>
-        public readonly ushort rid_group;
+        public ushort rid_group;
         /// <summary>Owner of media</summary>
-        public readonly ushort rid_owner;
+        public ushort rid_owner;
         /// <summary>Creation time</summary>
-        public readonly uint rid_ctime;
+        public uint rid_ctime;
         /// <summary>Last write time for this structure</summary>
-        public readonly uint rid_mtime;
+        public uint rid_mtime;
         /// <summary>Volume name</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public readonly byte[] rid_name;
+        public byte[] rid_name;
         /// <summary>Endian flag</summary>
-        public readonly byte rid_endflag;
+        public byte rid_endflag;
         /// <summary>Padding</summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        public readonly byte[] rid_unused2;
+        public byte[] rid_unused2;
         /// <summary>Parity</summary>
-        public readonly uint rid_parity;
+        public uint rid_parity;
     }
 
 #endregion
