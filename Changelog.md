@@ -1,3 +1,14 @@
+# [6.0.0-alpha.13] - 2025-10-21
+
+## Added
+
+- AaruFormat V2.
+
+## Fixed
+
+- Several colorization fixes in console output.
+- Fix spiral drawing for 80mm DVDs.
+
 # [6.0.0-alpha.12] - 2025-09-28
 
 ## Added
@@ -2591,6 +2602,8 @@
 - Apple Partition Map (aka APM).
 - Master Boot Record (aka MBR).
 - NeXT disklabels.
+
+[6.0.0-alpha.13]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.13
 
 [6.0.0-alpha.12]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.12
 
