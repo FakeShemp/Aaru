@@ -171,7 +171,7 @@ public sealed partial class OperaFS
 
             if(errno != ErrorNumber.NoError) break;
 
-            header    = Marshal.ByteArrayToStructureBigEndian<DirectoryHeader>(data);
+            header    = Marshal.ByteArrayToStructureBigEndianGenerated<DirectoryHeader>(data);
             nextBlock = header.next_block + firstBlock;
 
             var off = (int)header.first_used;
@@ -180,7 +180,7 @@ public sealed partial class OperaFS
 
             while(off + _directoryEntrySize < data.Length)
             {
-                entry = Marshal.ByteArrayToStructureBigEndian<DirectoryEntry>(data, off, _directoryEntrySize);
+                entry = Marshal.ByteArrayToStructureBigEndianGenerated<DirectoryEntry>(data, off, _directoryEntrySize);
                 string name = StringHandlers.CToString(entry.name, _encoding);
 
                 var entryWithPointers = new DirectoryEntryWithPointers
