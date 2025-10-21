@@ -27,6 +27,7 @@
 // ****************************************************************************/
 
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
@@ -37,34 +38,35 @@ public sealed partial class SFS
 #region Nested type: RootBlock
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct RootBlock
+    [SwapEndian]
+    partial struct RootBlock
     {
-        public readonly uint   blockId;
-        public readonly uint   blockChecksum;
-        public readonly uint   blockSelfPointer;
-        public readonly ushort version;
-        public readonly ushort sequence;
-        public readonly uint   datecreated;
-        public readonly Flags  bits;
-        public readonly byte   padding1;
-        public readonly ushort padding2;
+        public uint   blockId;
+        public uint   blockChecksum;
+        public uint   blockSelfPointer;
+        public ushort version;
+        public ushort sequence;
+        public uint   datecreated;
+        public Flags  bits;
+        public byte   padding1;
+        public ushort padding2;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public readonly uint[] reserved1;
-        public readonly ulong firstbyte;
-        public readonly ulong lastbyte;
-        public readonly uint  totalblocks;
-        public readonly uint  blocksize;
+        public uint[] reserved1;
+        public ulong firstbyte;
+        public ulong lastbyte;
+        public uint  totalblocks;
+        public uint  blocksize;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public readonly uint[] reserved2;
+        public uint[] reserved2;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public readonly uint[] reserved3;
-        public readonly uint bitmapbase;
-        public readonly uint adminspacecontainer;
-        public readonly uint rootobjectcontainer;
-        public readonly uint extentbnoderoot;
-        public readonly uint objectnoderoot;
+        public uint[] reserved3;
+        public uint bitmapbase;
+        public uint adminspacecontainer;
+        public uint rootobjectcontainer;
+        public uint extentbnoderoot;
+        public uint objectnoderoot;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        public readonly uint[] reserved4;
+        public uint[] reserved4;
     }
 
 #endregion
