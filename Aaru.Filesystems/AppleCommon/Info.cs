@@ -39,7 +39,7 @@ static partial class AppleCommon
     {
         if(bbSector is null || bbSector.Length < 0x100) return null;
 
-        BootBlock bb = Marshal.ByteArrayToStructureBigEndian<BootBlock>(bbSector);
+        BootBlock bb = Marshal.ByteArrayToStructureBigEndianGenerated<BootBlock>(bbSector);
 
         if(bb.bbID != BB_MAGIC) return null;
 
