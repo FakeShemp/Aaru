@@ -77,7 +77,7 @@ public sealed partial class DiskDupe
         for(int i = 0; i < numTracks; i++)
         {
             stream.EnsureRead(buffer, 0, 6);
-            trackMap[i]     = Marshal.ByteArrayToStructureBigEndian<TrackInfo>(buffer);
+            trackMap[i]     = Marshal.ByteArrayToStructureLittleEndian<TrackInfo>(buffer);
             trackOffsets[i] = trackLen * trackMap[i].trackNumber;
         }
 

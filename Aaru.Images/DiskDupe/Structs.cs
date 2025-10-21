@@ -106,12 +106,12 @@ public sealed partial class DiskDupe
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     struct TrackInfo
     {
-        public readonly byte present; // 1 = present, 0 = absent
-        public readonly byte trackNumber;
-        public readonly byte zero1;
-        public readonly byte zero2;
-        public readonly byte zero3;
-        public readonly byte unknown; // always 1?
+        public byte present; // 1 = present, 0 = absent
+        public byte trackNumber;
+        public byte zero1;
+        public byte zero2;
+        public byte zero3;
+        public byte unknown; // always 1?
     }
 
 #endregion
