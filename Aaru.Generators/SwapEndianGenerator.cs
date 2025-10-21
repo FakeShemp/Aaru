@@ -361,6 +361,9 @@ public class SwapEndianGenerator : IIncrementalGenerator
                           "byte" or "Byte" or "sbyte" or "SByte" =>
                               $"        // {fieldName} - no swap needed for byte types",
 
+                          "string" or "String" =>
+                              $"        // {fieldName} - no swap needed for string types",
+
                           "Guid" => $"        // TODO: Implement GUID swap for {fieldName}",
 
 
@@ -422,6 +425,9 @@ public class SwapEndianGenerator : IIncrementalGenerator
 
                                    "byte" or "System.Byte" or "sbyte" or "System.SByte" =>
                                        $"        // {fieldName} - no swap needed for byte types",
+
+                                   "string" or "System.String" =>
+                                       $"        // {fieldName} - no swap needed for string types",
 
                                    _ => null
                                };
@@ -609,3 +615,4 @@ public class SwapEndianGenerator : IIncrementalGenerator
                                                                    }
                                                            """;
 }
+
