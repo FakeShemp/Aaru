@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using Aaru.CommonTypes;
+using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
@@ -45,7 +46,7 @@ namespace Aaru.Partitions;
 
 /// <inheritdoc />
 /// <summary>Implements decoding of Sharp's Human68K partitions</summary>
-public sealed class Human68K : IPartition
+public sealed partial class Human68K : IPartition
 {
     // ReSharper disable once InconsistentNaming
     const uint   X68K_MAGIC  = 0x5836384B;
@@ -98,13 +99,13 @@ public sealed class Human68K : IPartition
 
         if(errno != ErrorNumber.NoError) return false;
 
-        Table table = Marshal.ByteArrayToStructureBigEndian<Table>(sector);
+        Table table = Marshal.ByteArrayToStructureBigEndianGenerated<Table>(sector);
 
         AaruLogging.Debug(MODULE_NAME, "table.magic = {0:X4}", table.magic);
 
         if(table.magic != X68K_MAGIC) return false;
 
-        for(int i = 0; i < table.entries.Length; i++)
+        for(var i = 0; i < table.entries.Length; i++)
             table.entries[i] = (Entry)Marshal.SwapStructureMembersEndian(table.entries[i]);
 
         AaruLogging.Debug(MODULE_NAME, "table.size = {0:X4}",    table.size);
@@ -116,16 +117,13 @@ public sealed class Human68K : IPartition
         foreach(Entry entry in table.entries)
         {
             AaruLogging.Debug(MODULE_NAME,
-                                       "entry.name = {0}",
-                                       StringHandlers.CToString(entry.name, Encoding.GetEncoding(932)));
+                              "entry.name = {0}",
+                              StringHandlers.CToString(entry.name, Encoding.GetEncoding(932)));
 
             AaruLogging.Debug(MODULE_NAME, "entry.stateStart = {0}", entry.stateStart);
             AaruLogging.Debug(MODULE_NAME, "entry.length = {0}",     entry.length);
 
-            AaruLogging.Debug(MODULE_NAME,
-                                       "sectsPerUnit = {0} {1}",
-                                       sectsPerUnit,
-                                       imagePlugin.Info.SectorSize);
+            AaruLogging.Debug(MODULE_NAME, "sectsPerUnit = {0} {1}", sectsPerUnit, imagePlugin.Info.SectorSize);
 
             var part = new Partition
             {
@@ -153,12 +151,13 @@ public sealed class Human68K : IPartition
 #region Nested type: Entry
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Entry
+    [SwapEndian]
+    partial struct Entry
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public readonly byte[] name;
-        public readonly uint stateStart;
-        public readonly uint length;
+        public byte[] name;
+        public uint stateStart;
+        public uint length;
     }
 
 #endregion
@@ -166,14 +165,15 @@ public sealed class Human68K : IPartition
 #region Nested type: Table
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Table
+    [SwapEndian]
+    partial struct Table
     {
-        public readonly uint magic;
-        public readonly uint size;
-        public readonly uint size2;
-        public readonly uint unknown;
+        public uint magic;
+        public uint size;
+        public uint size2;
+        public uint unknown;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public readonly Entry[] entries;
+        public Entry[] entries;
     }
 
 #endregion
