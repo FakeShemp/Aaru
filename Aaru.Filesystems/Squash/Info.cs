@@ -78,7 +78,7 @@ public sealed partial class Squash
 
                 break;
             case SQUASH_CIGAM:
-                sqSb         = Marshal.ByteArrayToStructureBigEndian<SuperBlock>(sector);
+                sqSb         = Marshal.ByteArrayToStructureBigEndianGenerated<SuperBlock>(sector);
                 littleEndian = false;
 
                 break;
