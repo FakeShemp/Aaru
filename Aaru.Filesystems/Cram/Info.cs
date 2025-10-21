@@ -83,7 +83,7 @@ public sealed partial class Cram
 
                 break;
             case CRAM_CIGAM:
-                crSb         = Marshal.ByteArrayToStructureBigEndian<SuperBlock>(sector);
+                crSb         = Marshal.ByteArrayToStructureBigEndianGenerated<SuperBlock>(sector);
                 littleEndian = false;
 
                 break;

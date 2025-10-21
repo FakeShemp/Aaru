@@ -30,6 +30,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
@@ -41,20 +42,21 @@ public sealed partial class Cram
 #region Nested type: SuperBlock
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct SuperBlock
+    [SwapEndian]
+    partial struct SuperBlock
     {
-        public readonly uint magic;
-        public readonly uint size;
-        public readonly uint flags;
-        public readonly uint future;
+        public uint magic;
+        public uint size;
+        public uint flags;
+        public uint future;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] signature;
-        public readonly uint crc;
-        public readonly uint edition;
-        public readonly uint blocks;
-        public readonly uint files;
+        public byte[] signature;
+        public uint crc;
+        public uint edition;
+        public uint blocks;
+        public uint files;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] name;
+        public byte[] name;
     }
 
 #endregion
