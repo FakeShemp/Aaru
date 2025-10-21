@@ -399,8 +399,8 @@ public static class Marshal
     /// <typeparam name="T">Type of the structure to marshal</typeparam>
     /// <returns>The byte array representing the given structure</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static byte[] StructureToByteArrayBigEndian<T>(T str) where T : struct =>
-        StructureToByteArrayLittleEndian((T)SwapStructureMembersEndian(str));
+    public static byte[] StructureToByteArrayBigEndian<T>(T str) where T : struct, ISwapEndian<T> =>
+        StructureToByteArrayLittleEndian(str.SwapEndian());
 
     /// <summary>Converts a hexadecimal string into a byte array</summary>
     /// <param name="hex">Hexadecimal string</param>
