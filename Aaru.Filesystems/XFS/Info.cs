@@ -70,7 +70,7 @@ public sealed partial class XFS
             {
                 Array.Copy(sector, location, sbpiece, 0, Marshal.SizeOf<Superblock>());
 
-                Superblock xfsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sbpiece);
+                Superblock xfsSb = Marshal.ByteArrayToStructureBigEndianGenerated<Superblock>(sbpiece);
 
                 AaruLogging.Debug(MODULE_NAME,
                                            Localization.magic_at_0_X3_equals_1_expected_2,
@@ -100,7 +100,7 @@ public sealed partial class XFS
 
                 if(sector.Length < Marshal.SizeOf<Superblock>()) return false;
 
-                Superblock xfsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
+                Superblock xfsSb = Marshal.ByteArrayToStructureBigEndianGenerated<Superblock>(sector);
 
                 AaruLogging.Debug(MODULE_NAME,
                                            Localization.magic_at_0_equals_1_expected_2,
@@ -147,7 +147,7 @@ public sealed partial class XFS
             {
                 Array.Copy(sector, location, sbpiece, 0, Marshal.SizeOf<Superblock>());
 
-                xfsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sbpiece);
+                xfsSb = Marshal.ByteArrayToStructureBigEndianGenerated<Superblock>(sbpiece);
 
                 AaruLogging.Debug(MODULE_NAME,
                                            Localization.magic_at_0_X3_equals_1_expected_2,
@@ -174,7 +174,7 @@ public sealed partial class XFS
 
                 if(errno != ErrorNumber.NoError || sector.Length < Marshal.SizeOf<Superblock>()) return;
 
-                xfsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
+                xfsSb = Marshal.ByteArrayToStructureBigEndianGenerated<Superblock>(sector);
 
                 AaruLogging.Debug(MODULE_NAME,
                                            Localization.magic_at_0_equals_1_expected_2,
