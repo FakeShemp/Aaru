@@ -129,7 +129,8 @@ static partial class AppleCommon
 
 #region Nested type: FInfo
 
-    internal struct FInfo
+    [SwapEndian]
+    internal partial struct FInfo
     {
         /// <summary>The type of the file.</summary>
         public uint fdType;
@@ -165,7 +166,8 @@ static partial class AppleCommon
 
 #region Nested type: Point
 
-    internal struct Point
+    [SwapEndian]
+    internal partial struct Point
     {
         public ushort v;
         public ushort h;

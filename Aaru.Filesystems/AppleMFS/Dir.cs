@@ -39,6 +39,87 @@ namespace Aaru.Filesystems;
 // Information from Inside Macintosh Volume II
 public sealed partial class AppleMFS
 {
+    bool FillDirectory()
+    {
+        _idToFilename = new Dictionary<uint, string>();
+        _idToEntry    = new Dictionary<uint, FileEntry>();
+        _filenameToId = new Dictionary<string, uint>();
+
+        var offset = 0;
+
+        while(offset + 51 < _directoryBlocks.Length)
+        {
+            var entry = new FileEntry
+            {
+                flFlags = (FileFlags)_directoryBlocks[offset + 0]
+            };
+
+            if(!entry.flFlags.HasFlag(FileFlags.Used)) break;
+
+            entry.flTyp = _directoryBlocks[offset + 1];
+
+            entry.flUsrWds =
+                Marshal.ByteArrayToStructureBigEndianGenerated<AppleCommon.FInfo>(_directoryBlocks, offset + 2, 16);
+
+            entry.flFlNum  = BigEndianBitConverter.ToUInt32(_directoryBlocks, offset + 18);
+            entry.flStBlk  = BigEndianBitConverter.ToUInt16(_directoryBlocks, offset + 22);
+            entry.flLgLen  = BigEndianBitConverter.ToUInt32(_directoryBlocks, offset + 24);
+            entry.flPyLen  = BigEndianBitConverter.ToUInt32(_directoryBlocks, offset + 28);
+            entry.flRStBlk = BigEndianBitConverter.ToUInt16(_directoryBlocks, offset + 32);
+            entry.flRLgLen = BigEndianBitConverter.ToUInt32(_directoryBlocks, offset + 34);
+            entry.flRPyLen = BigEndianBitConverter.ToUInt32(_directoryBlocks, offset + 38);
+            entry.flCrDat  = BigEndianBitConverter.ToUInt32(_directoryBlocks, offset + 42);
+            entry.flMdDat  = BigEndianBitConverter.ToUInt32(_directoryBlocks, offset + 46);
+            entry.flNam    = new byte[_directoryBlocks[offset + 50] + 1];
+            Array.Copy(_directoryBlocks, offset + 50, entry.flNam, 0, entry.flNam.Length);
+
+            string lowerFilename = StringHandlers.PascalToString(entry.flNam, _encoding)
+                                                 .ToLowerInvariant()
+                                                 .Replace('/', ':');
+
+            if(entry.flFlags.HasFlag(FileFlags.Used)     &&
+               !_idToFilename.ContainsKey(entry.flFlNum) &&
+               !_idToEntry.ContainsKey(entry.flFlNum)    &&
+               !_filenameToId.ContainsKey(lowerFilename) &&
+               entry.flFlNum > 0)
+            {
+                _idToEntry.Add(entry.flFlNum, entry);
+
+                _idToFilename.Add(entry.flFlNum,
+                                  StringHandlers.PascalToString(entry.flNam, _encoding).Replace('/', ':'));
+
+                _filenameToId.Add(lowerFilename, entry.flFlNum);
+
+                AaruLogging.Debug(MODULE_NAME, "entry.flFlags = {0}",  entry.flFlags);
+                AaruLogging.Debug(MODULE_NAME, "entry.flTyp = {0}",    entry.flTyp);
+                AaruLogging.Debug(MODULE_NAME, "entry.flFlNum = {0}",  entry.flFlNum);
+                AaruLogging.Debug(MODULE_NAME, "entry.flStBlk = {0}",  entry.flStBlk);
+                AaruLogging.Debug(MODULE_NAME, "entry.flLgLen = {0}",  entry.flLgLen);
+                AaruLogging.Debug(MODULE_NAME, "entry.flPyLen = {0}",  entry.flPyLen);
+                AaruLogging.Debug(MODULE_NAME, "entry.flRStBlk = {0}", entry.flRStBlk);
+                AaruLogging.Debug(MODULE_NAME, "entry.flRLgLen = {0}", entry.flRLgLen);
+                AaruLogging.Debug(MODULE_NAME, "entry.flRPyLen = {0}", entry.flRPyLen);
+
+                AaruLogging.Debug(MODULE_NAME, "entry.flCrDat = {0}", DateHandlers.MacToDateTime(entry.flCrDat));
+
+                AaruLogging.Debug(MODULE_NAME, "entry.flMdDat = {0}", DateHandlers.MacToDateTime(entry.flMdDat));
+
+                AaruLogging.Debug(MODULE_NAME,
+                                  "entry.flNam0 = {0}",
+                                  StringHandlers.PascalToString(entry.flNam, _encoding));
+            }
+
+            offset += 50 + entry.flNam.Length;
+
+            // "Entries are always an integral number of words"
+            if(offset % 2 != 0) offset++;
+
+            // TODO: "Entries don't cross logical block boundaries"
+        }
+
+        return true;
+    }
+
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
@@ -104,88 +185,4 @@ public sealed partial class AppleMFS
     }
 
 #endregion
-
-    bool FillDirectory()
-    {
-        _idToFilename = new Dictionary<uint, string>();
-        _idToEntry    = new Dictionary<uint, FileEntry>();
-        _filenameToId = new Dictionary<string, uint>();
-
-        int offset = 0;
-
-        while(offset + 51 < _directoryBlocks.Length)
-        {
-            var entry = new FileEntry
-            {
-                flFlags = (FileFlags)_directoryBlocks[offset + 0]
-            };
-
-            if(!entry.flFlags.HasFlag(FileFlags.Used)) break;
-
-            entry.flTyp = _directoryBlocks[offset + 1];
-
-            entry.flUsrWds = Marshal.ByteArrayToStructureBigEndian<AppleCommon.FInfo>(_directoryBlocks, offset + 2, 16);
-
-            entry.flFlNum  = BigEndianBitConverter.ToUInt32(_directoryBlocks, offset + 18);
-            entry.flStBlk  = BigEndianBitConverter.ToUInt16(_directoryBlocks, offset + 22);
-            entry.flLgLen  = BigEndianBitConverter.ToUInt32(_directoryBlocks, offset + 24);
-            entry.flPyLen  = BigEndianBitConverter.ToUInt32(_directoryBlocks, offset + 28);
-            entry.flRStBlk = BigEndianBitConverter.ToUInt16(_directoryBlocks, offset + 32);
-            entry.flRLgLen = BigEndianBitConverter.ToUInt32(_directoryBlocks, offset + 34);
-            entry.flRPyLen = BigEndianBitConverter.ToUInt32(_directoryBlocks, offset + 38);
-            entry.flCrDat  = BigEndianBitConverter.ToUInt32(_directoryBlocks, offset + 42);
-            entry.flMdDat  = BigEndianBitConverter.ToUInt32(_directoryBlocks, offset + 46);
-            entry.flNam    = new byte[_directoryBlocks[offset + 50] + 1];
-            Array.Copy(_directoryBlocks, offset + 50, entry.flNam, 0, entry.flNam.Length);
-
-            string lowerFilename = StringHandlers.PascalToString(entry.flNam, _encoding)
-                                                 .ToLowerInvariant()
-                                                 .Replace('/', ':');
-
-            if(entry.flFlags.HasFlag(FileFlags.Used)     &&
-               !_idToFilename.ContainsKey(entry.flFlNum) &&
-               !_idToEntry.ContainsKey(entry.flFlNum)    &&
-               !_filenameToId.ContainsKey(lowerFilename) &&
-               entry.flFlNum > 0)
-            {
-                _idToEntry.Add(entry.flFlNum, entry);
-
-                _idToFilename.Add(entry.flFlNum,
-                                  StringHandlers.PascalToString(entry.flNam, _encoding).Replace('/', ':'));
-
-                _filenameToId.Add(lowerFilename, entry.flFlNum);
-
-                AaruLogging.Debug(MODULE_NAME, "entry.flFlags = {0}",  entry.flFlags);
-                AaruLogging.Debug(MODULE_NAME, "entry.flTyp = {0}",    entry.flTyp);
-                AaruLogging.Debug(MODULE_NAME, "entry.flFlNum = {0}",  entry.flFlNum);
-                AaruLogging.Debug(MODULE_NAME, "entry.flStBlk = {0}",  entry.flStBlk);
-                AaruLogging.Debug(MODULE_NAME, "entry.flLgLen = {0}",  entry.flLgLen);
-                AaruLogging.Debug(MODULE_NAME, "entry.flPyLen = {0}",  entry.flPyLen);
-                AaruLogging.Debug(MODULE_NAME, "entry.flRStBlk = {0}", entry.flRStBlk);
-                AaruLogging.Debug(MODULE_NAME, "entry.flRLgLen = {0}", entry.flRLgLen);
-                AaruLogging.Debug(MODULE_NAME, "entry.flRPyLen = {0}", entry.flRPyLen);
-
-                AaruLogging.Debug(MODULE_NAME,
-                                           "entry.flCrDat = {0}",
-                                           DateHandlers.MacToDateTime(entry.flCrDat));
-
-                AaruLogging.Debug(MODULE_NAME,
-                                           "entry.flMdDat = {0}",
-                                           DateHandlers.MacToDateTime(entry.flMdDat));
-
-                AaruLogging.Debug(MODULE_NAME,
-                                           "entry.flNam0 = {0}",
-                                           StringHandlers.PascalToString(entry.flNam, _encoding));
-            }
-
-            offset += 50 + entry.flNam.Length;
-
-            // "Entries are always an integral number of words"
-            if(offset % 2 != 0) offset++;
-
-            // TODO: "Entries don't cross logical block boundaries"
-        }
-
-        return true;
-    }
 }
