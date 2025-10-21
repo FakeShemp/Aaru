@@ -106,7 +106,12 @@ public class SwapEndianGenerator : IIncrementalGenerator
         string generatedSource =
             GenerateSwapEndianMethod(structName, namespaceName, containingTypes, source.fieldTypes);
 
-        context.AddSource($"{structName}_SwapEndian.g.cs", SourceText.From(generatedSource, Encoding.UTF8));
+        // Create unique file name by including containing types
+        string fileName = containingTypes.Count > 0
+            ? $"{string.Join("_", containingTypes.Select(t => t.Name))}_{structName}_SwapEndian.g.cs"
+            : $"{structName}_SwapEndian.g.cs";
+
+        context.AddSource(fileName, SourceText.From(generatedSource, Encoding.UTF8));
     }
 
     private static string GetNamespace(SyntaxNode syntax)
@@ -448,3 +453,4 @@ public class SwapEndianGenerator : IIncrementalGenerator
                                                                    }
                                                            """;
 }
+
