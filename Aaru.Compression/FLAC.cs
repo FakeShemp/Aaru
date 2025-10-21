@@ -26,11 +26,10 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using Aaru.Helpers.IO;
-using CUETools.Codecs;
-using CUETools.Codecs.Flake;
 
 namespace Aaru.Compression;
 
@@ -39,7 +38,7 @@ namespace Aaru.Compression;
 public partial class FLAC
 {
     /// <summary>Set to <c>true</c> if this algorithm is supported, <c>false</c> otherwise.</summary>
-    public static bool IsSupported => true;
+    public static bool IsSupported => Native.IsSupported;
 
     [LibraryImport("libAaru.Compression.Native", SetLastError = true)]
     private static partial nuint AARU_flac_decode_redbook_buffer(byte[] dstBuffer, nuint dstSize, byte[] srcBuffer,
@@ -69,15 +68,7 @@ public partial class FLAC
                                                         (nuint)source.Length);
         }
 
-        var flacMs      = new MemoryStream(source);
-        var flakeReader = new AudioDecoder(new DecoderSettings(), "", flacMs);
-        int samples     = destination.Length / 4;
-        var audioBuffer = new AudioBuffer(AudioPCMConfig.RedBook, destination, samples);
-        flakeReader.Read(audioBuffer, samples);
-        flakeReader.Close();
-        flacMs.Close();
-
-        return samples * 4;
+        throw new NotSupportedException();
     }
 
     /// <summary>Compresses a buffer using FLAC</summary>
@@ -120,42 +111,6 @@ public partial class FLAC
                                                         (uint)applicationID.Length);
         }
 
-        var flakeWriterSettings = new EncoderSettings
-        {
-            PCM                = AudioPCMConfig.RedBook,
-            DoMD5              = false,
-            BlockSize          = (int)blockSize,
-            MinFixedOrder      = 0,
-            MaxFixedOrder      = 4,
-            MinLPCOrder        = 1,
-            MaxLPCOrder        = 32,
-            MaxPartitionOrder  = (int)maxResidualPartitionOrder,
-            StereoMethod       = StereoMethod.Estimate,
-            PredictionType     = PredictionType.Search,
-            WindowMethod       = WindowMethod.EvaluateN,
-            EstimationDepth    = 5,
-            MinPrecisionSearch = 1,
-            MaxPrecisionSearch = 1,
-            TukeyParts         = 0,
-            TukeyOverlap       = 1.0,
-            TukeyP             = 1.0,
-            AllowNonSubset     = true
-        };
-
-        // Check if FLAKE's block size is bigger than what we want
-        if(flakeWriterSettings.BlockSize > 4608) flakeWriterSettings.BlockSize = 4608;
-
-        if(flakeWriterSettings.BlockSize < 256) flakeWriterSettings.BlockSize = 256;
-
-        var flacMs      = new NonClosableStream(destination);
-        var flakeWriter = new AudioEncoder(flakeWriterSettings, "", flacMs);
-        var audioBuffer = new AudioBuffer(AudioPCMConfig.RedBook, source, source.Length / 4);
-        flakeWriter.Write(audioBuffer);
-        flakeWriter.Close();
-
-        var len = (int)flacMs.Length;
-        flacMs.ReallyClose();
-
-        return len;
+        throw new NotSupportedException();
     }
 }
