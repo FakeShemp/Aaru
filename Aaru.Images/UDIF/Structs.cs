@@ -32,6 +32,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Images;
 
@@ -40,14 +41,15 @@ public sealed partial class Udif
 #region Nested type: BlockChunk
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct BlockChunk
+    [SwapEndian]
+    partial struct BlockChunk
     {
-        public          uint  type;
-        public readonly uint  comment;
-        public          ulong sector;
-        public          ulong sectors;
-        public          ulong offset;
-        public          ulong length;
+        public uint  type;
+        public uint  comment;
+        public ulong sector;
+        public ulong sectors;
+        public ulong offset;
+        public ulong length;
     }
 
 #endregion
@@ -55,26 +57,27 @@ public sealed partial class Udif
 #region Nested type: BlockHeader
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct BlockHeader
+    [SwapEndian]
+    partial struct BlockHeader
     {
-        public          uint  signature;
-        public          uint  version;
-        public readonly ulong sectorStart;
-        public          ulong sectorCount;
-        public readonly ulong dataOffset;
-        public readonly uint  buffers;
-        public readonly uint  descriptor;
-        public readonly uint  reserved1;
-        public readonly uint  reserved2;
-        public readonly uint  reserved3;
-        public readonly uint  reserved4;
-        public readonly uint  reserved5;
-        public readonly uint  reserved6;
-        public          uint  checksumType;
-        public          uint  checksumLen;
-        public          uint  checksum;
+        public uint  signature;
+        public uint  version;
+        public ulong sectorStart;
+        public ulong sectorCount;
+        public ulong dataOffset;
+        public uint  buffers;
+        public uint  descriptor;
+        public uint  reserved1;
+        public uint  reserved2;
+        public uint  reserved3;
+        public uint  reserved4;
+        public uint  reserved5;
+        public uint  reserved6;
+        public uint  checksumType;
+        public uint  checksumLen;
+        public uint  checksum;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 124)]
-        public readonly byte[] reservedChk;
+        public byte[] reservedChk;
         public uint chunks;
     }
 
@@ -83,38 +86,39 @@ public sealed partial class Udif
 #region Nested type: Footer
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct Footer
+    [SwapEndian]
+    partial struct Footer
     {
-        public          uint  signature;
-        public          uint  version;
-        public          uint  headerSize;
-        public          uint  flags;
-        public readonly ulong runningDataForkOff;
-        public readonly ulong dataForkOff;
-        public          ulong dataForkLen;
-        public readonly ulong rsrcForkOff;
-        public readonly ulong rsrcForkLen;
-        public          uint  segmentNumber;
-        public          uint  segmentCount;
-        public          Guid  segmentId;
-        public          uint  dataForkChkType;
-        public          uint  dataForkChkLen;
-        public          uint  dataForkChk;
+        public uint  signature;
+        public uint  version;
+        public uint  headerSize;
+        public uint  flags;
+        public ulong runningDataForkOff;
+        public ulong dataForkOff;
+        public ulong dataForkLen;
+        public ulong rsrcForkOff;
+        public ulong rsrcForkLen;
+        public uint  segmentNumber;
+        public uint  segmentCount;
+        public Guid  segmentId;
+        public uint  dataForkChkType;
+        public uint  dataForkChkLen;
+        public uint  dataForkChk;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 124)]
-        public readonly byte[] reserved1;
+        public byte[] reserved1;
         public ulong plistOff;
         public ulong plistLen;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 120)]
-        public readonly byte[] reserved2;
-        public readonly uint masterChkType;
-        public readonly uint masterChkLen;
-        public readonly uint masterChk;
+        public byte[] reserved2;
+        public uint masterChkType;
+        public uint masterChkLen;
+        public uint masterChk;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 124)]
-        public readonly byte[] reserved3;
+        public byte[] reserved3;
         public uint  imageVariant;
         public ulong sectorCount;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
-        public readonly byte[] reserved4;
+        public byte[] reserved4;
     }
 
 #endregion
