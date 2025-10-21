@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
+using Aaru.Helpers;
+using Aaru.Logging;
+using Marshal = System.Runtime.InteropServices.Marshal;
 
 namespace Aaru.Images;
 
@@ -184,39 +188,296 @@ public sealed partial class AaruFormat
     public bool Create(string path, MediaType mediaType, Dictionary<string, string> options, ulong sectors,
                        uint   sectorSize)
     {
-        // Get application major and minor version
-        Version version      = typeof(AaruFormat).Assembly.GetName().Version;
-        var     majorVersion = (byte)(version?.Major ?? 0);
-        var     minorVersion = (byte)(version?.Minor ?? 0);
-
         // Convert options dictionary to string format
         string optionsString = options is { Count: > 0 }
                                    ? string.Join(";", options.Select(kvp => $"{kvp.Key}={kvp.Value}"))
                                    : null;
 
-        const string applicationName = "Aaru";
+        // Create new image
+        if(!File.Exists(path))
+        {
+            // Get application major and minor version
+            Version version      = typeof(AaruFormat).Assembly.GetName().Version;
+            var     majorVersion = (byte)(version?.Major ?? 0);
+            var     minorVersion = (byte)(version?.Minor ?? 0);
 
-        // Create the image context
-        _context = aaruf_create(path,
-                                mediaType,
-                                sectorSize,
-                                sectors,
-                                0,
-                                0,
-                                optionsString,
-                                applicationName,
-                                (byte)applicationName.Length,
-                                majorVersion,
-                                minorVersion,
-                                IsTape);
 
-        if(_context != IntPtr.Zero) return true;
+            const string applicationName = "Aaru";
 
-        int errno  = Marshal.GetLastWin32Error();
-        var status = (Status)errno;
-        ErrorMessage = StatusToErrorMessage(status);
+            // Create the image context
+            _context = aaruf_create(path,
+                                    mediaType,
+                                    sectorSize,
+                                    sectors,
+                                    0,
+                                    0,
+                                    optionsString,
+                                    applicationName,
+                                    (byte)applicationName.Length,
+                                    majorVersion,
+                                    minorVersion,
+                                    IsTape);
 
-        return false;
+            if(_context != IntPtr.Zero) return true;
+
+            int errno  = Marshal.GetLastWin32Error();
+            var status = (Status)errno;
+            ErrorMessage = StatusToErrorMessage(status);
+
+            return false;
+        }
+
+        _context = aaruf_open(path, true, optionsString);
+
+        if(_context == IntPtr.Zero)
+        {
+            int errno = Marshal.GetLastWin32Error();
+
+            AaruLogging.Debug(MODULE_NAME,
+                              "Failed to open AaruFormat image {0}, libaaruformat returned error number {1}",
+                              path,
+                              errno);
+
+            return false;
+        }
+
+        AaruFormatImageInfo imageInfo = new();
+
+        Status ret = aaruf_get_image_info(_context, ref imageInfo);
+
+        if(ret != Status.Ok)
+        {
+            ErrorMessage = StatusToErrorMessage(ret);
+
+            return false;
+        }
+
+        _imageInfo.Application          = StringHandlers.CToString(imageInfo.Application,        Encoding.UTF8);
+        _imageInfo.Version              = StringHandlers.CToString(imageInfo.Version,            Encoding.UTF8);
+        _imageInfo.ApplicationVersion   = StringHandlers.CToString(imageInfo.ApplicationVersion, Encoding.UTF8);
+        _imageInfo.CreationTime         = DateTime.FromFileTimeUtc(imageInfo.CreationTime);
+        _imageInfo.HasPartitions        = imageInfo.HasPartitions;
+        _imageInfo.HasSessions          = imageInfo.HasSessions;
+        _imageInfo.ImageSize            = imageInfo.ImageSize;
+        _imageInfo.MediaType            = imageInfo.MediaType;
+        _imageInfo.LastModificationTime = DateTime.FromFileTimeUtc(imageInfo.LastModificationTime);
+        _imageInfo.SectorSize           = imageInfo.SectorSize;
+        _imageInfo.Sectors              = imageInfo.Sectors;
+        _imageInfo.MetadataMediaType    = imageInfo.MetadataMediaType;
+
+        nuint sizet_length = 0;
+
+        ret = aaruf_get_readable_sector_tags(_context, null, ref sizet_length);
+
+        if(ret != Status.BufferTooSmall)
+        {
+            ErrorMessage = StatusToErrorMessage(ret);
+
+            return false;
+        }
+
+        var sectorTagsBuffer = new byte[sizet_length];
+        ret = aaruf_get_readable_sector_tags(_context, sectorTagsBuffer, ref sizet_length);
+
+        if(ret != Status.Ok)
+        {
+            ErrorMessage = StatusToErrorMessage(ret);
+
+            return false;
+        }
+
+        // Convert array of booleans to List of enums
+        for(nuint i = 0; i < sizet_length; i++)
+        {
+            if(sectorTagsBuffer[i] != 0) _imageInfo.ReadableSectorTags.Add((SectorTagType)i);
+        }
+
+        sizet_length = 0;
+        ret          = aaruf_get_readable_media_tags(_context, null, ref sizet_length);
+
+        if(ret != Status.BufferTooSmall)
+        {
+            ErrorMessage = StatusToErrorMessage(ret);
+
+            return false;
+        }
+
+        var mediaTagsBuffer = new byte[sizet_length];
+        ret = aaruf_get_readable_media_tags(_context, mediaTagsBuffer, ref sizet_length);
+
+        if(ret != Status.Ok)
+        {
+            ErrorMessage = StatusToErrorMessage(ret);
+
+            return false;
+        }
+
+        // Convert array of booleans to List of enums
+        for(nuint i = 0; i < sizet_length; i++)
+        {
+            if(mediaTagsBuffer[i] != 0) _imageInfo.ReadableMediaTags.Add((MediaTagType)i);
+        }
+
+        ret = aaruf_get_media_sequence(_context, out int sequence, out int lastSequence);
+
+        if(ret == Status.Ok)
+        {
+            _imageInfo.LastMediaSequence = lastSequence;
+            _imageInfo.MediaSequence     = sequence;
+        }
+
+        var length = 0;
+        ret = aaruf_get_creator(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_creator(_context, buffer, ref length);
+            if(ret == Status.Ok) _imageInfo.Creator = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_creator(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_creator(_context, buffer, ref length);
+            if(ret == Status.Ok) _imageInfo.Creator = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_comments(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_comments(_context, buffer, ref length);
+            if(ret == Status.Ok) _imageInfo.Comments = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_media_title(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_media_title(_context, buffer, ref length);
+            if(ret == Status.Ok) _imageInfo.MediaTitle = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_media_manufacturer(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_media_manufacturer(_context, buffer, ref length);
+
+            if(ret == Status.Ok)
+                _imageInfo.MediaManufacturer = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_media_model(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_media_model(_context, buffer, ref length);
+            if(ret == Status.Ok) _imageInfo.MediaModel = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_media_serial_number(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_media_serial_number(_context, buffer, ref length);
+
+            if(ret == Status.Ok)
+                _imageInfo.MediaSerialNumber = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_media_barcode(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_media_barcode(_context, buffer, ref length);
+            if(ret == Status.Ok) _imageInfo.MediaBarcode = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_media_part_number(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_media_part_number(_context, buffer, ref length);
+            if(ret == Status.Ok) _imageInfo.MediaPartNumber = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_drive_manufacturer(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_drive_manufacturer(_context, buffer, ref length);
+
+            if(ret == Status.Ok)
+                _imageInfo.DriveManufacturer = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_drive_model(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_drive_model(_context, buffer, ref length);
+            if(ret == Status.Ok) _imageInfo.DriveModel = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_drive_serial_number(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_drive_serial_number(_context, buffer, ref length);
+
+            if(ret == Status.Ok)
+                _imageInfo.DriveSerialNumber = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        length = 0;
+        ret    = aaruf_get_drive_firmware_revision(_context, null, ref length);
+
+        if(ret == Status.BufferTooSmall)
+        {
+            var buffer = new byte[length];
+            ret = aaruf_get_drive_firmware_revision(_context, buffer, ref length);
+
+            if(ret == Status.Ok)
+                _imageInfo.DriveFirmwareRevision = StringHandlers.CToString(buffer, Encoding.Unicode, true);
+        }
+
+        ret = aaruf_get_geometry(_context, out uint cylinders, out uint heads, out uint sectorsPerTrack);
+
+        if(ret == Status.Ok)
+        {
+            _imageInfo.Cylinders       = cylinders;
+            _imageInfo.Heads           = heads;
+            _imageInfo.SectorsPerTrack = sectorsPerTrack;
+        }
+
+        SetMetadataFromTags();
+
+        return true;
     }
 
 #endregion

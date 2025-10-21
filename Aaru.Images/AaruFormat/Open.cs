@@ -19,7 +19,7 @@ public sealed partial class AaruFormat
     {
         string imagePath = imageFilter.BasePath;
 
-        _context = aaruf_open(imagePath);
+        _context = aaruf_open(imagePath, false, null);
 
         if(_context == IntPtr.Zero)
         {
@@ -64,8 +64,9 @@ public sealed partial class AaruFormat
 
         // Convert array of booleans to List of enums
         for(nuint i = 0; i < sizet_length; i++)
-            if(sectorTagsBuffer[i] != 0)
-                _imageInfo.ReadableSectorTags.Add((SectorTagType)i);
+        {
+            if(sectorTagsBuffer[i] != 0) _imageInfo.ReadableSectorTags.Add((SectorTagType)i);
+        }
 
         sizet_length = 0;
         ret          = aaruf_get_readable_media_tags(_context, null, ref sizet_length);
@@ -79,8 +80,9 @@ public sealed partial class AaruFormat
 
         // Convert array of booleans to List of enums
         for(nuint i = 0; i < sizet_length; i++)
-            if(mediaTagsBuffer[i] != 0)
-                _imageInfo.ReadableMediaTags.Add((MediaTagType)i);
+        {
+            if(mediaTagsBuffer[i] != 0) _imageInfo.ReadableMediaTags.Add((MediaTagType)i);
+        }
 
         ret = aaruf_get_media_sequence(_context, out int sequence, out int lastSequence);
 
@@ -246,11 +248,12 @@ public sealed partial class AaruFormat
 
 #endregion
 
-    // AARU_EXPORT void AARU_CALL *aaruf_open(const char *filepath)
+    // AARU_EXPORT void *AARU_CALL aaruf_open(const char *filepath, bool resume_mode, const char *options)
     [LibraryImport("libaaruformat",
                    EntryPoint = "aaruf_open",
                    StringMarshalling = StringMarshalling.Utf8,
                    SetLastError = true)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
-    private static partial IntPtr aaruf_open(string filepath);
+    private static partial IntPtr aaruf_open(string filepath, [MarshalAs(UnmanagedType.I4)] bool resume,
+                                             string options);
 }
