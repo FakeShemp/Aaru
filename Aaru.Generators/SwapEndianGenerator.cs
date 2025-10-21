@@ -108,8 +108,8 @@ public class SwapEndianGenerator : IIncrementalGenerator
 
         // Create unique file name by including containing types
         string fileName = containingTypes.Count > 0
-            ? $"{string.Join("_", containingTypes.Select(t => t.Name))}_{structName}_SwapEndian.g.cs"
-            : $"{structName}_SwapEndian.g.cs";
+                              ? $"{string.Join("_", containingTypes.Select(t => t.Name))}_{structName}_SwapEndian.g.cs"
+                              : $"{structName}_SwapEndian.g.cs";
 
         context.AddSource(fileName, SourceText.From(generatedSource, Encoding.UTF8));
     }
@@ -217,7 +217,9 @@ public class SwapEndianGenerator : IIncrementalGenerator
             (string swapCode, bool usesEnumHelper) = GenerateSwapCode(typeName, fieldName, typeSymbol);
 
             if(string.IsNullOrEmpty(swapCode)) continue;
+
             sb.AppendLine(swapCode);
+
             if(usesEnumHelper) hasEnums = true;
         }
 
@@ -247,15 +249,15 @@ public class SwapEndianGenerator : IIncrementalGenerator
 
             return elementType switch
                    {
-                       "short" or "Int16" => ($$"""
-                                                        for (int i = 0; i < result.{{fieldName}}.Length; i++)
-                                                            result.{{fieldName}}[i] = (short)((result.{{fieldName}}[i] << 8) | ((result.{{fieldName}}[i] >> 8) & 0xFF));
-                                                """, false),
+                       "short" or "Int16" => ($"""
+                                                       for (int i = 0; i < result.{fieldName}.Length; i++)
+                                                           result.{fieldName}[i] = (short)((result.{fieldName}[i] << 8) | ((result.{fieldName}[i] >> 8) & 0xFF));
+                                               """, false),
 
-                       "ushort" or "UInt16" => ($$"""
-                                                          for (int i = 0; i < result.{{fieldName}}.Length; i++)
-                                                              result.{{fieldName}}[i] = (ushort)((result.{{fieldName}}[i] << 8) | (result.{{fieldName}}[i] >> 8));
-                                                  """, false),
+                       "ushort" or "UInt16" => ($"""
+                                                         for (int i = 0; i < result.{fieldName}.Length; i++)
+                                                             result.{fieldName}[i] = (ushort)((result.{fieldName}[i] << 8) | (result.{fieldName}[i] >> 8));
+                                                 """, false),
 
                        "int" or "Int32" => ($$"""
                                                       for (int i = 0; i < result.{{fieldName}}.Length; i++)
@@ -298,7 +300,8 @@ public class SwapEndianGenerator : IIncrementalGenerator
                        "byte" or "Byte" or "sbyte" or "SByte" =>
                            ($"        // {fieldName} - no swap needed for byte array", false),
 
-                       _ => ($"        // TODO: Implement array swap for {fieldName} (type: {elementType}[])", false)
+                       // Check if it's an array of structs using semantic info
+                       _ => HandleStructOrEnumArray(fieldName, elementType, typeSymbol)
                    };
         }
 
@@ -313,31 +316,31 @@ public class SwapEndianGenerator : IIncrementalGenerator
                           "ushort" or "UInt16" =>
                               $"        result.{fieldName} = (ushort)((result.{fieldName} << 8) | (result.{fieldName} >> 8));",
 
-                          "int" or "Int32" => $$"""
-                                                        var {{fieldName}}_temp = result.{{fieldName}};
-                                                        {{fieldName}}_temp = (int)(({{fieldName}}_temp << 8) & 0xFF00FF00 | ((uint){{fieldName}}_temp >> 8) & 0xFF00FF);
-                                                        result.{{fieldName}} = (int)(((uint){{fieldName}}_temp << 16) | ((uint){{fieldName}}_temp >> 16) & 0xFFFF);
-                                                """,
+                          "int" or "Int32" => $"""
+                                                       var {fieldName}_temp = result.{fieldName};
+                                                       {fieldName}_temp = (int)(({fieldName}_temp << 8) & 0xFF00FF00 | ((uint){fieldName}_temp >> 8) & 0xFF00FF);
+                                                       result.{fieldName} = (int)(((uint){fieldName}_temp << 16) | ((uint){fieldName}_temp >> 16) & 0xFFFF);
+                                               """,
 
-                          "uint" or "UInt32" => $$"""
-                                                          var {{fieldName}}_temp = result.{{fieldName}};
-                                                          {{fieldName}}_temp = ({{fieldName}}_temp << 8) & 0xFF00FF00 | ({{fieldName}}_temp >> 8) & 0xFF00FF;
-                                                          result.{{fieldName}} = ({{fieldName}}_temp << 16) | ({{fieldName}}_temp >> 16);
-                                                  """,
-
-                          "long" or "Int64" => $$"""
-                                                         var {{fieldName}}_temp = result.{{fieldName}};
-                                                         {{fieldName}}_temp = ({{fieldName}}_temp & 0x00000000FFFFFFFF) << 32 | (long)(((ulong){{fieldName}}_temp & 0xFFFFFFFF00000000) >> 32);
-                                                         {{fieldName}}_temp = ({{fieldName}}_temp & 0x0000FFFF0000FFFF) << 16 | (long)(((ulong){{fieldName}}_temp & 0xFFFF0000FFFF0000) >> 16);
-                                                         result.{{fieldName}} = ({{fieldName}}_temp & 0x00FF00FF00FF00FF) << 8 | (long)(((ulong){{fieldName}}_temp & 0xFF00FF00FF00FF00) >> 8);
+                          "uint" or "UInt32" => $"""
+                                                         var {fieldName}_temp = result.{fieldName};
+                                                         {fieldName}_temp = ({fieldName}_temp << 8) & 0xFF00FF00 | ({fieldName}_temp >> 8) & 0xFF00FF;
+                                                         result.{fieldName} = ({fieldName}_temp << 16) | ({fieldName}_temp >> 16);
                                                  """,
 
-                          "ulong" or "UInt64" => $$"""
-                                                           var {{fieldName}}_temp = result.{{fieldName}};
-                                                           {{fieldName}}_temp = ({{fieldName}}_temp & 0x00000000FFFFFFFF) << 32 | ({{fieldName}}_temp & 0xFFFFFFFF00000000) >> 32;
-                                                           {{fieldName}}_temp = ({{fieldName}}_temp & 0x0000FFFF0000FFFF) << 16 | ({{fieldName}}_temp & 0xFFFF0000FFFF0000) >> 16;
-                                                           result.{{fieldName}} = ({{fieldName}}_temp & 0x00FF00FF00FF00FF) << 8 | ({{fieldName}}_temp & 0xFF00FF00FF00FF00) >> 8;
-                                                   """,
+                          "long" or "Int64" => $"""
+                                                        var {fieldName}_temp = result.{fieldName};
+                                                        {fieldName}_temp = ({fieldName}_temp & 0x00000000FFFFFFFF) << 32 | (long)(((ulong){fieldName}_temp & 0xFFFFFFFF00000000) >> 32);
+                                                        {fieldName}_temp = ({fieldName}_temp & 0x0000FFFF0000FFFF) << 16 | (long)(((ulong){fieldName}_temp & 0xFFFF0000FFFF0000) >> 16);
+                                                        result.{fieldName} = ({fieldName}_temp & 0x00FF00FF00FF00FF) << 8 | (long)(((ulong){fieldName}_temp & 0xFF00FF00FF00FF00) >> 8);
+                                                """,
+
+                          "ulong" or "UInt64" => $"""
+                                                          var {fieldName}_temp = result.{fieldName};
+                                                          {fieldName}_temp = ({fieldName}_temp & 0x00000000FFFFFFFF) << 32 | ({fieldName}_temp & 0xFFFFFFFF00000000) >> 32;
+                                                          {fieldName}_temp = ({fieldName}_temp & 0x0000FFFF0000FFFF) << 16 | ({fieldName}_temp & 0xFFFF0000FFFF0000) >> 16;
+                                                          result.{fieldName} = ({fieldName}_temp & 0x00FF00FF00FF00FF) << 8 | ({fieldName}_temp & 0xFF00FF00FF00FF00) >> 8;
+                                                  """,
 
                           "float" or "Single" => $$"""
                                                            {
@@ -372,20 +375,173 @@ public class SwapEndianGenerator : IIncrementalGenerator
         if(typeSymbol.TypeKind == TypeKind.Enum)
         {
             // It's an enum - swap using runtime helper that will determine underlying type
-            return ($$"""
-                              result.{{fieldName}} = SwapEnumValue(result.{{fieldName}});
-                      """, true);
+            return ($"        result.{fieldName} = SwapEnumValue(result.{fieldName});", true);
         }
 
-        return typeSymbol.TypeKind == TypeKind.Struct
-                   ?
+        // Check if it's a struct - but it might be a primitive type through a type alias
+        if(typeSymbol.TypeKind != TypeKind.Struct)
+            return ($"        result.{fieldName} = result.{fieldName}.SwapEndian();", false);
 
-                   // It's a struct - call .SwapEndian()
-                   ($"        result.{fieldName} = result.{fieldName}.SwapEndian();", false)
+        // Get the fully qualified type name to check if it's a primitive (resolves type aliases)
+        string fullTypeName = typeSymbol.ToDisplayString();
+
+        // Check if the resolved type is a primitive numeric type
+        string primitiveCode = fullTypeName switch
+                               {
+                                   "short" or "System.Int16" =>
+                                       $"        result.{fieldName} = (short)((result.{fieldName} << 8) | ((result.{fieldName} >> 8) & 0xFF));",
+
+                                   "ushort" or "System.UInt16" =>
+                                       $"        result.{fieldName} = (ushort)((result.{fieldName} << 8) | (result.{fieldName} >> 8));",
+
+                                   "int" or "System.Int32" => $"""
+                                                                       var {fieldName}_temp = result.{fieldName};
+                                                                       {fieldName}_temp = (int)(({fieldName}_temp << 8) & 0xFF00FF00 | ((uint){fieldName}_temp >> 8) & 0xFF00FF);
+                                                                       result.{fieldName} = (int)(((uint){fieldName}_temp << 16) | ((uint){fieldName}_temp >> 16) & 0xFFFF);
+                                                               """,
+
+                                   "uint" or "System.UInt32" => $"""
+                                                                         var {fieldName}_temp = result.{fieldName};
+                                                                         {fieldName}_temp = ({fieldName}_temp << 8) & 0xFF00FF00 | ({fieldName}_temp >> 8) & 0xFF00FF;
+                                                                         result.{fieldName} = ({fieldName}_temp << 16) | ({fieldName}_temp >> 16);
+                                                                 """,
+
+                                   "long" or "System.Int64" => $"""
+                                                                        var {fieldName}_temp = result.{fieldName};
+                                                                        {fieldName}_temp = ({fieldName}_temp & 0x00000000FFFFFFFF) << 32 | (long)(((ulong){fieldName}_temp & 0xFFFFFFFF00000000) >> 32);
+                                                                        {fieldName}_temp = ({fieldName}_temp & 0x0000FFFF0000FFFF) << 16 | (long)(((ulong){fieldName}_temp & 0xFFFF0000FFFF0000) >> 16);
+                                                                        result.{fieldName} = ({fieldName}_temp & 0x00FF00FF00FF00FF) << 8 | (long)(((ulong){fieldName}_temp & 0xFF00FF00FF00FF00) >> 8);
+                                                                """,
+
+                                   "ulong" or "System.UInt64" => $"""
+                                                                          var {fieldName}_temp = result.{fieldName};
+                                                                          {fieldName}_temp = ({fieldName}_temp & 0x00000000FFFFFFFF) << 32 | ({fieldName}_temp & 0xFFFFFFFF00000000) >> 32;
+                                                                          {fieldName}_temp = ({fieldName}_temp & 0x0000FFFF0000FFFF) << 16 | ({fieldName}_temp & 0xFFFF0000FFFF0000) >> 16;
+                                                                          result.{fieldName} = ({fieldName}_temp & 0x00FF00FF00FF00FF) << 8 | ({fieldName}_temp & 0xFF00FF00FF00FF00) >> 8;
+                                                                  """,
+
+                                   "byte" or "System.Byte" or "sbyte" or "System.SByte" =>
+                                       $"        // {fieldName} - no swap needed for byte types",
+
+                                   _ => null
+                               };
+
+        return primitiveCode != null
+                   ? (primitiveCode, false)
                    :
 
-                   // Fallback to assuming it's a nested struct
+                   // Not a primitive - it's a custom struct, call SwapEndian on it
                    ($"        result.{fieldName} = result.{fieldName}.SwapEndian();", false);
+
+        // Fallback to assuming it's a nested struct
+    }
+
+    private static (string code, bool usesEnumHelper) HandleStructOrEnumArray(string fieldName, string elementType,
+                                                                              ITypeSymbol typeSymbol)
+    {
+        // Check if we have semantic information about the array type
+        if(typeSymbol is not IArrayTypeSymbol arrayType)
+        {
+            return ($"""
+                             for (int i = 0; i < result.{fieldName}.Length; i++)
+                                 result.{fieldName}[i] = result.{fieldName}[i].SwapEndian();
+                     """, false);
+        }
+
+        ITypeSymbol elementTypeSymbol = arrayType.ElementType;
+
+        // Check if it's an enum array
+        if(elementTypeSymbol.TypeKind == TypeKind.Enum)
+        {
+            return ($"""
+                             for (int i = 0; i < result.{fieldName}.Length; i++)
+                                 result.{fieldName}[i] = SwapEnumValue(result.{fieldName}[i]);
+                     """, true);
+        }
+
+        // Check if it's a struct - but make sure it's not a primitive type
+        if(elementTypeSymbol.TypeKind != TypeKind.Struct)
+        {
+            return ($"""
+                             for (int i = 0; i < result.{fieldName}.Length; i++)
+                                 result.{fieldName}[i] = result.{fieldName}[i].SwapEndian();
+                     """, false);
+        }
+
+        // Get the fully qualified type name to check if it's a primitive
+        string fullTypeName = elementTypeSymbol.ToDisplayString();
+
+        // Check if it's a primitive numeric type (these are resolved from type aliases)
+#pragma warning disable PH2093, PH2093
+        (string, bool) primitiveResult = fullTypeName switch
+#pragma warning restore PH2093, PH2093
+                                         {
+                                             "short" or "System.Int16" => ($"""
+                                                                                    for (int i = 0; i < result.{fieldName}.Length; i++)
+                                                                                        result.{fieldName}[i] = (short)((result.{fieldName}[i] << 8) | ((result.{fieldName}[i] >> 8) & 0xFF));
+                                                                            """, false),
+
+                                             "ushort" or "System.UInt16" => ($"""
+                                                                                      for (int i = 0; i < result.{fieldName}.Length; i++)
+                                                                                          result.{fieldName}[i] = (ushort)((result.{fieldName}[i] << 8) | (result.{fieldName}[i] >> 8));
+                                                                              """, false),
+
+                                             "int" or "System.Int32" => ($$"""
+                                                                                   for (int i = 0; i < result.{{fieldName}}.Length; i++)
+                                                                                   {
+                                                                                       var temp = result.{{fieldName}}[i];
+                                                                                       temp = (int)((temp << 8) & 0xFF00FF00 | ((uint)temp >> 8) & 0xFF00FF);
+                                                                                       result.{{fieldName}}[i] = (int)(((uint)temp << 16) | ((uint)temp >> 16) & 0xFFFF);
+                                                                                   }
+                                                                           """, false),
+
+                                             "uint" or "System.UInt32" => ($$"""
+                                                                                     for (int i = 0; i < result.{{fieldName}}.Length; i++)
+                                                                                     {
+                                                                                         var temp = result.{{fieldName}}[i];
+                                                                                         temp = (temp << 8) & 0xFF00FF00 | (temp >> 8) & 0xFF00FF;
+                                                                                         result.{{fieldName}}[i] = (temp << 16) | (temp >> 16);
+                                                                                     }
+                                                                             """, false),
+
+                                             "long" or "System.Int64" => ($$"""
+                                                                                    for (int i = 0; i < result.{{fieldName}}.Length; i++)
+                                                                                    {
+                                                                                        var temp = result.{{fieldName}}[i];
+                                                                                        temp = (temp & 0x00000000FFFFFFFF) << 32 | (long)(((ulong)temp & 0xFFFFFFFF00000000) >> 32);
+                                                                                        temp = (temp & 0x0000FFFF0000FFFF) << 16 | (long)(((ulong)temp & 0xFFFF0000FFFF0000) >> 16);
+                                                                                        result.{{fieldName}}[i] = (temp & 0x00FF00FF00FF00FF) << 8 | (long)(((ulong)temp & 0xFF00FF00FF00FF00) >> 8);
+                                                                                    }
+                                                                            """, false),
+
+                                             "ulong" or "System.UInt64" => ($$"""
+                                                                                      for (int i = 0; i < result.{{fieldName}}.Length; i++)
+                                                                                      {
+                                                                                          var temp = result.{{fieldName}}[i];
+                                                                                          temp = (temp & 0x00000000FFFFFFFF) << 32 | (temp & 0xFFFFFFFF00000000) >> 32;
+                                                                                          temp = (temp & 0x0000FFFF0000FFFF) << 16 | (temp & 0xFFFF0000FFFF0000) >> 16;
+                                                                                          result.{{fieldName}}[i] = (temp & 0x00FF00FF00FF00FF) << 8 | (temp & 0xFF00FF00FF00FF00) >> 8;
+                                                                                      }
+                                                                              """, false),
+
+                                             "byte" or "System.Byte" or "sbyte" or "System.SByte" =>
+                                                 ($"        // {fieldName} - no swap needed for byte array", false),
+
+                                             _ => (null, false)
+                                         };
+
+        // If it matched a primitive type, return that
+        return primitiveResult.Item1 != null
+                   ? primitiveResult
+                   :
+
+                   // Otherwise it's a custom struct - call SwapEndian on each element
+                   ($"""
+                             for (int i = 0; i < result.{fieldName}.Length; i++)
+                                 result.{fieldName}[i] = result.{fieldName}[i].SwapEndian();
+                     """, false);
+
+        // Fallback: assume it's a struct that implements SwapEndian
     }
 
     // Helper method to generate at the struct level for enum swapping only
@@ -453,4 +609,3 @@ public class SwapEndianGenerator : IIncrementalGenerator
                                                                    }
                                                            """;
 }
-
