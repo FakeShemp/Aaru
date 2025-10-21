@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Archives;
 
@@ -8,7 +9,8 @@ public sealed partial class Stfs
 #region Nested type: ConsolePackage
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    struct ConsolePackage
+    [SwapEndian]
+    partial struct ConsolePackage
     {
         public PackageMagic Magic;
         public ushort       PkCertificateSize;
@@ -49,7 +51,8 @@ public sealed partial class Stfs
 #region Nested type: FileTableEntry
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    struct FileTableEntry
+    [SwapEndian]
+    partial struct FileTableEntry
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x28)]
         public byte[] Filename;
@@ -73,7 +76,8 @@ public sealed partial class Stfs
 #region Nested type: LicenseEntry
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
-    struct LicenseEntry
+    [SwapEndian]
+    partial struct LicenseEntry
     {
         public long LicenseId;
         public int  LicenseBits;
@@ -85,7 +89,8 @@ public sealed partial class Stfs
 #region Nested type: LocalizedString
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
-    struct LocalizedString
+    [SwapEndian]
+    partial struct LocalizedString
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
         public string Name;
@@ -96,7 +101,8 @@ public sealed partial class Stfs
 #region Nested type: Metadata
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
-    struct Metadata
+    [SwapEndian]
+    partial struct Metadata
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public LicenseEntry[] Licensing;
@@ -157,7 +163,8 @@ public sealed partial class Stfs
 #region Nested type: RemotePackage
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
-    struct RemotePackage
+    [SwapEndian]
+    partial struct RemotePackage
     {
         public PackageMagic Magic;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
