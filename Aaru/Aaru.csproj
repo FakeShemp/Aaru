@@ -23,9 +23,6 @@
       <Link>README.md</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\.travis.yml">
-      <Link>.travis.yml</Link>
-    </None>
     <None Include="..\CONTRIBUTING.md">
       <Link>CONTRIBUTING.md</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
