@@ -3003,7 +3003,7 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <value>Cannot stat {0}</value>
   </data>
     <data name="Hashing_file_0_1" xml:space="preserve">
-        <value>[slateblue1]Hashing file [teal]{0}[/]/[teal]{1}[/]...[/]</value>
+        <value>[slateblue1]Hashing file [teal]{0}/{1}[/]...[/]</value>
     </data>
     <data name="Hashing_file_byte_0_of_1" xml:space="preserve">
         <value>[slateblue1]Hashing file byte [lime]{0}[/] of [violet]{1}[/][/]</value>

@@ -1385,7 +1385,7 @@
         <value>[slateblue1]Calculando el hash del fichero [green]{0}[/]...[/]</value>
     </data>
     <data name="Hashing_file_0_1" xml:space="preserve">
-        <value>[slateblue1]Calculando el hash del fichero [teal]{0}[/] de [teal]{1}[/]...[/]</value>
+        <value>[slateblue1]Calculando el hash del fichero [teal]{0}/{1}[/]...[/]</value>
     </data>
     <data name="Hashing_file_byte_0_of_1" xml:space="preserve">
         <value>[slateblue1]Calculando el hash del byte [lime]{0}[/] de [violet]{1}[/] del fichero[/]</value>
