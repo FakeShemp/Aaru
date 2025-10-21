@@ -28,6 +28,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
@@ -39,53 +40,54 @@ public sealed partial class EFS
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    readonly struct Superblock
+    [SwapEndian]
+    partial struct Superblock
     {
         /* 0:   fs size incl. bb 0 (in bb) */
-        public readonly int sb_size;
+        public int sb_size;
         /* 4:   first cg offset (in bb) */
-        public readonly int sb_firstcg;
+        public int sb_firstcg;
         /* 8:   cg size (in bb) */
-        public readonly int sb_cgfsize;
+        public int sb_cgfsize;
         /* 12:  inodes/cg (in bb) */
-        public readonly short sb_cgisize;
+        public short sb_cgisize;
         /* 14:  geom: sectors/track */
-        public readonly short sb_sectors;
+        public short sb_sectors;
         /* 16:  geom: heads/cylinder (unused) */
-        public readonly short sb_heads;
+        public short sb_heads;
         /* 18:  num of cg's in the filesystem */
-        public readonly short sb_ncg;
+        public short sb_ncg;
         /* 20:  non-0 indicates fsck required */
-        public readonly short sb_dirty;
+        public short sb_dirty;
         /* 22:  */
-        public readonly short sb_pad0;
+        public short sb_pad0;
         /* 24:  superblock ctime */
-        public readonly int sb_time;
+        public int sb_time;
         /* 28:  magic [0] */
-        public readonly uint sb_magic;
+        public uint sb_magic;
         /* 32:  name of filesystem */
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
-        public readonly byte[] sb_fname;
+        public byte[] sb_fname;
         /* 38:  name of filesystem pack */
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
-        public readonly byte[] sb_fpack;
+        public byte[] sb_fpack;
         /* 44:  bitmap size (in bytes) */
-        public readonly int sb_bmsize;
+        public int sb_bmsize;
         /* 48:  total free data blocks */
-        public readonly int sb_tfree;
+        public int sb_tfree;
         /* 52:  total free inodes */
-        public readonly int sb_tinode;
+        public int sb_tinode;
         /* 56:  bitmap offset (grown fs) */
-        public readonly int sb_bmblock;
+        public int sb_bmblock;
         /* 62:  repl. superblock offset */
-        public readonly int sb_replsb;
+        public int sb_replsb;
         /* 64:  last allocated inode */
-        public readonly int sb_lastinode;
+        public int sb_lastinode;
         /* 68:  unused */
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
-        public readonly byte[] sb_spare;
+        public byte[] sb_spare;
         /* 88:  checksum (all above) */
-        public readonly uint sb_checksum;
+        public uint sb_checksum;
     }
 
 #endregion

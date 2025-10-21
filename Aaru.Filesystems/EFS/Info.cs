@@ -65,7 +65,7 @@ public sealed partial class EFS
 
             Array.Copy(sector, 0x200, sbpiece, 0, Marshal.SizeOf<Superblock>());
 
-            Superblock sb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sbpiece);
+            Superblock sb = Marshal.ByteArrayToStructureBigEndianGenerated<Superblock>(sbpiece);
 
             AaruLogging.Debug(MODULE_NAME,
                                        Localization.magic_at_0_equals_1_expected_2_or_3,
@@ -88,7 +88,7 @@ public sealed partial class EFS
 
             if(sector.Length < Marshal.SizeOf<Superblock>()) return false;
 
-            Superblock sb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
+            Superblock sb = Marshal.ByteArrayToStructureBigEndianGenerated<Superblock>(sector);
 
             AaruLogging.Debug(MODULE_NAME,
                                        Localization.magic_at_0_equals_1_expected_2_or_3,
@@ -132,7 +132,7 @@ public sealed partial class EFS
 
             Array.Copy(sector, 0x200, sbpiece, 0, Marshal.SizeOf<Superblock>());
 
-            efsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sbpiece);
+            efsSb = Marshal.ByteArrayToStructureBigEndianGenerated<Superblock>(sbpiece);
 
             AaruLogging.Debug(MODULE_NAME,
                                        Localization.magic_at_0_X3_equals_1_expected_2_or_3,
@@ -153,7 +153,7 @@ public sealed partial class EFS
 
             if(sector.Length < Marshal.SizeOf<Superblock>()) return;
 
-            efsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
+            efsSb = Marshal.ByteArrayToStructureBigEndianGenerated<Superblock>(sector);
 
             AaruLogging.Debug(MODULE_NAME,
                                        Localization.magic_at_0_equals_1_expected_2_or_3,
