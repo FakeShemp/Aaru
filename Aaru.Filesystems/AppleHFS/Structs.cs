@@ -338,13 +338,13 @@ public sealed partial class AppleHFS
         /// <summary>0x080, Allocation blocks used by embedded volume</summary>
         public ushort xdrNumABlks;
 
-        // If not
+        // If not (use the previous fields, just the names here)
         /// <summary>0x07C, Size in blocks of volume cache</summary>
-        public readonly ushort drVCSize;
+        //public ushort drVCSize;
         /// <summary>0x07E, Size in blocks of volume bitmap cache</summary>
-        public readonly ushort drVBMCSize;
+        //public ushort drVBMCSize;
         /// <summary>0x080, Size in blocks of volume common cache</summary>
-        public readonly ushort drCtlCSize;
+        //public ushort drCtlCSize;
 
         // End of variable variables :D
         /// <summary>0x082, Bytes in the extents B-Tree 3 HFS extents following, 32 bits each</summary>

@@ -242,9 +242,9 @@ public sealed partial class AppleHFS
         }
         else
         {
-            sb.AppendFormat(Localization._0_blocks_in_volume_cache,        mdb.drVCSize).AppendLine();
-            sb.AppendFormat(Localization._0_blocks_in_volume_bitmap_cache, mdb.drVBMCSize).AppendLine();
-            sb.AppendFormat(Localization._0_blocks_in_volume_common_cache, mdb.drCtlCSize).AppendLine();
+            sb.AppendFormat(Localization._0_blocks_in_volume_cache,        mdb.drEmbedSigWord).AppendLine();
+            sb.AppendFormat(Localization._0_blocks_in_volume_bitmap_cache, mdb.xdrStABNt).AppendLine();
+            sb.AppendFormat(Localization._0_blocks_in_volume_common_cache, mdb.xdrNumABlks).AppendLine();
         }
 
         string bootBlockInfo = AppleCommon.GetBootBlockInformation(bbSector, encoding);
