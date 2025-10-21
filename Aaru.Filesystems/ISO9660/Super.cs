@@ -55,8 +55,8 @@ public sealed partial class ISO9660
                              Dictionary<string, string> options,     string    @namespace)
     {
         _encoding = encoding ?? Encoding.GetEncoding(1252);
-        byte[] vdMagic = new byte[5]; // Volume Descriptor magic "CD001"
-        byte[] hsMagic = new byte[5]; // Volume Descriptor magic "CDROM"
+        var vdMagic = new byte[5]; // Volume Descriptor magic "CD001"
+        var hsMagic = new byte[5]; // Volume Descriptor magic "CDROM"
 
         options ??= GetDefaultOptions();
 
@@ -120,7 +120,7 @@ public sealed partial class ISO9660
         int xaOff = vdSector.Length == 2336 ? 8 : 0;
         Array.Copy(vdSector, 0x009 + xaOff, hsMagic, 0, 5);
         _highSierra = _encoding.GetString(hsMagic) == HIGH_SIERRA_MAGIC;
-        int hsOff = 0;
+        var hsOff = 0;
 
         if(_highSierra) hsOff = 8;
 
@@ -182,7 +182,7 @@ public sealed partial class ISO9660
                     if(_highSierra)
                         hsvd = Marshal.ByteArrayToStructureLittleEndian<HighSierraPrimaryVolumeDescriptor>(vdSector);
                     else if(_cdi)
-                        fsvd = Marshal.ByteArrayToStructureBigEndian<FileStructureVolumeDescriptor>(vdSector);
+                        fsvd = Marshal.ByteArrayToStructureBigEndianGenerated<FileStructureVolumeDescriptor>(vdSector);
                     else
                         pvd = Marshal.ByteArrayToStructureLittleEndian<PrimaryVolumeDescriptor>(vdSector);
 
@@ -360,7 +360,7 @@ public sealed partial class ISO9660
 
                 if(errno != ErrorNumber.NoError) return errno;
 
-                bool pvdWrongRoot = false;
+                var pvdWrongRoot = false;
 
                 if(_highSierra)
                 {
@@ -382,7 +382,7 @@ public sealed partial class ISO9660
                     AaruLogging.Debug(MODULE_NAME,
                                       Localization.PVD_does_not_point_to_correct_root_directory_checking_path_table);
 
-                    bool pathTableWrongRoot = false;
+                    var pathTableWrongRoot = false;
 
                     rootLocation = _pathTable[0].Extent;
 
@@ -422,7 +422,8 @@ public sealed partial class ISO9660
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            CdiDirectoryRecord rootEntry = Marshal.ByteArrayToStructureBigEndian<CdiDirectoryRecord>(firstRootSector);
+            CdiDirectoryRecord rootEntry =
+                Marshal.ByteArrayToStructureBigEndianGenerated<CdiDirectoryRecord>(firstRootSector);
 
             rootSize = rootEntry.size;
 
@@ -619,7 +620,7 @@ public sealed partial class ISO9660
                                         Timestamp = decodedVd.CreationTime
                                     });
 
-            for(int i = 0; i < bvdSectors.Count; i++)
+            for(var i = 0; i < bvdSectors.Count; i++)
             {
                 _rootDirectoryCache.Add(i == 0 ? "$BOOT" : $"$BOOT_{i}",
                                         new DecodedDirectoryEntry
@@ -631,7 +632,7 @@ public sealed partial class ISO9660
                                         });
             }
 
-            for(int i = 0; i < pvdSectors.Count; i++)
+            for(var i = 0; i < pvdSectors.Count; i++)
             {
                 _rootDirectoryCache.Add(i == 0 ? "$PVD" : $"$PVD{i}",
                                         new DecodedDirectoryEntry
@@ -643,7 +644,7 @@ public sealed partial class ISO9660
                                         });
             }
 
-            for(int i = 0; i < svdSectors.Count; i++)
+            for(var i = 0; i < svdSectors.Count; i++)
             {
                 _rootDirectoryCache.Add(i == 0 ? "$SVD" : $"$SVD_{i}",
                                         new DecodedDirectoryEntry
@@ -655,7 +656,7 @@ public sealed partial class ISO9660
                                         });
             }
 
-            for(int i = 0; i < evdSectors.Count; i++)
+            for(var i = 0; i < evdSectors.Count; i++)
             {
                 _rootDirectoryCache.Add(i == 0 ? "$EVD" : $"$EVD_{i}",
                                         new DecodedDirectoryEntry
@@ -667,7 +668,7 @@ public sealed partial class ISO9660
                                         });
             }
 
-            for(int i = 0; i < vpdSectors.Count; i++)
+            for(var i = 0; i < vpdSectors.Count; i++)
             {
                 _rootDirectoryCache.Add(i == 0 ? "$VPD" : $"$VPD_{i}",
                                         new DecodedDirectoryEntry
@@ -731,7 +732,7 @@ public sealed partial class ISO9660
             Type           = fsFormat
         };
 
-        _directoryCache = new Dictionary<string, Dictionary<string, DecodedDirectoryEntry>>();
+        _directoryCache = [];
 
         if(_usePathTable)
         {

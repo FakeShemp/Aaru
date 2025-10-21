@@ -32,6 +32,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using Aaru.CommonTypes.Attributes;
 using Aaru.Helpers;
 
 namespace Aaru.Filesystems;
@@ -210,12 +211,13 @@ public sealed partial class ISO9660
 
     // There are two tables one in little endian one in big endian
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct PathTableEntry
+    [SwapEndian]
+    partial struct PathTableEntry
     {
-        public readonly byte   name_len;
-        public readonly byte   xattr_len;
-        public readonly uint   start_lbn;
-        public readonly ushort parent_dirno;
+        public byte   name_len;
+        public byte   xattr_len;
+        public uint   start_lbn;
+        public ushort parent_dirno;
 
         // Followed by name[name_len]
     }

@@ -30,6 +30,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using Aaru.CommonTypes.Attributes;
 using Aaru.Helpers;
 
 namespace Aaru.Filesystems;
@@ -112,12 +113,13 @@ public sealed partial class ISO9660
 
     // There are two tables one in little endian one in big endian
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct HighSierraPathTableEntry
+    [SwapEndian]
+    partial struct HighSierraPathTableEntry
     {
-        public readonly uint   start_lbn;
-        public readonly byte   xattr_len;
-        public readonly byte   name_len;
-        public readonly ushort parent_dirno;
+        public uint   start_lbn;
+        public byte   xattr_len;
+        public byte   name_len;
+        public ushort parent_dirno;
 
         // Followed by name[name_len]
     }
@@ -198,14 +200,15 @@ public sealed partial class ISO9660
 #region Nested type: HighSierraTimestamp
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct HighSierraTimestamp
+    [SwapEndian]
+    partial struct HighSierraTimestamp
     {
-        public readonly byte Years;
-        public readonly byte Month;
-        public readonly byte Day;
-        public readonly byte Hour;
-        public readonly byte Minute;
-        public readonly byte Second;
+        public byte Years;
+        public byte Month;
+        public byte Day;
+        public byte Hour;
+        public byte Minute;
+        public byte Second;
     }
 
 #endregion

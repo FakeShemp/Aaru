@@ -28,6 +28,7 @@
 // ****************************************************************************/
 
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
@@ -36,12 +37,13 @@ public sealed partial class ISO9660
 #region Nested type: AmigaEntry
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct AmigaEntry
+    [SwapEndian]
+    partial struct AmigaEntry
     {
-        public readonly ushort     signature;
-        public readonly byte       length;
-        public readonly byte       version;
-        public readonly AmigaFlags flags;
+        public ushort     signature;
+        public byte       length;
+        public byte       version;
+        public AmigaFlags flags;
 
         // Followed by AmigaProtection if present
         // Followed by length-prefixed string for comment if present
@@ -52,12 +54,13 @@ public sealed partial class ISO9660
 #region Nested type: AmigaProtection
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct AmigaProtection
+    [SwapEndian]
+    partial struct AmigaProtection
     {
-        public readonly byte            User;
-        public readonly byte            Reserved;
-        public readonly AmigaMultiuser  Multiuser;
-        public readonly AmigaAttributes Protection;
+        public byte            User;
+        public byte            Reserved;
+        public AmigaMultiuser  Multiuser;
+        public AmigaAttributes Protection;
     }
 
 #endregion

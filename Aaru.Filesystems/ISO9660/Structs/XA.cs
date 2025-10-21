@@ -32,6 +32,7 @@
 // ****************************************************************************/
 
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
@@ -41,15 +42,16 @@ public sealed partial class ISO9660
 
     // Big-endian
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct CdromXa
+    [SwapEndian]
+    partial struct CdromXa
     {
-        public readonly ushort       group;
-        public readonly ushort       user;
-        public readonly XaAttributes attributes;
-        public readonly ushort       signature;
-        public readonly byte         filenumber;
+        public ushort       group;
+        public ushort       user;
+        public XaAttributes attributes;
+        public ushort       signature;
+        public byte         filenumber;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
-        public readonly byte[] reserved;
+        public byte[] reserved;
     }
 
 #endregion

@@ -59,13 +59,13 @@ public sealed partial class ISO9660
 
         if(errno != ErrorNumber.NoError) return false;
 
-        int xaOff = 0;
+        var xaOff = 0;
 
         if(vdSector.Length == 2336) xaOff = 8;
 
-        byte   vdType  = vdSector[0 + xaOff];
-        byte[] vdMagic = new byte[5];
-        byte[] hsMagic = new byte[5];
+        byte vdType  = vdSector[0 + xaOff];
+        var  vdMagic = new byte[5];
+        var  hsMagic = new byte[5];
 
         // This indicates the end of a volume descriptor. HighSierra here would have 16 so no problem
         if(vdType == 255) return false;
@@ -88,11 +88,11 @@ public sealed partial class ISO9660
         encoding    ??= Encoding.ASCII;
         information =   "";
         metadata    =   new FileSystem();
-        var    isoMetadata = new StringBuilder();
-        byte[] vdMagic     = new byte[5]; // Volume Descriptor magic "CD001"
-        byte[] hsMagic     = new byte[5]; // Volume Descriptor magic "CDROM"
+        var isoMetadata = new StringBuilder();
+        var vdMagic     = new byte[5]; // Volume Descriptor magic "CD001"
+        var hsMagic     = new byte[5]; // Volume Descriptor magic "CDROM"
 
-        string bootSpec = "";
+        var bootSpec = "";
 
         PrimaryVolumeDescriptor?           pvd      = null;
         PrimaryVolumeDescriptor?           jolietvd = null;
@@ -116,13 +116,13 @@ public sealed partial class ISO9660
         int xaOff = vdSector.Length == 2336 ? 8 : 0;
         Array.Copy(vdSector, 0x009 + xaOff, hsMagic, 0, 5);
         bool highSierraInfo = encoding.GetString(hsMagic) == HIGH_SIERRA_MAGIC;
-        int  hsOff          = 0;
+        var  hsOff          = 0;
 
         if(highSierraInfo) hsOff = 8;
 
-        bool cdiInfo = false;
-        bool evd     = false;
-        bool vpd     = false;
+        var cdiInfo = false;
+        var evd     = false;
+        var vpd     = false;
 
         while(true)
         {
@@ -185,7 +185,7 @@ public sealed partial class ISO9660
                     if(highSierraInfo)
                         hsvd = Marshal.ByteArrayToStructureLittleEndian<HighSierraPrimaryVolumeDescriptor>(vdSector);
                     else if(cdiInfo)
-                        fsvd = Marshal.ByteArrayToStructureBigEndian<FileStructureVolumeDescriptor>(vdSector);
+                        fsvd = Marshal.ByteArrayToStructureBigEndianGenerated<FileStructureVolumeDescriptor>(vdSector);
                     else
                         pvd = Marshal.ByteArrayToStructureLittleEndian<PrimaryVolumeDescriptor>(vdSector);
 
@@ -276,14 +276,14 @@ public sealed partial class ISO9660
         }
 
         byte[]                 rootDir         = [];
-        int                    rootOff         = 0;
-        bool                   xaExtensions    = false;
-        bool                   apple           = false;
-        bool                   susp            = false;
-        bool                   rrip            = false;
-        bool                   ziso            = false;
-        bool                   amiga           = false;
-        bool                   aaip            = false;
+        var                    rootOff         = 0;
+        var                    xaExtensions    = false;
+        var                    apple           = false;
+        var                    susp            = false;
+        var                    rrip            = false;
+        var                    ziso            = false;
+        var                    amiga           = false;
+        var                    aaip            = false;
         List<ContinuationArea> contareas       = [];
         List<byte[]>           refareas        = [];
         var                    suspInformation = new StringBuilder();
@@ -309,17 +309,17 @@ public sealed partial class ISO9660
 
             if(saLen > 0 && rootOff + saOff + saLen <= rootDir.Length)
             {
-                byte[] sa = new byte[saLen];
+                var sa = new byte[saLen];
                 Array.Copy(rootDir, rootOff + saOff, sa, 0, saLen);
                 saOff = 0;
 
                 while(saOff < saLen)
                 {
-                    bool noneFound = true;
+                    var noneFound = true;
 
                     if(Marshal.SizeOf<CdromXa>() + saOff <= saLen)
                     {
-                        CdromXa xa = Marshal.ByteArrayToStructureBigEndian<CdromXa>(sa);
+                        CdromXa xa = Marshal.ByteArrayToStructureBigEndianGenerated<CdromXa>(sa);
 
                         if(xa.signature == XA_MAGIC)
                         {
@@ -331,7 +331,7 @@ public sealed partial class ISO9660
 
                     if(saOff + 2 >= saLen) break;
 
-                    ushort nextSignature = BigEndianBitConverter.ToUInt16(sa, saOff);
+                    var nextSignature = BigEndianBitConverter.ToUInt16(sa, saOff);
 
                     switch(nextSignature)
                     {
@@ -393,17 +393,17 @@ public sealed partial class ISO9660
 
                                         break;
                                     case SUSP_CONTINUATION when saOff + sa[saOff + 2] <= saLen:
-                                        byte[] ce = new byte[sa[saOff + 2]];
+                                        var ce = new byte[sa[saOff + 2]];
                                         Array.Copy(sa, saOff, ce, 0, ce.Length);
 
                                         ContinuationArea ca =
-                                            Marshal.ByteArrayToStructureBigEndian<ContinuationArea>(ce);
+                                            Marshal.ByteArrayToStructureBigEndianGenerated<ContinuationArea>(ce);
 
                                         contareas.Add(ca);
 
                                         break;
                                     case SUSP_REFERENCE when saOff + sa[saOff + 2] <= saLen:
-                                        byte[] er = new byte[sa[saOff + 2]];
+                                        var er = new byte[sa[saOff + 2]];
                                         Array.Copy(sa, saOff, er, 0, er.Length);
                                         refareas.Add(er);
 
@@ -458,13 +458,13 @@ public sealed partial class ISO9660
 
             if(errno != ErrorNumber.NoError) return;
 
-            byte[] caData = new byte[ca.ca_length_be];
+            var caData = new byte[ca.ca_length_be];
             Array.Copy(caSectors, ca.offset_be, caData, 0, ca.ca_length_be);
-            int caOff = 0;
+            var caOff = 0;
 
             while(caOff < ca.ca_length_be)
             {
-                ushort nextSignature = BigEndianBitConverter.ToUInt16(caData, caOff);
+                var nextSignature = BigEndianBitConverter.ToUInt16(caData, caOff);
 
                 switch(nextSignature)
                 {
@@ -477,7 +477,7 @@ public sealed partial class ISO9660
 
                         break;
                     case SUSP_REFERENCE when caOff + caData[caOff + 2] <= ca.ca_length_be:
-                        byte[] er = new byte[caData[caOff + 2]];
+                        var er = new byte[caData[caOff + 2]];
                         Array.Copy(caData, caOff, er, 0, er.Length);
                         refareas.Add(er);
 
@@ -515,7 +515,7 @@ public sealed partial class ISO9660
 
             foreach(byte[] erb in refareas)
             {
-                ReferenceArea er    = Marshal.ByteArrayToStructureBigEndian<ReferenceArea>(erb);
+                ReferenceArea er    = Marshal.ByteArrayToStructureBigEndianGenerated<ReferenceArea>(erb);
                 string        extId = encoding.GetString(erb, Marshal.SizeOf<ReferenceArea>(), er.id_len);
 
                 string extDes = encoding.GetString(erb, Marshal.SizeOf<ReferenceArea>() + er.id_len, er.des_len);
@@ -684,7 +684,7 @@ public sealed partial class ISO9660
 
             if(errno != ErrorNumber.NoError) return;
 
-            int toritoOff = 0;
+            var toritoOff = 0;
 
             if(vdSector[toritoOff] != 1) goto exit_torito;
 
@@ -806,7 +806,7 @@ public sealed partial class ISO9660
                 isoMetadata.AppendFormat("\t" + Localization.Section_ID_0, encoding.GetString(sectionHeader.identifier))
                            .AppendLine();
 
-                for(int entryCounter = 1;
+                for(var entryCounter = 1;
                     entryCounter <= sectionHeader.entries && toritoOff < vdSector.Length;
                     entryCounter++)
                 {

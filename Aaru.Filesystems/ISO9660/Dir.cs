@@ -43,160 +43,6 @@ public sealed partial class ISO9660
 {
     Dictionary<string, Dictionary<string, DecodedDirectoryEntry>> _directoryCache;
 
-#region IReadOnlyFilesystem Members
-
-    /// <inheritdoc />
-    public ErrorNumber OpenDir(string path, out IDirNode node)
-    {
-        node = null;
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        if(string.IsNullOrWhiteSpace(path) || path == "/")
-        {
-            node = new Iso9660DirNode
-            {
-                Path     = path,
-                Position = 0,
-                Entries  = _rootDirectoryCache.Values.ToArray()
-            };
-
-            return ErrorNumber.NoError;
-        }
-
-        string cutPath = path.StartsWith("/", StringComparison.Ordinal)
-                             ? path[1..].ToLower(CultureInfo.CurrentUICulture)
-                             : path.ToLower(CultureInfo.CurrentUICulture);
-
-        if(_directoryCache.TryGetValue(cutPath, out Dictionary<string, DecodedDirectoryEntry> currentDirectory))
-        {
-            node = new Iso9660DirNode
-            {
-                Path     = path,
-                Position = 0,
-                Entries  = currentDirectory.Values.ToArray()
-            };
-
-            return ErrorNumber.NoError;
-        }
-
-        string[] pieces = cutPath.Split(new[]
-                                        {
-                                            '/'
-                                        },
-                                        StringSplitOptions.RemoveEmptyEntries);
-
-        KeyValuePair<string, DecodedDirectoryEntry> entry =
-            _rootDirectoryCache.FirstOrDefault(t => t.Key.Equals(pieces[0], StringComparison.CurrentCultureIgnoreCase));
-
-        if(string.IsNullOrEmpty(entry.Key)) return ErrorNumber.NoSuchFile;
-
-        if(!entry.Value.Flags.HasFlag(FileFlags.Directory)) return ErrorNumber.NotDirectory;
-
-        string currentPath = pieces[0];
-
-        currentDirectory = _rootDirectoryCache;
-
-        for(var p = 0; p < pieces.Length; p++)
-        {
-            entry = currentDirectory.FirstOrDefault(t => t.Key.Equals(pieces[p],
-                                                                      StringComparison.CurrentCultureIgnoreCase));
-
-            if(string.IsNullOrEmpty(entry.Key)) return ErrorNumber.NoSuchFile;
-
-            if(!entry.Value.Flags.HasFlag(FileFlags.Directory)) return ErrorNumber.NotDirectory;
-
-            currentPath = p == 0 ? pieces[0] : $"{currentPath}/{pieces[p]}";
-
-            if(_directoryCache.TryGetValue(currentPath, out currentDirectory)) continue;
-
-            if(entry.Value.Extents.Count == 0) return ErrorNumber.InvalidArgument;
-
-            currentDirectory = _cdi
-                                   ? DecodeCdiDirectory(entry.Value.Extents[0].extent + entry.Value.XattrLength,
-                                                        entry.Value.Extents[0].size)
-                                   : _highSierra
-                                       ? DecodeHighSierraDirectory(entry.Value.Extents[0].extent +
-                                                                   entry.Value.XattrLength,
-                                                                   entry.Value.Extents[0].size)
-                                       : DecodeIsoDirectory(entry.Value.Extents[0].extent + entry.Value.XattrLength,
-                                                            entry.Value.Extents[0].size);
-
-            if(_usePathTable)
-            {
-                foreach(DecodedDirectoryEntry subDirectory in _cdi
-                                                                  ? GetSubdirsFromCdiPathTable(currentPath)
-                                                                  : _highSierra
-                                                                      ? GetSubdirsFromHighSierraPathTable(currentPath)
-                                                                      : GetSubdirsFromIsoPathTable(currentPath))
-                    currentDirectory[subDirectory.Filename] = subDirectory;
-            }
-
-            _directoryCache.Add(currentPath, currentDirectory);
-        }
-
-        if(currentDirectory is null) return ErrorNumber.NoSuchFile;
-
-        node = new Iso9660DirNode
-        {
-            Path     = path,
-            Position = 0,
-            Entries  = currentDirectory.Values.ToArray()
-        };
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
-    public ErrorNumber ReadDir(IDirNode node, out string filename)
-    {
-        filename = null;
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        if(node is not Iso9660DirNode mynode) return ErrorNumber.InvalidArgument;
-
-        if(mynode.Position < 0) return ErrorNumber.InvalidArgument;
-
-        if(mynode.Position >= mynode.Entries.Length) return ErrorNumber.NoError;
-
-        switch(_namespace)
-        {
-            case Namespace.Normal:
-                filename = mynode.Entries[mynode.Position].Filename.EndsWith(";1", StringComparison.Ordinal)
-                               ? mynode.Entries[mynode.Position].Filename[..^2]
-                               : mynode.Entries[mynode.Position].Filename;
-
-                break;
-            case Namespace.Vms:
-            case Namespace.Joliet:
-            case Namespace.Rrip:
-            case Namespace.Romeo:
-                filename = mynode.Entries[mynode.Position].Filename;
-
-                break;
-            default:
-                return ErrorNumber.InvalidArgument;
-        }
-
-        mynode.Position++;
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
-    public ErrorNumber CloseDir(IDirNode node)
-    {
-        if(node is not Iso9660DirNode mynode) return ErrorNumber.InvalidArgument;
-
-        mynode.Position = -1;
-        mynode.Entries  = null;
-
-        return ErrorNumber.NoError;
-    }
-
-#endregion
-
     Dictionary<string, DecodedDirectoryEntry> DecodeCdiDirectory(ulong start, uint size)
     {
         Dictionary<string, DecodedDirectoryEntry> entries  = new();
@@ -209,7 +55,9 @@ public sealed partial class ISO9660
         while(entryOff + _cdiDirectoryRecordSize < data.Length)
         {
             CdiDirectoryRecord record =
-                Marshal.ByteArrayToStructureBigEndian<CdiDirectoryRecord>(data, entryOff, _cdiDirectoryRecordSize);
+                Marshal.ByteArrayToStructureBigEndianGenerated<CdiDirectoryRecord>(data,
+                    entryOff,
+                    _cdiDirectoryRecordSize);
 
             if(record.length == 0)
             {
@@ -259,7 +107,9 @@ public sealed partial class ISO9660
             if(systemAreaStart % 2 != 0) systemAreaStart++;
 
             entry.CdiSystemArea =
-                Marshal.ByteArrayToStructureBigEndian<CdiSystemArea>(data, systemAreaStart, _cdiSystemAreaSize);
+                Marshal.ByteArrayToStructureBigEndianGenerated<CdiSystemArea>(data,
+                                                                              systemAreaStart,
+                                                                              _cdiSystemAreaSize);
 
             if(entry.CdiSystemArea.Value.attributes.HasFlag(CdiAttributes.Directory))
                 entry.Flags |= FileFlags.Directory;
@@ -609,7 +459,7 @@ public sealed partial class ISO9660
                             break;
                         case AppleId.HFS:
                             AppleHFSSystemUse appleHfsSystemUse =
-                                Marshal.ByteArrayToStructureBigEndian<AppleHFSSystemUse>(data,
+                                Marshal.ByteArrayToStructureBigEndianGenerated<AppleHFSSystemUse>(data,
                                     systemAreaOff,
                                     Marshal.SizeOf<AppleHFSSystemUse>());
 
@@ -650,7 +500,7 @@ public sealed partial class ISO9660
                         case AppleOldId.TypeCreator:
                         case AppleOldId.TypeCreatorBundle:
                             AppleHFSTypeCreatorSystemUse appleHfsTypeCreatorSystemUse =
-                                Marshal.ByteArrayToStructureBigEndian<AppleHFSTypeCreatorSystemUse>(data,
+                                Marshal.ByteArrayToStructureBigEndianGenerated<AppleHFSTypeCreatorSystemUse>(data,
                                     systemAreaOff,
                                     Marshal.SizeOf<AppleHFSTypeCreatorSystemUse>());
 
@@ -670,7 +520,7 @@ public sealed partial class ISO9660
                         case AppleOldId.TypeCreatorIcon:
                         case AppleOldId.TypeCreatorIconBundle:
                             AppleHFSIconSystemUse appleHfsIconSystemUse =
-                                Marshal.ByteArrayToStructureBigEndian<AppleHFSIconSystemUse>(data,
+                                Marshal.ByteArrayToStructureBigEndianGenerated<AppleHFSIconSystemUse>(data,
                                     systemAreaOff,
                                     Marshal.SizeOf<AppleHFSIconSystemUse>());
 
@@ -690,7 +540,7 @@ public sealed partial class ISO9660
                             break;
                         case AppleOldId.HFS:
                             AppleHFSOldSystemUse appleHfsSystemUse =
-                                Marshal.ByteArrayToStructureBigEndian<AppleHFSOldSystemUse>(data,
+                                Marshal.ByteArrayToStructureBigEndianGenerated<AppleHFSOldSystemUse>(data,
                                     systemAreaOff,
                                     Marshal.SizeOf<AppleHFSOldSystemUse>());
 
@@ -717,9 +567,9 @@ public sealed partial class ISO9660
 
                     break;
                 case XA_MAGIC:
-                    entry.XA = Marshal.ByteArrayToStructureBigEndian<CdromXa>(data,
-                                                                              systemAreaOff,
-                                                                              Marshal.SizeOf<CdromXa>());
+                    entry.XA = Marshal.ByteArrayToStructureBigEndianGenerated<CdromXa>(data,
+                        systemAreaOff,
+                        Marshal.SizeOf<CdromXa>());
 
                     systemAreaOff += Marshal.SizeOf<CdromXa>();
 
@@ -729,16 +579,16 @@ public sealed partial class ISO9660
                 case AAIP_MAGIC:
                 case AMIGA_MAGIC:
                     AmigaEntry amiga =
-                        Marshal.ByteArrayToStructureBigEndian<AmigaEntry>(data,
-                                                                          systemAreaOff,
-                                                                          Marshal.SizeOf<AmigaEntry>());
+                        Marshal.ByteArrayToStructureBigEndianGenerated<AmigaEntry>(data,
+                            systemAreaOff,
+                            Marshal.SizeOf<AmigaEntry>());
 
                     var protectionLength = 0;
 
                     if(amiga.flags.HasFlag(AmigaFlags.Protection))
                     {
                         entry.AmigaProtection =
-                            Marshal.ByteArrayToStructureBigEndian<AmigaProtection>(data,
+                            Marshal.ByteArrayToStructureBigEndianGenerated<AmigaProtection>(data,
                                 systemAreaOff + Marshal.SizeOf<AmigaEntry>(),
                                 Marshal.SizeOf<AmigaProtection>());
 
@@ -1145,9 +995,9 @@ public sealed partial class ISO9660
             if(errno != ErrorNumber.NoError) continue;
 
             CdiDirectoryRecord record =
-                Marshal.ByteArrayToStructureBigEndian<CdiDirectoryRecord>(sector,
-                                                                          tEntry.XattrLength,
-                                                                          _cdiDirectoryRecordSize);
+                Marshal.ByteArrayToStructureBigEndianGenerated<CdiDirectoryRecord>(sector,
+                    tEntry.XattrLength,
+                    _cdiDirectoryRecordSize);
 
             if(record.length == 0) break;
 
@@ -1170,7 +1020,9 @@ public sealed partial class ISO9660
             if(systemAreaStart % 2 != 0) systemAreaStart++;
 
             entry.CdiSystemArea =
-                Marshal.ByteArrayToStructureBigEndian<CdiSystemArea>(sector, systemAreaStart, _cdiSystemAreaSize);
+                Marshal.ByteArrayToStructureBigEndianGenerated<CdiSystemArea>(sector,
+                                                                              systemAreaStart,
+                                                                              _cdiSystemAreaSize);
 
             if(entry.CdiSystemArea.Value.attributes.HasFlag(CdiAttributes.Directory))
                 entry.Flags |= FileFlags.Directory;
@@ -1266,4 +1118,158 @@ public sealed partial class ISO9660
 
         return entries.ToArray();
     }
+
+#region IReadOnlyFilesystem Members
+
+    /// <inheritdoc />
+    public ErrorNumber OpenDir(string path, out IDirNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(string.IsNullOrWhiteSpace(path) || path == "/")
+        {
+            node = new Iso9660DirNode
+            {
+                Path     = path,
+                Position = 0,
+                Entries  = _rootDirectoryCache.Values.ToArray()
+            };
+
+            return ErrorNumber.NoError;
+        }
+
+        string cutPath = path.StartsWith("/", StringComparison.Ordinal)
+                             ? path[1..].ToLower(CultureInfo.CurrentUICulture)
+                             : path.ToLower(CultureInfo.CurrentUICulture);
+
+        if(_directoryCache.TryGetValue(cutPath, out Dictionary<string, DecodedDirectoryEntry> currentDirectory))
+        {
+            node = new Iso9660DirNode
+            {
+                Path     = path,
+                Position = 0,
+                Entries  = currentDirectory.Values.ToArray()
+            };
+
+            return ErrorNumber.NoError;
+        }
+
+        string[] pieces = cutPath.Split(new[]
+                                        {
+                                            '/'
+                                        },
+                                        StringSplitOptions.RemoveEmptyEntries);
+
+        KeyValuePair<string, DecodedDirectoryEntry> entry =
+            _rootDirectoryCache.FirstOrDefault(t => t.Key.Equals(pieces[0], StringComparison.CurrentCultureIgnoreCase));
+
+        if(string.IsNullOrEmpty(entry.Key)) return ErrorNumber.NoSuchFile;
+
+        if(!entry.Value.Flags.HasFlag(FileFlags.Directory)) return ErrorNumber.NotDirectory;
+
+        string currentPath = pieces[0];
+
+        currentDirectory = _rootDirectoryCache;
+
+        for(var p = 0; p < pieces.Length; p++)
+        {
+            entry = currentDirectory.FirstOrDefault(t => t.Key.Equals(pieces[p],
+                                                                      StringComparison.CurrentCultureIgnoreCase));
+
+            if(string.IsNullOrEmpty(entry.Key)) return ErrorNumber.NoSuchFile;
+
+            if(!entry.Value.Flags.HasFlag(FileFlags.Directory)) return ErrorNumber.NotDirectory;
+
+            currentPath = p == 0 ? pieces[0] : $"{currentPath}/{pieces[p]}";
+
+            if(_directoryCache.TryGetValue(currentPath, out currentDirectory)) continue;
+
+            if(entry.Value.Extents.Count == 0) return ErrorNumber.InvalidArgument;
+
+            currentDirectory = _cdi
+                                   ? DecodeCdiDirectory(entry.Value.Extents[0].extent + entry.Value.XattrLength,
+                                                        entry.Value.Extents[0].size)
+                                   : _highSierra
+                                       ? DecodeHighSierraDirectory(entry.Value.Extents[0].extent +
+                                                                   entry.Value.XattrLength,
+                                                                   entry.Value.Extents[0].size)
+                                       : DecodeIsoDirectory(entry.Value.Extents[0].extent + entry.Value.XattrLength,
+                                                            entry.Value.Extents[0].size);
+
+            if(_usePathTable)
+            {
+                foreach(DecodedDirectoryEntry subDirectory in _cdi
+                                                                  ? GetSubdirsFromCdiPathTable(currentPath)
+                                                                  : _highSierra
+                                                                      ? GetSubdirsFromHighSierraPathTable(currentPath)
+                                                                      : GetSubdirsFromIsoPathTable(currentPath))
+                    currentDirectory[subDirectory.Filename] = subDirectory;
+            }
+
+            _directoryCache.Add(currentPath, currentDirectory);
+        }
+
+        if(currentDirectory is null) return ErrorNumber.NoSuchFile;
+
+        node = new Iso9660DirNode
+        {
+            Path     = path,
+            Position = 0,
+            Entries  = currentDirectory.Values.ToArray()
+        };
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadDir(IDirNode node, out string filename)
+    {
+        filename = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not Iso9660DirNode mynode) return ErrorNumber.InvalidArgument;
+
+        if(mynode.Position < 0) return ErrorNumber.InvalidArgument;
+
+        if(mynode.Position >= mynode.Entries.Length) return ErrorNumber.NoError;
+
+        switch(_namespace)
+        {
+            case Namespace.Normal:
+                filename = mynode.Entries[mynode.Position].Filename.EndsWith(";1", StringComparison.Ordinal)
+                               ? mynode.Entries[mynode.Position].Filename[..^2]
+                               : mynode.Entries[mynode.Position].Filename;
+
+                break;
+            case Namespace.Vms:
+            case Namespace.Joliet:
+            case Namespace.Rrip:
+            case Namespace.Romeo:
+                filename = mynode.Entries[mynode.Position].Filename;
+
+                break;
+            default:
+                return ErrorNumber.InvalidArgument;
+        }
+
+        mynode.Position++;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseDir(IDirNode node)
+    {
+        if(node is not Iso9660DirNode mynode) return ErrorNumber.InvalidArgument;
+
+        mynode.Position = -1;
+        mynode.Entries  = null;
+
+        return ErrorNumber.NoError;
+    }
+
+#endregion
 }

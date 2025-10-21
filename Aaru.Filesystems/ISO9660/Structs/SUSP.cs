@@ -30,6 +30,7 @@
 // ReSharper disable UnusedType.Local
 
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
@@ -38,17 +39,18 @@ public sealed partial class ISO9660
 #region Nested type: ContinuationArea
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct ContinuationArea
+    [SwapEndian]
+    partial struct ContinuationArea
     {
-        public readonly ushort signature;
-        public readonly byte   length;
-        public readonly byte   version;
-        public readonly uint   block;
-        public readonly uint   block_be;
-        public readonly uint   offset;
-        public readonly uint   offset_be;
-        public readonly uint   ca_length;
-        public readonly uint   ca_length_be;
+        public ushort signature;
+        public byte   length;
+        public byte   version;
+        public uint   block;
+        public uint   block_be;
+        public uint   offset;
+        public uint   offset_be;
+        public uint   ca_length;
+        public uint   ca_length_be;
     }
 
 #endregion
@@ -82,15 +84,16 @@ public sealed partial class ISO9660
 #region Nested type: ReferenceArea
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct ReferenceArea
+    [SwapEndian]
+    partial struct ReferenceArea
     {
-        public readonly ushort signature;
-        public readonly byte   length;
-        public readonly byte   version;
-        public readonly byte   id_len;
-        public readonly byte   des_len;
-        public readonly byte   src_len;
-        public readonly byte   ext_ver;
+        public ushort signature;
+        public byte   length;
+        public byte   version;
+        public byte   id_len;
+        public byte   des_len;
+        public byte   src_len;
+        public byte   ext_ver;
 
         // Follows extension identifier for id_len bytes
         // Follows extension descriptor for des_len bytes

@@ -28,6 +28,7 @@
 // ****************************************************************************/
 
 using System.Runtime.InteropServices;
+using Aaru.CommonTypes.Attributes;
 
 namespace Aaru.Filesystems;
 
@@ -37,14 +38,15 @@ public sealed partial class ISO9660
 
     // Big-endian
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct AppleHFSIconSystemUse
+    [SwapEndian]
+    partial struct AppleHFSIconSystemUse
     {
-        public readonly ushort     signature;
-        public readonly AppleOldId id;
-        public readonly uint       type;
-        public readonly uint       creator;
+        public ushort     signature;
+        public AppleOldId id;
+        public uint       type;
+        public uint       creator;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
-        public readonly byte[] icon;
+        public byte[] icon;
     }
 
 #endregion
@@ -53,13 +55,14 @@ public sealed partial class ISO9660
 
     // Big-endian
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct AppleHFSOldSystemUse
+    [SwapEndian]
+    partial struct AppleHFSOldSystemUse
     {
-        public readonly ushort     signature;
-        public readonly AppleOldId id;
-        public readonly uint       type;
-        public readonly uint       creator;
-        public readonly ushort     finder_flags;
+        public ushort     signature;
+        public AppleOldId id;
+        public uint       type;
+        public uint       creator;
+        public ushort     finder_flags;
     }
 
 #endregion
@@ -68,14 +71,15 @@ public sealed partial class ISO9660
 
     // Big-endian
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct AppleHFSSystemUse
+    [SwapEndian]
+    partial struct AppleHFSSystemUse
     {
-        public readonly ushort                  signature;
-        public readonly byte                    length;
-        public readonly AppleId                 id;
-        public readonly uint                    type;
-        public readonly uint                    creator;
-        public readonly AppleCommon.FinderFlags finder_flags;
+        public ushort                  signature;
+        public byte                    length;
+        public AppleId                 id;
+        public uint                    type;
+        public uint                    creator;
+        public AppleCommon.FinderFlags finder_flags;
     }
 
 #endregion
@@ -84,12 +88,13 @@ public sealed partial class ISO9660
 
     // Big-endian
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct AppleHFSTypeCreatorSystemUse
+    [SwapEndian]
+    partial struct AppleHFSTypeCreatorSystemUse
     {
-        public readonly ushort     signature;
-        public readonly AppleOldId id;
-        public readonly uint       type;
-        public readonly uint       creator;
+        public ushort     signature;
+        public AppleOldId id;
+        public uint       type;
+        public uint       creator;
     }
 
 #endregion
