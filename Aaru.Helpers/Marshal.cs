@@ -97,6 +97,40 @@ public static class Marshal
         return (T)SwapStructureMembersEndian(str);
     }
 
+    /// <summary>
+    ///     Marshal big-endian binary data to a structure using compile-time generated swap method.
+    ///     This method is faster than <see cref="ByteArrayToStructureBigEndian{T}" /> as it avoids boxing and reflection.
+    /// </summary>
+    /// <param name="bytes">Byte array containing the binary data</param>
+    /// <typeparam name="T">Type of the structure to marshal (must be marked with [SwapEndian] attribute)</typeparam>
+    /// <returns>The binary data marshalled in a structure with the specified type</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T ByteArrayToStructureBigEndianGenerated<T>(byte[] bytes) where T : struct, ISwapEndian<T>
+    {
+        T str = ByteArrayToStructureLittleEndian<T>(bytes);
+
+        return str.SwapEndian();
+    }
+
+    /// <summary>
+    ///     Marshal big-endian binary data to a structure using compile-time generated swap method.
+    ///     This method is faster than <see cref="ByteArrayToStructureBigEndian{T}(byte[], int, int)" /> as it avoids boxing
+    ///     and reflection.
+    /// </summary>
+    /// <param name="bytes">Byte array containing the binary data</param>
+    /// <param name="start">Start on the array where the structure begins</param>
+    /// <param name="length">Length of the structure in bytes</param>
+    /// <typeparam name="T">Type of the structure to marshal (must be marked with [SwapEndian] attribute)</typeparam>
+    /// <returns>The binary data marshalled in a structure with the specified type</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T ByteArrayToStructureBigEndianGenerated<T>(byte[] bytes, int start, int length)
+        where T : struct, ISwapEndian<T>
+    {
+        Span<byte> span = bytes;
+
+        return ByteArrayToStructureBigEndianGenerated<T>(span.Slice(start, length).ToArray());
+    }
+
     /// <summary>Marshal big-endian binary data to a structure</summary>
     /// <param name="bytes">Byte array containing the binary data</param>
     /// <param name="start">Start on the array where the structure begins</param>
@@ -185,20 +219,40 @@ public static class Marshal
     }
 
     /// <summary>
-    ///     Marshal big-endian binary data to a structure. If the structure type contains any non value type, this method
-    ///     will crash.
+    ///     Marshal big-endian binary data to a structure using compile-time generated swap method.
+    ///     This method is faster than <see cref="SpanToStructureBigEndian{T}(ReadOnlySpan{byte})" /> as it avoids boxing and
+    ///     reflection.
+    ///     If the structure type contains any non value type, this method will crash.
+    /// </summary>
+    /// <param name="bytes">Byte array containing the binary data</param>
+    /// <typeparam name="T">Type of the structure to marshal (must be marked with [SwapEndian] attribute)</typeparam>
+    /// <returns>The binary data marshalled in a structure with the specified type</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T SpanToStructureBigEndianGenerated<T>(ReadOnlySpan<byte> bytes) where T : struct, ISwapEndian<T>
+    {
+        T str = SpanToStructureLittleEndian<T>(bytes);
+
+        return str.SwapEndian();
+    }
+
+    /// <summary>
+    ///     Marshal big-endian binary data to a structure using compile-time generated swap method.
+    ///     This method is faster than <see cref="SpanToStructureBigEndian{T}(ReadOnlySpan{byte}, int, int)" /> as it avoids
+    ///     boxing and reflection.
+    ///     If the structure type contains any non value type, this method will crash.
     /// </summary>
     /// <param name="bytes">Byte span containing the binary data</param>
     /// <param name="start">Start on the span where the structure begins</param>
     /// <param name="length">Length of the structure in bytes</param>
-    /// <typeparam name="T">Type of the structure to marshal</typeparam>
+    /// <typeparam name="T">Type of the structure to marshal (must be marked with [SwapEndian] attribute)</typeparam>
     /// <returns>The binary data marshalled in a structure with the specified type</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T SpanToStructureBigEndian<T>(ReadOnlySpan<byte> bytes, int start, int length) where T : struct
+    public static T SpanToStructureBigEndianGenerated<T>(ReadOnlySpan<byte> bytes, int start, int length)
+        where T : struct, ISwapEndian<T>
     {
         T str = SpanToStructureLittleEndian<T>(bytes.Slice(start, length));
 
-        return (T)SwapStructureMembersEndian(str);
+        return str.SwapEndian();
     }
 
     /// <summary>
