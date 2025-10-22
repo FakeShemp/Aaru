@@ -45,58 +45,6 @@ public sealed partial class AaruFormat
 
 #endregion
 
-#region Nested type: SectorStatus
-
-    enum SectorStatus : byte
-    {
-        /// <summary>
-        ///     Sector(s) not yet acquired during image dumping.
-        /// </summary>
-        NotDumped = 0x0,
-        /// <summary>
-        ///     Sector(s) successfully dumped without error.
-        /// </summary>
-        Dumped = 0x1,
-        /// <summary>
-        ///     Error during dumping; data may be incomplete or corrupt.
-        /// </summary>
-        Errored = 0x2,
-        /// <summary>
-        ///     Valid MODE 1 data with regenerable suffix/prefix.
-        /// </summary>
-        Mode1Correct = 0x3,
-        /// <summary>
-        ///     Suffix verified/regenerable for MODE 2 Form 1.
-        /// </summary>
-        Mode2Form1Ok = 0x4,
-        /// <summary>
-        ///     Suffix matches MODE 2 Form 2 with valid CRC.
-        /// </summary>
-        Mode2Form2Ok = 0x5,
-        /// <summary>
-        ///     Suffix matches MODE 2 Form 2 but CRC empty/missing.
-        /// </summary>
-        Mode2Form2NoCrc = 0x6,
-        /// <summary>
-        ///     Pointer references a twin sector table.
-        /// </summary>
-        Twin = 0x7,
-        /// <summary>
-        ///     Sector physically unrecorded; repeated reads non-deterministic.
-        /// </summary>
-        Unrecorded = 0x8,
-        /// <summary>
-        ///     Content encrypted and stored encrypted in image.
-        /// </summary>
-        Encrypted = 0x9,
-        /// <summary>
-        ///     Content originally encrypted but stored decrypted in image.
-        /// </summary>
-        Unencrypted = 0xA
-    }
-
-#endregion
-
 #region Nested type: Status
 
     /// <summary>
