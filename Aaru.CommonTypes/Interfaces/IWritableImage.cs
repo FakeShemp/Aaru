@@ -65,28 +65,32 @@ public interface IWritableImage : IMediaImage, IBaseWritableImage
     /// <summary>Writes a sector to the image</summary>
     /// <param name="data">Sector data</param>
     /// <param name="sectorAddress">Sector address</param>
+    /// <param name="sectorStatus"></param>
     /// <returns><c>true</c> if operating completed successfully, <c>false</c> otherwise</returns>
-    bool WriteSector(byte[] data, ulong sectorAddress);
+    bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus);
 
     /// <summary>Writes a sector to the image with main channel tags attached</summary>
     /// <param name="data">Sector data with its main channel tags attached</param>
     /// <param name="sectorAddress">Sector address</param>
+    /// <param name="sectorStatus"></param>
     /// <returns><c>true</c> if operating completed successfully, <c>false</c> otherwise</returns>
-    bool WriteSectorLong(byte[] data, ulong sectorAddress);
+    bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus);
 
     /// <summary>Writes several sectors to the image</summary>
     /// <param name="data">Sectors data</param>
     /// <param name="sectorAddress">Sector starting address</param>
     /// <param name="length">How many sectors to write</param>
+    /// <param name="sectorStatus"></param>
     /// <returns><c>true</c> if operating completed successfully, <c>false</c> otherwise</returns>
-    bool WriteSectors(byte[] data, ulong sectorAddress, uint length);
+    bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus);
 
     /// <summary>Writes several sectors to the image</summary>
     /// <param name="data">Sector data with their main channel tags attached</param>
     /// <param name="sectorAddress">Sector starting address</param>
     /// <param name="length">How many sectors to write</param>
+    /// <param name="sectorStatus"></param>
     /// <returns><c>true</c> if operating completed successfully, <c>false</c> otherwise</returns>
-    bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length);
+    bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus);
 
     /// <summary>Writes parallel or subchannel sector tag for several sector</summary>
     /// <param name="data">Tag data to write</param>

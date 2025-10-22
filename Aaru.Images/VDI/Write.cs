@@ -93,7 +93,7 @@ public sealed partial class Vdi
             return false;
         }
 
-        uint ibmEntries = (uint)(sectors * sectorSize / DEFAULT_BLOCK_SIZE);
+        var ibmEntries = (uint)(sectors * sectorSize / DEFAULT_BLOCK_SIZE);
 
         if(sectors * sectorSize % DEFAULT_BLOCK_SIZE > 0) ibmEntries++;
 
@@ -139,7 +139,7 @@ public sealed partial class Vdi
     }
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress)
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
@@ -191,7 +191,7 @@ public sealed partial class Vdi
 
     // TODO: This can be optimized
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
@@ -219,10 +219,10 @@ public sealed partial class Vdi
 
         for(uint i = 0; i < length; i++)
         {
-            byte[] tmp = new byte[_imageInfo.SectorSize];
+            var tmp = new byte[_imageInfo.SectorSize];
             Array.Copy(data, i * _imageInfo.SectorSize, tmp, 0, _imageInfo.SectorSize);
 
-            if(!WriteSector(tmp, sectorAddress + i)) return false;
+            if(!WriteSector(tmp, sectorAddress + i, sectorStatus[i])) return false;
         }
 
         ErrorMessage = "";
@@ -231,7 +231,7 @@ public sealed partial class Vdi
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -239,7 +239,7 @@ public sealed partial class Vdi
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -281,8 +281,8 @@ public sealed partial class Vdi
             }
         }
 
-        byte[] hdr    = new byte[Marshal.SizeOf<Header>()];
-        nint   hdrPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
+        var  hdr    = new byte[Marshal.SizeOf<Header>()];
+        nint hdrPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
         System.Runtime.InteropServices.Marshal.StructureToPtr(_vHdr, hdrPtr, true);
         System.Runtime.InteropServices.Marshal.Copy(hdrPtr, hdr, 0, hdr.Length);
         System.Runtime.InteropServices.Marshal.FreeHGlobal(hdrPtr);

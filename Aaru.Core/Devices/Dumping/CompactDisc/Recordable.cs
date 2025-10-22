@@ -72,7 +72,7 @@ partial class Dump
 
             if(track is null) continue;
 
-            byte[] sector = new byte[2352];
+            var sector = new byte[2352];
 
             switch(track.Type)
             {
@@ -102,9 +102,9 @@ partial class Dump
             }
 
             if(supportsLongSectors)
-                outputOptical.WriteSectorLong(sector, s);
+                outputOptical.WriteSectorLong(sector, s, SectorStatus.Dumped);
             else
-                outputOptical.WriteSector(Sector.GetUserData(sector), s);
+                outputOptical.WriteSector(Sector.GetUserData(sector), s, SectorStatus.Dumped);
 
             _resume.BadBlocks.Remove(s);
             extents.Add(s);

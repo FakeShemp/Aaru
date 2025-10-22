@@ -57,9 +57,9 @@ partial class Dump
     void RetrySbcData(Reader       scsiReader, DumpHardware currentTry, ExtentsULong extents, ref double totalDuration,
                       ExtentsULong blankExtents, byte[] discKey)
     {
-        int             pass              = 1;
-        bool            forward           = true;
-        bool            runningPersistent = false;
+        var             pass              = 1;
+        var             forward           = true;
+        var             runningPersistent = false;
         bool            sense;
         byte[]          buffer;
         bool            recoveredError;
@@ -67,7 +67,7 @@ partial class Dump
         byte[]          md6;
         byte[]          md10;
         bool            blankCheck;
-        bool            newBlank     = false;
+        var             newBlank     = false;
         var             outputFormat = _outputPlugin as IWritableImage;
 
         if(_persistent)
@@ -310,7 +310,7 @@ partial class Dump
 
                 if(scsiReader.LiteOnReadRaw || scsiReader.HldtstReadRaw)
                 {
-                    byte[] cmi = new byte[1];
+                    var cmi = new byte[1];
 
                     byte[] key = buffer.Skip(7).Take(5).ToArray();
 
@@ -348,10 +348,10 @@ partial class Dump
                     }
 
                     _resume.BadBlocks.Remove(badSector);
-                    outputFormat.WriteSectorLong(buffer, badSector);
+                    outputFormat.WriteSectorLong(buffer, badSector, SectorStatus.Dumped);
                 }
                 else
-                    outputFormat.WriteSector(buffer, badSector);
+                    outputFormat.WriteSector(buffer, badSector, SectorStatus.Dumped);
 
                 _mediaGraph?.PaintSectorGood(badSector);
 
@@ -359,7 +359,7 @@ partial class Dump
                                                    badSector,
                                                    pass));
             }
-            else if(runningPersistent) outputFormat.WriteSector(buffer, badSector);
+            else if(runningPersistent) outputFormat.WriteSector(buffer, badSector, SectorStatus.Errored);
         }
 
         if(pass < _retryPasses && !_aborted && _resume.BadBlocks.Count > 0)
@@ -397,8 +397,8 @@ partial class Dump
 
     void RetryTitleKeys(DVDDecryption dvdDecrypt, byte[] discKey, ref double totalDuration)
     {
-        int    pass    = 1;
-        bool   forward = true;
+        var    pass    = 1;
+        var    forward = true;
         bool   sense;
         byte[] buffer;
 

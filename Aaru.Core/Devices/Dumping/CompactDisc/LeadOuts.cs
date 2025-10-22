@@ -92,7 +92,7 @@ partial class Dump
     {
         byte[]             cmdBuf        = null; // Data buffer
         const uint         sectorSize    = 2352; // Full sector size
-        bool               sense         = true; // Sense indicator
+        var                sense         = true; // Sense indicator
         ReadOnlySpan<byte> senseBuf      = null;
         var                outputOptical = _outputPlugin as IWritableOpticalImage;
 
@@ -205,17 +205,21 @@ partial class Dump
 
                     if(supportedSubchannel != MmcSubchannel.None)
                     {
-                        byte[] data = new byte[sectorSize * _maximumReadable];
-                        byte[] sub  = new byte[subSize    * _maximumReadable];
+                        var data = new byte[sectorSize * _maximumReadable];
+                        var sub  = new byte[subSize    * _maximumReadable];
 
-                        for(int b = 0; b < _maximumReadable; b++)
+                        for(var b = 0; b < _maximumReadable; b++)
                         {
                             Array.Copy(cmdBuf, (int)(0 + b * blockSize), data, sectorSize * b, sectorSize);
 
                             Array.Copy(cmdBuf, (int)(sectorSize + b * blockSize), sub, subSize * b, subSize);
                         }
 
-                        outputOptical.WriteSectorsLong(data, i, _maximumReadable);
+                        outputOptical.WriteSectorsLong(data,
+                                                       i,
+                                                       _maximumReadable,
+                                                       Enumerable.Repeat(SectorStatus.Dumped, (int)_maximumReadable)
+                                                                 .ToArray());
 
                         bool indexesChanged = Media.CompactDisc.WriteSubchannelToImage(supportedSubchannel,
                             desiredSubchannel,
@@ -247,7 +251,11 @@ partial class Dump
                         }
                     }
                     else
-                        outputOptical.WriteSectors(cmdBuf, i, _maximumReadable);
+                        outputOptical.WriteSectors(cmdBuf,
+                                                   i,
+                                                   _maximumReadable,
+                                                   Enumerable.Repeat(SectorStatus.Dumped, (int)_maximumReadable)
+                                                             .ToArray());
 
                     imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
                 }
@@ -263,7 +271,7 @@ partial class Dump
 
                     if(supportedSubchannel != MmcSubchannel.None)
                     {
-                        outputOptical.WriteSectorsLong(new byte[sectorSize * _skip], i, 1);
+                        outputOptical.WriteSectorsLong(new byte[sectorSize * _skip], i, 1, new SectorStatus[1]);
 
                         outputOptical.WriteSectorsTag(new byte[subSize * _skip],
                                                       i,
@@ -271,7 +279,7 @@ partial class Dump
                                                       SectorTagType.CdSectorSubchannel);
                     }
                     else
-                        outputOptical.WriteSectors(new byte[blockSize * _skip], i, 1);
+                        outputOptical.WriteSectors(new byte[blockSize * _skip], i, 1, new SectorStatus[1]);
 
                     imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
 
@@ -331,7 +339,7 @@ partial class Dump
     {
         byte[]             cmdBuf        = null; // Data buffer
         const uint         sectorSize    = 2352; // Full sector size
-        bool               sense         = true; // Sense indicator
+        var                sense         = true; // Sense indicator
         ReadOnlySpan<byte> senseBuf      = null;
         var                outputOptical = _outputPlugin as IWritableOpticalImage;
 
@@ -444,17 +452,21 @@ partial class Dump
 
                     if(supportedSubchannel != MmcSubchannel.None)
                     {
-                        byte[] data = new byte[sectorSize * _maximumReadable];
-                        byte[] sub  = new byte[subSize    * _maximumReadable];
+                        var data = new byte[sectorSize * _maximumReadable];
+                        var sub  = new byte[subSize    * _maximumReadable];
 
-                        for(int b = 0; b < _maximumReadable; b++)
+                        for(var b = 0; b < _maximumReadable; b++)
                         {
                             Array.Copy(cmdBuf, (int)(0 + b * blockSize), data, sectorSize * b, sectorSize);
 
                             Array.Copy(cmdBuf, (int)(sectorSize + b * blockSize), sub, subSize * b, subSize);
                         }
 
-                        outputOptical.WriteSectorsLong(data, i, _maximumReadable);
+                        outputOptical.WriteSectorsLong(data,
+                                                       i,
+                                                       _maximumReadable,
+                                                       Enumerable.Repeat(SectorStatus.Dumped, (int)_maximumReadable)
+                                                                 .ToArray());
 
                         bool indexesChanged = Media.CompactDisc.WriteSubchannelToImage(supportedSubchannel,
                             desiredSubchannel,
@@ -486,7 +498,11 @@ partial class Dump
                         }
                     }
                     else
-                        outputOptical.WriteSectors(cmdBuf, i, _maximumReadable);
+                        outputOptical.WriteSectors(cmdBuf,
+                                                   i,
+                                                   _maximumReadable,
+                                                   Enumerable.Repeat(SectorStatus.Dumped, (int)_maximumReadable)
+                                                             .ToArray());
 
                     imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
                 }
@@ -502,7 +518,7 @@ partial class Dump
 
                     if(supportedSubchannel != MmcSubchannel.None)
                     {
-                        outputOptical.WriteSectorsLong(new byte[sectorSize * _skip], i, 1);
+                        outputOptical.WriteSectorsLong(new byte[sectorSize * _skip], i, 1, new SectorStatus[1]);
 
                         if(desiredSubchannel != MmcSubchannel.None)
                         {
@@ -513,7 +529,7 @@ partial class Dump
                         }
                     }
                     else
-                        outputOptical.WriteSectors(new byte[blockSize * _skip], i, 1);
+                        outputOptical.WriteSectors(new byte[blockSize * _skip], i, 1, new SectorStatus[1]);
 
                     imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
 

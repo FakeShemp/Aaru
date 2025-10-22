@@ -123,7 +123,7 @@ public sealed partial class RsIde
     }
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress)
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
@@ -157,7 +157,7 @@ public sealed partial class RsIde
     }
 
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
@@ -191,7 +191,7 @@ public sealed partial class RsIde
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -199,7 +199,7 @@ public sealed partial class RsIde
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -285,8 +285,8 @@ public sealed partial class RsIde
             if(string.IsNullOrEmpty(_imageInfo.DriveSerialNumber))
                 _imageInfo.DriveSerialNumber = $"{new Random().NextDouble():16X}";
 
-            byte[] ataIdBytes = new byte[Marshal.SizeOf<Identify.IdentifyDevice>()];
-            nint   ptr        = System.Runtime.InteropServices.Marshal.AllocHGlobal(512);
+            var  ataIdBytes = new byte[Marshal.SizeOf<Identify.IdentifyDevice>()];
+            nint ptr        = System.Runtime.InteropServices.Marshal.AllocHGlobal(512);
             System.Runtime.InteropServices.Marshal.StructureToPtr(ataId, ptr, true);
 
             System.Runtime.InteropServices.Marshal.Copy(ptr, ataIdBytes, 0, Marshal.SizeOf<Identify.IdentifyDevice>());
@@ -306,8 +306,8 @@ public sealed partial class RsIde
         else
             Array.Copy(_identify, 0, header.identify, 0, 106);
 
-        byte[] hdr    = new byte[Marshal.SizeOf<Header>()];
-        nint   hdrPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
+        var  hdr    = new byte[Marshal.SizeOf<Header>()];
+        nint hdrPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
         System.Runtime.InteropServices.Marshal.StructureToPtr(header, hdrPtr, true);
         System.Runtime.InteropServices.Marshal.Copy(hdrPtr, hdr, 0, hdr.Length);
         System.Runtime.InteropServices.Marshal.FreeHGlobal(hdrPtr);

@@ -230,7 +230,7 @@ partial class Dump
 
         if(decMode?.Pages != null)
         {
-            bool setGeometry = false;
+            var setGeometry = false;
 
             foreach(Modes.ModePage page in decMode.Value.Pages)
             {
@@ -327,7 +327,7 @@ partial class Dump
             _mediaGraph?.PaintSectorsBad(_resume.BadBlocks);
         }
 
-        bool newTrim = false;
+        var newTrim = false;
         _speedStopwatch.Reset();
         ulong sectorSpeedStart = 0;
         InitProgress?.Invoke();
@@ -374,7 +374,12 @@ partial class Dump
                 mhddLog.Write(i, cmdDuration, blocksToRead);
                 ibgLog.Write(i, currentSpeed * 1024);
                 _writeStopwatch.Restart();
-                outputFormat.WriteSectors(readBuffer, i, blocksToRead);
+
+                outputFormat.WriteSectors(readBuffer,
+                                          i,
+                                          blocksToRead,
+                                          Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
+
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
                 extents.Add(i, blocksToRead, true);
                 _mediaGraph?.PaintSectorsGood(i, blocksToRead);
@@ -388,7 +393,12 @@ partial class Dump
 
                 // Write empty data
                 _writeStopwatch.Restart();
-                outputFormat.WriteSectors(new byte[blockSize * _skip], i, _skip);
+
+                outputFormat.WriteSectors(new byte[blockSize * _skip],
+                                          i,
+                                          _skip,
+                                          Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
+
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
 
                 for(ulong b = i; b < i + _skip; b++) _resume.BadBlocks.Add(b);
@@ -470,7 +480,7 @@ partial class Dump
 
                 _resume.BadBlocks.Remove(badSector);
                 extents.Add(badSector);
-                outputFormat.WriteSector(readBuffer, badSector);
+                outputFormat.WriteSector(readBuffer, badSector, SectorStatus.Dumped);
                 _mediaGraph?.PaintSectorGood(badSector);
             }
 
@@ -487,9 +497,9 @@ partial class Dump
 
         if(_resume.BadBlocks.Count > 0 && !_aborted && _retryPasses > 0)
         {
-            int  pass              = 1;
-            bool forward           = true;
-            bool runningPersistent = false;
+            var pass              = 1;
+            var forward           = true;
+            var runningPersistent = false;
 
             Modes.ModePage? currentModePage = null;
             byte[]          md6;
@@ -637,14 +647,14 @@ partial class Dump
                 {
                     _resume.BadBlocks.Remove(badSector);
                     extents.Add(badSector);
-                    outputFormat.WriteSector(readBuffer, badSector);
+                    outputFormat.WriteSector(readBuffer, badSector, SectorStatus.Dumped);
                     _mediaGraph?.PaintSectorGood(badSector);
 
                     UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_block_0_in_pass_1,
                                                        badSector,
                                                        pass));
                 }
-                else if(runningPersistent) outputFormat.WriteSector(readBuffer, badSector);
+                else if(runningPersistent) outputFormat.WriteSector(readBuffer, badSector, SectorStatus.Errored);
             }
 
             if(pass < _retryPasses && !_aborted && _resume.BadBlocks.Count > 0)

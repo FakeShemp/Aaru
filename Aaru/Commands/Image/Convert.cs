@@ -700,28 +700,32 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                                                           doneSectors + sectorsToDo + track.StartSector,
                                                                           track.Sequence);
 
-                                    var useNotLong = false;
-                                    var result     = false;
+                                    var          useNotLong        = false;
+                                    var          result            = false;
+                                    SectorStatus sectorStatus      = SectorStatus.NotDumped;
+                                    var          sectorStatusArray = new SectorStatus[1];
 
                                     if(useLong)
                                     {
                                         errno = sectorsToDo == 1
                                                     ? inputOptical.ReadSectorLong(doneSectors + track.StartSector,
                                                         out sector,
-                                                        out _)
+                                                        out sectorStatus)
                                                     : inputOptical.ReadSectorsLong(doneSectors + track.StartSector,
                                                         sectorsToDo,
                                                         out sector,
-                                                        out _);
+                                                        out sectorStatusArray);
 
                                         if(errno == ErrorNumber.NoError)
                                         {
                                             result = sectorsToDo == 1
                                                          ? outputOptical.WriteSectorLong(sector,
-                                                             doneSectors + track.StartSector)
+                                                             doneSectors + track.StartSector,
+                                                             sectorStatus)
                                                          : outputOptical.WriteSectorsLong(sector,
                                                              doneSectors + track.StartSector,
-                                                             sectorsToDo);
+                                                             sectorsToDo,
+                                                             sectorStatusArray);
                                         }
                                         else
                                         {
@@ -766,11 +770,11 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                         errno = sectorsToDo == 1
                                                     ? inputOptical.ReadSector(doneSectors + track.StartSector,
                                                                               out sector,
-                                                                              out _)
+                                                                              out sectorStatus)
                                                     : inputOptical.ReadSectors(doneSectors + track.StartSector,
                                                                                sectorsToDo,
                                                                                out sector,
-                                                                               out _);
+                                                                               out sectorStatusArray);
 
                                         // TODO: Move to generic place when anything but CSS DVDs can be decrypted
                                         if(inputOptical.Info.MediaType is MediaType.DVDROM
@@ -907,10 +911,12 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                         {
                                             result = sectorsToDo == 1
                                                          ? outputOptical.WriteSector(sector,
-                                                             doneSectors + track.StartSector)
+                                                             doneSectors + track.StartSector,
+                                                             sectorStatus)
                                                          : outputOptical.WriteSectors(sector,
                                                              doneSectors + track.StartSector,
-                                                             sectorsToDo);
+                                                             sectorsToDo,
+                                                             sectorStatusArray);
                                         }
                                         else
                                         {
@@ -1433,22 +1439,27 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                 mediaTask.Description =
                                     string.Format(UI.Converting_sectors_0_to_1, doneSectors, doneSectors + sectorsToDo);
 
-                                bool result;
+                                bool         result;
+                                SectorStatus sectorStatus      = SectorStatus.NotDumped;
+                                var          sectorStatusArray = new SectorStatus[1];
 
                                 if(useLong)
                                 {
                                     errno = sectorsToDo == 1
-                                                ? inputFormat.ReadSectorLong(doneSectors, out sector, out _)
+                                                ? inputFormat.ReadSectorLong(doneSectors, out sector, out sectorStatus)
                                                 : inputFormat.ReadSectorsLong(doneSectors,
                                                                               sectorsToDo,
                                                                               out sector,
-                                                                              out _);
+                                                                              out sectorStatusArray);
 
                                     if(errno == ErrorNumber.NoError)
                                     {
                                         result = sectorsToDo == 1
-                                                     ? outputMedia.WriteSectorLong(sector, doneSectors)
-                                                     : outputMedia.WriteSectorsLong(sector, doneSectors, sectorsToDo);
+                                                     ? outputMedia.WriteSectorLong(sector, doneSectors, sectorStatus)
+                                                     : outputMedia.WriteSectorsLong(sector,
+                                                         doneSectors,
+                                                         sectorsToDo,
+                                                         sectorStatusArray);
                                     }
                                     else
                                     {
@@ -1473,14 +1484,20 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                 else
                                 {
                                     errno = sectorsToDo == 1
-                                                ? inputFormat.ReadSector(doneSectors, out sector, out _)
-                                                : inputFormat.ReadSectors(doneSectors, sectorsToDo, out sector, out _);
+                                                ? inputFormat.ReadSector(doneSectors, out sector, out sectorStatus)
+                                                : inputFormat.ReadSectors(doneSectors,
+                                                                          sectorsToDo,
+                                                                          out sector,
+                                                                          out sectorStatusArray);
 
                                     if(errno == ErrorNumber.NoError)
                                     {
                                         result = sectorsToDo == 1
-                                                     ? outputMedia.WriteSector(sector, doneSectors)
-                                                     : outputMedia.WriteSectors(sector, doneSectors, sectorsToDo);
+                                                     ? outputMedia.WriteSector(sector, doneSectors, sectorStatus)
+                                                     : outputMedia.WriteSectors(sector,
+                                                                                    doneSectors,
+                                                                                    sectorsToDo,
+                                                                                    sectorStatusArray);
                                     }
                                     else
                                     {

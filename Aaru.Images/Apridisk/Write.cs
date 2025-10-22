@@ -93,7 +93,7 @@ public sealed partial class Apridisk
     }
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress)
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         (ushort cylinder, byte head, byte sector) = LbaToChs(sectorAddress);
 
@@ -124,7 +124,7 @@ public sealed partial class Apridisk
     }
 
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         for(uint i = 0; i < length; i++)
         {
@@ -158,7 +158,7 @@ public sealed partial class Apridisk
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -166,7 +166,7 @@ public sealed partial class Apridisk
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -180,7 +180,7 @@ public sealed partial class Apridisk
         _writingStream.Seek(0, SeekOrigin.Begin);
         _writingStream.Write(_signature, 0, _signature.Length);
 
-        byte[] hdr = new byte[Marshal.SizeOf<Record>()];
+        var hdr = new byte[Marshal.SizeOf<Record>()];
 
         for(ushort c = 0; c < _imageInfo.Cylinders; c++)
         {

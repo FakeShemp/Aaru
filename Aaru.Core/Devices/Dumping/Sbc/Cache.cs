@@ -118,7 +118,7 @@ partial class Dump
                 _writeStopwatch.Restart();
 
                 byte[] tmpBuf;
-                byte[] cmi = new byte[blocksToRead];
+                var    cmi = new byte[blocksToRead];
 
                 for(uint j = 0; j < blocksToRead; j++)
                 {
@@ -160,7 +160,10 @@ partial class Dump
                         buffer = CSS.DecryptSectorLong(buffer, titleKey, cmi, blocksToRead);
                 }
 
-                outputFormat.WriteSectorsLong(buffer, i, blocksToRead);
+                outputFormat.WriteSectorsLong(buffer,
+                                              i,
+                                              blocksToRead,
+                                              Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
 
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
                 extents.Add(i, blocksToRead, true);
@@ -175,7 +178,12 @@ partial class Dump
 
                 // Write empty data
                 _writeStopwatch.Restart();
-                outputFormat.WriteSectorsLong(new byte[blockSize * _skip], i, _skip);
+
+                outputFormat.WriteSectorsLong(new byte[blockSize * _skip],
+                                              i,
+                                              _skip,
+                                              Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
+
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
 
                 for(ulong b = i; b < i + _skip; b++) _resume.BadBlocks.Add(b);

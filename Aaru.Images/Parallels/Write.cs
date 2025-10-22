@@ -92,7 +92,7 @@ public sealed partial class Parallels
             return false;
         }
 
-        uint batEntries = (uint)(sectors * sectorSize / DEFAULT_CLUSTER_SIZE);
+        var batEntries = (uint)(sectors * sectorSize / DEFAULT_CLUSTER_SIZE);
 
         if(sectors * sectorSize % DEFAULT_CLUSTER_SIZE > 0) batEntries++;
 
@@ -129,7 +129,7 @@ public sealed partial class Parallels
     }
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress)
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
@@ -180,7 +180,7 @@ public sealed partial class Parallels
 
     // TODO: This can be optimized
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
@@ -208,10 +208,10 @@ public sealed partial class Parallels
 
         for(uint i = 0; i < length; i++)
         {
-            byte[] tmp = new byte[512];
+            var tmp = new byte[512];
             Array.Copy(data, i * 512, tmp, 0, 512);
 
-            if(!WriteSector(tmp, sectorAddress + i)) return false;
+            if(!WriteSector(tmp, sectorAddress + i, sectorStatus[i])) return false;
         }
 
         ErrorMessage = "";
@@ -220,7 +220,7 @@ public sealed partial class Parallels
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -228,7 +228,7 @@ public sealed partial class Parallels
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -267,8 +267,8 @@ public sealed partial class Parallels
             }
         }
 
-        byte[] hdr    = new byte[Marshal.SizeOf<Header>()];
-        nint   hdrPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
+        var  hdr    = new byte[Marshal.SizeOf<Header>()];
+        nint hdrPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
         System.Runtime.InteropServices.Marshal.StructureToPtr(_pHdr, hdrPtr, true);
         System.Runtime.InteropServices.Marshal.Copy(hdrPtr, hdr, 0, hdr.Length);
         System.Runtime.InteropServices.Marshal.FreeHGlobal(hdrPtr);

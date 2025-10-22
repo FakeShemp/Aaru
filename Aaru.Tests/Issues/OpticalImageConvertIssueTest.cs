@@ -148,25 +148,32 @@ public abstract class OpticalImageConvertIssueTest
                 else
                     sectorsToDo = (uint)(trackSectors - doneSectors);
 
-                var useNotLong = false;
-                var result     = false;
+                var          useNotLong     = false;
+                var          result         = false;
+                SectorStatus sectorStatus   = SectorStatus.NotDumped;
+                var          sectorStatuses = new SectorStatus[1];
 
                 if(UseLong)
                 {
                     errno = sectorsToDo == 1
-                                ? inputFormat.ReadSectorLong(doneSectors + track.StartSector, out sector, out _)
+                                ? inputFormat.ReadSectorLong(doneSectors + track.StartSector,
+                                                             out sector,
+                                                             out sectorStatus)
                                 : inputFormat.ReadSectorsLong(doneSectors + track.StartSector,
                                                               sectorsToDo,
                                                               out sector,
-                                                              out _);
+                                                              out sectorStatuses);
 
                     if(errno == ErrorNumber.NoError)
                     {
                         result = sectorsToDo == 1
-                                     ? outputOptical.WriteSectorLong(sector, doneSectors + track.StartSector)
+                                     ? outputOptical.WriteSectorLong(sector,
+                                                                     doneSectors + track.StartSector,
+                                                                     sectorStatus)
                                      : outputOptical.WriteSectorsLong(sector,
                                                                       doneSectors + track.StartSector,
-                                                                      sectorsToDo);
+                                                                      sectorsToDo,
+                                                                      sectorStatuses);
                     }
                     else
                         result = true;
@@ -177,17 +184,20 @@ public abstract class OpticalImageConvertIssueTest
                 if(!UseLong || useNotLong)
                 {
                     errno = sectorsToDo == 1
-                                ? inputFormat.ReadSector(doneSectors + track.StartSector, out sector, out _)
+                                ? inputFormat.ReadSector(doneSectors + track.StartSector, out sector, out sectorStatus)
                                 : inputFormat.ReadSectors(doneSectors + track.StartSector,
                                                           sectorsToDo,
                                                           out sector,
-                                                          out _);
+                                                          out sectorStatuses);
 
                     Assert.That(errno, Is.EqualTo(ErrorNumber.NoError));
 
                     result = sectorsToDo == 1
-                                 ? outputOptical.WriteSector(sector, doneSectors  + track.StartSector)
-                                 : outputOptical.WriteSectors(sector, doneSectors + track.StartSector, sectorsToDo);
+                                 ? outputOptical.WriteSector(sector, doneSectors + track.StartSector, sectorStatus)
+                                 : outputOptical.WriteSectors(sector,
+                                                              doneSectors + track.StartSector,
+                                                              sectorsToDo,
+                                                              sectorStatuses);
                 }
 
                 Assert.That(result,

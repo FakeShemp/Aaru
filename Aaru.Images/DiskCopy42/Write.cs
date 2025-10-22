@@ -51,8 +51,8 @@ public sealed partial class DiskCopy42
                        uint   sectorSize)
     {
         header = new Header();
-        bool tags   = false;
-        bool macosx = false;
+        var tags   = false;
+        var macosx = false;
 
         if(options != null && options.TryGetValue("macosx", out string tmpOption)) bool.TryParse(tmpOption, out macosx);
 
@@ -223,7 +223,7 @@ public sealed partial class DiskCopy42
     }
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress)
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
@@ -255,7 +255,7 @@ public sealed partial class DiskCopy42
     }
 
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
@@ -287,7 +287,7 @@ public sealed partial class DiskCopy42
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
@@ -328,7 +328,7 @@ public sealed partial class DiskCopy42
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
@@ -387,7 +387,7 @@ public sealed partial class DiskCopy42
         if(writingStream.Length == 0x54 + header.DataSize) header.TagSize = 0;
 
         writingStream.Seek(0x54, SeekOrigin.Begin);
-        byte[] data = new byte[header.DataSize];
+        var data = new byte[header.DataSize];
         writingStream.EnsureRead(data, 0, (int)header.DataSize);
         header.DataChecksum = CheckSum(data);
         writingStream.Seek(0x54 + header.DataSize, SeekOrigin.Begin);

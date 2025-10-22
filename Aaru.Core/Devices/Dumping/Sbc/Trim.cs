@@ -52,7 +52,7 @@ partial class Dump
         bool    recoveredError;
         bool    blankCheck;
         byte[]  buffer;
-        bool    newBlank = false;
+        var     newBlank = false;
 
         if(_outputPlugin is not IWritableImage outputFormat)
         {
@@ -101,7 +101,7 @@ partial class Dump
 
             if(scsiReader.LiteOnReadRaw || scsiReader.HldtstReadRaw)
             {
-                byte[] cmi = new byte[1];
+                var cmi = new byte[1];
 
                 byte[] key = buffer.Skip(7).Take(5).ToArray();
 
@@ -138,10 +138,10 @@ partial class Dump
                 }
 
                 _resume.BadBlocks.Remove(badSector);
-                outputFormat.WriteSectorLong(buffer, badSector);
+                outputFormat.WriteSectorLong(buffer, badSector, SectorStatus.Dumped);
             }
             else
-                outputFormat.WriteSector(buffer, badSector);
+                outputFormat.WriteSector(buffer, badSector, SectorStatus.Dumped);
 
             _mediaGraph?.PaintSectorGood(badSector);
         }

@@ -128,11 +128,11 @@ public sealed partial class CisCopy
                           DiskType.MF2DD or DiskType.MD2HD or DiskType.MF2HD                     => 160
                       };
 
-        int headStep = 1;
+        var headStep = 1;
 
         if(diskType is DiskType.MD1DD or DiskType.MD1DD8) headStep = 2;
 
-        for(int i = 0; i < tracks; i += headStep)
+        for(var i = 0; i < tracks; i += headStep)
         {
             _writingStream.WriteByte((byte)TrackType.Copied);
 
@@ -157,7 +157,7 @@ public sealed partial class CisCopy
     }
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress)
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
@@ -189,7 +189,7 @@ public sealed partial class CisCopy
     }
 
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
@@ -221,7 +221,7 @@ public sealed partial class CisCopy
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -229,7 +229,7 @@ public sealed partial class CisCopy
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 

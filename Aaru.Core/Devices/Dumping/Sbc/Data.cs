@@ -189,7 +189,12 @@ partial class Dump
                 mhddLog.Write(i, cmdDuration, blocksToRead);
                 ibgLog.Write(i, currentSpeed * 1024);
                 _writeStopwatch.Restart();
-                outputFormat.WriteSectors(buffer, i, blocksToRead);
+
+                outputFormat.WriteSectors(buffer,
+                                          i,
+                                          blocksToRead,
+                                          Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
+
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
                 extents.Add(i, blocksToRead, true);
                 _mediaGraph?.PaintSectorsGood(i, blocksToRead);
@@ -217,7 +222,12 @@ partial class Dump
 
                 // Write empty data
                 _writeStopwatch.Restart();
-                outputFormat.WriteSectors(new byte[blockSize * _skip], i, _skip);
+
+                outputFormat.WriteSectors(new byte[blockSize * _skip],
+                                          i,
+                                          _skip,
+                                          Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
+
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
 
                 for(ulong b = i; b < i + _skip; b++) _resume.BadBlocks.Add(b);

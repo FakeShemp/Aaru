@@ -110,7 +110,7 @@ public sealed partial class CdrWin
             Tracks    = []
         };
 
-        int mediaTypeAsInt = (int)_discImage.MediaType;
+        var mediaTypeAsInt = (int)_discImage.MediaType;
 
         _isCd = mediaTypeAsInt is >= 10 and <= 39
                                or 112
@@ -168,7 +168,7 @@ public sealed partial class CdrWin
     }
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress)
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
@@ -220,7 +220,7 @@ public sealed partial class CdrWin
     }
 
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
@@ -279,7 +279,7 @@ public sealed partial class CdrWin
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
@@ -324,7 +324,7 @@ public sealed partial class CdrWin
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
@@ -393,9 +393,8 @@ public sealed partial class CdrWin
         }
 
         if(_writingTracks != null && _writingStreams != null)
-        {
-            foreach(FileStream oldTrack in _writingStreams.Select(t => t.Value).Distinct()) oldTrack.Close();
-        }
+            foreach(FileStream oldTrack in _writingStreams.Select(t => t.Value).Distinct())
+                oldTrack.Close();
 
         _writingTracks = [];
 
@@ -459,7 +458,7 @@ public sealed partial class CdrWin
             _writingStreams.First().Value.Close();
         }
 
-        int currentSession = 0;
+        var currentSession = 0;
 
         if(!string.IsNullOrWhiteSpace(_discImage.Comment))
         {

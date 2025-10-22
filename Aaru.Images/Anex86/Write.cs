@@ -113,7 +113,7 @@ public sealed partial class Anex86
     }
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress)
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
@@ -145,7 +145,7 @@ public sealed partial class Anex86
     }
 
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
@@ -177,7 +177,7 @@ public sealed partial class Anex86
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -185,7 +185,7 @@ public sealed partial class Anex86
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -233,7 +233,7 @@ public sealed partial class Anex86
             }
         }
 
-        byte[] hdr = new byte[Marshal.SizeOf<Header>()];
+        var hdr = new byte[Marshal.SizeOf<Header>()];
         MemoryMarshal.Write(hdr, in _header);
 
         _writingStream.Seek(0, SeekOrigin.Begin);

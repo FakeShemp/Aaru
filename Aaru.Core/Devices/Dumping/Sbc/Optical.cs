@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using Aaru.CommonTypes.AaruMetadata;
+using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Extents;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Core.Logging;
@@ -52,7 +53,7 @@ partial class Dump
         bool       sense;
         byte[]     buffer;
         ulong      sectorSpeedStart = 0;
-        bool       canMediumScan    = true;
+        var        canMediumScan    = true;
         var        outputFormat     = _outputPlugin as IWritableImage;
 
         InitProgress?.Invoke();
@@ -179,9 +180,8 @@ partial class Dump
             writtenExtents.Add(0, blocks - 1);
 
             foreach(Tuple<ulong, ulong> blank in blankExtents.ToArray())
-            {
-                for(ulong b = blank.Item1; b <= blank.Item2; b++) writtenExtents.Remove(b);
-            }
+                for(ulong b = blank.Item1; b <= blank.Item2; b++)
+                    writtenExtents.Remove(b);
         }
 
         if(writtenExtents.Count == 0)
@@ -236,7 +236,12 @@ partial class Dump
                     mhddLog.Write(i, cmdDuration, blocksToRead);
                     ibgLog.Write(i, currentSpeed * 1024);
                     _writeStopwatch.Restart();
-                    outputFormat.WriteSectors(buffer, i, blocksToRead);
+
+                    outputFormat.WriteSectors(buffer,
+                                              i,
+                                              blocksToRead,
+                                              Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
+
                     imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
                     extents.Add(i, blocksToRead, true);
                 }
@@ -249,7 +254,12 @@ partial class Dump
 
                     // Write empty data
                     _writeStopwatch.Restart();
-                    outputFormat.WriteSectors(new byte[blockSize * _skip], i, _skip);
+
+                    outputFormat.WriteSectors(new byte[blockSize * _skip],
+                                              i,
+                                              _skip,
+                                              Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
+
                     imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
 
                     for(ulong b = i; b < i + _skip; b++) _resume.BadBlocks.Add(b);

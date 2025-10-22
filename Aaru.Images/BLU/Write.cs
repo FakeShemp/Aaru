@@ -111,7 +111,7 @@ public sealed partial class Blu
     }
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress)
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         int longSectorSize = _imageInfo.MediaType == MediaType.PriamDataTower ? 536 : 532;
 
@@ -145,7 +145,7 @@ public sealed partial class Blu
     }
 
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         int longSectorSize = _imageInfo.MediaType == MediaType.PriamDataTower ? 536 : 532;
 
@@ -179,7 +179,7 @@ public sealed partial class Blu
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
@@ -269,7 +269,7 @@ public sealed partial class Blu
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
@@ -387,7 +387,7 @@ public sealed partial class Blu
 
         byte[] markerTag = Encoding.UTF8.GetBytes("Aaru " + Version.GetVersion());
         byte[] driveName;
-        byte[] driveType      = new byte[3];
+        var    driveType      = new byte[3];
         byte[] driveBlocks    = BigEndianBitConverter.GetBytes((uint)_imageInfo.Sectors);
         int    longSectorSize = _imageInfo.MediaType == MediaType.PriamDataTower ? 536 : 532;
         byte[] blockSize      = BigEndianBitConverter.GetBytes((ushort)longSectorSize);

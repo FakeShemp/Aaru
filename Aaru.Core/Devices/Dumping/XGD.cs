@@ -150,7 +150,7 @@ partial class Dump
             return;
         }
 
-        byte[] tmpBuf = new byte[ssBuf.Length - 4];
+        var tmpBuf = new byte[ssBuf.Length - 4];
         Array.Copy(ssBuf, 4, tmpBuf, 0, ssBuf.Length - 4);
         mediaTags.Add(MediaTagType.Xbox_SecuritySector, tmpBuf);
 
@@ -475,7 +475,7 @@ partial class Dump
 
         if(_skip < blocksToRead) _skip = blocksToRead;
 
-        bool ret = true;
+        var ret = true;
 
         foreach(MediaTagType tag in mediaTags.Keys.Where(tag => !outputFormat.SupportedMediaTags.Contains(tag)))
         {
@@ -579,14 +579,14 @@ partial class Dump
         if(_resume.NextBlock > 0)
             UpdateStatus?.Invoke(string.Format(Localization.Core.Resuming_from_block_0, _resume.NextBlock));
 
-        bool newTrim = false;
+        var newTrim = false;
 
         UpdateStatus?.Invoke(Localization.Core.Reading_game_partition);
         _speedStopwatch.Reset();
         ulong sectorSpeedStart = 0;
         InitProgress?.Invoke();
 
-        for(int e = 0; e <= 16; e++)
+        for(var e = 0; e <= 16; e++)
         {
             if(_aborted)
             {
@@ -683,7 +683,12 @@ partial class Dump
                     mhddLog.Write(i, cmdDuration, blocksToRead);
                     ibgLog.Write(i, currentSpeed * 1024);
                     _writeStopwatch.Restart();
-                    outputFormat.WriteSectors(readBuffer, i, blocksToRead);
+
+                    outputFormat.WriteSectors(readBuffer,
+                                              i,
+                                              blocksToRead,
+                                              Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
+
                     imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
                     extents.Add(i, blocksToRead, true);
                     _mediaGraph?.PaintSectorsGood(i, blocksToRead);
@@ -699,7 +704,12 @@ partial class Dump
 
                     // Write empty data
                     _writeStopwatch.Restart();
-                    outputFormat.WriteSectors(new byte[blockSize * _skip], i, _skip);
+
+                    outputFormat.WriteSectors(new byte[blockSize * _skip],
+                                              i,
+                                              _skip,
+                                              Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
+
                     imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
 
                     for(ulong b = i; b < i + _skip; b++) _resume.BadBlocks.Add(b);
@@ -757,7 +767,12 @@ partial class Dump
 
                 // Write empty data
                 _writeStopwatch.Restart();
-                outputFormat.WriteSectors(new byte[blockSize * blocksToRead], i, blocksToRead);
+
+                outputFormat.WriteSectors(new byte[blockSize * blocksToRead],
+                                          i,
+                                          blocksToRead,
+                                          Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
+
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
                 blocksToRead       =  saveBlocksToRead;
                 extents.Add(i, blocksToRead, true);
@@ -802,7 +817,12 @@ partial class Dump
 
             // Write empty data
             _writeStopwatch.Restart();
-            outputFormat.WriteSectors(new byte[blockSize * blocksToRead], middle + currentSector, blocksToRead);
+
+            outputFormat.WriteSectors(new byte[blockSize * blocksToRead],
+                                      middle + currentSector,
+                                      blocksToRead,
+                                      Enumerable.Repeat(SectorStatus.NotDumped, (int)blocksToRead).ToArray());
+
             imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
             extents.Add(currentSector, blocksToRead, true);
             _writeStopwatch.Stop();
@@ -887,7 +907,12 @@ partial class Dump
                 mhddLog.Write(currentSector, cmdDuration, blocksToRead);
                 ibgLog.Write(currentSector, currentSpeed * 1024);
                 _writeStopwatch.Restart();
-                outputFormat.WriteSectors(readBuffer, currentSector, blocksToRead);
+
+                outputFormat.WriteSectors(readBuffer,
+                                          currentSector,
+                                          blocksToRead,
+                                          Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
+
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
                 extents.Add(currentSector, blocksToRead, true);
                 _mediaGraph?.PaintSectorsGood(currentSector, blocksToRead);
@@ -901,7 +926,12 @@ partial class Dump
 
                 // Write empty data
                 _writeStopwatch.Restart();
-                outputFormat.WriteSectors(new byte[blockSize * _skip], currentSector, _skip);
+
+                outputFormat.WriteSectors(new byte[blockSize * _skip],
+                                          currentSector,
+                                          _skip,
+                                          Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
+
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
 
                 // TODO: Handle errors in video partition
@@ -1030,7 +1060,7 @@ partial class Dump
 
                 _resume.BadBlocks.Remove(badSector);
                 extents.Add(badSector);
-                outputFormat.WriteSector(readBuffer, badSector);
+                outputFormat.WriteSector(readBuffer, badSector, SectorStatus.Dumped);
                 _mediaGraph?.PaintSectorGood(badSector);
             }
 
@@ -1050,14 +1080,15 @@ partial class Dump
             List<ulong> tmpList = [];
 
             foreach(ulong ur in _resume.BadBlocks)
-                for(ulong i = ur; i < ur + blocksToRead; i++)
-                    tmpList.Add(i);
+            {
+                for(ulong i = ur; i < ur + blocksToRead; i++) tmpList.Add(i);
+            }
 
             tmpList.Sort();
 
-            int  pass              = 1;
-            bool forward           = true;
-            bool runningPersistent = false;
+            var pass              = 1;
+            var forward           = true;
+            var runningPersistent = false;
 
             _resume.BadBlocks = tmpList;
             Modes.ModePage? currentModePage = null;
@@ -1230,14 +1261,14 @@ partial class Dump
                 {
                     _resume.BadBlocks.Remove(badSector);
                     extents.Add(badSector);
-                    outputFormat.WriteSector(readBuffer, badSector);
+                    outputFormat.WriteSector(readBuffer, badSector, SectorStatus.Dumped);
                     _mediaGraph?.PaintSectorGood(badSector);
 
                     UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_block_0_in_pass_1,
                                                        badSector,
                                                        pass));
                 }
-                else if(runningPersistent) outputFormat.WriteSector(readBuffer, badSector);
+                else if(runningPersistent) outputFormat.WriteSector(readBuffer, badSector, SectorStatus.Errored);
             }
 
             if(pass < _retryPasses && !_aborted && _resume.BadBlocks.Count > 0)

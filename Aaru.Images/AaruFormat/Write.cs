@@ -66,9 +66,9 @@ public sealed partial class AaruFormat
 #region IWritableOpticalImage Members
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress)
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
-        Status res = aaruf_write_sector(_context, sectorAddress, false, data, SectorStatus.Dumped, (uint)data.Length);
+        Status res = aaruf_write_sector(_context, sectorAddress, false, data, sectorStatus, (uint)data.Length);
 
         if(res == Status.Ok) return true;
 
@@ -78,10 +78,9 @@ public sealed partial class AaruFormat
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
-        Status res =
-            aaruf_write_sector_long(_context, sectorAddress, false, data, SectorStatus.Dumped, (uint)data.Length);
+        Status res = aaruf_write_sector_long(_context, sectorAddress, false, data, sectorStatus, (uint)data.Length);
 
         if(res == Status.Ok) return true;
 
@@ -137,7 +136,7 @@ public sealed partial class AaruFormat
     }
 
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         var sectorSize = (uint)(data.Length / length);
 
@@ -146,14 +145,14 @@ public sealed partial class AaruFormat
             var sectorData = new byte[sectorSize];
             Array.Copy(data, i * sectorSize, sectorData, 0, sectorSize);
 
-            if(!WriteSector(sectorData, sectorAddress + i)) return false;
+            if(!WriteSector(sectorData, sectorAddress + i, sectorStatus[i])) return false;
         }
 
         return true;
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         var sectorSize = (uint)(data.Length / length);
 
@@ -162,7 +161,7 @@ public sealed partial class AaruFormat
             var sectorData = new byte[sectorSize];
             Array.Copy(data, i * sectorSize, sectorData, 0, sectorSize);
 
-            if(!WriteSectorLong(sectorData, sectorAddress + i)) return false;
+            if(!WriteSectorLong(sectorData, sectorAddress + i, sectorStatus[i])) return false;
         }
 
         return true;
@@ -288,9 +287,8 @@ public sealed partial class AaruFormat
 
         // Convert array of booleans to List of enums
         for(nuint i = 0; i < sizet_length; i++)
-        {
-            if(sectorTagsBuffer[i] != 0) _imageInfo.ReadableSectorTags.Add((SectorTagType)i);
-        }
+            if(sectorTagsBuffer[i] != 0)
+                _imageInfo.ReadableSectorTags.Add((SectorTagType)i);
 
         sizet_length = 0;
         ret          = aaruf_get_readable_media_tags(_context, null, ref sizet_length);
@@ -314,9 +312,8 @@ public sealed partial class AaruFormat
 
         // Convert array of booleans to List of enums
         for(nuint i = 0; i < sizet_length; i++)
-        {
-            if(mediaTagsBuffer[i] != 0) _imageInfo.ReadableMediaTags.Add((MediaTagType)i);
-        }
+            if(mediaTagsBuffer[i] != 0)
+                _imageInfo.ReadableMediaTags.Add((MediaTagType)i);
 
         ret = aaruf_get_media_sequence(_context, out int sequence, out int lastSequence);
 

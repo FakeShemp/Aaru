@@ -38,6 +38,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Aaru.CommonTypes.AaruMetadata;
+using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Extents;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Core.Logging;
@@ -60,7 +61,7 @@ partial class Dump
 
         byte[] syncMark = [0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00];
 
-        byte[] testMark = new byte[12];
+        var testMark = new byte[12];
         Array.Copy(sector, 0, testMark, 0, 12);
 
         return syncMark.SequenceEqual(testMark) && (sector[0xF] == 0 || sector[0xF] == 1 || sector[0xF] == 2);
@@ -79,9 +80,9 @@ partial class Dump
 
         byte[] syncMark = [0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00];
 
-        byte[] testMark = new byte[12];
+        var testMark = new byte[12];
 
-        for(int i = 0; i <= 2336; i++)
+        for(var i = 0; i <= 2336; i++)
         {
             Array.Copy(sector, i, testMark, 0, 12);
 
@@ -179,7 +180,7 @@ partial class Dump
                 break;
             }
 
-            uint firstSectorToRead = (uint)i;
+            var firstSectorToRead = (uint)i;
 
             blocksToRead = _maximumReadable;
 
@@ -288,8 +289,8 @@ partial class Dump
 
                         if(supportedSubchannel != MmcSubchannel.None)
                         {
-                            byte[] data = new byte[sectorSize];
-                            byte[] sub  = new byte[subSize];
+                            var data = new byte[sectorSize];
+                            var sub  = new byte[subSize];
 
                             Array.Copy(cmdBuf, 0, data, 0, sectorSize);
 
@@ -297,7 +298,10 @@ partial class Dump
 
                             if(cdiReadyReadAsAudio) data = Sector.Scramble(data);
 
-                            outputOptical.WriteSectorsLong(data, i + r, 1);
+                            outputOptical.WriteSectorsLong(data,
+                                                           i + r,
+                                                           1,
+                                                           Enumerable.Repeat(SectorStatus.Dumped, 1).ToArray());
 
                             bool indexesChanged = Media.CompactDisc.WriteSubchannelToImage(supportedSubchannel,
                                 desiredSubchannel,
@@ -329,7 +333,7 @@ partial class Dump
                             }
                         }
                         else
-                            outputOptical.WriteSectorsLong(cmdBuf, i + r, 1);
+                            outputOptical.WriteSectorsLong(cmdBuf, i + r, 1, [SectorStatus.Dumped]);
 
                         imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
 
@@ -386,11 +390,11 @@ partial class Dump
 
                 if(supportedSubchannel != MmcSubchannel.None)
                 {
-                    byte[] data    = new byte[sectorSize * blocksToRead];
-                    byte[] sub     = new byte[subSize    * blocksToRead];
-                    byte[] tmpData = new byte[sectorSize];
+                    var data    = new byte[sectorSize * blocksToRead];
+                    var sub     = new byte[subSize    * blocksToRead];
+                    var tmpData = new byte[sectorSize];
 
-                    for(int b = 0; b < blocksToRead; b++)
+                    for(var b = 0; b < blocksToRead; b++)
                     {
                         if(cdiReadyReadAsAudio)
                         {
@@ -404,7 +408,10 @@ partial class Dump
                         Array.Copy(cmdBuf, (int)(sectorSize + b * blockSize), sub, subSize * b, subSize);
                     }
 
-                    outputOptical.WriteSectorsLong(data, i, blocksToRead);
+                    outputOptical.WriteSectorsLong(data,
+                                                   i,
+                                                   blocksToRead,
+                                                   Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
 
                     bool indexesChanged = Media.CompactDisc.WriteSubchannelToImage(supportedSubchannel,
                         desiredSubchannel,
@@ -447,20 +454,28 @@ partial class Dump
                 {
                     if(cdiReadyReadAsAudio)
                     {
-                        byte[] tmpData = new byte[sectorSize];
-                        byte[] data    = new byte[sectorSize * blocksToRead];
+                        var tmpData = new byte[sectorSize];
+                        var data    = new byte[sectorSize * blocksToRead];
 
-                        for(int b = 0; b < blocksToRead; b++)
+                        for(var b = 0; b < blocksToRead; b++)
                         {
                             Array.Copy(cmdBuf, (int)(b * sectorSize), tmpData, 0, sectorSize);
                             tmpData = Sector.Scramble(tmpData);
                             Array.Copy(tmpData, 0, data, sectorSize * b, sectorSize);
                         }
 
-                        outputOptical.WriteSectorsLong(data, i, blocksToRead);
+                        outputOptical.WriteSectorsLong(data,
+                                                       i,
+                                                       blocksToRead,
+                                                       Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)
+                                                                 .ToArray());
                     }
                     else
-                        outputOptical.WriteSectorsLong(cmdBuf, i, blocksToRead);
+                        outputOptical.WriteSectorsLong(cmdBuf,
+                                                       i,
+                                                       blocksToRead,
+                                                       Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)
+                                                                 .ToArray());
                 }
 
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;

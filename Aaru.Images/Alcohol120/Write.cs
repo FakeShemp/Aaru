@@ -211,7 +211,7 @@ public sealed partial class Alcohol120
     }
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress)
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
@@ -261,7 +261,7 @@ public sealed partial class Alcohol120
     }
 
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
@@ -343,7 +343,7 @@ public sealed partial class Alcohol120
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
@@ -369,7 +369,7 @@ public sealed partial class Alcohol120
             return false;
         }
 
-        uint subchannelSize = (uint)(track.SubchannelType != TrackSubchannelType.None ? 96 : 0);
+        var subchannelSize = (uint)(track.SubchannelType != TrackSubchannelType.None ? 96 : 0);
 
         _imageStream.Seek((long)(track.FileOffset +
                                  (sectorAddress - track.StartSector) *
@@ -382,7 +382,7 @@ public sealed partial class Alcohol120
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
@@ -415,7 +415,7 @@ public sealed partial class Alcohol120
             return false;
         }
 
-        uint subchannelSize = (uint)(track.SubchannelType != TrackSubchannelType.None ? 96 : 0);
+        var subchannelSize = (uint)(track.SubchannelType != TrackSubchannelType.None ? 96 : 0);
 
         for(uint i = 0; i < length; i++)
         {
@@ -441,7 +441,7 @@ public sealed partial class Alcohol120
         {
             CommonTypes.Structs.Track[] tmpTracks = tracks.OrderBy(t => t.Sequence).ToArray();
 
-            for(int i = 1; i < tmpTracks.Length; i++)
+            for(var i = 1; i < tmpTracks.Length; i++)
             {
                 CommonTypes.Structs.Track firstTrackInSession =
                     tracks.FirstOrDefault(t => t.Session == tmpTracks[i].Session);
@@ -548,9 +548,9 @@ public sealed partial class Alcohol120
         FullTOC.CDFullTOC? decodedToc = FullTOC.Decode(tmpToc);
 
         long currentExtraOffset = currentTrackOffset;
-        int  extraCount         = 0;
+        var  extraCount         = 0;
 
-        for(int i = 1; i <= sessions; i++)
+        for(var i = 1; i <= sessions; i++)
         {
             if(decodedToc.HasValue)
             {
@@ -619,7 +619,7 @@ public sealed partial class Alcohol120
         }
         else
         {
-            for(int i = 1; i <= sessions; i++)
+            for(var i = 1; i <= sessions; i++)
             {
                 CommonTypes.Structs.Track firstTrack = _writingTracks.First(t => t.Session == i);
                 CommonTypes.Structs.Track lastTrack  = _writingTracks.Last(t => t.Session  == i);
@@ -915,8 +915,8 @@ public sealed partial class Alcohol120
 
         // Write header
         _descriptorStream.Seek(0, SeekOrigin.Begin);
-        byte[] block    = new byte[Marshal.SizeOf<Header>()];
-        nint   blockPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
+        var  block    = new byte[Marshal.SizeOf<Header>()];
+        nint blockPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(Marshal.SizeOf<Header>());
         System.Runtime.InteropServices.Marshal.StructureToPtr(header, blockPtr, true);
         System.Runtime.InteropServices.Marshal.Copy(blockPtr, block, 0, block.Length);
         System.Runtime.InteropServices.Marshal.FreeHGlobal(blockPtr);

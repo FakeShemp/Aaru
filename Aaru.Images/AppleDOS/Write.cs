@@ -114,10 +114,11 @@ public sealed partial class AppleDos
     }
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress) => WriteSectors(data, sectorAddress, 1);
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus) =>
+        WriteSectors(data, sectorAddress, 1, [SectorStatus.Dumped]);
 
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
@@ -148,7 +149,7 @@ public sealed partial class AppleDos
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -156,7 +157,7 @@ public sealed partial class AppleDos
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -195,9 +196,9 @@ public sealed partial class AppleDos
                                     ? _interleave
                                     : _deinterleave;
 
-            for(int t = 0; t < 35; t++)
+            for(var t = 0; t < 35; t++)
             {
-                for(int s = 0; s < 16; s++)
+                for(var s = 0; s < 16; s++)
                     Array.Copy(_deinterleaved, t * 16 * 256 + offsets[s] * 256, tmp, t * 16 * 256 + s * 256, 256);
             }
         }

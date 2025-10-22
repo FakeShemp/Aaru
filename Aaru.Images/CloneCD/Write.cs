@@ -126,7 +126,7 @@ public sealed partial class CloneCd
     }
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress)
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
@@ -142,7 +142,7 @@ public sealed partial class CloneCd
     }
 
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
@@ -158,7 +158,7 @@ public sealed partial class CloneCd
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
@@ -193,7 +193,7 @@ public sealed partial class CloneCd
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
@@ -310,7 +310,7 @@ public sealed partial class CloneCd
         // Easy, just decode the real toc
         if(_fullToc != null)
         {
-            byte[] tmp = new byte[_fullToc.Length + 2];
+            var tmp = new byte[_fullToc.Length + 2];
             Array.Copy(BigEndianBitConverter.GetBytes((ushort)_fullToc.Length), 0, tmp, 0, 2);
             Array.Copy(_fullToc,                                                0, tmp, 2, _fullToc.Length);
             nullableToc = FullTOC.Decode(tmp);
@@ -329,7 +329,7 @@ public sealed partial class CloneCd
 
         if(!string.IsNullOrEmpty(_catalog)) _descriptorStream.WriteLine("CATALOG={0}", _catalog);
 
-        for(int i = 1; i <= toc.LastCompleteSession; i++)
+        for(var i = 1; i <= toc.LastCompleteSession; i++)
         {
             _descriptorStream.WriteLine("[Session {0}]", i);
 
@@ -365,7 +365,7 @@ public sealed partial class CloneCd
             _descriptorStream.WriteLine("PreGapSubC=0");
         }
 
-        for(int i = 0; i < toc.TrackDescriptors.Length; i++)
+        for(var i = 0; i < toc.TrackDescriptors.Length; i++)
         {
             long alba = MsfToLba((toc.TrackDescriptors[i].Min, toc.TrackDescriptors[i].Sec,
                                   toc.TrackDescriptors[i].Frame));
@@ -484,7 +484,8 @@ public sealed partial class CloneCd
                         ErrorMessage = string.Format(Localization.Could_not_create_subchannel_file_exception_0,
                                                      ex.Message);
 
-                        AaruLogging.Exception(ex,Localization.Could_not_create_subchannel_file_exception_0,
+                        AaruLogging.Exception(ex,
+                                              Localization.Could_not_create_subchannel_file_exception_0,
                                               ex.Message);
 
                         return false;
@@ -561,7 +562,8 @@ public sealed partial class CloneCd
                         ErrorMessage = string.Format(Localization.Could_not_create_subchannel_file_exception_0,
                                                      ex.Message);
 
-                        AaruLogging.Exception(ex,Localization.Could_not_create_subchannel_file_exception_0,
+                        AaruLogging.Exception(ex,
+                                              Localization.Could_not_create_subchannel_file_exception_0,
                                               ex.Message);
 
                         return false;

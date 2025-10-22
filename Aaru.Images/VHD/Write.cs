@@ -49,6 +49,126 @@ namespace Aaru.Images;
 
 public sealed partial class Vhd
 {
+    void SetChsInFooter()
+    {
+        if(_imageInfo.Cylinders == 0)
+        {
+            ulong cylinderTimesHeads;
+
+            if(_imageInfo.Sectors > 65535 * 16 * 255)
+            {
+                _imageInfo.Cylinders       = 65535;
+                _imageInfo.Heads           = 16;
+                _imageInfo.SectorsPerTrack = 255;
+            }
+
+            if(_imageInfo.Sectors >= 65535 * 16 * 63)
+            {
+                _imageInfo.Heads           = 16;
+                _imageInfo.SectorsPerTrack = 255;
+                cylinderTimesHeads         = _imageInfo.Sectors / _imageInfo.SectorsPerTrack;
+            }
+            else
+            {
+                _imageInfo.SectorsPerTrack = 17;
+                cylinderTimesHeads         = _imageInfo.Sectors / _imageInfo.SectorsPerTrack;
+
+                _imageInfo.Heads = (uint)((cylinderTimesHeads + 1023) / 1024);
+
+                if(_imageInfo.Heads < 4) _imageInfo.Heads = 4;
+
+                if(cylinderTimesHeads >= _imageInfo.Heads * 1024 || _imageInfo.Heads > 16)
+                {
+                    _imageInfo.SectorsPerTrack = 31;
+                    _imageInfo.Heads           = 16;
+                    cylinderTimesHeads         = _imageInfo.Sectors / _imageInfo.SectorsPerTrack;
+                }
+
+                if(cylinderTimesHeads >= _imageInfo.Heads * 1024)
+                {
+                    _imageInfo.SectorsPerTrack = 63;
+                    _imageInfo.Heads           = 16;
+                    cylinderTimesHeads         = _imageInfo.Sectors / _imageInfo.SectorsPerTrack;
+                }
+            }
+
+            _imageInfo.Cylinders = (uint)(cylinderTimesHeads / _imageInfo.Heads);
+        }
+
+        _thisFooter.DiskGeometry = ((_imageInfo.Cylinders & 0xFFFF) << 16) +
+                                   ((_imageInfo.Heads     & 0xFF)   << 8)  +
+                                   (_imageInfo.SectorsPerTrack & 0xFF);
+    }
+
+    void Flush()
+    {
+        _thisFooter.Offset = _thisFooter.DiskType == TYPE_FIXED ? ulong.MaxValue : 512;
+
+        var footerBytes = new byte[512];
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.Cookie),             0, footerBytes, 0x00, 8);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.Features),           0, footerBytes, 0x08, 4);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.Version),            0, footerBytes, 0x0C, 4);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.Offset),             0, footerBytes, 0x10, 8);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.Timestamp),          0, footerBytes, 0x18, 4);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.CreatorApplication), 0, footerBytes, 0x1C, 4);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.CreatorVersion),     0, footerBytes, 0x20, 4);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.CreatorHostOs),      0, footerBytes, 0x24, 4);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.OriginalSize),       0, footerBytes, 0x28, 8);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.CurrentSize),        0, footerBytes, 0x30, 8);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.DiskGeometry),       0, footerBytes, 0x38, 4);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.DiskType),           0, footerBytes, 0x3C, 4);
+        Array.Copy(_thisFooter.UniqueId.ToByteArray(),                             0, footerBytes, 0x44, 4);
+
+        _thisFooter.Checksum = VhdChecksum(footerBytes);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.Checksum), 0, footerBytes, 0x40, 4);
+
+        if(!_dynamic)
+        {
+            _writingStream.Seek((long)_thisFooter.OriginalSize, SeekOrigin.Begin);
+            _writingStream.Write(footerBytes, 0, 512);
+
+            _writingStream.Flush();
+
+            return;
+        }
+
+        if(_blockInCache)
+        {
+            _writingStream.Position = _cachedBlockPosition;
+            _writingStream.Write(_cachedBlock, 0, _cachedBlock.Length);
+            _cachedBlock  = null;
+            _blockInCache = false;
+        }
+
+        _writingStream.Position = (long)_thisDynamic.TableOffset;
+        ReadOnlySpan<uint> span = _blockAllocationTable;
+
+        byte[] bat = MemoryMarshal.Cast<uint, byte>(span)[..(int)(_thisDynamic.MaxTableEntries * sizeof(uint))]
+                                  .ToArray();
+
+        _writingStream.Write(bat, 0, bat.Length);
+
+        var dynamicBytes = new byte[1024];
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisDynamic.Cookie),          0, dynamicBytes, 0x00, 8);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisDynamic.DataOffset),      0, dynamicBytes, 0x08, 8);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisDynamic.TableOffset),     0, dynamicBytes, 0x10, 8);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisDynamic.HeaderVersion),   0, dynamicBytes, 0x18, 4);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisDynamic.MaxTableEntries), 0, dynamicBytes, 0x1C, 4);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisDynamic.BlockSize),       0, dynamicBytes, 0x20, 4);
+
+        _thisDynamic.Checksum = VhdChecksum(dynamicBytes);
+        Array.Copy(BigEndianBitConverter.GetBytes(_thisDynamic.Checksum), 0, dynamicBytes, 0x24, 4);
+
+        _writingStream.Position = 0;
+        _writingStream.Write(footerBytes, 0, 512);
+        _writingStream.Position = 512;
+        _writingStream.Write(dynamicBytes, 0, 1024);
+        _writingStream.Position = _currentFooterPosition;
+        _writingStream.Write(footerBytes, 0, 512);
+
+        _writingStream.Flush();
+    }
+
 #region IWritableImage Members
 
     /// <inheritdoc />
@@ -202,7 +322,7 @@ public sealed partial class Vhd
     }
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress)
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
@@ -236,7 +356,7 @@ public sealed partial class Vhd
         }
 
         // Block number for BAT searching
-        uint blockNumber = (uint)Math.Floor(sectorAddress / (_thisDynamic.BlockSize / 512.0));
+        var blockNumber = (uint)Math.Floor(sectorAddress / (_thisDynamic.BlockSize / 512.0));
 
         // If there's a cached block and it's the one we're looking for, flush cached data (clears cache)
         if(_blockInCache && _cachedBlockNumber != blockNumber) Flush();
@@ -269,10 +389,10 @@ public sealed partial class Vhd
         }
 
         // Sector number inside of block
-        uint sectorInBlock = (uint)(sectorAddress % (_thisDynamic.BlockSize / 512));
-        int  bitmapByte    = (int)Math.Floor((double)sectorInBlock          / 8);
-        int  bitmapBit     = (int)(sectorInBlock % 8);
-        byte mask          = (byte)(1 << 7 - bitmapBit);
+        var  sectorInBlock = (uint)(sectorAddress % (_thisDynamic.BlockSize / 512));
+        var  bitmapByte    = (int)Math.Floor((double)sectorInBlock          / 8);
+        var  bitmapBit     = (int)(sectorInBlock % 8);
+        var  mask          = (byte)(1 << 7 - bitmapBit);
         bool dirty         = (_cachedBlock[bitmapByte] & mask) == mask;
 
         // If there's no data in sector...
@@ -304,16 +424,16 @@ public sealed partial class Vhd
     }
 
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(_dynamic)
         {
             if(ArrayHelpers.ArrayIsNullOrEmpty(data))
             {
-                for(int i = 0; i < length; i++)
+                for(var i = 0; i < length; i++)
                 {
                     // Block number for BAT searching
-                    uint blockNumber = (uint)Math.Floor(sectorAddress / (_thisDynamic.BlockSize / 512.0));
+                    var blockNumber = (uint)Math.Floor(sectorAddress / (_thisDynamic.BlockSize / 512.0));
 
                     // Block not allocated, bail out
                     if(_blockAllocationTable[blockNumber] == 0xFFFFFFFF) continue;
@@ -330,10 +450,10 @@ public sealed partial class Vhd
                     }
 
                     // Sector number inside of block
-                    uint sectorInBlock = (uint)(sectorAddress % (_thisDynamic.BlockSize / 512));
-                    int  bitmapByte    = (int)Math.Floor((double)sectorInBlock          / 8);
-                    int  bitmapBit     = (int)(sectorInBlock % 8);
-                    byte mask          = (byte)(1 << 7 - bitmapBit);
+                    var  sectorInBlock = (uint)(sectorAddress % (_thisDynamic.BlockSize / 512));
+                    var  bitmapByte    = (int)Math.Floor((double)sectorInBlock          / 8);
+                    var  bitmapBit     = (int)(sectorInBlock % 8);
+                    var  mask          = (byte)(1 << 7 - bitmapBit);
                     bool dirty         = (_cachedBlock[bitmapByte] & mask) == mask;
 
                     if(!dirty) continue;
@@ -351,10 +471,9 @@ public sealed partial class Vhd
                 return true;
             }
 
-            for(int i = 0; i < length; i++)
-            {
-                if(!WriteSector(data[(i * 512)..(i * 512 + 512)], sectorAddress + (ulong)i)) return false;
-            }
+            for(var i = 0; i < length; i++)
+                if(!WriteSector(data[(i * 512)..(i * 512 + 512)], sectorAddress + (ulong)i, sectorStatus[i]))
+                    return false;
 
             return true;
         }
@@ -389,7 +508,7 @@ public sealed partial class Vhd
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -397,7 +516,7 @@ public sealed partial class Vhd
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -484,124 +603,4 @@ public sealed partial class Vhd
     public bool SetMetadata(Metadata metadata) => false;
 
 #endregion
-
-    void SetChsInFooter()
-    {
-        if(_imageInfo.Cylinders == 0)
-        {
-            ulong cylinderTimesHeads;
-
-            if(_imageInfo.Sectors > 65535 * 16 * 255)
-            {
-                _imageInfo.Cylinders       = 65535;
-                _imageInfo.Heads           = 16;
-                _imageInfo.SectorsPerTrack = 255;
-            }
-
-            if(_imageInfo.Sectors >= 65535 * 16 * 63)
-            {
-                _imageInfo.Heads           = 16;
-                _imageInfo.SectorsPerTrack = 255;
-                cylinderTimesHeads         = _imageInfo.Sectors / _imageInfo.SectorsPerTrack;
-            }
-            else
-            {
-                _imageInfo.SectorsPerTrack = 17;
-                cylinderTimesHeads         = _imageInfo.Sectors / _imageInfo.SectorsPerTrack;
-
-                _imageInfo.Heads = (uint)((cylinderTimesHeads + 1023) / 1024);
-
-                if(_imageInfo.Heads < 4) _imageInfo.Heads = 4;
-
-                if(cylinderTimesHeads >= _imageInfo.Heads * 1024 || _imageInfo.Heads > 16)
-                {
-                    _imageInfo.SectorsPerTrack = 31;
-                    _imageInfo.Heads           = 16;
-                    cylinderTimesHeads         = _imageInfo.Sectors / _imageInfo.SectorsPerTrack;
-                }
-
-                if(cylinderTimesHeads >= _imageInfo.Heads * 1024)
-                {
-                    _imageInfo.SectorsPerTrack = 63;
-                    _imageInfo.Heads           = 16;
-                    cylinderTimesHeads         = _imageInfo.Sectors / _imageInfo.SectorsPerTrack;
-                }
-            }
-
-            _imageInfo.Cylinders = (uint)(cylinderTimesHeads / _imageInfo.Heads);
-        }
-
-        _thisFooter.DiskGeometry = ((_imageInfo.Cylinders & 0xFFFF) << 16) +
-                                   ((_imageInfo.Heads     & 0xFF)   << 8)  +
-                                   (_imageInfo.SectorsPerTrack & 0xFF);
-    }
-
-    void Flush()
-    {
-        _thisFooter.Offset = _thisFooter.DiskType == TYPE_FIXED ? ulong.MaxValue : 512;
-
-        byte[] footerBytes = new byte[512];
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.Cookie),             0, footerBytes, 0x00, 8);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.Features),           0, footerBytes, 0x08, 4);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.Version),            0, footerBytes, 0x0C, 4);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.Offset),             0, footerBytes, 0x10, 8);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.Timestamp),          0, footerBytes, 0x18, 4);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.CreatorApplication), 0, footerBytes, 0x1C, 4);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.CreatorVersion),     0, footerBytes, 0x20, 4);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.CreatorHostOs),      0, footerBytes, 0x24, 4);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.OriginalSize),       0, footerBytes, 0x28, 8);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.CurrentSize),        0, footerBytes, 0x30, 8);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.DiskGeometry),       0, footerBytes, 0x38, 4);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.DiskType),           0, footerBytes, 0x3C, 4);
-        Array.Copy(_thisFooter.UniqueId.ToByteArray(),                             0, footerBytes, 0x44, 4);
-
-        _thisFooter.Checksum = VhdChecksum(footerBytes);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisFooter.Checksum), 0, footerBytes, 0x40, 4);
-
-        if(!_dynamic)
-        {
-            _writingStream.Seek((long)_thisFooter.OriginalSize, SeekOrigin.Begin);
-            _writingStream.Write(footerBytes, 0, 512);
-
-            _writingStream.Flush();
-
-            return;
-        }
-
-        if(_blockInCache)
-        {
-            _writingStream.Position = _cachedBlockPosition;
-            _writingStream.Write(_cachedBlock, 0, _cachedBlock.Length);
-            _cachedBlock  = null;
-            _blockInCache = false;
-        }
-
-        _writingStream.Position = (long)_thisDynamic.TableOffset;
-        ReadOnlySpan<uint> span = _blockAllocationTable;
-
-        byte[] bat = MemoryMarshal.Cast<uint, byte>(span)[..(int)(_thisDynamic.MaxTableEntries * sizeof(uint))]
-                                  .ToArray();
-
-        _writingStream.Write(bat, 0, bat.Length);
-
-        byte[] dynamicBytes = new byte[1024];
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisDynamic.Cookie),          0, dynamicBytes, 0x00, 8);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisDynamic.DataOffset),      0, dynamicBytes, 0x08, 8);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisDynamic.TableOffset),     0, dynamicBytes, 0x10, 8);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisDynamic.HeaderVersion),   0, dynamicBytes, 0x18, 4);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisDynamic.MaxTableEntries), 0, dynamicBytes, 0x1C, 4);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisDynamic.BlockSize),       0, dynamicBytes, 0x20, 4);
-
-        _thisDynamic.Checksum = VhdChecksum(dynamicBytes);
-        Array.Copy(BigEndianBitConverter.GetBytes(_thisDynamic.Checksum), 0, dynamicBytes, 0x24, 4);
-
-        _writingStream.Position = 0;
-        _writingStream.Write(footerBytes, 0, 512);
-        _writingStream.Position = 512;
-        _writingStream.Write(dynamicBytes, 0, 1024);
-        _writingStream.Position = _currentFooterPosition;
-        _writingStream.Write(footerBytes, 0, 512);
-
-        _writingStream.Flush();
-    }
 }

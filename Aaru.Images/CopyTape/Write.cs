@@ -102,7 +102,7 @@ public sealed partial class CopyTape
     }
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress)
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!_writtenBlockPositions.TryGetValue(sectorAddress, out ulong position))
         {
@@ -138,11 +138,11 @@ public sealed partial class CopyTape
     }
 
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         for(uint i = 0; i < length; i++)
         {
-            bool ret = WriteSector(data, sectorAddress + i);
+            bool ret = WriteSector(data, sectorAddress + i, sectorStatus[i]);
 
             if(!ret) return false;
         }
@@ -151,7 +151,7 @@ public sealed partial class CopyTape
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         ErrorMessage = Localization.Unsupported_feature;
 
@@ -159,7 +159,7 @@ public sealed partial class CopyTape
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         ErrorMessage = Localization.Unsupported_feature;
 

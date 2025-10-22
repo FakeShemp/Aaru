@@ -197,7 +197,7 @@ public partial class Dump
                 IbgLog  ibgLog;
                 double  duration;
 
-                bool ret = true;
+                var ret = true;
 
                 if(_dev.IsUsb                  &&
                    _dev.UsbDescriptors != null &&
@@ -294,7 +294,7 @@ public partial class Dump
                         _mediaGraph?.PaintSectorsBad(_resume.BadBlocks);
                     }
 
-                    bool newTrim = false;
+                    var newTrim = false;
 
                     _dumpStopwatch.Restart();
                     _speedStopwatch.Reset();
@@ -336,7 +336,13 @@ public partial class Dump
                         {
                             mhddLog.Write(i, duration, blocksToRead);
                             ibgLog.Write(i, currentSpeed * 1024);
-                            outputFormat.WriteSectors(cmdBuf, i, blocksToRead);
+
+                            outputFormat.WriteSectors(cmdBuf,
+                                                      i,
+                                                      blocksToRead,
+                                                      Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)
+                                                                .ToArray());
+
                             imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
                             extents.Add(i, blocksToRead, true);
                             _mediaGraph?.PaintSectorsGood(i, blocksToRead);
@@ -350,7 +356,13 @@ public partial class Dump
                             mhddLog.Write(i, duration < 500 ? 65535 : duration, _skip);
 
                             ibgLog.Write(i, 0);
-                            outputFormat.WriteSectors(new byte[blockSize * _skip], i, _skip);
+
+                            outputFormat.WriteSectors(new byte[blockSize * _skip],
+                                                      i,
+                                                      _skip,
+                                                      Enumerable.Repeat(SectorStatus.NotDumped, (int)blocksToRead)
+                                                                .ToArray());
+
                             imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
 
                             UpdateProgress?.Invoke(Localization.Core.Skipping_0_blocks_from_errored_block_1,
@@ -436,7 +448,7 @@ public partial class Dump
 
                             _resume.BadBlocks.Remove(badSector);
                             extents.Add(badSector);
-                            outputFormat.WriteSector(cmdBuf, badSector);
+                            outputFormat.WriteSector(cmdBuf, badSector, SectorStatus.Dumped);
                             _mediaGraph?.PaintSectorGood(badSector);
                         }
 
@@ -453,8 +465,8 @@ public partial class Dump
 
                     if(_resume.BadBlocks.Count > 0 && !_aborted && _retryPasses > 0)
                     {
-                        int  pass    = 1;
-                        bool forward = true;
+                        var pass    = 1;
+                        var forward = true;
 
                         InitProgress?.Invoke();
                     repeatRetryLba:
@@ -504,7 +516,7 @@ public partial class Dump
                             {
                                 _resume.BadBlocks.Remove(badSector);
                                 extents.Add(badSector);
-                                outputFormat.WriteSector(cmdBuf, badSector);
+                                outputFormat.WriteSector(cmdBuf, badSector, SectorStatus.Dumped);
                                 _mediaGraph?.PaintSectorGood(badSector);
 
                                 UpdateStatus?.Invoke(string.Format(Localization.Core
@@ -512,7 +524,7 @@ public partial class Dump
                                                                    badSector,
                                                                    pass));
                             }
-                            else if(_persistent) outputFormat.WriteSector(cmdBuf, badSector);
+                            else if(_persistent) outputFormat.WriteSector(cmdBuf, badSector, SectorStatus.Errored);
                         }
 
                         if(pass < _retryPasses && !_aborted && _resume.BadBlocks.Count > 0)
@@ -613,7 +625,9 @@ public partial class Dump
                                     mhddLog.Write(currentBlock, duration);
                                     ibgLog.Write(currentBlock, currentSpeed * 1024);
 
-                                    outputFormat.WriteSector(cmdBuf, (ulong)((cy * heads + hd) * sectors + (sc - 1)));
+                                    outputFormat.WriteSector(cmdBuf,
+                                                             (ulong)((cy * heads + hd) * sectors + (sc - 1)),
+                                                             SectorStatus.Dumped);
 
                                     imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
                                     extents.Add(currentBlock);
@@ -627,7 +641,8 @@ public partial class Dump
                                     ibgLog.Write(currentBlock, 0);
 
                                     outputFormat.WriteSector(new byte[blockSize],
-                                                             (ulong)((cy * heads + hd) * sectors + (sc - 1)));
+                                                             (ulong)((cy * heads + hd) * sectors + (sc - 1)),
+                                                             SectorStatus.Errored);
 
                                     imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
                                 }

@@ -240,25 +240,32 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                         else
                             sectorsToDo = (uint)(trackSectors - doneSectors);
 
-                        var useNotLong = false;
-                        var result     = false;
+                        var          useNotLong        = false;
+                        var          result            = false;
+                        SectorStatus sectorStatus      = SectorStatus.NotDumped;
+                        var          sectorStatusArray = new SectorStatus[1];
 
                         if(useLong)
                         {
                             errno = sectorsToDo == 1
-                                        ? inputFormat.ReadSectorLong(doneSectors + track.StartSector, out sector, out _)
+                                        ? inputFormat.ReadSectorLong(doneSectors + track.StartSector,
+                                                                     out sector,
+                                                                     out sectorStatus)
                                         : inputFormat.ReadSectorsLong(doneSectors + track.StartSector,
                                                                       sectorsToDo,
                                                                       out sector,
-                                                                      out _);
+                                                                      out sectorStatusArray);
 
                             if(errno == ErrorNumber.NoError)
                             {
                                 result = sectorsToDo == 1
-                                             ? outputFormat.WriteSectorLong(sector, doneSectors + track.StartSector)
+                                             ? outputFormat.WriteSectorLong(sector,
+                                                                            doneSectors + track.StartSector,
+                                                                            sectorStatus)
                                              : outputFormat.WriteSectorsLong(sector,
                                                                              doneSectors + track.StartSector,
-                                                                             sectorsToDo);
+                                                                             sectorsToDo,
+                                                                             sectorStatusArray);
                             }
                             else
                                 result = false;
@@ -269,19 +276,24 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                         if(!useLong || useNotLong)
                         {
                             errno = sectorsToDo == 1
-                                        ? inputFormat.ReadSector(doneSectors + track.StartSector, out sector, out _)
+                                        ? inputFormat.ReadSector(doneSectors + track.StartSector,
+                                                                 out sector,
+                                                                 out sectorStatus)
                                         : inputFormat.ReadSectors(doneSectors + track.StartSector,
                                                                   sectorsToDo,
                                                                   out sector,
-                                                                  out _);
+                                                                  out sectorStatusArray);
 
                             Assert.That(errno, Is.EqualTo(ErrorNumber.NoError));
 
                             result = sectorsToDo == 1
-                                         ? outputFormat.WriteSector(sector, doneSectors + track.StartSector)
+                                         ? outputFormat.WriteSector(sector,
+                                                                    doneSectors + track.StartSector,
+                                                                    sectorStatus)
                                          : outputFormat.WriteSectors(sector,
                                                                      doneSectors + track.StartSector,
-                                                                     sectorsToDo);
+                                                                     sectorsToDo,
+                                                                     sectorStatusArray);
                         }
 
                         Assert.That(result,

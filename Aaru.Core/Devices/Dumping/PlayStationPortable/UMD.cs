@@ -96,11 +96,11 @@ public partial class Dump
             return;
         }
 
-        ushort fatStart      = (ushort)((readBuffer[0x0F] << 8)                          + readBuffer[0x0E]);
-        ushort sectorsPerFat = (ushort)((readBuffer[0x17] << 8)                          + readBuffer[0x16]);
-        ushort rootStart     = (ushort)(sectorsPerFat                                * 2 + fatStart);
-        ushort rootSize      = (ushort)(((readBuffer[0x12] << 8) + readBuffer[0x11]) * 32 / 512);
-        ushort umdStart      = (ushort)(rootStart + rootSize);
+        var fatStart      = (ushort)((readBuffer[0x0F] << 8)                          + readBuffer[0x0E]);
+        var sectorsPerFat = (ushort)((readBuffer[0x17] << 8)                          + readBuffer[0x16]);
+        var rootStart     = (ushort)(sectorsPerFat                                * 2 + fatStart);
+        var rootSize      = (ushort)(((readBuffer[0x12] << 8) + readBuffer[0x11]) * 32 / 512);
+        var umdStart      = (ushort)(rootStart + rootSize);
 
         UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_root_directory_in_sector_0, rootStart));
 
@@ -126,7 +126,7 @@ public partial class Dump
             return;
         }
 
-        uint   umdSizeInBytes  = BitConverter.ToUInt32(readBuffer, 0x3C);
+        var    umdSizeInBytes  = BitConverter.ToUInt32(readBuffer, 0x3C);
         ulong  blocks          = umdSizeInBytes / blockSize;
         string mediaPartNumber = Encoding.ASCII.GetString(readBuffer, 0, 11).Trim();
 
@@ -229,7 +229,7 @@ public partial class Dump
             _mediaGraph?.PaintSectorsBad(_resume.BadBlocks);
         }
 
-        bool newTrim = false;
+        var newTrim = false;
 
         _speedStopwatch.Reset();
         ulong sectorSpeedStart = 0;
@@ -285,7 +285,12 @@ public partial class Dump
             {
                 mhddLog.Write(i, cmdDuration, blocksToRead);
                 ibgLog.Write(i, currentSpeed * 1024);
-                outputOptical.WriteSectors(readBuffer, i, blocksToRead);
+
+                outputOptical.WriteSectors(readBuffer,
+                                           i,
+                                           blocksToRead,
+                                           Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
+
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
                 extents.Add(i, blocksToRead, true);
                 _mediaGraph?.PaintSectorsGood(i, blocksToRead);
@@ -300,7 +305,11 @@ public partial class Dump
                 if(i + _skip > blocks) _skip = (uint)(blocks - i);
 
                 // Write empty data
-                outputOptical.WriteSectors(new byte[blockSize * _skip], i, _skip);
+                outputOptical.WriteSectors(new byte[blockSize * _skip],
+                                           i,
+                                           _skip,
+                                           Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
+
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
 
                 for(ulong b = i; b < i + _skip; b++) _resume.BadBlocks.Add(b);
@@ -400,7 +409,7 @@ public partial class Dump
 
                 _resume.BadBlocks.Remove(badSector);
                 extents.Add(badSector);
-                outputOptical.WriteSector(readBuffer, badSector);
+                outputOptical.WriteSector(readBuffer, badSector, SectorStatus.Dumped);
                 _mediaGraph?.PaintSectorGood(badSector);
             }
 
@@ -417,9 +426,9 @@ public partial class Dump
 
         if(_resume.BadBlocks.Count > 0 && !_aborted && _retryPasses > 0)
         {
-            int  pass              = 1;
-            bool forward           = true;
-            bool runningPersistent = false;
+            var pass              = 1;
+            var forward           = true;
+            var runningPersistent = false;
 
             Modes.ModePage? currentModePage = null;
             byte[]          md6;
@@ -576,14 +585,14 @@ public partial class Dump
                 {
                     _resume.BadBlocks.Remove(badSector);
                     extents.Add(badSector);
-                    outputOptical.WriteSector(readBuffer, badSector);
+                    outputOptical.WriteSector(readBuffer, badSector, SectorStatus.Dumped);
                     _mediaGraph?.PaintSectorGood(badSector);
 
                     UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_block_0_in_pass_1,
                                                        badSector,
                                                        pass));
                 }
-                else if(runningPersistent) outputOptical.WriteSector(readBuffer, badSector);
+                else if(runningPersistent) outputOptical.WriteSector(readBuffer, badSector, SectorStatus.Errored);
             }
 
             if(pass < _retryPasses && !_aborted && _resume.BadBlocks.Count > 0)

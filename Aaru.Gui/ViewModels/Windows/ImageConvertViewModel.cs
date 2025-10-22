@@ -741,19 +741,27 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
                     Progress2Value = (int)(sectors / SectorsValue);
                 });
 
-                bool result;
+                bool         result;
+                SectorStatus sectorStatus      = SectorStatus.NotDumped;
+                var          sectorStatusArray = new SectorStatus[1];
 
                 if(useLong)
                 {
                     errno = sectorsToDo == 1
-                                ? _inputFormat.ReadSectorLong(doneSectors, out sector, out _)
-                                : _inputFormat.ReadSectorsLong(doneSectors, sectorsToDo, out sector, out _);
+                                ? _inputFormat.ReadSectorLong(doneSectors, out sector, out sectorStatus)
+                                : _inputFormat.ReadSectorsLong(doneSectors,
+                                                               sectorsToDo,
+                                                               out sector,
+                                                               out sectorStatusArray);
 
                     if(errno == ErrorNumber.NoError)
                     {
                         result = sectorsToDo == 1
-                                     ? outputFormat.WriteSectorLong(sector, doneSectors)
-                                     : outputFormat.WriteSectorsLong(sector, doneSectors, sectorsToDo);
+                                     ? outputFormat.WriteSectorLong(sector, doneSectors, sectorStatus)
+                                     : outputFormat.WriteSectorsLong(sector,
+                                                                     doneSectors,
+                                                                     sectorsToDo,
+                                                                     sectorStatusArray);
                     }
                     else
                     {
@@ -786,14 +794,14 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
                 else
                 {
                     errno = sectorsToDo == 1
-                                ? _inputFormat.ReadSector(doneSectors, out sector, out _)
-                                : _inputFormat.ReadSectors(doneSectors, sectorsToDo, out sector, out _);
+                                ? _inputFormat.ReadSector(doneSectors, out sector, out sectorStatus)
+                                : _inputFormat.ReadSectors(doneSectors, sectorsToDo, out sector, out sectorStatusArray);
 
                     if(errno == ErrorNumber.NoError)
                     {
                         result = sectorsToDo == 1
-                                     ? outputFormat.WriteSector(sector, doneSectors)
-                                     : outputFormat.WriteSectors(sector, doneSectors, sectorsToDo);
+                                     ? outputFormat.WriteSector(sector, doneSectors, sectorStatus)
+                                     : outputFormat.WriteSectors(sector, doneSectors, sectorsToDo, sectorStatusArray);
                     }
                     else
                     {
@@ -1200,24 +1208,31 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
                         Progress2Value = (int)(sectors / SectorsValue);
                     });
 
-                    bool result;
+                    bool         result;
+                    SectorStatus sectorStatus      = SectorStatus.NotDumped;
+                    var          sectorStatusArray = new SectorStatus[1];
 
                     if(useLong)
                     {
                         errno = sectorsToDo == 1
-                                    ? _inputFormat.ReadSectorLong(doneSectors + track.StartSector, out sector, out _)
+                                    ? _inputFormat.ReadSectorLong(doneSectors + track.StartSector,
+                                                                  out sector,
+                                                                  out sectorStatus)
                                     : _inputFormat.ReadSectorsLong(doneSectors + track.StartSector,
                                                                    sectorsToDo,
                                                                    out sector,
-                                                                   out _);
+                                                                   out sectorStatusArray);
 
                         if(errno == ErrorNumber.NoError)
                         {
                             result = sectorsToDo == 1
-                                         ? outputFormat.WriteSectorLong(sector, doneSectors + track.StartSector)
+                                         ? outputFormat.WriteSectorLong(sector,
+                                                                        doneSectors + track.StartSector,
+                                                                        sectorStatus)
                                          : outputFormat.WriteSectorsLong(sector,
                                                                          doneSectors + track.StartSector,
-                                                                         sectorsToDo);
+                                                                         sectorsToDo,
+                                                                         sectorStatusArray);
                         }
                         else
                         {
@@ -1248,19 +1263,24 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
                     else
                     {
                         errno = sectorsToDo == 1
-                                    ? _inputFormat.ReadSector(doneSectors + track.StartSector, out sector, out _)
+                                    ? _inputFormat.ReadSector(doneSectors + track.StartSector,
+                                                              out sector,
+                                                              out sectorStatus)
                                     : _inputFormat.ReadSectors(doneSectors + track.StartSector,
                                                                sectorsToDo,
                                                                out sector,
-                                                               out _);
+                                                               out sectorStatusArray);
 
                         if(errno == ErrorNumber.NoError)
                         {
                             result = sectorsToDo == 1
-                                         ? outputFormat.WriteSector(sector, doneSectors + track.StartSector)
+                                         ? outputFormat.WriteSector(sector,
+                                                                    doneSectors + track.StartSector,
+                                                                    sectorStatus)
                                          : outputFormat.WriteSectors(sector,
                                                                      doneSectors + track.StartSector,
-                                                                     sectorsToDo);
+                                                                     sectorsToDo,
+                                                                     sectorStatusArray);
                         }
                         else
                         {

@@ -143,7 +143,7 @@ public sealed partial class Cdrdao
     }
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress)
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
@@ -188,7 +188,7 @@ public sealed partial class Cdrdao
         // cdrdao audio tracks are endian swapped corresponding to Aaru
         if(track.Type == TrackType.Audio)
         {
-            byte[] swapped = new byte[data.Length];
+            var swapped = new byte[data.Length];
 
             for(long i = 0; i < swapped.Length; i += 2)
             {
@@ -209,7 +209,7 @@ public sealed partial class Cdrdao
     }
 
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
@@ -261,7 +261,7 @@ public sealed partial class Cdrdao
         // cdrdao audio tracks are endian swapped corresponding to Aaru
         if(track.Type == TrackType.Audio)
         {
-            byte[] swapped = new byte[data.Length];
+            var swapped = new byte[data.Length];
 
             for(long i = 0; i < swapped.Length; i += 2)
             {
@@ -307,7 +307,7 @@ public sealed partial class Cdrdao
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
@@ -345,7 +345,7 @@ public sealed partial class Cdrdao
         // cdrdao audio tracks are endian swapped corresponding to Aaru
         if(track.Type == TrackType.Audio)
         {
-            byte[] swapped = new byte[data.Length];
+            var swapped = new byte[data.Length];
 
             for(long i = 0; i < swapped.Length; i += 2)
             {
@@ -356,7 +356,7 @@ public sealed partial class Cdrdao
             data = swapped;
         }
 
-        uint subchannelSize = (uint)(track.SubchannelType != TrackSubchannelType.None ? 96 : 0);
+        var subchannelSize = (uint)(track.SubchannelType != TrackSubchannelType.None ? 96 : 0);
 
         trackStream.Seek((long)(track.FileOffset +
                                 (sectorAddress - track.StartSector) *
@@ -369,7 +369,7 @@ public sealed partial class Cdrdao
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
@@ -414,7 +414,7 @@ public sealed partial class Cdrdao
         // cdrdao audio tracks are endian swapped corresponding to Aaru
         if(track.Type == TrackType.Audio)
         {
-            byte[] swapped = new byte[data.Length];
+            var swapped = new byte[data.Length];
 
             for(long i = 0; i < swapped.Length; i += 2)
             {
@@ -425,7 +425,7 @@ public sealed partial class Cdrdao
             data = swapped;
         }
 
-        uint subchannelSize = (uint)(track.SubchannelType != TrackSubchannelType.None ? 96 : 0);
+        var subchannelSize = (uint)(track.SubchannelType != TrackSubchannelType.None ? 96 : 0);
 
         for(uint i = 0; i < length; i++)
         {
@@ -458,9 +458,8 @@ public sealed partial class Cdrdao
         }
 
         if(_writingTracks != null && _writingStreams != null)
-        {
-            foreach(FileStream oldTrack in _writingStreams.Select(t => t.Value).Distinct()) oldTrack.Close();
-        }
+            foreach(FileStream oldTrack in _writingStreams.Select(t => t.Value).Distinct())
+                oldTrack.Close();
 
         ulong currentOffset = 0;
         _writingTracks = [];

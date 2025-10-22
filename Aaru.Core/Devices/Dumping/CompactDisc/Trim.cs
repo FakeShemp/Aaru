@@ -39,6 +39,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Aaru.Checksums;
 using Aaru.CommonTypes.AaruMetadata;
+using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Extents;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Core.Logging;
@@ -84,7 +85,7 @@ partial class Dump
                         Dictionary<byte, string> isrcs, ref string mcn, HashSet<int> subchannelExtents,
                         Dictionary<byte, int> smallestPregapLbaPerTrack)
     {
-        bool               sense       = true; // Sense indicator
+        var                sense       = true; // Sense indicator
         byte[]             cmdBuf      = null; // Data buffer
         double             cmdDuration = 0;    // Command execution time
         const uint         sectorSize  = 2352; // Full sector size
@@ -109,7 +110,7 @@ partial class Dump
     trimStart:
         ulong[] tmpArray = _resume.BadBlocks.ToArray();
 
-        for(int b = 0; b < tmpArray.Length; b++)
+        for(var b = 0; b < tmpArray.Length; b++)
         {
             ulong badSector = tmpArray[b];
 
@@ -126,7 +127,7 @@ partial class Dump
             Track track = tracks.OrderBy(t => t.StartSector).LastOrDefault(t => badSector >= t.StartSector);
 
             byte sectorsToTrim   = 1;
-            uint badSectorToRead = (uint)badSector;
+            var  badSectorToRead = (uint)badSector;
 
             if(_fixOffset && audioExtents.Contains(badSector) && offsetBytes != 0)
             {
@@ -290,7 +291,7 @@ partial class Dump
                                 {
                                     case 0:
 
-                                        for(int c = 16; c < 2352; c++)
+                                        for(var c = 16; c < 2352; c++)
                                         {
                                             if(cmdBuf[c] == 0x00) continue;
 
@@ -417,15 +418,15 @@ partial class Dump
 
             if(supportedSubchannel != MmcSubchannel.None)
             {
-                byte[] data = new byte[sectorSize];
-                byte[] sub  = new byte[subSize];
+                var data = new byte[sectorSize];
+                var sub  = new byte[subSize];
                 Array.Copy(cmdBuf, 0,          data, 0, sectorSize);
                 Array.Copy(cmdBuf, sectorSize, sub,  0, subSize);
 
                 if(supportsLongSectors)
-                    outputOptical.WriteSectorLong(data, badSector);
+                    outputOptical.WriteSectorLong(data, badSector, SectorStatus.Dumped);
                 else
-                    outputOptical.WriteSector(Sector.GetUserData(data), badSector);
+                    outputOptical.WriteSector(Sector.GetUserData(data), badSector, SectorStatus.Dumped);
 
                 ulong trkStartBefore = track.StartSector;
 
@@ -467,9 +468,9 @@ partial class Dump
             }
 
             if(supportsLongSectors)
-                outputOptical.WriteSectorLong(cmdBuf, badSector);
+                outputOptical.WriteSectorLong(cmdBuf, badSector, SectorStatus.Dumped);
             else
-                outputOptical.WriteSector(Sector.GetUserData(cmdBuf), badSector);
+                outputOptical.WriteSector(Sector.GetUserData(cmdBuf), badSector, SectorStatus.Dumped);
         }
 
         _trimStopwatch.Stop();

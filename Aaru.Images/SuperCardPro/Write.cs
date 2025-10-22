@@ -101,9 +101,9 @@ public sealed partial class SuperCardPro
 
         List<byte> scpData = FluxRepresentationsToUInt16List(dataBuffer, scpIndices, out uint[] trackLengths);
 
-        uint offset = (uint)(4 + 12 * Header.revolutions);
+        var offset = (uint)(4 + 12 * Header.revolutions);
 
-        for(int i = 0; i < Header.revolutions; i++)
+        for(var i = 0; i < Header.revolutions; i++)
         {
             _writingStream.Write(BitConverter.GetBytes(scpIndices[i]),   0, 4);
             _writingStream.Write(BitConverter.GetBytes(trackLengths[i]), 0, 4);
@@ -179,7 +179,7 @@ public sealed partial class SuperCardPro
         _writingStream.WriteByte(Header.resolution);
 
         _writingStream.Seek(0, SeekOrigin.End);
-        string date = DateTime.Now.ToString("G");
+        var date = DateTime.Now.ToString("G");
         _writingStream.Write(Encoding.ASCII.GetBytes(date), 0, date.Length);
 
         Header.checksum = CalculateChecksum(_writingStream);
@@ -207,22 +207,14 @@ public sealed partial class SuperCardPro
 
     public bool WriteMediaTag(byte[] data, MediaTagType tag) => false;
 
-    public bool WriteSector(byte[] data, ulong sectorAddress)
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
     {
         ErrorMessage = Localization.Flux_decoding_is_not_yet_implemented;
 
         return false;
     }
 
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length)
-    {
-        ErrorMessage = Localization.Flux_decoding_is_not_yet_implemented;
-
-        return false;
-    }
-
-    /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         ErrorMessage = Localization.Flux_decoding_is_not_yet_implemented;
 
@@ -230,7 +222,15 @@ public sealed partial class SuperCardPro
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
+    {
+        ErrorMessage = Localization.Flux_decoding_is_not_yet_implemented;
+
+        return false;
+    }
+
+    /// <inheritdoc />
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
     {
         ErrorMessage = Localization.Flux_decoding_is_not_yet_implemented;
 

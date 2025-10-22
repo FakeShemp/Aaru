@@ -241,16 +241,20 @@ public sealed partial class A2R
     public bool WriteMediaTag(byte[] data, MediaTagType tag) => false;
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress) => throw new NotImplementedException();
+    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus) =>
+        throw new NotImplementedException();
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress) => throw new NotImplementedException();
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus) =>
+        throw new NotImplementedException();
 
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length) => throw new NotImplementedException();
+    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus) =>
+        throw new NotImplementedException();
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length) => throw new NotImplementedException();
+    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus) =>
+        throw new NotImplementedException();
 
 #endregion
 
