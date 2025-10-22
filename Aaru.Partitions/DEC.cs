@@ -47,6 +47,32 @@ public sealed class DEC : IPartition
     const int PT_MAGIC = 0x032957;
     const int PT_VALID = 1;
 
+#region Nested type: Label
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct Label
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 440)]
+        public readonly byte[] padding;
+        public readonly int pt_magic;
+        public readonly int pt_valid;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public readonly Partition[] pt_part;
+    }
+
+#endregion
+
+#region Nested type: Partition
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct Partition
+    {
+        public readonly int  pi_nblocks;
+        public readonly uint pi_blkoff;
+    }
+
+#endregion
+
 #region IPartition Members
 
     /// <inheritdoc />
@@ -65,7 +91,7 @@ public sealed class DEC : IPartition
 
         if(31 + sectorOffset >= imagePlugin.Info.Sectors) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(31 + sectorOffset, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSector(31 + sectorOffset, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError || sector.Length < 512) return false;
 
@@ -91,32 +117,6 @@ public sealed class DEC : IPartition
         }
 
         return true;
-    }
-
-#endregion
-
-#region Nested type: Label
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Label
-    {
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 440)]
-        public readonly byte[] padding;
-        public readonly int pt_magic;
-        public readonly int pt_valid;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public readonly Partition[] pt_part;
-    }
-
-#endregion
-
-#region Nested type: Partition
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Partition
-    {
-        public readonly int  pi_nblocks;
-        public readonly uint pi_blkoff;
     }
 
 #endregion

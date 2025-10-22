@@ -746,8 +746,8 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
                 if(useLong)
                 {
                     errno = sectorsToDo == 1
-                                ? _inputFormat.ReadSectorLong(doneSectors, out sector)
-                                : _inputFormat.ReadSectorsLong(doneSectors, sectorsToDo, out sector);
+                                ? _inputFormat.ReadSectorLong(doneSectors, out sector, out _)
+                                : _inputFormat.ReadSectorsLong(doneSectors, sectorsToDo, out sector, out _);
 
                     if(errno == ErrorNumber.NoError)
                     {
@@ -786,8 +786,8 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
                 else
                 {
                     errno = sectorsToDo == 1
-                                ? _inputFormat.ReadSector(doneSectors, out sector)
-                                : _inputFormat.ReadSectors(doneSectors, sectorsToDo, out sector);
+                                ? _inputFormat.ReadSector(doneSectors, out sector, out _)
+                                : _inputFormat.ReadSectors(doneSectors, sectorsToDo, out sector, out _);
 
                     if(errno == ErrorNumber.NoError)
                     {
@@ -1205,10 +1205,11 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
                     if(useLong)
                     {
                         errno = sectorsToDo == 1
-                                    ? _inputFormat.ReadSectorLong(doneSectors + track.StartSector, out sector)
+                                    ? _inputFormat.ReadSectorLong(doneSectors + track.StartSector, out sector, out _)
                                     : _inputFormat.ReadSectorsLong(doneSectors + track.StartSector,
                                                                    sectorsToDo,
-                                                                   out sector);
+                                                                   out sector,
+                                                                   out _);
 
                         if(errno == ErrorNumber.NoError)
                         {
@@ -1247,10 +1248,11 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
                     else
                     {
                         errno = sectorsToDo == 1
-                                    ? _inputFormat.ReadSector(doneSectors + track.StartSector, out sector)
+                                    ? _inputFormat.ReadSector(doneSectors + track.StartSector, out sector, out _)
                                     : _inputFormat.ReadSectors(doneSectors + track.StartSector,
                                                                sectorsToDo,
-                                                               out sector);
+                                                               out sector,
+                                                               out _);
 
                         if(errno == ErrorNumber.NoError)
                         {

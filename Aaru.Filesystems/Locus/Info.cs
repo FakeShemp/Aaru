@@ -72,7 +72,7 @@ public sealed partial class Locus
 
             if(partition.Start + location + sbSize >= imagePlugin.Info.Sectors) break;
 
-            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + location, sbSize, out byte[] sector);
+            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + location, sbSize, out byte[] sector, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
@@ -107,7 +107,7 @@ public sealed partial class Locus
 
             if(Marshal.SizeOf<Superblock>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
-            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + location, sbSize, out sector);
+            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + location, sbSize, out sector, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 

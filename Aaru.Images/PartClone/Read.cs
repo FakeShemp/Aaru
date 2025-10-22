@@ -55,7 +55,7 @@ public sealed partial class PartClone
 
         if(stream.Length < 512) return ErrorNumber.InvalidArgument;
 
-        byte[] pHdrB = new byte[Marshal.SizeOf<Header>()];
+        var pHdrB = new byte[Marshal.SizeOf<Header>()];
         stream.EnsureRead(pHdrB, 0, Marshal.SizeOf<Header>());
         _pHdr = Marshal.ByteArrayToStructureLittleEndian<Header>(pHdrB);
 
@@ -74,7 +74,7 @@ public sealed partial class PartClone
         AaruLogging.Debug(MODULE_NAME, Localization.Reading_bytemap_0_bytes, _byteMap.Length);
         stream.EnsureRead(_byteMap, 0, _byteMap.Length);
 
-        byte[] bitmagic = new byte[8];
+        var bitmagic = new byte[8];
         stream.EnsureRead(bitmagic, 0, 8);
 
         AaruLogging.Debug(MODULE_NAME, "pHdr.bitmagic = {0}", StringHandlers.CToString(bitmagic));
@@ -125,8 +125,8 @@ public sealed partial class PartClone
         extentFillStopwatch.Stop();
 
         AaruLogging.Debug(MODULE_NAME,
-                                   Localization.Took_0_seconds_to_fill_extents,
-                                   extentFillStopwatch.Elapsed.TotalSeconds);
+                          Localization.Took_0_seconds_to_fill_extents,
+                          extentFillStopwatch.Elapsed.TotalSeconds);
 
         _sectorCache = new Dictionary<ulong, byte[]>();
 
@@ -144,11 +144,14 @@ public sealed partial class PartClone
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer)
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
+
+        sectorStatus = SectorStatus.Dumped;
 
         if(_byteMap[sectorAddress] == 0)
         {
@@ -173,17 +176,19 @@ public sealed partial class PartClone
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
         var ms = new MemoryStream();
+        sectorStatus = Enumerable.Repeat(SectorStatus.Dumped, (int)length).ToArray();
 
-        bool allEmpty = true;
+        var allEmpty = true;
 
         for(uint i = 0; i < length; i++)
         {
@@ -203,11 +208,12 @@ public sealed partial class PartClone
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector);
+            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
 
             if(errno != ErrorNumber.NoError) return errno;
 
             ms.Write(sector, 0, sector.Length);
+            sectorStatus[i] = status;
         }
 
         buffer = ms.ToArray();

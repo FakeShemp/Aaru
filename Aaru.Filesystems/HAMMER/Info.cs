@@ -53,7 +53,7 @@ public sealed partial class HAMMER
 
         if(run + partition.Start >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, run, out byte[] sbSector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, run, out byte[] sbSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -76,7 +76,7 @@ public sealed partial class HAMMER
 
         if(HAMMER_VOLHDR_SIZE % imagePlugin.Info.SectorSize > 0) run++;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, run, out byte[] sbSector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, run, out byte[] sbSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

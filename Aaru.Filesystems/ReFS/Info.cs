@@ -47,13 +47,13 @@ public sealed partial class ReFS
     /// <inheritdoc />
     public bool Identify(IMediaImage imagePlugin, Partition partition)
     {
-        uint sbSize = (uint)(Marshal.SizeOf<VolumeHeader>() / imagePlugin.Info.SectorSize);
+        var sbSize = (uint)(Marshal.SizeOf<VolumeHeader>() / imagePlugin.Info.SectorSize);
 
         if(Marshal.SizeOf<VolumeHeader>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
         if(partition.Start + sbSize >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -73,13 +73,13 @@ public sealed partial class ReFS
         information = "";
         metadata    = new FileSystem();
 
-        uint sbSize = (uint)(Marshal.SizeOf<VolumeHeader>() / imagePlugin.Info.SectorSize);
+        var sbSize = (uint)(Marshal.SizeOf<VolumeHeader>() / imagePlugin.Info.SectorSize);
 
         if(Marshal.SizeOf<VolumeHeader>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
         if(partition.Start + sbSize >= partition.End) return;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -87,21 +87,17 @@ public sealed partial class ReFS
 
         VolumeHeader vhdr = Marshal.ByteArrayToStructureLittleEndian<VolumeHeader>(sector);
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "VolumeHeader.jump empty? = {0}",
-                                   ArrayHelpers.ArrayIsNullOrEmpty(vhdr.jump));
+        AaruLogging.Debug(MODULE_NAME, "VolumeHeader.jump empty? = {0}", ArrayHelpers.ArrayIsNullOrEmpty(vhdr.jump));
+
+        AaruLogging.Debug(MODULE_NAME, "VolumeHeader.signature = {0}", StringHandlers.CToString(vhdr.signature));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "VolumeHeader.signature = {0}",
-                                   StringHandlers.CToString(vhdr.signature));
+                          "VolumeHeader.mustBeZero empty? = {0}",
+                          ArrayHelpers.ArrayIsNullOrEmpty(vhdr.mustBeZero));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "VolumeHeader.mustBeZero empty? = {0}",
-                                   ArrayHelpers.ArrayIsNullOrEmpty(vhdr.mustBeZero));
-
-        AaruLogging.Debug(MODULE_NAME,
-                                   "VolumeHeader.identifier = {0}",
-                                   StringHandlers.CToString(BitConverter.GetBytes(vhdr.identifier)));
+                          "VolumeHeader.identifier = {0}",
+                          StringHandlers.CToString(BitConverter.GetBytes(vhdr.identifier)));
 
         AaruLogging.Debug(MODULE_NAME, "VolumeHeader.length = {0}",         vhdr.length);
         AaruLogging.Debug(MODULE_NAME, "VolumeHeader.checksum = 0x{0:X4}",  vhdr.checksum);
@@ -116,8 +112,8 @@ public sealed partial class ReFS
         AaruLogging.Debug(MODULE_NAME, "VolumeHeader.unknown4 zero? = {0}", vhdr.unknown4 == 0);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "VolumeHeader.unknown5 empty? = {0}",
-                                   ArrayHelpers.ArrayIsNullOrEmpty(vhdr.unknown5));
+                          "VolumeHeader.unknown5 empty? = {0}",
+                          ArrayHelpers.ArrayIsNullOrEmpty(vhdr.unknown5));
 
         if(vhdr.identifier != FSRS                           ||
            !ArrayHelpers.ArrayIsNullOrEmpty(vhdr.mustBeZero) ||

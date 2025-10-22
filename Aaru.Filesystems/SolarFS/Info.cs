@@ -49,11 +49,11 @@ public sealed partial class SolarFS
     {
         if(2 + partition.Start >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] bpb);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] bpb, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
-        byte[] fsTypeB = new byte[8];
+        var fsTypeB = new byte[8];
 
         byte signature = bpb[0x25];
         Array.Copy(bpb, 0x35, fsTypeB, 0, 8);
@@ -71,7 +71,7 @@ public sealed partial class SolarFS
         metadata    =   new FileSystem();
 
         var         sb    = new StringBuilder();
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] bpbSector);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] bpbSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -87,7 +87,7 @@ public sealed partial class SolarFS
             signature = bpbSector[0x25]
         };
 
-        byte[] bpbStrings = new byte[8];
+        var bpbStrings = new byte[8];
         Array.Copy(bpbSector, 0x03, bpbStrings, 0, 8);
         bpb.OEMName = StringHandlers.CToString(bpbStrings);
         bpbStrings  = new byte[8];
@@ -106,10 +106,10 @@ public sealed partial class SolarFS
         bpb.unk4 = BitConverter.ToUInt32(bpbSector, 0x26);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "BPB.x86_jump: 0x{0:X2}{1:X2}{2:X2}",
-                                   bpb.x86_jump[0],
-                                   bpb.x86_jump[1],
-                                   bpb.x86_jump[2]);
+                          "BPB.x86_jump: 0x{0:X2}{1:X2}{2:X2}",
+                          bpb.x86_jump[0],
+                          bpb.x86_jump[1],
+                          bpb.x86_jump[2]);
 
         AaruLogging.Debug(MODULE_NAME, "BPB.OEMName: \"{0}\"", bpb.OEMName);
         AaruLogging.Debug(MODULE_NAME, "BPB.bps: {0}",         bpb.bps);
@@ -123,17 +123,17 @@ public sealed partial class SolarFS
         AaruLogging.Debug(MODULE_NAME, "BPB.heads: {0}",       bpb.heads);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "BPB.unk3: 0x{0:X2}{1:X2}{2:X2}{3:X2}{4:X2}{5:X2}{6:X2}{7:X2}{8:X2}{9:X2}",
-                                   bpb.unk3[0],
-                                   bpb.unk3[1],
-                                   bpb.unk3[2],
-                                   bpb.unk3[3],
-                                   bpb.unk3[4],
-                                   bpb.unk3[5],
-                                   bpb.unk3[6],
-                                   bpb.unk3[7],
-                                   bpb.unk3[8],
-                                   bpb.unk3[9]);
+                          "BPB.unk3: 0x{0:X2}{1:X2}{2:X2}{3:X2}{4:X2}{5:X2}{6:X2}{7:X2}{8:X2}{9:X2}",
+                          bpb.unk3[0],
+                          bpb.unk3[1],
+                          bpb.unk3[2],
+                          bpb.unk3[3],
+                          bpb.unk3[4],
+                          bpb.unk3[5],
+                          bpb.unk3[6],
+                          bpb.unk3[7],
+                          bpb.unk3[8],
+                          bpb.unk3[9]);
 
         AaruLogging.Debug(MODULE_NAME, "BPB.signature: 0x{0:X2}", bpb.signature);
         AaruLogging.Debug(MODULE_NAME, "BPB.unk4: 0x{0:X8}",      bpb.unk4);

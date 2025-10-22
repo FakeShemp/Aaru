@@ -61,12 +61,12 @@ public sealed partial class CopyTape
         _imageStream          = imageFilter.GetDataForkStream();
         _imageStream.Position = 0;
 
-        byte[] header           = new byte[9];
-        byte[] blockHeader      = new byte[16];
-        ulong  currentBlock     = 0;
-        uint   currentFile      = 0;
-        ulong  currentFileStart = 0;
-        bool   inFile           = false;
+        var   header           = new byte[9];
+        var   blockHeader      = new byte[16];
+        ulong currentBlock     = 0;
+        uint  currentFile      = 0;
+        ulong currentFileStart = 0;
+        var   inFile           = false;
 
         Files = [];
 
@@ -188,16 +188,17 @@ public sealed partial class CopyTape
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer)
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
 
         if(sectorAddress >= (ulong)_blockPositionCache.LongLength) return ErrorNumber.OutOfRange;
 
         _imageStream.Position = _blockPositionCache[sectorAddress];
 
-        byte[] blockHeader = new byte[16];
-        var    blockRx     = new Regex(BLOCK_REGEX);
+        var blockHeader = new byte[16];
+        var blockRx     = new Regex(BLOCK_REGEX);
 
         _imageStream.EnsureRead(blockHeader, 0, 16);
         string mark    = Encoding.ASCII.GetString(blockHeader);
@@ -217,23 +218,30 @@ public sealed partial class CopyTape
 
         _imageStream.EnsureRead(buffer, 0, (int)blockSize);
 
-        return _imageStream.ReadByte() != 0x0A ? ErrorNumber.InvalidArgument : ErrorNumber.NoError;
+        if(_imageStream.ReadByte() != 0x0A) return ErrorNumber.InvalidArgument;
+
+        sectorStatus = SectorStatus.Dumped;
+
+        return ErrorNumber.NoError;
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         var ms = new MemoryStream();
+        sectorStatus = new SectorStatus[length];
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector);
+            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
 
             if(errno != ErrorNumber.NoError) return errno;
 
             ms.Write(sector, 0, sector.Length);
+            sectorStatus[i] = status;
         }
 
         buffer = ms.ToArray();

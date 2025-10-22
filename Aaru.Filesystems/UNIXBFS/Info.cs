@@ -49,11 +49,11 @@ public sealed partial class BFS
     {
         if(2 + partition.Start >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] tmp);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] tmp, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
-        uint magic = BitConverter.ToUInt32(tmp, 0);
+        var magic = BitConverter.ToUInt32(tmp, 0);
 
         return magic == BFS_MAGIC;
     }
@@ -67,11 +67,11 @@ public sealed partial class BFS
         metadata    =   new FileSystem();
 
         var         sb    = new StringBuilder();
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] bfsSbSector);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] bfsSbSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
-        byte[] sbStrings = new byte[6];
+        var sbStrings = new byte[6];
 
         var bfsSb = new SuperBlock
         {

@@ -60,14 +60,14 @@ public sealed partial class AcornADFS
         // ADFS-S, ADFS-M, ADFS-L, ADFS-D without partitions
         if(partition.Start == 0)
         {
-            errno = imagePlugin.ReadSector(0, out sector);
+            errno = imagePlugin.ReadSector(0, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
             byte          oldChk0 = AcornMapChecksum(sector, 255);
             OldMapSector0 oldMap0 = Marshal.ByteArrayToStructureLittleEndian<OldMapSector0>(sector);
 
-            errno = imagePlugin.ReadSector(1, out sector);
+            errno = imagePlugin.ReadSector(1, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
@@ -80,11 +80,11 @@ public sealed partial class AcornADFS
             // According to documentation map1 MUST start on sector 1. On ADFS-D it starts at 0x100, not on sector 1 (0x400)
             if(oldMap0.checksum == oldChk0 && oldMap1.checksum != oldChk1 && sector.Length >= 512)
             {
-                errno = imagePlugin.ReadSector(0, out sector);
+                errno = imagePlugin.ReadSector(0, out sector, out _);
 
                 if(errno != ErrorNumber.NoError) return false;
 
-                byte[] tmp = new byte[256];
+                var tmp = new byte[256];
                 Array.Copy(sector, 256, tmp, 0, 256);
                 oldChk1 = AcornMapChecksum(tmp, 255);
                 oldMap1 = Marshal.ByteArrayToStructureLittleEndian<OldMapSector1>(tmp);
@@ -103,13 +103,13 @@ public sealed partial class AcornADFS
 
                 if(OLD_DIRECTORY_SIZE % imagePlugin.Info.SectorSize > 0) sectorsToRead++;
 
-                errno = imagePlugin.ReadSectors(sbSector, sectorsToRead, out sector);
+                errno = imagePlugin.ReadSectors(sbSector, sectorsToRead, out sector, out _);
 
                 if(errno != ErrorNumber.NoError) return false;
 
                 if(sector.Length > OLD_DIRECTORY_SIZE)
                 {
-                    byte[] tmp = new byte[OLD_DIRECTORY_SIZE];
+                    var tmp = new byte[OLD_DIRECTORY_SIZE];
                     Array.Copy(sector, 0, tmp, 0, OLD_DIRECTORY_SIZE - 53);
                     Array.Copy(sector, sector.Length                 - 54, tmp, OLD_DIRECTORY_SIZE - 54, 53);
                     sector = tmp;
@@ -122,9 +122,7 @@ public sealed partial class AcornADFS
 
                 AaruLogging.Debug(MODULE_NAME, "oldRoot.tail.magic at 0x200 = {0}", oldRoot.tail.magic);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "oldRoot.tail.checkByte at 0x200 = {0}",
-                                           oldRoot.tail.checkByte);
+                AaruLogging.Debug(MODULE_NAME, "oldRoot.tail.checkByte at 0x200 = {0}", oldRoot.tail.checkByte);
 
                 AaruLogging.Debug(MODULE_NAME, "dirChk at 0x200 = {0}", dirChk);
 
@@ -138,13 +136,13 @@ public sealed partial class AcornADFS
 
                 if(NEW_DIRECTORY_SIZE % imagePlugin.Info.SectorSize > 0) sectorsToRead++;
 
-                errno = imagePlugin.ReadSectors(sbSector, sectorsToRead, out sector);
+                errno = imagePlugin.ReadSectors(sbSector, sectorsToRead, out sector, out _);
 
                 if(errno != ErrorNumber.NoError) return false;
 
                 if(sector.Length > OLD_DIRECTORY_SIZE)
                 {
-                    byte[] tmp = new byte[OLD_DIRECTORY_SIZE];
+                    var tmp = new byte[OLD_DIRECTORY_SIZE];
                     Array.Copy(sector, 0, tmp, 0, OLD_DIRECTORY_SIZE - 53);
                     Array.Copy(sector, sector.Length                 - 54, tmp, OLD_DIRECTORY_SIZE - 54, 53);
                     sector = tmp;
@@ -157,9 +155,7 @@ public sealed partial class AcornADFS
 
                 AaruLogging.Debug(MODULE_NAME, "oldRoot.tail.magic at 0x400 = {0}", oldRoot.tail.magic);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "oldRoot.tail.checkByte at 0x400 = {0}",
-                                           oldRoot.tail.checkByte);
+                AaruLogging.Debug(MODULE_NAME, "oldRoot.tail.checkByte at 0x400 = {0}", oldRoot.tail.checkByte);
 
                 AaruLogging.Debug(MODULE_NAME, "dirChk at 0x400 = {0}", dirChk);
 
@@ -172,7 +168,7 @@ public sealed partial class AcornADFS
         // Partitioning or not, new formats follow:
         DiscRecord drSb;
 
-        errno = imagePlugin.ReadSector(partition.Start, out sector);
+        errno = imagePlugin.ReadSector(partition.Start, out sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -187,15 +183,15 @@ public sealed partial class AcornADFS
 
         if(sbSector + partition.Start + sectorsToRead >= partition.End) return false;
 
-        errno = imagePlugin.ReadSectors(sbSector + partition.Start, sectorsToRead, out byte[] bootSector);
+        errno = imagePlugin.ReadSectors(sbSector + partition.Start, sectorsToRead, out byte[] bootSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
-        int bootChk = 0;
+        var bootChk = 0;
 
         if(bootSector.Length < 512) return false;
 
-        for(int i = 0; i < 0x1FF; i++) bootChk = (bootChk & 0xFF) + (bootChk >> 8) + bootSector[i];
+        for(var i = 0; i < 0x1FF; i++) bootChk = (bootChk & 0xFF) + (bootChk >> 8) + bootSector[i];
 
         AaruLogging.Debug(MODULE_NAME, "bootChk = {0}",         bootChk);
         AaruLogging.Debug(MODULE_NAME, "bBlock.checksum = {0}", bootSector[0x1FF]);
@@ -219,8 +215,8 @@ public sealed partial class AcornADFS
         AaruLogging.Debug(MODULE_NAME, "drSb.disc_size = {0}",      drSb.disc_size);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "IsNullOrEmpty(drSb.reserved) = {0}",
-                                   ArrayHelpers.ArrayIsNullOrEmpty(drSb.reserved));
+                          "IsNullOrEmpty(drSb.reserved) = {0}",
+                          ArrayHelpers.ArrayIsNullOrEmpty(drSb.reserved));
 
         if(drSb.log2secsize is < 8 or > 10) return false;
 
@@ -258,14 +254,14 @@ public sealed partial class AcornADFS
         // ADFS-S, ADFS-M, ADFS-L, ADFS-D without partitions
         if(partition.Start == 0)
         {
-            errno = imagePlugin.ReadSector(0, out sector);
+            errno = imagePlugin.ReadSector(0, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return;
 
             byte          oldChk0 = AcornMapChecksum(sector, 255);
             OldMapSector0 oldMap0 = Marshal.ByteArrayToStructureLittleEndian<OldMapSector0>(sector);
 
-            errno = imagePlugin.ReadSector(1, out sector);
+            errno = imagePlugin.ReadSector(1, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return;
 
@@ -275,11 +271,11 @@ public sealed partial class AcornADFS
             // According to documentation map1 MUST start on sector 1. On ADFS-D it starts at 0x100, not on sector 1 (0x400)
             if(oldMap0.checksum == oldChk0 && oldMap1.checksum != oldChk1 && sector.Length >= 512)
             {
-                errno = imagePlugin.ReadSector(0, out sector);
+                errno = imagePlugin.ReadSector(0, out sector, out _);
 
                 if(errno != ErrorNumber.NoError) return;
 
-                byte[] tmp = new byte[256];
+                var tmp = new byte[256];
                 Array.Copy(sector, 256, tmp, 0, 256);
                 oldChk1 = AcornMapChecksum(tmp, 255);
                 oldMap1 = Marshal.ByteArrayToStructureLittleEndian<OldMapSector1>(tmp);
@@ -291,9 +287,9 @@ public sealed partial class AcornADFS
                oldMap1.checksum != 0)
             {
                 bytes = (ulong)((oldMap0.size[2] << 16) + (oldMap0.size[1] << 8) + oldMap0.size[0]) * 256;
-                byte[] namebytes = new byte[10];
+                var namebytes = new byte[10];
 
-                for(int i = 0; i < 5; i++)
+                for(var i = 0; i < 5; i++)
                 {
                     namebytes[i * 2]     = oldMap0.name[i];
                     namebytes[i * 2 + 1] = oldMap1.name[i];
@@ -314,13 +310,13 @@ public sealed partial class AcornADFS
 
                     if(OLD_DIRECTORY_SIZE % imagePlugin.Info.SectorSize > 0) sectorsToRead++;
 
-                    errno = imagePlugin.ReadSectors(sbSector, sectorsToRead, out sector);
+                    errno = imagePlugin.ReadSectors(sbSector, sectorsToRead, out sector, out _);
 
                     if(errno != ErrorNumber.NoError) return;
 
                     if(sector.Length > OLD_DIRECTORY_SIZE)
                     {
-                        byte[] tmp = new byte[OLD_DIRECTORY_SIZE];
+                        var tmp = new byte[OLD_DIRECTORY_SIZE];
                         Array.Copy(sector, 0, tmp, 0, OLD_DIRECTORY_SIZE - 53);
                         Array.Copy(sector, sector.Length                 - 54, tmp, OLD_DIRECTORY_SIZE - 54, 53);
                         sector = tmp;
@@ -338,13 +334,13 @@ public sealed partial class AcornADFS
 
                         if(NEW_DIRECTORY_SIZE % imagePlugin.Info.SectorSize > 0) sectorsToRead++;
 
-                        errno = imagePlugin.ReadSectors(sbSector, sectorsToRead, out sector);
+                        errno = imagePlugin.ReadSectors(sbSector, sectorsToRead, out sector, out _);
 
                         if(errno != ErrorNumber.NoError) return;
 
                         if(sector.Length > OLD_DIRECTORY_SIZE)
                         {
-                            byte[] tmp = new byte[OLD_DIRECTORY_SIZE];
+                            var tmp = new byte[OLD_DIRECTORY_SIZE];
                             Array.Copy(sector, 0, tmp, 0, OLD_DIRECTORY_SIZE - 53);
 
                             Array.Copy(sector, sector.Length - 54, tmp, OLD_DIRECTORY_SIZE - 54, 53);
@@ -358,13 +354,13 @@ public sealed partial class AcornADFS
                             namebytes = oldRoot.tail.name;
                         else
                         {
-                            errno = imagePlugin.ReadSectors(sbSector, sectorsToRead, out sector);
+                            errno = imagePlugin.ReadSectors(sbSector, sectorsToRead, out sector, out _);
 
                             if(errno != ErrorNumber.NoError) return;
 
                             if(sector.Length > NEW_DIRECTORY_SIZE)
                             {
-                                byte[] tmp = new byte[NEW_DIRECTORY_SIZE];
+                                var tmp = new byte[NEW_DIRECTORY_SIZE];
                                 Array.Copy(sector, 0, tmp, 0, NEW_DIRECTORY_SIZE - 41);
 
                                 Array.Copy(sector, sector.Length - 42, tmp, NEW_DIRECTORY_SIZE - 42, 41);
@@ -406,7 +402,7 @@ public sealed partial class AcornADFS
         // Partitioning or not, new formats follow:
         DiscRecord drSb;
 
-        errno = imagePlugin.ReadSector(partition.Start, out sector);
+        errno = imagePlugin.ReadSector(partition.Start, out sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -419,13 +415,13 @@ public sealed partial class AcornADFS
 
         if(BOOT_BLOCK_SIZE % imagePlugin.Info.SectorSize > 0) sectorsToRead++;
 
-        errno = imagePlugin.ReadSectors(sbSector + partition.Start, sectorsToRead, out byte[] bootSector);
+        errno = imagePlugin.ReadSectors(sbSector + partition.Start, sectorsToRead, out byte[] bootSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
-        int bootChk = 0;
+        var bootChk = 0;
 
-        for(int i = 0; i < 0x1FF; i++) bootChk = (bootChk & 0xFF) + (bootChk >> 8) + bootSector[i];
+        for(var i = 0; i < 0x1FF; i++) bootChk = (bootChk & 0xFF) + (bootChk >> 8) + bootSector[i];
 
         AaruLogging.Debug(MODULE_NAME, "bootChk = {0}",         bootChk);
         AaruLogging.Debug(MODULE_NAME, "bBlock.checksum = {0}", bootSector[0x1FF]);
@@ -458,9 +454,7 @@ public sealed partial class AcornADFS
         AaruLogging.Debug(MODULE_NAME, "drSb.disc_size = {0}",   drSb.disc_size);
         AaruLogging.Debug(MODULE_NAME, "drSb.disc_id = {0}",     drSb.disc_id);
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "drSb.disc_name = {0}",
-                                   StringHandlers.CToString(drSb.disc_name, encoding));
+        AaruLogging.Debug(MODULE_NAME, "drSb.disc_name = {0}", StringHandlers.CToString(drSb.disc_name, encoding));
 
         AaruLogging.Debug(MODULE_NAME, "drSb.disc_type = {0}",      drSb.disc_type);
         AaruLogging.Debug(MODULE_NAME, "drSb.disc_size_high = {0}", drSb.disc_size_high);

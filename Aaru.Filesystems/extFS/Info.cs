@@ -54,7 +54,7 @@ public sealed partial class extFS
 
         if(sbSectorOff + partition.Start >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(sbSectorOff + partition.Start, out byte[] sbSector);
+        ErrorNumber errno = imagePlugin.ReadSector(sbSectorOff + partition.Start, out byte[] sbSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -85,7 +85,7 @@ public sealed partial class extFS
 
         if(sbSectorOff + partition.Start >= partition.End) return;
 
-        ErrorNumber errno = imagePlugin.ReadSector(sbSectorOff + partition.Start, out byte[] sblock);
+        ErrorNumber errno = imagePlugin.ReadSector(sbSectorOff + partition.Start, out byte[] sblock, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

@@ -38,6 +38,62 @@ namespace Aaru.Filesystems;
 
 public sealed partial class OperaFS
 {
+    Dictionary<string, DirectoryEntryWithPointers> DecodeDirectory(int firstBlock)
+    {
+        Dictionary<string, DirectoryEntryWithPointers> entries = new();
+
+        int nextBlock = firstBlock;
+
+        DirectoryHeader header;
+
+        do
+        {
+            ErrorNumber errno = _image.ReadSectors((ulong)(nextBlock * _volumeBlockSizeRatio),
+                                                   _volumeBlockSizeRatio,
+                                                   out byte[] data,
+                                                   out _);
+
+            if(errno != ErrorNumber.NoError) break;
+
+            header    = Marshal.ByteArrayToStructureBigEndian<DirectoryHeader>(data);
+            nextBlock = header.next_block + firstBlock;
+
+            var off = (int)header.first_used;
+
+            var entry = new DirectoryEntry();
+
+            while(off + _directoryEntrySize < data.Length)
+            {
+                entry = Marshal.ByteArrayToStructureBigEndian<DirectoryEntry>(data, off, _directoryEntrySize);
+                string name = StringHandlers.CToString(entry.name, _encoding);
+
+                var entryWithPointers = new DirectoryEntryWithPointers
+                {
+                    Entry    = entry,
+                    Pointers = new uint[entry.last_copy + 1]
+                };
+
+                for(var i = 0; i <= entry.last_copy; i++)
+                {
+                    entryWithPointers.Pointers[i] =
+                        BigEndianBitConverter.ToUInt32(data, off + _directoryEntrySize + i * 4);
+                }
+
+                entries.Add(name, entryWithPointers);
+
+                if((entry.flags & (uint)FileFlags.LastEntry)        != 0 ||
+                   (entry.flags & (uint)FileFlags.LastEntryInBlock) != 0)
+                    break;
+
+                off += (int)(_directoryEntrySize + (entry.last_copy + 1) * 4);
+            }
+
+            if((entry.flags & (uint)FileFlags.LastEntry) != 0) break;
+        } while(header.next_block != -1);
+
+        return entries;
+    }
+
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
@@ -154,59 +210,4 @@ public sealed partial class OperaFS
     }
 
 #endregion
-
-    Dictionary<string, DirectoryEntryWithPointers> DecodeDirectory(int firstBlock)
-    {
-        Dictionary<string, DirectoryEntryWithPointers> entries = new();
-
-        int nextBlock = firstBlock;
-
-        DirectoryHeader header;
-
-        do
-        {
-            ErrorNumber errno = _image.ReadSectors((ulong)(nextBlock * _volumeBlockSizeRatio),
-                                                   _volumeBlockSizeRatio,
-                                                   out byte[] data);
-
-            if(errno != ErrorNumber.NoError) break;
-
-            header    = Marshal.ByteArrayToStructureBigEndian<DirectoryHeader>(data);
-            nextBlock = header.next_block + firstBlock;
-
-            var off = (int)header.first_used;
-
-            var entry = new DirectoryEntry();
-
-            while(off + _directoryEntrySize < data.Length)
-            {
-                entry = Marshal.ByteArrayToStructureBigEndian<DirectoryEntry>(data, off, _directoryEntrySize);
-                string name = StringHandlers.CToString(entry.name, _encoding);
-
-                var entryWithPointers = new DirectoryEntryWithPointers
-                {
-                    Entry    = entry,
-                    Pointers = new uint[entry.last_copy + 1]
-                };
-
-                for(var i = 0; i <= entry.last_copy; i++)
-                {
-                    entryWithPointers.Pointers[i] =
-                        BigEndianBitConverter.ToUInt32(data, off + _directoryEntrySize + i * 4);
-                }
-
-                entries.Add(name, entryWithPointers);
-
-                if((entry.flags & (uint)FileFlags.LastEntry)        != 0 ||
-                   (entry.flags & (uint)FileFlags.LastEntryInBlock) != 0)
-                    break;
-
-                off += (int)(_directoryEntrySize + (entry.last_copy + 1) * 4);
-            }
-
-            if((entry.flags & (uint)FileFlags.LastEntry) != 0) break;
-        } while(header.next_block != -1);
-
-        return entries;
-    }
 }

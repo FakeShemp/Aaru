@@ -58,15 +58,13 @@ public sealed partial class D88
 
         if(stream.Length < Marshal.SizeOf<Header>()) return ErrorNumber.InvalidArgument;
 
-        byte[] hdrB = new byte[Marshal.SizeOf<Header>()];
+        var hdrB = new byte[Marshal.SizeOf<Header>()];
         stream.EnsureRead(hdrB, 0, hdrB.Length);
         Header hdr = Marshal.ByteArrayToStructureLittleEndian<Header>(hdrB);
 
         AaruLogging.Debug(MODULE_NAME, "d88hdr.name = \"{0}\"", StringHandlers.CToString(hdr.name, shiftjis));
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "d88hdr.reserved is empty? = {0}",
-                                   hdr.reserved.SequenceEqual(_reservedEmpty));
+        AaruLogging.Debug(MODULE_NAME, "d88hdr.reserved is empty? = {0}", hdr.reserved.SequenceEqual(_reservedEmpty));
 
         AaruLogging.Debug(MODULE_NAME, "d88hdr.write_protect = 0x{0:X2}", hdr.write_protect);
 
@@ -81,7 +79,7 @@ public sealed partial class D88
 
         if(!hdr.reserved.SequenceEqual(_reservedEmpty)) return ErrorNumber.InvalidArgument;
 
-        int trkCounter = 0;
+        var trkCounter = 0;
 
         foreach(int t in hdr.track_table)
         {
@@ -112,10 +110,10 @@ public sealed partial class D88
 
         short             spt      = sechdr.spt;
         IBMSectorSizeCode bps      = sechdr.n;
-        bool              allEqual = true;
+        var               allEqual = true;
         _sectorsData = [];
 
-        for(int i = 0; i < trkCounter; i++)
+        for(var i = 0; i < trkCounter; i++)
         {
             stream.Seek(hdr.track_table[i], SeekOrigin.Begin);
             stream.EnsureRead(hdrB, 0, hdrB.Length);
@@ -126,13 +124,13 @@ public sealed partial class D88
             if(sechdr.spt != spt || sechdr.n != bps)
             {
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Disk_tracks_are_not_same_size,
-                                           sechdr.spt,
-                                           spt,
-                                           sechdr.n,
-                                           bps,
-                                           i,
-                                           0);
+                                  Localization.Disk_tracks_are_not_same_size,
+                                  sechdr.spt,
+                                  spt,
+                                  sechdr.n,
+                                  bps,
+                                  i,
+                                  0);
 
                 allEqual = false;
             }
@@ -152,14 +150,14 @@ public sealed partial class D88
                 if(sechdr.spt == spt && sechdr.n == bps) continue;
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Disk_tracks_are_not_same_size,
-                                           sechdr.spt,
-                                           spt,
-                                           sechdr.n,
-                                           bps,
-                                           i,
-                                           j,
-                                           sechdr.deleted_mark);
+                                  Localization.Disk_tracks_are_not_same_size,
+                                  sechdr.spt,
+                                  spt,
+                                  sechdr.n,
+                                  bps,
+                                  i,
+                                  j,
+                                  sechdr.deleted_mark);
 
                 allEqual = false;
             }
@@ -350,20 +348,28 @@ public sealed partial class D88
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer) => ReadSectors(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectors(sectorAddress, 1, out buffer, out _);
+    }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
         var ms = new MemoryStream();
+        sectorStatus = new SectorStatus[length];
+        for(uint i = 0; i < length; i++) sectorStatus[i] = SectorStatus.Dumped;
 
-        for(int i = 0; i < length; i++)
+        for(var i = 0; i < length; i++)
             ms.Write(_sectorsData[(int)sectorAddress + i], 0, _sectorsData[(int)sectorAddress + i].Length);
 
         buffer = ms.ToArray();

@@ -65,7 +65,7 @@ public sealed partial class UDF
             [partition.End                     - 1024, 4], [partition.End - 4, 4]
         ];
 
-        bool   anchorFound = false;
+        var    anchorFound = false;
         uint   ratio       = 1;
         byte[] sector      = null;
 
@@ -74,7 +74,8 @@ public sealed partial class UDF
                                                             position[0] + partition.Start + position[1] <=
                                                             partition.End &&
                                                             position[0] < partition.End)
-                                    let errno = imagePlugin.ReadSectors(position[0], (uint)position[1], out sector)
+                                    let errno =
+                                        imagePlugin.ReadSectors(position[0], (uint)position[1], out sector, out _)
                                     where errno == ErrorNumber.NoError
                                     select position)
         {
@@ -91,27 +92,25 @@ public sealed partial class UDF
 
             AaruLogging.Debug(MODULE_NAME, "anchor.tag.descriptorCrc = 0x{0:X4}", anchor.tag.descriptorCrc);
 
-            AaruLogging.Debug(MODULE_NAME,
-                                       "anchor.tag.descriptorCrcLength = {0}",
-                                       anchor.tag.descriptorCrcLength);
+            AaruLogging.Debug(MODULE_NAME, "anchor.tag.descriptorCrcLength = {0}", anchor.tag.descriptorCrcLength);
 
             AaruLogging.Debug(MODULE_NAME, "anchor.tag.tagLocation = {0}", anchor.tag.tagLocation);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "anchor.mainVolumeDescriptorSequenceExtent.length = {0}",
-                                       anchor.mainVolumeDescriptorSequenceExtent.length);
+                              "anchor.mainVolumeDescriptorSequenceExtent.length = {0}",
+                              anchor.mainVolumeDescriptorSequenceExtent.length);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "anchor.mainVolumeDescriptorSequenceExtent.location = {0}",
-                                       anchor.mainVolumeDescriptorSequenceExtent.location);
+                              "anchor.mainVolumeDescriptorSequenceExtent.location = {0}",
+                              anchor.mainVolumeDescriptorSequenceExtent.location);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "anchor.reserveVolumeDescriptorSequenceExtent.length = {0}",
-                                       anchor.reserveVolumeDescriptorSequenceExtent.length);
+                              "anchor.reserveVolumeDescriptorSequenceExtent.length = {0}",
+                              anchor.reserveVolumeDescriptorSequenceExtent.length);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "anchor.reserveVolumeDescriptorSequenceExtent.location = {0}",
-                                       anchor.reserveVolumeDescriptorSequenceExtent.location);
+                              "anchor.reserveVolumeDescriptorSequenceExtent.location = {0}",
+                              anchor.reserveVolumeDescriptorSequenceExtent.location);
 
             if(anchor.tag.tagIdentifier != TagIdentifier.AnchorVolumeDescriptorPointer ||
                anchor.tag.tagLocation != position[0] / position[1] ||
@@ -135,7 +134,8 @@ public sealed partial class UDF
                                         anchor.mainVolumeDescriptorSequenceExtent.location * ratio +
                                         count                                              * ratio,
                                         ratio,
-                                        out sector);
+                                        out sector,
+                                        out _);
 
             if(errno != ErrorNumber.NoError)
             {
@@ -144,8 +144,8 @@ public sealed partial class UDF
                 continue;
             }
 
-            var  tagId    = (TagIdentifier)BitConverter.ToUInt16(sector, 0);
-            uint location = BitConverter.ToUInt32(sector, 0x0C);
+            var tagId    = (TagIdentifier)BitConverter.ToUInt16(sector, 0);
+            var location = BitConverter.ToUInt32(sector, 0x0C);
 
             if(location == partition.Start / ratio + anchor.mainVolumeDescriptorSequenceExtent.location + count)
             {
@@ -197,7 +197,7 @@ public sealed partial class UDF
 
         foreach(ulong[] position in positions)
         {
-            errno = imagePlugin.ReadSectors(position[0], (uint)position[1], out sector);
+            errno = imagePlugin.ReadSectors(position[0], (uint)position[1], out sector, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -225,12 +225,13 @@ public sealed partial class UDF
                                             anchor.mainVolumeDescriptorSequenceExtent.location * ratio +
                                             count                                              * ratio,
                                             ratio,
-                                            out sector);
+                                            out sector,
+                                            out _);
 
             if(errno != ErrorNumber.NoError) continue;
 
-            var  tagId    = (TagIdentifier)BitConverter.ToUInt16(sector, 0);
-            uint location = BitConverter.ToUInt32(sector, 0x0C);
+            var tagId    = (TagIdentifier)BitConverter.ToUInt16(sector, 0);
+            var location = BitConverter.ToUInt32(sector, 0x0C);
 
             if(location == partition.Start / ratio + anchor.mainVolumeDescriptorSequenceExtent.location + count)
             {
@@ -254,7 +255,7 @@ public sealed partial class UDF
             count++;
         }
 
-        errno = imagePlugin.ReadSectors(lvd.integritySequenceExtent.location * ratio, ratio, out sector);
+        errno = imagePlugin.ReadSectors(lvd.integritySequenceExtent.location * ratio, ratio, out sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

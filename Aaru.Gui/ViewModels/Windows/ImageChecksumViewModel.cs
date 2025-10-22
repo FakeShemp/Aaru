@@ -224,8 +224,8 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
     [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void DoWork()
     {
-        var  opticalMediaImage = _inputFormat as IOpticalMediaImage;
-        bool formatHasTracks   = false;
+        var opticalMediaImage = _inputFormat as IOpticalMediaImage;
+        var formatHasTracks   = false;
 
         if(opticalMediaImage != null)
         {
@@ -321,7 +321,7 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
                                 Progress2Text  = $"Hashing track-less sector {sector}";
                             });
 
-                            errno = opticalMediaImage.ReadSector(i, out byte[] hiddenSector);
+                            errno = opticalMediaImage.ReadSector(i, out byte[] hiddenSector, out _);
 
                             if(errno != ErrorNumber.NoError)
                             {
@@ -368,7 +368,8 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
                             errno = opticalMediaImage.ReadSectors(doneSectors,
                                                                   SECTORS_TO_READ,
                                                                   currentTrack.Sequence,
-                                                                  out sector);
+                                                                  out sector,
+                                                                  out _);
 
                             if(errno != ErrorNumber.NoError)
                             {
@@ -398,7 +399,8 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
                             errno = opticalMediaImage.ReadSectors(doneSectors,
                                                                   (uint)(sectors - doneSectors),
                                                                   currentTrack.Sequence,
-                                                                  out sector);
+                                                                  out sector,
+                                                                  out _);
 
                             if(errno != ErrorNumber.NoError)
                             {
@@ -462,7 +464,7 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
                             Progress2Text  = $"Hashing track-less sector {sector}";
                         });
 
-                        errno = opticalMediaImage.ReadSector(i, out byte[] hiddenSector);
+                        errno = opticalMediaImage.ReadSector(i, out byte[] hiddenSector, out _);
 
                         if(errno != ErrorNumber.NoError)
                         {
@@ -524,7 +526,7 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
 
                 if(_inputFormat.Info.Sectors - doneSectors >= SECTORS_TO_READ)
                 {
-                    errno = _inputFormat.ReadSectors(doneSectors, SECTORS_TO_READ, out sector);
+                    errno = _inputFormat.ReadSectors(doneSectors, SECTORS_TO_READ, out sector, out _);
 
                     if(errno != ErrorNumber.NoError)
                     {
@@ -554,7 +556,8 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
                 {
                     errno = _inputFormat.ReadSectors(doneSectors,
                                                      (uint)(_inputFormat.Info.Sectors - doneSectors),
-                                                     out sector);
+                                                     out sector,
+                                                     out _);
 
                     if(errno != ErrorNumber.NoError)
                     {

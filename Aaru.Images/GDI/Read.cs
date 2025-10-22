@@ -60,8 +60,8 @@ public sealed partial class Gdi
         {
             imageFilter.GetDataForkStream().Seek(0, SeekOrigin.Begin);
             _gdiStream = new StreamReader(imageFilter.GetDataForkStream());
-            int  lineNumber  = 0;
-            bool highDensity = false;
+            var lineNumber  = 0;
+            var highDensity = false;
 
             // Initialize all RegExs
             var regexTrack = new Regex(REGEX_TRACK);
@@ -165,7 +165,7 @@ public sealed partial class Gdi
 
             var sessions = new Session[2];
 
-            for(int s = 0; s < sessions.Length; s++)
+            for(var s = 0; s < sessions.Length; s++)
             {
                 if(s == 0)
                 {
@@ -217,7 +217,7 @@ public sealed partial class Gdi
 
             AaruLogging.Debug(MODULE_NAME, "\t" + Localization.Disc_contains_0_sessions, _discImage.Sessions.Count);
 
-            for(int i = 0; i < _discImage.Sessions.Count; i++)
+            for(var i = 0; i < _discImage.Sessions.Count; i++)
             {
                 AaruLogging.Debug(MODULE_NAME, "\t" + Localization.Session_0_information, i + 1);
 
@@ -238,7 +238,7 @@ public sealed partial class Gdi
 
             AaruLogging.Debug(MODULE_NAME, "\t" + Localization.Disc_contains_0_tracks, _discImage.Tracks.Count);
 
-            for(int i = 0; i < _discImage.Tracks.Count; i++)
+            for(var i = 0; i < _discImage.Tracks.Count; i++)
             {
                 AaruLogging.Debug(MODULE_NAME, "\t" + Localization.Track_0_information, _discImage.Tracks[i].Sequence);
 
@@ -270,7 +270,7 @@ public sealed partial class Gdi
             Partitions = [];
             ulong byteOffset = 0;
 
-            for(int i = 0; i < _discImage.Tracks.Count; i++)
+            for(var i = 0; i < _discImage.Tracks.Count; i++)
             {
                 if(_discImage.Tracks[i].Sequence == 1 && i != 0)
                 {
@@ -342,24 +342,34 @@ public sealed partial class Gdi
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer) => ReadSectors(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectors(sectorAddress, 1, out buffer, out _);
+    }
 
     /// <inheritdoc />
     public ErrorNumber ReadSectorTag(ulong sectorAddress, SectorTagType tag, out byte[] buffer) =>
         ReadSectorsTag(sectorAddress, 1, tag, out buffer);
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer) =>
-        ReadSectors(sectorAddress, 1, track, out buffer);
+    public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectors(sectorAddress, 1, track, out buffer, out _);
+    }
 
     /// <inheritdoc />
     public ErrorNumber ReadSectorTag(ulong sectorAddress, uint track, SectorTagType tag, out byte[] buffer) =>
         ReadSectorsTag(sectorAddress, 1, track, tag, out buffer);
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         foreach(KeyValuePair<uint, ulong> kvp in from kvp in _offsetMap
                                                  where sectorAddress >= kvp.Value
@@ -367,14 +377,16 @@ public sealed partial class Gdi
                                                  where gdiTrack.Sequence         == kvp.Key
                                                  where sectorAddress - kvp.Value < gdiTrack.Sectors
                                                  select kvp)
-            return ReadSectors(sectorAddress - kvp.Value, length, kvp.Key, out buffer);
+        {
+            return ReadSectors(sectorAddress - kvp.Value, length, kvp.Key, out buffer, out sectorStatus);
+        }
 
         _offsetMap.TryGetValue(0, out ulong transitionStart);
 
         if(sectorAddress < transitionStart || sectorAddress >= _densitySeparationSectors + transitionStart)
             return ErrorNumber.SectorNotFound;
 
-        return ReadSectors(sectorAddress - transitionStart, length, 0, out buffer);
+        return ReadSectors(sectorAddress - transitionStart, length, 0, out buffer, out sectorStatus);
     }
 
     /// <inheritdoc />
@@ -399,15 +411,18 @@ public sealed partial class Gdi
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, uint track, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(track == 0)
         {
             if(sectorAddress + length > _densitySeparationSectors) return ErrorNumber.OutOfRange;
 
-            buffer = new byte[length * 2352];
+            buffer       = new byte[length * 2352];
+            sectorStatus = new SectorStatus[length];
 
             return ErrorNumber.NoError;
         }
@@ -427,6 +442,7 @@ public sealed partial class Gdi
         if(aaruTrack.Sequence == 0) return ErrorNumber.SectorNotFound;
 
         if(sectorAddress + length > aaruTrack.Sectors) return ErrorNumber.OutOfRange;
+        sectorStatus = Enumerable.Repeat(SectorStatus.Dumped, (int)length).ToArray();
 
         uint sectorOffset;
         uint sectorSize;
@@ -501,7 +517,7 @@ public sealed partial class Gdi
             }
             default:
             {
-                int bufferPos = (int)((length - remainingSectors) * sectorSize);
+                var bufferPos = (int)((length - remainingSectors) * sectorSize);
 
                 for(ulong i = 0; i < remainingSectors; i++)
                 {
@@ -684,7 +700,7 @@ public sealed partial class Gdi
             }
             default:
             {
-                int bufferPos = (int)((length - remainingSectors) * sectorSize);
+                var bufferPos = (int)((length - remainingSectors) * sectorSize);
 
                 for(ulong i = 0; i < remainingSectors; i++)
                 {
@@ -703,17 +719,27 @@ public sealed partial class Gdi
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer) =>
-        ReadSectorsLong(sectorAddress, 1, out buffer);
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer) =>
-        ReadSectorsLong(sectorAddress, 1, track, out buffer);
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectorsLong(sectorAddress, 1, out buffer, out _);
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectorsLong(sectorAddress, 1, track, out buffer, out _);
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus)
+    {
+        buffer       = null;
+        sectorStatus = null;
 
         foreach(KeyValuePair<uint, ulong> kvp in from kvp in _offsetMap
                                                  where sectorAddress >= kvp.Value
@@ -721,21 +747,24 @@ public sealed partial class Gdi
                                                  where gdiTrack.Sequence         == kvp.Key
                                                  where sectorAddress - kvp.Value < gdiTrack.Sectors
                                                  select kvp)
-            return ReadSectorsLong(sectorAddress - kvp.Value, length, kvp.Key, out buffer);
+            return ReadSectorsLong(sectorAddress - kvp.Value, length, kvp.Key, out buffer, out sectorStatus);
 
         return ErrorNumber.SectorNotFound;
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, uint track, out byte[] buffer)
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(track == 0)
         {
             if(sectorAddress + length > _densitySeparationSectors) return ErrorNumber.OutOfRange;
 
-            buffer = new byte[length * 2352];
+            buffer       = new byte[length * 2352];
+            sectorStatus = new SectorStatus[length];
 
             return ErrorNumber.NoError;
         }
@@ -755,6 +784,7 @@ public sealed partial class Gdi
         if(aaruTrack.Sequence == 0) return ErrorNumber.SectorNotFound;
 
         if(sectorAddress + length > aaruTrack.Sectors) return ErrorNumber.OutOfRange;
+        sectorStatus = Enumerable.Repeat(SectorStatus.Dumped, (int)length).ToArray();
 
         uint sectorOffset;
         uint sectorSize;
@@ -829,7 +859,7 @@ public sealed partial class Gdi
             }
             default:
             {
-                int bufferPos = (int)((length - remainingSectors) * sectorSize);
+                var bufferPos = (int)((length - remainingSectors) * sectorSize);
 
                 for(ulong i = 0; i < remainingSectors; i++)
                 {
@@ -848,8 +878,8 @@ public sealed partial class Gdi
         {
             case TrackType.CdMode1 when aaruTrack.Bps == 2048:
             {
-                byte[] fullSector = new byte[2352];
-                byte[] fullBuffer = new byte[2352 * length];
+                var fullSector = new byte[2352];
+                var fullBuffer = new byte[2352 * length];
 
                 for(uint i = 0; i < length; i++)
                 {

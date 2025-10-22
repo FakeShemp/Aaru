@@ -298,9 +298,10 @@ public sealed partial class Ndif
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer)
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
@@ -375,6 +376,8 @@ public sealed partial class Ndif
 
             _sectorCache.Add(sectorAddress, buffer);
 
+            sectorStatus = SectorStatus.Dumped;
+
             return ErrorNumber.NoError;
         }
 
@@ -387,6 +390,8 @@ public sealed partial class Ndif
 
                 _sectorCache.Add(sectorAddress, buffer);
 
+                sectorStatus = SectorStatus.Dumped;
+
                 return ErrorNumber.NoError;
             case CHUNK_TYPE_COPY:
                 _imageStream.Seek(currentChunk.offset + relOff, SeekOrigin.Begin);
@@ -397,6 +402,8 @@ public sealed partial class Ndif
 
                 _sectorCache.Add(sectorAddress, buffer);
 
+                sectorStatus = SectorStatus.Dumped;
+
                 return ErrorNumber.NoError;
         }
 
@@ -404,23 +411,26 @@ public sealed partial class Ndif
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
         var ms = new MemoryStream();
+        sectorStatus = new SectorStatus[length];
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector);
+            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
 
             if(errno != ErrorNumber.NoError) return errno;
 
             ms.Write(sector, 0, sector.Length);
+            sectorStatus[i] = status;
         }
 
         buffer = ms.ToArray();

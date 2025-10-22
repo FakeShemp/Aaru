@@ -53,7 +53,8 @@ public sealed partial class HPOFS
 
         ErrorNumber errno =
             imagePlugin.ReadSector(0 + partition.Start,
-                                   out byte[] hpofsBpbSector); // Seek to BIOS parameter block, on logical sector 0
+                                   out byte[] hpofsBpbSector,
+                                   out _); // Seek to BIOS parameter block, on logical sector 0
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -76,27 +77,28 @@ public sealed partial class HPOFS
 
         ErrorNumber errno =
             imagePlugin.ReadSector(0 + partition.Start,
-                                   out byte[] hpofsBpbSector); // Seek to BIOS parameter block, on logical sector 0
+                                   out byte[] hpofsBpbSector,
+                                   out _); // Seek to BIOS parameter block, on logical sector 0
 
         if(errno != ErrorNumber.NoError) return;
 
         errno = imagePlugin.ReadSector(13 + partition.Start,
-                                       out byte[] medInfoSector); // Seek to media information block, on logical sector 13
+                                       out byte[] medInfoSector,
+                                       out _); // Seek to media information block, on logical sector 13
 
         if(errno != ErrorNumber.NoError) return;
 
         errno = imagePlugin.ReadSector(14 + partition.Start,
-                                       out byte[] volInfoSector); // Seek to volume information block, on logical sector 14
+                                       out byte[] volInfoSector,
+                                       out _); // Seek to volume information block, on logical sector 14
 
         if(errno != ErrorNumber.NoError) return;
 
         BiosParameterBlock bpb = Marshal.ByteArrayToStructureLittleEndian<BiosParameterBlock>(hpofsBpbSector);
 
-        MediaInformationBlock mib =
-            Marshal.ByteArrayToStructureBigEndian<MediaInformationBlock>(medInfoSector);
+        MediaInformationBlock mib = Marshal.ByteArrayToStructureBigEndian<MediaInformationBlock>(medInfoSector);
 
-        VolumeInformationBlock vib =
-            Marshal.ByteArrayToStructureBigEndian<VolumeInformationBlock>(volInfoSector);
+        VolumeInformationBlock vib = Marshal.ByteArrayToStructureBigEndian<VolumeInformationBlock>(volInfoSector);
 
         AaruLogging.Debug(MODULE_NAME, "bpb.oem_name = \"{0}\"", StringHandlers.CToString(bpb.oem_name));
 

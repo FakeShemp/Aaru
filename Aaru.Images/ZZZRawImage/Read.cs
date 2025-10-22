@@ -1286,18 +1286,26 @@ public sealed partial class ZZZRawImage
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer) => ReadSectors(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectors(sectorAddress, 1, out buffer, out _);
+    }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(_differentTrackZeroSize) return ErrorNumber.NotImplemented;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
+
+        sectorStatus = Enumerable.Repeat(SectorStatus.Dumped, (int)length).ToArray();
 
         Stream stream = _rawImageFilter.GetDataForkStream();
 
@@ -1435,43 +1443,51 @@ public sealed partial class ZZZRawImage
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer)
+    public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
 
         if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc) return ErrorNumber.NotSupported;
 
-        return track != 1 ? ErrorNumber.OutOfRange : ReadSector(sectorAddress, out buffer);
+        return track != 1 ? ErrorNumber.OutOfRange : ReadSector(sectorAddress, out buffer, out sectorStatus);
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, uint track, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc) return ErrorNumber.NotSupported;
 
-        return track != 1 ? ErrorNumber.OutOfRange : ReadSectors(sectorAddress, length, out buffer);
+        return track != 1 ? ErrorNumber.OutOfRange : ReadSectors(sectorAddress, length, out buffer, out sectorStatus);
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer)
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = SectorStatus.Dumped;
 
         if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc) return ErrorNumber.NotSupported;
 
-        return track != 1 ? ErrorNumber.OutOfRange : ReadSectorsLong(sectorAddress, 1, out buffer);
+        return track != 1 ? ErrorNumber.OutOfRange : ReadSectorsLong(sectorAddress, 1, out buffer, out _);
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, uint track, out byte[] buffer)
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc) return ErrorNumber.NotSupported;
 
-        return track != 1 ? ErrorNumber.OutOfRange : ReadSectorsLong(sectorAddress, length, out buffer);
+        return track != 1
+                   ? ErrorNumber.OutOfRange
+                   : ReadSectorsLong(sectorAddress, length, out buffer, out sectorStatus);
     }
 
     /// <inheritdoc />
@@ -1685,13 +1701,19 @@ public sealed partial class ZZZRawImage
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer) =>
-        ReadSectorsLong(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectorsLong(sectorAddress, 1, out buffer, out _);
+    }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc || !_rawCompactDisc && !_toastXa && !_rawDvd)
             return ErrorNumber.NotSupported;
@@ -1699,6 +1721,8 @@ public sealed partial class ZZZRawImage
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
+
+        sectorStatus = Enumerable.Repeat(SectorStatus.Dumped, (int)length).ToArray();
 
         var sectorSize = 2352u;
 

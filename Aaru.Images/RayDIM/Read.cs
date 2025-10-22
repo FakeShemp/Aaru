@@ -31,6 +31,7 @@
 // ****************************************************************************/
 
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
@@ -107,18 +108,26 @@ public sealed partial class RayDim
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer) => ReadSectors(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectors(sectorAddress, 1, out buffer, out _);
+    }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
-        buffer = new byte[length * _imageInfo.SectorSize];
+        buffer       = new byte[length * _imageInfo.SectorSize];
+        sectorStatus = Enumerable.Repeat(SectorStatus.Dumped, (int)length).ToArray();
+
 
         _disk.Seek((long)(sectorAddress          * _imageInfo.SectorSize), SeekOrigin.Begin);
         _disk.EnsureRead(buffer, 0, (int)(length * _imageInfo.SectorSize));

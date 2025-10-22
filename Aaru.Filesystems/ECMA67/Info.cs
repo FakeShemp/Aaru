@@ -53,7 +53,7 @@ public sealed partial class ECMA67
 
         if(partition.End < 8) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(6, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSector(6, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -70,7 +70,7 @@ public sealed partial class ECMA67
     {
         information = "";
         metadata    = new FileSystem();
-        ErrorNumber errno = imagePlugin.ReadSector(6, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSector(6, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

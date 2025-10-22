@@ -40,80 +40,6 @@ public sealed partial class FAT
 {
     Dictionary<string, Dictionary<string, byte[]>> _eaCache;
 
-#region IReadOnlyFilesystem Members
-
-    /// <inheritdoc />
-    public ErrorNumber ListXAttr(string path, out List<string> xattrs)
-    {
-        xattrs = null;
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        // No other xattr recognized yet
-        if(_cachedEaData is null && !_fat32) return ErrorNumber.NotSupported;
-
-        if(path[0] == '/') path = path[1..];
-
-        if(_eaCache.TryGetValue(path.ToLower(_cultureInfo), out Dictionary<string, byte[]> eas))
-        {
-            xattrs = eas.Keys.ToList();
-
-            return ErrorNumber.NoError;
-        }
-
-        ErrorNumber err = GetFileEntry(path, out CompleteDirectoryEntry entry);
-
-        if(err != ErrorNumber.NoError || entry is null) return err;
-
-        xattrs = [];
-
-        if(!_fat32)
-        {
-            if(entry.Dirent.ea_handle == 0) return ErrorNumber.NoError;
-
-            eas = GetEas(entry.Dirent.ea_handle);
-        }
-        else
-        {
-            if(entry.Fat32Ea.start_cluster == 0) return ErrorNumber.NoError;
-
-            eas = GetEas(entry.Fat32Ea);
-        }
-
-        if(eas is null) return ErrorNumber.NoError;
-
-        _eaCache.Add(path.ToLower(_cultureInfo), eas);
-        xattrs = eas.Keys.ToList();
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
-    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf)
-    {
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        ErrorNumber err = ListXAttr(path, out List<string> xattrs);
-
-        if(err != ErrorNumber.NoError) return err;
-
-        if(path[0] == '/') path = path[1..];
-
-        if(!xattrs.Contains(xattr.ToLower(_cultureInfo))) return ErrorNumber.NoSuchExtendedAttribute;
-
-        if(!_eaCache.TryGetValue(path.ToLower(_cultureInfo), out Dictionary<string, byte[]> eas))
-            return ErrorNumber.InvalidArgument;
-
-        if(!eas.TryGetValue(xattr.ToLower(_cultureInfo), out byte[] data)) return ErrorNumber.InvalidArgument;
-
-        buf = new byte[data.Length];
-        data.CopyTo(buf, 0);
-
-        return ErrorNumber.NoError;
-    }
-
-#endregion
-
     Dictionary<string, byte[]> GetEas(DirectoryEntry entryFat32Ea)
     {
         var    eaMs                  = new MemoryStream();
@@ -123,7 +49,8 @@ public sealed partial class FAT
         {
             ErrorNumber errno = _image.ReadSectors(_firstClusterSector + cluster * _sectorsPerCluster,
                                                    _sectorsPerCluster,
-                                                   out byte[] buffer);
+                                                   out byte[] buffer,
+                                                   out _);
 
             if(errno != ErrorNumber.NoError) return null;
 
@@ -221,7 +148,8 @@ public sealed partial class FAT
         {
             ErrorNumber errno = _image.ReadSectors(_firstClusterSector + cluster * _sectorsPerCluster,
                                                    _sectorsPerCluster,
-                                                   out byte[] buffer);
+                                                   out byte[] buffer,
+                                                   out _);
 
             if(errno != ErrorNumber.NoError) break;
 
@@ -230,4 +158,78 @@ public sealed partial class FAT
 
         _cachedEaData = eaDataMs.ToArray();
     }
+
+#region IReadOnlyFilesystem Members
+
+    /// <inheritdoc />
+    public ErrorNumber ListXAttr(string path, out List<string> xattrs)
+    {
+        xattrs = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        // No other xattr recognized yet
+        if(_cachedEaData is null && !_fat32) return ErrorNumber.NotSupported;
+
+        if(path[0] == '/') path = path[1..];
+
+        if(_eaCache.TryGetValue(path.ToLower(_cultureInfo), out Dictionary<string, byte[]> eas))
+        {
+            xattrs = eas.Keys.ToList();
+
+            return ErrorNumber.NoError;
+        }
+
+        ErrorNumber err = GetFileEntry(path, out CompleteDirectoryEntry entry);
+
+        if(err != ErrorNumber.NoError || entry is null) return err;
+
+        xattrs = [];
+
+        if(!_fat32)
+        {
+            if(entry.Dirent.ea_handle == 0) return ErrorNumber.NoError;
+
+            eas = GetEas(entry.Dirent.ea_handle);
+        }
+        else
+        {
+            if(entry.Fat32Ea.start_cluster == 0) return ErrorNumber.NoError;
+
+            eas = GetEas(entry.Fat32Ea);
+        }
+
+        if(eas is null) return ErrorNumber.NoError;
+
+        _eaCache.Add(path.ToLower(_cultureInfo), eas);
+        xattrs = eas.Keys.ToList();
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf)
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ErrorNumber err = ListXAttr(path, out List<string> xattrs);
+
+        if(err != ErrorNumber.NoError) return err;
+
+        if(path[0] == '/') path = path[1..];
+
+        if(!xattrs.Contains(xattr.ToLower(_cultureInfo))) return ErrorNumber.NoSuchExtendedAttribute;
+
+        if(!_eaCache.TryGetValue(path.ToLower(_cultureInfo), out Dictionary<string, byte[]> eas))
+            return ErrorNumber.InvalidArgument;
+
+        if(!eas.TryGetValue(xattr.ToLower(_cultureInfo), out byte[] data)) return ErrorNumber.InvalidArgument;
+
+        buf = new byte[data.Length];
+        data.CopyTo(buf, 0);
+
+        return ErrorNumber.NoError;
+    }
+
+#endregion
 }

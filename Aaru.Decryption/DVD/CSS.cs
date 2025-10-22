@@ -432,36 +432,36 @@ public class CSS
     /// <returns>The encrypted key.</returns>
     public static void EncryptKey(DvdCssKeyType keyType, uint variant, byte[] challenge, out byte[] key)
     {
-        byte[] bits    = new byte[30];
-        byte[] scratch = new byte[10];
-        byte   index   = sizeof(byte) * 30;
-        byte[] temp1   = new byte[5];
-        byte[] temp2   = new byte[5];
-        byte   carry   = 0;
+        var  bits    = new byte[30];
+        var  scratch = new byte[10];
+        byte index   = sizeof(byte) * 30;
+        var  temp1   = new byte[5];
+        var  temp2   = new byte[5];
+        byte carry   = 0;
         key = new byte[5];
 
-        for(int i = 9; i >= 0; --i) scratch[i] = challenge[_permutationChallenge[(uint)keyType, i]];
+        for(var i = 9; i >= 0; --i) scratch[i] = challenge[_permutationChallenge[(uint)keyType, i]];
 
-        byte cssVariant = (byte)(keyType == 0 ? variant : _permutationVariant[(uint)keyType - 1, variant]);
+        var cssVariant = (byte)(keyType == 0 ? variant : _permutationVariant[(uint)keyType - 1, variant]);
 
-        for(int i = 5; --i >= 0;) temp1[i] = (byte)(scratch[5 + i] ^ _secret[i] ^ _encryptTable2[i]);
+        for(var i = 5; --i >= 0;) temp1[i] = (byte)(scratch[5 + i] ^ _secret[i] ^ _encryptTable2[i]);
 
-        uint lfsr0 = (uint)(temp1[0] << 17 | temp1[1] << 9 | (temp1[2] & ~7) << 1 | 8 | temp1[2] & 7);
-        uint lfsr1 = (uint)(temp1[3] << 9  | 0x100         | temp1[4]);
+        var lfsr0 = (uint)(temp1[0] << 17 | temp1[1] << 9 | (temp1[2] & ~7) << 1 | 8 | temp1[2] & 7);
+        var lfsr1 = (uint)(temp1[3] << 9  | 0x100         | temp1[4]);
 
         do
         {
             byte val = 0;
 
-            for(int bit = 0; bit < 8; ++bit)
+            for(var bit = 0; bit < 8; ++bit)
             {
-                byte oLfsr0 = (byte)((lfsr0 >> 24 ^ lfsr0 >> 21 ^ lfsr0 >> 20 ^ lfsr0 >> 12) & 1);
+                var oLfsr0 = (byte)((lfsr0 >> 24 ^ lfsr0 >> 21 ^ lfsr0 >> 20 ^ lfsr0 >> 12) & 1);
                 lfsr0 = lfsr0 << 1 | oLfsr0;
 
-                byte oLfsr1 = (byte)((lfsr1 >> 16 ^ lfsr1 >> 2) & 1);
+                var oLfsr1 = (byte)((lfsr1 >> 16 ^ lfsr1 >> 2) & 1);
                 lfsr1 = lfsr1 << 1 | oLfsr1;
 
-                byte combined = (byte)(Convert.ToByte(oLfsr1 == 0) + carry + Convert.ToByte(oLfsr0 == 0));
+                var combined = (byte)(Convert.ToByte(oLfsr1 == 0) + carry + Convert.ToByte(oLfsr0 == 0));
                 carry =  (byte)(combined >> 1 & 1);
                 val   |= (byte)((combined & 1) << bit);
             }
@@ -469,10 +469,10 @@ public class CSS
             bits[--index] = val;
         } while(index > 0);
 
-        byte cse  = (byte)(_variants[cssVariant] ^ _encryptTable2[cssVariant]);
-        int  term = 0;
+        var cse  = (byte)(_variants[cssVariant] ^ _encryptTable2[cssVariant]);
+        var term = 0;
 
-        for(int i = 5; --i >= 0; term = scratch[i])
+        for(var i = 5; --i >= 0; term = scratch[i])
         {
             index = (byte)(bits[25 + i]          ^ scratch[i]);
             index = (byte)(_encryptTable1[index] ^ ~_encryptTable2[index] ^ cse);
@@ -483,7 +483,7 @@ public class CSS
         temp1[4] ^= temp1[0];
         term     =  0;
 
-        for(int i = 5; --i >= 0; term = temp1[i])
+        for(var i = 5; --i >= 0; term = temp1[i])
         {
             index = (byte)(bits[20 + i]          ^ temp1[i]);
             index = (byte)(_encryptTable1[index] ^ ~_encryptTable2[index] ^ cse);
@@ -494,7 +494,7 @@ public class CSS
         temp2[4] ^= temp2[0];
         term     =  0;
 
-        for(int i = 5; --i >= 0; term = temp2[i])
+        for(var i = 5; --i >= 0; term = temp2[i])
         {
             index = (byte)(bits[15 + i]          ^ temp2[i]);
             index = (byte)(_encryptTable1[index] ^ ~_encryptTable2[index] ^ cse);
@@ -506,7 +506,7 @@ public class CSS
         temp1[4] ^= temp1[0];
         term     =  0;
 
-        for(int i = 5; --i >= 0; term = temp1[i])
+        for(var i = 5; --i >= 0; term = temp1[i])
         {
             index = (byte)(bits[10 + i]          ^ temp1[i]);
             index = (byte)(_encryptTable1[index] ^ ~_encryptTable2[index] ^ cse);
@@ -518,7 +518,7 @@ public class CSS
         temp2[4] ^= temp2[0];
         term     =  0;
 
-        for(int i = 5; --i >= 0; term = temp2[i])
+        for(var i = 5; --i >= 0; term = temp2[i])
         {
             index = (byte)(bits[5 + i]           ^ temp2[i]);
             index = (byte)(_encryptTable1[index] ^ ~_encryptTable2[index] ^ cse);
@@ -529,7 +529,7 @@ public class CSS
         temp1[4] ^= temp1[0];
         term     =  0;
 
-        for(int i = 5; --i >= 0; term = temp1[i])
+        for(var i = 5; --i >= 0; term = temp1[i])
         {
             index = (byte)(bits[i]               ^ temp1[i]);
             index = (byte)(_encryptTable1[index] ^ ~_encryptTable2[index] ^ cse);
@@ -546,12 +546,12 @@ public class CSS
     static void DecryptKey(byte invert, byte[] cryptoKey, byte[] encryptedKey, out byte[] decryptedKey)
     {
         decryptedKey = new byte[5];
-        byte[] k = new byte[5];
+        var k = new byte[5];
 
-        uint lfsr1Lo = (uint)(cryptoKey[0] | 0x100);
+        var  lfsr1Lo = (uint)(cryptoKey[0] | 0x100);
         uint lfsr1Hi = cryptoKey[1];
 
-        uint lfsr0 = (uint)((cryptoKey[4] << 17 | cryptoKey[3] << 9 | cryptoKey[2] << 1) + 8 - (cryptoKey[2] & 7));
+        var lfsr0 = (uint)((cryptoKey[4] << 17 | cryptoKey[3] << 9 | cryptoKey[2] << 1) + 8 - (cryptoKey[2] & 7));
 
         lfsr0 = (uint)(_cssTable4[lfsr0       & 0xff] << 24 |
                        _cssTable4[lfsr0 >> 8  & 0xff] << 16 |
@@ -562,11 +562,11 @@ public class CSS
 
         for(uint i = 0; i < 5; i++)
         {
-            byte oLfsr1 = (byte)(_cssTable2[lfsr1Hi] ^ _cssTable3[lfsr1Lo]);
+            var oLfsr1 = (byte)(_cssTable2[lfsr1Hi] ^ _cssTable3[lfsr1Lo]);
             lfsr1Hi = lfsr1Lo >> 1;
             lfsr1Lo = (lfsr1Lo & 1) << 8 ^ oLfsr1;
             oLfsr1  = _cssTable4[oLfsr1];
-            byte oLfsr0 = (byte)((((lfsr0 >> 8 ^ lfsr0) >> 1 ^ lfsr0) >> 3 ^ lfsr0) >> 7);
+            var oLfsr0 = (byte)((((lfsr0 >> 8 ^ lfsr0) >> 1 ^ lfsr0) >> 3 ^ lfsr0) >> 7);
             lfsr0    =   lfsr0 >> 8 | (uint)oLfsr0 << 24;
             combined +=  (uint)((oLfsr0 ^ invert) + oLfsr1);
             k[i]     =   (byte)(combined & 0xff);
@@ -632,7 +632,7 @@ public class CSS
         if(cmiData != null && cmiData.All(static cmi => (cmi & 0x80) >> 7 == 0) || keyData.All(static k => k == 0))
             return sectorData;
 
-        byte[] decryptedBuffer = new byte[sectorData.Length];
+        var decryptedBuffer = new byte[sectorData.Length];
 
         for(uint i = 0; i < blocks; i++)
         {
@@ -670,7 +670,7 @@ public class CSS
         if(cmiData != null && cmiData.All(static cmi => (cmi & 0x80) >> 7 == 0) || keyData.All(static k => k == 0))
             return sectorData;
 
-        byte[] decryptedBuffer = new byte[sectorData.Length];
+        var decryptedBuffer = new byte[sectorData.Length];
 
         for(uint i = 0; i < blocks; i++)
         {
@@ -825,7 +825,7 @@ public class CSS
         // If we found an adequate pattern.
         if(bestPattern <= 0 || bestPatternLength <= 3 || bestPatternLength / bestPattern < 2) return false;
 
-        int offset = (int)(0x80 - bestPatternLength / bestPattern * bestPattern);
+        var offset = (int)(0x80 - bestPatternLength / bestPattern * bestPattern);
 
         int result = RecoverTitleKey(0,
                                      sector.Skip(0x80).Take(sector.Length   - 0x80).ToArray(),
@@ -849,10 +849,10 @@ public class CSS
     static int RecoverTitleKey(uint       start, byte[] encryptedBytes, byte[] decryptedBytes, byte[] sectorSeed,
                                out byte[] key)
     {
-        byte[] buffer = new byte[10];
-        long   iTry;
-        uint   i;
-        int    exit = -1;
+        var  buffer = new byte[10];
+        long iTry;
+        uint i;
+        int  exit = -1;
         key = new byte[5];
 
         for(i = 0; i < 10; i++) buffer[i] = (byte)(_cssTable1[encryptedBytes[i]] ^ decryptedBytes[i]);
@@ -960,11 +960,11 @@ public class CSS
     /// <returns>The title key.</returns>
     static byte[] FindTitleKey(IOpticalMediaImage input, ulong startSector, ulong sectorsToSearch = 20000)
     {
-        byte[] titleKey = new byte[5];
+        var titleKey = new byte[5];
 
         for(ulong i = 0; i < sectorsToSearch; i++)
         {
-            input.ReadSector(startSector + i, out byte[] sector);
+            input.ReadSector(startSector + i, out byte[] sector, out _);
 
             if(!IsEncrypted(null, null, sector)) continue;
 
@@ -985,7 +985,7 @@ public class CSS
     public static byte[] GenerateTitleKeys(IOpticalMediaImage  input, List<Partition> partitions, ulong trackSectors,
                                            IReadOnlyFilesystem fs)
     {
-        byte[] keys = new byte[trackSectors * 5];
+        var keys = new byte[trackSectors * 5];
 
         foreach(Partition partition in partitions)
         {

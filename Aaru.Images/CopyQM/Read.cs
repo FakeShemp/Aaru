@@ -42,6 +42,13 @@ namespace Aaru.Images;
 
 public sealed partial class CopyQm
 {
+#region IVerifiableImage Members
+
+    /// <inheritdoc />
+    public bool? VerifyMediaImage() => _calculatedDataCrc == _header.crc && _headerChecksumOk;
+
+#endregion
+
 #region IMediaImage Members
 
     /// <inheritdoc />
@@ -50,7 +57,7 @@ public sealed partial class CopyQm
         Stream stream = imageFilter.GetDataForkStream();
         stream.Seek(0, SeekOrigin.Begin);
 
-        byte[] hdr = new byte[133];
+        var hdr = new byte[133];
 
         stream.EnsureRead(hdr, 0, 133);
         _header = Marshal.ByteArrayToStructureLittleEndian<Header>(hdr);
@@ -85,7 +92,7 @@ public sealed partial class CopyQm
         AaruLogging.Debug(MODULE_NAME, "header.skew = {0}",             _header.skew);
         AaruLogging.Debug(MODULE_NAME, "header.drive = {0}",            _header.drive);
 
-        byte[] cmt = new byte[_header.commentLength];
+        var cmt = new byte[_header.commentLength];
         stream.EnsureRead(cmt, 0, _header.commentLength);
         _imageInfo.Comments = StringHandlers.CToString(cmt);
         _decodedImage       = new MemoryStream();
@@ -94,21 +101,21 @@ public sealed partial class CopyQm
 
         while(stream.Position + 2 < stream.Length)
         {
-            byte[] runLengthBytes = new byte[2];
+            var runLengthBytes = new byte[2];
 
             if(stream.EnsureRead(runLengthBytes, 0, 2) != 2) break;
 
-            short runLength = BitConverter.ToInt16(runLengthBytes, 0);
+            var runLength = BitConverter.ToInt16(runLengthBytes, 0);
 
             switch(runLength)
             {
                 case < 0:
                 {
-                    byte   repeatedByte  = (byte)stream.ReadByte();
-                    byte[] repeatedArray = new byte[runLength * -1];
+                    var repeatedByte  = (byte)stream.ReadByte();
+                    var repeatedArray = new byte[runLength * -1];
                     ArrayHelpers.ArrayFill(repeatedArray, repeatedByte);
 
-                    for(int i = 0; i < runLength * -1; i++)
+                    for(var i = 0; i < runLength * -1; i++)
                     {
                         _decodedImage.WriteByte(repeatedByte);
 
@@ -120,7 +127,7 @@ public sealed partial class CopyQm
                 }
                 case > 0:
                 {
-                    byte[] nonRepeated = new byte[runLength];
+                    var nonRepeated = new byte[runLength];
                     stream.EnsureRead(nonRepeated, 0, runLength);
                     _decodedImage.Write(nonRepeated, 0, runLength);
 
@@ -139,26 +146,26 @@ public sealed partial class CopyQm
 
         if(fillingLen > 0)
         {
-            byte[] filling = new byte[fillingLen];
+            var filling = new byte[fillingLen];
             ArrayHelpers.ArrayFill(filling, (byte)0xF6);
             _decodedImage.Write(filling, 0, filling.Length);
         }
 
-        int sum = 0;
+        var sum = 0;
 
-        for(int i = 0; i < hdr.Length - 1; i++) sum += hdr[i];
+        for(var i = 0; i < hdr.Length - 1; i++) sum += hdr[i];
 
         _headerChecksumOk = (-1 * sum & 0xFF) == _header.headerChecksum;
 
         AaruLogging.Debug(MODULE_NAME,
-                                   Localization.Calculated_header_checksum_equals_0_X2_1,
-                                   -1 * sum & 0xFF,
-                                   _headerChecksumOk);
+                          Localization.Calculated_header_checksum_equals_0_X2_1,
+                          -1 * sum & 0xFF,
+                          _headerChecksumOk);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   Localization.Calculated_data_CRC_equals_0_X8_1,
-                                   _calculatedDataCrc,
-                                   _calculatedDataCrc == _header.crc);
+                          Localization.Calculated_data_CRC_equals_0_X8_1,
+                          _calculatedDataCrc,
+                          _calculatedDataCrc == _header.crc);
 
         _imageInfo.Application          = "CopyQM";
         _imageInfo.CreationTime         = DateHandlers.DosToDateTime(_header.date, _header.time);
@@ -206,30 +213,31 @@ public sealed partial class CopyQm
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer) => ReadSectors(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectors(sectorAddress, 1, out buffer, out _);
+    }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
-        buffer = new byte[length * _imageInfo.SectorSize];
+        buffer       = new byte[length * _imageInfo.SectorSize];
+        sectorStatus = new SectorStatus[length];
+        for(uint i = 0; i < length; i++) sectorStatus[i] = SectorStatus.Dumped;
 
         Array.Copy(_decodedDisk, (int)sectorAddress * _imageInfo.SectorSize, buffer, 0, length * _imageInfo.SectorSize);
 
         return ErrorNumber.NoError;
     }
-
-#endregion
-
-#region IVerifiableImage Members
-
-    /// <inheritdoc />
-    public bool? VerifyMediaImage() => _calculatedDataCrc == _header.crc && _headerChecksumOk;
 
 #endregion
 }

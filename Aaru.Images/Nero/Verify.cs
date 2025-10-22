@@ -44,7 +44,7 @@ public sealed partial class Nero
     /// <inheritdoc />
     public bool? VerifySector(ulong sectorAddress)
     {
-        ErrorNumber errno = ReadSectorLong(sectorAddress, out byte[] buffer);
+        ErrorNumber errno = ReadSectorLong(sectorAddress, out byte[] buffer, out _);
 
         return errno != ErrorNumber.NoError ? null : CdChecksums.CheckCdSector(buffer);
     }
@@ -55,7 +55,7 @@ public sealed partial class Nero
     {
         failingLbas = [];
         unknownLbas = [];
-        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, out byte[] buffer);
+        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, out byte[] buffer, out _);
 
         if(errno != ErrorNumber.NoError) return null;
 
@@ -91,7 +91,7 @@ public sealed partial class Nero
     {
         failingLbas = [];
         unknownLbas = [];
-        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, track, out byte[] buffer);
+        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, track, out byte[] buffer, out _);
 
         if(errno != ErrorNumber.NoError) return null;
 

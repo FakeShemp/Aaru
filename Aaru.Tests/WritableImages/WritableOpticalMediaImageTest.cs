@@ -246,10 +246,11 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                         if(useLong)
                         {
                             errno = sectorsToDo == 1
-                                        ? inputFormat.ReadSectorLong(doneSectors + track.StartSector, out sector)
+                                        ? inputFormat.ReadSectorLong(doneSectors + track.StartSector, out sector, out _)
                                         : inputFormat.ReadSectorsLong(doneSectors + track.StartSector,
                                                                       sectorsToDo,
-                                                                      out sector);
+                                                                      out sector,
+                                                                      out _);
 
                             if(errno == ErrorNumber.NoError)
                             {
@@ -268,10 +269,11 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                         if(!useLong || useNotLong)
                         {
                             errno = sectorsToDo == 1
-                                        ? inputFormat.ReadSector(doneSectors + track.StartSector, out sector)
+                                        ? inputFormat.ReadSector(doneSectors + track.StartSector, out sector, out _)
                                         : inputFormat.ReadSectors(doneSectors + track.StartSector,
                                                                   sectorsToDo,
-                                                                  out sector);
+                                                                  out sector,
+                                                                  out _);
 
                             Assert.That(errno, Is.EqualTo(ErrorNumber.NoError));
 
@@ -691,11 +693,13 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                                             ? image.ReadSectorsLong(doneSectors,
                                                                     SECTORS_TO_READ,
                                                                     currentTrack.Sequence,
-                                                                    out sector)
+                                                                    out sector,
+                                                                    out _)
                                             : image.ReadSectors(doneSectors,
                                                                 SECTORS_TO_READ,
                                                                 currentTrack.Sequence,
-                                                                out sector);
+                                                                out sector,
+                                                                out _);
 
                                 doneSectors += SECTORS_TO_READ;
                             }
@@ -705,11 +709,13 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                                             ? image.ReadSectorsLong(doneSectors,
                                                                     (uint)(sectors - doneSectors),
                                                                     currentTrack.Sequence,
-                                                                    out sector)
+                                                                    out sector,
+                                                                    out _)
                                             : image.ReadSectors(doneSectors,
                                                                 (uint)(sectors - doneSectors),
                                                                 currentTrack.Sequence,
-                                                                out sector);
+                                                                out sector,
+                                                                out _);
 
                                 doneSectors += sectors - doneSectors;
                             }

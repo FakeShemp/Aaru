@@ -82,7 +82,7 @@ public sealed partial class AppleMap : IPartition
 
         if(sectorOffset + 2 >= imagePlugin.Info.Sectors) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset, out byte[] ddmSector);
+        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset, out byte[] ddmSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -103,8 +103,7 @@ public sealed partial class AppleMap : IPartition
                 return false;
         }
 
-        AppleDriverDescriptorMap ddm =
-            Marshal.ByteArrayToStructureBigEndian<AppleDriverDescriptorMap>(ddmSector);
+        AppleDriverDescriptorMap ddm = Marshal.ByteArrayToStructureBigEndian<AppleDriverDescriptorMap>(ddmSector);
 
         AaruLogging.Debug(MODULE_NAME, "ddm.sbSig = 0x{0:X4}",  ddm.sbSig);
         AaruLogging.Debug(MODULE_NAME, "ddm.sbBlockSize = {0}", ddm.sbBlockSize);
@@ -155,7 +154,7 @@ public sealed partial class AppleMap : IPartition
             }
         }
 
-        errno = imagePlugin.ReadSector(1 + sectorOffset, out byte[] partSector);
+        errno = imagePlugin.ReadSector(1 + sectorOffset, out byte[] partSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -259,7 +258,7 @@ public sealed partial class AppleMap : IPartition
                 return partitions.Count > 0;
         }
 
-        errno = imagePlugin.ReadSectors(sectorOffset, sectorsToRead, out byte[] entries);
+        errno = imagePlugin.ReadSectors(sectorOffset, sectorsToRead, out byte[] entries, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 

@@ -32,6 +32,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
@@ -51,7 +52,7 @@ public sealed partial class SaveDskF
         Stream stream = imageFilter.GetDataForkStream();
         stream.Seek(0, SeekOrigin.Begin);
 
-        byte[] hdr = new byte[40];
+        var hdr = new byte[40];
 
         stream.EnsureRead(hdr, 0, 40);
         _header = Marshal.ByteArrayToStructureLittleEndian<Header>(hdr);
@@ -78,7 +79,7 @@ public sealed partial class SaveDskF
 
         if(_header is { dataOffset: 0, magic: SDF_MAGIC_OLD }) _header.dataOffset = 512;
 
-        byte[] cmt = new byte[_header.dataOffset - _header.commentOffset];
+        var cmt = new byte[_header.dataOffset - _header.commentOffset];
         stream.Seek(_header.commentOffset, SeekOrigin.Begin);
         stream.EnsureRead(cmt, 0, cmt.Length);
 
@@ -97,9 +98,9 @@ public sealed partial class SaveDskF
         } while(b >= 0);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   Localization.Calculated_checksum_equals_0_X8_1,
-                                   _calculatedChk,
-                                   _calculatedChk == _header.checksum);
+                          Localization.Calculated_checksum_equals_0_X8_1,
+                          _calculatedChk,
+                          _calculatedChk == _header.checksum);
 
         _imageInfo.Application          = "SaveDskF";
         _imageInfo.CreationTime         = imageFilter.CreationTime;
@@ -140,18 +141,26 @@ public sealed partial class SaveDskF
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer) => ReadSectors(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectors(sectorAddress, 1, out buffer, out _);
+    }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
-        buffer = new byte[length * _imageInfo.SectorSize];
+        buffer       = new byte[length * _imageInfo.SectorSize];
+        sectorStatus = Enumerable.Repeat(SectorStatus.Dumped, (int)length).ToArray();
+
 
         Array.Copy(_decodedDisk, (int)sectorAddress * _imageInfo.SectorSize, buffer, 0, length * _imageInfo.SectorSize);
 

@@ -64,7 +64,11 @@ public abstract class OpticalImageReadIssueTest
 
                 if(sectors - doneSectors >= SECTORS_TO_READ)
                 {
-                    errno = opticalInput.ReadSectors(doneSectors, SECTORS_TO_READ, currentTrack.Sequence, out sector);
+                    errno = opticalInput.ReadSectors(doneSectors,
+                                                     SECTORS_TO_READ,
+                                                     currentTrack.Sequence,
+                                                     out sector,
+                                                     out _);
 
                     doneSectors += SECTORS_TO_READ;
                 }
@@ -73,7 +77,8 @@ public abstract class OpticalImageReadIssueTest
                     errno = opticalInput.ReadSectors(doneSectors,
                                                      (uint)(sectors - doneSectors),
                                                      currentTrack.Sequence,
-                                                     out sector);
+                                                     out sector,
+                                                     out _);
 
                     doneSectors += sectors - doneSectors;
                 }

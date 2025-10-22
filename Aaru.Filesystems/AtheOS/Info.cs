@@ -55,7 +55,7 @@ public sealed partial class AtheOS
 
         if(sector + partition.Start >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(sector + partition.Start, run, out byte[] tmp);
+        ErrorNumber errno = imagePlugin.ReadSectors(sector + partition.Start, run, out byte[] tmp, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -86,7 +86,7 @@ public sealed partial class AtheOS
 
         if(imagePlugin.Info.SectorSize < AFS_SUPERBLOCK_SIZE) run = AFS_SUPERBLOCK_SIZE / imagePlugin.Info.SectorSize;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(sector + partition.Start, run, out byte[] tmp);
+        ErrorNumber errno = imagePlugin.ReadSectors(sector + partition.Start, run, out byte[] tmp, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

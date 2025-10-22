@@ -201,7 +201,7 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
                .AppendLine();
         }
 
-        bool        imagesDiffer = false;
+        var         imagesDiffer = false;
         ErrorNumber errno;
 
         ImageInfo                        image1Info       = input1Format.Info;
@@ -438,7 +438,7 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
                                 try
                                 {
-                                    errno = input1MediaImage.ReadSector(sector, out byte[] image1Sector);
+                                    errno = input1MediaImage.ReadSector(sector, out byte[] image1Sector, out _);
 
                                     if(errno != ErrorNumber.NoError)
                                     {
@@ -447,7 +447,7 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
                                                                         sector));
                                     }
 
-                                    errno = input2MediaImage.ReadSector(sector, out byte[] image2Sector);
+                                    errno = input2MediaImage.ReadSector(sector, out byte[] image2Sector, out _);
 
                                     if(errno != ErrorNumber.NoError)
                                     {
@@ -489,8 +489,8 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
                             ProgressTask task = ctx.AddTask(UI.Comparing_images);
                             task.IsIndeterminate = true;
 
-                            byte[] data1 = new byte[input1ByteAddressable.Info.Sectors];
-                            byte[] data2 = new byte[input2ByteAddressable.Info.Sectors];
+                            var    data1 = new byte[input1ByteAddressable.Info.Sectors];
+                            var    data2 = new byte[input2ByteAddressable.Info.Sectors];
                             byte[] tmp;
 
                             input1ByteAddressable.ReadBytes(data1, 0, data1.Length, out int bytesRead);

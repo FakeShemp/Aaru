@@ -303,362 +303,12 @@ public sealed class MBR : IPartition
         Localization.Xenix_bad_block
     ];
 
-#region IPartition Members
-
-    /// <inheritdoc />
-    public string Name => Localization.MBR_Name;
-
-    /// <inheritdoc />
-    public Guid Id => new("5E8A34E8-4F1A-59E6-4BF7-7EA647063A76");
-
-    /// <inheritdoc />
-    public string Author => Authors.NATALIA_PORTILLO;
-
-    /// <inheritdoc />
-    [SuppressMessage("ReSharper", "UnusedVariable")]
-    public bool GetInformation(IMediaImage imagePlugin, out List<Partition> partitions, ulong sectorOffset)
-    {
-        ulong counter = 0;
-
-        partitions = [];
-
-        if(imagePlugin.Info.SectorSize < 512) return false;
-
-        uint sectorSize = imagePlugin.Info.SectorSize;
-
-        // Divider of sector size in MBR between real sector size
-        ulong divider = 1;
-
-        if(imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc)
-        {
-            sectorSize = 512;
-            divider    = 4;
-        }
-
-        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset, out byte[] sector);
-
-        if(errno != ErrorNumber.NoError) return false;
-
-        MasterBootRecord      mbr     = Marshal.ByteArrayToStructureLittleEndian<MasterBootRecord>(sector);
-        TimedMasterBootRecord mbrTime = Marshal.ByteArrayToStructureLittleEndian<TimedMasterBootRecord>(sector);
-
-        SerializedMasterBootRecord mbrSerial =
-            Marshal.ByteArrayToStructureLittleEndian<SerializedMasterBootRecord>(sector);
-
-        ModernMasterBootRecord mbrModern = Marshal.ByteArrayToStructureLittleEndian<ModernMasterBootRecord>(sector);
-        NecMasterBootRecord    mbrNec    = Marshal.ByteArrayToStructureLittleEndian<NecMasterBootRecord>(sector);
-
-        DiskManagerMasterBootRecord mbrOntrack =
-            Marshal.ByteArrayToStructureLittleEndian<DiskManagerMasterBootRecord>(sector);
-
-        AaruLogging.Debug(MODULE_NAME, "xmlmedia = {0}",     imagePlugin.Info.MetadataMediaType);
-        AaruLogging.Debug(MODULE_NAME, "mbr.magic = {0:X4}", mbr.magic);
-
-        if(mbr.magic != MBR_MAGIC) return false; // Not MBR
-
-        errno = imagePlugin.ReadSector(1 + sectorOffset, out byte[] hdrBytes);
-
-        if(errno != ErrorNumber.NoError) return false;
-
-        ulong signature = BitConverter.ToUInt64(hdrBytes, 0);
-
-        AaruLogging.Debug(MODULE_NAME, "gpt.signature = 0x{0:X16}", signature);
-
-        if(signature == GPT_MAGIC) return false;
-
-        if(imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc)
-        {
-            errno = imagePlugin.ReadSector(sectorOffset, out hdrBytes);
-
-            if(errno != ErrorNumber.NoError) return false;
-
-            signature = BitConverter.ToUInt64(hdrBytes, 512);
-            AaruLogging.Debug(MODULE_NAME, "gpt.signature @ 0x200 = 0x{0:X16}", signature);
-
-            if(signature == GPT_MAGIC) return false;
-        }
-
-        PartitionEntry[] entries;
-
-        if(mbrOntrack.dm_magic == DM_MAGIC)
-            entries = mbrOntrack.entries;
-        else if(mbrNec.nec_magic == NEC_MAGIC)
-            entries = mbrNec.entries;
-        else
-            entries = mbr.entries;
-
-        foreach(PartitionEntry entry in entries)
-        {
-            byte   startSector   = (byte)(entry.start_sector & 0x3F);
-            ushort startCylinder = (ushort)((entry.start_sector & 0xC0) << 2 | entry.start_cylinder);
-            byte   endSector     = (byte)(entry.end_sector & 0x3F);
-            ushort endCylinder   = (ushort)((entry.end_sector & 0xC0) << 2 | entry.end_cylinder);
-            ulong  lbaStart      = entry.lba_start;
-            ulong  lbaSectors    = entry.lba_sectors;
-
-            // Let's start the fun...
-
-            bool valid    = true;
-            bool extended = false;
-            bool minix    = false;
-
-            if(entry.status != 0x00 && entry.status != 0x80) return false; // Maybe a FAT filesystem
-
-            valid &= entry.type != 0x00;
-
-            if(entry.type is 0x05 or 0x0F or 0x15 or 0x1F or 0x85 or 0x91 or 0x9B or 0xC5 or 0xCF or 0xD5)
-            {
-                valid    = false;
-                extended = true; // Extended partition
-            }
-
-            minix |= entry.type is 0x81 or 0x80; // MINIX partition
-
-            valid &= entry.lba_start      != 0 ||
-                     entry.lba_sectors    != 0 ||
-                     entry.start_cylinder != 0 ||
-                     entry.start_head     != 0 ||
-                     entry.start_sector   != 0 ||
-                     entry.end_cylinder   != 0 ||
-                     entry.end_head       != 0 ||
-                     entry.end_sector     != 0;
-
-            if(entry is { lba_start: 0, lba_sectors: 0 } && valid)
-            {
-                lbaStart = CHS.ToLBA(startCylinder,
-                                     entry.start_head,
-                                     startSector,
-                                     imagePlugin.Info.Heads,
-                                     imagePlugin.Info.SectorsPerTrack);
-
-                lbaSectors = CHS.ToLBA(endCylinder,
-                                       entry.end_head,
-                                       entry.end_sector,
-                                       imagePlugin.Info.Heads,
-                                       imagePlugin.Info.SectorsPerTrack) -
-                             lbaStart;
-            }
-
-            // For optical media
-            lbaStart   /= divider;
-            lbaSectors /= divider;
-
-            if(minix && lbaStart == sectorOffset) minix = false;
-
-            if(lbaStart > imagePlugin.Info.Sectors)
-            {
-                valid    = false;
-                extended = false;
-            }
-
-            // Some buggy implementations do some rounding errors getting a few sectors beyond device size
-            if(lbaStart + lbaSectors > imagePlugin.Info.Sectors) lbaSectors = imagePlugin.Info.Sectors - lbaStart;
-
-            AaruLogging.Debug(MODULE_NAME, "entry.status {0}",         entry.status);
-            AaruLogging.Debug(MODULE_NAME, "entry.type {0}",           entry.type);
-            AaruLogging.Debug(MODULE_NAME, "entry.lba_start {0}",      entry.lba_start);
-            AaruLogging.Debug(MODULE_NAME, "entry.lba_sectors {0}",    entry.lba_sectors);
-            AaruLogging.Debug(MODULE_NAME, "entry.start_cylinder {0}", startCylinder);
-            AaruLogging.Debug(MODULE_NAME, "entry.start_head {0}",     entry.start_head);
-            AaruLogging.Debug(MODULE_NAME, "entry.start_sector {0}",   startSector);
-            AaruLogging.Debug(MODULE_NAME, "entry.end_cylinder {0}",   endCylinder);
-            AaruLogging.Debug(MODULE_NAME, "entry.end_head {0}",       entry.end_head);
-            AaruLogging.Debug(MODULE_NAME, "entry.end_sector {0}",     endSector);
-
-            AaruLogging.Debug(MODULE_NAME, "entry.minix = {0}", minix);
-
-            AaruLogging.Debug(MODULE_NAME, "lba_start {0}",   lbaStart);
-            AaruLogging.Debug(MODULE_NAME, "lba_sectors {0}", lbaSectors);
-
-            if(valid && minix) // Let's mix the fun
-            {
-                if(GetMinix(imagePlugin, lbaStart, divider, sectorOffset, sectorSize, out List<Partition> mnxParts))
-                    partitions.AddRange(mnxParts);
-                else
-                    minix = false;
-            }
-
-            if(valid && !minix)
-            {
-                var part = new Partition();
-
-                if((lbaStart > 0 || imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc) &&
-                   lbaSectors > 0)
-                {
-                    part.Start  = lbaStart + sectorOffset;
-                    part.Length = lbaSectors;
-                    part.Offset = part.Start  * sectorSize;
-                    part.Size   = part.Length * sectorSize;
-                }
-                else
-                    valid = false;
-
-                if(valid)
-                {
-                    part.Type        = $"0x{entry.type:X2}";
-                    part.Name        = DecodeMbrType(entry.type);
-                    part.Sequence    = counter;
-                    part.Description = entry.status == 0x80 ? Localization.Partition_is_bootable : "";
-                    part.Scheme      = Name;
-
-                    counter++;
-
-                    partitions.Add(part);
-                }
-            }
-
-            AaruLogging.Debug(MODULE_NAME, "entry.extended = {0}", extended);
-
-            if(!extended) continue;
-
-            bool  processingExtended = true;
-            ulong chainStart         = lbaStart;
-
-            while(processingExtended)
-            {
-                errno = imagePlugin.ReadSector(lbaStart, out sector);
-
-                if(errno != ErrorNumber.NoError) break;
-
-                ExtendedBootRecord ebr = Marshal.ByteArrayToStructureLittleEndian<ExtendedBootRecord>(sector);
-
-                AaruLogging.Debug(MODULE_NAME, "ebr.magic == MBR_Magic = {0}", ebr.magic == MBR_MAGIC);
-
-                if(ebr.magic != MBR_MAGIC) break;
-
-                ulong nextStart = 0;
-
-                foreach(PartitionEntry ebrEntry in ebr.entries)
-                {
-                    bool extValid = true;
-                    startSector   = (byte)(ebrEntry.start_sector & 0x3F);
-                    startCylinder = (ushort)((ebrEntry.start_sector & 0xC0) << 2 | ebrEntry.start_cylinder);
-                    endSector     = (byte)(ebrEntry.end_sector & 0x3F);
-                    endCylinder   = (ushort)((ebrEntry.end_sector & 0xC0) << 2 | ebrEntry.end_cylinder);
-                    ulong extStart   = ebrEntry.lba_start;
-                    ulong extSectors = ebrEntry.lba_sectors;
-                    bool  extMinix   = false;
-
-                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.status {0}",         ebrEntry.status);
-                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.type {0}",           ebrEntry.type);
-                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.lba_start {0}",      ebrEntry.lba_start);
-                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.lba_sectors {0}",    ebrEntry.lba_sectors);
-                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.start_cylinder {0}", startCylinder);
-                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.start_head {0}",     ebrEntry.start_head);
-                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.start_sector {0}",   startSector);
-                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.end_cylinder {0}",   endCylinder);
-                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.end_head {0}",       ebrEntry.end_head);
-                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.end_sector {0}",     endSector);
-
-                    // Let's start the fun...
-                    extValid &= ebrEntry.status is 0x00 or 0x80;
-                    extValid &= ebrEntry.type != 0x00;
-
-                    extValid &= ebrEntry.lba_start      != 0 ||
-                                ebrEntry.lba_sectors    != 0 ||
-                                ebrEntry.start_cylinder != 0 ||
-                                ebrEntry.start_head     != 0 ||
-                                ebrEntry.start_sector   != 0 ||
-                                ebrEntry.end_cylinder   != 0 ||
-                                ebrEntry.end_head       != 0 ||
-                                ebrEntry.end_sector     != 0;
-
-                    if(ebrEntry is { lba_start: 0, lba_sectors: 0 } && extValid)
-                    {
-                        extStart = CHS.ToLBA(startCylinder,
-                                             ebrEntry.start_head,
-                                             startSector,
-                                             imagePlugin.Info.Heads,
-                                             imagePlugin.Info.SectorsPerTrack);
-
-                        extSectors = CHS.ToLBA(endCylinder,
-                                               ebrEntry.end_head,
-                                               ebrEntry.end_sector,
-                                               imagePlugin.Info.Heads,
-                                               imagePlugin.Info.SectorsPerTrack) -
-                                     extStart;
-                    }
-
-                    extMinix |= ebrEntry.type is 0x81 or 0x80;
-
-                    // For optical media
-                    extStart   /= divider;
-                    extSectors /= divider;
-
-                    AaruLogging.Debug(MODULE_NAME, "ext_start {0}",   extStart);
-                    AaruLogging.Debug(MODULE_NAME, "ext_sectors {0}", extSectors);
-
-                    if(ebrEntry.type is 0x05 or 0x0F or 0x15 or 0x1F or 0x85 or 0x91 or 0x9B or 0xC5 or 0xCF or 0xD5)
-                    {
-                        extValid  = false;
-                        nextStart = chainStart + extStart;
-                    }
-
-                    extStart += lbaStart;
-                    extValid &= extStart <= imagePlugin.Info.Sectors;
-
-                    // Some buggy implementations do some rounding errors getting a few sectors beyond device size
-                    if(extStart + extSectors > imagePlugin.Info.Sectors)
-                        extSectors = imagePlugin.Info.Sectors - extStart;
-
-                    if(extValid && extMinix) // Let's mix the fun
-                    {
-                        if(GetMinix(imagePlugin,
-                                    lbaStart,
-                                    divider,
-                                    sectorOffset,
-                                    sectorSize,
-                                    out List<Partition> mnxParts))
-                            partitions.AddRange(mnxParts);
-                        else
-                            extMinix = false;
-                    }
-
-                    if(!extValid || extMinix) continue;
-
-                    var part = new Partition();
-
-                    if(extStart > 0 && extSectors > 0)
-                    {
-                        part.Start  = extStart + sectorOffset;
-                        part.Length = extSectors;
-                        part.Offset = part.Start  * sectorSize;
-                        part.Size   = part.Length * sectorSize;
-                    }
-                    else
-                        extValid = false;
-
-                    if(!extValid) continue;
-
-                    part.Type        = $"0x{ebrEntry.type:X2}";
-                    part.Name        = DecodeMbrType(ebrEntry.type);
-                    part.Sequence    = counter;
-                    part.Description = ebrEntry.status == 0x80 ? Localization.Partition_is_bootable : "";
-                    part.Scheme      = Name;
-                    counter++;
-
-                    partitions.Add(part);
-                }
-
-                AaruLogging.Debug(MODULE_NAME, "next_start {0}", nextStart);
-                processingExtended &= nextStart != 0;
-                processingExtended &= nextStart <= imagePlugin.Info.Sectors;
-                lbaStart           =  nextStart;
-            }
-        }
-
-        // An empty MBR may exist, NeXT creates one and then hardcodes its disklabel
-        return partitions.Count != 0;
-    }
-
-#endregion
-
     static bool GetMinix(IMediaImage imagePlugin, ulong start, ulong divider, ulong sectorOffset, uint sectorSize,
                          out List<Partition> partitions)
     {
         partitions = [];
 
-        ErrorNumber errno = imagePlugin.ReadSector(start, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSector(start, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -668,17 +318,17 @@ public sealed class MBR : IPartition
 
         if(mnx.magic != MBR_MAGIC) return false;
 
-        bool anyMnx = false;
+        var anyMnx = false;
 
         foreach(PartitionEntry mnxEntry in mnx.entries)
         {
-            bool   mnxValid      = true;
-            byte   startSector   = (byte)(mnxEntry.start_sector & 0x3F);
-            ushort startCylinder = (ushort)((mnxEntry.start_sector & 0xC0) << 2 | mnxEntry.start_cylinder);
-            byte   endSector     = (byte)(mnxEntry.end_sector & 0x3F);
-            ushort endCylinder   = (ushort)((mnxEntry.end_sector & 0xC0) << 2 | mnxEntry.end_cylinder);
-            ulong  mnxStart      = mnxEntry.lba_start;
-            ulong  mnxSectors    = mnxEntry.lba_sectors;
+            var   mnxValid      = true;
+            var   startSector   = (byte)(mnxEntry.start_sector & 0x3F);
+            var   startCylinder = (ushort)((mnxEntry.start_sector & 0xC0) << 2 | mnxEntry.start_cylinder);
+            var   endSector     = (byte)(mnxEntry.end_sector & 0x3F);
+            var   endCylinder   = (ushort)((mnxEntry.end_sector & 0xC0) << 2 | mnxEntry.end_cylinder);
+            ulong mnxStart      = mnxEntry.lba_start;
+            ulong mnxSectors    = mnxEntry.lba_sectors;
 
             AaruLogging.Debug(MODULE_NAME, "mnx_entry.status {0}",         mnxEntry.status);
             AaruLogging.Debug(MODULE_NAME, "mnx_entry.type {0}",           mnxEntry.type);
@@ -957,6 +607,356 @@ public sealed class MBR : IPartition
         ///     <see cref="MBR.MBR_MAGIC" />
         /// </summary>
         public readonly ushort magic;
+    }
+
+#endregion
+
+#region IPartition Members
+
+    /// <inheritdoc />
+    public string Name => Localization.MBR_Name;
+
+    /// <inheritdoc />
+    public Guid Id => new("5E8A34E8-4F1A-59E6-4BF7-7EA647063A76");
+
+    /// <inheritdoc />
+    public string Author => Authors.NATALIA_PORTILLO;
+
+    /// <inheritdoc />
+    [SuppressMessage("ReSharper", "UnusedVariable")]
+    public bool GetInformation(IMediaImage imagePlugin, out List<Partition> partitions, ulong sectorOffset)
+    {
+        ulong counter = 0;
+
+        partitions = [];
+
+        if(imagePlugin.Info.SectorSize < 512) return false;
+
+        uint sectorSize = imagePlugin.Info.SectorSize;
+
+        // Divider of sector size in MBR between real sector size
+        ulong divider = 1;
+
+        if(imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc)
+        {
+            sectorSize = 512;
+            divider    = 4;
+        }
+
+        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset, out byte[] sector, out _);
+
+        if(errno != ErrorNumber.NoError) return false;
+
+        MasterBootRecord      mbr     = Marshal.ByteArrayToStructureLittleEndian<MasterBootRecord>(sector);
+        TimedMasterBootRecord mbrTime = Marshal.ByteArrayToStructureLittleEndian<TimedMasterBootRecord>(sector);
+
+        SerializedMasterBootRecord mbrSerial =
+            Marshal.ByteArrayToStructureLittleEndian<SerializedMasterBootRecord>(sector);
+
+        ModernMasterBootRecord mbrModern = Marshal.ByteArrayToStructureLittleEndian<ModernMasterBootRecord>(sector);
+        NecMasterBootRecord    mbrNec    = Marshal.ByteArrayToStructureLittleEndian<NecMasterBootRecord>(sector);
+
+        DiskManagerMasterBootRecord mbrOntrack =
+            Marshal.ByteArrayToStructureLittleEndian<DiskManagerMasterBootRecord>(sector);
+
+        AaruLogging.Debug(MODULE_NAME, "xmlmedia = {0}",     imagePlugin.Info.MetadataMediaType);
+        AaruLogging.Debug(MODULE_NAME, "mbr.magic = {0:X4}", mbr.magic);
+
+        if(mbr.magic != MBR_MAGIC) return false; // Not MBR
+
+        errno = imagePlugin.ReadSector(1 + sectorOffset, out byte[] hdrBytes, out _);
+
+        if(errno != ErrorNumber.NoError) return false;
+
+        var signature = BitConverter.ToUInt64(hdrBytes, 0);
+
+        AaruLogging.Debug(MODULE_NAME, "gpt.signature = 0x{0:X16}", signature);
+
+        if(signature == GPT_MAGIC) return false;
+
+        if(imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc)
+        {
+            errno = imagePlugin.ReadSector(sectorOffset, out hdrBytes, out _);
+
+            if(errno != ErrorNumber.NoError) return false;
+
+            signature = BitConverter.ToUInt64(hdrBytes, 512);
+            AaruLogging.Debug(MODULE_NAME, "gpt.signature @ 0x200 = 0x{0:X16}", signature);
+
+            if(signature == GPT_MAGIC) return false;
+        }
+
+        PartitionEntry[] entries;
+
+        if(mbrOntrack.dm_magic == DM_MAGIC)
+            entries = mbrOntrack.entries;
+        else if(mbrNec.nec_magic == NEC_MAGIC)
+            entries = mbrNec.entries;
+        else
+            entries = mbr.entries;
+
+        foreach(PartitionEntry entry in entries)
+        {
+            var   startSector   = (byte)(entry.start_sector & 0x3F);
+            var   startCylinder = (ushort)((entry.start_sector & 0xC0) << 2 | entry.start_cylinder);
+            var   endSector     = (byte)(entry.end_sector & 0x3F);
+            var   endCylinder   = (ushort)((entry.end_sector & 0xC0) << 2 | entry.end_cylinder);
+            ulong lbaStart      = entry.lba_start;
+            ulong lbaSectors    = entry.lba_sectors;
+
+            // Let's start the fun...
+
+            var valid    = true;
+            var extended = false;
+            var minix    = false;
+
+            if(entry.status != 0x00 && entry.status != 0x80) return false; // Maybe a FAT filesystem
+
+            valid &= entry.type != 0x00;
+
+            if(entry.type is 0x05 or 0x0F or 0x15 or 0x1F or 0x85 or 0x91 or 0x9B or 0xC5 or 0xCF or 0xD5)
+            {
+                valid    = false;
+                extended = true; // Extended partition
+            }
+
+            minix |= entry.type is 0x81 or 0x80; // MINIX partition
+
+            valid &= entry.lba_start      != 0 ||
+                     entry.lba_sectors    != 0 ||
+                     entry.start_cylinder != 0 ||
+                     entry.start_head     != 0 ||
+                     entry.start_sector   != 0 ||
+                     entry.end_cylinder   != 0 ||
+                     entry.end_head       != 0 ||
+                     entry.end_sector     != 0;
+
+            if(entry is { lba_start: 0, lba_sectors: 0 } && valid)
+            {
+                lbaStart = CHS.ToLBA(startCylinder,
+                                     entry.start_head,
+                                     startSector,
+                                     imagePlugin.Info.Heads,
+                                     imagePlugin.Info.SectorsPerTrack);
+
+                lbaSectors = CHS.ToLBA(endCylinder,
+                                       entry.end_head,
+                                       entry.end_sector,
+                                       imagePlugin.Info.Heads,
+                                       imagePlugin.Info.SectorsPerTrack) -
+                             lbaStart;
+            }
+
+            // For optical media
+            lbaStart   /= divider;
+            lbaSectors /= divider;
+
+            if(minix && lbaStart == sectorOffset) minix = false;
+
+            if(lbaStart > imagePlugin.Info.Sectors)
+            {
+                valid    = false;
+                extended = false;
+            }
+
+            // Some buggy implementations do some rounding errors getting a few sectors beyond device size
+            if(lbaStart + lbaSectors > imagePlugin.Info.Sectors) lbaSectors = imagePlugin.Info.Sectors - lbaStart;
+
+            AaruLogging.Debug(MODULE_NAME, "entry.status {0}",         entry.status);
+            AaruLogging.Debug(MODULE_NAME, "entry.type {0}",           entry.type);
+            AaruLogging.Debug(MODULE_NAME, "entry.lba_start {0}",      entry.lba_start);
+            AaruLogging.Debug(MODULE_NAME, "entry.lba_sectors {0}",    entry.lba_sectors);
+            AaruLogging.Debug(MODULE_NAME, "entry.start_cylinder {0}", startCylinder);
+            AaruLogging.Debug(MODULE_NAME, "entry.start_head {0}",     entry.start_head);
+            AaruLogging.Debug(MODULE_NAME, "entry.start_sector {0}",   startSector);
+            AaruLogging.Debug(MODULE_NAME, "entry.end_cylinder {0}",   endCylinder);
+            AaruLogging.Debug(MODULE_NAME, "entry.end_head {0}",       entry.end_head);
+            AaruLogging.Debug(MODULE_NAME, "entry.end_sector {0}",     endSector);
+
+            AaruLogging.Debug(MODULE_NAME, "entry.minix = {0}", minix);
+
+            AaruLogging.Debug(MODULE_NAME, "lba_start {0}",   lbaStart);
+            AaruLogging.Debug(MODULE_NAME, "lba_sectors {0}", lbaSectors);
+
+            if(valid && minix) // Let's mix the fun
+            {
+                if(GetMinix(imagePlugin, lbaStart, divider, sectorOffset, sectorSize, out List<Partition> mnxParts))
+                    partitions.AddRange(mnxParts);
+                else
+                    minix = false;
+            }
+
+            if(valid && !minix)
+            {
+                var part = new Partition();
+
+                if((lbaStart > 0 || imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc) &&
+                   lbaSectors > 0)
+                {
+                    part.Start  = lbaStart + sectorOffset;
+                    part.Length = lbaSectors;
+                    part.Offset = part.Start  * sectorSize;
+                    part.Size   = part.Length * sectorSize;
+                }
+                else
+                    valid = false;
+
+                if(valid)
+                {
+                    part.Type        = $"0x{entry.type:X2}";
+                    part.Name        = DecodeMbrType(entry.type);
+                    part.Sequence    = counter;
+                    part.Description = entry.status == 0x80 ? Localization.Partition_is_bootable : "";
+                    part.Scheme      = Name;
+
+                    counter++;
+
+                    partitions.Add(part);
+                }
+            }
+
+            AaruLogging.Debug(MODULE_NAME, "entry.extended = {0}", extended);
+
+            if(!extended) continue;
+
+            var   processingExtended = true;
+            ulong chainStart         = lbaStart;
+
+            while(processingExtended)
+            {
+                errno = imagePlugin.ReadSector(lbaStart, out sector, out _);
+
+                if(errno != ErrorNumber.NoError) break;
+
+                ExtendedBootRecord ebr = Marshal.ByteArrayToStructureLittleEndian<ExtendedBootRecord>(sector);
+
+                AaruLogging.Debug(MODULE_NAME, "ebr.magic == MBR_Magic = {0}", ebr.magic == MBR_MAGIC);
+
+                if(ebr.magic != MBR_MAGIC) break;
+
+                ulong nextStart = 0;
+
+                foreach(PartitionEntry ebrEntry in ebr.entries)
+                {
+                    var extValid = true;
+                    startSector   = (byte)(ebrEntry.start_sector & 0x3F);
+                    startCylinder = (ushort)((ebrEntry.start_sector & 0xC0) << 2 | ebrEntry.start_cylinder);
+                    endSector     = (byte)(ebrEntry.end_sector & 0x3F);
+                    endCylinder   = (ushort)((ebrEntry.end_sector & 0xC0) << 2 | ebrEntry.end_cylinder);
+                    ulong extStart   = ebrEntry.lba_start;
+                    ulong extSectors = ebrEntry.lba_sectors;
+                    var   extMinix   = false;
+
+                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.status {0}",         ebrEntry.status);
+                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.type {0}",           ebrEntry.type);
+                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.lba_start {0}",      ebrEntry.lba_start);
+                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.lba_sectors {0}",    ebrEntry.lba_sectors);
+                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.start_cylinder {0}", startCylinder);
+                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.start_head {0}",     ebrEntry.start_head);
+                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.start_sector {0}",   startSector);
+                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.end_cylinder {0}",   endCylinder);
+                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.end_head {0}",       ebrEntry.end_head);
+                    AaruLogging.Debug(MODULE_NAME, "ebr_entry.end_sector {0}",     endSector);
+
+                    // Let's start the fun...
+                    extValid &= ebrEntry.status is 0x00 or 0x80;
+                    extValid &= ebrEntry.type != 0x00;
+
+                    extValid &= ebrEntry.lba_start      != 0 ||
+                                ebrEntry.lba_sectors    != 0 ||
+                                ebrEntry.start_cylinder != 0 ||
+                                ebrEntry.start_head     != 0 ||
+                                ebrEntry.start_sector   != 0 ||
+                                ebrEntry.end_cylinder   != 0 ||
+                                ebrEntry.end_head       != 0 ||
+                                ebrEntry.end_sector     != 0;
+
+                    if(ebrEntry is { lba_start: 0, lba_sectors: 0 } && extValid)
+                    {
+                        extStart = CHS.ToLBA(startCylinder,
+                                             ebrEntry.start_head,
+                                             startSector,
+                                             imagePlugin.Info.Heads,
+                                             imagePlugin.Info.SectorsPerTrack);
+
+                        extSectors = CHS.ToLBA(endCylinder,
+                                               ebrEntry.end_head,
+                                               ebrEntry.end_sector,
+                                               imagePlugin.Info.Heads,
+                                               imagePlugin.Info.SectorsPerTrack) -
+                                     extStart;
+                    }
+
+                    extMinix |= ebrEntry.type is 0x81 or 0x80;
+
+                    // For optical media
+                    extStart   /= divider;
+                    extSectors /= divider;
+
+                    AaruLogging.Debug(MODULE_NAME, "ext_start {0}",   extStart);
+                    AaruLogging.Debug(MODULE_NAME, "ext_sectors {0}", extSectors);
+
+                    if(ebrEntry.type is 0x05 or 0x0F or 0x15 or 0x1F or 0x85 or 0x91 or 0x9B or 0xC5 or 0xCF or 0xD5)
+                    {
+                        extValid  = false;
+                        nextStart = chainStart + extStart;
+                    }
+
+                    extStart += lbaStart;
+                    extValid &= extStart <= imagePlugin.Info.Sectors;
+
+                    // Some buggy implementations do some rounding errors getting a few sectors beyond device size
+                    if(extStart + extSectors > imagePlugin.Info.Sectors)
+                        extSectors = imagePlugin.Info.Sectors - extStart;
+
+                    if(extValid && extMinix) // Let's mix the fun
+                    {
+                        if(GetMinix(imagePlugin,
+                                    lbaStart,
+                                    divider,
+                                    sectorOffset,
+                                    sectorSize,
+                                    out List<Partition> mnxParts))
+                            partitions.AddRange(mnxParts);
+                        else
+                            extMinix = false;
+                    }
+
+                    if(!extValid || extMinix) continue;
+
+                    var part = new Partition();
+
+                    if(extStart > 0 && extSectors > 0)
+                    {
+                        part.Start  = extStart + sectorOffset;
+                        part.Length = extSectors;
+                        part.Offset = part.Start  * sectorSize;
+                        part.Size   = part.Length * sectorSize;
+                    }
+                    else
+                        extValid = false;
+
+                    if(!extValid) continue;
+
+                    part.Type        = $"0x{ebrEntry.type:X2}";
+                    part.Name        = DecodeMbrType(ebrEntry.type);
+                    part.Sequence    = counter;
+                    part.Description = ebrEntry.status == 0x80 ? Localization.Partition_is_bootable : "";
+                    part.Scheme      = Name;
+                    counter++;
+
+                    partitions.Add(part);
+                }
+
+                AaruLogging.Debug(MODULE_NAME, "next_start {0}", nextStart);
+                processingExtended &= nextStart != 0;
+                processingExtended &= nextStart <= imagePlugin.Info.Sectors;
+                lbaStart           =  nextStart;
+            }
+        }
+
+        // An empty MBR may exist, NeXT creates one and then hardcodes its disklabel
+        return partitions.Count != 0;
     }
 
 #endregion

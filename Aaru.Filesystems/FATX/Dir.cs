@@ -113,7 +113,8 @@ public sealed partial class XboxFatPlugin
                 ErrorNumber errno =
                     _imagePlugin.ReadSectors(_firstClusterSector + (clusters[i] - 1) * _sectorsPerCluster,
                                              _sectorsPerCluster,
-                                             out byte[] buffer);
+                                             out byte[] buffer,
+                                             out _);
 
                 if(errno != ErrorNumber.NoError) return errno;
 

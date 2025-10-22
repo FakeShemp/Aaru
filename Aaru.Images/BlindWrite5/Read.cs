@@ -69,26 +69,26 @@ public sealed partial class BlindWrite5
 
         if(stream.Length < 276) return ErrorNumber.InvalidArgument;
 
-        byte[] hdr = new byte[260];
+        var hdr = new byte[260];
         stream.EnsureRead(hdr, 0, 260);
         _header = Marshal.ByteArrayToStructureLittleEndian<Header>(hdr);
 
         AaruLogging.Debug(MODULE_NAME, "header.signature = {0}", StringHandlers.CToString(_header.signature));
 
-        for(int i = 0; i < _header.unknown1.Length; i++)
+        for(var i = 0; i < _header.unknown1.Length; i++)
             AaruLogging.Debug(MODULE_NAME, "header.unknown1[{1}] = 0x{0:X8}", _header.unknown1[i], i);
 
         AaruLogging.Debug(MODULE_NAME, "header.profile = {0}",  _header.profile);
         AaruLogging.Debug(MODULE_NAME, "header.sessions = {0}", _header.sessions);
 
-        for(int i = 0; i < _header.unknown2.Length; i++)
+        for(var i = 0; i < _header.unknown2.Length; i++)
             AaruLogging.Debug(MODULE_NAME, "header.unknown2[{1}] = 0x{0:X8}", _header.unknown2[i], i);
 
         AaruLogging.Debug(MODULE_NAME, "header.mcnIsValid = {0}",    _header.mcnIsValid);
         AaruLogging.Debug(MODULE_NAME, "header.mcn = {0}",           StringHandlers.CToString(_header.mcn));
         AaruLogging.Debug(MODULE_NAME, "header.unknown3 = 0x{0:X4}", _header.unknown3);
 
-        for(int i = 0; i < _header.unknown4.Length; i++)
+        for(var i = 0; i < _header.unknown4.Length; i++)
             AaruLogging.Debug(MODULE_NAME, "header.unknown4[{1}] = 0x{0:X8}", _header.unknown4[i], i);
 
         AaruLogging.Debug(MODULE_NAME, "header.pmaLen = {0}",    _header.pmaLen);
@@ -97,13 +97,13 @@ public sealed partial class BlindWrite5
         AaruLogging.Debug(MODULE_NAME, "header.cdInfoLen = {0}", _header.cdInfoLen);
         AaruLogging.Debug(MODULE_NAME, "header.bcaLen = {0}",    _header.bcaLen);
 
-        for(int i = 0; i < _header.unknown5.Length; i++)
+        for(var i = 0; i < _header.unknown5.Length; i++)
             AaruLogging.Debug(MODULE_NAME, "header.unknown5[{1}] = 0x{0:X8}", _header.unknown5[i], i);
 
         AaruLogging.Debug(MODULE_NAME, "header.dvdStrLen = {0}",  _header.dvdStrLen);
         AaruLogging.Debug(MODULE_NAME, "header.dvdInfoLen = {0}", _header.dvdInfoLen);
 
-        for(int i = 0; i < _header.unknown6.Length; i++)
+        for(var i = 0; i < _header.unknown6.Length; i++)
             AaruLogging.Debug(MODULE_NAME, "header.unknown6[{1}] = 0x{0:X2}", _header.unknown6[i], i);
 
         AaruLogging.Debug(MODULE_NAME, "header.manufacturer = {0}", StringHandlers.CToString(_header.manufacturer));
@@ -140,7 +140,7 @@ public sealed partial class BlindWrite5
 
         if(_unkBlock.Length > 0) stream.EnsureRead(_unkBlock, 0, _unkBlock.Length);
 
-        byte[] temp = new byte[_header.pmaLen];
+        var temp = new byte[_header.pmaLen];
 
         if(temp.Length > 0)
         {
@@ -234,20 +234,20 @@ public sealed partial class BlindWrite5
             _discInformation = null;
 
         // How many data blocks
-        byte[] tmpArray = new byte[4];
+        var tmpArray = new byte[4];
         stream.EnsureRead(tmpArray, 0, tmpArray.Length);
-        uint dataBlockCount = BitConverter.ToUInt32(tmpArray, 0);
+        var dataBlockCount = BitConverter.ToUInt32(tmpArray, 0);
 
         stream.EnsureRead(tmpArray, 0, tmpArray.Length);
-        uint   dataPathLen   = BitConverter.ToUInt32(tmpArray, 0);
-        byte[] dataPathBytes = new byte[dataPathLen];
+        var dataPathLen   = BitConverter.ToUInt32(tmpArray, 0);
+        var dataPathBytes = new byte[dataPathLen];
         stream.EnsureRead(dataPathBytes, 0, dataPathBytes.Length);
         _dataPath = Encoding.Unicode.GetString(dataPathBytes);
         AaruLogging.Debug(MODULE_NAME, Localization.Data_path_0, _dataPath);
 
         _dataFiles = [];
 
-        for(int cD = 0; cD < dataBlockCount; cD++)
+        for(var cD = 0; cD < dataBlockCount; cD++)
         {
             tmpArray = new byte[52];
 
@@ -286,12 +286,12 @@ public sealed partial class BlindWrite5
             AaruLogging.Debug(MODULE_NAME, "dataFile.type = 0x{0:X8}", dataFile.Type);
             AaruLogging.Debug(MODULE_NAME, "dataFile.length = {0}",    dataFile.Length);
 
-            for(int i = 0; i < dataFile.Unknown1.Length; i++)
+            for(var i = 0; i < dataFile.Unknown1.Length; i++)
                 AaruLogging.Debug(MODULE_NAME, "dataFile.unknown1[{1}] = {0}", dataFile.Unknown1[i], i);
 
             AaruLogging.Debug(MODULE_NAME, "dataFile.offset = {0}", dataFile.Offset);
 
-            for(int i = 0; i < dataFile.Unknown2.Length; i++)
+            for(var i = 0; i < dataFile.Unknown2.Length; i++)
                 AaruLogging.Debug(MODULE_NAME, "dataFile.unknown2[{1}] = {0}", dataFile.Unknown2[i], i);
 
             AaruLogging.Debug(MODULE_NAME, "dataFile.startLba = {0}",    dataFile.StartLba);
@@ -303,7 +303,7 @@ public sealed partial class BlindWrite5
 
         _bwSessions = [];
 
-        for(int ses = 0; ses < _header.sessions; ses++)
+        for(var ses = 0; ses < _header.sessions; ses++)
         {
             var session = new SessionDescriptor();
             tmpArray = new byte[16];
@@ -327,9 +327,9 @@ public sealed partial class BlindWrite5
 
             AaruLogging.Debug(MODULE_NAME, "session[{0}].lastTrack = {1}", ses, session.LastTrack);
 
-            for(int tSeq = 0; tSeq < session.Entries; tSeq++)
+            for(var tSeq = 0; tSeq < session.Entries; tSeq++)
             {
-                byte[] trk = new byte[72];
+                var trk = new byte[72];
                 stream.EnsureRead(trk, 0, 72);
                 session.Tracks[tSeq] = Marshal.ByteArrayToStructureLittleEndian<TrackDescriptor>(trk);
 
@@ -346,7 +346,7 @@ public sealed partial class BlindWrite5
                                   tSeq,
                                   session.Tracks[tSeq].type);
 
-                for(int i = 0; i < session.Tracks[tSeq].unknown1.Length; i++)
+                for(var i = 0; i < session.Tracks[tSeq].unknown1.Length; i++)
                 {
                     AaruLogging.Debug(MODULE_NAME,
                                       "session[{0}].track[{1}].unknown1[{2}] = 0x{3:X2}",
@@ -452,7 +452,7 @@ public sealed partial class BlindWrite5
                                   tSeq,
                                   session.Tracks[tSeq].pregap);
 
-                for(int i = 0; i < session.Tracks[tSeq].unknown6.Length; i++)
+                for(var i = 0; i < session.Tracks[tSeq].unknown6.Length; i++)
                 {
                     AaruLogging.Debug(MODULE_NAME,
                                       "session[{0}].track[{1}].unknown6[{2}] = 0x{3:X8}",
@@ -474,7 +474,7 @@ public sealed partial class BlindWrite5
                                   tSeq,
                                   session.Tracks[tSeq].sectors);
 
-                for(int i = 0; i < session.Tracks[tSeq].unknown7.Length; i++)
+                for(var i = 0; i < session.Tracks[tSeq].unknown7.Length; i++)
                 {
                     AaruLogging.Debug(MODULE_NAME,
                                       "session[{0}].track[{1}].unknown7[{2}] = 0x{3:X8}",
@@ -499,7 +499,7 @@ public sealed partial class BlindWrite5
                 if(session.Tracks[tSeq].type is TrackType.Dvd or TrackType.NotData) continue;
 
                 {
-                    for(int i = 0; i < session.Tracks[tSeq].unknown9.Length; i++)
+                    for(var i = 0; i < session.Tracks[tSeq].unknown9.Length; i++)
                     {
                         AaruLogging.Debug(MODULE_NAME,
                                           "session[{0}].track[{1}].unknown9[{2}] = 0x{3:X8}",
@@ -521,7 +521,7 @@ public sealed partial class BlindWrite5
         tmpArray = new byte[4];
         stream.EnsureRead(tmpArray, 0, tmpArray.Length);
 
-        byte[] footer = new byte[16];
+        var footer = new byte[16];
         stream.EnsureRead(footer, 0, footer.Length);
 
         if(_bw5Footer.SequenceEqual(footer))
@@ -704,7 +704,7 @@ public sealed partial class BlindWrite5
 
         ulong offsetBytes = 0;
         _offsetMap = new Dictionary<uint, ulong>();
-        bool isDvd        = false;
+        var  isDvd        = false;
         byte firstSession = byte.MaxValue;
         byte lastSession  = 0;
         _trackFlags        = new Dictionary<uint, byte>();
@@ -729,7 +729,7 @@ public sealed partial class BlindWrite5
 
             foreach(TrackDescriptor trk in ses.Tracks)
             {
-                byte adrCtl = (byte)((trk.adr << 4) + trk.ctl);
+                var adrCtl = (byte)((trk.adr << 4) + trk.ctl);
                 fullTocStream.WriteByte((byte)trk.session);
                 fullTocStream.WriteByte(adrCtl);
                 fullTocStream.WriteByte(0x00);
@@ -846,8 +846,8 @@ public sealed partial class BlindWrite5
                         _filePaths.FirstOrDefault(f => Path.GetExtension(f.FilePath).ToLowerInvariant() == ".b00");
 
                     string filename           = Path.GetFileNameWithoutExtension(splitStartChars.FilePath);
-                    bool   lowerCaseExtension = false;
-                    bool   lowerCaseFileName  = false;
+                    var    lowerCaseExtension = false;
+                    var    lowerCaseFileName  = false;
                     string basePath;
 
                     bool version5 = string.Compare(Path.GetExtension(imageFilter.Filename),
@@ -1248,11 +1248,11 @@ public sealed partial class BlindWrite5
         }
         else if(_imageInfo.MediaType is MediaType.CD or MediaType.CDROM)
         {
-            bool data       = false;
-            bool mode2      = false;
-            bool firstAudio = false;
-            bool firstData  = false;
-            bool audio      = false;
+            var data       = false;
+            var mode2      = false;
+            var firstAudio = false;
+            var firstData  = false;
+            var audio      = false;
 
             foreach(Track bwTrack in Tracks)
             {
@@ -1319,7 +1319,7 @@ public sealed partial class BlindWrite5
 
         if(_atip != null)
         {
-            byte[] atipTmp = new byte[_atip.Length + 4];
+            var atipTmp = new byte[_atip.Length + 4];
             Array.Copy(_atip, 0, atipTmp, 4, _atip.Length);
             atipTmp[0] = (byte)((_atip.Length & 0xFF00) >> 8);
             atipTmp[1] = (byte)(_atip.Length & 0xFF);
@@ -1336,7 +1336,7 @@ public sealed partial class BlindWrite5
             }
         }
 
-        bool isBd = false;
+        var isBd = false;
 
         if(_imageInfo.MediaType is MediaType.BDR or MediaType.BDRE or MediaType.BDROM)
         {
@@ -1456,24 +1456,34 @@ public sealed partial class BlindWrite5
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer) => ReadSectors(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectors(sectorAddress, 1, out buffer, out _);
+    }
 
     /// <inheritdoc />
     public ErrorNumber ReadSectorTag(ulong sectorAddress, SectorTagType tag, out byte[] buffer) =>
         ReadSectorsTag(sectorAddress, 1, tag, out buffer);
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer) =>
-        ReadSectors(sectorAddress, 1, track, out buffer);
+    public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectors(sectorAddress, 1, track, out buffer, out _);
+    }
 
     /// <inheritdoc />
     public ErrorNumber ReadSectorTag(ulong sectorAddress, uint track, SectorTagType tag, out byte[] buffer) =>
         ReadSectorsTag(sectorAddress, 1, track, tag, out buffer);
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         foreach(KeyValuePair<uint, ulong> kvp in from kvp in _offsetMap
                                                  where sectorAddress >= kvp.Value
@@ -1482,7 +1492,7 @@ public sealed partial class BlindWrite5
                                                  where sectorAddress                       - kvp.Value <
                                                        track.EndSector - track.StartSector + 1
                                                  select kvp)
-            return ReadSectors(sectorAddress - kvp.Value, length, kvp.Key, out buffer);
+            return ReadSectors(sectorAddress - kvp.Value, length, kvp.Key, out buffer, out sectorStatus);
 
         return ErrorNumber.SectorNotFound;
     }
@@ -1505,9 +1515,11 @@ public sealed partial class BlindWrite5
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, uint track, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         // TODO: Cross data files
         Track aaruTrack = Tracks.FirstOrDefault(bwTrack => bwTrack.Sequence == track);
@@ -1515,6 +1527,9 @@ public sealed partial class BlindWrite5
         if(aaruTrack is null) return ErrorNumber.SectorNotFound;
 
         if(length + sectorAddress > aaruTrack.EndSector - aaruTrack.StartSector + 1) return ErrorNumber.OutOfRange;
+
+        sectorStatus = new SectorStatus[length];
+        for(uint i = 0; i < length; i++) sectorStatus[i] = SectorStatus.Dumped;
 
         DataFileCharacteristics chars = (from characteristics in _filePaths
                                          let firstSector = characteristics.StartLba
@@ -1528,7 +1543,7 @@ public sealed partial class BlindWrite5
         uint sectorOffset;
         uint sectorSize;
         uint sectorSkip;
-        bool mode2 = false;
+        var  mode2 = false;
 
         switch(aaruTrack.Type)
         {
@@ -1604,9 +1619,9 @@ public sealed partial class BlindWrite5
 
             buffer = br.ReadBytes((int)((sectorSize + sectorSkip) * length));
 
-            for(int i = 0; i < length; i++)
+            for(var i = 0; i < length; i++)
             {
-                byte[] sector = new byte[sectorSize];
+                var sector = new byte[sectorSize];
                 Array.Copy(buffer, (sectorSize + sectorSkip) * i, sector, 0, sectorSize);
                 sector = Sector.GetUserDataFromMode2(sector);
                 mode2Ms.Write(sector, 0, sector.Length);
@@ -1618,7 +1633,7 @@ public sealed partial class BlindWrite5
             buffer = br.ReadBytes((int)(sectorSize * length));
         else
         {
-            for(int i = 0; i < length; i++)
+            for(var i = 0; i < length; i++)
             {
                 br.BaseStream.Seek(sectorOffset, SeekOrigin.Current);
                 byte[] sector = br.ReadBytes((int)sectorSize);
@@ -2107,7 +2122,7 @@ public sealed partial class BlindWrite5
             buffer = br.ReadBytes((int)(sectorSize * length));
         else
         {
-            for(int i = 0; i < length; i++)
+            for(var i = 0; i < length; i++)
             {
                 br.BaseStream.Seek(sectorOffset, SeekOrigin.Current);
                 byte[] sector = br.ReadBytes((int)sectorSize);
@@ -2129,17 +2144,27 @@ public sealed partial class BlindWrite5
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer) =>
-        ReadSectorsLong(sectorAddress, 1, out buffer);
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer) =>
-        ReadSectorsLong(sectorAddress, 1, track, out buffer);
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectorsLong(sectorAddress, 1, out buffer, out _);
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectorsLong(sectorAddress, 1, track, out buffer, out _);
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus)
+    {
+        buffer       = null;
+        sectorStatus = null;
 
         foreach(KeyValuePair<uint, ulong> kvp in from kvp in _offsetMap
                                                  where sectorAddress >= kvp.Value
@@ -2148,15 +2173,17 @@ public sealed partial class BlindWrite5
                                                  where sectorAddress                       - kvp.Value <
                                                        track.EndSector - track.StartSector + 1
                                                  select kvp)
-            return ReadSectorsLong(sectorAddress - kvp.Value, length, kvp.Key, out buffer);
+            return ReadSectorsLong(sectorAddress - kvp.Value, length, kvp.Key, out buffer, out sectorStatus);
 
         return ErrorNumber.SectorNotFound;
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, uint track, out byte[] buffer)
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         // TODO: Cross data files
         Track aaruTrack = Tracks.FirstOrDefault(bwTrack => bwTrack.Sequence == track);
@@ -2164,6 +2191,9 @@ public sealed partial class BlindWrite5
         if(aaruTrack is null) return ErrorNumber.SectorNotFound;
 
         if(length + sectorAddress > aaruTrack.EndSector - aaruTrack.StartSector + 1) return ErrorNumber.OutOfRange;
+
+        sectorStatus = new SectorStatus[length];
+        for(uint i = 0; i < length; i++) sectorStatus[i] = SectorStatus.Dumped;
 
         DataFileCharacteristics chars = (from characteristics in _filePaths
                                          let firstSector = characteristics.StartLba
@@ -2234,7 +2264,7 @@ public sealed partial class BlindWrite5
             buffer = br.ReadBytes((int)(sectorSize * length));
         else
         {
-            for(int i = 0; i < length; i++)
+            for(var i = 0; i < length; i++)
             {
                 br.BaseStream.Seek(sectorOffset, SeekOrigin.Current);
                 byte[] sector = br.ReadBytes((int)sectorSize);

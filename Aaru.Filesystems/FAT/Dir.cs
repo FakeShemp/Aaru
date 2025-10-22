@@ -105,7 +105,7 @@ public sealed partial class FAT
 
         currentDirectory = _rootDirectoryCache;
 
-        for(int p = 0; p < pieces.Length; p++)
+        for(var p = 0; p < pieces.Length; p++)
         {
             entry = currentDirectory.FirstOrDefault(t => t.Key.ToLower(_cultureInfo) == pieces[p]);
 
@@ -139,13 +139,14 @@ public sealed partial class FAT
 
             if(clusters is null) return ErrorNumber.InvalidArgument;
 
-            byte[] directoryBuffer = new byte[_bytesPerCluster * clusters.Length];
+            var directoryBuffer = new byte[_bytesPerCluster * clusters.Length];
 
-            for(int i = 0; i < clusters.Length; i++)
+            for(var i = 0; i < clusters.Length; i++)
             {
                 ErrorNumber errno = _image.ReadSectors(_firstClusterSector + clusters[i] * _sectorsPerCluster,
                                                        _sectorsPerCluster,
-                                                       out byte[] buffer);
+                                                       out byte[] buffer,
+                                                       out _);
 
                 if(errno != ErrorNumber.NoError) return errno;
 
@@ -156,7 +157,7 @@ public sealed partial class FAT
             byte[] lastLfnName     = null;
             byte   lastLfnChecksum = 0;
 
-            for(int pos = 0; pos < directoryBuffer.Length; pos += Marshal.SizeOf<DirectoryEntry>())
+            for(var pos = 0; pos < directoryBuffer.Length; pos += Marshal.SizeOf<DirectoryEntry>())
             {
                 DirectoryEntry dirent =
                     Marshal.ByteArrayToStructureLittleEndian<DirectoryEntry>(directoryBuffer,
@@ -247,7 +248,7 @@ public sealed partial class FAT
                     name = ":{EMPTYNAME}:";
 
                     // Try to create a unique filename with an extension from 000 to 999
-                    for(int uniq = 0; uniq < 1000; uniq++)
+                    for(var uniq = 0; uniq < 1000; uniq++)
                     {
                         extension = $"{uniq:D03}";
 
@@ -318,11 +319,11 @@ public sealed partial class FAT
 
                     if(BitConverter.ToUInt16(longnameEa, 0) != EAT_ASCII) continue;
 
-                    ushort longnameSize = BitConverter.ToUInt16(longnameEa, 2);
+                    var longnameSize = BitConverter.ToUInt16(longnameEa, 2);
 
                     if(longnameSize + 4 > longnameEa.Length) continue;
 
-                    byte[] longnameBytes = new byte[longnameSize];
+                    var longnameBytes = new byte[longnameSize];
 
                     Array.Copy(longnameEa, 4, longnameBytes, 0, longnameSize);
 

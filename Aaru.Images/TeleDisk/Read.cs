@@ -49,7 +49,7 @@ public sealed partial class TeleDisk
     public ErrorNumber Open(IFilter imageFilter)
     {
         _header = new Header();
-        byte[] headerBytes = new byte[12];
+        var headerBytes = new byte[12];
         _inStream = imageFilter.GetDataForkStream();
         var stream = new MemoryStream();
         _inStream.Seek(0, SeekOrigin.Begin);
@@ -75,7 +75,7 @@ public sealed partial class TeleDisk
         _imageInfo.Version     = $"{(_header.Version & 0xF0) >> 4}.{_header.Version & 0x0F}";
         _imageInfo.Application = _imageInfo.Version;
 
-        byte[] headerBytesForCrc = new byte[10];
+        var headerBytesForCrc = new byte[10];
         Array.Copy(headerBytes, headerBytesForCrc, 10);
         ushort calculatedHeaderCrc = TeleDiskCrc(0x0000, headerBytesForCrc);
 
@@ -134,7 +134,7 @@ public sealed partial class TeleDisk
         else
         {
             // Not using Stream.CopyTo() because it's failing with LZIP
-            byte[] copybuf = new byte[_inStream.Length];
+            var copybuf = new byte[_inStream.Length];
             _inStream.Seek(0, SeekOrigin.Begin);
             _inStream.EnsureRead(copybuf, 0, copybuf.Length);
             stream.Seek(0, SeekOrigin.Begin);
@@ -149,7 +149,7 @@ public sealed partial class TeleDisk
         {
             _commentHeader = new CommentBlockHeader();
 
-            byte[] commentHeaderBytes = new byte[10];
+            var commentHeaderBytes = new byte[10];
 
             stream.EnsureRead(commentHeaderBytes, 0, 10);
             _commentHeader.Crc    = BitConverter.ToUInt16(commentHeaderBytes, 0);
@@ -164,7 +164,7 @@ public sealed partial class TeleDisk
             _commentBlock = new byte[_commentHeader.Length];
             stream.EnsureRead(_commentBlock, 0, _commentHeader.Length);
 
-            byte[] commentBlockForCrc = new byte[_commentHeader.Length + 8];
+            var commentBlockForCrc = new byte[_commentHeader.Length + 8];
             Array.Copy(commentHeaderBytes, 2, commentBlockForCrc, 0, 8);
             Array.Copy(_commentBlock,      0, commentBlockForCrc, 8, _commentHeader.Length);
 
@@ -185,12 +185,11 @@ public sealed partial class TeleDisk
 
             _aDiskCrcHasFailed |= cmtcrc != _commentHeader.Crc;
 
-            for(int i = 0; i < _commentBlock.Length; i++)
+            for(var i = 0; i < _commentBlock.Length; i++)
 
                 // Replace NULLs, used by TeleDisk as newline markers, with UNIX newline marker
-            {
-                if(_commentBlock[i] == 0x00) _commentBlock[i] = 0x0A;
-            }
+                if(_commentBlock[i] == 0x00)
+                    _commentBlock[i] = 0x0A;
 
             _imageInfo.Comments = Encoding.ASCII.GetString(_commentBlock);
 
@@ -222,7 +221,7 @@ public sealed partial class TeleDisk
         int  totalCylinders = -1;
         int  totalHeads     = -1;
         int  maxSector      = -1;
-        int  totalSectors   = 0;
+        var  totalSectors   = 0;
         long currentPos     = stream.Position;
         _imageInfo.SectorSize      = uint.MaxValue;
         _imageInfo.SectorsPerTrack = uint.MaxValue;
@@ -247,9 +246,9 @@ public sealed partial class TeleDisk
 
             for(byte processedSectors = 0; processedSectors < teleDiskTrack.Sectors; processedSectors++)
             {
-                var    teleDiskSector = new SectorHeader();
-                var    teleDiskData   = new DataHeader();
-                byte[] dataSizeBytes  = new byte[2];
+                var teleDiskSector = new SectorHeader();
+                var teleDiskData   = new DataHeader();
+                var dataSizeBytes  = new byte[2];
 
                 teleDiskSector.Cylinder     = (byte)stream.ReadByte();
                 teleDiskSector.Head         = (byte)stream.ReadByte();
@@ -267,7 +266,7 @@ public sealed partial class TeleDisk
                     teleDiskData.DataSize = BitConverter.ToUInt16(dataSizeBytes, 0);
                     teleDiskData.DataSize--; // Sydex decided to including dataEncoding byte as part of it
                     teleDiskData.DataEncoding = (byte)stream.ReadByte();
-                    byte[] data = new byte[teleDiskData.DataSize];
+                    var data = new byte[teleDiskData.DataSize];
                     stream.EnsureRead(data, 0, teleDiskData.DataSize);
                 }
 
@@ -288,8 +287,8 @@ public sealed partial class TeleDisk
             return ErrorNumber.InvalidArgument;
         }
 
-        bool hasLeadOutOnHead0 = false;
-        bool hasLeadOutOnHead1 = false;
+        var hasLeadOutOnHead0 = false;
+        var hasLeadOutOnHead1 = false;
         _imageInfo.Cylinders = (ushort)totalCylinders;
         _imageInfo.Heads     = (byte)totalHeads;
 
@@ -324,9 +323,9 @@ public sealed partial class TeleDisk
 
             for(byte processedSectors = 0; processedSectors < teleDiskTrack.Sectors; processedSectors++)
             {
-                var    teleDiskSector = new SectorHeader();
-                var    teleDiskData   = new DataHeader();
-                byte[] dataSizeBytes  = new byte[2];
+                var teleDiskSector = new SectorHeader();
+                var teleDiskData   = new DataHeader();
+                var dataSizeBytes  = new byte[2];
 
                 teleDiskSector.Cylinder     = (byte)stream.ReadByte();
                 teleDiskSector.Head         = (byte)stream.ReadByte();
@@ -343,7 +342,7 @@ public sealed partial class TeleDisk
                 teleDiskData.DataSize = BitConverter.ToUInt16(dataSizeBytes, 0);
                 teleDiskData.DataSize--; // Sydex decided to including dataEncoding byte as part of it
                 teleDiskData.DataEncoding = (byte)stream.ReadByte();
-                byte[] data = new byte[teleDiskData.DataSize];
+                var data = new byte[teleDiskData.DataSize];
                 stream.EnsureRead(data, 0, teleDiskData.DataSize);
             }
         }
@@ -351,21 +350,21 @@ public sealed partial class TeleDisk
         _sectorsData = new byte[totalCylinders][][][];
 
         // Total sectors per track
-        uint[][] spts = new uint[totalCylinders][];
+        var spts = new uint[totalCylinders][];
 
         AaruLogging.Debug(MODULE_NAME,
-                                   Localization.Found_0_cylinders_and_1_heads_with_a_maximum_sector_number_of_2,
-                                   totalCylinders,
-                                   totalHeads,
-                                   maxSector);
+                          Localization.Found_0_cylinders_and_1_heads_with_a_maximum_sector_number_of_2,
+                          totalCylinders,
+                          totalHeads,
+                          maxSector);
 
         // Create heads
-        for(int i = 0; i < totalCylinders; i++)
+        for(var i = 0; i < totalCylinders; i++)
         {
             _sectorsData[i] = new byte[totalHeads][][];
             spts[i]         = new uint[totalHeads];
 
-            for(int j = 0; j < totalHeads; j++) _sectorsData[i][j] = new byte[maxSector + 1][];
+            for(var j = 0; j < totalHeads; j++) _sectorsData[i][j] = new byte[maxSector + 1][];
         }
 
         // Decode the image
@@ -373,8 +372,8 @@ public sealed partial class TeleDisk
 
         while(true)
         {
-            var    teleDiskTrack = new TrackHeader();
-            byte[] tdTrackForCrc = new byte[3];
+            var teleDiskTrack = new TrackHeader();
+            var tdTrackForCrc = new byte[3];
 
             teleDiskTrack.Sectors  = (byte)stream.ReadByte();
             teleDiskTrack.Cylinder = (byte)stream.ReadByte();
@@ -385,7 +384,7 @@ public sealed partial class TeleDisk
             tdTrackForCrc[1] = teleDiskTrack.Cylinder;
             tdTrackForCrc[2] = teleDiskTrack.Head;
 
-            byte tdTrackCalculatedCrc = (byte)(TeleDiskCrc(0, tdTrackForCrc) & 0xFF);
+            var tdTrackCalculatedCrc = (byte)(TeleDiskCrc(0, tdTrackForCrc) & 0xFF);
 
             AaruLogging.Debug(MODULE_NAME, Localization.Track_follows);
             AaruLogging.Debug(MODULE_NAME, "\t" + Localization.Track_cylinder_0, teleDiskTrack.Cylinder);
@@ -394,9 +393,9 @@ public sealed partial class TeleDisk
             AaruLogging.Debug(MODULE_NAME, "\t" + Localization.Sectors_in_track_0, teleDiskTrack.Sectors);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "\t" + Localization.Track_header_CRC_0_X2_calculated_1_X2,
-                                       teleDiskTrack.Crc,
-                                       tdTrackCalculatedCrc);
+                              "\t" + Localization.Track_header_CRC_0_X2_calculated_1_X2,
+                              teleDiskTrack.Crc,
+                              tdTrackCalculatedCrc);
 
             _aDiskCrcHasFailed |= tdTrackCalculatedCrc != teleDiskTrack.Crc;
 
@@ -405,9 +404,9 @@ public sealed partial class TeleDisk
                 AaruLogging.Debug(MODULE_NAME, Localization.End_of_disk_image_arrived);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Total_of_0_data_sectors_for_1_bytes,
-                                           totalSectors,
-                                           _totalDiskSize);
+                                  Localization.Total_of_0_data_sectors_for_1_bytes,
+                                  totalSectors,
+                                  _totalDiskSize);
 
                 break;
             }
@@ -416,7 +415,7 @@ public sealed partial class TeleDisk
             {
                 var    teleDiskSector = new SectorHeader();
                 var    teleDiskData   = new DataHeader();
-                byte[] dataSizeBytes  = new byte[2];
+                var    dataSizeBytes  = new byte[2];
                 byte[] decodedData;
 
                 teleDiskSector.Cylinder     = (byte)stream.ReadByte();
@@ -428,27 +427,23 @@ public sealed partial class TeleDisk
 
                 AaruLogging.Debug(MODULE_NAME, "\t" + Localization.Sector_follows);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "\t\t" + Localization.AddressMark_cylinder_0,
-                                           teleDiskSector.Cylinder);
+                AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.AddressMark_cylinder_0, teleDiskSector.Cylinder);
 
                 AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.AddressMark_head_0, teleDiskSector.Head);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "\t\t" + Localization.AddressMark_sector_number_0,
-                                           teleDiskSector.SectorNumber);
+                                  "\t\t" + Localization.AddressMark_sector_number_0,
+                                  teleDiskSector.SectorNumber);
 
                 AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Sector_size_0, teleDiskSector.SectorSize);
 
                 AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Sector_flags_0_X2, teleDiskSector.Flags);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "\t\t" + Localization.Sector_CRC_plus_headers_0_X2,
-                                           teleDiskSector.Crc);
+                AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Sector_CRC_plus_headers_0_X2, teleDiskSector.Crc);
 
-                uint lba = (uint)(teleDiskSector.Cylinder * _header.Sides * _imageInfo.SectorsPerTrack +
-                                  teleDiskSector.Head     * _imageInfo.SectorsPerTrack                 +
-                                  (teleDiskSector.SectorNumber - 1));
+                var lba = (uint)(teleDiskSector.Cylinder * _header.Sides * _imageInfo.SectorsPerTrack +
+                                 teleDiskSector.Head     * _imageInfo.SectorsPerTrack                 +
+                                 (teleDiskSector.SectorNumber - 1));
 
                 if((teleDiskSector.Flags & FLAGS_SECTOR_DATALESS) != FLAGS_SECTOR_DATALESS &&
                    (teleDiskSector.Flags & FLAGS_SECTOR_SKIPPED)  != FLAGS_SECTOR_SKIPPED)
@@ -458,16 +453,12 @@ public sealed partial class TeleDisk
                     teleDiskData.DataSize--; // Sydex decided to including dataEncoding byte as part of it
                     _imageInfo.ImageSize      += teleDiskData.DataSize;
                     teleDiskData.DataEncoding =  (byte)stream.ReadByte();
-                    byte[] data = new byte[teleDiskData.DataSize];
+                    var data = new byte[teleDiskData.DataSize];
                     stream.EnsureRead(data, 0, teleDiskData.DataSize);
 
-                    AaruLogging.Debug(MODULE_NAME,
-                                               "\t\t" + Localization.Data_size_in_image_0,
-                                               teleDiskData.DataSize);
+                    AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Data_size_in_image_0, teleDiskData.DataSize);
 
-                    AaruLogging.Debug(MODULE_NAME,
-                                               "\t\t" + Localization.Data_encoding_0_X2,
-                                               teleDiskData.DataEncoding);
+                    AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Data_encoding_0_X2, teleDiskData.DataEncoding);
 
                     ErrorNumber errno = DecodeTeleDiskData(teleDiskSector.SectorSize,
                                                            teleDiskData.DataEncoding,
@@ -476,18 +467,17 @@ public sealed partial class TeleDisk
 
                     if(errno != ErrorNumber.NoError) return errno;
 
-                    byte tdSectorCalculatedCrc = (byte)(TeleDiskCrc(0, decodedData) & 0xFF);
+                    var tdSectorCalculatedCrc = (byte)(TeleDiskCrc(0, decodedData) & 0xFF);
 
                     if(tdSectorCalculatedCrc != teleDiskSector.Crc)
                     {
                         AaruLogging.Debug(MODULE_NAME,
-                                                   Localization
-                                                      .Sector_0_3_4_calculated_CRC_1_X2_differs_from_stored_CRC_2_X2,
-                                                   teleDiskTrack.Cylinder,
-                                                   tdSectorCalculatedCrc,
-                                                   teleDiskSector.Crc,
-                                                   teleDiskTrack.Cylinder,
-                                                   teleDiskSector.SectorNumber);
+                                          Localization.Sector_0_3_4_calculated_CRC_1_X2_differs_from_stored_CRC_2_X2,
+                                          teleDiskTrack.Cylinder,
+                                          tdSectorCalculatedCrc,
+                                          teleDiskSector.Crc,
+                                          teleDiskTrack.Cylinder,
+                                          teleDiskSector.SectorNumber);
 
                         if((teleDiskSector.Flags & FLAGS_SECTOR_NO_ID) != FLAGS_SECTOR_NO_ID)
                             _sectorsWhereCrcHasFailed.Add(lba);
@@ -503,16 +493,15 @@ public sealed partial class TeleDisk
                 if(_sectorsData[teleDiskTrack.Cylinder][teleDiskTrack.Head][teleDiskSector.SectorNumber] != null)
                 {
                     AaruLogging.Debug(MODULE_NAME,
-                                               (teleDiskSector.Flags & FLAGS_SECTOR_DUPLICATE) == FLAGS_SECTOR_DUPLICATE
-                                                   ? "\t\t" +
-                                                     Localization
-                                                        .Sector_0_on_cylinder_1_head_2_is_duplicate_and_marked_so
-                                                   : "\t\t" +
-                                                     Localization
-                                                        .Sector_0_on_cylinder_1_head_2_is_duplicate_but_is_not_marked_so,
-                                               teleDiskSector.SectorNumber,
-                                               teleDiskSector.Cylinder,
-                                               teleDiskSector.Head);
+                                      (teleDiskSector.Flags & FLAGS_SECTOR_DUPLICATE) == FLAGS_SECTOR_DUPLICATE
+                                          ? "\t\t" +
+                                            Localization.Sector_0_on_cylinder_1_head_2_is_duplicate_and_marked_so
+                                          : "\t\t" +
+                                            Localization
+                                               .Sector_0_on_cylinder_1_head_2_is_duplicate_but_is_not_marked_so,
+                                      teleDiskSector.SectorNumber,
+                                      teleDiskSector.Cylinder,
+                                      teleDiskSector.Head);
                 }
                 else
                 {
@@ -527,7 +516,7 @@ public sealed partial class TeleDisk
 
         if(hasLeadOutOnHead0)
         {
-            for(int i = 0; i < _sectorsData[totalCylinders - 1][0].Length; i++)
+            for(var i = 0; i < _sectorsData[totalCylinders - 1][0].Length; i++)
             {
                 if(_sectorsData[totalCylinders - 1][0][i] != null)
                 {
@@ -540,7 +529,7 @@ public sealed partial class TeleDisk
 
         if(hasLeadOutOnHead1)
         {
-            for(int i = 0; i < _sectorsData[totalCylinders - 1][1].Length; i++)
+            for(var i = 0; i < _sectorsData[totalCylinders - 1][1].Length; i++)
             {
                 if(_sectorsData[totalCylinders - 1][1][i] != null)
                 {
@@ -574,9 +563,10 @@ public sealed partial class TeleDisk
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer)
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
         buffer                                    = null;
+        sectorStatus                              = SectorStatus.NotDumped;
         (ushort cylinder, byte head, byte sector) = LbaToChs(sectorAddress);
 
         if(cylinder >= _sectorsData.Length) return ErrorNumber.SectorNotFound;
@@ -585,32 +575,41 @@ public sealed partial class TeleDisk
 
         if(sector > _sectorsData[cylinder][head].Length) return ErrorNumber.SectorNotFound;
 
-        buffer = _sectorsData[cylinder][head][sector];
+        buffer       = _sectorsData[cylinder][head][sector];
+        sectorStatus = SectorStatus.Dumped;
 
         return ErrorNumber.NoError;
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
         var ms = new MemoryStream();
+        sectorStatus = new SectorStatus[length];
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector);
+            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            // Sector not in image, TODO for 6.0 return NotDumped status
-            if(sector is null) continue;
+            // Sector not in image
+            if(sector is null)
+            {
+                sectorStatus[i] = SectorStatus.NotDumped;
+
+                continue;
+            }
 
             ms.Write(sector, 0, sector.Length);
+            sectorStatus[i] = status;
         }
 
         buffer = ms.ToArray();
@@ -619,12 +618,17 @@ public sealed partial class TeleDisk
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer) =>
-        ReadSectors(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectors(sectorAddress, 1, out buffer, out _);
+    }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, out byte[] buffer) =>
-        ReadSectors(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus) =>
+        ReadSectors(sectorAddress, length, out buffer, out sectorStatus);
 
     /// <inheritdoc />
     public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer)

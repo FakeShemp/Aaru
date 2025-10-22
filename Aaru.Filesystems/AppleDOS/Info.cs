@@ -48,7 +48,7 @@ public sealed partial class AppleDOS
 
         int spt = imagePlugin.Info.Sectors == 455 ? 13 : 16;
 
-        ErrorNumber errno = imagePlugin.ReadSector((ulong)(17 * spt), out byte[] vtocB);
+        ErrorNumber errno = imagePlugin.ReadSector((ulong)(17 * spt), out byte[] vtocB, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -70,7 +70,7 @@ public sealed partial class AppleDOS
 
         int spt = imagePlugin.Info.Sectors == 455 ? 13 : 16;
 
-        ErrorNumber errno = imagePlugin.ReadSector((ulong)(17 * spt), out byte[] vtocB);
+        ErrorNumber errno = imagePlugin.ReadSector((ulong)(17 * spt), out byte[] vtocB, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

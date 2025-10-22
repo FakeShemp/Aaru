@@ -51,7 +51,7 @@ public sealed partial class PCEnginePlugin
         if(2 + partition.Start >= partition.End) return false;
 
         var         systemDescriptor = new byte[23];
-        ErrorNumber errno            = imagePlugin.ReadSector(1 + partition.Start, out byte[] sector);
+        ErrorNumber errno            = imagePlugin.ReadSector(1 + partition.Start, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 

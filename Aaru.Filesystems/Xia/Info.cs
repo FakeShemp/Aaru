@@ -57,7 +57,7 @@ public sealed partial class Xia
 
         if(sbSizeInSectors + partition.Start >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSizeInSectors, out byte[] sbSector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSizeInSectors, out byte[] sbSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -80,7 +80,7 @@ public sealed partial class Xia
 
         if(sbSizeInBytes % imagePlugin.Info.SectorSize > 0) sbSizeInSectors++;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSizeInSectors, out byte[] sbSector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSizeInSectors, out byte[] sbSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

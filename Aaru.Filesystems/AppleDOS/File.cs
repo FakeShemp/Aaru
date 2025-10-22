@@ -40,6 +40,103 @@ namespace Aaru.Filesystems;
 
 public sealed partial class AppleDOS
 {
+    ErrorNumber CacheFile(string path)
+    {
+        string[] pathElements = path.Split(new[]
+                                           {
+                                               '/'
+                                           },
+                                           StringSplitOptions.RemoveEmptyEntries);
+
+        if(pathElements.Length != 1) return ErrorNumber.NotSupported;
+
+        string filename = pathElements[0].ToUpperInvariant();
+
+        if(filename.Length > 30) return ErrorNumber.NameTooLong;
+
+        if(!_catalogCache.TryGetValue(filename, out ushort ts)) return ErrorNumber.NoSuchFile;
+
+        var    lba           = (ulong)(((ts & 0xFF00) >> 8) * _sectorsPerTrack + (ts & 0xFF));
+        var    fileMs        = new MemoryStream();
+        var    tsListMs      = new MemoryStream();
+        ushort expectedBlock = 0;
+
+        while(lba != 0)
+        {
+            _usedSectors++;
+            ErrorNumber errno = _device.ReadSector(lba, out byte[] tsSectorB, out _);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if(_debug) tsListMs.Write(tsSectorB, 0, tsSectorB.Length);
+
+            // Read the track/sector list sector
+            TrackSectorList tsSector = Marshal.ByteArrayToStructureLittleEndian<TrackSectorList>(tsSectorB);
+
+            if(tsSector.sectorOffset > expectedBlock)
+            {
+                var hole = new byte[(tsSector.sectorOffset - expectedBlock) * _vtoc.bytesPerSector];
+                fileMs.Write(hole, 0, hole.Length);
+                expectedBlock = tsSector.sectorOffset;
+            }
+
+            foreach(TrackSectorListEntry entry in tsSector.entries)
+            {
+                _track1UsedByFiles |= entry.track == 1;
+                _track2UsedByFiles |= entry.track == 2;
+                _usedSectors++;
+
+                var blockLba = (ulong)(entry.track * _sectorsPerTrack + entry.sector);
+
+                if(blockLba == 0) break;
+
+                errno = _device.ReadSector(blockLba, out byte[] fileBlock, out _);
+
+                if(errno != ErrorNumber.NoError) return errno;
+
+                fileMs.Write(fileBlock, 0, fileBlock.Length);
+                expectedBlock++;
+            }
+
+            lba = (ulong)(tsSector.nextListTrack * _sectorsPerTrack + tsSector.nextListSector);
+        }
+
+        if(_fileCache.ContainsKey(filename)) _fileCache.Remove(filename);
+
+        if(_extentCache.ContainsKey(filename)) _extentCache.Remove(filename);
+
+        if(_fileSizeCache.ContainsKey(filename)) _fileSizeCache.Remove(filename);
+
+        _fileCache.Add(filename, fileMs.ToArray());
+        _extentCache.Add(filename, tsListMs.ToArray());
+        _fileSizeCache.Add(filename, (int)fileMs.Length);
+
+        return ErrorNumber.NoError;
+    }
+
+    ErrorNumber CacheAllFiles()
+    {
+        _fileCache   = new Dictionary<string, byte[]>();
+        _extentCache = new Dictionary<string, byte[]>();
+
+        foreach(ErrorNumber error in _catalogCache.Keys.Select(CacheFile).Where(error => error != ErrorNumber.NoError))
+            return error;
+
+        uint tracksOnBoot = 1;
+
+        if(!_track1UsedByFiles) tracksOnBoot++;
+
+        if(!_track2UsedByFiles) tracksOnBoot++;
+
+        ErrorNumber errno = _device.ReadSectors(0, (uint)(tracksOnBoot * _sectorsPerTrack), out _bootBlocks, out _);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        _usedSectors += (uint)(_bootBlocks.Length / _vtoc.bytesPerSector);
+
+        return ErrorNumber.NoError;
+    }
+
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
@@ -217,101 +314,4 @@ public sealed partial class AppleDOS
     }
 
 #endregion
-
-    ErrorNumber CacheFile(string path)
-    {
-        string[] pathElements = path.Split(new[]
-                                           {
-                                               '/'
-                                           },
-                                           StringSplitOptions.RemoveEmptyEntries);
-
-        if(pathElements.Length != 1) return ErrorNumber.NotSupported;
-
-        string filename = pathElements[0].ToUpperInvariant();
-
-        if(filename.Length > 30) return ErrorNumber.NameTooLong;
-
-        if(!_catalogCache.TryGetValue(filename, out ushort ts)) return ErrorNumber.NoSuchFile;
-
-        var    lba           = (ulong)(((ts & 0xFF00) >> 8) * _sectorsPerTrack + (ts & 0xFF));
-        var    fileMs        = new MemoryStream();
-        var    tsListMs      = new MemoryStream();
-        ushort expectedBlock = 0;
-
-        while(lba != 0)
-        {
-            _usedSectors++;
-            ErrorNumber errno = _device.ReadSector(lba, out byte[] tsSectorB);
-
-            if(errno != ErrorNumber.NoError) return errno;
-
-            if(_debug) tsListMs.Write(tsSectorB, 0, tsSectorB.Length);
-
-            // Read the track/sector list sector
-            TrackSectorList tsSector = Marshal.ByteArrayToStructureLittleEndian<TrackSectorList>(tsSectorB);
-
-            if(tsSector.sectorOffset > expectedBlock)
-            {
-                var hole = new byte[(tsSector.sectorOffset - expectedBlock) * _vtoc.bytesPerSector];
-                fileMs.Write(hole, 0, hole.Length);
-                expectedBlock = tsSector.sectorOffset;
-            }
-
-            foreach(TrackSectorListEntry entry in tsSector.entries)
-            {
-                _track1UsedByFiles |= entry.track == 1;
-                _track2UsedByFiles |= entry.track == 2;
-                _usedSectors++;
-
-                var blockLba = (ulong)(entry.track * _sectorsPerTrack + entry.sector);
-
-                if(blockLba == 0) break;
-
-                errno = _device.ReadSector(blockLba, out byte[] fileBlock);
-
-                if(errno != ErrorNumber.NoError) return errno;
-
-                fileMs.Write(fileBlock, 0, fileBlock.Length);
-                expectedBlock++;
-            }
-
-            lba = (ulong)(tsSector.nextListTrack * _sectorsPerTrack + tsSector.nextListSector);
-        }
-
-        if(_fileCache.ContainsKey(filename)) _fileCache.Remove(filename);
-
-        if(_extentCache.ContainsKey(filename)) _extentCache.Remove(filename);
-
-        if(_fileSizeCache.ContainsKey(filename)) _fileSizeCache.Remove(filename);
-
-        _fileCache.Add(filename, fileMs.ToArray());
-        _extentCache.Add(filename, tsListMs.ToArray());
-        _fileSizeCache.Add(filename, (int)fileMs.Length);
-
-        return ErrorNumber.NoError;
-    }
-
-    ErrorNumber CacheAllFiles()
-    {
-        _fileCache   = new Dictionary<string, byte[]>();
-        _extentCache = new Dictionary<string, byte[]>();
-
-        foreach(ErrorNumber error in _catalogCache.Keys.Select(CacheFile).Where(error => error != ErrorNumber.NoError))
-            return error;
-
-        uint tracksOnBoot = 1;
-
-        if(!_track1UsedByFiles) tracksOnBoot++;
-
-        if(!_track2UsedByFiles) tracksOnBoot++;
-
-        ErrorNumber errno = _device.ReadSectors(0, (uint)(tracksOnBoot * _sectorsPerTrack), out _bootBlocks);
-
-        if(errno != ErrorNumber.NoError) return errno;
-
-        _usedSectors += (uint)(_bootBlocks.Length / _vtoc.bytesPerSector);
-
-        return ErrorNumber.NoError;
-    }
 }

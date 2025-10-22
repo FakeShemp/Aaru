@@ -54,10 +54,10 @@ public sealed partial class Apple2Mg
 
         _imageHeader = new Header();
 
-        byte[] header = new byte[64];
+        var header = new byte[64];
         stream.EnsureRead(header, 0, 64);
-        byte[] magic   = new byte[4];
-        byte[] creator = new byte[4];
+        var magic   = new byte[4];
+        var creator = new byte[4];
 
         Array.Copy(header, 0, magic,   0, 4);
         Array.Copy(header, 4, creator, 0, 4);
@@ -68,8 +68,7 @@ public sealed partial class Apple2Mg
         {
             _imageHeader.DataSize = 0x000C8000;
 
-            AaruLogging.Debug(MODULE_NAME,
-                                       Localization.Detected_incorrect_endian_on_data_size_field_correcting);
+            AaruLogging.Debug(MODULE_NAME, Localization.Detected_incorrect_endian_on_data_size_field_correcting);
         }
 
         AaruLogging.Debug(MODULE_NAME, "ImageHeader.magic = \"{0}\"", Encoding.ASCII.GetString(magic));
@@ -89,12 +88,10 @@ public sealed partial class Apple2Mg
         AaruLogging.Debug(MODULE_NAME, "ImageHeader.commentSize = {0}", _imageHeader.CommentSize);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "ImageHeader.creatorSpecificOffset = 0x{0:X8}",
-                                   _imageHeader.CreatorSpecificOffset);
+                          "ImageHeader.creatorSpecificOffset = 0x{0:X8}",
+                          _imageHeader.CreatorSpecificOffset);
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "ImageHeader.creatorSpecificSize = {0}",
-                                   _imageHeader.CreatorSpecificSize);
+        AaruLogging.Debug(MODULE_NAME, "ImageHeader.creatorSpecificSize = {0}", _imageHeader.CreatorSpecificSize);
 
         AaruLogging.Debug(MODULE_NAME, "ImageHeader.reserved1 = 0x{0:X8}", _imageHeader.Reserved1);
         AaruLogging.Debug(MODULE_NAME, "ImageHeader.reserved2 = 0x{0:X8}", _imageHeader.Reserved2);
@@ -117,7 +114,7 @@ public sealed partial class Apple2Mg
                 var noFilter  = new ZZZNoFilter();
                 noFilter.Open(tmp);
                 nibPlugin.Open(noFilter);
-                ErrorNumber errno = nibPlugin.ReadSectors(0, (uint)nibPlugin.Info.Sectors, out _decodedImage);
+                ErrorNumber errno = nibPlugin.ReadSectors(0, (uint)nibPlugin.Info.Sectors, out _decodedImage, out _);
 
                 if(errno != ErrorNumber.NoError) return errno;
 
@@ -147,9 +144,9 @@ public sealed partial class Apple2Mg
                                   ? _interleave
                                   : _deinterleave;
 
-                for(int t = 0; t < 35; t++)
+                for(var t = 0; t < 35; t++)
                 {
-                    for(int s = 0; s < 16; s++)
+                    for(var s = 0; s < 16; s++)
                         Array.Copy(tmp, t * 16 * 256 + s * 256, _decodedImage, t * 16 * 256 + offsets[s] * 256, 256);
                 }
 
@@ -164,9 +161,9 @@ public sealed partial class Apple2Mg
                 _decodedImage = new byte[_imageHeader.DataSize];
                 offsets       = _interleave;
 
-                for(int t = 0; t < 200; t++)
+                for(var t = 0; t < 200; t++)
                 {
-                    for(int s = 0; s < 16; s++)
+                    for(var s = 0; s < 16; s++)
                         Array.Copy(tmp, t * 16 * 256 + s * 256, _decodedImage, t * 16 * 256 + offsets[s] * 256, 256);
                 }
 
@@ -205,7 +202,7 @@ public sealed partial class Apple2Mg
         {
             stream.Seek(_imageHeader.CommentOffset, SeekOrigin.Begin);
 
-            byte[] comments = new byte[_imageHeader.CommentSize];
+            var comments = new byte[_imageHeader.CommentSize];
             stream.EnsureRead(comments, 0, (int)_imageHeader.CommentSize);
             _imageInfo.Comments = Encoding.ASCII.GetString(comments);
         }
@@ -278,16 +275,24 @@ public sealed partial class Apple2Mg
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer) => ReadSectors(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectors(sectorAddress, 1, out buffer, out _);
+    }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
-        if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
+        if(sectorAddress > _imageInfo.Sectors - 1 || sectorAddress + length > _imageInfo.Sectors)
+            return ErrorNumber.OutOfRange;
 
-        if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
+        sectorStatus = new SectorStatus[length];
+        for(uint i = 0; i < length; i++) sectorStatus[i] = SectorStatus.Dumped;
 
         buffer = new byte[length * _imageInfo.SectorSize];
 

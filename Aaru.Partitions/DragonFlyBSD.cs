@@ -69,7 +69,7 @@ public sealed class DragonFlyBSD : IPartition
 
         if(sectorOffset + nSectors >= imagePlugin.Info.Sectors) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(sectorOffset, nSectors, out byte[] sectors);
+        ErrorNumber errno = imagePlugin.ReadSectors(sectorOffset, nSectors, out byte[] sectors, out _);
 
         if(errno != ErrorNumber.NoError || sectors.Length < 2048) return false;
 

@@ -57,15 +57,14 @@ public sealed partial class Cpcdsk
 
         if(stream.Length < 512) return ErrorNumber.InvalidArgument;
 
-        byte[] headerB = new byte[256];
+        var headerB = new byte[256];
         stream.EnsureRead(headerB, 0, 256);
 
         int pos;
 
         for(pos = 0; pos < 254; pos++)
-        {
-            if(headerB[pos] == 0x0D && headerB[pos + 1] == 0x0A) break;
-        }
+            if(headerB[pos] == 0x0D && headerB[pos + 1] == 0x0A)
+                break;
 
         if(pos >= 254) return ErrorNumber.InvalidArgument;
 
@@ -97,15 +96,15 @@ public sealed partial class Cpcdsk
             AaruLogging.Debug(MODULE_NAME, "header.tracksize = {0}", header.tracksize);
         else
         {
-            for(int i = 0; i < header.tracks; i++)
+            for(var i = 0; i < header.tracks; i++)
             {
-                for(int j = 0; j < header.sides; j++)
+                for(var j = 0; j < header.sides; j++)
                 {
                     AaruLogging.Debug(MODULE_NAME,
-                                               Localization.Track_0_Side_1_size_equals_2,
-                                               i,
-                                               j,
-                                               header.tracksizeTable[i * header.sides + j] * 256);
+                                      Localization.Track_0_Side_1_size_equals_2,
+                                      i,
+                                      j,
+                                      header.tracksizeTable[i * header.sides + j] * 256);
                 }
             }
         }
@@ -114,22 +113,22 @@ public sealed partial class Cpcdsk
         _sectors      = new Dictionary<ulong, byte[]>();
         _addressMarks = new Dictionary<ulong, byte[]>();
         ulong readtracks        = 0;
-        bool  allTracksSameSize = true;
+        var   allTracksSameSize = true;
         ulong sectorsPerTrack   = 0;
 
         // Seek to first track descriptor
         stream.Seek(256, SeekOrigin.Begin);
 
-        for(int i = 0; i < header.tracks; i++)
+        for(var i = 0; i < header.tracks; i++)
         {
-            for(int j = 0; j < header.sides; j++)
+            for(var j = 0; j < header.sides; j++)
             {
                 // Track not stored in image
                 if(_extended && header.tracksizeTable[i * header.sides + j] == 0) continue;
 
                 long trackPos = stream.Position;
 
-                byte[] trackB = new byte[256];
+                var trackB = new byte[256];
                 stream.EnsureRead(trackB, 0, 256);
                 TrackInfo trackInfo = Marshal.ByteArrayToStructureLittleEndian<TrackInfo>(trackB);
 
@@ -144,16 +143,12 @@ public sealed partial class Cpcdsk
                 }
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "trackInfo[{1}:{2}].magic = \"{0}\"",
-                                           StringHandlers.CToString(trackInfo.magic),
-                                           i,
-                                           j);
+                                  "trackInfo[{1}:{2}].magic = \"{0}\"",
+                                  StringHandlers.CToString(trackInfo.magic),
+                                  i,
+                                  j);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "trackInfo[{1}:{2}].bps = {0}",
-                                           SizeCodeToBytes(trackInfo.bps),
-                                           i,
-                                           j);
+                AaruLogging.Debug(MODULE_NAME, "trackInfo[{1}:{2}].bps = {0}", SizeCodeToBytes(trackInfo.bps), i, j);
 
                 AaruLogging.Debug(MODULE_NAME, "trackInfo[{1}:{2}].dataRate = {0}", trackInfo.dataRate, i, j);
 
@@ -163,11 +158,7 @@ public sealed partial class Cpcdsk
 
                 AaruLogging.Debug(MODULE_NAME, "trackInfo[{1}:{2}].padding = {0}", trackInfo.padding, i, j);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           "trackInfo[{1}:{2}].recordingMode = {0}",
-                                           trackInfo.recordingMode,
-                                           i,
-                                           j);
+                AaruLogging.Debug(MODULE_NAME, "trackInfo[{1}:{2}].recordingMode = {0}", trackInfo.recordingMode, i, j);
 
                 AaruLogging.Debug(MODULE_NAME, "trackInfo[{1}:{2}].sectors = {0}", trackInfo.sectors, i, j);
 
@@ -186,80 +177,80 @@ public sealed partial class Cpcdsk
                 Dictionary<int, byte[]> thisTrackSectors      = new();
                 Dictionary<int, byte[]> thisTrackAddressMarks = new();
 
-                for(int k = 1; k <= trackInfo.sectors; k++)
+                for(var k = 1; k <= trackInfo.sectors; k++)
                 {
                     AaruLogging.Debug(MODULE_NAME,
-                                               "trackInfo[{1}:{2}].sector[{3}].id = 0x{0:X2}",
-                                               trackInfo.sectorsInfo[k - 1].id,
-                                               i,
-                                               j,
-                                               k);
+                                      "trackInfo[{1}:{2}].sector[{3}].id = 0x{0:X2}",
+                                      trackInfo.sectorsInfo[k - 1].id,
+                                      i,
+                                      j,
+                                      k);
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               "trackInfo[{1}:{2}].sector[{3}].len = {0}",
-                                               trackInfo.sectorsInfo[k - 1].len,
-                                               i,
-                                               j,
-                                               k);
+                                      "trackInfo[{1}:{2}].sector[{3}].len = {0}",
+                                      trackInfo.sectorsInfo[k - 1].len,
+                                      i,
+                                      j,
+                                      k);
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               "trackInfo[{1}:{2}].sector[{3}].side = {0}",
-                                               trackInfo.sectorsInfo[k - 1].side,
-                                               i,
-                                               j,
-                                               k);
+                                      "trackInfo[{1}:{2}].sector[{3}].side = {0}",
+                                      trackInfo.sectorsInfo[k - 1].side,
+                                      i,
+                                      j,
+                                      k);
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               "trackInfo[{1}:{2}].sector[{3}].size = {0}",
-                                               SizeCodeToBytes(trackInfo.sectorsInfo[k - 1].size),
-                                               i,
-                                               j,
-                                               k);
+                                      "trackInfo[{1}:{2}].sector[{3}].size = {0}",
+                                      SizeCodeToBytes(trackInfo.sectorsInfo[k - 1].size),
+                                      i,
+                                      j,
+                                      k);
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               "trackInfo[{1}:{2}].sector[{3}].st1 = 0x{0:X2}",
-                                               trackInfo.sectorsInfo[k - 1].st1,
-                                               i,
-                                               j,
-                                               k);
+                                      "trackInfo[{1}:{2}].sector[{3}].st1 = 0x{0:X2}",
+                                      trackInfo.sectorsInfo[k - 1].st1,
+                                      i,
+                                      j,
+                                      k);
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               "trackInfo[{1}:{2}].sector[{3}].st2 = 0x{0:X2}",
-                                               trackInfo.sectorsInfo[k - 1].st2,
-                                               i,
-                                               j,
-                                               k);
+                                      "trackInfo[{1}:{2}].sector[{3}].st2 = 0x{0:X2}",
+                                      trackInfo.sectorsInfo[k - 1].st2,
+                                      i,
+                                      j,
+                                      k);
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               "trackInfo[{1}:{2}].sector[{3}].track = {0}",
-                                               trackInfo.sectorsInfo[k - 1].track,
-                                               i,
-                                               j,
-                                               k);
+                                      "trackInfo[{1}:{2}].sector[{3}].track = {0}",
+                                      trackInfo.sectorsInfo[k - 1].track,
+                                      i,
+                                      j,
+                                      k);
 
                     int sectLen = _extended
                                       ? trackInfo.sectorsInfo[k - 1].len
                                       : SizeCodeToBytes(trackInfo.sectorsInfo[k - 1].size);
 
-                    byte[] sector = new byte[sectLen];
+                    var sector = new byte[sectLen];
                     stream.EnsureRead(sector, 0, sectLen);
 
                     if(sectLen < SizeCodeToBytes(trackInfo.sectorsInfo[k - 1].size))
                     {
-                        byte[] temp = new byte[SizeCodeToBytes(trackInfo.sectorsInfo[k - 1].size)];
+                        var temp = new byte[SizeCodeToBytes(trackInfo.sectorsInfo[k - 1].size)];
                         Array.Copy(sector, 0, temp, 0, sector.Length);
                         sector = temp;
                     }
                     else if(sectLen > SizeCodeToBytes(trackInfo.sectorsInfo[k - 1].size))
                     {
-                        byte[] temp = new byte[SizeCodeToBytes(trackInfo.sectorsInfo[k - 1].size)];
+                        var temp = new byte[SizeCodeToBytes(trackInfo.sectorsInfo[k - 1].size)];
                         Array.Copy(sector, 0, temp, 0, temp.Length);
                         sector = temp;
                     }
 
                     thisTrackSectors[(trackInfo.sectorsInfo[k - 1].id & 0x3F) - 1] = sector;
 
-                    byte[] amForCrc = new byte[8];
+                    var amForCrc = new byte[8];
                     amForCrc[0] = 0xA1;
                     amForCrc[1] = 0xA1;
                     amForCrc[2] = 0xA1;
@@ -271,7 +262,7 @@ public sealed partial class Cpcdsk
 
                     CRC16IbmContext.Data(amForCrc, 8, out byte[] amCrc);
 
-                    byte[] addressMark = new byte[22];
+                    var addressMark = new byte[22];
                     Array.Copy(amForCrc, 0, addressMark, 12, 8);
                     Array.Copy(amCrc,    0, addressMark, 20, 2);
 
@@ -325,23 +316,37 @@ public sealed partial class Cpcdsk
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer) =>
-        _sectors.TryGetValue(sectorAddress, out buffer) ? ErrorNumber.NoError : ErrorNumber.SectorNotFound;
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        if(_sectors.TryGetValue(sectorAddress, out buffer))
+        {
+            sectorStatus = SectorStatus.Dumped;
+
+            return ErrorNumber.NoError;
+        }
+
+        sectorStatus = SectorStatus.NotDumped;
+
+        return ErrorNumber.SectorNotFound;
+    }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
         var ms = new MemoryStream();
+        sectorStatus = new SectorStatus[length];
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector);
+            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
+            sectorStatus[i] = status;
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -378,7 +383,7 @@ public sealed partial class Cpcdsk
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] addressMark);
+            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] addressMark, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 

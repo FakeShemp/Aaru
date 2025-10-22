@@ -54,7 +54,7 @@ public sealed partial class PCFX
         if(2 + partition.Start >= partition.End || imagePlugin.Info.MetadataMediaType != MetadataMediaType.OpticalDisc)
             return false;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, 2, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, 2, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -72,7 +72,7 @@ public sealed partial class PCFX
         information = "";
         metadata    = new FileSystem();
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, 2, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, 2, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -84,9 +84,9 @@ public sealed partial class PCFX
         try
         {
             date = encoding.GetString(header.date);
-            int year  = int.Parse(date[..4]);
-            int month = int.Parse(date.Substring(4, 2));
-            int day   = int.Parse(date.Substring(6, 2));
+            var year  = int.Parse(date[..4]);
+            var month = int.Parse(date.Substring(4, 2));
+            var day   = int.Parse(date.Substring(6, 2));
             dateTime = new DateTime(year, month, day);
         }
         catch(Exception ex)

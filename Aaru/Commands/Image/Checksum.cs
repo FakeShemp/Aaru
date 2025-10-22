@@ -221,7 +221,8 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                                 errno = opticalInput.ReadSectors(doneSectors,
                                                     SECTORS_TO_READ,
                                                     currentTrack.Sequence,
-                                                    out sector);
+                                                    out sector,
+                                                    out _);
 
                                                 trackTask.Description =
                                                     string.Format(UI.Hashing_sectors_0_to_2_of_track_1,
@@ -249,7 +250,8 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                                 errno = opticalInput.ReadSectors(doneSectors,
                                                     (uint)(sectors - doneSectors),
                                                     currentTrack.Sequence,
-                                                    out sector);
+                                                    out sector,
+                                                    out _);
 
                                                 trackTask.Description =
                                                     string.Format(UI.Hashing_sectors_0_to_2_of_track_1,
@@ -316,9 +318,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                     AaruLogging.WriteLine();
 
                                     foreach(CommonTypes.AaruMetadata.Checksum chk in mediaChecksum.End())
-                                    {
                                         AaruLogging.WriteLine(UI.Checksums_Disc_has_0_1, chk.Type, chk.Value);
-                                    }
                                 });
 
                     if(errno != ErrorNumber.NoError) return (int)errno;
@@ -365,7 +365,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         {
                                             preFileTask.Description = string.Format(UI.Hashing_file_less_block_0, i);
 
-                                            errno = tapeImage.ReadSector(i, out byte[] hiddenSector);
+                                            errno = tapeImage.ReadSector(i, out byte[] hiddenSector, out _);
 
                                             if(errno != ErrorNumber.NoError)
                                             {
@@ -405,7 +405,8 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         {
                                             errno = tapeImage.ReadSectors(doneSectors + currentFile.FirstBlock,
                                                                           SECTORS_TO_READ,
-                                                                          out sector);
+                                                                          out sector,
+                                                                          out _);
 
                                             if(errno != ErrorNumber.NoError)
                                             {
@@ -430,7 +431,8 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         {
                                             errno = tapeImage.ReadSectors(doneSectors + currentFile.FirstBlock,
                                                                           (uint)(sectors - doneSectors),
-                                                                          out sector);
+                                                                          out sector,
+                                                                          out _);
 
                                             if(errno != ErrorNumber.NoError)
                                             {
@@ -490,7 +492,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                 {
                                     postFileTask.Description = string.Format(UI.Hashing_file_less_block_0, i);
 
-                                    errno = tapeImage.ReadSector(i, out byte[] hiddenSector);
+                                    errno = tapeImage.ReadSector(i, out byte[] hiddenSector, out _);
 
                                     if(errno != ErrorNumber.NoError)
                                     {
@@ -511,9 +513,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                     AaruLogging.WriteLine();
 
                     foreach(CommonTypes.AaruMetadata.Checksum chk in mediaChecksum.End())
-                    {
                         AaruLogging.WriteLine(UI.Checksums_Tape_has_0_1, chk.Type, chk.Value);
-                    }
                 }
 
                 break;
@@ -532,8 +532,8 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                 ProgressTask imageTask = ctx.AddTask(UI.Hashing_image);
                                 ulong        length    = byteAddressableImage.Info.Sectors;
                                 imageTask.MaxValue = length;
-                                ulong  doneBytes = 0;
-                                byte[] data      = new byte[BYTES_TO_READ];
+                                ulong doneBytes = 0;
+                                var   data      = new byte[BYTES_TO_READ];
 
                                 while(doneBytes < length)
                                 {
@@ -597,9 +597,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                 AaruLogging.WriteLine();
 
                 foreach(CommonTypes.AaruMetadata.Checksum chk in mediaChecksum.End())
-                {
                     AaruLogging.WriteLine(UI.Checksums_Media_has_0_1, chk.Type, chk.Value);
-                }
 
                 break;
             }
@@ -626,7 +624,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                     if(sectors - doneSectors >= SECTORS_TO_READ)
                                     {
-                                        errno = mediaImage.ReadSectors(doneSectors, SECTORS_TO_READ, out sector);
+                                        errno = mediaImage.ReadSectors(doneSectors, SECTORS_TO_READ, out sector, out _);
 
                                         if(errno != ErrorNumber.NoError)
                                         {
@@ -650,7 +648,8 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                     {
                                         errno = mediaImage.ReadSectors(doneSectors,
                                                                        (uint)(sectors - doneSectors),
-                                                                       out sector);
+                                                                       out sector,
+                                                                       out _);
 
                                         if(errno != ErrorNumber.NoError)
                                         {
@@ -680,9 +679,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                 AaruLogging.WriteLine();
 
                 foreach(CommonTypes.AaruMetadata.Checksum chk in mediaChecksum.End())
-                {
                     AaruLogging.WriteLine(UI.Checksums_Disk_has_0_1, chk.Type, chk.Value);
-                }
 
                 break;
             }

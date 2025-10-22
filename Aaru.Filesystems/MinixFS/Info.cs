@@ -57,7 +57,7 @@ public sealed partial class MinixFS
 
         if(sector + partition.Start >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(sector + partition.Start, out byte[] minixSbSector);
+        ErrorNumber errno = imagePlugin.ReadSector(sector + partition.Start, out byte[] minixSbSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -107,7 +107,7 @@ public sealed partial class MinixFS
         var         minix3 = false;
         int         filenamesize;
         string      minixVersion;
-        ErrorNumber errno = imagePlugin.ReadSector(sector + partition.Start, out byte[] minixSbSector);
+        ErrorNumber errno = imagePlugin.ReadSector(sector + partition.Start, out byte[] minixSbSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

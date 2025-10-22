@@ -54,7 +54,7 @@ public sealed partial class UkvFdi
 
         if(stream.Length < Marshal.SizeOf<Header>()) return ErrorNumber.InvalidArgument;
 
-        byte[] hdrB = new byte[Marshal.SizeOf<Header>()];
+        var hdrB = new byte[Marshal.SizeOf<Header>()];
         stream.EnsureRead(hdrB, 0, hdrB.Length);
 
         Header hdr = Marshal.ByteArrayToStructureLittleEndian<Header>(hdrB);
@@ -67,7 +67,7 @@ public sealed partial class UkvFdi
         AaruLogging.Debug(MODULE_NAME, "hdr.heads = {0}",      hdr.heads);
 
         stream.Seek(hdr.descOff, SeekOrigin.Begin);
-        byte[] description = new byte[hdr.dataOff - hdr.descOff];
+        var description = new byte[hdr.dataOff - hdr.descOff];
         stream.EnsureRead(description, 0, description.Length);
         _imageInfo.Comments = StringHandlers.CToString(description);
 
@@ -75,8 +75,8 @@ public sealed partial class UkvFdi
 
         stream.Seek(0xE + hdr.addInfoLen, SeekOrigin.Begin);
 
-        long       spt        = long.MaxValue;
-        uint[][][] sectorsOff = new uint[hdr.cylinders][][];
+        long spt        = long.MaxValue;
+        var  sectorsOff = new uint[hdr.cylinders][][];
         _sectorsData = new byte[hdr.cylinders][][][];
 
         _imageInfo.Cylinders = hdr.cylinders;
@@ -90,11 +90,11 @@ public sealed partial class UkvFdi
 
             for(ushort head = 0; head < hdr.heads; head++)
             {
-                byte[] sctB = new byte[4];
+                var sctB = new byte[4];
                 stream.EnsureRead(sctB, 0, 4);
                 stream.Seek(2, SeekOrigin.Current);
-                byte sectors = (byte)stream.ReadByte();
-                uint trkOff  = BitConverter.ToUInt32(sctB, 0);
+                var sectors = (byte)stream.ReadByte();
+                var trkOff  = BitConverter.ToUInt32(sctB, 0);
 
                 AaruLogging.Debug(MODULE_NAME, "trkhdr.c = {0}",       cyl);
                 AaruLogging.Debug(MODULE_NAME, "trkhdr.h = {0}",       head);
@@ -108,14 +108,14 @@ public sealed partial class UkvFdi
 
                 for(ushort sec = 0; sec < sectors; sec++)
                 {
-                    byte   c    = (byte)stream.ReadByte();
-                    byte   h    = (byte)stream.ReadByte();
-                    byte   r    = (byte)stream.ReadByte();
-                    byte   n    = (byte)stream.ReadByte();
-                    var    f    = (SectorFlags)stream.ReadByte();
-                    byte[] offB = new byte[2];
+                    var c    = (byte)stream.ReadByte();
+                    var h    = (byte)stream.ReadByte();
+                    var r    = (byte)stream.ReadByte();
+                    var n    = (byte)stream.ReadByte();
+                    var f    = (SectorFlags)stream.ReadByte();
+                    var offB = new byte[2];
                     stream.EnsureRead(offB, 0, 2);
-                    ushort secOff = BitConverter.ToUInt16(offB, 0);
+                    var secOff = BitConverter.ToUInt16(offB, 0);
 
                     AaruLogging.Debug(MODULE_NAME, "sechdr.c = {0}",       c);
                     AaruLogging.Debug(MODULE_NAME, "sechdr.h = {0}",       h);
@@ -123,10 +123,7 @@ public sealed partial class UkvFdi
                     AaruLogging.Debug(MODULE_NAME, "sechdr.n = {0} ({1})", n, 128 << n);
                     AaruLogging.Debug(MODULE_NAME, "sechdr.f = {0}",       f);
 
-                    AaruLogging.Debug(MODULE_NAME,
-                                               "sechdr.off = {0} ({1})",
-                                               secOff,
-                                               secOff + trkOff + hdr.dataOff);
+                    AaruLogging.Debug(MODULE_NAME, "sechdr.off = {0} ({1})", secOff, secOff + trkOff + hdr.dataOff);
 
                     // TODO: This assumes sequential sectors.
                     sectorsOff[cyl][head][sec]   = secOff + trkOff + hdr.dataOff;
@@ -140,7 +137,7 @@ public sealed partial class UkvFdi
         // Read sectors
         for(ushort cyl = 0; cyl < hdr.cylinders; cyl++)
         {
-            bool emptyCyl = false;
+            var emptyCyl = false;
 
             for(ushort head = 0; head < hdr.heads; head++)
             {
@@ -164,7 +161,7 @@ public sealed partial class UkvFdi
                 {
                     _sectorsData[cyl][head] = new byte[spt][];
 
-                    for(int i = 0; i < spt; i++) _sectorsData[cyl][head][i] = new byte[_imageInfo.SectorSize];
+                    for(var i = 0; i < spt; i++) _sectorsData[cyl][head][i] = new byte[_imageInfo.SectorSize];
                 }
             }
 
@@ -185,9 +182,10 @@ public sealed partial class UkvFdi
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer)
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
         buffer                                    = null;
+        sectorStatus                              = SectorStatus.NotDumped;
         (ushort cylinder, byte head, byte sector) = LbaToChs(sectorAddress);
 
         if(cylinder >= _sectorsData.Length) return ErrorNumber.SectorNotFound;
@@ -196,25 +194,29 @@ public sealed partial class UkvFdi
 
         if(sector > _sectorsData[cylinder][head].Length) return ErrorNumber.SectorNotFound;
 
-        buffer = _sectorsData[cylinder][head][sector - 1];
+        buffer       = _sectorsData[cylinder][head][sector - 1];
+        sectorStatus = SectorStatus.Dumped;
 
         return ErrorNumber.NoError;
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
         var ms = new MemoryStream();
+        sectorStatus = new SectorStatus[length];
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector);
+            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
+            sectorStatus[i] = status;
 
             if(errno != ErrorNumber.NoError) return errno;
 

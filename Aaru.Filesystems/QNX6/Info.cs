@@ -49,11 +49,11 @@ public sealed partial class QNX6
 
         if(partition.Start + bootSectors + sectors >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sectors, out byte[] audiSector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sectors, out byte[] audiSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
-        errno = imagePlugin.ReadSectors(partition.Start + bootSectors, sectors, out byte[] sector);
+        errno = imagePlugin.ReadSectors(partition.Start + bootSectors, sectors, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -76,11 +76,11 @@ public sealed partial class QNX6
         uint sectors     = QNX6_SUPER_BLOCK_SIZE / imagePlugin.Info.SectorSize;
         uint bootSectors = QNX6_BOOT_BLOCKS_SIZE / imagePlugin.Info.SectorSize;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sectors, out byte[] audiSector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sectors, out byte[] audiSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
-        errno = imagePlugin.ReadSectors(partition.Start + bootSectors, sectors, out byte[] sector);
+        errno = imagePlugin.ReadSectors(partition.Start + bootSectors, sectors, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

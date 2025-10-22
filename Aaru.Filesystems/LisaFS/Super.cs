@@ -92,7 +92,7 @@ public sealed partial class LisaFS
                 if(searchTag.FileId != FILEID_MDDF) continue;
 
                 _devTagSize = tag.Length;
-                errno       = _device.ReadSector(i, out byte[] sector);
+                errno       = _device.ReadSector(i, out byte[] sector, out _);
 
                 if(errno != ErrorNumber.NoError) return errno;
 

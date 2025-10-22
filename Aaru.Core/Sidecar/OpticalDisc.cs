@@ -358,7 +358,11 @@ public sealed partial class Sidecar
 
                     if(sectors - doneSectors >= sectorsToRead)
                     {
-                        errno = image.ReadSectorsLong(doneSectors, sectorsToRead, xmlTrk.Sequence.Number, out sector);
+                        errno = image.ReadSectorsLong(doneSectors,
+                                                      sectorsToRead,
+                                                      xmlTrk.Sequence.Number,
+                                                      out sector,
+                                                      out _);
 
                         UpdateProgress2(Localization.Core.Hashing_sector_0_of_1,
                                         (long)doneSectors,
@@ -379,7 +383,8 @@ public sealed partial class Sidecar
                         errno = image.ReadSectorsLong(doneSectors,
                                                       (uint)(sectors - doneSectors),
                                                       xmlTrk.Sequence.Number,
-                                                      out sector);
+                                                      out sector,
+                                                      out _);
 
                         UpdateProgress2(Localization.Core.Hashing_sector_0_of_1,
                                         (long)doneSectors,

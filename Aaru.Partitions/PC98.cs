@@ -48,6 +48,61 @@ public sealed class PC98 : IPartition
 {
     const string MODULE_NAME = "PC-98 partitions plugin";
 
+    static string DecodePC98Sid(byte sid)
+    {
+        return (sid & 0x7F) switch
+               {
+                   0x01 => Localization.FAT12,
+                   0x04 => Localization.PC_UX,
+                   0x06 => Localization.N88_BASIC_86,
+
+                   // Supposedly for FAT16 < 32 MiB, seen in bigger partitions
+                   0x11 or 0x21         => Localization.FAT16,
+                   0x28 or 0x41 or 0x48 => Localization.Windows_Volume_Set,
+                   0x44                 => Localization.FreeBSD,
+                   0x61                 => Localization.FAT32,
+                   0x62                 => Localization.Linux,
+                   _                    => Localization.Unknown_partition_type
+               };
+    }
+
+#region Nested type: Partition
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct Partition
+    {
+        /// <summary>Some ID, if 0x80 bit is set, it is bootable</summary>
+        public readonly byte dp_mid;
+        /// <summary>Some ID, if 0x80 bit is set, it is active</summary>
+        public readonly byte dp_sid;
+        public readonly byte   dp_dum1;
+        public readonly byte   dp_dum2;
+        public readonly byte   dp_ipl_sct;
+        public readonly byte   dp_ipl_head;
+        public readonly ushort dp_ipl_cyl;
+        public readonly byte   dp_ssect;
+        public readonly byte   dp_shd;
+        public readonly ushort dp_scyl;
+        public readonly byte   dp_esect;
+        public readonly byte   dp_ehd;
+        public readonly ushort dp_ecyl;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public readonly byte[] dp_name;
+    }
+
+#endregion
+
+#region Nested type: Table
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct Table
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public readonly Partition[] entries;
+    }
+
+#endregion
+
 #region IPartition Members
 
     /// <inheritdoc />
@@ -66,11 +121,11 @@ public sealed class PC98 : IPartition
 
         if(sectorOffset != 0) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(0, out byte[] bootSector);
+        ErrorNumber errno = imagePlugin.ReadSector(0, out byte[] bootSector, out _);
 
         if(errno != ErrorNumber.NoError || bootSector[^2] != 0x55 || bootSector[^1] != 0xAA) return false;
 
-        errno = imagePlugin.ReadSector(1, out byte[] sector);
+        errno = imagePlugin.ReadSector(1, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -98,8 +153,8 @@ public sealed class PC98 : IPartition
             AaruLogging.Debug(MODULE_NAME, "entry.dp_ecyl = {0}",     entry.dp_ecyl);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       "entry.dp_name = \"{0}\"",
-                                       StringHandlers.CToString(entry.dp_name, Encoding.GetEncoding(932)));
+                              "entry.dp_name = \"{0}\"",
+                              StringHandlers.CToString(entry.dp_name, Encoding.GetEncoding(932)));
 
             if(entry.dp_scyl  == entry.dp_ecyl                   ||
                entry.dp_ecyl  <= 0                               ||
@@ -154,61 +209,6 @@ public sealed class PC98 : IPartition
         }
 
         return partitions.Count > 0;
-    }
-
-#endregion
-
-    static string DecodePC98Sid(byte sid)
-    {
-        return (sid & 0x7F) switch
-               {
-                   0x01 => Localization.FAT12,
-                   0x04 => Localization.PC_UX,
-                   0x06 => Localization.N88_BASIC_86,
-
-                   // Supposedly for FAT16 < 32 MiB, seen in bigger partitions
-                   0x11 or 0x21         => Localization.FAT16,
-                   0x28 or 0x41 or 0x48 => Localization.Windows_Volume_Set,
-                   0x44                 => Localization.FreeBSD,
-                   0x61                 => Localization.FAT32,
-                   0x62                 => Localization.Linux,
-                   _                    => Localization.Unknown_partition_type
-               };
-    }
-
-#region Nested type: Partition
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Partition
-    {
-        /// <summary>Some ID, if 0x80 bit is set, it is bootable</summary>
-        public readonly byte dp_mid;
-        /// <summary>Some ID, if 0x80 bit is set, it is active</summary>
-        public readonly byte dp_sid;
-        public readonly byte   dp_dum1;
-        public readonly byte   dp_dum2;
-        public readonly byte   dp_ipl_sct;
-        public readonly byte   dp_ipl_head;
-        public readonly ushort dp_ipl_cyl;
-        public readonly byte   dp_ssect;
-        public readonly byte   dp_shd;
-        public readonly ushort dp_scyl;
-        public readonly byte   dp_esect;
-        public readonly byte   dp_ehd;
-        public readonly ushort dp_ecyl;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public readonly byte[] dp_name;
-    }
-
-#endregion
-
-#region Nested type: Table
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Table
-    {
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public readonly Partition[] entries;
     }
 
 #endregion

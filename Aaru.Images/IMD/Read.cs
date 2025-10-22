@@ -33,6 +33,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -56,7 +57,7 @@ public sealed partial class Imd
 
         for(uint i = 0; i < stream.Length; i++)
         {
-            byte b = (byte)stream.ReadByte();
+            var b = (byte)stream.ReadByte();
 
             if(b == 0x1A) break;
 
@@ -76,14 +77,14 @@ public sealed partial class Imd
         while(stream.Position + 5 < stream.Length)
         {
             mode = (TransferRate)stream.ReadByte();
-            byte     cylinder = (byte)stream.ReadByte();
-            byte     head     = (byte)stream.ReadByte();
-            byte     spt      = (byte)stream.ReadByte();
-            byte     n        = (byte)stream.ReadByte();
-            byte[]   idmap    = new byte[spt];
-            byte[]   cylmap   = new byte[spt];
-            byte[]   headmap  = new byte[spt];
-            ushort[] bps      = new ushort[spt];
+            var cylinder = (byte)stream.ReadByte();
+            var head     = (byte)stream.ReadByte();
+            var spt      = (byte)stream.ReadByte();
+            var n        = (byte)stream.ReadByte();
+            var idmap    = new byte[spt];
+            var cylmap   = new byte[spt];
+            var headmap  = new byte[spt];
+            var bps      = new ushort[spt];
 
             if(cylinder != currentCylinder)
             {
@@ -102,28 +103,28 @@ public sealed partial class Imd
 
             if(n == 0xFF)
             {
-                byte[] bpsbytes = new byte[spt * 2];
+                var bpsbytes = new byte[spt * 2];
                 stream.EnsureRead(bpsbytes, 0, bpsbytes.Length);
 
-                for(int i = 0; i < spt; i++) bps[i] = BitConverter.ToUInt16(bpsbytes, i * 2);
+                for(var i = 0; i < spt; i++) bps[i] = BitConverter.ToUInt16(bpsbytes, i * 2);
             }
             else
-            {
-                for(int i = 0; i < spt; i++) bps[i] = (ushort)(128 << n);
-            }
+                for(var i = 0; i < spt; i++)
+                    bps[i] = (ushort)(128 << n);
 
             if(spt > _imageInfo.SectorsPerTrack) _imageInfo.SectorsPerTrack = spt;
 
             SortedDictionary<byte, byte[]> track = new();
 
-            for(int i = 0; i < spt; i++)
+            for(var i = 0; i < spt; i++)
             {
-                var    type = (SectorType)stream.ReadByte();
-                byte[] data = new byte[bps[i]];
+                var type = (SectorType)stream.ReadByte();
+                var data = new byte[bps[i]];
 
                 // TODO; Handle disks with different bps in track 0
                 if(bps[i] > _imageInfo.SectorSize) _imageInfo.SectorSize = bps[i];
 
+                // TODO: Preserve sector status information
                 switch(type)
                 {
                     case SectorType.Unavailable:
@@ -145,7 +146,7 @@ public sealed partial class Imd
                     case SectorType.CompressedDeleted:
                     case SectorType.CompressedError:
                     case SectorType.CompressedDeletedError:
-                        byte filling = (byte)stream.ReadByte();
+                        var filling = (byte)stream.ReadByte();
                         ArrayHelpers.ArrayFill(data, filling);
 
                         if(!track.ContainsKey(idmap[i])) track.Add(idmap[i], data);
@@ -211,20 +212,27 @@ public sealed partial class Imd
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer) => ReadSectors(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectors(sectorAddress, 1, out buffer, out _);
+    }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
         var ms = new MemoryStream();
+        sectorStatus = Enumerable.Repeat(SectorStatus.Dumped, (int)length).ToArray();
 
-        for(int i = 0; i < length; i++)
+        for(var i = 0; i < length; i++)
             ms.Write(_sectorsData[(int)sectorAddress + i], 0, _sectorsData[(int)sectorAddress + i].Length);
 
         buffer = ms.ToArray();

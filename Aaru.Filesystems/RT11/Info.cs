@@ -55,7 +55,7 @@ public sealed partial class RT11
         if(1 + partition.Start >= partition.End) return false;
 
         var         magicB = new byte[12];
-        ErrorNumber errno  = imagePlugin.ReadSector(1 + partition.Start, out byte[] hbSector);
+        ErrorNumber errno  = imagePlugin.ReadSector(1 + partition.Start, out byte[] hbSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -77,7 +77,7 @@ public sealed partial class RT11
 
         var sb = new StringBuilder();
 
-        ErrorNumber errno = imagePlugin.ReadSector(1 + partition.Start, out byte[] hbSector);
+        ErrorNumber errno = imagePlugin.ReadSector(1 + partition.Start, out byte[] hbSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -108,7 +108,7 @@ public sealed partial class RT11
         sb.AppendFormat(Localization.Volume_label_0, encoding.GetString(homeblock.volname).TrimEnd()).AppendLine();
         sb.AppendFormat(Localization.Checksum_0_calculated_1, homeblock.checksum, check).AppendLine();
 
-        imagePlugin.ReadSector(0, out byte[] bootBlock);
+        imagePlugin.ReadSector(0, out byte[] bootBlock, out _);
 
         metadata = new FileSystem
         {

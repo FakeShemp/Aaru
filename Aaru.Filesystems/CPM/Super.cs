@@ -69,7 +69,7 @@ public sealed partial class CPM
         {
             _sectorMask = new int[_workingDefinition.side1.sectorIds.Length];
 
-            for(int m = 0; m < _sectorMask.Length; m++)
+            for(var m = 0; m < _sectorMask.Length; m++)
                 _sectorMask[m] = _workingDefinition.side1.sectorIds[m] - _workingDefinition.side1.sectorIds[0];
         }
         else
@@ -80,11 +80,11 @@ public sealed partial class CPM
                 _sectorMask = new int[_workingDefinition.side1.sectorIds.Length +
                                       _workingDefinition.side2.sectorIds.Length];
 
-                for(int m = 0; m < _workingDefinition.side1.sectorIds.Length; m++)
+                for(var m = 0; m < _workingDefinition.side1.sectorIds.Length; m++)
                     _sectorMask[m] = _workingDefinition.side1.sectorIds[m] - _workingDefinition.side1.sectorIds[0];
 
                 // Skip first track (first side)
-                for(int m = 0; m < _workingDefinition.side2.sectorIds.Length; m++)
+                for(var m = 0; m < _workingDefinition.side2.sectorIds.Length; m++)
                 {
                     _sectorMask[m + _workingDefinition.side1.sectorIds.Length] =
                         _workingDefinition.side2.sectorIds[m] -
@@ -99,11 +99,11 @@ public sealed partial class CPM
                                    StringComparison.InvariantCultureIgnoreCase) ==
                     0)
             {
-                for(int m = 0; m < _workingDefinition.side1.sectorIds.Length; m++)
+                for(var m = 0; m < _workingDefinition.side1.sectorIds.Length; m++)
                     _sectorMask[m] = _workingDefinition.side1.sectorIds[m] - _workingDefinition.side1.sectorIds[0];
 
                 // Skip first track (first side) and first track (second side)
-                for(int m = 0; m < _workingDefinition.side1.sectorIds.Length; m++)
+                for(var m = 0; m < _workingDefinition.side1.sectorIds.Length; m++)
                 {
                     _sectorMask[m + _workingDefinition.side1.sectorIds.Length] =
                         _workingDefinition.side1.sectorIds[m] -
@@ -123,8 +123,8 @@ public sealed partial class CPM
                     0)
             {
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization
-                                              .Dont_know_how_to_handle_COLUMBIA_ordering_not_proceeding_with_this_definition);
+                                  Localization
+                                     .Dont_know_how_to_handle_COLUMBIA_ordering_not_proceeding_with_this_definition);
 
                 return ErrorNumber.NotImplemented;
             }
@@ -133,16 +133,16 @@ public sealed partial class CPM
             else if(string.Compare(_workingDefinition.order, "EAGLE", StringComparison.InvariantCultureIgnoreCase) == 0)
             {
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization
-                                              .Don_know_how_to_handle_EAGLE_ordering_not_proceeding_with_this_definition);
+                                  Localization
+                                     .Don_know_how_to_handle_EAGLE_ordering_not_proceeding_with_this_definition);
 
                 return ErrorNumber.NotImplemented;
             }
             else
             {
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Unknown_order_type_0_not_proceeding_with_this_definition,
-                                           _workingDefinition.order);
+                                  Localization.Unknown_order_type_0_not_proceeding_with_this_definition,
+                                  _workingDefinition.order);
 
                 return ErrorNumber.NotSupported;
             }
@@ -156,19 +156,21 @@ public sealed partial class CPM
         {
             AaruLogging.Debug(MODULE_NAME, Localization.Deinterleaving_whole_volume);
 
-            for(int p = 0; p <= (int)(partition.End - partition.Start); p++)
+            for(var p = 0; p <= (int)(partition.End - partition.Start); p++)
             {
                 ErrorNumber errno =
                     _device.ReadSector((ulong)((int)partition.Start                        +
                                                p / _sectorMask.Length * _sectorMask.Length +
                                                _sectorMask[p % _sectorMask.Length]),
-                                       out byte[] readSector);
+                                       out byte[] readSector,
+                                       out _);
 
                 if(errno != ErrorNumber.NoError) return errno;
 
                 if(_workingDefinition.complement)
-                    for(int b = 0; b < readSector.Length; b++)
-                        readSector[b] = (byte)(~readSector[b] & 0xFF);
+                {
+                    for(var b = 0; b < readSector.Length; b++) readSector[b] = (byte)(~readSector[b] & 0xFF);
+                }
 
                 deinterleavedSectors.Add((ulong)p, readSector);
             }
@@ -177,7 +179,7 @@ public sealed partial class CPM
         int                       blockSize        = 128 << _dpb.bsh;
         var                       blockMs          = new MemoryStream();
         ulong                     blockNo          = 0;
-        int                       sectorsPerBlock  = 0;
+        var                       sectorsPerBlock  = 0;
         Dictionary<ulong, byte[]> allocationBlocks = new();
 
         AaruLogging.Debug(MODULE_NAME, Localization.Creating_allocation_blocks);
@@ -190,9 +192,9 @@ public sealed partial class CPM
             // May it happen? Just in case, CP/M blocks are smaller than physical sectors
             if(sector.Length > blockSize)
             {
-                for(int i = 0; i < sector.Length / blockSize; i++)
+                for(var i = 0; i < sector.Length / blockSize; i++)
                 {
-                    byte[] tmp = new byte[blockSize];
+                    var tmp = new byte[blockSize];
                     Array.Copy(sector, blockSize * i, tmp, 0, blockSize);
                     allocationBlocks.Add(blockNo++, tmp);
                 }
@@ -229,7 +231,7 @@ public sealed partial class CPM
         // Read the whole directory blocks
         var dirMs = new MemoryStream();
 
-        for(int d = 0; d < dirSectors; d++)
+        for(var d = 0; d < dirSectors; d++)
         {
             deinterleavedSectors.TryGetValue((ulong)(d + dirOff), out byte[] sector);
             dirMs.Write(sector, 0, sector.Length);
@@ -239,7 +241,7 @@ public sealed partial class CPM
 
         if(directory == null) return ErrorNumber.InvalidArgument;
 
-        int    dirCnt = 0;
+        var    dirCnt = 0;
         string file1  = null;
         string file2  = null;
         string file3  = null;
@@ -248,7 +250,7 @@ public sealed partial class CPM
 
         _statCache = new Dictionary<string, FileEntryInfo>();
         _cpmStat   = new FileSystemInfo();
-        bool atime = false;
+        var atime = false;
         _dirList           = [];
         _labelCreationDate = null;
         _labelUpdateDate   = null;
@@ -257,7 +259,7 @@ public sealed partial class CPM
         AaruLogging.Debug(MODULE_NAME, Localization.Traversing_directory);
 
         // For each directory entry
-        for(int dOff = 0; dOff < directory.Length; dOff += 32)
+        for(var dOff = 0; dOff < directory.Length; dOff += 32)
 
         {
             switch(directory[dOff] & 0x7F)
@@ -275,15 +277,15 @@ public sealed partial class CPM
                     //bool backed = (entry.filename[3] & 0x80) == 0x80 || (entry.extension[3] & 0x80) == 0x80;
                     int user = entry.statusUser & 0x0F;
 
-                    bool validEntry = true;
+                    var validEntry = true;
 
-                    for(int i = 0; i < 8; i++)
+                    for(var i = 0; i < 8; i++)
                     {
                         entry.filename[i] &= 0x7F;
                         validEntry        &= entry.filename[i] >= 0x20;
                     }
 
-                    for(int i = 0; i < 3; i++)
+                    for(var i = 0; i < 3; i++)
                     {
                         entry.extension[i] &= 0x7F;
                         validEntry         &= entry.extension[i] >= 0x20;
@@ -383,15 +385,15 @@ public sealed partial class CPM
                     //bool backed = (entry.filename[3] & 0x80) == 0x80 || (entry.extension[3] & 0x80) == 0x80;
                     int user = entry.statusUser & 0x0F;
 
-                    bool validEntry = true;
+                    var validEntry = true;
 
-                    for(int i = 0; i < 8; i++)
+                    for(var i = 0; i < 8; i++)
                     {
                         entry.filename[i] &= 0x7F;
                         validEntry        &= entry.filename[i] >= 0x20;
                     }
 
-                    for(int i = 0; i < 3; i++)
+                    for(var i = 0; i < 3; i++)
                     {
                         entry.extension[i] &= 0x7F;
                         validEntry         &= entry.extension[i] >= 0x20;
@@ -487,9 +489,9 @@ public sealed partial class CPM
 
                     int user = entry.userNumber & 0x0F;
 
-                    for(int i = 0; i < 8; i++) entry.filename[i] &= 0x7F;
+                    for(var i = 0; i < 8; i++) entry.filename[i] &= 0x7F;
 
-                    for(int i = 0; i < 3; i++) entry.extension[i] &= 0x7F;
+                    for(var i = 0; i < 3; i++) entry.extension[i] &= 0x7F;
 
                     string filename  = Encoding.ASCII.GetString(entry.filename).Trim();
                     string extension = Encoding.ASCII.GetString(entry.extension).Trim();
@@ -505,7 +507,7 @@ public sealed partial class CPM
                     if(_passwordCache.ContainsKey(filename)) _passwordCache.Remove(filename);
 
                     // Copy whole password entry
-                    byte[] tmp = new byte[32];
+                    var tmp = new byte[32];
                     Array.Copy(directory, dOff, tmp, 0, 32);
                     _passwordCache.Add(filename, tmp);
 
@@ -654,7 +656,7 @@ public sealed partial class CPM
                                     else
                                         fInfo = new FileEntryInfo();
 
-                                    byte[] ctime = new byte[4];
+                                    var ctime = new byte[4];
                                     ctime[0] = trdPartyDateEntry.create1[0];
                                     ctime[1] = trdPartyDateEntry.create1[1];
 
@@ -672,7 +674,7 @@ public sealed partial class CPM
                                     else
                                         fInfo = new FileEntryInfo();
 
-                                    byte[] ctime = new byte[4];
+                                    var ctime = new byte[4];
                                     ctime[0] = trdPartyDateEntry.create2[0];
                                     ctime[1] = trdPartyDateEntry.create2[1];
 
@@ -690,7 +692,7 @@ public sealed partial class CPM
                                     else
                                         fInfo = new FileEntryInfo();
 
-                                    byte[] ctime = new byte[4];
+                                    var ctime = new byte[4];
                                     ctime[0] = trdPartyDateEntry.create3[0];
                                     ctime[1] = trdPartyDateEntry.create3[1];
 
@@ -730,7 +732,7 @@ public sealed partial class CPM
 
             if(fileExtents.TryGetValue(filename, out Dictionary<int, List<ushort>> extents))
             {
-                for(int ex = 0; ex < extents.Count; ex++)
+                for(var ex = 0; ex < extents.Count; ex++)
                 {
                     if(!extents.TryGetValue(ex, out List<ushort> alBlks)) continue;
 
@@ -759,10 +761,10 @@ public sealed partial class CPM
         // For each stored password, store a decoded version of it
         foreach(KeyValuePair<string, byte[]> kvp in _passwordCache)
         {
-            byte[] tmp = new byte[8];
+            var tmp = new byte[8];
             Array.Copy(kvp.Value, 16, tmp, 0, 8);
 
-            for(int t = 0; t < 8; t++) tmp[t] ^= kvp.Value[13];
+            for(var t = 0; t < 8; t++) tmp[t] ^= kvp.Value[13];
 
             _decodedPasswordCache.Add(kvp.Key, tmp);
         }

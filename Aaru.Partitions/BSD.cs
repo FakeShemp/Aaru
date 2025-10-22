@@ -79,20 +79,20 @@ public sealed partial class BSD : IPartition
 
         if((MAX_LABEL_SIZE + _labelOffsets.Last()) % imagePlugin.Info.SectorSize > 0) run++;
 
-        var  dl    = new DiskLabel();
-        bool found = false;
+        var dl    = new DiskLabel();
+        var found = false;
 
         foreach(ulong location in _labelLocations)
         {
             if(location + run + sectorOffset >= imagePlugin.Info.Sectors) return false;
 
-            ErrorNumber errno = imagePlugin.ReadSectors(location + sectorOffset, run, out byte[] tmp);
+            ErrorNumber errno = imagePlugin.ReadSectors(location + sectorOffset, run, out byte[] tmp, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 
             foreach(uint offset in _labelOffsets)
             {
-                byte[] sector = new byte[MAX_LABEL_SIZE];
+                var sector = new byte[MAX_LABEL_SIZE];
 
                 if(offset + MAX_LABEL_SIZE > tmp.Length) break;
 
@@ -160,9 +160,9 @@ public sealed partial class BSD : IPartition
         AaruLogging.Debug(MODULE_NAME, "dl.d_sbsize = {0}",         dl.d_sbsize);
 
         ulong counter         = 0;
-        bool  addSectorOffset = false;
+        var   addSectorOffset = false;
 
-        for(int i = 0; i < dl.d_npartitions && i < 22; i++)
+        for(var i = 0; i < dl.d_npartitions && i < 22; i++)
         {
             AaruLogging.Debug(MODULE_NAME, "dl.d_partitions[i].p_offset = {0}", dl.d_partitions[i].p_offset);
 

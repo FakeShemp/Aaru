@@ -23,6 +23,11 @@ public sealed partial class AaruFormat
 
 #endregion
 
+    // AARU_EXPORT int32_t AARU_CALL aaruf_verify_image(void *context)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_verify_image", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_verify_image(IntPtr context);
+
 #region IWritableOpticalImage Members
 
     /// <inheritdoc />
@@ -30,7 +35,7 @@ public sealed partial class AaruFormat
     {
         if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc) return null;
 
-        ErrorNumber errno = ReadSectorLong(sectorAddress, out byte[] buffer);
+        ErrorNumber errno = ReadSectorLong(sectorAddress, out byte[] buffer, out _);
 
         return errno != ErrorNumber.NoError ? null : CdChecksums.CheckCdSector(buffer);
     }
@@ -50,7 +55,7 @@ public sealed partial class AaruFormat
             return null;
         }
 
-        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, out byte[] buffer);
+        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, out byte[] buffer, out _);
 
         if(errno != ErrorNumber.NoError) return null;
 
@@ -81,7 +86,8 @@ public sealed partial class AaruFormat
 
         return failingLbas.Count <= 0;
     }
-     /// <inheritdoc />
+
+    /// <inheritdoc />
     public bool? VerifySectors(ulong           sectorAddress, uint length, uint track, out List<ulong> failingLbas,
                                out List<ulong> unknownLbas)
     {
@@ -99,7 +105,7 @@ public sealed partial class AaruFormat
         failingLbas = [];
         unknownLbas = [];
 
-        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, track, out byte[] buffer);
+        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, track, out byte[] buffer, out _);
 
         if(errno != ErrorNumber.NoError) return null;
 
@@ -130,9 +136,4 @@ public sealed partial class AaruFormat
     }
 
 #endregion
-
-    // AARU_EXPORT int32_t AARU_CALL aaruf_verify_image(void *context)
-    [LibraryImport("libaaruformat", EntryPoint = "aaruf_verify_image", SetLastError = true)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
-    private static partial Status aaruf_verify_image(IntPtr context);
 }

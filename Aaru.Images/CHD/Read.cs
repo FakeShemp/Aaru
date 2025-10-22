@@ -1349,9 +1349,10 @@ public sealed partial class Chd
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer)
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
@@ -1386,6 +1387,8 @@ public sealed partial class Chd
         if(_isHdd)
         {
             buffer = sector;
+
+            sectorStatus = SectorStatus.Dumped;
 
             return ErrorNumber.NoError;
         }
@@ -1465,7 +1468,8 @@ public sealed partial class Chd
                 return ErrorNumber.NotSupported;
         }
 
-        buffer = new byte[sectorSize];
+        sectorStatus = SectorStatus.Dumped;
+        buffer       = new byte[sectorSize];
 
         if(mode2)
             buffer = Sector.GetUserDataFromMode2(sector);
@@ -1760,19 +1764,22 @@ public sealed partial class Chd
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
         var ms = new MemoryStream();
+        sectorStatus = new SectorStatus[length];
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector);
+            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
+            sectorStatus[i] = status;
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -1810,11 +1817,12 @@ public sealed partial class Chd
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer)
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
 
-        if(_isHdd) return ReadSector(sectorAddress, out buffer);
+        if(_isHdd) return ReadSector(sectorAddress, out buffer, out sectorStatus);
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
@@ -1832,7 +1840,8 @@ public sealed partial class Chd
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            sector = new byte[_imageInfo.SectorSize];
+            sectorStatus = SectorStatus.Dumped;
+            sector       = new byte[_imageInfo.SectorSize];
             Array.Copy(hunk, (int)secOff, sector, 0, sector.Length);
 
             if(_sectorCache.Count >= _maxSectorCache) _sectorCache.Clear();
@@ -1840,7 +1849,8 @@ public sealed partial class Chd
             _sectorCache.Add(sectorAddress, sector);
         }
 
-        buffer = new byte[track.RawBytesPerSector];
+        sectorStatus = SectorStatus.Dumped;
+        buffer       = new byte[track.RawBytesPerSector];
 
         if(track.Type == TrackType.Audio && _swapAudio)
         {
@@ -1908,19 +1918,23 @@ public sealed partial class Chd
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
         var ms = new MemoryStream();
+        sectorStatus = new SectorStatus[length];
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSectorLong(sectorAddress + i, out byte[] sector);
+            ErrorNumber errno = ReadSectorLong(sectorAddress + i, out byte[] sector, out SectorStatus status);
+            sectorStatus[i] = status;
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -1961,11 +1975,14 @@ public sealed partial class Chd
         _isHdd ? null : _tracks.Values.Where(track => track.Session == session).ToList();
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer)
+    public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
 
-        return _isHdd ? ErrorNumber.NotSupported : ReadSector(GetAbsoluteSector(sectorAddress, track), out buffer);
+        return _isHdd
+                   ? ErrorNumber.NotSupported
+                   : ReadSector(GetAbsoluteSector(sectorAddress, track), out buffer, out sectorStatus);
     }
 
     /// <inheritdoc />
@@ -1979,13 +1996,15 @@ public sealed partial class Chd
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, uint track, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         return _isHdd
                    ? ErrorNumber.NotSupported
-                   : ReadSectors(GetAbsoluteSector(sectorAddress, track), length, out buffer);
+                   : ReadSectors(GetAbsoluteSector(sectorAddress, track), length, out buffer, out sectorStatus);
     }
 
     /// <inheritdoc />
@@ -2000,21 +2019,26 @@ public sealed partial class Chd
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer)
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
-
-        return _isHdd ? ErrorNumber.NotSupported : ReadSectorLong(GetAbsoluteSector(sectorAddress, track), out buffer);
-    }
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, uint track, out byte[] buffer)
-    {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
 
         return _isHdd
                    ? ErrorNumber.NotSupported
-                   : ReadSectorLong(GetAbsoluteSector(sectorAddress, track), length, out buffer);
+                   : ReadSectorLong(GetAbsoluteSector(sectorAddress, track), out buffer, out sectorStatus);
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus)
+    {
+        buffer       = null;
+        sectorStatus = null;
+
+        return _isHdd
+                   ? ErrorNumber.NotSupported
+                   : ReadSectorsLong(GetAbsoluteSector(sectorAddress, track), length, out buffer, out sectorStatus);
     }
 
 #endregion

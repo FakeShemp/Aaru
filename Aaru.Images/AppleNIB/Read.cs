@@ -54,7 +54,7 @@ public sealed partial class AppleNib
 
         if(stream.Length < 512) return ErrorNumber.InvalidArgument;
 
-        byte[] buffer = new byte[stream.Length];
+        var buffer = new byte[stream.Length];
         stream.EnsureRead(buffer, 0, buffer.Length);
 
         AaruLogging.Debug(MODULE_NAME, Localization.Decoding_whole_image);
@@ -63,10 +63,10 @@ public sealed partial class AppleNib
 
         Dictionary<ulong, Apple2.RawSector> rawSectors = new();
 
-        int  spt            = 0;
-        bool allTracksEqual = true;
+        var spt            = 0;
+        var allTracksEqual = true;
 
-        for(int i = 1; i < tracks.Count; i++)
+        for(var i = 1; i < tracks.Count; i++)
             allTracksEqual &= tracks[i - 1].sectors.Length == tracks[i].sectors.Length;
 
         if(allTracksEqual) spt = tracks[0].sectors.Length;
@@ -96,27 +96,27 @@ public sealed partial class AppleNib
                 if(isDos) skewing = _dosSkewing;
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           skewing.SequenceEqual(_dosSkewing)
-                                               ? Localization.Using_DOS_skewing
-                                               : Localization.Using_ProDOS_skewing);
+                                  skewing.SequenceEqual(_dosSkewing)
+                                      ? Localization.Using_DOS_skewing
+                                      : Localization.Using_ProDOS_skewing);
             }
         }
 
-        for(int i = 0; i < tracks.Count; i++)
+        for(var i = 0; i < tracks.Count; i++)
         {
             foreach(Apple2.RawSector sector in tracks[i].sectors)
             {
                 if(skewed && spt != 0)
                 {
-                    ulong sectorNo = (ulong)(((sector.addressField.sector[0] & 0x55) << 1 |
-                                              sector.addressField.sector[1] & 0x55) &
-                                             0xFF);
+                    var sectorNo = (ulong)(((sector.addressField.sector[0] & 0x55) << 1 |
+                                            sector.addressField.sector[1] & 0x55) &
+                                           0xFF);
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               Localization.Hardware_sector_0_of_track_1_goes_to_logical_sector_2,
-                                               sectorNo,
-                                               i,
-                                               skewing[sectorNo] + (ulong)(i * spt));
+                                      Localization.Hardware_sector_0_of_track_1_goes_to_logical_sector_2,
+                                      sectorNo,
+                                      i,
+                                      skewing[sectorNo] + (ulong)(i * spt));
 
                     rawSectors.Add(skewing[sectorNo] + (ulong)(i * spt), sector);
                     _imageInfo.Sectors++;
@@ -183,29 +183,42 @@ public sealed partial class AppleNib
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer)
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = SectorStatus.Dumped;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
-        return _cookedSectors.TryGetValue(sectorAddress, out buffer) ? ErrorNumber.NoError : ErrorNumber.SectorNotFound;
+        if(_cookedSectors.TryGetValue(sectorAddress, out buffer))
+        {
+            sectorStatus = SectorStatus.Dumped;
+
+            return ErrorNumber.NoError;
+        }
+
+        sectorStatus = SectorStatus.NotDumped;
+
+        return ErrorNumber.SectorNotFound;
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
         var ms = new MemoryStream();
+        sectorStatus = new SectorStatus[length];
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector);
+            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus singleSectorStatus);
+            sectorStatus[i] = singleSectorStatus;
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -257,29 +270,45 @@ public sealed partial class AppleNib
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer)
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
-        return _longSectors.TryGetValue(sectorAddress, out buffer) ? ErrorNumber.NoError : ErrorNumber.SectorNotFound;
+        if(_longSectors.TryGetValue(sectorAddress, out buffer))
+        {
+            sectorStatus = SectorStatus.Dumped;
+
+            return ErrorNumber.NoError;
+        }
+
+        sectorStatus = SectorStatus.NotDumped;
+
+        return ErrorNumber.SectorNotFound;
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
         var ms = new MemoryStream();
+        sectorStatus = new SectorStatus[length];
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSectorLong(sectorAddress + i, out byte[] sector);
+            ErrorNumber errno =
+                ReadSectorLong(sectorAddress + i, out byte[] sector, out SectorStatus singleSectorStatus);
+
+            sectorStatus[i] = singleSectorStatus;
 
             if(errno != ErrorNumber.NoError) return errno;
 

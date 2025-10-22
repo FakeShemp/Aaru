@@ -50,7 +50,7 @@ public sealed partial class JFS
 
         if(partition.Start + bootSectors >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start + bootSectors, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start + bootSectors, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -70,7 +70,7 @@ public sealed partial class JFS
         metadata    =   new FileSystem();
         var         sb          = new StringBuilder();
         uint        bootSectors = JFS_BOOT_BLOCKS_SIZE / imagePlugin.Info.SectorSize;
-        ErrorNumber errno       = imagePlugin.ReadSector(partition.Start + bootSectors, out byte[] sector);
+        ErrorNumber errno       = imagePlugin.ReadSector(partition.Start + bootSectors, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

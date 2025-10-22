@@ -56,12 +56,12 @@ public sealed partial class VMware
 
         _vmEHdr = new ExtentHeader();
         _vmCHdr = new CowHeader();
-        bool embedded = false;
+        var embedded = false;
 
         if(stream.Length > Marshal.SizeOf<ExtentHeader>())
         {
             stream.Seek(0, SeekOrigin.Begin);
-            byte[] vmEHdrB = new byte[Marshal.SizeOf<ExtentHeader>()];
+            var vmEHdrB = new byte[Marshal.SizeOf<ExtentHeader>()];
             stream.EnsureRead(vmEHdrB, 0, Marshal.SizeOf<ExtentHeader>());
             _vmEHdr = Marshal.ByteArrayToStructureLittleEndian<ExtentHeader>(vmEHdrB);
         }
@@ -69,14 +69,14 @@ public sealed partial class VMware
         if(stream.Length > Marshal.SizeOf<CowHeader>())
         {
             stream.Seek(0, SeekOrigin.Begin);
-            byte[] vmCHdrB = new byte[Marshal.SizeOf<CowHeader>()];
+            var vmCHdrB = new byte[Marshal.SizeOf<CowHeader>()];
             stream.EnsureRead(vmCHdrB, 0, Marshal.SizeOf<CowHeader>());
             _vmCHdr = Marshal.ByteArrayToStructureLittleEndian<CowHeader>(vmCHdrB);
         }
 
-        var  ddfStream = new MemoryStream();
-        bool vmEHdrSet = false;
-        bool cowD      = false;
+        var ddfStream = new MemoryStream();
+        var vmEHdrSet = false;
+        var cowD      = false;
 
         if(_vmEHdr.magic == VMWARE_EXTENT_MAGIC)
         {
@@ -90,7 +90,7 @@ public sealed partial class VMware
                 return ErrorNumber.InvalidArgument;
             }
 
-            byte[] ddfEmbed = new byte[_vmEHdr.descriptorSize * SECTOR_SIZE];
+            var ddfEmbed = new byte[_vmEHdr.descriptorSize * SECTOR_SIZE];
 
             stream.Seek((long)(_vmEHdr.descriptorOffset * SECTOR_SIZE), SeekOrigin.Begin);
             stream.EnsureRead(ddfEmbed, 0, ddfEmbed.Length);
@@ -105,7 +105,7 @@ public sealed partial class VMware
         }
         else
         {
-            byte[] ddfMagic = new byte[0x15];
+            var ddfMagic = new byte[0x15];
             stream.Seek(0, SeekOrigin.Begin);
             stream.EnsureRead(ddfMagic, 0, 0x15);
 
@@ -117,7 +117,7 @@ public sealed partial class VMware
             }
 
             stream.Seek(0, SeekOrigin.Begin);
-            byte[] ddfExternal = new byte[imageFilter.DataForkLength];
+            var ddfExternal = new byte[imageFilter.DataForkLength];
             stream.EnsureRead(ddfExternal, 0, ddfExternal.Length);
             ddfStream.Write(ddfExternal, 0, ddfExternal.Length);
         }
@@ -129,7 +129,7 @@ public sealed partial class VMware
 
         if(cowD)
         {
-            int    cowCount = 1;
+            var    cowCount = 1;
             string basePath = Path.GetFileNameWithoutExtension(imageFilter.BasePath);
 
             while(true)
@@ -149,7 +149,7 @@ public sealed partial class VMware
                 if(stream.Length > Marshal.SizeOf<CowHeader>())
                 {
                     extentStream.Seek(0, SeekOrigin.Begin);
-                    byte[] vmCHdrB = new byte[Marshal.SizeOf<CowHeader>()];
+                    var vmCHdrB = new byte[Marshal.SizeOf<CowHeader>()];
                     extentStream.EnsureRead(vmCHdrB, 0, Marshal.SizeOf<CowHeader>());
                     CowHeader extHdrCow = Marshal.ByteArrayToStructureLittleEndian<CowHeader>(vmCHdrB);
 
@@ -355,7 +355,7 @@ public sealed partial class VMware
                 return ErrorNumber.InvalidArgument;
             }
 
-            byte[] extentHdrB = new byte[Marshal.SizeOf<ExtentHeader>()];
+            var extentHdrB = new byte[Marshal.SizeOf<ExtentHeader>()];
             extentStream.EnsureRead(extentHdrB, 0, Marshal.SizeOf<ExtentHeader>());
             ExtentHeader extentHdr = Marshal.ByteArrayToStructureLittleEndian<ExtentHeader>(extentHdrB);
 
@@ -503,7 +503,7 @@ public sealed partial class VMware
             gdStream.Seek(gdOffset * SECTOR_SIZE, SeekOrigin.Begin);
 
             AaruLogging.Debug(MODULE_NAME, Localization.Reading_grain_directory);
-            byte[] gdBytes = new byte[gdEntries * 4];
+            var gdBytes = new byte[gdEntries * 4];
             gdStream.EnsureRead(gdBytes, 0, gdBytes.Length);
             ReadOnlySpan<uint> gd = MemoryMarshal.Cast<byte, uint>(gdBytes);
 
@@ -513,7 +513,7 @@ public sealed partial class VMware
 
             foreach(uint gtOff in gd)
             {
-                byte[] gtBytes = new byte[gtEsPerGt * 4];
+                var gtBytes = new byte[gtEsPerGt * 4];
                 gdStream.Seek(gtOff * SECTOR_SIZE, SeekOrigin.Begin);
                 gdStream.EnsureRead(gtBytes, 0, gtBytes.Length);
 
@@ -589,16 +589,19 @@ public sealed partial class VMware
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer)
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(_sectorCache.TryGetValue(sectorAddress, out buffer)) return ErrorNumber.NoError;
 
+        sectorStatus = SectorStatus.Dumped;
+
         var   currentExtent     = new Extent();
-        bool  extentFound       = false;
+        var   extentFound       = false;
         ulong extentStartSector = 0;
 
         foreach(KeyValuePair<ulong, Extent> kvp in _extents.Where(kvp => sectorAddress >= kvp.Key))
@@ -647,7 +650,7 @@ public sealed partial class VMware
         switch(grainOff)
         {
             case 0 when _hasParent:
-                return _parentImage.ReadSector(sectorAddress, out buffer);
+                return _parentImage.ReadSector(sectorAddress, out buffer, out sectorStatus);
             case 0 or 1:
             {
                 buffer = new byte[SECTOR_SIZE];
@@ -683,23 +686,26 @@ public sealed partial class VMware
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
         var ms = new MemoryStream();
+        sectorStatus = new SectorStatus[length];
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector);
+            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
 
             if(errno != ErrorNumber.NoError) return errno;
 
             ms.Write(sector, 0, sector.Length);
+            sectorStatus[i] = status;
         }
 
         buffer = ms.ToArray();

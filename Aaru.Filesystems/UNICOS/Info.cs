@@ -49,13 +49,13 @@ public sealed partial class UNICOS
     {
         if(imagePlugin.Info.SectorSize < 512) return false;
 
-        uint sbSize = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
+        var sbSize = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
 
         if(Marshal.SizeOf<Superblock>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
         if(partition.Start + sbSize >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -78,11 +78,11 @@ public sealed partial class UNICOS
 
         if(imagePlugin.Info.SectorSize < 512) return;
 
-        uint sbSize = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
+        var sbSize = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
 
         if(Marshal.SizeOf<Superblock>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

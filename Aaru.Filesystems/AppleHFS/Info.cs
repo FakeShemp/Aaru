@@ -54,7 +54,7 @@ public sealed partial class AppleHFS
 
         if(imagePlugin.Info.SectorSize is 2352 or 2448 or 2048)
         {
-            errno = imagePlugin.ReadSectors(partition.Start, 2, out mdbSector);
+            errno = imagePlugin.ReadSectors(partition.Start, 2, out mdbSector, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
@@ -74,7 +74,7 @@ public sealed partial class AppleHFS
         }
         else
         {
-            errno = imagePlugin.ReadSector(2 + partition.Start, out mdbSector);
+            errno = imagePlugin.ReadSector(2 + partition.Start, out mdbSector, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
@@ -111,7 +111,7 @@ public sealed partial class AppleHFS
 
         if(imagePlugin.Info.SectorSize is 2352 or 2448 or 2048)
         {
-            errno = imagePlugin.ReadSectors(partition.Start, 2, out byte[] tmpSector);
+            errno = imagePlugin.ReadSectors(partition.Start, 2, out byte[] tmpSector, out _);
 
             if(errno != ErrorNumber.NoError) return;
 
@@ -139,7 +139,7 @@ public sealed partial class AppleHFS
         }
         else
         {
-            errno = imagePlugin.ReadSector(2 + partition.Start, out mdbSector);
+            errno = imagePlugin.ReadSector(2 + partition.Start, out mdbSector, out _);
 
             if(errno != ErrorNumber.NoError) return;
 
@@ -147,7 +147,7 @@ public sealed partial class AppleHFS
 
             if(drSigWord == AppleCommon.HFS_MAGIC)
             {
-                errno = imagePlugin.ReadSector(partition.Start, out bbSector);
+                errno = imagePlugin.ReadSector(partition.Start, out bbSector, out _);
 
                 if(errno != ErrorNumber.NoError) return;
             }

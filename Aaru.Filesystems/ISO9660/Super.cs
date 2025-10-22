@@ -113,7 +113,7 @@ public sealed partial class ISO9660
 
         ulong counter = 0;
 
-        ErrorNumber errno = imagePlugin.ReadSector(16 + partition.Start, out byte[] vdSector);
+        ErrorNumber errno = imagePlugin.ReadSector(16 + partition.Start, out byte[] vdSector, out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -137,7 +137,7 @@ public sealed partial class ISO9660
 
             // Seek to Volume Descriptor
             AaruLogging.Debug(MODULE_NAME, Localization.Reading_sector_0, 16 + counter + partition.Start);
-            errno = imagePlugin.ReadSector(16 + counter + partition.Start, out byte[] vdSectorTmp);
+            errno = imagePlugin.ReadSector(16 + counter + partition.Start, out byte[] vdSectorTmp, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -422,8 +422,7 @@ public sealed partial class ISO9660
 
             if(errno != ErrorNumber.NoError) return errno;
 
-            CdiDirectoryRecord rootEntry =
-                Marshal.ByteArrayToStructureBigEndian<CdiDirectoryRecord>(firstRootSector);
+            CdiDirectoryRecord rootEntry = Marshal.ByteArrayToStructureBigEndian<CdiDirectoryRecord>(firstRootSector);
 
             rootSize = rootEntry.size;
 

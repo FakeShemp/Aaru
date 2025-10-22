@@ -59,7 +59,7 @@ public sealed partial class Alcohol120
         if(stream.Length < 88) return ErrorNumber.InvalidArgument;
 
         _isDvd = false;
-        byte[] hdr = new byte[88];
+        var hdr = new byte[88];
         stream.EnsureRead(hdr, 0, 88);
         _header = Marshal.ByteArrayToStructureLittleEndian<Header>(hdr);
 
@@ -70,22 +70,22 @@ public sealed partial class Alcohol120
         AaruLogging.Debug(MODULE_NAME, "header.type = {0}",     _header.type);
         AaruLogging.Debug(MODULE_NAME, "header.sessions = {0}", _header.sessions);
 
-        for(int i = 0; i < _header.unknown1.Length; i++)
+        for(var i = 0; i < _header.unknown1.Length; i++)
             AaruLogging.Debug(MODULE_NAME, "header.unknown1[{1}] = 0x{0:X4}", _header.unknown1[i], i);
 
         AaruLogging.Debug(MODULE_NAME, "header.bcaLength = {0}", _header.bcaLength);
 
-        for(int i = 0; i < _header.unknown2.Length; i++)
+        for(var i = 0; i < _header.unknown2.Length; i++)
             AaruLogging.Debug(MODULE_NAME, "header.unknown2[{1}] = 0x{0:X8}", _header.unknown2[i], i);
 
         AaruLogging.Debug(MODULE_NAME, "header.bcaOffset = {0}", _header.bcaOffset);
 
-        for(int i = 0; i < _header.unknown3.Length; i++)
+        for(var i = 0; i < _header.unknown3.Length; i++)
             AaruLogging.Debug(MODULE_NAME, "header.unknown3[{1}] = 0x{0:X8}", _header.unknown3[i], i);
 
         AaruLogging.Debug(MODULE_NAME, "header.structuresOffset = {0}", _header.structuresOffset);
 
-        for(int i = 0; i < _header.unknown4.Length; i++)
+        for(var i = 0; i < _header.unknown4.Length; i++)
             AaruLogging.Debug(MODULE_NAME, "header.unknown4[{1}] = 0x{0:X8}", _header.unknown4[i], i);
 
         AaruLogging.Debug(MODULE_NAME, "header.sessionOffset = {0}", _header.sessionOffset);
@@ -96,9 +96,9 @@ public sealed partial class Alcohol120
         stream.Seek(_header.sessionOffset, SeekOrigin.Begin);
         _alcSessions = new Dictionary<int, Session>();
 
-        for(int i = 0; i < _header.sessions; i++)
+        for(var i = 0; i < _header.sessions; i++)
         {
-            byte[] sesHdr = new byte[24];
+            var sesHdr = new byte[24];
             stream.EnsureRead(sesHdr, 0, 24);
             Session session = Marshal.SpanToStructureLittleEndian<Session>(sesHdr);
 
@@ -124,7 +124,7 @@ public sealed partial class Alcohol120
         }
 
         long footerOff         = 0;
-        bool oldIncorrectImage = false;
+        var  oldIncorrectImage = false;
 
         _alcTracks = new Dictionary<int, Track>();
         _alcToc    = new Dictionary<int, Dictionary<int, Track>>();
@@ -135,9 +135,9 @@ public sealed partial class Alcohol120
             stream.Seek(session.trackOffset, SeekOrigin.Begin);
             Dictionary<int, Track> sesToc = new();
 
-            for(int i = 0; i < session.allBlocks; i++)
+            for(var i = 0; i < session.allBlocks; i++)
             {
-                byte[] trkHdr = new byte[80];
+                var trkHdr = new byte[80];
                 stream.EnsureRead(trkHdr, 0, 80);
                 Track track = Marshal.ByteArrayToStructureLittleEndian<Track>(trkHdr);
 
@@ -293,7 +293,7 @@ public sealed partial class Alcohol120
         {
             if(track.extraOffset > 0 && !_isDvd)
             {
-                byte[] extHdr = new byte[8];
+                var extHdr = new byte[8];
                 stream.Seek(track.extraOffset, SeekOrigin.Begin);
                 stream.EnsureRead(extHdr, 0, 8);
                 TrackExtra extra = Marshal.SpanToStructureLittleEndian<TrackExtra>(extHdr);
@@ -323,7 +323,7 @@ public sealed partial class Alcohol120
 
         if(footerOff > 0)
         {
-            byte[] footer = new byte[16];
+            var footer = new byte[16];
             stream.Seek(footerOff, SeekOrigin.Begin);
             stream.EnsureRead(footer, 0, 16);
             _alcFooter = Marshal.SpanToStructureLittleEndian<Footer>(footer);
@@ -335,7 +335,7 @@ public sealed partial class Alcohol120
             AaruLogging.Debug(MODULE_NAME, "footer.unknown2 = 0x{0:X8}", _alcFooter.unknown2);
         }
 
-        string alcFile = "*.mdf";
+        var alcFile = "*.mdf";
 
         if(_alcFooter.filenameOffset > 0)
         {
@@ -417,7 +417,7 @@ public sealed partial class Alcohol120
             // TODO: Second layer
             if(_header.structuresOffset > 0)
             {
-                byte[] structures = new byte[4100];
+                var structures = new byte[4100];
                 stream.Seek(_header.structuresOffset, SeekOrigin.Begin);
                 stream.EnsureRead(structures, 0, 4100);
                 _dmi = new byte[2052];
@@ -466,7 +466,7 @@ public sealed partial class Alcohol120
                         _imageInfo.MediaType                          = MediaType.XGD;
                     else if(DMI.IsXbox360(_dmi)) _imageInfo.MediaType = MediaType.XGD2;
 
-                    byte[] tmp = new byte[2048];
+                    var tmp = new byte[2048];
                     Array.Copy(_dmi, 4, tmp, 0, 2048);
                     _dmi = tmp;
                     tmp  = new byte[2048];
@@ -480,11 +480,11 @@ public sealed partial class Alcohol120
         }
         else if(_header.type == MediumType.CD)
         {
-            bool data       = false;
-            bool mode2      = false;
-            bool firstAudio = false;
-            bool firstData  = false;
-            bool audio      = false;
+            var data       = false;
+            var mode2      = false;
+            var firstAudio = false;
+            var firstData  = false;
+            var audio      = false;
 
             foreach(Track alcoholTrack in _alcTracks.Values)
             {
@@ -757,24 +757,34 @@ public sealed partial class Alcohol120
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer) => ReadSectors(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectors(sectorAddress, 1, out buffer, out _);
+    }
 
     /// <inheritdoc />
     public ErrorNumber ReadSectorTag(ulong sectorAddress, SectorTagType tag, out byte[] buffer) =>
         ReadSectorsTag(sectorAddress, 1, tag, out buffer);
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer) =>
-        ReadSectors(sectorAddress, 1, track, out buffer);
+    public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectors(sectorAddress, 1, track, out buffer, out _);
+    }
 
     /// <inheritdoc />
     public ErrorNumber ReadSectorTag(ulong sectorAddress, uint track, SectorTagType tag, out byte[] buffer) =>
         ReadSectorsTag(sectorAddress, 1, track, tag, out buffer);
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         foreach(KeyValuePair<uint, ulong> kvp in _offsetMap)
         {
@@ -786,7 +796,7 @@ public sealed partial class Alcohol120
 
                 if(sectorAddress - kvp.Value >= extra.sectors + extra.pregap) continue;
 
-                return ReadSectors(sectorAddress - kvp.Value, length, kvp.Key, out buffer);
+                return ReadSectors(sectorAddress - kvp.Value, length, kvp.Key, out buffer, out sectorStatus);
             }
         }
 
@@ -816,9 +826,11 @@ public sealed partial class Alcohol120
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, uint track, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(!_alcTracks.TryGetValue((int)track, out Track alcTrack) ||
            !_alcTrackExtras.TryGetValue((int)track, out TrackExtra alcExtra))
@@ -826,10 +838,13 @@ public sealed partial class Alcohol120
 
         if(length + sectorAddress > alcExtra.sectors + alcExtra.pregap) return ErrorNumber.OutOfRange;
 
+        sectorStatus = new SectorStatus[length];
+        for(uint i = 0; i < length; i++) sectorStatus[i] = SectorStatus.Dumped;
+
         uint sectorOffset;
         uint sectorSize;
         uint sectorSkip;
-        bool mode2 = false;
+        var  mode2 = false;
 
         switch(alcTrack.mode)
         {
@@ -904,7 +919,7 @@ public sealed partial class Alcohol120
         }
 
         uint pregapBytes = alcExtra.pregap * (sectorOffset + sectorSize + sectorSkip);
-        long fileOffset  = (long)alcTrack.startOffset;
+        var  fileOffset  = (long)alcTrack.startOffset;
 
         if(alcTrack.startOffset >= pregapBytes) fileOffset = (long)(alcTrack.startOffset - pregapBytes);
 
@@ -920,9 +935,9 @@ public sealed partial class Alcohol120
 
             buffer = br.ReadBytes((int)((sectorSize + sectorSkip) * length));
 
-            for(int i = 0; i < length; i++)
+            for(var i = 0; i < length; i++)
             {
-                byte[] sector = new byte[sectorSize];
+                var sector = new byte[sectorSize];
                 Array.Copy(buffer, (sectorSize + sectorSkip) * i, sector, 0, sectorSize);
                 sector = Sector.GetUserDataFromMode2(sector);
                 mode2Ms.Write(sector, 0, sector.Length);
@@ -934,7 +949,7 @@ public sealed partial class Alcohol120
             buffer = br.ReadBytes((int)(sectorSize * length));
         else
         {
-            for(int i = 0; i < length; i++)
+            for(var i = 0; i < length; i++)
             {
                 br.BaseStream.Seek(sectorOffset, SeekOrigin.Current);
                 byte[] sector = br.ReadBytes((int)sectorSize);
@@ -1334,7 +1349,7 @@ public sealed partial class Alcohol120
         }
 
         uint pregapBytes = alcExtra.pregap * (sectorOffset + sectorSize + sectorSkip);
-        long fileOffset  = (long)alcTrack.startOffset;
+        var  fileOffset  = (long)alcTrack.startOffset;
 
         if(alcTrack.startOffset >= pregapBytes) fileOffset = (long)(alcTrack.startOffset - pregapBytes);
 
@@ -1348,7 +1363,7 @@ public sealed partial class Alcohol120
             buffer = br.ReadBytes((int)(sectorSize * length));
         else
         {
-            for(int i = 0; i < length; i++)
+            for(var i = 0; i < length; i++)
             {
                 br.BaseStream.Seek(sectorOffset, SeekOrigin.Current);
                 byte[] sector = br.ReadBytes((int)sectorSize);
@@ -1361,17 +1376,27 @@ public sealed partial class Alcohol120
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer) =>
-        ReadSectorsLong(sectorAddress, 1, out buffer);
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer) =>
-        ReadSectorsLong(sectorAddress, 1, track, out buffer);
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectorsLong(sectorAddress, 1, out buffer, out _);
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectorsLong(sectorAddress, 1, track, out buffer, out _);
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus)
+    {
+        buffer       = null;
+        sectorStatus = null;
 
         foreach(KeyValuePair<uint, ulong> kvp in _offsetMap)
         {
@@ -1384,7 +1409,7 @@ public sealed partial class Alcohol120
 
                 if(sectorAddress - kvp.Value >= alcExtra.sectors + alcExtra.pregap) continue;
 
-                return ReadSectorsLong(sectorAddress - kvp.Value, length, kvp.Key, out buffer);
+                return ReadSectorsLong(sectorAddress - kvp.Value, length, kvp.Key, out buffer, out sectorStatus);
             }
         }
 
@@ -1392,15 +1417,20 @@ public sealed partial class Alcohol120
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, uint track, out byte[] buffer)
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(!_alcTracks.TryGetValue((int)track, out Track alcTrack) ||
            !_alcTrackExtras.TryGetValue((int)track, out TrackExtra alcExtra))
             return ErrorNumber.SectorNotFound;
 
         if(length + sectorAddress > alcExtra.sectors + alcExtra.pregap) return ErrorNumber.OutOfRange;
+
+        sectorStatus = new SectorStatus[length];
+        for(uint i = 0; i < length; i++) sectorStatus[i] = SectorStatus.Dumped;
 
         uint sectorOffset;
         uint sectorSize;
@@ -1442,7 +1472,7 @@ public sealed partial class Alcohol120
         }
 
         uint pregapBytes = alcExtra.pregap * (sectorSize + sectorSkip);
-        long fileOffset  = (long)alcTrack.startOffset;
+        var  fileOffset  = (long)alcTrack.startOffset;
 
         if(alcTrack.startOffset >= pregapBytes) fileOffset = (long)(alcTrack.startOffset - pregapBytes);
 
@@ -1455,7 +1485,7 @@ public sealed partial class Alcohol120
             buffer = br.ReadBytes((int)(sectorSize * length));
         else
         {
-            for(int i = 0; i < length; i++)
+            for(var i = 0; i < length; i++)
             {
                 br.BaseStream.Seek(sectorOffset, SeekOrigin.Current);
                 byte[] sector = br.ReadBytes((int)sectorSize);

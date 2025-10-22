@@ -31,6 +31,7 @@
 // ****************************************************************************/
 
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
@@ -51,7 +52,7 @@ public sealed partial class DriDiskCopy
 
         if((stream.Length - Marshal.SizeOf<Footer>()) % 512 != 0) return ErrorNumber.InvalidArgument;
 
-        byte[] buffer = new byte[Marshal.SizeOf<Footer>()];
+        var buffer = new byte[Marshal.SizeOf<Footer>()];
         stream.Seek(-buffer.Length, SeekOrigin.End);
         stream.EnsureRead(buffer, 0, buffer.Length);
 
@@ -84,9 +85,9 @@ public sealed partial class DriDiskCopy
         _imageInfo.LastModificationTime = imageFilter.LastWriteTime;
 
         AaruLogging.Debug(MODULE_NAME,
-                                   Localization.Image_application_0_version_1,
-                                   _imageInfo.Application,
-                                   _imageInfo.ApplicationVersion);
+                          Localization.Image_application_0_version_1,
+                          _imageInfo.Application,
+                          _imageInfo.ApplicationVersion);
 
         // Correct some incorrect data in images of NEC 2HD disks
         if(_imageInfo is { Cylinders: 77, Heads: 2 } and { SectorsPerTrack: 16, SectorSize: 512 } &&
@@ -119,24 +120,31 @@ public sealed partial class DriDiskCopy
         _imageInfo.MetadataMediaType = MetadataMediaType.BlockMedia;
 
         AaruLogging.Verbose(Localization.Digital_Research_DiskCopy_image_contains_a_disk_of_type_0,
-                                     _imageInfo.MediaType);
+                            _imageInfo.MediaType);
 
         return ErrorNumber.NoError;
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer) => ReadSectors(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectors(sectorAddress, 1, out buffer, out _);
+    }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
-        buffer = new byte[length * _imageInfo.SectorSize];
+        buffer       = new byte[length * _imageInfo.SectorSize];
+        sectorStatus = Enumerable.Repeat(SectorStatus.Dumped, (int)length).ToArray();
 
         Stream stream = _driImageFilter.GetDataForkStream();
         stream.Seek((long)(sectorAddress          * _imageInfo.SectorSize), SeekOrigin.Begin);

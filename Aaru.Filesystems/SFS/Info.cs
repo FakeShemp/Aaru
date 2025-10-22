@@ -46,7 +46,7 @@ public sealed partial class SFS
     {
         if(partition.Start >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -61,7 +61,7 @@ public sealed partial class SFS
     {
         information = "";
         metadata    = new FileSystem();
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, out byte[] rootBlockSector);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, out byte[] rootBlockSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

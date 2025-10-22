@@ -39,6 +39,26 @@ namespace Aaru.Filesystems;
 // Information from Call-A.P.P.L.E. Pascal Disk Directory Structure
 public sealed partial class PascalPlugin
 {
+    ErrorNumber GetFileEntry(string path, out PascalFileEntry entry)
+    {
+        entry = new PascalFileEntry();
+
+        foreach(PascalFileEntry ent in _fileEntries.Where(ent => string.Compare(path,
+                                                                                    StringHandlers
+                                                                                       .PascalToString(ent.Filename,
+                                                                                            _encoding),
+                                                                                    StringComparison
+                                                                                       .InvariantCultureIgnoreCase) ==
+                                                                 0))
+        {
+            entry = ent;
+
+            return ErrorNumber.NoError;
+        }
+
+        return ErrorNumber.NoSuchFile;
+    }
+
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
@@ -94,7 +114,8 @@ public sealed partial class PascalPlugin
 
             error = _device.ReadSectors((ulong)entry.FirstBlock                    * _multiplier,
                                         (uint)(entry.LastBlock - entry.FirstBlock) * _multiplier,
-                                        out byte[] tmp);
+                                        out byte[] tmp,
+                                        out _);
 
             if(error != ErrorNumber.NoError) return error;
 
@@ -207,24 +228,4 @@ public sealed partial class PascalPlugin
     }
 
 #endregion
-
-    ErrorNumber GetFileEntry(string path, out PascalFileEntry entry)
-    {
-        entry = new PascalFileEntry();
-
-        foreach(PascalFileEntry ent in _fileEntries.Where(ent => string.Compare(path,
-                                                                                    StringHandlers
-                                                                                       .PascalToString(ent.Filename,
-                                                                                            _encoding),
-                                                                                    StringComparison
-                                                                                       .InvariantCultureIgnoreCase) ==
-                                                                 0))
-        {
-            entry = ent;
-
-            return ErrorNumber.NoError;
-        }
-
-        return ErrorNumber.NoSuchFile;
-    }
 }

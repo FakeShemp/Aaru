@@ -50,7 +50,7 @@ public sealed partial class APFS
     {
         if(partition.Start >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -80,7 +80,7 @@ public sealed partial class APFS
 
         if(partition.Start >= partition.End) return;
 
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

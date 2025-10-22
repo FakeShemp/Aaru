@@ -74,7 +74,7 @@ public sealed partial class CisCopy
                 return ErrorNumber.InvalidArgument;
         }
 
-        byte[] trackBytes = new byte[tracks];
+        var trackBytes = new byte[tracks];
         stream.EnsureRead(trackBytes, 0, tracks);
 
         var cmpr = (Compression)stream.ReadByte();
@@ -94,15 +94,15 @@ public sealed partial class CisCopy
                             DiskType.MF2HD                                     => 18 * 512
                         };
 
-        int headStep = 1;
+        var headStep = 1;
 
         if(type is DiskType.MD1DD or DiskType.MD1DD8) headStep = 2;
 
         var decodedImage = new MemoryStream();
 
-        for(int i = 0; i < tracks; i += headStep)
+        for(var i = 0; i < tracks; i += headStep)
         {
-            byte[] track = new byte[trackSize];
+            var track = new byte[trackSize];
 
             if((TrackType)trackBytes[i] == TrackType.Copied)
                 stream.EnsureRead(track, 0, trackSize);
@@ -190,18 +190,26 @@ public sealed partial class CisCopy
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer) => ReadSectors(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectors(sectorAddress, 1, out buffer, out _);
+    }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
-        buffer = new byte[length * _imageInfo.SectorSize];
+        buffer       = new byte[length * _imageInfo.SectorSize];
+        sectorStatus = new SectorStatus[length];
+        for(uint i = 0; i < length; i++) sectorStatus[i] = SectorStatus.Dumped;
 
         Array.Copy(_decodedDisk, (int)sectorAddress * _imageInfo.SectorSize, buffer, 0, length * _imageInfo.SectorSize);
 

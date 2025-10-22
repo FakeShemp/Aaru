@@ -64,7 +64,7 @@ public sealed partial class PascalPlugin
         _multiplier = (uint)(imagePlugin.Info.SectorSize == 256 ? 2 : 1);
 
         // Blocks 0 and 1 are boot code
-        ErrorNumber errno = _device.ReadSectors(_multiplier * 2, _multiplier, out _catalogBlocks);
+        ErrorNumber errno = _device.ReadSectors(_multiplier * 2, _multiplier, out _catalogBlocks, out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -96,11 +96,12 @@ public sealed partial class PascalPlugin
 
         errno = _device.ReadSectors(_multiplier                                                          * 2,
                                     (uint)(_mountedVolEntry.LastBlock - _mountedVolEntry.FirstBlock - 2) * _multiplier,
-                                    out _catalogBlocks);
+                                    out _catalogBlocks,
+                                    out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        int offset = 26;
+        var offset = 26;
 
         _fileEntries = [];
 
@@ -123,7 +124,7 @@ public sealed partial class PascalPlugin
             offset += 26;
         }
 
-        errno = _device.ReadSectors(0, 2 * _multiplier, out _bootBlocks);
+        errno = _device.ReadSectors(0, 2 * _multiplier, out _bootBlocks, out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 

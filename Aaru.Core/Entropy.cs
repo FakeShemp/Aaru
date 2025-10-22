@@ -109,15 +109,15 @@ public sealed class Entropy
                                             currentTrack.Sequence,
                                             inputTracks.Max(t => t.Sequence));
 
-                ulong[]      entTable              = new ulong[256];
+                var          entTable              = new ulong[256];
                 ulong        trackSize             = 0;
                 List<string> uniqueSectorsPerTrack = [];
 
                 trackEntropy.Sectors = currentTrack.EndSector - currentTrack.StartSector + 1;
 
                 AaruLogging.Verbose(Localization.Core.Track_0_has_1_sectors,
-                                             currentTrack.Sequence,
-                                             trackEntropy.Sectors);
+                                    currentTrack.Sequence,
+                                    trackEntropy.Sectors);
 
                 InitProgress2Event?.Invoke();
 
@@ -129,14 +129,14 @@ public sealed class Entropy
                                                  (long)(i + 1),
                                                  (long)currentTrack.EndSector);
 
-                    ErrorNumber errno = opticalMediaImage.ReadSector(i, currentTrack.Sequence, out byte[] sector);
+                    ErrorNumber errno =
+                        opticalMediaImage.ReadSector(i, currentTrack.Sequence, out byte[] sector, out _);
 
                     if(errno != ErrorNumber.NoError)
                     {
-                        AaruLogging.Error(string.Format(Localization.Core
-                                                                             .Error_0_while_reading_sector_1_continuing,
-                                                                 errno,
-                                                                 i));
+                        AaruLogging.Error(string.Format(Localization.Core.Error_0_while_reading_sector_1_continuing,
+                                                        errno,
+                                                        i));
 
                         continue;
                     }
@@ -175,8 +175,7 @@ public sealed class Entropy
             }
             else
             {
-                AaruLogging.Error(Localization.Core
-                                                       .Unable_to_get_separate_tracks_not_calculating_their_entropy);
+                AaruLogging.Error(Localization.Core.Unable_to_get_separate_tracks_not_calculating_their_entropy);
             }
         }
 
@@ -195,7 +194,7 @@ public sealed class Entropy
 
         if(_inputFormat is not IMediaImage mediaImage) return entropy;
 
-        ulong[]      entTable      = new ulong[256];
+        var          entTable      = new ulong[256];
         ulong        diskSize      = 0;
         List<string> uniqueSectors = [];
 
@@ -209,13 +208,11 @@ public sealed class Entropy
                                         (long)(i + 1),
                                         (long)entropy.Sectors);
 
-            ErrorNumber errno = mediaImage.ReadSector(i, out byte[] sector);
+            ErrorNumber errno = mediaImage.ReadSector(i, out byte[] sector, out _);
 
             if(errno != ErrorNumber.NoError)
             {
-                AaruLogging.Error(string.Format(Localization.Core.Error_0_while_reading_sector_1_continuing,
-                                                         errno,
-                                                         i));
+                AaruLogging.Error(string.Format(Localization.Core.Error_0_while_reading_sector_1_continuing, errno, i));
 
                 continue;
             }
@@ -254,8 +251,8 @@ public sealed class Entropy
 
         if(_inputFormat is not IByteAddressableImage byteAddressableImage) return entropy;
 
-        ulong[] entTable = new ulong[256];
-        byte[]  data     = new byte[byteAddressableImage.Info.Sectors];
+        var entTable = new ulong[256];
+        var data     = new byte[byteAddressableImage.Info.Sectors];
 
         entropy.Sectors = _inputFormat.Info.Sectors;
         AaruLogging.WriteLine(Localization.Core._0_bytes, entropy.Sectors);
@@ -265,15 +262,14 @@ public sealed class Entropy
 
         if(errno != ErrorNumber.NoError)
         {
-            AaruLogging.Error(string.Format(Localization.Core.Error_0_while_reading_data__not_continuing,
-                                                     errno));
+            AaruLogging.Error(string.Format(Localization.Core.Error_0_while_reading_data__not_continuing, errno));
 
             return entropy;
         }
 
         if(bytesRead != data.Length)
         {
-            byte[] tmp = new byte[bytesRead];
+            var tmp = new byte[bytesRead];
             Array.Copy(data, 0, tmp, 0, bytesRead);
             data = tmp;
         }

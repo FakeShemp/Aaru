@@ -154,8 +154,11 @@ public abstract class OpticalImageConvertIssueTest
                 if(UseLong)
                 {
                     errno = sectorsToDo == 1
-                                ? inputFormat.ReadSectorLong(doneSectors  + track.StartSector, out sector)
-                                : inputFormat.ReadSectorsLong(doneSectors + track.StartSector, sectorsToDo, out sector);
+                                ? inputFormat.ReadSectorLong(doneSectors + track.StartSector, out sector, out _)
+                                : inputFormat.ReadSectorsLong(doneSectors + track.StartSector,
+                                                              sectorsToDo,
+                                                              out sector,
+                                                              out _);
 
                     if(errno == ErrorNumber.NoError)
                     {
@@ -174,8 +177,11 @@ public abstract class OpticalImageConvertIssueTest
                 if(!UseLong || useNotLong)
                 {
                     errno = sectorsToDo == 1
-                                ? inputFormat.ReadSector(doneSectors  + track.StartSector, out sector)
-                                : inputFormat.ReadSectors(doneSectors + track.StartSector, sectorsToDo, out sector);
+                                ? inputFormat.ReadSector(doneSectors + track.StartSector, out sector, out _)
+                                : inputFormat.ReadSectors(doneSectors + track.StartSector,
+                                                          sectorsToDo,
+                                                          out sector,
+                                                          out _);
 
                     Assert.That(errno, Is.EqualTo(ErrorNumber.NoError));
 

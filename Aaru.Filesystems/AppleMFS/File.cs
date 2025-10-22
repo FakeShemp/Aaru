@@ -40,6 +40,112 @@ namespace Aaru.Filesystems;
 // Information from Inside Macintosh Volume II
 public sealed partial class AppleMFS
 {
+    ErrorNumber ReadFile(string path, out byte[] buf, bool resourceFork, bool tags)
+    {
+        buf = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        string[] pathElements = path.Split(new[]
+                                           {
+                                               '/'
+                                           },
+                                           StringSplitOptions.RemoveEmptyEntries);
+
+        if(pathElements.Length != 1) return ErrorNumber.NotSupported;
+
+        path = pathElements[0];
+
+        if(!_filenameToId.TryGetValue(path.ToLowerInvariant(), out uint fileId)) return ErrorNumber.NoSuchFile;
+
+        if(!_idToEntry.TryGetValue(fileId, out FileEntry entry)) return ErrorNumber.NoSuchFile;
+
+        uint nextBlock;
+
+        if(resourceFork)
+        {
+            if(entry.flRPyLen == 0)
+            {
+                buf = [];
+
+                return ErrorNumber.NoError;
+            }
+
+            nextBlock = entry.flRStBlk;
+        }
+        else
+        {
+            if(entry.flPyLen == 0)
+            {
+                buf = [];
+
+                return ErrorNumber.NoError;
+            }
+
+            nextBlock = entry.flStBlk;
+        }
+
+        var ms = new MemoryStream();
+
+        do
+        {
+            ErrorNumber errno = tags
+                                    ? _device.ReadSectorsTag((ulong)((nextBlock - 2) * _sectorsPerBlock) +
+                                                             _volMdb.drAlBlSt                            +
+                                                             _partitionStart,
+                                                             (uint)_sectorsPerBlock,
+                                                             SectorTagType.AppleSonyTag,
+                                                             out byte[] sectors)
+                                    : _device.ReadSectors((ulong)((nextBlock - 2) * _sectorsPerBlock) +
+                                                          _volMdb.drAlBlSt                            +
+                                                          _partitionStart,
+                                                          (uint)_sectorsPerBlock,
+                                                          out sectors,
+                                                          out _);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            ms.Write(sectors, 0, sectors.Length);
+
+            if(_blockMap[nextBlock] == BMAP_FREE)
+            {
+                AaruLogging.Error(Localization.File_truncated_at_block_0, nextBlock);
+
+                break;
+            }
+
+            nextBlock = _blockMap[nextBlock];
+        } while(nextBlock > BMAP_LAST);
+
+        if(tags)
+            buf = ms.ToArray();
+        else
+        {
+            if(resourceFork)
+            {
+                if(ms.Length < entry.flRLgLen)
+                    buf = ms.ToArray();
+                else
+                {
+                    buf = new byte[entry.flRLgLen];
+                    Array.Copy(ms.ToArray(), 0, buf, 0, buf.Length);
+                }
+            }
+            else
+            {
+                if(ms.Length < entry.flLgLen)
+                    buf = ms.ToArray();
+                else
+                {
+                    buf = new byte[entry.flLgLen];
+                    Array.Copy(ms.ToArray(), 0, buf, 0, buf.Length);
+                }
+            }
+        }
+
+        return ErrorNumber.NoError;
+    }
+
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
@@ -270,109 +376,4 @@ public sealed partial class AppleMFS
     }
 
 #endregion
-
-    ErrorNumber ReadFile(string path, out byte[] buf, bool resourceFork, bool tags)
-    {
-        buf = null;
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        string[] pathElements = path.Split(new[]
-                                           {
-                                               '/'
-                                           },
-                                           StringSplitOptions.RemoveEmptyEntries);
-
-        if(pathElements.Length != 1) return ErrorNumber.NotSupported;
-
-        path = pathElements[0];
-
-        if(!_filenameToId.TryGetValue(path.ToLowerInvariant(), out uint fileId)) return ErrorNumber.NoSuchFile;
-
-        if(!_idToEntry.TryGetValue(fileId, out FileEntry entry)) return ErrorNumber.NoSuchFile;
-
-        uint nextBlock;
-
-        if(resourceFork)
-        {
-            if(entry.flRPyLen == 0)
-            {
-                buf = [];
-
-                return ErrorNumber.NoError;
-            }
-
-            nextBlock = entry.flRStBlk;
-        }
-        else
-        {
-            if(entry.flPyLen == 0)
-            {
-                buf = [];
-
-                return ErrorNumber.NoError;
-            }
-
-            nextBlock = entry.flStBlk;
-        }
-
-        var ms = new MemoryStream();
-
-        do
-        {
-            ErrorNumber errno = tags
-                                    ? _device.ReadSectorsTag((ulong)((nextBlock - 2) * _sectorsPerBlock) +
-                                                             _volMdb.drAlBlSt                            +
-                                                             _partitionStart,
-                                                             (uint)_sectorsPerBlock,
-                                                             SectorTagType.AppleSonyTag,
-                                                             out byte[] sectors)
-                                    : _device.ReadSectors((ulong)((nextBlock - 2) * _sectorsPerBlock) +
-                                                          _volMdb.drAlBlSt                            +
-                                                          _partitionStart,
-                                                          (uint)_sectorsPerBlock,
-                                                          out sectors);
-
-            if(errno != ErrorNumber.NoError) return errno;
-
-            ms.Write(sectors, 0, sectors.Length);
-
-            if(_blockMap[nextBlock] == BMAP_FREE)
-            {
-                AaruLogging.Error(Localization.File_truncated_at_block_0, nextBlock);
-
-                break;
-            }
-
-            nextBlock = _blockMap[nextBlock];
-        } while(nextBlock > BMAP_LAST);
-
-        if(tags)
-            buf = ms.ToArray();
-        else
-        {
-            if(resourceFork)
-            {
-                if(ms.Length < entry.flRLgLen)
-                    buf = ms.ToArray();
-                else
-                {
-                    buf = new byte[entry.flRLgLen];
-                    Array.Copy(ms.ToArray(), 0, buf, 0, buf.Length);
-                }
-            }
-            else
-            {
-                if(ms.Length < entry.flLgLen)
-                    buf = ms.ToArray();
-                else
-                {
-                    buf = new byte[entry.flLgLen];
-                    Array.Copy(ms.ToArray(), 0, buf, 0, buf.Length);
-                }
-            }
-        }
-
-        return ErrorNumber.NoError;
-    }
 }

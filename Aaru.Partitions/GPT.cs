@@ -71,14 +71,14 @@ public sealed class GuidPartitionTable : IPartition
 
         if(sectorOffset + 2 >= imagePlugin.Info.Sectors) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(1 + sectorOffset, out byte[] hdrBytes);
+        ErrorNumber errno = imagePlugin.ReadSector(1 + sectorOffset, out byte[] hdrBytes, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
         Header hdr;
 
-        ulong signature  = BitConverter.ToUInt64(hdrBytes, 0);
-        bool  misaligned = false;
+        var signature  = BitConverter.ToUInt64(hdrBytes, 0);
+        var misaligned = false;
 
         AaruLogging.Debug(MODULE_NAME, "hdr.signature = 0x{0:X16}", signature);
 
@@ -86,7 +86,7 @@ public sealed class GuidPartitionTable : IPartition
         {
             if(imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc)
             {
-                errno = imagePlugin.ReadSector(sectorOffset, out hdrBytes);
+                errno = imagePlugin.ReadSector(sectorOffset, out hdrBytes, out _);
 
                 if(errno != ErrorNumber.NoError) return false;
 
@@ -96,7 +96,7 @@ public sealed class GuidPartitionTable : IPartition
                 if(signature == GPT_MAGIC)
                 {
                     AaruLogging.Debug(MODULE_NAME, Localization.Found_unaligned_signature, signature);
-                    byte[] real = new byte[512];
+                    var real = new byte[512];
                     Array.Copy(hdrBytes, 512, real, 0, 512);
                     hdrBytes   = real;
                     misaligned = true;
@@ -156,19 +156,19 @@ public sealed class GuidPartitionTable : IPartition
 
         if(hdr.entries * hdr.entriesSize % imagePlugin.Info.SectorSize > 0) totalEntriesSectors++;
 
-        errno = imagePlugin.ReadSectors(hdr.entryLBA / divisor, totalEntriesSectors + modulo, out byte[] temp);
+        errno = imagePlugin.ReadSectors(hdr.entryLBA / divisor, totalEntriesSectors + modulo, out byte[] temp, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
-        byte[] entriesBytes = new byte[temp.Length - modulo * 512];
+        var entriesBytes = new byte[temp.Length - modulo * 512];
         Array.Copy(temp, modulo * 512, entriesBytes, 0, entriesBytes.Length);
         List<Entry> entries = [];
 
-        for(int i = 0; i < hdr.entries; i++)
+        for(var i = 0; i < hdr.entries; i++)
         {
             try
             {
-                byte[] entryBytes = new byte[hdr.entriesSize];
+                var entryBytes = new byte[hdr.entriesSize];
                 Array.Copy(entriesBytes, hdr.entriesSize * i, entryBytes, 0, hdr.entriesSize);
                 entries.Add(Marshal.ByteArrayToStructureLittleEndian<Entry>(entryBytes));
             }

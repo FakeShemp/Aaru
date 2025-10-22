@@ -430,11 +430,13 @@ public abstract class OpticalMediaImageTest : BaseMediaImageTest
                                                              ? image.ReadSectorsLong(doneSectors,
                                                                  SECTORS_TO_READ,
                                                                  currentTrack.Sequence,
-                                                                 out sector)
+                                                                 out sector,
+                                                                 out SectorStatus[] _)
                                                              : image.ReadSectors(doneSectors,
                                                                  SECTORS_TO_READ,
                                                                  currentTrack.Sequence,
-                                                                 out sector);
+                                                                 out sector,
+                                                                 out SectorStatus[] _);
 
                                                  doneSectors += SECTORS_TO_READ;
                                              }
@@ -444,11 +446,13 @@ public abstract class OpticalMediaImageTest : BaseMediaImageTest
                                                              ? image.ReadSectorsLong(doneSectors,
                                                                  (uint)(sectors - doneSectors),
                                                                  currentTrack.Sequence,
-                                                                 out sector)
+                                                                 out sector,
+                                                                 out SectorStatus[] _)
                                                              : image.ReadSectors(doneSectors,
                                                                  (uint)(sectors - doneSectors),
                                                                  currentTrack.Sequence,
-                                                                 out sector);
+                                                                 out sector,
+                                                                 out SectorStatus[] _);
 
                                                  doneSectors += sectors - doneSectors;
                                              }
@@ -518,14 +522,19 @@ public abstract class OpticalMediaImageTest : BaseMediaImageTest
 
                                      if(image.Info.Sectors - doneSectors >= SECTORS_TO_READ)
                                      {
-                                         errno       =  image.ReadSectors(doneSectors, SECTORS_TO_READ, out sector);
+                                         errno = image.ReadSectors(doneSectors,
+                                                                   SECTORS_TO_READ,
+                                                                   out sector,
+                                                                   out SectorStatus[] _);
+
                                          doneSectors += SECTORS_TO_READ;
                                      }
                                      else
                                      {
                                          errno = image.ReadSectors(doneSectors,
                                                                    (uint)(image.Info.Sectors - doneSectors),
-                                                                   out sector);
+                                                                   out sector,
+                                                                   out SectorStatus[] _);
 
                                          doneSectors += image.Info.Sectors - doneSectors;
                                      }

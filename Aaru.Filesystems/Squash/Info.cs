@@ -47,7 +47,7 @@ public sealed partial class Squash
     {
         if(partition.Start >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -62,7 +62,7 @@ public sealed partial class Squash
     {
         information = "";
         metadata    = new FileSystem();
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

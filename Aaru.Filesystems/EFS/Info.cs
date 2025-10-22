@@ -51,38 +51,38 @@ public sealed partial class EFS
         // Misaligned
         if(imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc)
         {
-            uint sbSize = (uint)((Marshal.SizeOf<Superblock>() + 0x200) / imagePlugin.Info.SectorSize);
+            var sbSize = (uint)((Marshal.SizeOf<Superblock>() + 0x200) / imagePlugin.Info.SectorSize);
 
             if((Marshal.SizeOf<Superblock>() + 0x200) % imagePlugin.Info.SectorSize != 0) sbSize++;
 
-            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector);
+            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
             if(sector.Length < Marshal.SizeOf<Superblock>()) return false;
 
-            byte[] sbpiece = new byte[Marshal.SizeOf<Superblock>()];
+            var sbpiece = new byte[Marshal.SizeOf<Superblock>()];
 
             Array.Copy(sector, 0x200, sbpiece, 0, Marshal.SizeOf<Superblock>());
 
             Superblock sb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sbpiece);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization.magic_at_0_equals_1_expected_2_or_3,
-                                       0x200,
-                                       sb.sb_magic,
-                                       EFS_MAGIC,
-                                       EFS_MAGIC_NEW);
+                              Localization.magic_at_0_equals_1_expected_2_or_3,
+                              0x200,
+                              sb.sb_magic,
+                              EFS_MAGIC,
+                              EFS_MAGIC_NEW);
 
             if(sb.sb_magic is EFS_MAGIC or EFS_MAGIC_NEW) return true;
         }
         else
         {
-            uint sbSize = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
+            var sbSize = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
 
             if(Marshal.SizeOf<Superblock>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
-            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + 1, sbSize, out byte[] sector);
+            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + 1, sbSize, out byte[] sector, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
@@ -91,11 +91,11 @@ public sealed partial class EFS
             Superblock sb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization.magic_at_0_equals_1_expected_2_or_3,
-                                       1,
-                                       sb.sb_magic,
-                                       EFS_MAGIC,
-                                       EFS_MAGIC_NEW);
+                              Localization.magic_at_0_equals_1_expected_2_or_3,
+                              1,
+                              sb.sb_magic,
+                              EFS_MAGIC,
+                              EFS_MAGIC_NEW);
 
             if(sb.sb_magic is EFS_MAGIC or EFS_MAGIC_NEW) return true;
         }
@@ -118,36 +118,36 @@ public sealed partial class EFS
         // Misaligned
         if(imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc)
         {
-            uint sbSize = (uint)((Marshal.SizeOf<Superblock>() + 0x400) / imagePlugin.Info.SectorSize);
+            var sbSize = (uint)((Marshal.SizeOf<Superblock>() + 0x400) / imagePlugin.Info.SectorSize);
 
             if((Marshal.SizeOf<Superblock>() + 0x400) % imagePlugin.Info.SectorSize != 0) sbSize++;
 
-            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector);
+            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector, out _);
 
             if(errno != ErrorNumber.NoError) return;
 
             if(sector.Length < Marshal.SizeOf<Superblock>()) return;
 
-            byte[] sbpiece = new byte[Marshal.SizeOf<Superblock>()];
+            var sbpiece = new byte[Marshal.SizeOf<Superblock>()];
 
             Array.Copy(sector, 0x200, sbpiece, 0, Marshal.SizeOf<Superblock>());
 
             efsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sbpiece);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization.magic_at_0_X3_equals_1_expected_2_or_3,
-                                       0x200,
-                                       efsSb.sb_magic,
-                                       EFS_MAGIC,
-                                       EFS_MAGIC_NEW);
+                              Localization.magic_at_0_X3_equals_1_expected_2_or_3,
+                              0x200,
+                              efsSb.sb_magic,
+                              EFS_MAGIC,
+                              EFS_MAGIC_NEW);
         }
         else
         {
-            uint sbSize = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
+            var sbSize = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
 
             if(Marshal.SizeOf<Superblock>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
-            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + 1, sbSize, out byte[] sector);
+            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + 1, sbSize, out byte[] sector, out _);
 
             if(errno != ErrorNumber.NoError) return;
 
@@ -156,11 +156,11 @@ public sealed partial class EFS
             efsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization.magic_at_0_equals_1_expected_2_or_3,
-                                       1,
-                                       efsSb.sb_magic,
-                                       EFS_MAGIC,
-                                       EFS_MAGIC_NEW);
+                              Localization.magic_at_0_equals_1_expected_2_or_3,
+                              1,
+                              efsSb.sb_magic,
+                              EFS_MAGIC,
+                              EFS_MAGIC_NEW);
         }
 
         if(efsSb.sb_magic != EFS_MAGIC && efsSb.sb_magic != EFS_MAGIC_NEW) return;

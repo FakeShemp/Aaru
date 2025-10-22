@@ -39,6 +39,49 @@ namespace Aaru.Filesystems;
 
 public sealed partial class OperaFS
 {
+    ErrorNumber GetFileEntry(string path, out DirectoryEntryWithPointers entry)
+    {
+        entry = null;
+
+        string cutPath = path.StartsWith("/", StringComparison.Ordinal)
+                             ? path[1..].ToLower(CultureInfo.CurrentUICulture)
+                             : path.ToLower(CultureInfo.CurrentUICulture);
+
+        string[] pieces = cutPath.Split(new[]
+                                        {
+                                            '/'
+                                        },
+                                        StringSplitOptions.RemoveEmptyEntries);
+
+        if(pieces.Length == 0) return ErrorNumber.InvalidArgument;
+
+        var parentPath = string.Join("/", pieces, 0, pieces.Length - 1);
+
+        if(!_directoryCache.TryGetValue(parentPath, out _))
+        {
+            ErrorNumber err = OpenDir(parentPath, out IDirNode node);
+
+            if(err != ErrorNumber.NoError) return err;
+
+            CloseDir(node);
+        }
+
+        Dictionary<string, DirectoryEntryWithPointers> parent;
+
+        if(pieces.Length == 1)
+            parent = _rootDirectoryCache;
+        else if(!_directoryCache.TryGetValue(parentPath, out parent)) return ErrorNumber.InvalidArgument;
+
+        KeyValuePair<string, DirectoryEntryWithPointers> dirent =
+            parent.FirstOrDefault(t => t.Key.Equals(pieces[^1], StringComparison.CurrentCultureIgnoreCase));
+
+        if(string.IsNullOrEmpty(dirent.Key)) return ErrorNumber.NoSuchFile;
+
+        entry = dirent.Value;
+
+        return ErrorNumber.NoError;
+    }
+
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
@@ -121,7 +164,8 @@ public sealed partial class OperaFS
 
         ErrorNumber errno = _image.ReadSectors((ulong)(mynode.Dentry.Pointers[0] + firstBlock * fileBlockSizeRatio),
                                                (uint)(sizeInBlocks * fileBlockSizeRatio),
-                                               out byte[] buf);
+                                               out byte[] buf,
+                                               out _);
 
         if(errno != ErrorNumber.NoError)
         {
@@ -178,47 +222,4 @@ public sealed partial class OperaFS
     }
 
 #endregion
-
-    ErrorNumber GetFileEntry(string path, out DirectoryEntryWithPointers entry)
-    {
-        entry = null;
-
-        string cutPath = path.StartsWith("/", StringComparison.Ordinal)
-                             ? path[1..].ToLower(CultureInfo.CurrentUICulture)
-                             : path.ToLower(CultureInfo.CurrentUICulture);
-
-        string[] pieces = cutPath.Split(new[]
-                                        {
-                                            '/'
-                                        },
-                                        StringSplitOptions.RemoveEmptyEntries);
-
-        if(pieces.Length == 0) return ErrorNumber.InvalidArgument;
-
-        string parentPath = string.Join("/", pieces, 0, pieces.Length - 1);
-
-        if(!_directoryCache.TryGetValue(parentPath, out _))
-        {
-            ErrorNumber err = OpenDir(parentPath, out IDirNode node);
-
-            if(err != ErrorNumber.NoError) return err;
-
-            CloseDir(node);
-        }
-
-        Dictionary<string, DirectoryEntryWithPointers> parent;
-
-        if(pieces.Length == 1)
-            parent = _rootDirectoryCache;
-        else if(!_directoryCache.TryGetValue(parentPath, out parent)) return ErrorNumber.InvalidArgument;
-
-        KeyValuePair<string, DirectoryEntryWithPointers> dirent =
-            parent.FirstOrDefault(t => t.Key.Equals(pieces[^1], StringComparison.CurrentCultureIgnoreCase));
-
-        if(string.IsNullOrEmpty(dirent.Key)) return ErrorNumber.NoSuchFile;
-
-        entry = dirent.Value;
-
-        return ErrorNumber.NoError;
-    }
 }

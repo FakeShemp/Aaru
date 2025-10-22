@@ -56,9 +56,9 @@ public sealed partial class DiskDupe
         if(!TryReadHeader(stream, ref fHeader, ref trackMap, ref trackOffsets)) return ErrorNumber.InvalidArgument;
 
         AaruLogging.Debug(MODULE_NAME,
-                                   Localization.Detected_DiskDupe_DDI_image_with_0_tracks_and_1_sectors_per_track,
-                                   _diskTypes[fHeader.diskType].cyl,
-                                   _diskTypes[fHeader.diskType].spt);
+                          Localization.Detected_DiskDupe_DDI_image_with_0_tracks_and_1_sectors_per_track,
+                          _diskTypes[fHeader.diskType].cyl,
+                          _diskTypes[fHeader.diskType].spt);
 
         _imageInfo.Cylinders       = _diskTypes[fHeader.diskType].cyl;
         _imageInfo.Heads           = _diskTypes[fHeader.diskType].hd;
@@ -86,11 +86,12 @@ public sealed partial class DiskDupe
         return ErrorNumber.NoError;
     }
 
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer)
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
-        int trackNum     = (int)(sectorAddress / _imageInfo.SectorsPerTrack);
-        int sectorOffset = (int)(sectorAddress % _imageInfo.SectorsPerTrack);
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
+        var trackNum     = (int)(sectorAddress / _imageInfo.SectorsPerTrack);
+        var sectorOffset = (int)(sectorAddress % _imageInfo.SectorsPerTrack);
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
@@ -109,26 +110,31 @@ public sealed partial class DiskDupe
             strm.EnsureRead(buffer, 0, (int)_imageInfo.SectorSize);
         }
 
+        sectorStatus = SectorStatus.Dumped;
+
         return ErrorNumber.NoError;
     }
 
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
         var ms = new MemoryStream();
+        sectorStatus = new SectorStatus[length];
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector);
+            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
 
             if(errno != ErrorNumber.NoError) return errno;
 
             ms.Write(sector, 0, sector.Length);
+            sectorStatus[i] = status;
         }
 
         buffer = ms.ToArray();

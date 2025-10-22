@@ -54,7 +54,7 @@ public sealed partial class Parallels
 
         if(stream.Length < 512) return ErrorNumber.InvalidArgument;
 
-        byte[] pHdrB = new byte[Marshal.SizeOf<Header>()];
+        var pHdrB = new byte[Marshal.SizeOf<Header>()];
         stream.EnsureRead(pHdrB, 0, Marshal.SizeOf<Header>());
         _pHdr = Marshal.ByteArrayToStructureLittleEndian<Header>(pHdrB);
 
@@ -75,10 +75,10 @@ public sealed partial class Parallels
 
         AaruLogging.Debug(MODULE_NAME, Localization.Reading_BAT);
         _bat = new uint[_pHdr.bat_entries];
-        byte[] batB = new byte[_pHdr.bat_entries * 4];
+        var batB = new byte[_pHdr.bat_entries * 4];
         stream.EnsureRead(batB, 0, batB.Length);
 
-        for(int i = 0; i < _bat.Length; i++) _bat[i] = BitConverter.ToUInt32(batB, i * 4);
+        for(var i = 0; i < _bat.Length; i++) _bat[i] = BitConverter.ToUInt32(batB, i * 4);
 
         _clusterBytes = _pHdr.cluster_size * 512;
 
@@ -108,11 +108,14 @@ public sealed partial class Parallels
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer)
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
+
+        sectorStatus = SectorStatus.Dumped;
 
         if(_empty)
         {
@@ -141,7 +144,7 @@ public sealed partial class Parallels
         else
             imageOff = batOff * 512UL;
 
-        byte[] cluster = new byte[_clusterBytes];
+        var cluster = new byte[_clusterBytes];
         _imageStream.Seek((long)imageOff, SeekOrigin.Begin);
         _imageStream.EnsureRead(cluster, 0, (int)_clusterBytes);
         buffer = new byte[512];
@@ -155,23 +158,26 @@ public sealed partial class Parallels
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
         var ms = new MemoryStream();
+        sectorStatus = new SectorStatus[length];
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector);
+            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
 
             if(errno != ErrorNumber.NoError) return errno;
 
             ms.Write(sector, 0, sector.Length);
+            sectorStatus[i] = status;
         }
 
         buffer = ms.ToArray();

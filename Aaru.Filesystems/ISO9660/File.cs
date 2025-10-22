@@ -44,6 +44,178 @@ namespace Aaru.Filesystems;
 
 public sealed partial class ISO9660
 {
+    ErrorNumber GetFileEntry(string path, out DecodedDirectoryEntry entry)
+    {
+        entry = null;
+
+        string cutPath = path.StartsWith("/", StringComparison.Ordinal)
+                             ? path[1..].ToLower(CultureInfo.CurrentUICulture)
+                             : path.ToLower(CultureInfo.CurrentUICulture);
+
+        string[] pieces = cutPath.Split(new[]
+                                        {
+                                            '/'
+                                        },
+                                        StringSplitOptions.RemoveEmptyEntries);
+
+        if(pieces.Length == 0) return ErrorNumber.InvalidArgument;
+
+        var parentPath = string.Join("/", pieces, 0, pieces.Length - 1);
+
+        if(!_directoryCache.TryGetValue(parentPath, out _))
+        {
+            ErrorNumber err = OpenDir(parentPath, out IDirNode node);
+
+            if(err != ErrorNumber.NoError) return err;
+
+            CloseDir(node);
+        }
+
+        Dictionary<string, DecodedDirectoryEntry> parent;
+
+        if(pieces.Length == 1)
+            parent = _rootDirectoryCache;
+        else if(!_directoryCache.TryGetValue(parentPath, out parent)) return ErrorNumber.InvalidArgument;
+
+        KeyValuePair<string, DecodedDirectoryEntry> dirent =
+            parent.FirstOrDefault(t => t.Key.Equals(pieces[^1], StringComparison.CurrentCultureIgnoreCase));
+
+        if(string.IsNullOrEmpty(dirent.Key))
+        {
+            if(!_joliet && !pieces[^1].EndsWith(";1", StringComparison.Ordinal))
+            {
+                dirent = parent.FirstOrDefault(t => t.Key.Equals(pieces[^1] + ";1",
+                                                                 StringComparison.CurrentCultureIgnoreCase));
+
+                if(string.IsNullOrEmpty(dirent.Key)) return ErrorNumber.NoSuchFile;
+            }
+            else
+                return ErrorNumber.NoSuchFile;
+        }
+
+        entry = dirent.Value;
+
+        return ErrorNumber.NoError;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    ErrorNumber ReadSingleExtent(long size, uint startingSector, out byte[] buffer, bool interleaved = false,
+                                 byte fileNumber = 0) => ReadWithExtents(0,
+                                                                         size,
+                                                                         [(startingSector, (uint)size)],
+                                                                         interleaved,
+                                                                         fileNumber,
+                                                                         out buffer);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    ErrorNumber ReadSingleExtent(long offset,              long size, uint startingSector, out byte[] buffer,
+                                 bool interleaved = false, byte fileNumber = 0) => ReadWithExtents(offset,
+        size,
+        [(startingSector, (uint)size)],
+        interleaved,
+        fileNumber,
+        out buffer);
+
+    // Cannot think how to make this faster, as we don't know the mode sector until it is read, but we have size in bytes
+    ErrorNumber ReadWithExtents(long offset,     long size, List<(uint extent, uint size)> extents, bool interleaved,
+                                byte fileNumber, out byte[] buffer)
+    {
+        var  ms             = new MemoryStream();
+        long currentFilePos = offset;
+
+        for(var i = 0; i < extents.Count; i++)
+        {
+            if(offset - currentFilePos >= extents[i].size)
+            {
+                currentFilePos += extents[i].size;
+
+                continue;
+            }
+
+            var  currentExtentSector = (uint)(offset / 2048);
+            long leftExtentSize      = extents[i].size - currentFilePos;
+
+            while(leftExtentSize > 0)
+            {
+                ErrorNumber errno = ReadSector(extents[i].extent + currentExtentSector,
+                                               out byte[] sector,
+                                               interleaved,
+                                               fileNumber);
+
+                if(errno != ErrorNumber.NoError)
+                {
+                    buffer = ms.ToArray();
+
+                    return errno;
+                }
+
+                if(sector is null)
+                {
+                    currentExtentSector++;
+                    leftExtentSize -= 2048;
+                    currentFilePos += 2048;
+
+                    continue;
+                }
+
+                if(offset - currentFilePos > sector.Length)
+                {
+                    currentExtentSector++;
+                    leftExtentSize -= sector.Length;
+                    currentFilePos += sector.Length;
+
+                    continue;
+                }
+
+                if(offset - currentFilePos > 0)
+                    ms.Write(sector, (int)(offset - currentFilePos), (int)(sector.Length - (offset - currentFilePos)));
+                else
+                    ms.Write(sector, 0, sector.Length);
+
+                currentExtentSector++;
+                leftExtentSize -= sector.Length;
+                currentFilePos += sector.Length;
+
+                if(ms.Length >= size) break;
+            }
+
+            if(ms.Length >= size) break;
+        }
+
+        if(ms.Length >= size) ms.SetLength(size);
+
+        buffer = ms.ToArray();
+
+        return ErrorNumber.NoError;
+    }
+
+    byte[] ReadSubheaderWithExtents(List<(uint extent, uint size)> extents, bool copy)
+    {
+        var ms = new MemoryStream();
+
+        for(var i = 0; i < extents.Count; i++)
+        {
+            long leftExtentSize      = extents[i].size;
+            uint currentExtentSector = 0;
+
+            while(leftExtentSize > 0)
+            {
+                ErrorNumber errno = _image.ReadSectorTag((extents[i].extent + currentExtentSector) * _blockSize / 2048,
+                                                         SectorTagType.CdSectorSubHeader,
+                                                         out byte[] fullSector);
+
+                if(errno != ErrorNumber.NoError) return null;
+
+                ms.Write(fullSector, copy ? 0 : 4, 4);
+
+                currentExtentSector++;
+                leftExtentSize -= 2048;
+            }
+        }
+
+        return ms.ToArray();
+    }
+
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
@@ -153,7 +325,8 @@ public sealed partial class ISO9660
 
             ErrorNumber errno = _image.ReadSectorsLong((ulong)(mynode.Dentry.Extents[0].extent + firstSector),
                                                        (uint)sizeInSectors,
-                                                       out byte[] buf);
+                                                       out byte[] buf,
+                                                       out _);
 
             if(errno != ErrorNumber.NoError)
             {
@@ -407,176 +580,4 @@ public sealed partial class ISO9660
     }
 
 #endregion
-
-    ErrorNumber GetFileEntry(string path, out DecodedDirectoryEntry entry)
-    {
-        entry = null;
-
-        string cutPath = path.StartsWith("/", StringComparison.Ordinal)
-                             ? path[1..].ToLower(CultureInfo.CurrentUICulture)
-                             : path.ToLower(CultureInfo.CurrentUICulture);
-
-        string[] pieces = cutPath.Split(new[]
-                                        {
-                                            '/'
-                                        },
-                                        StringSplitOptions.RemoveEmptyEntries);
-
-        if(pieces.Length == 0) return ErrorNumber.InvalidArgument;
-
-        string parentPath = string.Join("/", pieces, 0, pieces.Length - 1);
-
-        if(!_directoryCache.TryGetValue(parentPath, out _))
-        {
-            ErrorNumber err = OpenDir(parentPath, out IDirNode node);
-
-            if(err != ErrorNumber.NoError) return err;
-
-            CloseDir(node);
-        }
-
-        Dictionary<string, DecodedDirectoryEntry> parent;
-
-        if(pieces.Length == 1)
-            parent = _rootDirectoryCache;
-        else if(!_directoryCache.TryGetValue(parentPath, out parent)) return ErrorNumber.InvalidArgument;
-
-        KeyValuePair<string, DecodedDirectoryEntry> dirent =
-            parent.FirstOrDefault(t => t.Key.Equals(pieces[^1], StringComparison.CurrentCultureIgnoreCase));
-
-        if(string.IsNullOrEmpty(dirent.Key))
-        {
-            if(!_joliet && !pieces[^1].EndsWith(";1", StringComparison.Ordinal))
-            {
-                dirent = parent.FirstOrDefault(t => t.Key.Equals(pieces[^1] + ";1",
-                                                                 StringComparison.CurrentCultureIgnoreCase));
-
-                if(string.IsNullOrEmpty(dirent.Key)) return ErrorNumber.NoSuchFile;
-            }
-            else
-                return ErrorNumber.NoSuchFile;
-        }
-
-        entry = dirent.Value;
-
-        return ErrorNumber.NoError;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    ErrorNumber ReadSingleExtent(long size, uint startingSector, out byte[] buffer, bool interleaved = false,
-                                 byte fileNumber = 0) => ReadWithExtents(0,
-                                                                         size,
-                                                                         [(startingSector, (uint)size)],
-                                                                         interleaved,
-                                                                         fileNumber,
-                                                                         out buffer);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    ErrorNumber ReadSingleExtent(long offset,              long size, uint startingSector, out byte[] buffer,
-                                 bool interleaved = false, byte fileNumber = 0) => ReadWithExtents(offset,
-        size,
-        [(startingSector, (uint)size)],
-        interleaved,
-        fileNumber,
-        out buffer);
-
-    // Cannot think how to make this faster, as we don't know the mode sector until it is read, but we have size in bytes
-    ErrorNumber ReadWithExtents(long offset,     long size, List<(uint extent, uint size)> extents, bool interleaved,
-                                byte fileNumber, out byte[] buffer)
-    {
-        var  ms             = new MemoryStream();
-        long currentFilePos = offset;
-
-        for(int i = 0; i < extents.Count; i++)
-        {
-            if(offset - currentFilePos >= extents[i].size)
-            {
-                currentFilePos += extents[i].size;
-
-                continue;
-            }
-
-            uint currentExtentSector = (uint)(offset / 2048);
-            long leftExtentSize      = extents[i].size - currentFilePos;
-
-            while(leftExtentSize > 0)
-            {
-                ErrorNumber errno = ReadSector(extents[i].extent + currentExtentSector,
-                                               out byte[] sector,
-                                               interleaved,
-                                               fileNumber);
-
-                if(errno != ErrorNumber.NoError)
-                {
-                    buffer = ms.ToArray();
-
-                    return errno;
-                }
-
-                if(sector is null)
-                {
-                    currentExtentSector++;
-                    leftExtentSize -= 2048;
-                    currentFilePos += 2048;
-
-                    continue;
-                }
-
-                if(offset - currentFilePos > sector.Length)
-                {
-                    currentExtentSector++;
-                    leftExtentSize -= sector.Length;
-                    currentFilePos += sector.Length;
-
-                    continue;
-                }
-
-                if(offset - currentFilePos > 0)
-                    ms.Write(sector, (int)(offset - currentFilePos), (int)(sector.Length - (offset - currentFilePos)));
-                else
-                    ms.Write(sector, 0, sector.Length);
-
-                currentExtentSector++;
-                leftExtentSize -= sector.Length;
-                currentFilePos += sector.Length;
-
-                if(ms.Length >= size) break;
-            }
-
-            if(ms.Length >= size) break;
-        }
-
-        if(ms.Length >= size) ms.SetLength(size);
-
-        buffer = ms.ToArray();
-
-        return ErrorNumber.NoError;
-    }
-
-    byte[] ReadSubheaderWithExtents(List<(uint extent, uint size)> extents, bool copy)
-    {
-        var ms = new MemoryStream();
-
-        for(int i = 0; i < extents.Count; i++)
-        {
-            long leftExtentSize      = extents[i].size;
-            uint currentExtentSector = 0;
-
-            while(leftExtentSize > 0)
-            {
-                ErrorNumber errno = _image.ReadSectorTag((extents[i].extent + currentExtentSector) * _blockSize / 2048,
-                                                         SectorTagType.CdSectorSubHeader,
-                                                         out byte[] fullSector);
-
-                if(errno != ErrorNumber.NoError) return null;
-
-                ms.Write(fullSector, copy ? 0 : 4, 4);
-
-                currentExtentSector++;
-                leftExtentSize -= 2048;
-            }
-        }
-
-        return ms.ToArray();
-    }
 }

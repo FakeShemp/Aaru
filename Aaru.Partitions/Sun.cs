@@ -106,7 +106,7 @@ public sealed partial class SunDisklabel : IPartition
 
         bool useDkl = false, useDkl8 = false, useDkl16 = false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset, out byte[] sunSector);
+        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset, out byte[] sunSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -130,7 +130,7 @@ public sealed partial class SunDisklabel : IPartition
 
         if(!useDkl && !useDkl8 && !useDkl16)
         {
-            errno = imagePlugin.ReadSector(sectorOffset + 1, out sunSector);
+            errno = imagePlugin.ReadSector(sectorOffset + 1, out sunSector, out _);
 
             if(errno == ErrorNumber.NoError)
             {
@@ -170,7 +170,7 @@ public sealed partial class SunDisklabel : IPartition
 
         if(useDkl)
         {
-            ulong sectorsPerCylinder = (ulong)(dkl.dkl_nsect * dkl.dkl_nhead);
+            var sectorsPerCylinder = (ulong)(dkl.dkl_nsect * dkl.dkl_nhead);
 
             AaruLogging.Debug(MODULE_NAME,
                               "dkl.dkl_asciilabel = \"{0}\"",
@@ -189,7 +189,7 @@ public sealed partial class SunDisklabel : IPartition
             AaruLogging.Debug(MODULE_NAME, "dkl.dkl_bhead = {0}",  dkl.dkl_bhead);
             AaruLogging.Debug(MODULE_NAME, "dkl.dkl_ppart = {0}",  dkl.dkl_ppart);
 
-            for(int i = 0; i < NDKMAP; i++)
+            for(var i = 0; i < NDKMAP; i++)
             {
                 AaruLogging.Debug(MODULE_NAME, "dkl.dkl_map[{0}].dkl_cylno = {1}", i, dkl.dkl_map[i].dkl_cylno);
 
@@ -200,7 +200,7 @@ public sealed partial class SunDisklabel : IPartition
             AaruLogging.Debug(MODULE_NAME, "dkl.dkl_cksum = 0x{0:X4}", dkl.dkl_cksum);
             AaruLogging.Debug(MODULE_NAME, "sectorsPerCylinder = {0}", sectorsPerCylinder);
 
-            for(int i = 0; i < NDKMAP; i++)
+            for(var i = 0; i < NDKMAP; i++)
             {
                 if(dkl.dkl_map[i].dkl_cylno <= 0 || dkl.dkl_map[i].dkl_nblk <= 0) continue;
 
@@ -222,7 +222,7 @@ public sealed partial class SunDisklabel : IPartition
         }
         else if(useDkl8)
         {
-            ulong sectorsPerCylinder = (ulong)(dkl8.dkl_nsect * dkl8.dkl_nhead);
+            var sectorsPerCylinder = (ulong)(dkl8.dkl_nsect * dkl8.dkl_nhead);
 
             AaruLogging.Debug(MODULE_NAME,
                               "dkl8.dkl_asciilabel = \"{0}\"",
@@ -251,7 +251,7 @@ public sealed partial class SunDisklabel : IPartition
             AaruLogging.Debug(MODULE_NAME, "dkl8.dkl_obs3 = {0}",               dkl8.dkl_obs3);
             AaruLogging.Debug(MODULE_NAME, "dkl8.dkl_obs4 = {0}",               dkl8.dkl_obs4);
 
-            for(int i = 0; i < NDKMAP; i++)
+            for(var i = 0; i < NDKMAP; i++)
             {
                 AaruLogging.Debug(MODULE_NAME, "dkl8.dkl_map[{0}].dkl_cylno = {1}", i, dkl8.dkl_map[i].dkl_cylno);
 
@@ -281,7 +281,7 @@ public sealed partial class SunDisklabel : IPartition
 
             if(dkl8.dkl_vtoc.v_nparts > NDKMAP) return false;
 
-            for(int i = 0; i < dkl8.dkl_vtoc.v_nparts; i++)
+            for(var i = 0; i < dkl8.dkl_vtoc.v_nparts; i++)
             {
                 if(dkl8.dkl_map[i].dkl_nblk      <= 0               ||
                    dkl8.dkl_vtoc.v_part[i].p_tag == SunTag.SunEmpty ||
@@ -344,7 +344,7 @@ public sealed partial class SunDisklabel : IPartition
 
             AaruLogging.Debug(MODULE_NAME, "dkl16.dkl_read_reinstruct = {0}", dkl16.dkl_read_reinstruct);
 
-            for(int i = 0; i < NDKMAP16; i++)
+            for(var i = 0; i < NDKMAP16; i++)
             {
                 AaruLogging.Debug(MODULE_NAME,
                                   "dkl16.dkl_vtoc.v_part[{0}].p_start = {1}",
@@ -379,7 +379,7 @@ public sealed partial class SunDisklabel : IPartition
 
             if(dkl16.dkl_vtoc.v_nparts > NDKMAP16) return false;
 
-            for(int i = 0; i < dkl16.dkl_vtoc.v_nparts; i++)
+            for(var i = 0; i < dkl16.dkl_vtoc.v_nparts; i++)
             {
                 if(dkl16.dkl_vtoc.v_part[i].p_size <= 0               ||
                    dkl16.dkl_vtoc.v_part[i].p_tag  == SunTag.SunEmpty ||

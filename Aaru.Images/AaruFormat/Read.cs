@@ -69,19 +69,21 @@ public sealed partial class AaruFormat
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer)
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
         buffer = null;
         uint length = 0;
+        sectorStatus = SectorStatus.NotDumped;
 
-        // TODO: Sector status API
         Status res = aaruf_read_sector(_context, sectorAddress, false, buffer, ref length, out _);
 
         if(res != Status.BufferTooSmall) return StatusToErrorNumber(res);
 
         buffer = new byte[length];
 
-        res = aaruf_read_sector(_context, sectorAddress, false, buffer, ref length, out _);
+        res = aaruf_read_sector(_context, sectorAddress, false, buffer, ref length, out byte libSectorStatus);
+
+        sectorStatus = (SectorStatus)libSectorStatus;
 
         // Sector not dumped
         if(res != Status.SectorNotDumped || length <= 0) return StatusToErrorNumber(res);
@@ -92,10 +94,11 @@ public sealed partial class AaruFormat
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer)
+    public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus)
     {
         buffer = null;
         uint length = 0;
+        sectorStatus = SectorStatus.NotDumped;
 
         Status res = aaruf_read_track_sector(_context, buffer, sectorAddress, ref length, (byte)track, out _);
 
@@ -103,7 +106,14 @@ public sealed partial class AaruFormat
 
         buffer = new byte[length];
 
-        res = aaruf_read_track_sector(_context, buffer, sectorAddress, ref length, (byte)track, out _);
+        res = aaruf_read_track_sector(_context,
+                                      buffer,
+                                      sectorAddress,
+                                      ref length,
+                                      (byte)track,
+                                      out byte libSectorStatus);
+
+        sectorStatus = (SectorStatus)libSectorStatus;
 
         // Sector not dumped
         if(res != Status.SectorNotDumped || length <= 0) return StatusToErrorNumber(res);
@@ -114,10 +124,11 @@ public sealed partial class AaruFormat
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer)
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
         buffer = null;
         uint length = 0;
+        sectorStatus = SectorStatus.NotDumped;
 
         Status res = aaruf_read_sector_long(_context, sectorAddress, false, buffer, ref length, out _);
 
@@ -125,7 +136,9 @@ public sealed partial class AaruFormat
 
         buffer = new byte[length];
 
-        res = aaruf_read_sector_long(_context, sectorAddress, false, buffer, ref length, out _);
+        res = aaruf_read_sector_long(_context, sectorAddress, false, buffer, ref length, out byte libSectorStatus);
+
+        sectorStatus = (SectorStatus)libSectorStatus;
 
         // Sector not dumped
         if(res != Status.SectorNotDumped || length <= 0) return StatusToErrorNumber(res);
@@ -186,17 +199,21 @@ public sealed partial class AaruFormat
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
         MemoryStream ms = new();
+        sectorStatus = new SectorStatus[length];
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber res = ReadSector(sectorAddress + i, out byte[] sectorBuffer);
+            ErrorNumber res = ReadSector(sectorAddress + i,
+                                         out byte[] sectorBuffer,
+                                         out SectorStatus singleSectorStatus);
 
             if(res != ErrorNumber.NoError)
             {
-                buffer = ms.ToArray();
+                buffer          = ms.ToArray();
+                sectorStatus[i] = singleSectorStatus;
 
                 return res;
             }
@@ -210,17 +227,22 @@ public sealed partial class AaruFormat
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus)
     {
         MemoryStream ms = new();
+        sectorStatus = new SectorStatus[length];
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber res = ReadSectorLong(sectorAddress + i, out byte[] sectorBuffer);
+            ErrorNumber res = ReadSectorLong(sectorAddress + i,
+                                             out byte[] sectorBuffer,
+                                             out SectorStatus singleSectorStatus);
 
             if(res != ErrorNumber.NoError)
             {
-                buffer = ms.ToArray();
+                buffer          = ms.ToArray();
+                sectorStatus[i] = singleSectorStatus;
 
                 return res;
             }
@@ -274,9 +296,11 @@ public sealed partial class AaruFormat
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, uint track, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc) return ErrorNumber.NotSupported;
 
@@ -288,7 +312,7 @@ public sealed partial class AaruFormat
 
         return trk.StartSector + sectorAddress + length > trk.EndSector + 1
                    ? ErrorNumber.OutOfRange
-                   : ReadSectors(trk.StartSector + sectorAddress, length, out buffer);
+                   : ReadSectors(trk.StartSector + sectorAddress, length, out buffer, out sectorStatus);
     }
 
     /// <inheritdoc />
@@ -311,9 +335,10 @@ public sealed partial class AaruFormat
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer)
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
 
         if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc) return ErrorNumber.NotSupported;
 
@@ -323,13 +348,15 @@ public sealed partial class AaruFormat
 
         return trk?.Sequence != track
                    ? ErrorNumber.SectorNotFound
-                   : ReadSectorLong(trk.StartSector + sectorAddress, out buffer);
+                   : ReadSectorLong(trk.StartSector + sectorAddress, out buffer, out sectorStatus);
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, uint track, out byte[] buffer)
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc) return ErrorNumber.NotSupported;
 
@@ -341,7 +368,7 @@ public sealed partial class AaruFormat
                    ? ErrorNumber.SectorNotFound
                    : trk.StartSector + sectorAddress + length > trk.EndSector + 1
                        ? ErrorNumber.OutOfRange
-                       : ReadSectorsLong(trk.StartSector + sectorAddress, length, out buffer);
+                       : ReadSectorsLong(trk.StartSector + sectorAddress, length, out buffer, out sectorStatus);
     }
 
 #endregion

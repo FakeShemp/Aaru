@@ -51,7 +51,7 @@ public sealed partial class NTFS
 
         var eigthBytes = new byte[8];
 
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] ntfsBpb);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] ntfsBpb, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -80,7 +80,7 @@ public sealed partial class NTFS
 
         var sb = new StringBuilder();
 
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] ntfsBpb);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] ntfsBpb, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

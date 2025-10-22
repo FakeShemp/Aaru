@@ -158,7 +158,7 @@ public sealed partial class CdrWin
     /// <inheritdoc />
     public bool? VerifySector(ulong sectorAddress)
     {
-        ErrorNumber errno = ReadSectorLong(sectorAddress, out byte[] buffer);
+        ErrorNumber errno = ReadSectorLong(sectorAddress, out byte[] buffer, out _);
 
         return errno != ErrorNumber.NoError ? null : CdChecksums.CheckCdSector(buffer);
     }
@@ -169,14 +169,14 @@ public sealed partial class CdrWin
     {
         failingLbas = [];
         unknownLbas = [];
-        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, out byte[] buffer);
+        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, out byte[] buffer, out _);
 
         if(errno != ErrorNumber.NoError) return null;
 
-        int    bps    = (int)(buffer.Length / length);
-        byte[] sector = new byte[bps];
+        var bps    = (int)(buffer.Length / length);
+        var sector = new byte[bps];
 
-        for(int i = 0; i < length; i++)
+        for(var i = 0; i < length; i++)
         {
             Array.Copy(buffer, i * bps, sector, 0, bps);
             bool? sectorStatus = CdChecksums.CheckCdSector(sector);
@@ -205,14 +205,14 @@ public sealed partial class CdrWin
     {
         failingLbas = [];
         unknownLbas = [];
-        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, track, out byte[] buffer);
+        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, track, out byte[] buffer, out _);
 
         if(errno != ErrorNumber.NoError) return null;
 
-        int    bps    = (int)(buffer.Length / length);
-        byte[] sector = new byte[bps];
+        var bps    = (int)(buffer.Length / length);
+        var sector = new byte[bps];
 
-        for(int i = 0; i < length; i++)
+        for(var i = 0; i < length; i++)
         {
             Array.Copy(buffer, i * bps, sector, 0, bps);
             bool? sectorStatus = CdChecksums.CheckCdSector(sector);

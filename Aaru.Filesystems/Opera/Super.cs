@@ -53,7 +53,7 @@ public sealed partial class OperaFS
 
         if(options.TryGetValue("debug", out string debugString)) bool.TryParse(debugString, out _debug);
 
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] sbSector);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] sbSector, out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -93,7 +93,7 @@ public sealed partial class OperaFS
         };
 
         _image = imagePlugin;
-        int firstRootBlock = BigEndianBitConverter.ToInt32(sbSector, Marshal.SizeOf<SuperBlock>());
+        var firstRootBlock = BigEndianBitConverter.ToInt32(sbSector, Marshal.SizeOf<SuperBlock>());
         _rootDirectoryCache = DecodeDirectory(firstRootBlock);
         _directoryCache     = new Dictionary<string, Dictionary<string, DirectoryEntryWithPointers>>();
         _mounted            = true;

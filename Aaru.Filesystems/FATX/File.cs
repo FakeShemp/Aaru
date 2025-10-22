@@ -40,6 +40,78 @@ namespace Aaru.Filesystems;
 
 public sealed partial class XboxFatPlugin
 {
+    uint[] GetClusters(uint startCluster)
+    {
+        if(startCluster == 0) return null;
+
+        if(_fat16 is null)
+        {
+            if(startCluster >= _fat32.Length) return null;
+        }
+        else if(startCluster >= _fat16.Length) return null;
+
+        List<uint> clusters = [];
+
+        uint nextCluster = startCluster;
+
+        if(_fat16 is null)
+        {
+            while((nextCluster & FAT32_MASK) > 0 && (nextCluster & FAT32_MASK) <= FAT32_RESERVED)
+            {
+                clusters.Add(nextCluster);
+                nextCluster = _fat32[nextCluster];
+            }
+        }
+        else
+        {
+            while(nextCluster is > 0 and <= FAT16_RESERVED)
+            {
+                clusters.Add(nextCluster);
+                nextCluster = _fat16[nextCluster];
+            }
+        }
+
+        return clusters.ToArray();
+    }
+
+    ErrorNumber GetFileEntry(string path, out DirectoryEntry entry)
+    {
+        entry = new DirectoryEntry();
+
+        string cutPath = path.StartsWith('/') ? path[1..].ToLower(_cultureInfo) : path.ToLower(_cultureInfo);
+
+        string[] pieces = cutPath.Split(new[]
+                                        {
+                                            '/'
+                                        },
+                                        StringSplitOptions.RemoveEmptyEntries);
+
+        if(pieces.Length == 0) return ErrorNumber.InvalidArgument;
+
+        var parentPath = string.Join("/", pieces, 0, pieces.Length - 1);
+
+        ErrorNumber err = OpenDir(parentPath, out IDirNode node);
+
+        if(err != ErrorNumber.NoError) return err;
+
+        CloseDir(node);
+
+        Dictionary<string, DirectoryEntry> parent;
+
+        if(pieces.Length == 1)
+            parent = _rootDirectory;
+        else if(!_directoryCache.TryGetValue(parentPath, out parent)) return ErrorNumber.InvalidArgument;
+
+        KeyValuePair<string, DirectoryEntry> dirent =
+            parent.FirstOrDefault(t => t.Key.ToLower(_cultureInfo) == pieces[^1]);
+
+        if(string.IsNullOrEmpty(dirent.Key)) return ErrorNumber.NoSuchFile;
+
+        entry = dirent.Value;
+
+        return ErrorNumber.NoError;
+    }
+
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
@@ -127,7 +199,8 @@ public sealed partial class XboxFatPlugin
                 _imagePlugin.ReadSectors(_firstClusterSector +
                                          (mynode.Clusters[i + firstCluster] - 1) * _sectorsPerCluster,
                                          _sectorsPerCluster,
-                                         out byte[] buf);
+                                         out byte[] buf,
+                                         out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -209,76 +282,4 @@ public sealed partial class XboxFatPlugin
     }
 
 #endregion
-
-    uint[] GetClusters(uint startCluster)
-    {
-        if(startCluster == 0) return null;
-
-        if(_fat16 is null)
-        {
-            if(startCluster >= _fat32.Length) return null;
-        }
-        else if(startCluster >= _fat16.Length) return null;
-
-        List<uint> clusters = [];
-
-        uint nextCluster = startCluster;
-
-        if(_fat16 is null)
-        {
-            while((nextCluster & FAT32_MASK) > 0 && (nextCluster & FAT32_MASK) <= FAT32_RESERVED)
-            {
-                clusters.Add(nextCluster);
-                nextCluster = _fat32[nextCluster];
-            }
-        }
-        else
-        {
-            while(nextCluster is > 0 and <= FAT16_RESERVED)
-            {
-                clusters.Add(nextCluster);
-                nextCluster = _fat16[nextCluster];
-            }
-        }
-
-        return clusters.ToArray();
-    }
-
-    ErrorNumber GetFileEntry(string path, out DirectoryEntry entry)
-    {
-        entry = new DirectoryEntry();
-
-        string cutPath = path.StartsWith('/') ? path[1..].ToLower(_cultureInfo) : path.ToLower(_cultureInfo);
-
-        string[] pieces = cutPath.Split(new[]
-                                        {
-                                            '/'
-                                        },
-                                        StringSplitOptions.RemoveEmptyEntries);
-
-        if(pieces.Length == 0) return ErrorNumber.InvalidArgument;
-
-        var parentPath = string.Join("/", pieces, 0, pieces.Length - 1);
-
-        ErrorNumber err = OpenDir(parentPath, out IDirNode node);
-
-        if(err != ErrorNumber.NoError) return err;
-
-        CloseDir(node);
-
-        Dictionary<string, DirectoryEntry> parent;
-
-        if(pieces.Length == 1)
-            parent = _rootDirectory;
-        else if(!_directoryCache.TryGetValue(parentPath, out parent)) return ErrorNumber.InvalidArgument;
-
-        KeyValuePair<string, DirectoryEntry> dirent =
-            parent.FirstOrDefault(t => t.Key.ToLower(_cultureInfo) == pieces[^1]);
-
-        if(string.IsNullOrEmpty(dirent.Key)) return ErrorNumber.NoSuchFile;
-
-        entry = dirent.Value;
-
-        return ErrorNumber.NoError;
-    }
 }

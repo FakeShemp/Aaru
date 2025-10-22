@@ -76,8 +76,7 @@ public sealed partial class Dim
             case DiskType.Hd2:
                 if(diskSize % (2 * 8 * 1024) != 0)
                 {
-                    AaruLogging.Error(Localization.DIM_shows_unknown_image_with_0_tracks,
-                                               diskSize / (2 * 8 * 1024));
+                    AaruLogging.Error(Localization.DIM_shows_unknown_image_with_0_tracks, diskSize / (2 * 8 * 1024));
 
                     return ErrorNumber.NotSupported;
                 }
@@ -92,8 +91,7 @@ public sealed partial class Dim
             case DiskType.Hs2:
                 if(diskSize % (2 * 9 * 512) != 0)
                 {
-                    AaruLogging.Error(Localization.DIM_shows_unknown_image_with_0_tracks,
-                                               diskSize / (2 * 9 * 512));
+                    AaruLogging.Error(Localization.DIM_shows_unknown_image_with_0_tracks, diskSize / (2 * 9 * 512));
 
                     return ErrorNumber.NotSupported;
                 }
@@ -108,8 +106,7 @@ public sealed partial class Dim
             case DiskType.Hc2:
                 if(diskSize % (2 * 15 * 512) != 0)
                 {
-                    AaruLogging.Error(Localization.DIM_shows_unknown_image_with_0_tracks,
-                                               diskSize / (2 * 15 * 512));
+                    AaruLogging.Error(Localization.DIM_shows_unknown_image_with_0_tracks, diskSize / (2 * 15 * 512));
 
                     return ErrorNumber.NotSupported;
                 }
@@ -124,8 +121,7 @@ public sealed partial class Dim
             case DiskType.Hde2:
                 if(diskSize % (2 * 9 * 512) != 0)
                 {
-                    AaruLogging.Error(Localization.DIM_shows_unknown_image_with_0_tracks,
-                                               diskSize / (2 * 9 * 512));
+                    AaruLogging.Error(Localization.DIM_shows_unknown_image_with_0_tracks, diskSize / (2 * 9 * 512));
 
                     return ErrorNumber.NotSupported;
                 }
@@ -140,8 +136,7 @@ public sealed partial class Dim
             case DiskType.Hq2:
                 if(diskSize % (2 * 18 * 512) != 0)
                 {
-                    AaruLogging.Error(Localization.DIM_shows_unknown_image_with_0_tracks,
-                                               diskSize / (2 * 18 * 512));
+                    AaruLogging.Error(Localization.DIM_shows_unknown_image_with_0_tracks, diskSize / (2 * 18 * 512));
 
                     return ErrorNumber.NotSupported;
                 }
@@ -168,8 +163,7 @@ public sealed partial class Dim
                 }
                 else
                 {
-                    AaruLogging.Error(Localization.DIM_shows_unknown_image_with_0_tracks,
-                                               diskSize / (2 * 26 * 256));
+                    AaruLogging.Error(Localization.DIM_shows_unknown_image_with_0_tracks, diskSize / (2 * 26 * 256));
 
                     return ErrorNumber.NotSupported;
                 }
@@ -239,18 +233,26 @@ public sealed partial class Dim
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer) => ReadSectors(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.Dumped;
+
+        return ReadSectors(sectorAddress, 1, out buffer, out _);
+    }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
-        buffer = new byte[length * _imageInfo.SectorSize];
+        buffer       = new byte[length * _imageInfo.SectorSize];
+        sectorStatus = new SectorStatus[length];
+        for(uint i = 0; i < length; i++) sectorStatus[i] = SectorStatus.Dumped;
 
         Stream stream = _dimImageFilter.GetDataForkStream();
 

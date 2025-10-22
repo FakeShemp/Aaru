@@ -53,7 +53,7 @@ public sealed partial class exFAT
     {
         if(12 + partition.Start >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] vbrSector);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] vbrSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -73,20 +73,20 @@ public sealed partial class exFAT
         var sb = new StringBuilder();
         metadata = new FileSystem();
 
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] vbrSector);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] vbrSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
         VolumeBootRecord vbr = Marshal.ByteArrayToStructureLittleEndian<VolumeBootRecord>(vbrSector);
 
-        errno = imagePlugin.ReadSector(9 + partition.Start, out byte[] parametersSector);
+        errno = imagePlugin.ReadSector(9 + partition.Start, out byte[] parametersSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
         OemParameterTable parametersTable =
             Marshal.ByteArrayToStructureLittleEndian<OemParameterTable>(parametersSector);
 
-        errno = imagePlugin.ReadSector(11 + partition.Start, out byte[] chkSector);
+        errno = imagePlugin.ReadSector(11 + partition.Start, out byte[] chkSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

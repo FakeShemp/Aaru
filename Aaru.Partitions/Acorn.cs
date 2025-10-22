@@ -57,32 +57,6 @@ public sealed class Acorn : IPartition
     const    uint   TYPE_MASK        = 15;
     readonly byte[] _linuxIcsMagic   = "LinuxPart"u8.ToArray();
 
-#region IPartition Members
-
-    /// <inheritdoc />
-    public string Name => Localization.Acorn_Name;
-
-    /// <inheritdoc />
-    public Guid Id => new("A7C8FEBE-8D00-4933-B9F3-42184C8BA808");
-
-    /// <inheritdoc />
-    public string Author => Authors.NATALIA_PORTILLO;
-
-    /// <inheritdoc />
-    public bool GetInformation(IMediaImage imagePlugin, out List<Partition> partitions, ulong sectorOffset)
-    {
-        partitions = [];
-
-        ulong counter = 0;
-
-        GetFileCorePartitions(imagePlugin, partitions, sectorOffset, ref counter);
-        GetIcsPartitions(imagePlugin, partitions, sectorOffset, ref counter);
-
-        return partitions.Count != 0;
-    }
-
-#endregion
-
     static void GetFileCorePartitions(IMediaImage imagePlugin, List<Partition> partitions, ulong sectorOffset,
                                       ref ulong   counter)
     {
@@ -96,7 +70,7 @@ public sealed class Acorn : IPartition
         else
             sbSector = ADFS_SB_POS / imagePlugin.Info.SectorSize;
 
-        ErrorNumber errno = imagePlugin.ReadSector(sbSector, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSector(sbSector, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError || sector.Length < 512) return;
 
@@ -112,7 +86,7 @@ public sealed class Acorn : IPartition
 
         if((ulong)mapSector >= imagePlugin.Info.Sectors) return;
 
-        errno = imagePlugin.ReadSector((ulong)mapSector, out byte[] map);
+        errno = imagePlugin.ReadSector((ulong)mapSector, out byte[] map, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -206,7 +180,7 @@ public sealed class Acorn : IPartition
         // RISC OS always checks for the partition on 0. Afaik no emulator chains it.
         if(sectorOffset != 0) return;
 
-        ErrorNumber errno = imagePlugin.ReadSector(0, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSector(0, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError || sector.Length < 512) return;
 
@@ -246,7 +220,7 @@ public sealed class Acorn : IPartition
             }
 
             // Negative size means Linux partition, first sector needs to be read
-            errno = imagePlugin.ReadSector(entry.start, out sector);
+            errno = imagePlugin.ReadSector(entry.start, out sector, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -391,6 +365,32 @@ public sealed class Acorn : IPartition
         public readonly uint date;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
         public readonly RiscIxEntry[] partitions;
+    }
+
+#endregion
+
+#region IPartition Members
+
+    /// <inheritdoc />
+    public string Name => Localization.Acorn_Name;
+
+    /// <inheritdoc />
+    public Guid Id => new("A7C8FEBE-8D00-4933-B9F3-42184C8BA808");
+
+    /// <inheritdoc />
+    public string Author => Authors.NATALIA_PORTILLO;
+
+    /// <inheritdoc />
+    public bool GetInformation(IMediaImage imagePlugin, out List<Partition> partitions, ulong sectorOffset)
+    {
+        partitions = [];
+
+        ulong counter = 0;
+
+        GetFileCorePartitions(imagePlugin, partitions, sectorOffset, ref counter);
+        GetIcsPartitions(imagePlugin, partitions, sectorOffset, ref counter);
+
+        return partitions.Count != 0;
     }
 
 #endregion

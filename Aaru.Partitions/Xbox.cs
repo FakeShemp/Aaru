@@ -84,12 +84,11 @@ public sealed partial class Xbox : IPartition
         // Xbox partitions always start on 0
         if(sectorOffset != 0) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(0, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSector(0, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError || sector.Length < 512) return false;
 
-        Xbox360DevKitPartitionTable table =
-            Marshal.ByteArrayToStructureBigEndian<Xbox360DevKitPartitionTable>(sector);
+        Xbox360DevKitPartitionTable table = Marshal.ByteArrayToStructureBigEndian<Xbox360DevKitPartitionTable>(sector);
 
         if(table.magic                             == XBOX360_DEVKIT_MAGIC     &&
            table.contentOff   + table.contentLen   <= imagePlugin.Info.Sectors &&
@@ -127,7 +126,9 @@ public sealed partial class Xbox : IPartition
 
         if(imagePlugin.Info.Sectors > (ulong)(MEMORY_UNIT_DATA_OFF / imagePlugin.Info.SectorSize))
         {
-            errno = imagePlugin.ReadSector((ulong)(MEMORY_UNIT_DATA_OFF / imagePlugin.Info.SectorSize), out sector);
+            errno = imagePlugin.ReadSector((ulong)(MEMORY_UNIT_DATA_OFF / imagePlugin.Info.SectorSize),
+                                           out sector,
+                                           out _);
 
             if(errno == ErrorNumber.NoError)
             {
@@ -168,7 +169,7 @@ public sealed partial class Xbox : IPartition
         if(imagePlugin.Info.Sectors <= (ulong)(XBOX_360DATA_OFF / imagePlugin.Info.SectorSize)) return false;
 
         {
-            errno = imagePlugin.ReadSector((ulong)(XBOX_360DATA_OFF / imagePlugin.Info.SectorSize), out sector);
+            errno = imagePlugin.ReadSector((ulong)(XBOX_360DATA_OFF / imagePlugin.Info.SectorSize), out sector, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 

@@ -55,15 +55,15 @@ public sealed partial class RBF
                     0, 4, 15
                 })
         {
-            ulong location = (ulong)i;
+            var location = (ulong)i;
 
-            uint sbSize = (uint)(Marshal.SizeOf<IdSector>() / imagePlugin.Info.SectorSize);
+            var sbSize = (uint)(Marshal.SizeOf<IdSector>() / imagePlugin.Info.SectorSize);
 
             if(Marshal.SizeOf<IdSector>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
             if(partition.Start + location + sbSize >= imagePlugin.Info.Sectors) break;
 
-            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + location, sbSize, out byte[] sector);
+            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + location, sbSize, out byte[] sector, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
@@ -73,12 +73,12 @@ public sealed partial class RBF
             NewIdSector rbf9000Sb = Marshal.ByteArrayToStructureBigEndian<NewIdSector>(sector);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization.magic_at_0_equals_1_or_2_expected_3_or_4,
-                                       location,
-                                       rbfSb.dd_sync,
-                                       rbf9000Sb.rid_sync,
-                                       RBF_SYNC,
-                                       RBF_CNYS);
+                              Localization.magic_at_0_equals_1_or_2_expected_3_or_4,
+                              location,
+                              rbfSb.dd_sync,
+                              rbf9000Sb.rid_sync,
+                              RBF_SYNC,
+                              RBF_CNYS);
 
             if(rbfSb.dd_sync == RBF_SYNC || rbf9000Sb.rid_sync is RBF_SYNC or RBF_CNYS) return true;
         }
@@ -104,12 +104,12 @@ public sealed partial class RBF
                     0, 4, 15
                 })
         {
-            ulong location = (ulong)i;
-            uint  sbSize   = (uint)(Marshal.SizeOf<IdSector>() / imagePlugin.Info.SectorSize);
+            var location = (ulong)i;
+            var sbSize   = (uint)(Marshal.SizeOf<IdSector>() / imagePlugin.Info.SectorSize);
 
             if(Marshal.SizeOf<IdSector>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
-            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + location, sbSize, out byte[] sector);
+            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + location, sbSize, out byte[] sector, out _);
 
             if(errno != ErrorNumber.NoError) return;
 
@@ -119,12 +119,12 @@ public sealed partial class RBF
             rbf9000Sb = Marshal.ByteArrayToStructureBigEndian<NewIdSector>(sector);
 
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization.magic_at_0_equals_1_or_2_expected_3_or_4,
-                                       location,
-                                       rbfSb.dd_sync,
-                                       rbf9000Sb.rid_sync,
-                                       RBF_SYNC,
-                                       RBF_CNYS);
+                              Localization.magic_at_0_equals_1_or_2_expected_3_or_4,
+                              location,
+                              rbfSb.dd_sync,
+                              rbf9000Sb.rid_sync,
+                              RBF_SYNC,
+                              RBF_CNYS);
 
             if(rbfSb.dd_sync == RBF_SYNC || rbf9000Sb.rid_sync is RBF_SYNC or RBF_CNYS) break;
         }

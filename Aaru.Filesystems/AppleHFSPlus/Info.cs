@@ -54,7 +54,7 @@ public sealed partial class AppleHFSPlus
 
         if(0x800 % imagePlugin.Info.SectorSize > 0) sectorsToRead++;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sectorsToRead, out byte[] vhSector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sectorsToRead, out byte[] vhSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -85,7 +85,8 @@ public sealed partial class AppleHFSPlus
 
         errno = imagePlugin.ReadSectors(partition.Start + hfspOffset,
                                         sectorsToRead,
-                                        out vhSector); // Read volume header
+                                        out vhSector,
+                                        out _); // Read volume header
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -110,7 +111,7 @@ public sealed partial class AppleHFSPlus
 
         if(0x800 % imagePlugin.Info.SectorSize > 0) sectorsToRead++;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sectorsToRead, out byte[] vhSector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sectorsToRead, out byte[] vhSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -146,7 +147,8 @@ public sealed partial class AppleHFSPlus
 
         errno = imagePlugin.ReadSectors(partition.Start + hfspOffset,
                                         sectorsToRead,
-                                        out vhSector); // Read volume header
+                                        out vhSector,
+                                        out _); // Read volume header
 
         if(errno != ErrorNumber.NoError) return;
 

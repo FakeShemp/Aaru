@@ -56,7 +56,7 @@ public sealed partial class Vdi
 
         if(stream.Length < 512) return ErrorNumber.InvalidArgument;
 
-        byte[] vHdrB = new byte[Marshal.SizeOf<Header>()];
+        var vHdrB = new byte[Marshal.SizeOf<Header>()];
         stream.EnsureRead(vHdrB, 0, Marshal.SizeOf<Header>());
         _vHdr = Marshal.ByteArrayToStructureLittleEndian<Header>(vHdrB);
 
@@ -92,7 +92,7 @@ public sealed partial class Vdi
         if(_vHdr.imageType != VdiImageType.Normal)
         {
             AaruLogging.Error(string.Format(Localization.Support_for_image_type_0_not_yet_implemented,
-                                                     _vHdr.imageType));
+                                            _vHdr.imageType));
 
             return ErrorNumber.InvalidArgument;
         }
@@ -101,14 +101,14 @@ public sealed partial class Vdi
         blockMapStopwatch.Start();
         AaruLogging.Debug(MODULE_NAME, Localization.Reading_Image_Block_Map);
         stream.Seek(_vHdr.offsetBlocks, SeekOrigin.Begin);
-        byte[] ibmB = new byte[_vHdr.blocks * 4];
+        var ibmB = new byte[_vHdr.blocks * 4];
         stream.EnsureRead(ibmB, 0, ibmB.Length);
         _ibm = MemoryMarshal.Cast<byte, uint>(ibmB).ToArray();
         blockMapStopwatch.Stop();
 
         AaruLogging.Debug(MODULE_NAME,
-                                   Localization.Reading_Image_Block_Map_took_0_ms,
-                                   blockMapStopwatch.Elapsed.TotalMilliseconds);
+                          Localization.Reading_Image_Block_Map_took_0_ms,
+                          blockMapStopwatch.Elapsed.TotalMilliseconds);
 
         _sectorCache = new Dictionary<ulong, byte[]>();
 
@@ -176,13 +176,16 @@ public sealed partial class Vdi
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer)
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(_sectorCache.TryGetValue(sectorAddress, out buffer)) return ErrorNumber.NoError;
+
+        sectorStatus = SectorStatus.Dumped;
 
         ulong index  = sectorAddress * _vHdr.sectorSize / _vHdr.blockSize;
         ulong secOff = sectorAddress * _vHdr.sectorSize % _vHdr.blockSize;
@@ -198,7 +201,7 @@ public sealed partial class Vdi
 
         ulong imageOff = _vHdr.offsetData + (ulong)ibmOff * _vHdr.blockSize;
 
-        byte[] cluster = new byte[_vHdr.blockSize];
+        var cluster = new byte[_vHdr.blockSize];
         _imageStream.Seek((long)imageOff, SeekOrigin.Begin);
         _imageStream.EnsureRead(cluster, 0, (int)_vHdr.blockSize);
         buffer = new byte[_vHdr.sectorSize];
@@ -212,23 +215,26 @@ public sealed partial class Vdi
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
         var ms = new MemoryStream();
+        sectorStatus = new SectorStatus[length];
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector);
+            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
 
             if(errno != ErrorNumber.NoError) return errno;
 
             ms.Write(sector, 0, sector.Length);
+            sectorStatus[i] = status;
         }
 
         buffer = ms.ToArray();

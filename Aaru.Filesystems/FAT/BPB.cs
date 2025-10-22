@@ -116,15 +116,15 @@ public sealed partial class FAT
         var ebpb       = new BiosParameterBlockEbpb();
         var apricotBpb = new ApricotLabel();
 
-        bool useAtariBpb          = false;
-        bool useMsxBpb            = false;
-        bool useDos2Bpb           = false;
-        bool useDos3Bpb           = false;
-        bool useDos32Bpb          = false;
-        bool useDos33Bpb          = false;
-        bool userShortExtendedBpb = false;
-        bool useExtendedBpb       = false;
-        bool useApricotBpb        = false;
+        var useAtariBpb          = false;
+        var useMsxBpb            = false;
+        var useDos2Bpb           = false;
+        var useDos3Bpb           = false;
+        var useDos32Bpb          = false;
+        var useDos33Bpb          = false;
+        var userShortExtendedBpb = false;
+        var useExtendedBpb       = false;
+        var useApricotBpb        = false;
 
         if(imagePlugin.Info.SectorSize >= 256)
         {
@@ -374,10 +374,10 @@ public sealed partial class FAT
             byte z80Di = bpbSector[0];
 
             // First FAT1 sector resides at LBA 0x14
-            imagePlugin.ReadSector(0x14, out byte[] fat1Sector0);
+            imagePlugin.ReadSector(0x14, out byte[] fat1Sector0, out _);
 
             // First FAT2 sector resides at LBA 0x1A
-            imagePlugin.ReadSector(0x1A, out byte[] fat2Sector0);
+            imagePlugin.ReadSector(0x1A, out byte[] fat2Sector0, out _);
             bool equalFatIds = fat1Sector0[0] == fat2Sector0[0] && fat1Sector0[1] == fat2Sector0[1];
 
             // Volume is software interleaved 2:1
@@ -388,17 +388,17 @@ public sealed partial class FAT
                         0x17, 0x19, 0x1B, 0x1D, 0x1E, 0x20
                     })
             {
-                imagePlugin.ReadSector(rootSector, out byte[] tmp);
+                imagePlugin.ReadSector(rootSector, out byte[] tmp, out _);
                 rootMs.Write(tmp, 0, tmp.Length);
             }
 
             byte[] rootDir      = rootMs.ToArray();
-            bool   validRootDir = true;
+            var    validRootDir = true;
 
             // Iterate all root directory
-            for(int e = 0; e < 96 * 32; e += 32)
+            for(var e = 0; e < 96 * 32; e += 32)
             {
-                for(int c = 0; c < 11; c++)
+                for(var c = 0; c < 11; c++)
                 {
                     if((rootDir[c + e] >= 0x20 || rootDir[c + e] == 0x00 || rootDir[c + e] == 0x05) &&
                        rootDir[c + e] != 0xFF                                                       &&
@@ -449,7 +449,7 @@ public sealed partial class FAT
            !useExtendedBpb       &&
            !useApricotBpb)
         {
-            imagePlugin.ReadSector(1 + partition.Start, out byte[] fatSector);
+            imagePlugin.ReadSector(1 + partition.Start, out byte[] fatSector, out _);
 
             switch(fatSector[0])
             {
@@ -808,7 +808,8 @@ public sealed partial class FAT
         {
             imagePlugin.ReadSectors(apricotBpb.bootLocation,
                                     (uint)(apricotBpb.sectorSize * apricotBpb.bootSize) / imagePlugin.Info.SectorSize,
-                                    out fakeBpb.boot_code);
+                                    out fakeBpb.boot_code,
+                                    out _);
         }
 
         return BpbKind.Apricot;

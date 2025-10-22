@@ -53,6 +53,29 @@ public sealed class XENIX : IPartition
     const uint   XENIX_OFFSET = 977;
     const string MODULE_NAME  = "XENIX partitions plugin";
 
+#region Nested type: Partable
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct Partable
+    {
+        public readonly ushort p_magic; /* magic number validity indicator */
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXPARTS)]
+        public readonly Partition[] p; /*partition headers*/
+    }
+
+#endregion
+
+#region Nested type: Partition
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    readonly struct Partition
+    {
+        public readonly int p_off;  /*start 1K block no of partition*/
+        public readonly int p_size; /*# of 1K blocks in partition*/
+    }
+
+#endregion
+
 #region IPartition Members
 
     /// <inheritdoc />
@@ -71,20 +94,17 @@ public sealed class XENIX : IPartition
 
         if(42 + sectorOffset >= imagePlugin.Info.Sectors) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(42 + sectorOffset, out byte[] tblsector);
+        ErrorNumber errno = imagePlugin.ReadSector(42 + sectorOffset, out byte[] tblsector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
         Partable xnxtbl = Marshal.ByteArrayToStructureLittleEndian<Partable>(tblsector);
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "xnxtbl.p_magic = 0x{0:X4} (should be 0x{1:X4})",
-                                   xnxtbl.p_magic,
-                                   PAMAGIC);
+        AaruLogging.Debug(MODULE_NAME, "xnxtbl.p_magic = 0x{0:X4} (should be 0x{1:X4})", xnxtbl.p_magic, PAMAGIC);
 
         if(xnxtbl.p_magic != PAMAGIC) return false;
 
-        for(int i = 0; i < MAXPARTS; i++)
+        for(var i = 0; i < MAXPARTS; i++)
         {
             AaruLogging.Debug(MODULE_NAME, "xnxtbl.p[{0}].p_off = {1}",  i, xnxtbl.p[i].p_off);
             AaruLogging.Debug(MODULE_NAME, "xnxtbl.p[{0}].p_size = {1}", i, xnxtbl.p[i].p_size);
@@ -109,29 +129,6 @@ public sealed class XENIX : IPartition
         }
 
         return partitions.Count > 0;
-    }
-
-#endregion
-
-#region Nested type: Partable
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Partable
-    {
-        public readonly ushort p_magic; /* magic number validity indicator */
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXPARTS)]
-        public readonly Partition[] p; /*partition headers*/
-    }
-
-#endregion
-
-#region Nested type: Partition
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    readonly struct Partition
-    {
-        public readonly int p_off;  /*start 1K block no of partition*/
-        public readonly int p_size; /*# of 1K blocks in partition*/
     }
 
 #endregion

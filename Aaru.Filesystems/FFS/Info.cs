@@ -72,7 +72,7 @@ public sealed partial class FFSPlugin
             foreach(ulong loc in locations.Where(loc => partition.End > partition.Start + loc + sbSizeInSectors))
             {
                 ErrorNumber errno =
-                    imagePlugin.ReadSectors(partition.Start + loc, sbSizeInSectors, out byte[] ufsSbSectors);
+                    imagePlugin.ReadSectors(partition.Start + loc, sbSizeInSectors, out byte[] ufsSbSectors, out _);
 
                 if(errno != ErrorNumber.NoError) continue;
 
@@ -135,7 +135,7 @@ public sealed partial class FFSPlugin
 
         foreach(ulong loc in locations.Where(loc => partition.End > partition.Start + loc + sb_size_in_sectors))
         {
-            errno = imagePlugin.ReadSectors(partition.Start + loc, sb_size_in_sectors, out ufs_sb_sectors);
+            errno = imagePlugin.ReadSectors(partition.Start + loc, sb_size_in_sectors, out ufs_sb_sectors, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -214,7 +214,7 @@ public sealed partial class FFSPlugin
         }
 
         // Fun with seeking follows on superblock reading!
-        errno = imagePlugin.ReadSectors(sb_offset, sb_size_in_sectors, out ufs_sb_sectors);
+        errno = imagePlugin.ReadSectors(sb_offset, sb_size_in_sectors, out ufs_sb_sectors, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

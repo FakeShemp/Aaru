@@ -69,7 +69,7 @@ public sealed partial class LisaFS
 
             if(searchTag.FileId != FILEID_MDDF) continue;
 
-            errno = imagePlugin.ReadSector((ulong)i, out byte[] sector);
+            errno = imagePlugin.ReadSector((ulong)i, out byte[] sector, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -146,7 +146,7 @@ public sealed partial class LisaFS
 
             if(searchTag.FileId != FILEID_MDDF) continue;
 
-            errno = imagePlugin.ReadSector((ulong)i, out byte[] sector);
+            errno = imagePlugin.ReadSector((ulong)i, out byte[] sector, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 

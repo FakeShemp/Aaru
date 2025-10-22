@@ -65,20 +65,20 @@ public sealed partial class FAT
         byte   bpbSignature;
         byte   fat32Signature;
         ulong  hugeSectors;
-        byte[] fat32Id = new byte[8];
-        byte[] msxId   = new byte[6];
+        var    fat32Id = new byte[8];
+        var    msxId   = new byte[6];
         byte   fatId;
-        byte[] dosOem   = new byte[8];
-        byte[] atariOem = new byte[6];
+        var    dosOem   = new byte[8];
+        var    atariOem = new byte[6];
         ushort bootable = 0;
 
         uint sectorsPerBpb = imagePlugin.Info.SectorSize < 512 ? 512 / imagePlugin.Info.SectorSize : 1;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(0 + partition.Start, sectorsPerBpb, out byte[] bpbSector);
+        ErrorNumber errno = imagePlugin.ReadSectors(0 + partition.Start, sectorsPerBpb, out byte[] bpbSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
-        errno = imagePlugin.ReadSector(sectorsPerBpb + partition.Start, out byte[] fatSector);
+        errno = imagePlugin.ReadSector(sectorsPerBpb + partition.Start, out byte[] fatSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -187,14 +187,14 @@ public sealed partial class FAT
         AaruLogging.Debug(MODULE_NAME, "huge_sectors = {0}",          hugeSectors);
         AaruLogging.Debug(MODULE_NAME, "fat_id = 0x{0:X2}",           fatId);
 
-        ushort apricotBps             = BitConverter.ToUInt16(bpbSector, 0x50);
-        byte   apricotSpc             = bpbSector[0x52];
-        ushort apricotReservedSecs    = BitConverter.ToUInt16(bpbSector, 0x53);
-        byte   apricotFatsNo          = bpbSector[0x55];
-        ushort apricotRootEntries     = BitConverter.ToUInt16(bpbSector, 0x56);
-        ushort apricotSectors         = BitConverter.ToUInt16(bpbSector, 0x58);
-        byte   apricotMediaDescriptor = bpbSector[0x5A];
-        ushort apricotFatSectors      = BitConverter.ToUInt16(bpbSector, 0x5B);
+        var  apricotBps             = BitConverter.ToUInt16(bpbSector, 0x50);
+        byte apricotSpc             = bpbSector[0x52];
+        var  apricotReservedSecs    = BitConverter.ToUInt16(bpbSector, 0x53);
+        byte apricotFatsNo          = bpbSector[0x55];
+        var  apricotRootEntries     = BitConverter.ToUInt16(bpbSector, 0x56);
+        var  apricotSectors         = BitConverter.ToUInt16(bpbSector, 0x58);
+        byte apricotMediaDescriptor = bpbSector[0x5A];
+        var  apricotFatSectors      = BitConverter.ToUInt16(bpbSector, 0x5B);
 
         bool apricotCorrectSpc = apricotSpc is 1 or 2 or 4 or 8 or 16 or 32 or 64;
 
@@ -238,12 +238,13 @@ public sealed partial class FAT
         if(16 + partition.Start <= partition.End)
         {
             errno = imagePlugin.ReadSector(16 + partition.Start,
-                                           out byte[] hpfsSbSector); // Seek to superblock, on logical sector 16
+                                           out byte[] hpfsSbSector,
+                                           out _); // Seek to superblock, on logical sector 16
 
             if(errno != ErrorNumber.NoError) return false;
 
-            uint hpfsMagic1 = BitConverter.ToUInt32(hpfsSbSector, 0x000);
-            uint hpfsMagic2 = BitConverter.ToUInt32(hpfsSbSector, 0x004);
+            var hpfsMagic1 = BitConverter.ToUInt32(hpfsSbSector, 0x000);
+            var hpfsMagic2 = BitConverter.ToUInt32(hpfsSbSector, 0x004);
 
             if(hpfsMagic1 == 0xF995E849 && hpfsMagic2 == 0xFA53E9C5) return false;
         }
@@ -317,12 +318,12 @@ public sealed partial class FAT
             byte z80Di = bpbSector[0];
 
             // First FAT1 sector resides at LBA 0x14
-            errno = imagePlugin.ReadSector(0x14, out byte[] fat1Sector0);
+            errno = imagePlugin.ReadSector(0x14, out byte[] fat1Sector0, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
             // First FAT2 sector resides at LBA 0x1A
-            errno = imagePlugin.ReadSector(0x1A, out byte[] fat2Sector0);
+            errno = imagePlugin.ReadSector(0x1A, out byte[] fat2Sector0, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
@@ -336,7 +337,7 @@ public sealed partial class FAT
                         0x17, 0x19, 0x1B, 0x1D, 0x1E, 0x20
                     })
             {
-                errno = imagePlugin.ReadSector(rootSector, out byte[] tmp);
+                errno = imagePlugin.ReadSector(rootSector, out byte[] tmp, out _);
 
                 if(errno != ErrorNumber.NoError) return false;
 
@@ -344,12 +345,12 @@ public sealed partial class FAT
             }
 
             byte[] rootDir      = rootMs.ToArray();
-            bool   validRootDir = true;
+            var    validRootDir = true;
 
             // Iterate all root directory
-            for(int e = 0; e < 96 * 32; e += 32)
+            for(var e = 0; e < 96 * 32; e += 32)
             {
-                for(int c = 0; c < 11; c++)
+                for(var c = 0; c < 11; c++)
                 {
                     if((rootDir[c + e] >= 0x20 || rootDir[c + e] == 0x00 || rootDir[c + e] == 0x05) &&
                        rootDir[c + e] != 0xFF                                                       &&
@@ -372,9 +373,9 @@ public sealed partial class FAT
                 return true;
         }
 
-        byte   fat2        = fatSector[1];
-        byte   fat3        = fatSector[2];
-        ushort fatCluster2 = (ushort)((fat2 << 8) + fat3 & 0xFFF);
+        byte fat2        = fatSector[1];
+        byte fat3        = fatSector[2];
+        var  fatCluster2 = (ushort)((fat2 << 8) + fat3 & 0xFFF);
 
         AaruLogging.Debug(MODULE_NAME, "1st fat cluster 1 = {0:X3}", fatCluster2);
 
@@ -428,7 +429,7 @@ public sealed partial class FAT
 
         AaruLogging.Debug(MODULE_NAME, Localization.Second_fat_starts_at_0, fat2SectorNo);
 
-        errno = imagePlugin.ReadSector(fat2SectorNo, out byte[] fat2Sector);
+        errno = imagePlugin.ReadSector(fat2SectorNo, out byte[] fat2Sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -453,7 +454,7 @@ public sealed partial class FAT
 
         uint sectorsPerBpb = imagePlugin.Info.SectorSize < 512 ? 512 / imagePlugin.Info.SectorSize : 1;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(0 + partition.Start, sectorsPerBpb, out byte[] bpbSector);
+        ErrorNumber errno = imagePlugin.ReadSectors(0 + partition.Start, sectorsPerBpb, out byte[] bpbSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -467,9 +468,9 @@ public sealed partial class FAT
                                         out bool andosOemCorrect,
                                         out bool bootable);
 
-        bool   isFat12             = false;
-        bool   isFat16             = false;
-        bool   isFat32             = false;
+        var    isFat12             = false;
+        var    isFat16             = false;
+        var    isFat32             = false;
         ulong  rootDirectorySector = 0;
         string extraInfo           = null;
         string bootChk             = null;
@@ -641,7 +642,9 @@ public sealed partial class FAT
 
                 if(fat32Bpb.fsinfo_sector + partition.Start <= partition.End)
                 {
-                    errno = imagePlugin.ReadSector(fat32Bpb.fsinfo_sector + partition.Start, out byte[] fsinfoSector);
+                    errno = imagePlugin.ReadSector(fat32Bpb.fsinfo_sector + partition.Start,
+                                                   out byte[] fsinfoSector,
+                                                   out _);
 
                     if(errno != ErrorNumber.NoError) return;
 
@@ -669,7 +672,7 @@ public sealed partial class FAT
             {
                 ushort sum = 0;
 
-                for(int i = 0; i < bpbSector.Length; i += 2) sum += BigEndianBitConverter.ToUInt16(bpbSector, i);
+                for(var i = 0; i < bpbSector.Length; i += 2) sum += BigEndianBitConverter.ToUInt16(bpbSector, i);
 
                 // TODO: Check this
                 if(sum == 0x1234)
@@ -689,7 +692,7 @@ public sealed partial class FAT
 
                     if(atariBpb.ldmode == 0)
                     {
-                        byte[] tmp = new byte[8];
+                        var tmp = new byte[8];
                         Array.Copy(atariBpb.fname, 0, tmp, 0, 8);
                         string fname = Encoding.ASCII.GetString(tmp).Trim();
                         tmp = new byte[3];
@@ -772,19 +775,19 @@ public sealed partial class FAT
                 if(clusters < 4089)
                 {
                     // The first 2 FAT entries do not count as allocation clusters in FAT12 and FAT16
-                    ushort[] fat12 = new ushort[clusters + 2];
+                    var fat12 = new ushort[clusters + 2];
 
                     _reservedSectors     = fakeBpb.rsectors;
                     sectorsPerRealSector = fakeBpb.bps / imagePlugin.Info.SectorSize;
                     _fatFirstSector      = partition.Start + _reservedSectors * sectorsPerRealSector;
 
-                    errno = imagePlugin.ReadSectors(_fatFirstSector, fakeBpb.spfat, out byte[] fatBytes);
+                    errno = imagePlugin.ReadSectors(_fatFirstSector, fakeBpb.spfat, out byte[] fatBytes, out _);
 
                     if(errno != ErrorNumber.NoError) return;
 
-                    int pos = 0;
+                    var pos = 0;
 
-                    for(int i = 0; i + 3 < fatBytes.Length && pos < fat12.Length; i += 3)
+                    for(var i = 0; i + 3 < fatBytes.Length && pos < fat12.Length; i += 3)
                     {
                         fat12[pos++] = (ushort)(((fatBytes[i + 1] & 0xF) << 8) + fatBytes[i + 0]);
 
@@ -1031,7 +1034,8 @@ public sealed partial class FAT
         {
             errno = imagePlugin.ReadSectors(rootDirectorySector + partition.Start,
                                             sectorsForRootDirectory,
-                                            out byte[] rootDirectory);
+                                            out byte[] rootDirectory,
+                                            out _);
 
             if(errno != ErrorNumber.NoError) return;
 
@@ -1044,7 +1048,7 @@ public sealed partial class FAT
                             0x17, 0x19, 0x1B, 0x1D, 0x1E, 0x20
                         })
                 {
-                    errno = imagePlugin.ReadSector(rootSector, out byte[] tmp);
+                    errno = imagePlugin.ReadSector(rootSector, out byte[] tmp, out _);
 
                     if(errno != ErrorNumber.NoError) return;
 
@@ -1054,7 +1058,7 @@ public sealed partial class FAT
                 rootDirectory = rootMs.ToArray();
             }
 
-            for(int i = 0; i < rootDirectory.Length; i += 32)
+            for(var i = 0; i < rootDirectory.Length; i += 32)
             {
                 // Not a correct entry
                 if(rootDirectory[i] < DIRENT_MIN && rootDirectory[i] != DIRENT_E5) continue;
@@ -1067,7 +1071,7 @@ public sealed partial class FAT
 
                 DirectoryEntry entry = Marshal.ByteArrayToStructureLittleEndian<DirectoryEntry>(rootDirectory, i, 32);
 
-                byte[] fullname = new byte[11];
+                var fullname = new byte[11];
                 Array.Copy(entry.filename,  0, fullname, 0, 8);
                 Array.Copy(entry.extension, 0, fullname, 8, 3);
                 string volname = encoding.GetString(fullname).Trim();
@@ -1112,8 +1116,8 @@ public sealed partial class FAT
                 // Intel short jump
                 case 0xEB when bpbSector[1] < 0x80:
                 {
-                    int    sigSize  = bpbSector[510] == 0x55 && bpbSector[511] == 0xAA ? 2 : 0;
-                    byte[] bootCode = new byte[512 - sigSize - bpbSector[1] - 2];
+                    int sigSize  = bpbSector[510] == 0x55 && bpbSector[511] == 0xAA ? 2 : 0;
+                    var bootCode = new byte[512 - sigSize - bpbSector[1] - 2];
                     Array.Copy(bpbSector, bpbSector[1] + 2, bootCode, 0, bootCode.Length);
                     Sha1Context.Data(bootCode, out _);
 
@@ -1123,8 +1127,8 @@ public sealed partial class FAT
                 // Intel big jump
                 case 0xE9 when BitConverter.ToUInt16(bpbSector, 1) < 0x1FC:
                 {
-                    int    sigSize  = bpbSector[510] == 0x55 && bpbSector[511] == 0xAA ? 2 : 0;
-                    byte[] bootCode = new byte[512 - sigSize - BitConverter.ToUInt16(bpbSector, 1) - 3];
+                    int sigSize  = bpbSector[510] == 0x55 && bpbSector[511] == 0xAA ? 2 : 0;
+                    var bootCode = new byte[512 - sigSize - BitConverter.ToUInt16(bpbSector, 1) - 3];
                     Array.Copy(bpbSector, BitConverter.ToUInt16(bpbSector, 1) + 3, bootCode, 0, bootCode.Length);
                     Sha1Context.Data(bootCode, out _);
 

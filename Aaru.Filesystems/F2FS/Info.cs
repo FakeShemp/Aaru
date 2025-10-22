@@ -58,7 +58,7 @@ public sealed partial class F2FS
 
         if(partition.Start + sbAddr + sbSize >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + sbAddr, sbSize, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + sbAddr, sbSize, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -86,7 +86,7 @@ public sealed partial class F2FS
 
         if(Marshal.SizeOf<Superblock>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + sbAddr, sbSize, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + sbAddr, sbSize, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

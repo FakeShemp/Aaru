@@ -52,6 +52,36 @@ public sealed partial class Human68K : IPartition
     const uint   X68K_MAGIC  = 0x5836384B;
     const string MODULE_NAME = "Human68k partitions plugin";
 
+#region Nested type: Entry
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct Entry
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public byte[] name;
+        public uint stateStart;
+        public uint length;
+    }
+
+#endregion
+
+#region Nested type: Table
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [SwapEndian]
+    partial struct Table
+    {
+        public uint magic;
+        public uint size;
+        public uint size2;
+        public uint unknown;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public Entry[] entries;
+    }
+
+#endregion
+
 #region IPartition Members
 
     /// <inheritdoc />
@@ -79,17 +109,17 @@ public sealed partial class Human68K : IPartition
         switch(imagePlugin.Info.SectorSize)
         {
             case 256:
-                errno        = imagePlugin.ReadSector(4 + sectorOffset, out sector);
+                errno        = imagePlugin.ReadSector(4 + sectorOffset, out sector, out _);
                 sectsPerUnit = 1;
 
                 break;
             case 512:
-                errno        = imagePlugin.ReadSector(4 + sectorOffset, out sector);
+                errno        = imagePlugin.ReadSector(4 + sectorOffset, out sector, out _);
                 sectsPerUnit = 2;
 
                 break;
             case 1024:
-                errno        = imagePlugin.ReadSector(2 + sectorOffset, out sector);
+                errno        = imagePlugin.ReadSector(2 + sectorOffset, out sector, out _);
                 sectsPerUnit = 1;
 
                 break;
@@ -141,36 +171,6 @@ public sealed partial class Human68K : IPartition
         }
 
         return true;
-    }
-
-#endregion
-
-#region Nested type: Entry
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    [SwapEndian]
-    partial struct Entry
-    {
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public byte[] name;
-        public uint stateStart;
-        public uint length;
-    }
-
-#endregion
-
-#region Nested type: Table
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    [SwapEndian]
-    partial struct Table
-    {
-        public uint magic;
-        public uint size;
-        public uint size2;
-        public uint unknown;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public Entry[] entries;
     }
 
 #endregion

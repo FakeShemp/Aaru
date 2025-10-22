@@ -46,7 +46,7 @@ public sealed partial class ZZZRawImage
     {
         if(!_rawCompactDisc) return null;
 
-        ErrorNumber errno = ReadSectorLong(sectorAddress, out byte[] buffer);
+        ErrorNumber errno = ReadSectorLong(sectorAddress, out byte[] buffer, out _);
 
         return errno != ErrorNumber.NoError ? null : CdChecksums.CheckCdSector(buffer);
     }
@@ -67,7 +67,7 @@ public sealed partial class ZZZRawImage
 
         failingLbas = [];
         unknownLbas = [];
-        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, out byte[] buffer);
+        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, out byte[] buffer, out _);
 
         if(errno != ErrorNumber.NoError) return null;
 
@@ -113,7 +113,7 @@ public sealed partial class ZZZRawImage
 
         failingLbas = [];
         unknownLbas = [];
-        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, track, out byte[] buffer);
+        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, track, out byte[] buffer, out _);
 
         if(errno != ErrorNumber.NoError) return null;
 

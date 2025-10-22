@@ -707,10 +707,12 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     {
                                         errno = sectorsToDo == 1
                                                     ? inputOptical.ReadSectorLong(doneSectors + track.StartSector,
-                                                        out sector)
+                                                        out sector,
+                                                        out _)
                                                     : inputOptical.ReadSectorsLong(doneSectors + track.StartSector,
                                                         sectorsToDo,
-                                                        out sector);
+                                                        out sector,
+                                                        out _);
 
                                         if(errno == ErrorNumber.NoError)
                                         {
@@ -763,10 +765,12 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     {
                                         errno = sectorsToDo == 1
                                                     ? inputOptical.ReadSector(doneSectors + track.StartSector,
-                                                                              out sector)
+                                                                              out sector,
+                                                                              out _)
                                                     : inputOptical.ReadSectors(doneSectors + track.StartSector,
                                                                                sectorsToDo,
-                                                                               out sector);
+                                                                               out sector,
+                                                                               out _);
 
                                         // TODO: Move to generic place when anything but CSS DVDs can be decrypted
                                         if(inputOptical.Info.MediaType is MediaType.DVDROM
@@ -1434,8 +1438,11 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                 if(useLong)
                                 {
                                     errno = sectorsToDo == 1
-                                                ? inputFormat.ReadSectorLong(doneSectors, out sector)
-                                                : inputFormat.ReadSectorsLong(doneSectors, sectorsToDo, out sector);
+                                                ? inputFormat.ReadSectorLong(doneSectors, out sector, out _)
+                                                : inputFormat.ReadSectorsLong(doneSectors,
+                                                                              sectorsToDo,
+                                                                              out sector,
+                                                                              out _);
 
                                     if(errno == ErrorNumber.NoError)
                                     {
@@ -1466,8 +1473,8 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                 else
                                 {
                                     errno = sectorsToDo == 1
-                                                ? inputFormat.ReadSector(doneSectors, out sector)
-                                                : inputFormat.ReadSectors(doneSectors, sectorsToDo, out sector);
+                                                ? inputFormat.ReadSector(doneSectors, out sector, out _)
+                                                : inputFormat.ReadSectors(doneSectors, sectorsToDo, out sector, out _);
 
                                     if(errno == ErrorNumber.NoError)
                                     {

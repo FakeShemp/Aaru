@@ -58,9 +58,9 @@ public sealed partial class ISO9660
 
         if(sectorCount == 1)
         {
-            errno = _image.ReadSectorLong(realSector, out data);
+            errno = _image.ReadSectorLong(realSector, out data, out _);
 
-            if(errno != ErrorNumber.NoError) errno = _image.ReadSector(realSector, out data);
+            if(errno != ErrorNumber.NoError) errno = _image.ReadSector(realSector, out data, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -70,26 +70,24 @@ public sealed partial class ISO9660
                 {
                     case 2048:
                         AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.tor_Sector_0_Cooked_Mode_zero_one_Mode_two_Form_one,
-                                                   realSector);
+                                          Localization.tor_Sector_0_Cooked_Mode_zero_one_Mode_two_Form_one,
+                                          realSector);
 
                         break;
                     case 2324:
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.tor_Sector_0_Cooked_Mode_two_Form_two,
-                                                   realSector);
+                        AaruLogging.Debug(MODULE_NAME, Localization.tor_Sector_0_Cooked_Mode_two_Form_two, realSector);
 
                         break;
                     case 2336:
                         AaruLogging.Debug(MODULE_NAME,
-                                                   Localization
-                                                      .tor_Sector_0_Cooked_Mode_two_Form_1_File_Number_2_Channel_Number_3_Submode_4_Coding_Information_5,
-                                                   realSector,
-                                                   ((Mode2Submode)data[2]).HasFlag(Mode2Submode.Form2) ? 2 : 1,
-                                                   data[0],
-                                                   data[1],
-                                                   (Mode2Submode)data[2],
-                                                   data[3]);
+                                          Localization
+                                             .tor_Sector_0_Cooked_Mode_two_Form_1_File_Number_2_Channel_Number_3_Submode_4_Coding_Information_5,
+                                          realSector,
+                                          ((Mode2Submode)data[2]).HasFlag(Mode2Submode.Form2) ? 2 : 1,
+                                          data[0],
+                                          data[1],
+                                          (Mode2Submode)data[2],
+                                          data[3]);
 
                         break;
                     case 2352 when data[0]  != 0x00 ||
@@ -109,27 +107,27 @@ public sealed partial class ISO9660
                         break;
                     case 2352 when data[15] != 2:
                         AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.tor_Sector_0_1_2_3_Raw_Mode_4,
-                                                   realSector,
-                                                   data[12],
-                                                   data[13],
-                                                   data[14],
-                                                   data[15]);
+                                          Localization.tor_Sector_0_1_2_3_Raw_Mode_4,
+                                          realSector,
+                                          data[12],
+                                          data[13],
+                                          data[14],
+                                          data[15]);
 
                         break;
                     case 2352:
                         AaruLogging.Debug(MODULE_NAME,
-                                                   Localization
-                                                      .tor_Sector_0_1_2_3_Raw_Mode_two_Form_4_File_Number_5_Channel_Number_6_Submode_7_Coding_Information_8,
-                                                   realSector,
-                                                   data[12],
-                                                   data[13],
-                                                   data[14],
-                                                   ((Mode2Submode)data[18]).HasFlag(Mode2Submode.Form2) ? 2 : 1,
-                                                   data[16],
-                                                   data[17],
-                                                   (Mode2Submode)data[18],
-                                                   data[19]);
+                                          Localization
+                                             .tor_Sector_0_1_2_3_Raw_Mode_two_Form_4_File_Number_5_Channel_Number_6_Submode_7_Coding_Information_8,
+                                          realSector,
+                                          data[12],
+                                          data[13],
+                                          data[14],
+                                          ((Mode2Submode)data[18]).HasFlag(Mode2Submode.Form2) ? 2 : 1,
+                                          data[16],
+                                          data[17],
+                                          (Mode2Submode)data[18],
+                                          data[19]);
 
                         break;
                 }
@@ -142,7 +140,7 @@ public sealed partial class ISO9660
                 return ErrorNumber.NoError;
             }
 
-            byte[] tmp = new byte[_blockSize];
+            var tmp = new byte[_blockSize];
             Array.Copy(Sector.GetUserData(data, interleaved, fileNumber), (int)offset, tmp, 0, _blockSize);
 
             buffer = tmp;
@@ -157,9 +155,9 @@ public sealed partial class ISO9660
             {
                 ulong dstSector = realSector + 1;
 
-                errno = _image.ReadSectorLong(dstSector, out data);
+                errno = _image.ReadSectorLong(dstSector, out data, out _);
 
-                if(errno != ErrorNumber.NoError) errno = _image.ReadSector(dstSector, out data);
+                if(errno != ErrorNumber.NoError) errno = _image.ReadSector(dstSector, out data, out _);
 
                 if(errno != ErrorNumber.NoError) return errno;
 
@@ -169,26 +167,26 @@ public sealed partial class ISO9660
                     {
                         case 2048:
                             AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.tor_Sector_0_Cooked_Mode_zero_one_Mode_two_Form_one,
-                                                       dstSector);
+                                              Localization.tor_Sector_0_Cooked_Mode_zero_one_Mode_two_Form_one,
+                                              dstSector);
 
                             break;
                         case 2324:
                             AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.tor_Sector_0_Cooked_Mode_two_Form_two,
-                                                       dstSector);
+                                              Localization.tor_Sector_0_Cooked_Mode_two_Form_two,
+                                              dstSector);
 
                             break;
                         case 2336:
                             AaruLogging.Debug(MODULE_NAME,
-                                                       Localization
-                                                          .tor_Sector_0_Cooked_Mode_two_Form_1_File_Number_2_Channel_Number_3_Submode_4_Coding_Information_5,
-                                                       dstSector,
-                                                       ((Mode2Submode)data[2]).HasFlag(Mode2Submode.Form2) ? 2 : 1,
-                                                       data[0],
-                                                       data[1],
-                                                       (Mode2Submode)data[2],
-                                                       data[3]);
+                                              Localization
+                                                 .tor_Sector_0_Cooked_Mode_two_Form_1_File_Number_2_Channel_Number_3_Submode_4_Coding_Information_5,
+                                              dstSector,
+                                              ((Mode2Submode)data[2]).HasFlag(Mode2Submode.Form2) ? 2 : 1,
+                                              data[0],
+                                              data[1],
+                                              (Mode2Submode)data[2],
+                                              data[3]);
 
                             break;
                         case 2352 when data[0]  != 0x00 ||
@@ -208,27 +206,27 @@ public sealed partial class ISO9660
                             break;
                         case 2352 when data[15] != 2:
                             AaruLogging.Debug(MODULE_NAME,
-                                                       Localization.tor_Sector_0_1_2_3_Raw_Mode_4,
-                                                       dstSector,
-                                                       data[12],
-                                                       data[13],
-                                                       data[14],
-                                                       data[15]);
+                                              Localization.tor_Sector_0_1_2_3_Raw_Mode_4,
+                                              dstSector,
+                                              data[12],
+                                              data[13],
+                                              data[14],
+                                              data[15]);
 
                             break;
                         case 2352:
                             AaruLogging.Debug(MODULE_NAME,
-                                                       Localization
-                                                          .tor_Sector_0_1_2_3_Raw_Mode_two_Form_4_File_Number_5_Channel_Number_6_Submode_7_Coding_Information_8,
-                                                       dstSector,
-                                                       data[12],
-                                                       data[13],
-                                                       data[14],
-                                                       ((Mode2Submode)data[18]).HasFlag(Mode2Submode.Form2) ? 2 : 1,
-                                                       data[16],
-                                                       data[17],
-                                                       (Mode2Submode)data[18],
-                                                       data[19]);
+                                              Localization
+                                                 .tor_Sector_0_1_2_3_Raw_Mode_two_Form_4_File_Number_5_Channel_Number_6_Submode_7_Coding_Information_8,
+                                              dstSector,
+                                              data[12],
+                                              data[13],
+                                              data[14],
+                                              ((Mode2Submode)data[18]).HasFlag(Mode2Submode.Form2) ? 2 : 1,
+                                              data[16],
+                                              data[17],
+                                              (Mode2Submode)data[18],
+                                              data[19]);
 
                             break;
                     }
@@ -239,7 +237,7 @@ public sealed partial class ISO9660
                 ms.Write(sectorData, 0, sectorData.Length);
             }
 
-            byte[] tmp = new byte[_blockSize];
+            var tmp = new byte[_blockSize];
             Array.Copy(Sector.GetUserData(ms.ToArray(), interleaved, fileNumber), 0, tmp, 0, _blockSize);
             buffer = tmp;
 

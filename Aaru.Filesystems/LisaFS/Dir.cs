@@ -44,89 +44,6 @@ namespace Aaru.Filesystems;
 
 public sealed partial class LisaFS
 {
-#region IReadOnlyFilesystem Members
-
-    /// <inheritdoc />
-    public ErrorNumber ReadLink(string path, out string dest)
-    {
-        dest = null;
-
-        // LisaFS does not support symbolic links (afaik)
-        return ErrorNumber.NotSupported;
-    }
-
-    /// <inheritdoc />
-    public ErrorNumber OpenDir(string path, out IDirNode node)
-    {
-        node = null;
-        ErrorNumber error = LookupFileId(path, out short fileId, out bool isDir);
-
-        if(error != ErrorNumber.NoError) return error;
-
-        if(!isDir) return ErrorNumber.NotDirectory;
-
-        /*List<CatalogEntry> catalog;
-        error = ReadCatalog(fileId, out catalog);
-        if(error != ErrorNumber.NoError)
-            return error;*/
-
-        ReadDir(fileId, out List<string> contents);
-
-        // On debug add system files as readable files
-        // Syntax similar to NTFS
-        if(_debug && fileId == DIRID_ROOT)
-        {
-            contents.Add("$MDDF");
-            contents.Add("$Boot");
-            contents.Add("$Loader");
-            contents.Add("$Bitmap");
-            contents.Add("$S-Record");
-            contents.Add("$");
-        }
-
-        contents.Sort();
-
-        node = new LisaDirNode
-        {
-            Path     = path,
-            Contents = contents.ToArray(),
-            Position = 0
-        };
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
-    public ErrorNumber ReadDir(IDirNode node, out string filename)
-    {
-        filename = null;
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        if(node is not LisaDirNode mynode) return ErrorNumber.InvalidArgument;
-
-        if(mynode.Position < 0) return ErrorNumber.InvalidArgument;
-
-        if(mynode.Position >= mynode.Contents.Length) return ErrorNumber.NoError;
-
-        filename = mynode.Contents[mynode.Position++];
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
-    public ErrorNumber CloseDir(IDirNode node)
-    {
-        if(node is not LisaDirNode mynode) return ErrorNumber.InvalidArgument;
-
-        mynode.Position = -1;
-        mynode.Contents = null;
-
-        return ErrorNumber.NoError;
-    }
-
-#endregion
-
     void ReadDir(short dirId, out List<string> contents) =>
 
         // Do same trick as Mac OS X, replace filesystem '/' with '-',
@@ -218,7 +135,7 @@ public sealed partial class LisaFS
 
             if(catTag.FileId != FILEID_CATALOG || catTag.RelPage != 0) continue;
 
-            errno = _device.ReadSectors(i, 4, out firstCatalogBlock);
+            errno = _device.ReadSectors(i, 4, out firstCatalogBlock, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -245,7 +162,8 @@ public sealed partial class LisaFS
 
             errno = _device.ReadSectors(prevCatalogPointer + _mddf.mddf_block + _volumePrefix,
                                         4,
-                                        out firstCatalogBlock);
+                                        out firstCatalogBlock,
+                                        out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -271,7 +189,8 @@ public sealed partial class LisaFS
 
             errno = _device.ReadSectors(nextCatalogPointer + _mddf.mddf_block + _volumePrefix,
                                         4,
-                                        out byte[] nextCatalogBlock);
+                                        out byte[] nextCatalogBlock,
+                                        out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -395,4 +314,87 @@ public sealed partial class LisaFS
 
         return ErrorNumber.NoError;
     }
+
+#region IReadOnlyFilesystem Members
+
+    /// <inheritdoc />
+    public ErrorNumber ReadLink(string path, out string dest)
+    {
+        dest = null;
+
+        // LisaFS does not support symbolic links (afaik)
+        return ErrorNumber.NotSupported;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber OpenDir(string path, out IDirNode node)
+    {
+        node = null;
+        ErrorNumber error = LookupFileId(path, out short fileId, out bool isDir);
+
+        if(error != ErrorNumber.NoError) return error;
+
+        if(!isDir) return ErrorNumber.NotDirectory;
+
+        /*List<CatalogEntry> catalog;
+        error = ReadCatalog(fileId, out catalog);
+        if(error != ErrorNumber.NoError)
+            return error;*/
+
+        ReadDir(fileId, out List<string> contents);
+
+        // On debug add system files as readable files
+        // Syntax similar to NTFS
+        if(_debug && fileId == DIRID_ROOT)
+        {
+            contents.Add("$MDDF");
+            contents.Add("$Boot");
+            contents.Add("$Loader");
+            contents.Add("$Bitmap");
+            contents.Add("$S-Record");
+            contents.Add("$");
+        }
+
+        contents.Sort();
+
+        node = new LisaDirNode
+        {
+            Path     = path,
+            Contents = contents.ToArray(),
+            Position = 0
+        };
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadDir(IDirNode node, out string filename)
+    {
+        filename = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not LisaDirNode mynode) return ErrorNumber.InvalidArgument;
+
+        if(mynode.Position < 0) return ErrorNumber.InvalidArgument;
+
+        if(mynode.Position >= mynode.Contents.Length) return ErrorNumber.NoError;
+
+        filename = mynode.Contents[mynode.Position++];
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseDir(IDirNode node)
+    {
+        if(node is not LisaDirNode mynode) return ErrorNumber.InvalidArgument;
+
+        mynode.Position = -1;
+        mynode.Contents = null;
+
+        return ErrorNumber.NoError;
+    }
+
+#endregion
 }

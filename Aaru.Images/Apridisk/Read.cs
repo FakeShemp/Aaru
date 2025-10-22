@@ -60,7 +60,7 @@ public sealed partial class Apridisk
         // Count cylinders
         while(stream.Position < stream.Length)
         {
-            byte[] recB = new byte[recordSize];
+            var recB = new byte[recordSize];
             stream.EnsureRead(recB, 0, recordSize);
 
             Record record = Marshal.SpanToStructureLittleEndian<Record>(recB);
@@ -78,7 +78,7 @@ public sealed partial class Apridisk
                     AaruLogging.Debug(MODULE_NAME, Localization.Found_comment_record_at_0, stream.Position);
 
                     stream.Seek(record.headerSize - recordSize, SeekOrigin.Current);
-                    byte[] commentB = new byte[record.dataSize];
+                    var commentB = new byte[record.dataSize];
                     stream.EnsureRead(commentB, 0, commentB.Length);
                     _imageInfo.Comments = StringHandlers.CToString(commentB);
                     AaruLogging.Debug(MODULE_NAME, Localization.Comment_0, _imageInfo.Comments);
@@ -88,7 +88,7 @@ public sealed partial class Apridisk
                     AaruLogging.Debug(MODULE_NAME, Localization.Found_creator_record_at_0, stream.Position);
 
                     stream.Seek(record.headerSize - recordSize, SeekOrigin.Current);
-                    byte[] creatorB = new byte[record.dataSize];
+                    var creatorB = new byte[record.dataSize];
                     stream.EnsureRead(creatorB, 0, creatorB.Length);
                     _imageInfo.Creator = StringHandlers.CToString(creatorB);
                     AaruLogging.Debug(MODULE_NAME, Localization.Creator_0, _imageInfo.Creator);
@@ -99,15 +99,15 @@ public sealed partial class Apridisk
                         return ErrorNumber.NotSupported;
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               record.compression == CompressType.Compressed
-                                                   ? Localization
-                                                      .Found_compressed_sector_record_at_0_for_cylinder_1_head_2_sector_3
-                                                   : Localization
-                                                      .Found_uncompressed_sector_record_at_0_for_cylinder_1_head_2_sector_3,
-                                               stream.Position,
-                                               record.cylinder,
-                                               record.head,
-                                               record.sector);
+                                      record.compression == CompressType.Compressed
+                                          ? Localization
+                                             .Found_compressed_sector_record_at_0_for_cylinder_1_head_2_sector_3
+                                          : Localization
+                                             .Found_uncompressed_sector_record_at_0_for_cylinder_1_head_2_sector_3,
+                                      stream.Position,
+                                      record.cylinder,
+                                      record.head,
+                                      record.sector);
 
                     if(record.cylinder > totalCylinders) totalCylinders = record.cylinder;
 
@@ -131,24 +131,24 @@ public sealed partial class Apridisk
         _sectorsData = new byte[totalCylinders][][][];
 
         // Total sectors per track
-        uint[][] spts = new uint[totalCylinders][];
+        var spts = new uint[totalCylinders][];
 
         _imageInfo.Cylinders = (ushort)totalCylinders;
         _imageInfo.Heads     = (byte)totalHeads;
 
         AaruLogging.Debug(MODULE_NAME,
-                                   Localization.Found_0_cylinders_and_1_heads_with_a_maximum_sector_number_of_2,
-                                   totalCylinders,
-                                   totalHeads,
-                                   maxSector);
+                          Localization.Found_0_cylinders_and_1_heads_with_a_maximum_sector_number_of_2,
+                          totalCylinders,
+                          totalHeads,
+                          maxSector);
 
         // Create heads
-        for(int i = 0; i < totalCylinders; i++)
+        for(var i = 0; i < totalCylinders; i++)
         {
             _sectorsData[i] = new byte[totalHeads][][];
             spts[i]         = new uint[totalHeads];
 
-            for(int j = 0; j < totalHeads; j++) _sectorsData[i][j] = new byte[maxSector + 1][];
+            for(var j = 0; j < totalHeads; j++) _sectorsData[i][j] = new byte[maxSector + 1][];
         }
 
         _imageInfo.SectorSize = uint.MaxValue;
@@ -160,7 +160,7 @@ public sealed partial class Apridisk
 
         while(stream.Position < stream.Length)
         {
-            byte[] recB = new byte[recordSize];
+            var recB = new byte[recordSize];
             stream.EnsureRead(recB, 0, recordSize);
 
             Record record = Marshal.SpanToStructureLittleEndian<Record>(recB);
@@ -178,7 +178,7 @@ public sealed partial class Apridisk
                 case RecordType.Sector:
                     stream.Seek(record.headerSize - recordSize, SeekOrigin.Current);
 
-                    byte[] data = new byte[record.dataSize];
+                    var data = new byte[record.dataSize];
                     stream.EnsureRead(data, 0, data.Length);
 
                     spts[record.cylinder][record.head]++;
@@ -197,9 +197,7 @@ public sealed partial class Apridisk
             }
         }
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   Localization.Found_a_minimum_of_0_bytes_per_sector,
-                                   _imageInfo.SectorSize);
+        AaruLogging.Debug(MODULE_NAME, Localization.Found_a_minimum_of_0_bytes_per_sector, _imageInfo.SectorSize);
 
         // Count sectors per track
         uint spt = uint.MaxValue;
@@ -207,16 +205,13 @@ public sealed partial class Apridisk
         for(ushort cyl = 0; cyl < _imageInfo.Cylinders; cyl++)
         {
             for(ushort head = 0; head < _imageInfo.Heads; head++)
-            {
-                if(spts[cyl][head] < spt) spt = spts[cyl][head];
-            }
+                if(spts[cyl][head] < spt)
+                    spt = spts[cyl][head];
         }
 
         _imageInfo.SectorsPerTrack = spt;
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   Localization.Found_a_minimum_of_0_sectors_per_track,
-                                   _imageInfo.SectorsPerTrack);
+        AaruLogging.Debug(MODULE_NAME, Localization.Found_a_minimum_of_0_sectors_per_track, _imageInfo.SectorsPerTrack);
 
         _imageInfo.MediaType = Geometry.GetMediaType(((ushort)_imageInfo.Cylinders, (byte)_imageInfo.Heads,
                                                       (ushort)_imageInfo.SectorsPerTrack, 512, MediaEncoding.MFM,
@@ -233,36 +228,40 @@ public sealed partial class Apridisk
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer)
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
     {
         buffer                                    = null;
         (ushort cylinder, byte head, byte sector) = LbaToChs(sectorAddress);
+        sectorStatus                              = SectorStatus.NotDumped;
 
-        if(cylinder >= _sectorsData.Length) return ErrorNumber.SectorNotFound;
+        if(cylinder >= _sectorsData.Length           ||
+           head     >= _sectorsData[cylinder].Length ||
+           sector   > _sectorsData[cylinder][head].Length)
+            return ErrorNumber.SectorNotFound;
 
-        if(head >= _sectorsData[cylinder].Length) return ErrorNumber.SectorNotFound;
-
-        if(sector > _sectorsData[cylinder][head].Length) return ErrorNumber.SectorNotFound;
-
-        buffer = _sectorsData[cylinder][head][sector];
+        buffer       = _sectorsData[cylinder][head][sector];
+        sectorStatus = SectorStatus.Dumped;
 
         return ErrorNumber.NoError;
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > _imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
         var ms = new MemoryStream();
+        sectorStatus = new SectorStatus[length];
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector);
+            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus singleSectorStatus);
+            sectorStatus[i] = singleSectorStatus;
 
             if(errno != ErrorNumber.NoError) return errno;
 

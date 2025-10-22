@@ -48,7 +48,7 @@ public sealed partial class AppleMFS
     {
         if(2 + partition.Start >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(2 + partition.Start, out byte[] mdbSector);
+        ErrorNumber errno = imagePlugin.ReadSector(2 + partition.Start, out byte[] mdbSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -69,11 +69,11 @@ public sealed partial class AppleMFS
 
         var mdb = new MasterDirectoryBlock();
 
-        ErrorNumber errno = imagePlugin.ReadSector(2 + partition.Start, out byte[] mdbSector);
+        ErrorNumber errno = imagePlugin.ReadSector(2 + partition.Start, out byte[] mdbSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
-        errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] bbSector);
+        errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] bbSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

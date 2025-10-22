@@ -55,7 +55,7 @@ public sealed partial class KryoFlux
 
         if(stream.Length < Marshal.SizeOf<OobBlock>()) return ErrorNumber.InvalidArgument;
 
-        byte[] hdr = new byte[Marshal.SizeOf<OobBlock>()];
+        var hdr = new byte[Marshal.SizeOf<OobBlock>()];
         stream.EnsureRead(hdr, 0, Marshal.SizeOf<OobBlock>());
 
         OobBlock header = Marshal.ByteArrayToStructureLittleEndian<OobBlock>(hdr);
@@ -78,7 +78,7 @@ public sealed partial class KryoFlux
         tracks = new SortedDictionary<byte, IFilter>();
         byte step    = 1;
         byte heads   = 2;
-        bool topHead = false;
+        var  topHead = false;
 
         string basename = Path.Combine(imageFilter.ParentFolder, imageFilter.Filename[..^8]);
 
@@ -97,8 +97,7 @@ public sealed partial class KryoFlux
                 {
                     case 0 when head == 0:
                         AaruLogging.Debug(MODULE_NAME,
-                                                   Localization
-                                                      .Cannot_find_cyl_0_hd_0_supposing_only_top_head_was_dumped);
+                                          Localization.Cannot_find_cyl_0_hd_0_supposing_only_top_head_was_dumped);
 
                         topHead = true;
                         heads   = 1;
@@ -106,15 +105,13 @@ public sealed partial class KryoFlux
                         continue;
                     case 0:
                         AaruLogging.Debug(MODULE_NAME,
-                                                   Localization
-                                                      .Cannot_find_cyl_0_hd_1_supposing_only_bottom_head_was_dumped);
+                                          Localization.Cannot_find_cyl_0_hd_1_supposing_only_bottom_head_was_dumped);
 
                         heads = 1;
 
                         continue;
                     case 1:
-                        AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.Cannot_find_cyl_1_supposing_double_stepping);
+                        AaruLogging.Debug(MODULE_NAME, Localization.Cannot_find_cyl_1_supposing_double_stepping);
 
                         step = 2;
 
@@ -138,7 +135,7 @@ public sealed partial class KryoFlux
 
             while(trackStream.Position < trackStream.Length)
             {
-                byte blockId = (byte)trackStream.ReadByte();
+                var blockId = (byte)trackStream.ReadByte();
 
                 switch(blockId)
                 {
@@ -146,7 +143,7 @@ public sealed partial class KryoFlux
                     {
                         trackStream.Position--;
 
-                        byte[] oob = new byte[Marshal.SizeOf<OobBlock>()];
+                        var oob = new byte[Marshal.SizeOf<OobBlock>()];
                         trackStream.EnsureRead(oob, 0, Marshal.SizeOf<OobBlock>());
 
                         OobBlock oobBlk = Marshal.ByteArrayToStructureLittleEndian<OobBlock>(oob);
@@ -165,7 +162,7 @@ public sealed partial class KryoFlux
                             break;
                         }
 
-                        byte[] kfinfo = new byte[oobBlk.length];
+                        var kfinfo = new byte[oobBlk.length];
                         trackStream.EnsureRead(kfinfo, 0, oobBlk.length);
                         string kfinfoStr = StringHandlers.CToString(kfinfo);
 
@@ -177,7 +174,7 @@ public sealed partial class KryoFlux
 
                         DateTime blockDate = DateTime.Now;
                         DateTime blockTime = DateTime.Now;
-                        bool     foundDate = false;
+                        var      foundDate = false;
 
                         foreach(string[] kvp in lines.Select(line => line.Split('=')).Where(kvp => kvp.Length == 2))
                         {
@@ -276,16 +273,22 @@ public sealed partial class KryoFlux
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer) => ReadSectors(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.NotDumped;
+
+        return ReadSectors(sectorAddress, 1, out buffer, out _);
+    }
 
     /// <inheritdoc />
     public ErrorNumber ReadSectorTag(ulong sectorAddress, SectorTagType tag, out byte[] buffer) =>
         ReadSectorsTag(sectorAddress, 1, tag, out buffer);
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         return ErrorNumber.NotImplemented;
     }
@@ -299,13 +302,19 @@ public sealed partial class KryoFlux
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer) =>
-        ReadSectorsLong(sectorAddress, 1, out buffer);
+    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    {
+        sectorStatus = SectorStatus.NotDumped;
+
+        return ReadSectorsLong(sectorAddress, 1, out buffer, out _);
+    }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, out byte[] buffer)
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+                                       out SectorStatus[] sectorStatus)
     {
-        buffer = null;
+        buffer       = null;
+        sectorStatus = null;
 
         return ErrorNumber.NotImplemented;
     }

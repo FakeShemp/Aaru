@@ -51,17 +51,17 @@ public sealed partial class XFS
         // Misaligned
         if(imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc)
         {
-            uint sbSize = (uint)((Marshal.SizeOf<Superblock>() + 0x400) / imagePlugin.Info.SectorSize);
+            var sbSize = (uint)((Marshal.SizeOf<Superblock>() + 0x400) / imagePlugin.Info.SectorSize);
 
             if((Marshal.SizeOf<Superblock>() + 0x400) % imagePlugin.Info.SectorSize != 0) sbSize++;
 
-            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector);
+            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
             if(sector.Length < Marshal.SizeOf<Superblock>()) return false;
 
-            byte[] sbpiece = new byte[Marshal.SizeOf<Superblock>()];
+            var sbpiece = new byte[Marshal.SizeOf<Superblock>()];
 
             foreach(int location in new[]
                     {
@@ -73,10 +73,10 @@ public sealed partial class XFS
                 Superblock xfsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sbpiece);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization.magic_at_0_X3_equals_1_expected_2,
-                                           location,
-                                           xfsSb.magicnum,
-                                           XFS_MAGIC);
+                                  Localization.magic_at_0_X3_equals_1_expected_2,
+                                  location,
+                                  xfsSb.magicnum,
+                                  XFS_MAGIC);
 
                 if(xfsSb.magicnum == XFS_MAGIC) return true;
             }
@@ -88,13 +88,14 @@ public sealed partial class XFS
                         0, 1, 2
                     })
             {
-                ulong location = (ulong)i;
+                var location = (ulong)i;
 
-                uint sbSize = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
+                var sbSize = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
 
                 if(Marshal.SizeOf<Superblock>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
-                ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + location, sbSize, out byte[] sector);
+                ErrorNumber errno =
+                    imagePlugin.ReadSectors(partition.Start + location, sbSize, out byte[] sector, out _);
 
                 if(errno != ErrorNumber.NoError) continue;
 
@@ -103,10 +104,10 @@ public sealed partial class XFS
                 Superblock xfsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization.magic_at_0_equals_1_expected_2,
-                                           location,
-                                           xfsSb.magicnum,
-                                           XFS_MAGIC);
+                                  Localization.magic_at_0_equals_1_expected_2,
+                                  location,
+                                  xfsSb.magicnum,
+                                  XFS_MAGIC);
 
                 if(xfsSb.magicnum == XFS_MAGIC) return true;
             }
@@ -130,15 +131,15 @@ public sealed partial class XFS
         // Misaligned
         if(imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc)
         {
-            uint sbSize = (uint)((Marshal.SizeOf<Superblock>() + 0x400) / imagePlugin.Info.SectorSize);
+            var sbSize = (uint)((Marshal.SizeOf<Superblock>() + 0x400) / imagePlugin.Info.SectorSize);
 
             if((Marshal.SizeOf<Superblock>() + 0x400) % imagePlugin.Info.SectorSize != 0) sbSize++;
 
-            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector);
+            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector, out _);
 
             if(errno != ErrorNumber.NoError || sector.Length < Marshal.SizeOf<Superblock>()) return;
 
-            byte[] sbpiece = new byte[Marshal.SizeOf<Superblock>()];
+            var sbpiece = new byte[Marshal.SizeOf<Superblock>()];
 
             foreach(int location in new[]
                     {
@@ -150,10 +151,10 @@ public sealed partial class XFS
                 xfsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sbpiece);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization.magic_at_0_X3_equals_1_expected_2,
-                                           location,
-                                           xfsSb.magicnum,
-                                           XFS_MAGIC);
+                                  Localization.magic_at_0_X3_equals_1_expected_2,
+                                  location,
+                                  xfsSb.magicnum,
+                                  XFS_MAGIC);
 
                 if(xfsSb.magicnum == XFS_MAGIC) break;
             }
@@ -165,22 +166,23 @@ public sealed partial class XFS
                         0, 1, 2
                     })
             {
-                ulong location = (ulong)i;
-                uint  sbSize   = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
+                var location = (ulong)i;
+                var sbSize   = (uint)(Marshal.SizeOf<Superblock>() / imagePlugin.Info.SectorSize);
 
                 if(Marshal.SizeOf<Superblock>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
-                ErrorNumber errno = imagePlugin.ReadSectors(partition.Start + location, sbSize, out byte[] sector);
+                ErrorNumber errno =
+                    imagePlugin.ReadSectors(partition.Start + location, sbSize, out byte[] sector, out _);
 
                 if(errno != ErrorNumber.NoError || sector.Length < Marshal.SizeOf<Superblock>()) return;
 
                 xfsSb = Marshal.ByteArrayToStructureBigEndian<Superblock>(sector);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization.magic_at_0_equals_1_expected_2,
-                                           location,
-                                           xfsSb.magicnum,
-                                           XFS_MAGIC);
+                                  Localization.magic_at_0_equals_1_expected_2,
+                                  location,
+                                  xfsSb.magicnum,
+                                  XFS_MAGIC);
 
                 if(xfsSb.magicnum == XFS_MAGIC) break;
             }

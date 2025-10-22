@@ -40,172 +40,6 @@ namespace Aaru.Filesystems;
 
 public sealed partial class FAT
 {
-#region IReadOnlyFilesystem Members
-
-    /// <inheritdoc />
-    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
-    {
-        attributes = new FileAttributes();
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        ErrorNumber err = Stat(path, out FileEntryInfo stat);
-
-        if(err != ErrorNumber.NoError) return err;
-
-        attributes = stat.Attributes;
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
-    public ErrorNumber OpenFile(string path, out IFileNode node)
-    {
-        node = null;
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        ErrorNumber err = Stat(path, out FileEntryInfo stat);
-
-        if(err != ErrorNumber.NoError) return err;
-
-        if(stat.Attributes.HasFlag(FileAttributes.Directory) && !_debug) return ErrorNumber.IsDirectory;
-
-        uint[] clusters = GetClusters((uint)stat.Inode);
-
-        if(clusters is null) return ErrorNumber.InvalidArgument;
-
-        node = new FatFileNode
-        {
-            Path     = path,
-            Length   = stat.Length,
-            Offset   = 0,
-            Clusters = clusters
-        };
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
-    public ErrorNumber CloseFile(IFileNode node)
-    {
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        if(node is not FatFileNode mynode) return ErrorNumber.InvalidArgument;
-
-        mynode.Clusters = null;
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
-    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
-    {
-        read = 0;
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        if(buffer is null || buffer.Length < length) return ErrorNumber.InvalidArgument;
-
-        if(node is not FatFileNode mynode) return ErrorNumber.InvalidArgument;
-
-        read = length;
-
-        if(length + mynode.Offset >= mynode.Length) read = mynode.Length - mynode.Offset;
-
-        long firstCluster    = mynode.Offset            / _bytesPerCluster;
-        long offsetInCluster = mynode.Offset            % _bytesPerCluster;
-        long sizeInClusters  = (read + offsetInCluster) / _bytesPerCluster;
-
-        if((read + offsetInCluster) % _bytesPerCluster > 0) sizeInClusters++;
-
-        var ms = new MemoryStream();
-
-        for(var i = 0; i < sizeInClusters; i++)
-        {
-            if(i + firstCluster >= mynode.Clusters.Length) return ErrorNumber.InvalidArgument;
-
-            ErrorNumber errno =
-                _image.ReadSectors(_firstClusterSector + mynode.Clusters[i + firstCluster] * _sectorsPerCluster,
-                                   _sectorsPerCluster,
-                                   out byte[] buf);
-
-            if(errno != ErrorNumber.NoError) return errno;
-
-            ms.Write(buf, 0, buf.Length);
-        }
-
-        ms.Position = offsetInCluster;
-        ms.EnsureRead(buffer, 0, (int)read);
-        mynode.Offset += read;
-
-        return ErrorNumber.NoError;
-    }
-
-    /// <inheritdoc />
-    public ErrorNumber Stat(string path, out FileEntryInfo stat)
-    {
-        stat = null;
-
-        if(!_mounted) return ErrorNumber.AccessDenied;
-
-        ErrorNumber err = GetFileEntry(path, out CompleteDirectoryEntry completeEntry);
-
-        if(err != ErrorNumber.NoError) return err;
-
-        DirectoryEntry entry = completeEntry.Dirent;
-
-        stat = new FileEntryInfo
-        {
-            Attributes = new FileAttributes(),
-            Blocks     = entry.size / _bytesPerCluster,
-            BlockSize  = _bytesPerCluster,
-            Length     = entry.size,
-            Inode      = (ulong)(_fat32 ? (entry.ea_handle << 16) + entry.start_cluster : entry.start_cluster),
-            Links      = 1
-        };
-
-        if(entry.cdate > 0 || entry.ctime > 0) stat.CreationTime = DateHandlers.DosToDateTime(entry.cdate, entry.ctime);
-
-        if(_namespace != Namespace.Human)
-        {
-            if(entry.mdate > 0 || entry.mtime > 0)
-                stat.LastWriteTime = DateHandlers.DosToDateTime(entry.mdate, entry.mtime);
-
-            if(entry.ctime_ms > 0) stat.CreationTime = stat.CreationTime?.AddMilliseconds(entry.ctime_ms * 10);
-        }
-
-        if(entry.size % _bytesPerCluster > 0) stat.Blocks++;
-
-        if(entry.attributes.HasFlag(FatAttributes.Subdirectory))
-        {
-            stat.Attributes |= FileAttributes.Directory;
-
-            if(_fat32 && entry.ea_handle << 16 > 0 || entry.start_cluster > 0)
-            {
-                stat.Blocks = _fat32
-                                  ? GetClusters((uint)((entry.ea_handle << 16) + entry.start_cluster))?.Length ?? 0
-                                  : GetClusters(entry.start_cluster)?.Length                                   ?? 0;
-            }
-
-            stat.Length = stat.Blocks * stat.BlockSize;
-        }
-
-        if(entry.attributes.HasFlag(FatAttributes.ReadOnly)) stat.Attributes |= FileAttributes.ReadOnly;
-
-        if(entry.attributes.HasFlag(FatAttributes.Hidden)) stat.Attributes |= FileAttributes.Hidden;
-
-        if(entry.attributes.HasFlag(FatAttributes.System)) stat.Attributes |= FileAttributes.System;
-
-        if(entry.attributes.HasFlag(FatAttributes.Archive)) stat.Attributes |= FileAttributes.Archive;
-
-        if(entry.attributes.HasFlag(FatAttributes.Device)) stat.Attributes |= FileAttributes.Device;
-
-        return ErrorNumber.NoError;
-    }
-
-#endregion
-
     uint[] GetClusters(uint startCluster)
     {
         if(startCluster == 0) return [];
@@ -221,7 +55,7 @@ public sealed partial class FAT
         var nextEntry = (int)(nextCluster % _fatEntriesPerSector);
 
         ulong       currentSector = nextSector;
-        ErrorNumber errno         = _image.ReadSector(currentSector, out byte[] fatData);
+        ErrorNumber errno         = _image.ReadSector(currentSector, out byte[] fatData, out _);
 
         if(errno != ErrorNumber.NoError) return null;
 
@@ -233,7 +67,7 @@ public sealed partial class FAT
 
                 if(currentSector != nextSector)
                 {
-                    errno = _image.ReadSector(nextSector, out fatData);
+                    errno = _image.ReadSector(nextSector, out fatData, out _);
 
                     if(errno != ErrorNumber.NoError) return null;
 
@@ -322,4 +156,171 @@ public sealed partial class FAT
 
         return sum;
     }
+
+#region IReadOnlyFilesystem Members
+
+    /// <inheritdoc />
+    public ErrorNumber GetAttributes(string path, out FileAttributes attributes)
+    {
+        attributes = new FileAttributes();
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ErrorNumber err = Stat(path, out FileEntryInfo stat);
+
+        if(err != ErrorNumber.NoError) return err;
+
+        attributes = stat.Attributes;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber OpenFile(string path, out IFileNode node)
+    {
+        node = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ErrorNumber err = Stat(path, out FileEntryInfo stat);
+
+        if(err != ErrorNumber.NoError) return err;
+
+        if(stat.Attributes.HasFlag(FileAttributes.Directory) && !_debug) return ErrorNumber.IsDirectory;
+
+        uint[] clusters = GetClusters((uint)stat.Inode);
+
+        if(clusters is null) return ErrorNumber.InvalidArgument;
+
+        node = new FatFileNode
+        {
+            Path     = path,
+            Length   = stat.Length,
+            Offset   = 0,
+            Clusters = clusters
+        };
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber CloseFile(IFileNode node)
+    {
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(node is not FatFileNode mynode) return ErrorNumber.InvalidArgument;
+
+        mynode.Clusters = null;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read)
+    {
+        read = 0;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        if(buffer is null || buffer.Length < length) return ErrorNumber.InvalidArgument;
+
+        if(node is not FatFileNode mynode) return ErrorNumber.InvalidArgument;
+
+        read = length;
+
+        if(length + mynode.Offset >= mynode.Length) read = mynode.Length - mynode.Offset;
+
+        long firstCluster    = mynode.Offset            / _bytesPerCluster;
+        long offsetInCluster = mynode.Offset            % _bytesPerCluster;
+        long sizeInClusters  = (read + offsetInCluster) / _bytesPerCluster;
+
+        if((read + offsetInCluster) % _bytesPerCluster > 0) sizeInClusters++;
+
+        var ms = new MemoryStream();
+
+        for(var i = 0; i < sizeInClusters; i++)
+        {
+            if(i + firstCluster >= mynode.Clusters.Length) return ErrorNumber.InvalidArgument;
+
+            ErrorNumber errno =
+                _image.ReadSectors(_firstClusterSector + mynode.Clusters[i + firstCluster] * _sectorsPerCluster,
+                                   _sectorsPerCluster,
+                                   out byte[] buf,
+                                   out _);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            ms.Write(buf, 0, buf.Length);
+        }
+
+        ms.Position = offsetInCluster;
+        ms.EnsureRead(buffer, 0, (int)read);
+        mynode.Offset += read;
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber Stat(string path, out FileEntryInfo stat)
+    {
+        stat = null;
+
+        if(!_mounted) return ErrorNumber.AccessDenied;
+
+        ErrorNumber err = GetFileEntry(path, out CompleteDirectoryEntry completeEntry);
+
+        if(err != ErrorNumber.NoError) return err;
+
+        DirectoryEntry entry = completeEntry.Dirent;
+
+        stat = new FileEntryInfo
+        {
+            Attributes = new FileAttributes(),
+            Blocks     = entry.size / _bytesPerCluster,
+            BlockSize  = _bytesPerCluster,
+            Length     = entry.size,
+            Inode      = (ulong)(_fat32 ? (entry.ea_handle << 16) + entry.start_cluster : entry.start_cluster),
+            Links      = 1
+        };
+
+        if(entry.cdate > 0 || entry.ctime > 0) stat.CreationTime = DateHandlers.DosToDateTime(entry.cdate, entry.ctime);
+
+        if(_namespace != Namespace.Human)
+        {
+            if(entry.mdate > 0 || entry.mtime > 0)
+                stat.LastWriteTime = DateHandlers.DosToDateTime(entry.mdate, entry.mtime);
+
+            if(entry.ctime_ms > 0) stat.CreationTime = stat.CreationTime?.AddMilliseconds(entry.ctime_ms * 10);
+        }
+
+        if(entry.size % _bytesPerCluster > 0) stat.Blocks++;
+
+        if(entry.attributes.HasFlag(FatAttributes.Subdirectory))
+        {
+            stat.Attributes |= FileAttributes.Directory;
+
+            if(_fat32 && entry.ea_handle << 16 > 0 || entry.start_cluster > 0)
+            {
+                stat.Blocks = _fat32
+                                  ? GetClusters((uint)((entry.ea_handle << 16) + entry.start_cluster))?.Length ?? 0
+                                  : GetClusters(entry.start_cluster)?.Length                                   ?? 0;
+            }
+
+            stat.Length = stat.Blocks * stat.BlockSize;
+        }
+
+        if(entry.attributes.HasFlag(FatAttributes.ReadOnly)) stat.Attributes |= FileAttributes.ReadOnly;
+
+        if(entry.attributes.HasFlag(FatAttributes.Hidden)) stat.Attributes |= FileAttributes.Hidden;
+
+        if(entry.attributes.HasFlag(FatAttributes.System)) stat.Attributes |= FileAttributes.System;
+
+        if(entry.attributes.HasFlag(FatAttributes.Archive)) stat.Attributes |= FileAttributes.Archive;
+
+        if(entry.attributes.HasFlag(FatAttributes.Device)) stat.Attributes |= FileAttributes.Device;
+
+        return ErrorNumber.NoError;
+    }
+
+#endregion
 }

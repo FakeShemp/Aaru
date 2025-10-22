@@ -95,7 +95,7 @@ public sealed partial class NeXTDisklabel : IPartition
                     0, 4, 15, 16
                 }.TakeWhile(i => i + sectorOffset < imagePlugin.Info.Sectors))
         {
-            errno = imagePlugin.ReadSector(i + sectorOffset, out labelSector);
+            errno = imagePlugin.ReadSector(i + sectorOffset, out labelSector, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -115,7 +115,7 @@ public sealed partial class NeXTDisklabel : IPartition
 
         if(7680 % imagePlugin.Info.SectorSize > 0) sectorsToRead++;
 
-        errno = imagePlugin.ReadSectors(labelPosition, sectorsToRead, out labelSector);
+        errno = imagePlugin.ReadSectors(labelPosition, sectorsToRead, out labelSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 

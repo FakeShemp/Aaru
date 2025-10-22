@@ -159,6 +159,7 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
         lifetime!.Shutdown();
     }
 
+    // TODO: Show message when sector was not dumped
     void LoadSector()
     {
         Lines.Clear();
@@ -167,7 +168,7 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
 
         if(_longMode)
         {
-            ErrorNumber errno = _imageFormat.ReadSectorLong(CurrentSector, out sector);
+            ErrorNumber errno = _imageFormat.ReadSectorLong(CurrentSector, out sector, out _);
 
             if(errno != ErrorNumber.NoError)
             {
@@ -177,7 +178,7 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
             }
         }
         else
-            _imageFormat.ReadSector(CurrentSector, out sector);
+            _imageFormat.ReadSector(CurrentSector, out sector, out _);
 
         using var stream = new MemoryStream(sector);
         var       buffer = new byte[BYTES_PER_LINE];

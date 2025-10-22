@@ -61,7 +61,7 @@ public sealed partial class Dump
 
         if(Marshal.SizeOf<s_spcl>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -100,7 +100,7 @@ public sealed partial class Dump
 
         if(Marshal.SizeOf<s_spcl>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

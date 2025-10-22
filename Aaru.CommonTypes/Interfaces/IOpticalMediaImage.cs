@@ -63,7 +63,8 @@ public interface IOpticalMediaImage : IMediaImage, IPartitionableMediaImage, IVe
     /// <param name="sectorAddress">Sector address (relative LBA).</param>
     /// <param name="track">Track.</param>
     /// <param name="buffer"></param>
-    ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer);
+    /// <param name="sectorStatus"></param>
+    ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus);
 
     /// <summary>Reads a sector's tag, relative to track.</summary>
     /// <returns>The sector's tag.</returns>
@@ -79,7 +80,9 @@ public interface IOpticalMediaImage : IMediaImage, IPartitionableMediaImage, IVe
     /// <param name="length">How many sectors to read.</param>
     /// <param name="track">Track.</param>
     /// <param name="buffer"></param>
-    ErrorNumber ReadSectors(ulong sectorAddress, uint length, uint track, out byte[] buffer);
+    /// <param name="sectorStatus"></param>
+    ErrorNumber ReadSectors(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
+                            out SectorStatus[] sectorStatus);
 
     /// <summary>Reads tag from several sectors, relative to track.</summary>
     /// <returns>The sectors tag.</returns>
@@ -95,7 +98,8 @@ public interface IOpticalMediaImage : IMediaImage, IPartitionableMediaImage, IVe
     /// <param name="sectorAddress">Sector address (relative LBA).</param>
     /// <param name="track">Track.</param>
     /// <param name="buffer"></param>
-    ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer);
+    /// <param name="sectorStatus"></param>
+    ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus);
 
     /// <summary>Reads several complete sector (user data + all tags), relative to track.</summary>
     /// <returns>The complete sectors. Format depends on disk type.</returns>
@@ -103,7 +107,9 @@ public interface IOpticalMediaImage : IMediaImage, IPartitionableMediaImage, IVe
     /// <param name="length">How many sectors to read.</param>
     /// <param name="track">Track.</param>
     /// <param name="buffer"></param>
-    ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, uint track, out byte[] buffer);
+    /// <param name="sectorStatus"></param>
+    ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
+                                out SectorStatus[] sectorStatus);
 
     /// <summary>Gets the disc track extents for a specified session.</summary>
     /// <returns>The track extents for that session.</returns>

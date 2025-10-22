@@ -117,9 +117,9 @@ sealed class PrintHexCommand : Command<PrintHexCommand.Settings>
 
             AaruLogging.WriteLine($"[bold][italic]{string.Format(UI.Start_0_as_in_sector_start, settings.Start)}[/][/]");
 
-            byte[]      data      = new byte[settings.Length];
+            var         data      = new byte[settings.Length];
             ErrorNumber errno     = ErrorNumber.NoError;
-            int         bytesRead = 0;
+            var         bytesRead = 0;
 
             Core.Spectre.ProgressSingleSpinner(ctx =>
             {
@@ -136,7 +136,7 @@ sealed class PrintHexCommand : Command<PrintHexCommand.Settings>
             // TODO: Span
             if(bytesRead != (int)settings.Length)
             {
-                byte[] tmp = new byte[bytesRead];
+                var tmp = new byte[bytesRead];
                 Array.Copy(data, 0, tmp, 0, bytesRead);
                 data = tmp;
             }
@@ -180,13 +180,14 @@ sealed class PrintHexCommand : Command<PrintHexCommand.Settings>
                 byte[]      sector = [];
                 ErrorNumber errno  = ErrorNumber.NoError;
 
+                // TODO: Print a message when a sector is not dumped or other status
                 Core.Spectre.ProgressSingleSpinner(ctx =>
                 {
                     ctx.AddTask(UI.Reading_sector).IsIndeterminate();
 
                     errno = longSectors
-                                ? blockImage.ReadSectorLong(settings.Start + i, out sector)
-                                : blockImage.ReadSector(settings.Start     + i, out sector);
+                                ? blockImage.ReadSectorLong(settings.Start + i, out sector, out _)
+                                : blockImage.ReadSector(settings.Start     + i, out sector, out _);
                 });
 
                 if(errno == ErrorNumber.NoError)

@@ -102,8 +102,8 @@ public sealed partial class LisaFS
         if(extTag.FileId != (short)(-1 * fileId)) return ErrorNumber.NoSuchFile;
 
         errno = _mddf.fsversion == LISA_V1
-                    ? _device.ReadSectors(ptr, 2, out byte[] sector)
-                    : _device.ReadSector(ptr, out sector);
+                    ? _device.ReadSectors(ptr, 2, out byte[] sector, out _)
+                    : _device.ReadSector(ptr, out sector, out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -308,7 +308,8 @@ public sealed partial class LisaFS
         // Searches the S-Records place using MDDF pointers
         ErrorNumber errno = _device.ReadSectors(_mddf.srec_ptr + _mddf.mddf_block + _volumePrefix,
                                                 _mddf.srec_len,
-                                                out byte[] sectors);
+                                                out byte[] sectors,
+                                                out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 

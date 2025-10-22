@@ -86,7 +86,7 @@ public sealed partial class VTOC : IPartition
                     0, 1, 8, 29
                 }.TakeWhile(i => i + sectorOffset < imagePlugin.Info.Sectors))
         {
-            errno = imagePlugin.ReadSector(i + sectorOffset, out pdsector);
+            errno = imagePlugin.ReadSector(i + sectorOffset, out pdsector, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -169,7 +169,7 @@ public sealed partial class VTOC : IPartition
 
         magicFound = false;
         var useOld = false;
-        errno = imagePlugin.ReadSector(pdloc + sectorOffset + 1, out byte[] vtocsector);
+        errno = imagePlugin.ReadSector(pdloc + sectorOffset + 1, out byte[] vtocsector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -249,7 +249,7 @@ public sealed partial class VTOC : IPartition
                 return false;
             }
 
-            errno = imagePlugin.ReadSectors(relSecPtr + sectorOffset, secCount, out byte[] tmp);
+            errno = imagePlugin.ReadSectors(relSecPtr + sectorOffset, secCount, out byte[] tmp, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
