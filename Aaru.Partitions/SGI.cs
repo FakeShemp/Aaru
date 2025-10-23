@@ -70,7 +70,7 @@ public sealed partial class SGI : IPartition
     {
         partitions = [];
 
-        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError || sector.Length < 512) return false;
 

@@ -663,11 +663,11 @@ public sealed partial class Sidecar
                 xmlTrk.FileSystemInformation.Add(metadataPartition);
             }
 
-            errno = image.ReadSectorTag(trk.Sequence, SectorTagType.CdTrackIsrc, out byte[] isrcData);
+            errno = image.ReadSectorTag(trk.Sequence, false, SectorTagType.CdTrackIsrc, out byte[] isrcData);
 
             if(errno == ErrorNumber.NoError) xmlTrk.ISRC = Encoding.UTF8.GetString(isrcData);
 
-            errno = image.ReadSectorTag(trk.Sequence, SectorTagType.CdTrackFlags, out byte[] flagsData);
+            errno = image.ReadSectorTag(trk.Sequence, false, SectorTagType.CdTrackFlags, out byte[] flagsData);
 
             if(errno == ErrorNumber.NoError)
             {

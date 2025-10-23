@@ -377,6 +377,7 @@ partial class Dump
 
                 outputFormat.WriteSectors(readBuffer,
                                           i,
+                                          false,
                                           blocksToRead,
                                           Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
 
@@ -396,6 +397,7 @@ partial class Dump
 
                 outputFormat.WriteSectors(new byte[blockSize * _skip],
                                           i,
+                                          false,
                                           _skip,
                                           Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
 
@@ -480,7 +482,7 @@ partial class Dump
 
                 _resume.BadBlocks.Remove(badSector);
                 extents.Add(badSector);
-                outputFormat.WriteSector(readBuffer, badSector, SectorStatus.Dumped);
+                outputFormat.WriteSector(readBuffer, badSector, false, SectorStatus.Dumped);
                 _mediaGraph?.PaintSectorGood(badSector);
             }
 
@@ -647,14 +649,14 @@ partial class Dump
                 {
                     _resume.BadBlocks.Remove(badSector);
                     extents.Add(badSector);
-                    outputFormat.WriteSector(readBuffer, badSector, SectorStatus.Dumped);
+                    outputFormat.WriteSector(readBuffer, badSector, false, SectorStatus.Dumped);
                     _mediaGraph?.PaintSectorGood(badSector);
 
                     UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_block_0_in_pass_1,
                                                        badSector,
                                                        pass));
                 }
-                else if(runningPersistent) outputFormat.WriteSector(readBuffer, badSector, SectorStatus.Errored);
+                else if(runningPersistent) outputFormat.WriteSector(readBuffer, badSector, false, SectorStatus.Errored);
             }
 
             if(pass < _retryPasses && !_aborted && _resume.BadBlocks.Count > 0)

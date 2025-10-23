@@ -339,6 +339,7 @@ public partial class Dump
 
                             outputFormat.WriteSectors(cmdBuf,
                                                       i,
+                                                      false,
                                                       blocksToRead,
                                                       Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)
                                                                 .ToArray());
@@ -359,6 +360,7 @@ public partial class Dump
 
                             outputFormat.WriteSectors(new byte[blockSize * _skip],
                                                       i,
+                                                      false,
                                                       _skip,
                                                       Enumerable.Repeat(SectorStatus.NotDumped, (int)blocksToRead)
                                                                 .ToArray());
@@ -448,7 +450,7 @@ public partial class Dump
 
                             _resume.BadBlocks.Remove(badSector);
                             extents.Add(badSector);
-                            outputFormat.WriteSector(cmdBuf, badSector, SectorStatus.Dumped);
+                            outputFormat.WriteSector(cmdBuf, badSector, false, SectorStatus.Dumped);
                             _mediaGraph?.PaintSectorGood(badSector);
                         }
 
@@ -516,7 +518,7 @@ public partial class Dump
                             {
                                 _resume.BadBlocks.Remove(badSector);
                                 extents.Add(badSector);
-                                outputFormat.WriteSector(cmdBuf, badSector, SectorStatus.Dumped);
+                                outputFormat.WriteSector(cmdBuf, badSector, false, SectorStatus.Dumped);
                                 _mediaGraph?.PaintSectorGood(badSector);
 
                                 UpdateStatus?.Invoke(string.Format(Localization.Core
@@ -524,7 +526,8 @@ public partial class Dump
                                                                    badSector,
                                                                    pass));
                             }
-                            else if(_persistent) outputFormat.WriteSector(cmdBuf, badSector, SectorStatus.Errored);
+                            else if(_persistent)
+                                outputFormat.WriteSector(cmdBuf, badSector, false, SectorStatus.Errored);
                         }
 
                         if(pass < _retryPasses && !_aborted && _resume.BadBlocks.Count > 0)
@@ -627,6 +630,7 @@ public partial class Dump
 
                                     outputFormat.WriteSector(cmdBuf,
                                                              (ulong)((cy * heads + hd) * sectors + (sc - 1)),
+                                                             false,
                                                              SectorStatus.Dumped);
 
                                     imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
@@ -642,6 +646,7 @@ public partial class Dump
 
                                     outputFormat.WriteSector(new byte[blockSize],
                                                              (ulong)((cy * heads + hd) * sectors + (sc - 1)),
+                                                             false,
                                                              SectorStatus.Errored);
 
                                     imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;

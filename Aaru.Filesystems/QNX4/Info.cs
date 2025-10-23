@@ -49,7 +49,7 @@ public sealed partial class QNX4
     {
         if(partition.Start + 1 >= imagePlugin.Info.Sectors) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start + 1, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start + 1, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -88,7 +88,7 @@ public sealed partial class QNX4
     {
         information = "";
         metadata    = new FileSystem();
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start + 1, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start + 1, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

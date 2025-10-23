@@ -180,8 +180,9 @@ partial class Dump
             writtenExtents.Add(0, blocks - 1);
 
             foreach(Tuple<ulong, ulong> blank in blankExtents.ToArray())
-                for(ulong b = blank.Item1; b <= blank.Item2; b++)
-                    writtenExtents.Remove(b);
+            {
+                for(ulong b = blank.Item1; b <= blank.Item2; b++) writtenExtents.Remove(b);
+            }
         }
 
         if(writtenExtents.Count == 0)
@@ -239,6 +240,7 @@ partial class Dump
 
                     outputFormat.WriteSectors(buffer,
                                               i,
+                                              false,
                                               blocksToRead,
                                               Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
 
@@ -257,6 +259,7 @@ partial class Dump
 
                     outputFormat.WriteSectors(new byte[blockSize * _skip],
                                               i,
+                                              false,
                                               _skip,
                                               Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
 

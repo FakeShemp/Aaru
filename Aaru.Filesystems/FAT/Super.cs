@@ -96,7 +96,8 @@ public sealed partial class FAT
 
         uint sectorsPerBpb = imagePlugin.Info.SectorSize < 512 ? 512 / imagePlugin.Info.SectorSize : 1;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(0 + partition.Start, sectorsPerBpb, out byte[] bpbSector, out _);
+        ErrorNumber errno =
+            imagePlugin.ReadSectors(0 + partition.Start, false, sectorsPerBpb, out byte[] bpbSector, out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -193,8 +194,9 @@ public sealed partial class FAT
                 };
 
                 if((fat32Bpb.flags & 0xF8) == 0x00)
-                    if((fat32Bpb.flags & 0x01) == 0x01)
-                        Metadata.Dirty = true;
+                {
+                    if((fat32Bpb.flags & 0x01) == 0x01) Metadata.Dirty = true;
+                }
 
                 if((fat32Bpb.mirror_flags & 0x80) == 0x80) _useFirstFat = (fat32Bpb.mirror_flags & 0xF) != 1;
 
@@ -224,6 +226,7 @@ public sealed partial class FAT
                 if(fat32Bpb.fsinfo_sector + partition.Start <= partition.End)
                 {
                     errno = imagePlugin.ReadSector(fat32Bpb.fsinfo_sector + partition.Start,
+                                                   false,
                                                    out byte[] fsinfoSector,
                                                    out _);
 
@@ -325,7 +328,7 @@ public sealed partial class FAT
                     sectorsPerRealSector = fakeBpb.bps / imagePlugin.Info.SectorSize;
                     _fatFirstSector      = partition.Start + _reservedSectors * sectorsPerRealSector;
 
-                    errno = imagePlugin.ReadSectors(_fatFirstSector, fakeBpb.spfat, out byte[] fatBytes, out _);
+                    errno = imagePlugin.ReadSectors(_fatFirstSector, false, fakeBpb.spfat, out byte[] fatBytes, out _);
 
                     if(errno != ErrorNumber.NoError) return errno;
 
@@ -458,8 +461,9 @@ public sealed partial class FAT
             if(fakeBpb.signature is 0x28 or 0x29 || andosOemCorrect)
             {
                 if((fakeBpb.flags & 0xF8) == 0x00)
-                    if((fakeBpb.flags & 0x01) == 0x01)
-                        Metadata.Dirty = true;
+                {
+                    if((fakeBpb.flags & 0x01) == 0x01) Metadata.Dirty = true;
+                }
 
                 if(fakeBpb.signature == 0x29 || andosOemCorrect)
                 {
@@ -512,7 +516,7 @@ public sealed partial class FAT
         if(!_fat32)
         {
             _firstClusterSector = firstRootSector + sectorsForRootDirectory - _sectorsPerCluster * 2;
-            errno = imagePlugin.ReadSectors(firstRootSector, sectorsForRootDirectory, out rootDirectory, out _);
+            errno = imagePlugin.ReadSectors(firstRootSector, false, sectorsForRootDirectory, out rootDirectory, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -525,7 +529,7 @@ public sealed partial class FAT
                             0x17, 0x19, 0x1B, 0x1D, 0x1E, 0x20
                         })
                 {
-                    errno = imagePlugin.ReadSector(rootSector, out byte[] tmp, out _);
+                    errno = imagePlugin.ReadSector(rootSector, false, out byte[] tmp, out _);
 
                     if(errno != ErrorNumber.NoError) return errno;
 
@@ -545,6 +549,7 @@ public sealed partial class FAT
             foreach(uint cluster in rootDirectoryClusters)
             {
                 errno = imagePlugin.ReadSectors(_firstClusterSector + cluster * _sectorsPerCluster,
+                                                false,
                                                 _sectorsPerCluster,
                                                 out byte[] buffer,
                                                 out _);
@@ -771,7 +776,7 @@ public sealed partial class FAT
         {
             AaruLogging.Debug(MODULE_NAME, Localization.Reading_FAT12);
 
-            errno = imagePlugin.ReadSectors(_fatFirstSector, _sectorsPerFat, out byte[] fatBytes, out _);
+            errno = imagePlugin.ReadSectors(_fatFirstSector, false, _sectorsPerFat, out byte[] fatBytes, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -786,7 +791,11 @@ public sealed partial class FAT
                 firstFatEntries[pos++] = (ushort)(((fatBytes[i + 1] & 0xF0) >> 4) + (fatBytes[i + 2] << 4));
             }
 
-            errno = imagePlugin.ReadSectors(_fatFirstSector + _sectorsPerFat, _sectorsPerFat, out fatBytes, out _);
+            errno = imagePlugin.ReadSectors(_fatFirstSector + _sectorsPerFat,
+                                            false,
+                                            _sectorsPerFat,
+                                            out fatBytes,
+                                            out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -820,14 +829,18 @@ public sealed partial class FAT
         {
             AaruLogging.Debug(MODULE_NAME, Localization.Reading_FAT16);
 
-            errno = imagePlugin.ReadSectors(_fatFirstSector, _sectorsPerFat, out byte[] fatBytes, out _);
+            errno = imagePlugin.ReadSectors(_fatFirstSector, false, _sectorsPerFat, out byte[] fatBytes, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
             AaruLogging.Debug(MODULE_NAME, Localization.Casting_FAT);
             firstFatEntries = MemoryMarshal.Cast<byte, ushort>(fatBytes).ToArray();
 
-            errno = imagePlugin.ReadSectors(_fatFirstSector + _sectorsPerFat, _sectorsPerFat, out fatBytes, out _);
+            errno = imagePlugin.ReadSectors(_fatFirstSector + _sectorsPerFat,
+                                            false,
+                                            _sectorsPerFat,
+                                            out fatBytes,
+                                            out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 

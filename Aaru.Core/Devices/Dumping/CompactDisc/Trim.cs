@@ -424,9 +424,9 @@ partial class Dump
                 Array.Copy(cmdBuf, sectorSize, sub,  0, subSize);
 
                 if(supportsLongSectors)
-                    outputOptical.WriteSectorLong(data, badSector, SectorStatus.Dumped);
+                    outputOptical.WriteSectorLong(data, badSector, false, SectorStatus.Dumped);
                 else
-                    outputOptical.WriteSector(Sector.GetUserData(data), badSector, SectorStatus.Dumped);
+                    outputOptical.WriteSector(Sector.GetUserData(data), badSector, false, SectorStatus.Dumped);
 
                 ulong trkStartBefore = track.StartSector;
 
@@ -468,9 +468,9 @@ partial class Dump
             }
 
             if(supportsLongSectors)
-                outputOptical.WriteSectorLong(cmdBuf, badSector, SectorStatus.Dumped);
+                outputOptical.WriteSectorLong(cmdBuf, badSector, false, SectorStatus.Dumped);
             else
-                outputOptical.WriteSector(Sector.GetUserData(cmdBuf), badSector, SectorStatus.Dumped);
+                outputOptical.WriteSector(Sector.GetUserData(cmdBuf), badSector, false, SectorStatus.Dumped);
         }
 
         _trimStopwatch.Stop();

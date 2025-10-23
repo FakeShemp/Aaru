@@ -285,8 +285,9 @@ partial class Dump
         Modes.DecodedMode? decMode = null;
 
         if(!sense && !_dev.Error)
-            if(Modes.DecodeMode10(cmdBuf, _dev.ScsiType).HasValue)
-                decMode = Modes.DecodeMode10(cmdBuf, _dev.ScsiType);
+        {
+            if(Modes.DecodeMode10(cmdBuf, _dev.ScsiType).HasValue) decMode = Modes.DecodeMode10(cmdBuf, _dev.ScsiType);
+        }
 
         UpdateStatus?.Invoke(Localization.Core.Requesting_MODE_SENSE_6);
 
@@ -314,8 +315,9 @@ partial class Dump
         if(sense || _dev.Error) sense = _dev.ModeSense(out cmdBuf, out senseBuf, 5, out duration);
 
         if(!sense && !_dev.Error)
-            if(Modes.DecodeMode6(cmdBuf, _dev.ScsiType).HasValue)
-                decMode = Modes.DecodeMode6(cmdBuf, _dev.ScsiType);
+        {
+            if(Modes.DecodeMode6(cmdBuf, _dev.ScsiType).HasValue) decMode = Modes.DecodeMode6(cmdBuf, _dev.ScsiType);
+        }
 
         // TODO: Check partitions page
         if(decMode.HasValue)
@@ -1090,7 +1092,7 @@ partial class Dump
 
                 // Write empty data
                 _writeStopwatch.Restart();
-                outputTape.WriteSector(new byte[blockSize], currentBlock, SectorStatus.NotDumped);
+                outputTape.WriteSector(new byte[blockSize], currentBlock, false, SectorStatus.NotDumped);
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
 
                 mhddLog.Write(currentBlock, duration < 500 ? 65535 : duration);
@@ -1102,7 +1104,7 @@ partial class Dump
                 mhddLog.Write(currentBlock, duration);
                 ibgLog.Write(currentBlock, currentSpeed * 1024);
                 _writeStopwatch.Restart();
-                outputTape.WriteSector(cmdBuf, currentBlock, SectorStatus.Dumped);
+                outputTape.WriteSector(cmdBuf, currentBlock, false, SectorStatus.Dumped);
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
                 extents.Add(currentBlock, 1, true);
             }
@@ -1297,13 +1299,13 @@ partial class Dump
                 {
                     _resume.BadBlocks.Remove(badBlock);
                     extents.Add(badBlock);
-                    outputTape.WriteSector(cmdBuf, badBlock, SectorStatus.Dumped);
+                    outputTape.WriteSector(cmdBuf, badBlock, false, SectorStatus.Dumped);
 
                     UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_block_0_in_pass_1,
                                                        badBlock,
                                                        pass));
                 }
-                else if(runningPersistent) outputTape.WriteSector(cmdBuf, badBlock, SectorStatus.Errored);
+                else if(runningPersistent) outputTape.WriteSector(cmdBuf, badBlock, false, SectorStatus.Errored);
             }
 
             if(pass < _retryPasses && !_aborted && _resume.BadBlocks.Count > 0)

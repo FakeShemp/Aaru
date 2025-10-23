@@ -119,10 +119,10 @@ public abstract class OpticalMediaImageTest : BaseMediaImageTest
 
                             if(image.Info.ReadableSectorTags.Contains(SectorTagType.CdTrackFlags))
                             {
-                                ErrorNumber errno =
-                                    image.ReadSectorTag(currentTrack.Sequence,
-                                                        SectorTagType.CdTrackFlags,
-                                                        out byte[] tmp);
+                                ErrorNumber errno = image.ReadSectorTag(currentTrack.Sequence,
+                                                                        false,
+                                                                        SectorTagType.CdTrackFlags,
+                                                                        out byte[] tmp);
 
                                 if(errno != ErrorNumber.NoError) continue;
 
@@ -523,6 +523,7 @@ public abstract class OpticalMediaImageTest : BaseMediaImageTest
                                      if(image.Info.Sectors - doneSectors >= SECTORS_TO_READ)
                                      {
                                          errno = image.ReadSectors(doneSectors,
+                                                                   false,
                                                                    SECTORS_TO_READ,
                                                                    out sector,
                                                                    out SectorStatus[] _);
@@ -532,6 +533,7 @@ public abstract class OpticalMediaImageTest : BaseMediaImageTest
                                      else
                                      {
                                          errno = image.ReadSectors(doneSectors,
+                                                                   false,
                                                                    (uint)(image.Info.Sectors - doneSectors),
                                                                    out sector,
                                                                    out SectorStatus[] _);

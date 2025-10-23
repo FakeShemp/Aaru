@@ -64,8 +64,11 @@ public sealed partial class ext2FS
 
         if(sbSizeInBytes % imagePlugin.Info.SectorSize > 0) sbSizeInSectors++;
 
-        ErrorNumber errno =
-            imagePlugin.ReadSectors(sbSectorOff + partition.Start, sbSizeInSectors, out byte[] sbSector, out _);
+        ErrorNumber errno = imagePlugin.ReadSectors(sbSectorOff + partition.Start,
+                                                    false,
+                                                    sbSizeInSectors,
+                                                    out byte[] sbSector,
+                                                    out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -102,8 +105,11 @@ public sealed partial class ext2FS
         ulong sbSectorOff = SB_POS / imagePlugin.Info.SectorSize;
         uint  sbOff       = SB_POS % imagePlugin.Info.SectorSize;
 
-        ErrorNumber errno =
-            imagePlugin.ReadSectors(sbSectorOff + partition.Start, sbSizeInSectors, out byte[] sbSector, out _);
+        ErrorNumber errno = imagePlugin.ReadSectors(sbSectorOff + partition.Start,
+                                                    false,
+                                                    sbSizeInSectors,
+                                                    out byte[] sbSector,
+                                                    out _);
 
         if(errno != ErrorNumber.NoError) return;
 

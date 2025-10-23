@@ -374,10 +374,10 @@ public sealed partial class FAT
             byte z80Di = bpbSector[0];
 
             // First FAT1 sector resides at LBA 0x14
-            imagePlugin.ReadSector(0x14, out byte[] fat1Sector0, out _);
+            imagePlugin.ReadSector(0x14, false, out byte[] fat1Sector0, out _);
 
             // First FAT2 sector resides at LBA 0x1A
-            imagePlugin.ReadSector(0x1A, out byte[] fat2Sector0, out _);
+            imagePlugin.ReadSector(0x1A, false, out byte[] fat2Sector0, out _);
             bool equalFatIds = fat1Sector0[0] == fat2Sector0[0] && fat1Sector0[1] == fat2Sector0[1];
 
             // Volume is software interleaved 2:1
@@ -388,7 +388,7 @@ public sealed partial class FAT
                         0x17, 0x19, 0x1B, 0x1D, 0x1E, 0x20
                     })
             {
-                imagePlugin.ReadSector(rootSector, out byte[] tmp, out _);
+                imagePlugin.ReadSector(rootSector, false, out byte[] tmp, out _);
                 rootMs.Write(tmp, 0, tmp.Length);
             }
 
@@ -449,7 +449,7 @@ public sealed partial class FAT
            !useExtendedBpb       &&
            !useApricotBpb)
         {
-            imagePlugin.ReadSector(1 + partition.Start, out byte[] fatSector, out _);
+            imagePlugin.ReadSector(1 + partition.Start, false, out byte[] fatSector, out _);
 
             switch(fatSector[0])
             {
@@ -807,6 +807,7 @@ public sealed partial class FAT
         if(apricotBpb.bootLocation > 0 && apricotBpb.bootLocation + apricotBpb.bootSize < imagePlugin.Info.Sectors)
         {
             imagePlugin.ReadSectors(apricotBpb.bootLocation,
+                                    false,
                                     (uint)(apricotBpb.sectorSize * apricotBpb.bootSize) / imagePlugin.Info.SectorSize,
                                     out fakeBpb.boot_code,
                                     out _);

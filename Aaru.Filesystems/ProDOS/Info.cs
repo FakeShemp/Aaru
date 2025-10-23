@@ -60,6 +60,7 @@ public sealed partial class ProDOSPlugin
 
         // Blocks 0 and 1 are boot code
         ErrorNumber errno = imagePlugin.ReadSectors(2 * multiplier + partition.Start,
+                                                    false,
                                                     multiplier,
                                                     out byte[] rootDirectoryKeyBlock,
                                                     out _);
@@ -70,7 +71,7 @@ public sealed partial class ProDOSPlugin
 
         if(imagePlugin.Info.SectorSize is 2352 or 2448 or 2048)
         {
-            errno = imagePlugin.ReadSectors(partition.Start, 2, out byte[] tmp, out _);
+            errno = imagePlugin.ReadSectors(partition.Start, false, 2, out byte[] tmp, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
@@ -141,6 +142,7 @@ public sealed partial class ProDOSPlugin
 
         // Blocks 0 and 1 are boot code
         ErrorNumber errno = imagePlugin.ReadSectors(2 * multiplier + partition.Start,
+                                                    false,
                                                     multiplier,
                                                     out byte[] rootDirectoryKeyBlockBytes,
                                                     out _);
@@ -151,7 +153,7 @@ public sealed partial class ProDOSPlugin
 
         if(imagePlugin.Info.SectorSize is 2352 or 2448 or 2048)
         {
-            errno = imagePlugin.ReadSectors(partition.Start, 2, out byte[] tmp, out _);
+            errno = imagePlugin.ReadSectors(partition.Start, false, 2, out byte[] tmp, out _);
 
             if(errno != ErrorNumber.NoError) return;
 

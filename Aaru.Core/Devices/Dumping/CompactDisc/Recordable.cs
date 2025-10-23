@@ -102,9 +102,9 @@ partial class Dump
             }
 
             if(supportsLongSectors)
-                outputOptical.WriteSectorLong(sector, s, SectorStatus.Dumped);
+                outputOptical.WriteSectorLong(sector, s, false, SectorStatus.Dumped);
             else
-                outputOptical.WriteSector(Sector.GetUserData(sector), s, SectorStatus.Dumped);
+                outputOptical.WriteSector(Sector.GetUserData(sector), s, false, SectorStatus.Dumped);
 
             _resume.BadBlocks.Remove(s);
             extents.Add(s);
@@ -145,7 +145,7 @@ partial class Dump
 
             byte[] sub = Subchannel.Generate((int)s, track?.Sequence ?? 0, (int)pregap, (int)trackStart, flags, index);
 
-            outputOptical.WriteSectorsTag(sub, s, 1, SectorTagType.CdSectorSubchannel);
+            outputOptical.WriteSectorsTag(sub, s, false, 1, SectorTagType.CdSectorSubchannel);
 
             subLog?.WriteEntry(sub, true, (long)s, 1, true, false);
             subchannelExtents.Remove((int)s);

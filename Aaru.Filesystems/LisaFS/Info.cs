@@ -57,7 +57,7 @@ public sealed partial class LisaFS
         // LisaOS searches sectors until tag tells MDDF resides there, so we'll search 100 sectors
         for(var i = 0; i < 100; i++)
         {
-            ErrorNumber errno = imagePlugin.ReadSectorTag((ulong)i, SectorTagType.AppleSonyTag, out byte[] tag);
+            ErrorNumber errno = imagePlugin.ReadSectorTag((ulong)i, false, SectorTagType.AppleSonyTag, out byte[] tag);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -69,7 +69,7 @@ public sealed partial class LisaFS
 
             if(searchTag.FileId != FILEID_MDDF) continue;
 
-            errno = imagePlugin.ReadSector((ulong)i, out byte[] sector, out _);
+            errno = imagePlugin.ReadSector((ulong)i, false, out byte[] sector, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -134,7 +134,7 @@ public sealed partial class LisaFS
         // LisaOS searches sectors until tag tells MDDF resides there, so we'll search 100 sectors
         for(var i = 0; i < 100; i++)
         {
-            ErrorNumber errno = imagePlugin.ReadSectorTag((ulong)i, SectorTagType.AppleSonyTag, out byte[] tag);
+            ErrorNumber errno = imagePlugin.ReadSectorTag((ulong)i, false, SectorTagType.AppleSonyTag, out byte[] tag);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -146,7 +146,7 @@ public sealed partial class LisaFS
 
             if(searchTag.FileId != FILEID_MDDF) continue;
 
-            errno = imagePlugin.ReadSector((ulong)i, out byte[] sector, out _);
+            errno = imagePlugin.ReadSector((ulong)i, false, out byte[] sector, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 

@@ -58,9 +58,9 @@ public sealed partial class ISO9660
 
         if(sectorCount == 1)
         {
-            errno = _image.ReadSectorLong(realSector, out data, out _);
+            errno = _image.ReadSectorLong(realSector, false, out data, out _);
 
-            if(errno != ErrorNumber.NoError) errno = _image.ReadSector(realSector, out data, out _);
+            if(errno != ErrorNumber.NoError) errno = _image.ReadSector(realSector, false, out data, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -155,9 +155,9 @@ public sealed partial class ISO9660
             {
                 ulong dstSector = realSector + 1;
 
-                errno = _image.ReadSectorLong(dstSector, out data, out _);
+                errno = _image.ReadSectorLong(dstSector, false, out data, out _);
 
-                if(errno != ErrorNumber.NoError) errno = _image.ReadSector(dstSector, out data, out _);
+                if(errno != ErrorNumber.NoError) errno = _image.ReadSector(dstSector, false, out data, out _);
 
                 if(errno != ErrorNumber.NoError) return errno;
 

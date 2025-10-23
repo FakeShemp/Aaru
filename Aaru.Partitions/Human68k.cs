@@ -109,17 +109,17 @@ public sealed partial class Human68K : IPartition
         switch(imagePlugin.Info.SectorSize)
         {
             case 256:
-                errno        = imagePlugin.ReadSector(4 + sectorOffset, out sector, out _);
+                errno        = imagePlugin.ReadSector(4 + sectorOffset, false, out sector, out _);
                 sectsPerUnit = 1;
 
                 break;
             case 512:
-                errno        = imagePlugin.ReadSector(4 + sectorOffset, out sector, out _);
+                errno        = imagePlugin.ReadSector(4 + sectorOffset, false, out sector, out _);
                 sectsPerUnit = 2;
 
                 break;
             case 1024:
-                errno        = imagePlugin.ReadSector(2 + sectorOffset, out sector, out _);
+                errno        = imagePlugin.ReadSector(2 + sectorOffset, false, out sector, out _);
                 sectsPerUnit = 1;
 
                 break;

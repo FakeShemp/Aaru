@@ -316,14 +316,17 @@ partial class Dump
 
                     if(key.All(static k => k == 0))
                     {
-                        outputFormat.WriteSectorTag([0, 0, 0, 0, 0], badSector, SectorTagType.DvdTitleKeyDecrypted);
+                        outputFormat.WriteSectorTag([0, 0, 0, 0, 0],
+                                                    badSector,
+                                                    false,
+                                                    SectorTagType.DvdTitleKeyDecrypted);
 
                         _resume.MissingTitleKeys?.Remove(badSector);
                     }
                     else
                     {
                         CSS.DecryptTitleKey(discKey, key, out byte[] tmpBuf);
-                        outputFormat.WriteSectorTag(tmpBuf, badSector, SectorTagType.DvdTitleKeyDecrypted);
+                        outputFormat.WriteSectorTag(tmpBuf, badSector, false, SectorTagType.DvdTitleKeyDecrypted);
                         _resume.MissingTitleKeys?.Remove(badSector);
 
                         cmi[0] = buffer[6];
@@ -333,6 +336,7 @@ partial class Dump
                     {
                         ErrorNumber errno =
                             outputFormat.ReadSectorsTag(badSector,
+                                                        false,
                                                         1,
                                                         SectorTagType.DvdTitleKeyDecrypted,
                                                         out byte[] titleKey);
@@ -348,10 +352,10 @@ partial class Dump
                     }
 
                     _resume.BadBlocks.Remove(badSector);
-                    outputFormat.WriteSectorLong(buffer, badSector, SectorStatus.Dumped);
+                    outputFormat.WriteSectorLong(buffer, badSector, false, SectorStatus.Dumped);
                 }
                 else
-                    outputFormat.WriteSector(buffer, badSector, SectorStatus.Dumped);
+                    outputFormat.WriteSector(buffer, badSector, false, SectorStatus.Dumped);
 
                 _mediaGraph?.PaintSectorGood(badSector);
 
@@ -359,7 +363,7 @@ partial class Dump
                                                    badSector,
                                                    pass));
             }
-            else if(runningPersistent) outputFormat.WriteSector(buffer, badSector, SectorStatus.Errored);
+            else if(runningPersistent) outputFormat.WriteSector(buffer, badSector, false, SectorStatus.Errored);
         }
 
         if(pass < _retryPasses && !_aborted && _resume.BadBlocks.Count > 0)
@@ -441,15 +445,15 @@ partial class Dump
 
             if(!titleKey.HasValue) continue;
 
-            outputFormat.WriteSectorTag([titleKey.Value.CMI], missingKey, SectorTagType.DvdSectorCmi);
+            outputFormat.WriteSectorTag([titleKey.Value.CMI], missingKey, false, SectorTagType.DvdSectorCmi);
 
             // If the CMI bit is 1, the sector is using copy protection, else it is not
             // If the decoded title key is zeroed, there should be no copy protection
             if((titleKey.Value.CMI & 0x80) >> 7 == 0 || titleKey.Value.Key.All(k => k == 0))
             {
-                outputFormat.WriteSectorTag([0, 0, 0, 0, 0], missingKey, SectorTagType.DvdSectorTitleKey);
+                outputFormat.WriteSectorTag([0, 0, 0, 0, 0], missingKey, false, SectorTagType.DvdSectorTitleKey);
 
-                outputFormat.WriteSectorTag([0, 0, 0, 0, 0], missingKey, SectorTagType.DvdTitleKeyDecrypted);
+                outputFormat.WriteSectorTag([0, 0, 0, 0, 0], missingKey, false, SectorTagType.DvdTitleKeyDecrypted);
 
                 _resume.MissingTitleKeys.Remove(missingKey);
 
@@ -459,13 +463,13 @@ partial class Dump
             }
             else
             {
-                outputFormat.WriteSectorTag(titleKey.Value.Key, missingKey, SectorTagType.DvdSectorTitleKey);
+                outputFormat.WriteSectorTag(titleKey.Value.Key, missingKey, false, SectorTagType.DvdSectorTitleKey);
                 _resume.MissingTitleKeys.Remove(missingKey);
 
                 if(discKey != null)
                 {
                     CSS.DecryptTitleKey(discKey, titleKey.Value.Key, out buffer);
-                    outputFormat.WriteSectorTag(buffer, missingKey, SectorTagType.DvdTitleKeyDecrypted);
+                    outputFormat.WriteSectorTag(buffer, missingKey, false, SectorTagType.DvdTitleKeyDecrypted);
                 }
 
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_title_key_0_in_pass_1,

@@ -55,7 +55,7 @@ public sealed partial class FAT
         var nextEntry = (int)(nextCluster % _fatEntriesPerSector);
 
         ulong       currentSector = nextSector;
-        ErrorNumber errno         = _image.ReadSector(currentSector, out byte[] fatData, out _);
+        ErrorNumber errno         = _image.ReadSector(currentSector, false, out byte[] fatData, out _);
 
         if(errno != ErrorNumber.NoError) return null;
 
@@ -67,7 +67,7 @@ public sealed partial class FAT
 
                 if(currentSector != nextSector)
                 {
-                    errno = _image.ReadSector(nextSector, out fatData, out _);
+                    errno = _image.ReadSector(nextSector, false, out fatData, out _);
 
                     if(errno != ErrorNumber.NoError) return null;
 
@@ -244,6 +244,7 @@ public sealed partial class FAT
 
             ErrorNumber errno =
                 _image.ReadSectors(_firstClusterSector + mynode.Clusters[i + firstCluster] * _sectorsPerCluster,
+                                   false,
                                    _sectorsPerCluster,
                                    out byte[] buf,
                                    out _);

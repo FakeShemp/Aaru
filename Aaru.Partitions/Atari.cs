@@ -116,7 +116,7 @@ public sealed class AtariPartitions : IPartition
     {
         partitions = [];
 
-        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError || sector.Length < 512) return false;
 
@@ -276,7 +276,7 @@ public sealed class AtariPartitions : IPartition
 
                     break;
                 case TYPE_EXTENDED:
-                    errno = imagePlugin.ReadSector(table.Entries[i].Start, out byte[] extendedSector, out _);
+                    errno = imagePlugin.ReadSector(table.Entries[i].Start, false, out byte[] extendedSector, out _);
 
                     if(errno != ErrorNumber.NoError) break;
 

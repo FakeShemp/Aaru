@@ -702,9 +702,12 @@ public sealed partial class Vhd
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
         sectorStatus = SectorStatus.NotDumped;
+        buffer       = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         switch(_thisFooter.DiskType)
         {
@@ -755,7 +758,7 @@ public sealed partial class Vhd
                 */
 
                 // Sector has been written, read from child image
-                if(!dirty) return _parentImage.ReadSector(sectorAddress, out buffer, out sectorStatus);
+                if(!dirty) return _parentImage.ReadSector(sectorAddress, false, out buffer, out sectorStatus);
                 /* Too noisy
                     AaruLogging.DebugWriteLine(MODULE_NAME, "Sector {0} is dirty", sectorAddress);
                     */
@@ -781,15 +784,18 @@ public sealed partial class Vhd
             default:
                 sectorStatus = SectorStatus.Dumped;
 
-                return ReadSectors(sectorAddress, 1, out buffer, out _);
+                return ReadSectors(sectorAddress, false, 1, out buffer, out _);
         }
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = Enumerable.Repeat(SectorStatus.Dumped, (int)length).ToArray();
+
+        if(negative) return ErrorNumber.NotSupported;
 
 
         switch(_thisFooter.DiskType)
@@ -830,7 +836,8 @@ public sealed partial class Vhd
                 if(length > remainingInBlock)
                 {
                     ErrorNumber errno = ReadSectors(sectorAddress + remainingInBlock,
-                                                    length        - remainingInBlock,
+                                                    false,
+                                                    length - remainingInBlock,
                                                     out suffix,
                                                     out sectorStatus);
 
@@ -885,7 +892,7 @@ public sealed partial class Vhd
 
                 for(ulong i = 0; i < length; i++)
                 {
-                    ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] oneSector, out _);
+                    ErrorNumber errno = ReadSector(sectorAddress + i, false, out byte[] oneSector, out _);
 
                     if(errno != ErrorNumber.NoError) return errno;
 

@@ -201,6 +201,7 @@ public sealed partial class ISO9660
             while(leftExtentSize > 0)
             {
                 ErrorNumber errno = _image.ReadSectorTag((extents[i].extent + currentExtentSector) * _blockSize / 2048,
+                                                         false,
                                                          SectorTagType.CdSectorSubHeader,
                                                          out byte[] fullSector);
 
@@ -324,6 +325,7 @@ public sealed partial class ISO9660
             if((read + offsetInSector) % 2352 > 0) sizeInSectors++;
 
             ErrorNumber errno = _image.ReadSectorsLong((ulong)(mynode.Dentry.Extents[0].extent + firstSector),
+                                                       false,
                                                        (uint)sizeInSectors,
                                                        out byte[] buf,
                                                        out _);

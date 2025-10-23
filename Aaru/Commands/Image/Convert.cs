@@ -709,9 +709,11 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     {
                                         errno = sectorsToDo == 1
                                                     ? inputOptical.ReadSectorLong(doneSectors + track.StartSector,
+                                                        false,
                                                         out sector,
                                                         out sectorStatus)
                                                     : inputOptical.ReadSectorsLong(doneSectors + track.StartSector,
+                                                        false,
                                                         sectorsToDo,
                                                         out sector,
                                                         out sectorStatusArray);
@@ -721,9 +723,11 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                             result = sectorsToDo == 1
                                                          ? outputOptical.WriteSectorLong(sector,
                                                              doneSectors + track.StartSector,
+                                                             false,
                                                              sectorStatus)
                                                          : outputOptical.WriteSectorsLong(sector,
                                                              doneSectors + track.StartSector,
+                                                             false,
                                                              sectorsToDo,
                                                              sectorStatusArray);
                                         }
@@ -769,9 +773,11 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     {
                                         errno = sectorsToDo == 1
                                                     ? inputOptical.ReadSector(doneSectors + track.StartSector,
+                                                                              false,
                                                                               out sector,
                                                                               out sectorStatus)
                                                     : inputOptical.ReadSectors(doneSectors + track.StartSector,
+                                                                               false,
                                                                                sectorsToDo,
                                                                                out sector,
                                                                                out sectorStatusArray);
@@ -792,10 +798,12 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                                 if(sectorsToDo == 1)
                                                 {
                                                     if(inputOptical.ReadSectorTag(doneSectors + track.StartSector,
+                                                           false,
                                                            SectorTagType.DvdSectorCmi,
                                                            out cmi) ==
                                                        ErrorNumber.NoError &&
                                                        inputOptical.ReadSectorTag(doneSectors + track.StartSector,
+                                                           false,
                                                            SectorTagType.DvdTitleKeyDecrypted,
                                                            out titleKey) ==
                                                        ErrorNumber.NoError)
@@ -848,11 +856,13 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                                 else
                                                 {
                                                     if(inputOptical.ReadSectorsTag(doneSectors + track.StartSector,
+                                                           false,
                                                            sectorsToDo,
                                                            SectorTagType.DvdSectorCmi,
                                                            out cmi) ==
                                                        ErrorNumber.NoError &&
                                                        inputOptical.ReadSectorsTag(doneSectors + track.StartSector,
+                                                           false,
                                                            sectorsToDo,
                                                            SectorTagType.DvdTitleKeyDecrypted,
                                                            out titleKey) ==
@@ -912,9 +922,11 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                             result = sectorsToDo == 1
                                                          ? outputOptical.WriteSector(sector,
                                                              doneSectors + track.StartSector,
+                                                             false,
                                                              sectorStatus)
                                                          : outputOptical.WriteSectors(sector,
                                                              doneSectors + track.StartSector,
+                                                             false,
                                                              sectorsToDo,
                                                              sectorStatusArray);
                                         }
@@ -1005,7 +1017,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
             {
                 foreach(Track track in tracks)
                 {
-                    errno = inputOptical.ReadSectorTag(track.Sequence, tag, out byte[] isrc);
+                    errno = inputOptical.ReadSectorTag(track.Sequence, false, tag, out byte[] isrc);
 
                     if(errno != ErrorNumber.NoError) continue;
 
@@ -1019,7 +1031,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
             {
                 foreach(Track track in tracks)
                 {
-                    errno = inputOptical.ReadSectorTag(track.Sequence, tag, out byte[] flags);
+                    errno = inputOptical.ReadSectorTag(track.Sequence, false, tag, out byte[] flags);
 
                     if(errno != ErrorNumber.NoError) continue;
 
@@ -1087,7 +1099,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     {
                                         case SectorTagType.CdTrackFlags:
                                         case SectorTagType.CdTrackIsrc:
-                                            errno = inputOptical.ReadSectorTag(track.Sequence, tag, out sector);
+                                            errno = inputOptical.ReadSectorTag(track.Sequence, false, tag, out sector);
 
                                             switch(errno)
                                             {
@@ -1096,7 +1108,10 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
                                                     continue;
                                                 case ErrorNumber.NoError:
-                                                    result = outputOptical.WriteSectorTag(sector, track.Sequence, tag);
+                                                    result = outputOptical.WriteSectorTag(sector,
+                                                        track.Sequence,
+                                                        false,
+                                                        tag);
 
                                                     break;
                                                 default:
@@ -1161,6 +1176,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                         if(sectorsToDo == 1)
                                         {
                                             errno = inputOptical.ReadSectorTag(doneSectors + track.StartSector,
+                                                                               false,
                                                                                tag,
                                                                                out sector);
 
@@ -1197,6 +1213,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                                 {
                                                     result = outputOptical.WriteSectorTag(sector,
                                                         doneSectors + track.StartSector,
+                                                        false,
                                                         tag);
                                                 }
                                             }
@@ -1224,6 +1241,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                         else
                                         {
                                             errno = inputOptical.ReadSectorsTag(doneSectors + track.StartSector,
+                                                                                    false,
                                                                                     sectorsToDo,
                                                                                     tag,
                                                                                     out sector);
@@ -1261,6 +1279,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                                 {
                                                     result = outputOptical.WriteSectorsTag(sector,
                                                         doneSectors + track.StartSector,
+                                                        false,
                                                         sectorsToDo,
                                                         tag);
                                                 }
@@ -1320,12 +1339,15 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
             }
 
             foreach(KeyValuePair<byte, string> isrc in isrcs)
-                outputOptical.WriteSectorTag(Encoding.UTF8.GetBytes(isrc.Value), isrc.Key, SectorTagType.CdTrackIsrc);
+                outputOptical.WriteSectorTag(Encoding.UTF8.GetBytes(isrc.Value),
+                                             isrc.Key,
+                                             false,
+                                             SectorTagType.CdTrackIsrc);
 
             if(trackFlags.Count > 0)
             {
                 foreach((byte track, byte flags) in trackFlags)
-                    outputOptical.WriteSectorTag([flags], track, SectorTagType.CdTrackFlags);
+                    outputOptical.WriteSectorTag([flags], track, false, SectorTagType.CdTrackFlags);
             }
 
             if(mcn != null) outputOptical.WriteMediaTag(Encoding.UTF8.GetBytes(mcn), MediaTagType.CD_MCN);
@@ -1446,8 +1468,12 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                 if(useLong)
                                 {
                                     errno = sectorsToDo == 1
-                                                ? inputFormat.ReadSectorLong(doneSectors, out sector, out sectorStatus)
+                                                ? inputFormat.ReadSectorLong(doneSectors,
+                                                                             false,
+                                                                             out sector,
+                                                                             out sectorStatus)
                                                 : inputFormat.ReadSectorsLong(doneSectors,
+                                                                              false,
                                                                               sectorsToDo,
                                                                               out sector,
                                                                               out sectorStatusArray);
@@ -1455,9 +1481,13 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     if(errno == ErrorNumber.NoError)
                                     {
                                         result = sectorsToDo == 1
-                                                     ? outputMedia.WriteSectorLong(sector, doneSectors, sectorStatus)
+                                                     ? outputMedia.WriteSectorLong(sector,
+                                                         doneSectors,
+                                                         false,
+                                                         sectorStatus)
                                                      : outputMedia.WriteSectorsLong(sector,
                                                          doneSectors,
+                                                         false,
                                                          sectorsToDo,
                                                          sectorStatusArray);
                                     }
@@ -1484,8 +1514,12 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                 else
                                 {
                                     errno = sectorsToDo == 1
-                                                ? inputFormat.ReadSector(doneSectors, out sector, out sectorStatus)
+                                                ? inputFormat.ReadSector(doneSectors,
+                                                                         false,
+                                                                         out sector,
+                                                                         out sectorStatus)
                                                 : inputFormat.ReadSectors(doneSectors,
+                                                                          false,
                                                                           sectorsToDo,
                                                                           out sector,
                                                                           out sectorStatusArray);
@@ -1493,9 +1527,10 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     if(errno == ErrorNumber.NoError)
                                     {
                                         result = sectorsToDo == 1
-                                                     ? outputMedia.WriteSector(sector, doneSectors, sectorStatus)
+                                                     ? outputMedia.WriteSector(sector, doneSectors, false, sectorStatus)
                                                      : outputMedia.WriteSectors(sector,
                                                                                     doneSectors,
+                                                                                    false,
                                                                                     sectorsToDo,
                                                                                     sectorStatusArray);
                                     }
@@ -1588,15 +1623,20 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     bool result;
 
                                     errno = sectorsToDo == 1
-                                                ? inputFormat.ReadSectorTag(doneSectors, tag, out byte[] sector)
-                                                : inputFormat.ReadSectorsTag(doneSectors, sectorsToDo, tag, out sector);
+                                                ? inputFormat.ReadSectorTag(doneSectors, false, tag, out byte[] sector)
+                                                : inputFormat.ReadSectorsTag(doneSectors,
+                                                                             false,
+                                                                             sectorsToDo,
+                                                                             tag,
+                                                                             out sector);
 
                                     if(errno == ErrorNumber.NoError)
                                     {
                                         result = sectorsToDo == 1
-                                                     ? outputMedia.WriteSectorTag(sector, doneSectors, tag)
+                                                     ? outputMedia.WriteSectorTag(sector, doneSectors, false, tag)
                                                      : outputMedia.WriteSectorsTag(sector,
                                                          doneSectors,
+                                                         false,
                                                          sectorsToDo,
                                                          tag);
                                     }

@@ -1208,18 +1208,14 @@ public sealed partial class CdrWin
             if(_discImage.CdTextFile == null)
                 AaruLogging.Debug(MODULE_NAME, "\t" + Localization.CD_TEXT_binary_file_not_set);
             else
-            {
                 AaruLogging.Debug(MODULE_NAME, "\t" + Localization.CD_TEXT_binary_file_0, _discImage.CdTextFile);
-            }
 
             AaruLogging.Debug(MODULE_NAME, Localization.Disc_information);
 
             if(_discImage.OriginalMediaType == null)
                 AaruLogging.Debug(MODULE_NAME, "\t" + Localization.ISOBuster_disc_type_not_set);
             else
-            {
                 AaruLogging.Debug(MODULE_NAME, "\t" + Localization.ISOBuster_disc_type_0, _discImage.OriginalMediaType);
-            }
 
             AaruLogging.Debug(MODULE_NAME, "\t" + Localization.Guessed_disk_type_0, _discImage.MediaType);
 
@@ -1688,16 +1684,16 @@ public sealed partial class CdrWin
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
         sectorStatus = SectorStatus.Dumped;
 
-        return ReadSectors(sectorAddress, 1, out buffer, out _);
+        return ReadSectors(sectorAddress, negative, 1, out buffer, out _);
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorTag(ulong sectorAddress, SectorTagType tag, out byte[] buffer) =>
-        ReadSectorsTag(sectorAddress, 1, tag, out buffer);
+    public ErrorNumber ReadSectorTag(ulong sectorAddress, bool negative, SectorTagType tag, out byte[] buffer) =>
+        ReadSectorsTag(sectorAddress, negative, 1, tag, out buffer);
 
     /// <inheritdoc />
     public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus)
@@ -1712,10 +1708,13 @@ public sealed partial class CdrWin
         ReadSectorsTag(sectorAddress, 1, track, tag, out buffer);
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         foreach(KeyValuePair<uint, ulong> kvp in from kvp in _offsetMap
                                                  where sectorAddress >= kvp.Value
@@ -1729,9 +1728,12 @@ public sealed partial class CdrWin
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsTag(ulong sectorAddress, uint length, SectorTagType tag, out byte[] buffer)
+    public ErrorNumber ReadSectorsTag(ulong      sectorAddress, bool negative, uint length, SectorTagType tag,
+                                      out byte[] buffer)
     {
         buffer = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(tag is SectorTagType.CdTrackFlags or SectorTagType.CdTrackIsrc)
             return ReadSectorsTag(sectorAddress, length, 0, tag, out buffer);
@@ -2180,11 +2182,12 @@ public sealed partial class CdrWin
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSectorLong(ulong            sectorAddress, bool negative, out byte[] buffer,
+                                      out SectorStatus sectorStatus)
     {
         sectorStatus = SectorStatus.Dumped;
 
-        return ReadSectorsLong(sectorAddress, 1, out buffer, out _);
+        return ReadSectorsLong(sectorAddress, negative, 1, out buffer, out _);
     }
 
     /// <inheritdoc />
@@ -2196,11 +2199,13 @@ public sealed partial class CdrWin
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
                                        out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         foreach(KeyValuePair<uint, ulong> kvp in from kvp in _offsetMap
                                                  where sectorAddress >= kvp.Value

@@ -59,11 +59,11 @@ public sealed partial class AppleMFS
 
         _volMdb = new MasterDirectoryBlock();
 
-        ErrorNumber errno = _device.ReadSector(2 + _partitionStart, out _mdbBlocks, out _);
+        ErrorNumber errno = _device.ReadSector(2 + _partitionStart, false, out _mdbBlocks, out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        errno = _device.ReadSector(0 + _partitionStart, out _bootBlocks, out _);
+        errno = _device.ReadSector(0 + _partitionStart, false, out _bootBlocks, out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -88,7 +88,11 @@ public sealed partial class AppleMFS
         Array.Copy(_mdbBlocks, 0x024, variableSize, 0, _volMdb.drVNSiz + 1);
         _volMdb.drVN = StringHandlers.PascalToString(variableSize, _encoding);
 
-        errno = _device.ReadSectors(_volMdb.drDirSt + _partitionStart, _volMdb.drBlLen, out _directoryBlocks, out _);
+        errno = _device.ReadSectors(_volMdb.drDirSt + _partitionStart,
+                                    false,
+                                    _volMdb.drBlLen,
+                                    out _directoryBlocks,
+                                    out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -98,7 +102,7 @@ public sealed partial class AppleMFS
         int sectorsInWholeMdb = bytesInWholeMdb / (int)_device.Info.SectorSize +
                                 bytesInWholeMdb % (int)_device.Info.SectorSize;
 
-        errno = _device.ReadSectors(_partitionStart + 2, (uint)sectorsInWholeMdb, out byte[] wholeMdb, out _);
+        errno = _device.ReadSectors(_partitionStart + 2, false, (uint)sectorsInWholeMdb, out byte[] wholeMdb, out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -143,15 +147,17 @@ public sealed partial class AppleMFS
 
         if(_device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSonyTag))
         {
-            _device.ReadSectorTag(2 + _partitionStart, SectorTagType.AppleSonyTag, out _mdbTags);
-            _device.ReadSectorTag(0 + _partitionStart, SectorTagType.AppleSonyTag, out _bootTags);
+            _device.ReadSectorTag(2 + _partitionStart, false, SectorTagType.AppleSonyTag, out _mdbTags);
+            _device.ReadSectorTag(0 + _partitionStart, false, SectorTagType.AppleSonyTag, out _bootTags);
 
             _device.ReadSectorsTag(_volMdb.drDirSt + _partitionStart,
+                                   false,
                                    _volMdb.drBlLen,
                                    SectorTagType.AppleSonyTag,
                                    out _directoryTags);
 
             _device.ReadSectorsTag(_partitionStart + 2,
+                                   false,
                                    (uint)sectorsInWholeMdb,
                                    SectorTagType.AppleSonyTag,
                                    out _bitmapTags);

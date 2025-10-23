@@ -50,12 +50,17 @@ public abstract class ImageReadIssueTest
 
             if(image.Info.Sectors - doneSectors >= SECTORS_TO_READ)
             {
-                errno       =  image.ReadSectors(doneSectors, SECTORS_TO_READ, out sector, out _);
+                errno       =  image.ReadSectors(doneSectors, false, SECTORS_TO_READ, out sector, out _);
                 doneSectors += SECTORS_TO_READ;
             }
             else
             {
-                errno = image.ReadSectors(doneSectors, (uint)(image.Info.Sectors - doneSectors), out sector, out _);
+                errno = image.ReadSectors(doneSectors,
+                                          false,
+                                          (uint)(image.Info.Sectors - doneSectors),
+                                          out sector,
+                                          out _);
+
                 doneSectors += image.Info.Sectors - doneSectors;
             }
 

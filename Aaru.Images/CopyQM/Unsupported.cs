@@ -39,7 +39,7 @@ public sealed partial class CopyQm
 #region IMediaImage Members
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorTag(ulong sectorAddress, SectorTagType tag, out byte[] buffer)
+    public ErrorNumber ReadSectorTag(ulong sectorAddress, bool negative, SectorTagType tag, out byte[] buffer)
     {
         buffer = null;
 
@@ -47,7 +47,8 @@ public sealed partial class CopyQm
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsTag(ulong sectorAddress, uint length, SectorTagType tag, out byte[] buffer)
+    public ErrorNumber ReadSectorsTag(ulong      sectorAddress, bool negative, uint length, SectorTagType tag,
+                                      out byte[] buffer)
     {
         buffer = null;
 
@@ -55,7 +56,8 @@ public sealed partial class CopyQm
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSectorLong(ulong            sectorAddress, bool negative, out byte[] buffer,
+                                      out SectorStatus sectorStatus)
     {
         buffer       = null;
         sectorStatus = SectorStatus.NotDumped;
@@ -64,7 +66,7 @@ public sealed partial class CopyQm
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
                                        out SectorStatus[] sectorStatus)
     {
         buffer       = null;

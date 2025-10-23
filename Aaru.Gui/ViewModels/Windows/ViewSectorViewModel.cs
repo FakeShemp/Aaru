@@ -60,7 +60,7 @@ public sealed partial class ViewSectorViewModel : ViewModelBase
     {
         _inputFormat = inputFormat;
 
-        ErrorNumber errno = inputFormat.ReadSectorLong(0, out _, out _);
+        ErrorNumber errno = inputFormat.ReadSectorLong(0, false, out _, out _);
 
         if(errno == ErrorNumber.NoError)
             LongSectorChecked = true;
@@ -83,8 +83,8 @@ public sealed partial class ViewSectorViewModel : ViewModelBase
             SetProperty(ref _sectorNumber, value);
 
             ErrorNumber errno = LongSectorChecked
-                                    ? _inputFormat.ReadSectorLong((ulong)SectorNumber, out byte[] sector, out _)
-                                    : _inputFormat.ReadSector((ulong)SectorNumber, out sector, out _);
+                                    ? _inputFormat.ReadSectorLong((ulong)SectorNumber, false, out byte[] sector, out _)
+                                    : _inputFormat.ReadSector((ulong)SectorNumber, false, out sector, out _);
 
             if(errno == ErrorNumber.NoError) PrintHexText = PrintHex.ByteArrayToHexArrayString(sector, HEX_COLUMNS);
         }

@@ -86,7 +86,7 @@ public sealed partial class BSD : IPartition
         {
             if(location + run + sectorOffset >= imagePlugin.Info.Sectors) return false;
 
-            ErrorNumber errno = imagePlugin.ReadSectors(location + sectorOffset, run, out byte[] tmp, out _);
+            ErrorNumber errno = imagePlugin.ReadSectors(location + sectorOffset, false, run, out byte[] tmp, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 

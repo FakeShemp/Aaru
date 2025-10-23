@@ -203,7 +203,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
 
             if(rdbBlock + sectorOffset >= imagePlugin.Info.Sectors) break;
 
-            errno = imagePlugin.ReadSector(rdbBlock + sectorOffset, out byte[] tmpSector, out _);
+            errno = imagePlugin.ReadSector(rdbBlock + sectorOffset, false, out byte[] tmpSector, out _);
 
             if(errno != ErrorNumber.NoError)
             {
@@ -234,7 +234,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
 
         var rdb = new RigidDiskBlock();
 
-        errno = imagePlugin.ReadSector(rdbBlock, out byte[] sector, out _);
+        errno = imagePlugin.ReadSector(rdbBlock, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -374,7 +374,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
         {
             AaruLogging.Debug(MODULE_NAME, Localization.Going_to_block_0_in_search_of_a_BadBlock_block, nextBlock);
 
-            errno = imagePlugin.ReadSector(nextBlock, out sector, out _);
+            errno = imagePlugin.ReadSector(nextBlock, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) break;
 
@@ -435,7 +435,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
                               Localization.Going_to_block_0_in_search_of_a_PartitionEntry_block,
                               nextBlock + sectorOffset);
 
-            errno = imagePlugin.ReadSector(nextBlock + sectorOffset, out sector, out _);
+            errno = imagePlugin.ReadSector(nextBlock + sectorOffset, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) break;
 
@@ -595,7 +595,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
                               Localization.Going_to_block_0_in_search_of_a_FileSystemHeader_block,
                               nextBlock);
 
-            errno = imagePlugin.ReadSector(nextBlock, out sector, out _);
+            errno = imagePlugin.ReadSector(nextBlock, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) break;
 
@@ -674,7 +674,7 @@ public sealed class AmigaRigidDiskBlock : IPartition
                                   Localization.Going_to_block_0_in_search_of_a_LoadSegment_block,
                                   nextBlock);
 
-                errno = imagePlugin.ReadSector(nextBlock, out sector, out _);
+                errno = imagePlugin.ReadSector(nextBlock, false, out sector, out _);
 
                 if(errno != ErrorNumber.NoError) break;
 

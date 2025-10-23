@@ -197,9 +197,10 @@ public sealed partial class SuperCardPro
 
     public bool SetGeometry(uint cylinders, uint heads, uint sectorsPerTrack) => true;
 
-    public bool WriteSectorTag(byte[] data, ulong sectorAddress, SectorTagType tag) => false;
+    public bool WriteSectorTag(byte[] data, ulong sectorAddress, bool negative, SectorTagType tag) => false;
 
-    public bool WriteSectorsTag(byte[] data, ulong sectorAddress, uint length, SectorTagType tag) => false;
+    public bool WriteSectorsTag(byte[] data, ulong sectorAddress, bool negative, uint length, SectorTagType tag) =>
+        false;
 
     public bool SetDumpHardware(List<DumpHardware> dumpHardware) => false;
 
@@ -207,22 +208,14 @@ public sealed partial class SuperCardPro
 
     public bool WriteMediaTag(byte[] data, MediaTagType tag) => false;
 
-    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
+    public bool WriteSector(byte[] data, ulong sectorAddress, bool negative, SectorStatus sectorStatus)
     {
         ErrorMessage = Localization.Flux_decoding_is_not_yet_implemented;
 
         return false;
     }
 
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
-    {
-        ErrorMessage = Localization.Flux_decoding_is_not_yet_implemented;
-
-        return false;
-    }
-
-    /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, bool negative, uint length, SectorStatus[] sectorStatus)
     {
         ErrorMessage = Localization.Flux_decoding_is_not_yet_implemented;
 
@@ -230,7 +223,16 @@ public sealed partial class SuperCardPro
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, bool negative, SectorStatus sectorStatus)
+    {
+        ErrorMessage = Localization.Flux_decoding_is_not_yet_implemented;
+
+        return false;
+    }
+
+    /// <inheritdoc />
+    public bool WriteSectorsLong(byte[]         data, ulong sectorAddress, bool negative, uint length,
+                                 SectorStatus[] sectorStatus)
     {
         ErrorMessage = Localization.Flux_decoding_is_not_yet_implemented;
 

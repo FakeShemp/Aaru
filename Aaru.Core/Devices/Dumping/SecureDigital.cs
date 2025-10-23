@@ -667,6 +667,7 @@ public partial class Dump
 
                 outputFormat.WriteSectors(cmdBuf,
                                           i,
+                                          false,
                                           blocksToRead,
                                           Enumerable.Repeat(SectorStatus.Dumped, blocksToRead).ToArray());
 
@@ -689,6 +690,7 @@ public partial class Dump
 
                 outputFormat.WriteSectors(new byte[blockSize * _skip],
                                           i,
+                                          false,
                                           _skip,
                                           Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
 
@@ -781,7 +783,7 @@ public partial class Dump
 
                 _resume.BadBlocks.Remove(badSector);
                 extents.Add(badSector);
-                outputFormat.WriteSector(cmdBuf, badSector, SectorStatus.Dumped);
+                outputFormat.WriteSector(cmdBuf, badSector, false, SectorStatus.Dumped);
                 _mediaGraph?.PaintSectorGood(badSector);
             }
 
@@ -842,7 +844,7 @@ public partial class Dump
 
                 _resume.BadBlocks.Remove(badSector);
                 extents.Add(badSector);
-                outputFormat.WriteSector(cmdBuf, badSector, SectorStatus.Dumped);
+                outputFormat.WriteSector(cmdBuf, badSector, false, SectorStatus.Dumped);
                 _mediaGraph?.PaintSectorGood(badSector);
 
                 UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_block_0_in_pass_1,

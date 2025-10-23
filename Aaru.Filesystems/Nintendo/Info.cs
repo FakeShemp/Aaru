@@ -50,7 +50,8 @@ public sealed partial class NintendoPlugin
 
         if(imagePlugin.Info.Sectors * imagePlugin.Info.SectorSize < 0x50000) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(0, 0x50000 / imagePlugin.Info.SectorSize, out byte[] header, out _);
+        ErrorNumber errno =
+            imagePlugin.ReadSectors(0, false, 0x50000 / imagePlugin.Info.SectorSize, out byte[] header, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -71,7 +72,8 @@ public sealed partial class NintendoPlugin
 
         var fields = new NintendoFields();
 
-        ErrorNumber errno = imagePlugin.ReadSectors(0, 0x50000 / imagePlugin.Info.SectorSize, out byte[] header, out _);
+        ErrorNumber errno =
+            imagePlugin.ReadSectors(0, false, 0x50000 / imagePlugin.Info.SectorSize, out byte[] header, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

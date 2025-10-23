@@ -174,9 +174,7 @@ public sealed class Entropy
                 AaruLogging.Exception(ex, Localization.Core.Could_not_get_tracks_because_0, ex.Message);
             }
             else
-            {
                 AaruLogging.Error(Localization.Core.Unable_to_get_separate_tracks_not_calculating_their_entropy);
-            }
         }
 
         return entropyResults.ToArray();
@@ -208,7 +206,7 @@ public sealed class Entropy
                                         (long)(i + 1),
                                         (long)entropy.Sectors);
 
-            ErrorNumber errno = mediaImage.ReadSector(i, out byte[] sector, out _);
+            ErrorNumber errno = mediaImage.ReadSector(i, false, out byte[] sector, out _);
 
             if(errno != ErrorNumber.NoError)
             {

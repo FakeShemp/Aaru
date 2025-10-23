@@ -70,7 +70,7 @@ public sealed class Acorn : IPartition
         else
             sbSector = ADFS_SB_POS / imagePlugin.Info.SectorSize;
 
-        ErrorNumber errno = imagePlugin.ReadSector(sbSector, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(sbSector, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError || sector.Length < 512) return;
 
@@ -86,7 +86,7 @@ public sealed class Acorn : IPartition
 
         if((ulong)mapSector >= imagePlugin.Info.Sectors) return;
 
-        errno = imagePlugin.ReadSector((ulong)mapSector, out byte[] map, out _);
+        errno = imagePlugin.ReadSector((ulong)mapSector, false, out byte[] map, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -180,7 +180,7 @@ public sealed class Acorn : IPartition
         // RISC OS always checks for the partition on 0. Afaik no emulator chains it.
         if(sectorOffset != 0) return;
 
-        ErrorNumber errno = imagePlugin.ReadSector(0, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(0, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError || sector.Length < 512) return;
 
@@ -220,7 +220,7 @@ public sealed class Acorn : IPartition
             }
 
             // Negative size means Linux partition, first sector needs to be read
-            errno = imagePlugin.ReadSector(entry.start, out sector, out _);
+            errno = imagePlugin.ReadSector(entry.start, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 

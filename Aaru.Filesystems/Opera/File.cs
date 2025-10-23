@@ -163,6 +163,7 @@ public sealed partial class OperaFS
             fileBlockSizeRatio = mynode.Dentry.Entry.block_size / _image.Info.SectorSize;
 
         ErrorNumber errno = _image.ReadSectors((ulong)(mynode.Dentry.Pointers[0] + firstBlock * fileBlockSizeRatio),
+                                               false,
                                                (uint)(sizeInBlocks * fileBlockSizeRatio),
                                                out byte[] buf,
                                                out _);

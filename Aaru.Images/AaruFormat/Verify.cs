@@ -35,7 +35,7 @@ public sealed partial class AaruFormat
     {
         if(_imageInfo.MetadataMediaType != MetadataMediaType.OpticalDisc) return null;
 
-        ErrorNumber errno = ReadSectorLong(sectorAddress, out byte[] buffer, out _);
+        ErrorNumber errno = ReadSectorLong(sectorAddress, false, out byte[] buffer, out _);
 
         return errno != ErrorNumber.NoError ? null : CdChecksums.CheckCdSector(buffer);
     }
@@ -55,7 +55,7 @@ public sealed partial class AaruFormat
             return null;
         }
 
-        ErrorNumber errno = ReadSectorsLong(sectorAddress, length, out byte[] buffer, out _);
+        ErrorNumber errno = ReadSectorsLong(sectorAddress, false, length, out byte[] buffer, out _);
 
         if(errno != ErrorNumber.NoError) return null;
 

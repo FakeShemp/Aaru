@@ -77,7 +77,7 @@ public sealed partial class ZFS
 
         if(partition.Start + 31 < partition.End)
         {
-            errno = imagePlugin.ReadSector(partition.Start + 31, out sector, out _);
+            errno = imagePlugin.ReadSector(partition.Start + 31, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
@@ -88,7 +88,7 @@ public sealed partial class ZFS
 
         if(partition.Start + 16 >= partition.End) return false;
 
-        errno = imagePlugin.ReadSector(partition.Start + 16, out sector, out _);
+        errno = imagePlugin.ReadSector(partition.Start + 16, false, out sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -116,7 +116,7 @@ public sealed partial class ZFS
 
         if(partition.Start + 31 < partition.End)
         {
-            errno = imagePlugin.ReadSector(partition.Start + 31, out sector, out _);
+            errno = imagePlugin.ReadSector(partition.Start + 31, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return;
 
@@ -127,7 +127,7 @@ public sealed partial class ZFS
 
         if(partition.Start + 16 < partition.End)
         {
-            errno = imagePlugin.ReadSector(partition.Start + 16, out sector, out _);
+            errno = imagePlugin.ReadSector(partition.Start + 16, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return;
 
@@ -139,7 +139,7 @@ public sealed partial class ZFS
         var sb = new StringBuilder();
         sb.AppendLine(Localization.ZFS_filesystem);
 
-        errno = imagePlugin.ReadSectors(partition.Start + nvlistOff, nvlistLen, out byte[] nvlist, out _);
+        errno = imagePlugin.ReadSectors(partition.Start + nvlistOff, false, nvlistLen, out byte[] nvlist, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

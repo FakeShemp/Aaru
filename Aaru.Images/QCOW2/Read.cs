@@ -202,7 +202,7 @@ public sealed partial class Qcow2
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
         buffer       = null;
         sectorStatus = SectorStatus.NotDumped;
@@ -304,7 +304,8 @@ public sealed partial class Qcow2
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
@@ -318,7 +319,7 @@ public sealed partial class Qcow2
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
+            ErrorNumber errno = ReadSector(sectorAddress + i, false, out byte[] sector, out SectorStatus status);
 
             if(errno != ErrorNumber.NoError) return errno;
 

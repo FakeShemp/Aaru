@@ -50,7 +50,7 @@ public sealed partial class BeFS
     {
         if(2 + partition.Start >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] sbSector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, false, out byte[] sbSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -67,7 +67,7 @@ public sealed partial class BeFS
 
         if(magic == BEFS_MAGIC1 || magicBe == BEFS_MAGIC1) return true;
 
-        errno = imagePlugin.ReadSector(1 + partition.Start, out sbSector, out _);
+        errno = imagePlugin.ReadSector(1 + partition.Start, false, out sbSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -89,7 +89,7 @@ public sealed partial class BeFS
 
         var besb = new SuperBlock();
 
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] sbSector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, false, out byte[] sbSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -101,7 +101,7 @@ public sealed partial class BeFS
             littleEndian = besb.magic1 == BEFS_CIGAM1;
         else
         {
-            errno = imagePlugin.ReadSector(1 + partition.Start, out sbSector, out _);
+            errno = imagePlugin.ReadSector(1 + partition.Start, false, out sbSector, out _);
 
             if(errno != ErrorNumber.NoError) return;
 
@@ -111,7 +111,7 @@ public sealed partial class BeFS
                 littleEndian = besb.magic1 == BEFS_CIGAM1;
             else if(sbSector.Length >= 0x400)
             {
-                errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] temp, out _);
+                errno = imagePlugin.ReadSector(0 + partition.Start, false, out byte[] temp, out _);
 
                 if(errno != ErrorNumber.NoError) return;
 

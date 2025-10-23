@@ -53,7 +53,7 @@ public sealed partial class OperaFS
 
         if(options.TryGetValue("debug", out string debugString)) bool.TryParse(debugString, out _debug);
 
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] sbSector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, false, out byte[] sbSector, out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 

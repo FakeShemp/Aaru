@@ -178,8 +178,13 @@ public sealed partial class WCDiskImage
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
+        sectorStatus = SectorStatus.NotDumped;
+        buffer       = null;
+
+        if(negative) return ErrorNumber.NotSupported;
+
         int sectorNumber   = (int)(sectorAddress % _imageInfo.SectorsPerTrack) + 1;
         var trackNumber    = (int)(sectorAddress / _imageInfo.SectorsPerTrack);
         int headNumber     = _imageInfo.Heads > 1 ? trackNumber % 2 : 0;
@@ -219,10 +224,13 @@ public sealed partial class WCDiskImage
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
@@ -233,7 +241,7 @@ public sealed partial class WCDiskImage
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
+            ErrorNumber errno = ReadSector(sectorAddress + i, false, out byte[] sector, out SectorStatus status);
 
             if(errno != ErrorNumber.NoError) return errno;
 

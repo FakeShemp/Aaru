@@ -186,8 +186,8 @@ sealed class PrintHexCommand : Command<PrintHexCommand.Settings>
                     ctx.AddTask(UI.Reading_sector).IsIndeterminate();
 
                     errno = longSectors
-                                ? blockImage.ReadSectorLong(settings.Start + i, out sector, out _)
-                                : blockImage.ReadSector(settings.Start     + i, out sector, out _);
+                                ? blockImage.ReadSectorLong(settings.Start + i, false, out sector, out _)
+                                : blockImage.ReadSector(settings.Start     + i, false, out sector, out _);
                 });
 
                 if(errno == ErrorNumber.NoError)

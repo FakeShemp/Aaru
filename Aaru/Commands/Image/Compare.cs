@@ -438,7 +438,7 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
                                 try
                                 {
-                                    errno = input1MediaImage.ReadSector(sector, out byte[] image1Sector, out _);
+                                    errno = input1MediaImage.ReadSector(sector, false, out byte[] image1Sector, out _);
 
                                     if(errno != ErrorNumber.NoError)
                                     {
@@ -447,7 +447,7 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
                                                                         sector));
                                     }
 
-                                    errno = input2MediaImage.ReadSector(sector, out byte[] image2Sector, out _);
+                                    errno = input2MediaImage.ReadSector(sector, false, out byte[] image2Sector, out _);
 
                                     if(errno != ErrorNumber.NoError)
                                     {

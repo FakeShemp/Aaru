@@ -91,7 +91,7 @@ public sealed class DEC : IPartition
 
         if(31 + sectorOffset >= imagePlugin.Info.Sectors) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(31 + sectorOffset, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(31 + sectorOffset, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError || sector.Length < 512) return false;
 

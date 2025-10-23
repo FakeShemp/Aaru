@@ -473,28 +473,28 @@ public sealed partial class A2R
     public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus) =>
-        throw new NotImplementedException();
-
-    /// <inheritdoc />
     public ErrorNumber
-        ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus) =>
+        ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus) =>
         throw new NotImplementedException();
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+    public ErrorNumber ReadSectorLong(ulong            sectorAddress, bool negative, out byte[] buffer,
+                                      out SectorStatus sectorStatus) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
                                        out SectorStatus[] sectorStatus) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsTag(ulong sectorAddress, uint length, SectorTagType tag, out byte[] buffer) =>
-        throw new NotImplementedException();
+    public ErrorNumber ReadSectorsTag(ulong      sectorAddress, bool negative, uint length, SectorTagType tag,
+                                      out byte[] buffer) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorTag(ulong sectorAddress, SectorTagType tag, out byte[] buffer) =>
+    public ErrorNumber ReadSectorTag(ulong sectorAddress, bool negative, SectorTagType tag, out byte[] buffer) =>
         throw new NotImplementedException();
 
 #endregion

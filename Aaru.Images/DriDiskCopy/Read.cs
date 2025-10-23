@@ -126,18 +126,21 @@ public sealed partial class DriDiskCopy
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
         sectorStatus = SectorStatus.Dumped;
 
-        return ReadSectors(sectorAddress, 1, out buffer, out _);
+        return ReadSectors(sectorAddress, negative, 1, out buffer, out _);
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 

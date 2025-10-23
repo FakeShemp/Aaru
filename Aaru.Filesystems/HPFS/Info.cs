@@ -55,6 +55,7 @@ public sealed partial class HPFS
 
         ErrorNumber errno =
             imagePlugin.ReadSector(16 + partition.Start,
+                                   false,
                                    out byte[] hpfsSbSector,
                                    out _); // Seek to superblock, on logical sector 16
 
@@ -78,18 +79,21 @@ public sealed partial class HPFS
 
         ErrorNumber errno =
             imagePlugin.ReadSector(0 + partition.Start,
+                                   false,
                                    out byte[] hpfsBpbSector,
                                    out _); // Seek to BIOS parameter block, on logical sector 0
 
         if(errno != ErrorNumber.NoError) return;
 
         errno = imagePlugin.ReadSector(16 + partition.Start,
+                                       false,
                                        out byte[] hpfsSbSector,
                                        out _); // Seek to superblock, on logical sector 16
 
         if(errno != ErrorNumber.NoError) return;
 
         errno = imagePlugin.ReadSector(17 + partition.Start,
+                                       false,
                                        out byte[] hpfsSpSector,
                                        out _); // Seek to spareblock, on logical sector 17
 

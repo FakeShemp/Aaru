@@ -55,7 +55,7 @@ public sealed partial class XFS
 
             if((Marshal.SizeOf<Superblock>() + 0x400) % imagePlugin.Info.SectorSize != 0) sbSize++;
 
-            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector, out _);
+            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, false, sbSize, out byte[] sector, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
@@ -95,7 +95,7 @@ public sealed partial class XFS
                 if(Marshal.SizeOf<Superblock>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
                 ErrorNumber errno =
-                    imagePlugin.ReadSectors(partition.Start + location, sbSize, out byte[] sector, out _);
+                    imagePlugin.ReadSectors(partition.Start + location, false, sbSize, out byte[] sector, out _);
 
                 if(errno != ErrorNumber.NoError) continue;
 
@@ -135,7 +135,7 @@ public sealed partial class XFS
 
             if((Marshal.SizeOf<Superblock>() + 0x400) % imagePlugin.Info.SectorSize != 0) sbSize++;
 
-            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector, out _);
+            ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, false, sbSize, out byte[] sector, out _);
 
             if(errno != ErrorNumber.NoError || sector.Length < Marshal.SizeOf<Superblock>()) return;
 
@@ -172,7 +172,7 @@ public sealed partial class XFS
                 if(Marshal.SizeOf<Superblock>() % imagePlugin.Info.SectorSize != 0) sbSize++;
 
                 ErrorNumber errno =
-                    imagePlugin.ReadSectors(partition.Start + location, sbSize, out byte[] sector, out _);
+                    imagePlugin.ReadSectors(partition.Start + location, false, sbSize, out byte[] sector, out _);
 
                 if(errno != ErrorNumber.NoError || sector.Length < Marshal.SizeOf<Superblock>()) return;
 

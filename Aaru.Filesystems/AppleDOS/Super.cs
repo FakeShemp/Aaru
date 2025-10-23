@@ -75,7 +75,7 @@ public sealed partial class AppleDOS
         _sectorsPerTrack = _device.Info.Sectors == 455 ? 13 : 16;
 
         // Read the VTOC
-        ErrorNumber error = _device.ReadSector((ulong)(17 * _sectorsPerTrack), out _vtocBlocks, out _);
+        ErrorNumber error = _device.ReadSector((ulong)(17 * _sectorsPerTrack), false, out _vtocBlocks, out _);
 
         if(error != ErrorNumber.NoError) return error;
 

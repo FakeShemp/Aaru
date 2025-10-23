@@ -181,7 +181,7 @@ public sealed partial class CPM
             if(!_cpmFound)
             {
                 // Read CHS = {0,0,1}
-                errno = imagePlugin.ReadSector(0 + partition.Start, out sector, out _);
+                errno = imagePlugin.ReadSector(0 + partition.Start, false, out sector, out _);
 
                 if(errno == ErrorNumber.NoError)
                 {
@@ -246,6 +246,7 @@ public sealed partial class CPM
                             var directoryLength = (uint)(((ulong)_dpb.drm + 1) * 32 / sectorSize);
 
                             imagePlugin.ReadSectors(firstDirectorySector + partition.Start,
+                                                    false,
                                                     directoryLength,
                                                     out directory,
                                                     out _);
@@ -311,7 +312,7 @@ public sealed partial class CPM
             if(!_cpmFound)
             {
                 // Read CHS = {0,0,4}
-                errno = imagePlugin.ReadSector(3 + partition.Start, out sector, out _);
+                errno = imagePlugin.ReadSector(3 + partition.Start, false, out sector, out _);
 
                 if(errno == ErrorNumber.NoError)
                 {
@@ -366,6 +367,7 @@ public sealed partial class CPM
                             var directoryLength = (uint)(((ulong)_dpb.drm + 1) * 32 / sectorSize);
 
                             imagePlugin.ReadSectors(firstDirectorySector + partition.Start,
+                                                    false,
                                                     directoryLength,
                                                     out directory,
                                                     out _);
@@ -419,7 +421,7 @@ public sealed partial class CPM
             if(!_cpmFound)
             {
                 // Read CHS = {0,0,1}
-                errno = imagePlugin.ReadSector(0 + partition.Start, out sector, out _);
+                errno = imagePlugin.ReadSector(0 + partition.Start, false, out sector, out _);
 
                 if(errno == ErrorNumber.NoError)
                 {
@@ -874,6 +876,7 @@ public sealed partial class CPM
                         var directoryLength = (uint)(((ulong)_dpb.drm + 1) * 32 / imagePlugin.Info.SectorSize);
 
                         imagePlugin.ReadSectors(firstDirectorySector86 + partition.Start,
+                                                false,
                                                 directoryLength,
                                                 out directory,
                                                 out _);
@@ -1010,6 +1013,7 @@ public sealed partial class CPM
                                                                    (int)partition.Start                        +
                                                                    p / _sectorMask.Length * _sectorMask.Length +
                                                                    _sectorMask[p % _sectorMask.Length]),
+                                                           false,
                                                            out byte[] dirSector,
                                                            out _);
 
@@ -1029,8 +1033,9 @@ public sealed partial class CPM
 
                         // Complement of the directory bytes if needed
                         if(def.complement)
-                            for(var b = 0; b < directory.Length; b++)
-                                directory[b] = (byte)(~directory[b] & 0xFF);
+                        {
+                            for(var b = 0; b < directory.Length; b++) directory[b] = (byte)(~directory[b] & 0xFF);
+                        }
 
                         // Check the directory
                         if(CheckDir(directory))

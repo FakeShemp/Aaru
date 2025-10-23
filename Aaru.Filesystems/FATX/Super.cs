@@ -61,7 +61,7 @@ public sealed partial class XboxFatPlugin
 
         AaruLogging.Debug(MODULE_NAME, Localization.Reading_superblock);
 
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -146,7 +146,7 @@ public sealed partial class XboxFatPlugin
 
             AaruLogging.Debug(MODULE_NAME, Localization.FAT_is_0_sectors, fatSize);
 
-            errno = imagePlugin.ReadSectors(_fatStartSector, fatSize, out buffer, out _);
+            errno = imagePlugin.ReadSectors(_fatStartSector, false, fatSize, out buffer, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -154,9 +154,8 @@ public sealed partial class XboxFatPlugin
             _fat32 = MemoryMarshal.Cast<byte, uint>(buffer).ToArray();
 
             if(!_littleEndian)
-            {
-                for(var i = 0; i < _fat32.Length; i++) _fat32[i] = Swapping.Swap(_fat32[i]);
-            }
+                for(var i = 0; i < _fat32.Length; i++)
+                    _fat32[i] = Swapping.Swap(_fat32[i]);
 
             AaruLogging.Debug(MODULE_NAME, "fat32[0] == FATX32_ID = {0}", _fat32[0] == FATX32_ID);
 
@@ -178,7 +177,7 @@ public sealed partial class XboxFatPlugin
 
             AaruLogging.Debug(MODULE_NAME, Localization.FAT_is_0_sectors, fatSize);
 
-            errno = imagePlugin.ReadSectors(_fatStartSector, fatSize, out buffer, out _);
+            errno = imagePlugin.ReadSectors(_fatStartSector, false, fatSize, out buffer, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -186,9 +185,8 @@ public sealed partial class XboxFatPlugin
             _fat16 = MemoryMarshal.Cast<byte, ushort>(buffer).ToArray();
 
             if(!_littleEndian)
-            {
-                for(var i = 0; i < _fat16.Length; i++) _fat16[i] = Swapping.Swap(_fat16[i]);
-            }
+                for(var i = 0; i < _fat16.Length; i++)
+                    _fat16[i] = Swapping.Swap(_fat16[i]);
 
             AaruLogging.Debug(MODULE_NAME, "fat16[0] == FATX16_ID = {0}", _fat16[0] == FATX16_ID);
 
@@ -215,6 +213,7 @@ public sealed partial class XboxFatPlugin
         for(var i = 0; i < rootDirectoryClusters.Length; i++)
         {
             errno = imagePlugin.ReadSectors(_firstClusterSector + (rootDirectoryClusters[i] - 1) * _sectorsPerCluster,
+                                            false,
                                             _sectorsPerCluster,
                                             out buffer,
                                             out _);

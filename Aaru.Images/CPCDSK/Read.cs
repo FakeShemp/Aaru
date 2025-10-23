@@ -63,8 +63,9 @@ public sealed partial class Cpcdsk
         int pos;
 
         for(pos = 0; pos < 254; pos++)
-            if(headerB[pos] == 0x0D && headerB[pos + 1] == 0x0A)
-                break;
+        {
+            if(headerB[pos] == 0x0D && headerB[pos + 1] == 0x0A) break;
+        }
 
         if(pos >= 254) return ErrorNumber.InvalidArgument;
 
@@ -316,8 +317,13 @@ public sealed partial class Cpcdsk
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
+        buffer       = null;
+        sectorStatus = SectorStatus.NotDumped;
+
+        if(negative) return ErrorNumber.NotSupported;
+
         if(_sectors.TryGetValue(sectorAddress, out buffer))
         {
             sectorStatus = SectorStatus.Dumped;
@@ -331,10 +337,13 @@ public sealed partial class Cpcdsk
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
@@ -345,7 +354,7 @@ public sealed partial class Cpcdsk
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
+            ErrorNumber errno = ReadSector(sectorAddress + i, false, out byte[] sector, out SectorStatus status);
             sectorStatus[i] = status;
 
             if(errno != ErrorNumber.NoError) return errno;
@@ -359,9 +368,11 @@ public sealed partial class Cpcdsk
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorTag(ulong sectorAddress, SectorTagType tag, out byte[] buffer)
+    public ErrorNumber ReadSectorTag(ulong sectorAddress, bool negative, SectorTagType tag, out byte[] buffer)
     {
         buffer = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(tag != SectorTagType.FloppyAddressMark) return ErrorNumber.NotSupported;
 
@@ -369,9 +380,12 @@ public sealed partial class Cpcdsk
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsTag(ulong sectorAddress, uint length, SectorTagType tag, out byte[] buffer)
+    public ErrorNumber ReadSectorsTag(ulong      sectorAddress, bool negative, uint length, SectorTagType tag,
+                                      out byte[] buffer)
     {
         buffer = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(tag != SectorTagType.FloppyAddressMark) return ErrorNumber.NotSupported;
 
@@ -383,7 +397,7 @@ public sealed partial class Cpcdsk
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] addressMark, out _);
+            ErrorNumber errno = ReadSector(sectorAddress + i, false, out byte[] addressMark, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 

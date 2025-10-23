@@ -49,6 +49,7 @@ public sealed partial class OperaFS
         do
         {
             ErrorNumber errno = _image.ReadSectors((ulong)(nextBlock * _volumeBlockSizeRatio),
+                                                   false,
                                                    _volumeBlockSizeRatio,
                                                    out byte[] data,
                                                    out _);

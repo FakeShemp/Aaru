@@ -53,6 +53,7 @@ public sealed partial class HPOFS
 
         ErrorNumber errno =
             imagePlugin.ReadSector(0 + partition.Start,
+                                   false,
                                    out byte[] hpofsBpbSector,
                                    out _); // Seek to BIOS parameter block, on logical sector 0
 
@@ -77,18 +78,21 @@ public sealed partial class HPOFS
 
         ErrorNumber errno =
             imagePlugin.ReadSector(0 + partition.Start,
+                                   false,
                                    out byte[] hpofsBpbSector,
                                    out _); // Seek to BIOS parameter block, on logical sector 0
 
         if(errno != ErrorNumber.NoError) return;
 
         errno = imagePlugin.ReadSector(13 + partition.Start,
+                                       false,
                                        out byte[] medInfoSector,
                                        out _); // Seek to media information block, on logical sector 13
 
         if(errno != ErrorNumber.NoError) return;
 
         errno = imagePlugin.ReadSector(14 + partition.Start,
+                                       false,
                                        out byte[] volInfoSector,
                                        out _); // Seek to volume information block, on logical sector 14
 

@@ -93,12 +93,14 @@ public sealed partial class AppleMFS
                                     ? _device.ReadSectorsTag((ulong)((nextBlock - 2) * _sectorsPerBlock) +
                                                              _volMdb.drAlBlSt                            +
                                                              _partitionStart,
+                                                             false,
                                                              (uint)_sectorsPerBlock,
                                                              SectorTagType.AppleSonyTag,
                                                              out byte[] sectors)
                                     : _device.ReadSectors((ulong)((nextBlock - 2) * _sectorsPerBlock) +
                                                           _volMdb.drAlBlSt                            +
                                                           _partitionStart,
+                                                          false,
                                                           (uint)_sectorsPerBlock,
                                                           out sectors,
                                                           out _);

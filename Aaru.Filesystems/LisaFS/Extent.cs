@@ -75,7 +75,7 @@ public sealed partial class LisaFS
 
             for(ulong i = 0; i < _device.Info.Sectors; i++)
             {
-                errno = _device.ReadSectorTag(i, SectorTagType.AppleSonyTag, out tag);
+                errno = _device.ReadSectorTag(i, false, SectorTagType.AppleSonyTag, out tag);
 
                 if(errno != ErrorNumber.NoError) continue;
 
@@ -93,7 +93,7 @@ public sealed partial class LisaFS
         }
 
         // Checks that the sector tag indicates its the Extents File we are searching for
-        errno = _device.ReadSectorTag(ptr, SectorTagType.AppleSonyTag, out tag);
+        errno = _device.ReadSectorTag(ptr, false, SectorTagType.AppleSonyTag, out tag);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -102,8 +102,8 @@ public sealed partial class LisaFS
         if(extTag.FileId != (short)(-1 * fileId)) return ErrorNumber.NoSuchFile;
 
         errno = _mddf.fsversion == LISA_V1
-                    ? _device.ReadSectors(ptr, 2, out byte[] sector, out _)
-                    : _device.ReadSector(ptr, out sector, out _);
+                    ? _device.ReadSectors(ptr, false, 2, out byte[] sector, out _)
+                    : _device.ReadSector(ptr, false, out sector, out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 
@@ -307,6 +307,7 @@ public sealed partial class LisaFS
 
         // Searches the S-Records place using MDDF pointers
         ErrorNumber errno = _device.ReadSectors(_mddf.srec_ptr + _mddf.mddf_block + _volumePrefix,
+                                                false,
                                                 _mddf.srec_len,
                                                 out byte[] sectors,
                                                 out _);

@@ -398,22 +398,25 @@ public sealed partial class DiskCopy42
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
         sectorStatus = SectorStatus.Dumped;
 
-        return ReadSectors(sectorAddress, 1, out buffer, out _);
+        return ReadSectors(sectorAddress, negative, 1, out buffer, out _);
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorTag(ulong sectorAddress, SectorTagType tag, out byte[] buffer) =>
-        ReadSectorsTag(sectorAddress, 1, tag, out buffer);
+    public ErrorNumber ReadSectorTag(ulong sectorAddress, bool negative, SectorTagType tag, out byte[] buffer) =>
+        ReadSectorsTag(sectorAddress, negative, 1, tag, out buffer);
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(sectorAddress > imageInfo.Sectors - 1) return ErrorNumber.SectorNotFound;
 
@@ -441,9 +444,12 @@ public sealed partial class DiskCopy42
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsTag(ulong sectorAddress, uint length, SectorTagType tag, out byte[] buffer)
+    public ErrorNumber ReadSectorsTag(ulong      sectorAddress, bool negative, uint length, SectorTagType tag,
+                                      out byte[] buffer)
     {
         buffer = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(tag != SectorTagType.AppleSonyTag) return ErrorNumber.NotSupported;
 
@@ -468,29 +474,32 @@ public sealed partial class DiskCopy42
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSectorLong(ulong            sectorAddress, bool negative, out byte[] buffer,
+                                      out SectorStatus sectorStatus)
     {
         sectorStatus = SectorStatus.Dumped;
 
-        return ReadSectorsLong(sectorAddress, 1, out buffer, out _);
+        return ReadSectorsLong(sectorAddress, negative, 1, out buffer, out _);
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
                                        out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
 
+        if(negative) return ErrorNumber.NotSupported;
+
         if(sectorAddress > imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
         if(sectorAddress + length > imageInfo.Sectors) return ErrorNumber.OutOfRange;
 
-        ErrorNumber errno = ReadSectors(sectorAddress, length, out byte[] data, out sectorStatus);
+        ErrorNumber errno = ReadSectors(sectorAddress, false, length, out byte[] data, out sectorStatus);
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        errno = ReadSectorsTag(sectorAddress, length, SectorTagType.AppleSonyTag, out byte[] tags);
+        errno = ReadSectorsTag(sectorAddress, false, length, SectorTagType.AppleSonyTag, out byte[] tags);
 
         if(errno != ErrorNumber.NoError) return errno;
 

@@ -82,7 +82,7 @@ public sealed partial class AppleMap : IPartition
 
         if(sectorOffset + 2 >= imagePlugin.Info.Sectors) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset, out byte[] ddmSector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset, false, out byte[] ddmSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -154,7 +154,7 @@ public sealed partial class AppleMap : IPartition
             }
         }
 
-        errno = imagePlugin.ReadSector(1 + sectorOffset, out byte[] partSector, out _);
+        errno = imagePlugin.ReadSector(1 + sectorOffset, false, out byte[] partSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -258,7 +258,7 @@ public sealed partial class AppleMap : IPartition
                 return partitions.Count > 0;
         }
 
-        errno = imagePlugin.ReadSectors(sectorOffset, sectorsToRead, out byte[] entries, out _);
+        errno = imagePlugin.ReadSectors(sectorOffset, false, sectorsToRead, out byte[] entries, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 

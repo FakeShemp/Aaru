@@ -964,7 +964,7 @@ public class CSS
 
         for(ulong i = 0; i < sectorsToSearch; i++)
         {
-            input.ReadSector(startSector + i, out byte[] sector, out _);
+            input.ReadSector(startSector + i, false, out byte[] sector, out _);
 
             if(!IsEncrypted(null, null, sector)) continue;
 

@@ -144,6 +144,7 @@ public sealed partial class FAT
             for(var i = 0; i < clusters.Length; i++)
             {
                 ErrorNumber errno = _image.ReadSectors(_firstClusterSector + clusters[i] * _sectorsPerCluster,
+                                                       false,
                                                        _sectorsPerCluster,
                                                        out byte[] buffer,
                                                        out _);

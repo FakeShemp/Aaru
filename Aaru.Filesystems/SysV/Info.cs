@@ -84,8 +84,11 @@ public sealed partial class SysVfs
         foreach(int i in locations.TakeWhile(i => (ulong)i + partition.Start + sb_size_in_sectors <
                                                   imagePlugin.Info.Sectors))
         {
-            ErrorNumber errno =
-                imagePlugin.ReadSectors((ulong)i + partition.Start, sb_size_in_sectors, out byte[] sb_sector, out _);
+            ErrorNumber errno = imagePlugin.ReadSectors((ulong)i + partition.Start,
+                                                        false,
+                                                        sb_size_in_sectors,
+                                                        out byte[] sb_sector,
+                                                        out _);
 
             if(errno != ErrorNumber.NoError || sb_sector.Length < 0x400) continue;
 
@@ -186,7 +189,11 @@ public sealed partial class SysVfs
 
         foreach(int i in locations)
         {
-            errno = imagePlugin.ReadSectors((ulong)i + partition.Start, sb_size_in_sectors, out sb_sector, out _);
+            errno = imagePlugin.ReadSectors((ulong)i + partition.Start,
+                                            false,
+                                            sb_size_in_sectors,
+                                            out sb_sector,
+                                            out _);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -320,7 +327,12 @@ public sealed partial class SysVfs
         {
             var xenix_strings = new byte[6];
             var xnx_sb        = new XenixSuperBlock();
-            errno = imagePlugin.ReadSectors((ulong)start + partition.Start, sb_size_in_sectors, out sb_sector, out _);
+
+            errno = imagePlugin.ReadSectors((ulong)start + partition.Start,
+                                            false,
+                                            sb_size_in_sectors,
+                                            out sb_sector,
+                                            out _);
 
             if(errno != ErrorNumber.NoError) return;
 
@@ -490,7 +502,11 @@ public sealed partial class SysVfs
 
         if(sysv)
         {
-            errno = imagePlugin.ReadSectors((ulong)start + partition.Start, sb_size_in_sectors, out sb_sector, out _);
+            errno = imagePlugin.ReadSectors((ulong)start + partition.Start,
+                                            false,
+                                            sb_size_in_sectors,
+                                            out sb_sector,
+                                            out _);
 
             if(errno != ErrorNumber.NoError) return;
 
@@ -655,7 +671,11 @@ public sealed partial class SysVfs
 
         if(coherent)
         {
-            errno = imagePlugin.ReadSectors((ulong)start + partition.Start, sb_size_in_sectors, out sb_sector, out _);
+            errno = imagePlugin.ReadSectors((ulong)start + partition.Start,
+                                            false,
+                                            sb_size_in_sectors,
+                                            out sb_sector,
+                                            out _);
 
             if(errno != ErrorNumber.NoError) return;
 
@@ -728,7 +748,11 @@ public sealed partial class SysVfs
 
         if(sys7th)
         {
-            errno = imagePlugin.ReadSectors((ulong)start + partition.Start, sb_size_in_sectors, out sb_sector, out _);
+            errno = imagePlugin.ReadSectors((ulong)start + partition.Start,
+                                            false,
+                                            sb_size_in_sectors,
+                                            out sb_sector,
+                                            out _);
 
             if(errno != ErrorNumber.NoError) return;
 

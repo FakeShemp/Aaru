@@ -64,7 +64,7 @@ public sealed partial class ODS
         if(imagePlugin.Info.SectorSize < 512) return false;
 
         var         magicB = new byte[12];
-        ErrorNumber errno  = imagePlugin.ReadSector(1 + partition.Start, out byte[] hbSector, out _);
+        ErrorNumber errno  = imagePlugin.ReadSector(1 + partition.Start, false, out byte[] hbSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -80,7 +80,7 @@ public sealed partial class ODS
 
         if(hbSector.Length < 0x400) return false;
 
-        errno = imagePlugin.ReadSector(partition.Start, out hbSector, out _);
+        errno = imagePlugin.ReadSector(partition.Start, false, out hbSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -102,7 +102,7 @@ public sealed partial class ODS
 
         var sb = new StringBuilder();
 
-        ErrorNumber errno = imagePlugin.ReadSector(1 + partition.Start, out byte[] hbSector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(1 + partition.Start, false, out byte[] hbSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -115,7 +115,7 @@ public sealed partial class ODS
         {
             if(hbSector.Length < 0x400) return;
 
-            errno = imagePlugin.ReadSector(partition.Start, out byte[] tmp, out _);
+            errno = imagePlugin.ReadSector(partition.Start, false, out byte[] tmp, out _);
 
             if(errno != ErrorNumber.NoError) return;
 

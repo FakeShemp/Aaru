@@ -300,6 +300,7 @@ partial class Dump
 
                             outputOptical.WriteSectorsLong(data,
                                                            i + r,
+                                                           false,
                                                            1,
                                                            Enumerable.Repeat(SectorStatus.Dumped, 1).ToArray());
 
@@ -333,7 +334,7 @@ partial class Dump
                             }
                         }
                         else
-                            outputOptical.WriteSectorsLong(cmdBuf, i + r, 1, [SectorStatus.Dumped]);
+                            outputOptical.WriteSectorsLong(cmdBuf, i + r, false, 1, [SectorStatus.Dumped]);
 
                         imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
 
@@ -410,6 +411,7 @@ partial class Dump
 
                     outputOptical.WriteSectorsLong(data,
                                                    i,
+                                                   false,
                                                    blocksToRead,
                                                    Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
 
@@ -466,16 +468,20 @@ partial class Dump
 
                         outputOptical.WriteSectorsLong(data,
                                                        i,
+                                                       false,
                                                        blocksToRead,
                                                        Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)
                                                                  .ToArray());
                     }
                     else
+                    {
                         outputOptical.WriteSectorsLong(cmdBuf,
                                                        i,
+                                                       false,
                                                        blocksToRead,
                                                        Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)
                                                                  .ToArray());
+                    }
                 }
 
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;

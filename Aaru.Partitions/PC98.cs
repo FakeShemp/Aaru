@@ -121,11 +121,11 @@ public sealed class PC98 : IPartition
 
         if(sectorOffset != 0) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(0, out byte[] bootSector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(0, false, out byte[] bootSector, out _);
 
         if(errno != ErrorNumber.NoError || bootSector[^2] != 0x55 || bootSector[^1] != 0xAA) return false;
 
-        errno = imagePlugin.ReadSector(1, out byte[] sector, out _);
+        errno = imagePlugin.ReadSector(1, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 

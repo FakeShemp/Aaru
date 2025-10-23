@@ -226,10 +226,11 @@ public sealed partial class A2R
     public bool SetGeometry(uint cylinders, uint heads, uint sectorsPerTrack) => true;
 
     /// <inheritdoc />
-    public bool WriteSectorTag(byte[] data, ulong sectorAddress, SectorTagType tag) => false;
+    public bool WriteSectorTag(byte[] data, ulong sectorAddress, bool negative, SectorTagType tag) => false;
 
     /// <inheritdoc />
-    public bool WriteSectorsTag(byte[] data, ulong sectorAddress, uint length, SectorTagType tag) => false;
+    public bool WriteSectorsTag(byte[] data, ulong sectorAddress, bool negative, uint length, SectorTagType tag) =>
+        false;
 
     /// <inheritdoc />
     public bool SetDumpHardware(List<DumpHardware> dumpHardware) => false;
@@ -241,20 +242,20 @@ public sealed partial class A2R
     public bool WriteMediaTag(byte[] data, MediaTagType tag) => false;
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus) =>
+    public bool WriteSector(byte[] data, ulong sectorAddress, bool negative, SectorStatus sectorStatus) =>
         throw new NotImplementedException();
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus) =>
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, bool negative, SectorStatus sectorStatus) =>
         throw new NotImplementedException();
 
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus) =>
-        throw new NotImplementedException();
+    public bool WriteSectors(byte[]         data, ulong sectorAddress, bool negative, uint length,
+                             SectorStatus[] sectorStatus) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus) =>
-        throw new NotImplementedException();
+    public bool WriteSectorsLong(byte[]         data, ulong sectorAddress, bool negative, uint length,
+                                 SectorStatus[] sectorStatus) => throw new NotImplementedException();
 
 #endregion
 

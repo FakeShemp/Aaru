@@ -48,7 +48,7 @@ public sealed partial class LIF
     {
         if(imagePlugin.Info.SectorSize < 256) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -68,7 +68,7 @@ public sealed partial class LIF
 
         if(imagePlugin.Info.SectorSize < 256) return;
 
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

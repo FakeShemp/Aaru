@@ -64,7 +64,7 @@ public sealed partial class AppleDOS
         while(lba != 0)
         {
             _usedSectors++;
-            ErrorNumber errno = _device.ReadSector(lba, out byte[] tsSectorB, out _);
+            ErrorNumber errno = _device.ReadSector(lba, false, out byte[] tsSectorB, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -90,7 +90,7 @@ public sealed partial class AppleDOS
 
                 if(blockLba == 0) break;
 
-                errno = _device.ReadSector(blockLba, out byte[] fileBlock, out _);
+                errno = _device.ReadSector(blockLba, false, out byte[] fileBlock, out _);
 
                 if(errno != ErrorNumber.NoError) return errno;
 
@@ -128,7 +128,8 @@ public sealed partial class AppleDOS
 
         if(!_track2UsedByFiles) tracksOnBoot++;
 
-        ErrorNumber errno = _device.ReadSectors(0, (uint)(tracksOnBoot * _sectorsPerTrack), out _bootBlocks, out _);
+        ErrorNumber errno =
+            _device.ReadSectors(0, false, (uint)(tracksOnBoot * _sectorsPerTrack), out _bootBlocks, out _);
 
         if(errno != ErrorNumber.NoError) return errno;
 

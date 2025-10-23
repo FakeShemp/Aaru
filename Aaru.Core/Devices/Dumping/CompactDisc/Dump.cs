@@ -87,21 +87,21 @@ sealed partial class Dump
         MhddLog                  mhddLog;                             // MHDD log
         double                   minSpeed = double.MaxValue;          // Minimum speed
         bool                     newTrim;                             // Is trim a new one?
-        int                      offsetBytes = 0;                     // Read offset
-        bool                     read6       = false;                 // Device supports READ(6)
-        bool                     read10      = false;                 // Device supports READ(10)
-        bool                     read12      = false;                 // Device supports READ(12)
-        bool                     read16      = false;                 // Device supports READ(16)
-        bool                     readcd      = true;                  // Device supports READ CD
+        var                      offsetBytes = 0;                     // Read offset
+        var                      read6       = false;                 // Device supports READ(6)
+        var                      read10      = false;                 // Device supports READ(10)
+        var                      read12      = false;                 // Device supports READ(12)
+        var                      read16      = false;                 // Device supports READ(16)
+        var                      readcd      = true;                  // Device supports READ CD
         bool                     ret;                                 // Image writing return status
         const uint               sectorSize       = 2352;             // Full sector size
-        int                      sectorsForOffset = 0;                // Sectors needed to fix offset
-        bool                     sense            = true;             // Sense indicator
+        var                      sectorsForOffset = 0;                // Sectors needed to fix offset
+        var                      sense            = true;             // Sense indicator
         int                      sessions;                            // Number of sessions in disc
         SubchannelLog            subLog  = null;                      // Subchannel log
         uint                     subSize = 0;                         // Subchannel size in bytes
         TrackSubchannelType      subType;                             // Track subchannel type
-        bool                     supportsLongSectors = true;          // Supports reading EDC and ECC
+        var                      supportsLongSectors = true;          // Supports reading EDC and ECC
         bool                     supportsPqSubchannel;                // Supports reading PQ subchannel
         bool                     supportsRwSubchannel;                // Supports reading RW subchannel
         byte[]                   tmpBuf;                              // Temporary buffer
@@ -113,11 +113,11 @@ sealed partial class Dump
         bool                     hiddenTrack;                         // Disc has a hidden track before track 1
         MmcSubchannel            supportedSubchannel;                 // Drive's maximum supported subchannel
         MmcSubchannel            desiredSubchannel;                   // User requested subchannel
-        bool                     bcdSubchannel       = false;         // Subchannel positioning is in BCD
+        var                      bcdSubchannel       = false;         // Subchannel positioning is in BCD
         Dictionary<byte, string> isrcs               = new();
         string                   mcn                 = null;
         HashSet<int>             subchannelExtents   = [];
-        bool                     cdiReadyReadAsAudio = false;
+        var                      cdiReadyReadAsAudio = false;
         uint                     firstLba;
         var                      outputOptical = _outputPlugin as IWritableOpticalImage;
 
@@ -541,7 +541,7 @@ sealed partial class Dump
             ErrorMessage?.Invoke(Localization.Core.Output_format_does_not_support_pregaps_continuing);
         }
 
-        for(int t = 1; t < tracks.Length; t++) tracks[t - 1].EndSector = tracks[t].StartSector - 1;
+        for(var t = 1; t < tracks.Length; t++) tracks[t - 1].EndSector = tracks[t].StartSector - 1;
 
         tracks[^1].EndSector = (ulong)lastSector;
         blocks               = (ulong)(lastSector + 1);
@@ -626,7 +626,7 @@ sealed partial class Dump
 
             Tuple<ulong, ulong>[] dataExtentsArray = dataExtents.ToArray();
 
-            for(int i = 0; i < dataExtentsArray.Length - 1; i++)
+            for(var i = 0; i < dataExtentsArray.Length - 1; i++)
                 leadOutExtents.Add(dataExtentsArray[i].Item2 + 1, dataExtentsArray[i + 1].Item1 - 1);
         }
 
@@ -715,7 +715,7 @@ sealed partial class Dump
                 continue;
             }
 
-            int bufOffset = 0;
+            var bufOffset = 0;
 
             while(cmdBuf[0  + bufOffset] != 0x00 ||
                   cmdBuf[1  + bufOffset] != 0xFF ||
@@ -928,7 +928,7 @@ sealed partial class Dump
                                                        _dev.LastError));
         }
 
-        bool cdiWithHiddenTrack1 = false;
+        var cdiWithHiddenTrack1 = false;
 
         if(dskType is MediaType.CDIREADY && tracks.Min(t => t.Sequence) == 1)
         {
@@ -978,7 +978,10 @@ sealed partial class Dump
         {
             foreach(Track imgTrack in outputOptical.Tracks)
             {
-                errno = outputOptical.ReadSectorTag(imgTrack.Sequence, SectorTagType.CdTrackIsrc, out byte[] isrcBytes);
+                errno = outputOptical.ReadSectorTag(imgTrack.Sequence,
+                                                    false,
+                                                    SectorTagType.CdTrackIsrc,
+                                                    out byte[] isrcBytes);
 
                 if(errno == ErrorNumber.NoError) isrcs[(byte)imgTrack.Sequence] = Encoding.ASCII.GetString(isrcBytes);
 
@@ -1041,7 +1044,7 @@ sealed partial class Dump
 
             UpdateStatus?.Invoke(string.Format(Localization.Core.Setting_flags_for_track_0, track.Sequence));
 
-            outputOptical.WriteSectorTag([kvp.Value], kvp.Key, SectorTagType.CdTrackFlags);
+            outputOptical.WriteSectorTag([kvp.Value], kvp.Key, false, SectorTagType.CdTrackFlags);
         }
 
         // Set MCN
@@ -1079,8 +1082,9 @@ sealed partial class Dump
             foreach(int sub in _resume.BadSubchannels) subchannelExtents.Add(sub);
 
             if(_resume.NextBlock < blocks)
-                for(ulong i = _resume.NextBlock; i < blocks; i++)
-                    subchannelExtents.Add((int)i);
+            {
+                for(ulong i = _resume.NextBlock; i < blocks; i++) subchannelExtents.Add((int)i);
+            }
         }
 
         if(_resume.NextBlock > 0)
@@ -1495,8 +1499,9 @@ sealed partial class Dump
                         supportsLongSectors);
 
         foreach(Tuple<ulong, ulong> leadoutExtent in leadOutExtents.ToArray())
-            for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++)
-                subchannelExtents.Remove((int)e);
+        {
+            for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++) subchannelExtents.Remove((int)e);
+        }
 
         if(subchannelExtents.Count > 0 && _retryPasses > 0 && _retrySubchannel)
         {
@@ -1583,7 +1588,10 @@ sealed partial class Dump
         foreach(KeyValuePair<byte, string> isrc in isrcs)
         {
             // TODO: Track tags
-            if(!outputOptical.WriteSectorTag(Encoding.ASCII.GetBytes(isrc.Value), isrc.Key, SectorTagType.CdTrackIsrc))
+            if(!outputOptical.WriteSectorTag(Encoding.ASCII.GetBytes(isrc.Value),
+                                             isrc.Key,
+                                             false,
+                                             SectorTagType.CdTrackIsrc))
                 continue;
 
             UpdateStatus?.Invoke(string.Format(Localization.Core.Setting_ISRC_for_track_0_to_1, isrc.Key, isrc.Value));

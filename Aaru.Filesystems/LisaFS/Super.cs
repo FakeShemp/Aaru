@@ -78,7 +78,7 @@ public sealed partial class LisaFS
             // LisaOS searches sectors until tag tells MDDF resides there, so we'll search 100 sectors
             for(ulong i = 0; i < 100; i++)
             {
-                ErrorNumber errno = _device.ReadSectorTag(i, SectorTagType.AppleSonyTag, out byte[] tag);
+                ErrorNumber errno = _device.ReadSectorTag(i, false, SectorTagType.AppleSonyTag, out byte[] tag);
 
                 if(errno != ErrorNumber.NoError) continue;
 
@@ -92,7 +92,7 @@ public sealed partial class LisaFS
                 if(searchTag.FileId != FILEID_MDDF) continue;
 
                 _devTagSize = tag.Length;
-                errno       = _device.ReadSector(i, out byte[] sector, out _);
+                errno       = _device.ReadSector(i, false, out byte[] sector, out _);
 
                 if(errno != ErrorNumber.NoError) return errno;
 

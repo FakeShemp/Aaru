@@ -47,7 +47,8 @@ public sealed partial class Cpcdsk
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSectorLong(ulong            sectorAddress, bool negative, out byte[] buffer,
+                                      out SectorStatus sectorStatus)
     {
         buffer       = null;
         sectorStatus = SectorStatus.NotDumped;
@@ -56,7 +57,7 @@ public sealed partial class Cpcdsk
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
                                        out SectorStatus[] sectorStatus)
     {
         buffer       = null;

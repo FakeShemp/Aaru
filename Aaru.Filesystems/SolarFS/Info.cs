@@ -49,7 +49,7 @@ public sealed partial class SolarFS
     {
         if(2 + partition.Start >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] bpb, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, false, out byte[] bpb, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -71,7 +71,7 @@ public sealed partial class SolarFS
         metadata    =   new FileSystem();
 
         var         sb    = new StringBuilder();
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] bpbSector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, false, out byte[] bpbSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

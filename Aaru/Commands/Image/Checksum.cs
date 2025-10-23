@@ -365,7 +365,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         {
                                             preFileTask.Description = string.Format(UI.Hashing_file_less_block_0, i);
 
-                                            errno = tapeImage.ReadSector(i, out byte[] hiddenSector, out _);
+                                            errno = tapeImage.ReadSector(i, false, out byte[] hiddenSector, out _);
 
                                             if(errno != ErrorNumber.NoError)
                                             {
@@ -404,6 +404,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         if(sectors - doneSectors >= SECTORS_TO_READ)
                                         {
                                             errno = tapeImage.ReadSectors(doneSectors + currentFile.FirstBlock,
+                                                                          false,
                                                                           SECTORS_TO_READ,
                                                                           out sector,
                                                                           out _);
@@ -430,6 +431,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                         else
                                         {
                                             errno = tapeImage.ReadSectors(doneSectors + currentFile.FirstBlock,
+                                                                          false,
                                                                           (uint)(sectors - doneSectors),
                                                                           out sector,
                                                                           out _);
@@ -492,7 +494,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                 {
                                     postFileTask.Description = string.Format(UI.Hashing_file_less_block_0, i);
 
-                                    errno = tapeImage.ReadSector(i, out byte[] hiddenSector, out _);
+                                    errno = tapeImage.ReadSector(i, false, out byte[] hiddenSector, out _);
 
                                     if(errno != ErrorNumber.NoError)
                                     {
@@ -624,7 +626,11 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
                                     if(sectors - doneSectors >= SECTORS_TO_READ)
                                     {
-                                        errno = mediaImage.ReadSectors(doneSectors, SECTORS_TO_READ, out sector, out _);
+                                        errno = mediaImage.ReadSectors(doneSectors,
+                                                                       false,
+                                                                       SECTORS_TO_READ,
+                                                                       out sector,
+                                                                       out _);
 
                                         if(errno != ErrorNumber.NoError)
                                         {
@@ -647,6 +653,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
                                     else
                                     {
                                         errno = mediaImage.ReadSectors(doneSectors,
+                                                                       false,
                                                                        (uint)(sectors - doneSectors),
                                                                        out sector,
                                                                        out _);

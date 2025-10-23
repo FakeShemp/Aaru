@@ -50,7 +50,7 @@ public sealed partial class JFS
 
         if(partition.Start + bootSectors >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start + bootSectors, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start + bootSectors, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -65,12 +65,12 @@ public sealed partial class JFS
     public void GetInformation(IMediaImage imagePlugin, Partition partition, Encoding encoding, out string information,
                                out FileSystem metadata)
     {
-        encoding    ??= Encoding.GetEncoding("iso-8859-15");
-        information =   "";
-        metadata    =   new FileSystem();
-        var         sb          = new StringBuilder();
+        encoding ??= Encoding.GetEncoding("iso-8859-15");
+        information = "";
+        metadata = new FileSystem();
+        var         sb = new StringBuilder();
         uint        bootSectors = JFS_BOOT_BLOCKS_SIZE / imagePlugin.Info.SectorSize;
-        ErrorNumber errno       = imagePlugin.ReadSector(partition.Start + bootSectors, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start + bootSectors, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

@@ -48,6 +48,7 @@ public sealed partial class FAT
         foreach(uint cluster in rootDirectoryClusters)
         {
             ErrorNumber errno = _image.ReadSectors(_firstClusterSector + cluster * _sectorsPerCluster,
+                                                   false,
                                                    _sectorsPerCluster,
                                                    out byte[] buffer,
                                                    out _);
@@ -147,6 +148,7 @@ public sealed partial class FAT
         foreach(uint cluster in GetClusters(_eaDirEntry.start_cluster))
         {
             ErrorNumber errno = _image.ReadSectors(_firstClusterSector + cluster * _sectorsPerCluster,
+                                                   false,
                                                    _sectorsPerCluster,
                                                    out byte[] buffer,
                                                    out _);

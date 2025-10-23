@@ -334,7 +334,7 @@ public sealed class Apricot : IPartition
         // I think Apricot can't chain partitions so.
         if(sectorOffset != 0) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(0, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(0, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError || sector.Length < 512) return false;
 

@@ -112,7 +112,8 @@ public sealed partial class PascalPlugin
 
             if(error != ErrorNumber.NoError) return error;
 
-            error = _device.ReadSectors((ulong)entry.FirstBlock                    * _multiplier,
+            error = _device.ReadSectors((ulong)entry.FirstBlock * _multiplier,
+                                        false,
                                         (uint)(entry.LastBlock - entry.FirstBlock) * _multiplier,
                                         out byte[] tmp,
                                         out _);

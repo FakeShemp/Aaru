@@ -60,14 +60,14 @@ public sealed partial class AcornADFS
         // ADFS-S, ADFS-M, ADFS-L, ADFS-D without partitions
         if(partition.Start == 0)
         {
-            errno = imagePlugin.ReadSector(0, out sector, out _);
+            errno = imagePlugin.ReadSector(0, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
             byte          oldChk0 = AcornMapChecksum(sector, 255);
             OldMapSector0 oldMap0 = Marshal.ByteArrayToStructureLittleEndian<OldMapSector0>(sector);
 
-            errno = imagePlugin.ReadSector(1, out sector, out _);
+            errno = imagePlugin.ReadSector(1, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
@@ -80,7 +80,7 @@ public sealed partial class AcornADFS
             // According to documentation map1 MUST start on sector 1. On ADFS-D it starts at 0x100, not on sector 1 (0x400)
             if(oldMap0.checksum == oldChk0 && oldMap1.checksum != oldChk1 && sector.Length >= 512)
             {
-                errno = imagePlugin.ReadSector(0, out sector, out _);
+                errno = imagePlugin.ReadSector(0, false, out sector, out _);
 
                 if(errno != ErrorNumber.NoError) return false;
 
@@ -103,7 +103,7 @@ public sealed partial class AcornADFS
 
                 if(OLD_DIRECTORY_SIZE % imagePlugin.Info.SectorSize > 0) sectorsToRead++;
 
-                errno = imagePlugin.ReadSectors(sbSector, sectorsToRead, out sector, out _);
+                errno = imagePlugin.ReadSectors(sbSector, false, sectorsToRead, out sector, out _);
 
                 if(errno != ErrorNumber.NoError) return false;
 
@@ -136,7 +136,7 @@ public sealed partial class AcornADFS
 
                 if(NEW_DIRECTORY_SIZE % imagePlugin.Info.SectorSize > 0) sectorsToRead++;
 
-                errno = imagePlugin.ReadSectors(sbSector, sectorsToRead, out sector, out _);
+                errno = imagePlugin.ReadSectors(sbSector, false, sectorsToRead, out sector, out _);
 
                 if(errno != ErrorNumber.NoError) return false;
 
@@ -168,7 +168,7 @@ public sealed partial class AcornADFS
         // Partitioning or not, new formats follow:
         DiscRecord drSb;
 
-        errno = imagePlugin.ReadSector(partition.Start, out sector, out _);
+        errno = imagePlugin.ReadSector(partition.Start, false, out sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -183,7 +183,7 @@ public sealed partial class AcornADFS
 
         if(sbSector + partition.Start + sectorsToRead >= partition.End) return false;
 
-        errno = imagePlugin.ReadSectors(sbSector + partition.Start, sectorsToRead, out byte[] bootSector, out _);
+        errno = imagePlugin.ReadSectors(sbSector + partition.Start, false, sectorsToRead, out byte[] bootSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -254,14 +254,14 @@ public sealed partial class AcornADFS
         // ADFS-S, ADFS-M, ADFS-L, ADFS-D without partitions
         if(partition.Start == 0)
         {
-            errno = imagePlugin.ReadSector(0, out sector, out _);
+            errno = imagePlugin.ReadSector(0, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return;
 
             byte          oldChk0 = AcornMapChecksum(sector, 255);
             OldMapSector0 oldMap0 = Marshal.ByteArrayToStructureLittleEndian<OldMapSector0>(sector);
 
-            errno = imagePlugin.ReadSector(1, out sector, out _);
+            errno = imagePlugin.ReadSector(1, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return;
 
@@ -271,7 +271,7 @@ public sealed partial class AcornADFS
             // According to documentation map1 MUST start on sector 1. On ADFS-D it starts at 0x100, not on sector 1 (0x400)
             if(oldMap0.checksum == oldChk0 && oldMap1.checksum != oldChk1 && sector.Length >= 512)
             {
-                errno = imagePlugin.ReadSector(0, out sector, out _);
+                errno = imagePlugin.ReadSector(0, false, out sector, out _);
 
                 if(errno != ErrorNumber.NoError) return;
 
@@ -310,7 +310,7 @@ public sealed partial class AcornADFS
 
                     if(OLD_DIRECTORY_SIZE % imagePlugin.Info.SectorSize > 0) sectorsToRead++;
 
-                    errno = imagePlugin.ReadSectors(sbSector, sectorsToRead, out sector, out _);
+                    errno = imagePlugin.ReadSectors(sbSector, false, sectorsToRead, out sector, out _);
 
                     if(errno != ErrorNumber.NoError) return;
 
@@ -334,7 +334,7 @@ public sealed partial class AcornADFS
 
                         if(NEW_DIRECTORY_SIZE % imagePlugin.Info.SectorSize > 0) sectorsToRead++;
 
-                        errno = imagePlugin.ReadSectors(sbSector, sectorsToRead, out sector, out _);
+                        errno = imagePlugin.ReadSectors(sbSector, false, sectorsToRead, out sector, out _);
 
                         if(errno != ErrorNumber.NoError) return;
 
@@ -354,7 +354,7 @@ public sealed partial class AcornADFS
                             namebytes = oldRoot.tail.name;
                         else
                         {
-                            errno = imagePlugin.ReadSectors(sbSector, sectorsToRead, out sector, out _);
+                            errno = imagePlugin.ReadSectors(sbSector, false, sectorsToRead, out sector, out _);
 
                             if(errno != ErrorNumber.NoError) return;
 
@@ -402,7 +402,7 @@ public sealed partial class AcornADFS
         // Partitioning or not, new formats follow:
         DiscRecord drSb;
 
-        errno = imagePlugin.ReadSector(partition.Start, out sector, out _);
+        errno = imagePlugin.ReadSector(partition.Start, false, out sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -415,7 +415,7 @@ public sealed partial class AcornADFS
 
         if(BOOT_BLOCK_SIZE % imagePlugin.Info.SectorSize > 0) sectorsToRead++;
 
-        errno = imagePlugin.ReadSectors(sbSector + partition.Start, sectorsToRead, out byte[] bootSector, out _);
+        errno = imagePlugin.ReadSectors(sbSector + partition.Start, false, sectorsToRead, out byte[] bootSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

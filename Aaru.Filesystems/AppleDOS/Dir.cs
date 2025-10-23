@@ -56,7 +56,7 @@ public sealed partial class AppleDOS
         while(lba != 0)
         {
             _usedSectors++;
-            ErrorNumber errno = _device.ReadSector(lba, out byte[] catSectorB, out _);
+            ErrorNumber errno = _device.ReadSector(lba, false, out byte[] catSectorB, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 

@@ -188,10 +188,12 @@ public sealed partial class CopyTape
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
         buffer       = null;
         sectorStatus = SectorStatus.NotDumped;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(sectorAddress >= (ulong)_blockPositionCache.LongLength) return ErrorNumber.OutOfRange;
 
@@ -226,17 +228,20 @@ public sealed partial class CopyTape
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         var ms = new MemoryStream();
         sectorStatus = new SectorStatus[length];
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
+            ErrorNumber errno = ReadSector(sectorAddress + i, false, out byte[] sector, out SectorStatus status);
 
             if(errno != ErrorNumber.NoError) return errno;
 

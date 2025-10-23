@@ -94,7 +94,7 @@ public sealed class XENIX : IPartition
 
         if(42 + sectorOffset >= imagePlugin.Info.Sectors) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(42 + sectorOffset, out byte[] tblsector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(42 + sectorOffset, false, out byte[] tblsector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 

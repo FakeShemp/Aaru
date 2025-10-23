@@ -489,10 +489,12 @@ public sealed partial class Vhdx
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
         buffer       = null;
         sectorStatus = SectorStatus.NotDumped;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
@@ -516,7 +518,7 @@ public sealed partial class Vhdx
         switch(blkFlags & BAT_FLAGS_MASK)
         {
             case PAYLOAD_BLOCK_NOT_PRESENT:
-                if(_hasParent) return _parentImage.ReadSector(sectorAddress, out buffer, out sectorStatus);
+                if(_hasParent) return _parentImage.ReadSector(sectorAddress, false, out buffer, out sectorStatus);
 
                 buffer = new byte[_logicalSectorSize];
 
@@ -532,7 +534,7 @@ public sealed partial class Vhdx
         bool partialBlock = (blkFlags & BAT_FLAGS_MASK) == PAYLOAD_BLOCK_PARTIALLY_PRESENT;
 
         if(partialBlock && _hasParent && !CheckBitmap(sectorAddress))
-            return _parentImage.ReadSector(sectorAddress, out buffer, out sectorStatus);
+            return _parentImage.ReadSector(sectorAddress, false, out buffer, out sectorStatus);
 
         if(!_blockCache.TryGetValue(blkPtr & BAT_FILE_OFFSET_MASK, out byte[] block))
         {
@@ -556,10 +558,13 @@ public sealed partial class Vhdx
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
@@ -570,7 +575,7 @@ public sealed partial class Vhdx
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
+            ErrorNumber errno = ReadSector(sectorAddress + i, false, out byte[] sector, out SectorStatus status);
 
             if(errno != ErrorNumber.NoError) return errno;
 

@@ -71,7 +71,7 @@ public sealed class GuidPartitionTable : IPartition
 
         if(sectorOffset + 2 >= imagePlugin.Info.Sectors) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(1 + sectorOffset, out byte[] hdrBytes, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(1 + sectorOffset, false, out byte[] hdrBytes, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -86,7 +86,7 @@ public sealed class GuidPartitionTable : IPartition
         {
             if(imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc)
             {
-                errno = imagePlugin.ReadSector(sectorOffset, out hdrBytes, out _);
+                errno = imagePlugin.ReadSector(sectorOffset, false, out hdrBytes, out _);
 
                 if(errno != ErrorNumber.NoError) return false;
 
@@ -156,7 +156,11 @@ public sealed class GuidPartitionTable : IPartition
 
         if(hdr.entries * hdr.entriesSize % imagePlugin.Info.SectorSize > 0) totalEntriesSectors++;
 
-        errno = imagePlugin.ReadSectors(hdr.entryLBA / divisor, totalEntriesSectors + modulo, out byte[] temp, out _);
+        errno = imagePlugin.ReadSectors(hdr.entryLBA / divisor,
+                                        false,
+                                        totalEntriesSectors + modulo,
+                                        out byte[] temp,
+                                        out _);
 
         if(errno != ErrorNumber.NoError) return false;
 

@@ -114,7 +114,9 @@ public sealed partial class Apple2Mg
                 var noFilter  = new ZZZNoFilter();
                 noFilter.Open(tmp);
                 nibPlugin.Open(noFilter);
-                ErrorNumber errno = nibPlugin.ReadSectors(0, (uint)nibPlugin.Info.Sectors, out _decodedImage, out _);
+
+                ErrorNumber errno =
+                    nibPlugin.ReadSectors(0, false, (uint)nibPlugin.Info.Sectors, out _decodedImage, out _);
 
                 if(errno != ErrorNumber.NoError) return errno;
 
@@ -275,18 +277,21 @@ public sealed partial class Apple2Mg
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
         sectorStatus = SectorStatus.Dumped;
 
-        return ReadSectors(sectorAddress, 1, out buffer, out _);
+        return ReadSectors(sectorAddress, false, 1, out buffer, out _);
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(sectorAddress > _imageInfo.Sectors - 1 || sectorAddress + length > _imageInfo.Sectors)
             return ErrorNumber.OutOfRange;

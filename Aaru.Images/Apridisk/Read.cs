@@ -205,8 +205,9 @@ public sealed partial class Apridisk
         for(ushort cyl = 0; cyl < _imageInfo.Cylinders; cyl++)
         {
             for(ushort head = 0; head < _imageInfo.Heads; head++)
-                if(spts[cyl][head] < spt)
-                    spt = spts[cyl][head];
+            {
+                if(spts[cyl][head] < spt) spt = spts[cyl][head];
+            }
         }
 
         _imageInfo.SectorsPerTrack = spt;
@@ -228,11 +229,13 @@ public sealed partial class Apridisk
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
         buffer                                    = null;
         (ushort cylinder, byte head, byte sector) = LbaToChs(sectorAddress);
         sectorStatus                              = SectorStatus.NotDumped;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(cylinder >= _sectorsData.Length           ||
            head     >= _sectorsData[cylinder].Length ||
@@ -246,10 +249,13 @@ public sealed partial class Apridisk
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
@@ -260,7 +266,11 @@ public sealed partial class Apridisk
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus singleSectorStatus);
+            ErrorNumber errno = ReadSector(sectorAddress + i,
+                                           false,
+                                           out byte[] sector,
+                                           out SectorStatus singleSectorStatus);
+
             sectorStatus[i] = singleSectorStatus;
 
             if(errno != ErrorNumber.NoError) return errno;

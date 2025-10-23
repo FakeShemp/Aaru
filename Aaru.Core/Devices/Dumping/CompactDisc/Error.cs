@@ -466,9 +466,8 @@ partial class Dump
 
                 // MEDIUM ERROR, retry with ignore error below
                 if(decSense is { ASC: 0x11 })
-                {
-                    if(!sectorsNotEvenPartial.Contains(badSector)) sectorsNotEvenPartial.Add(badSector);
-                }
+                    if(!sectorsNotEvenPartial.Contains(badSector))
+                        sectorsNotEvenPartial.Add(badSector);
             }
 
             // Because one block has been partially used to fix the offset
@@ -510,9 +509,9 @@ partial class Dump
                 Array.Copy(cmdBuf, sectorSize, sub,  0, subSize);
 
                 if(supportsLongSectors)
-                    outputOptical.WriteSectorLong(data, badSector, SectorStatus.Dumped);
+                    outputOptical.WriteSectorLong(data, badSector, false, SectorStatus.Dumped);
                 else
-                    outputOptical.WriteSector(Sector.GetUserData(data), badSector, SectorStatus.Dumped);
+                    outputOptical.WriteSector(Sector.GetUserData(data), badSector, false, SectorStatus.Dumped);
 
                 bool indexesChanged = Media.CompactDisc.WriteSubchannelToImage(supportedSubchannel,
                                                                                desiredSubchannel,
@@ -543,9 +542,9 @@ partial class Dump
             else
             {
                 if(supportsLongSectors)
-                    outputOptical.WriteSectorLong(cmdBuf, badSector, SectorStatus.Dumped);
+                    outputOptical.WriteSectorLong(cmdBuf, badSector, false, SectorStatus.Dumped);
                 else
-                    outputOptical.WriteSector(Sector.GetUserData(cmdBuf), badSector, SectorStatus.Dumped);
+                    outputOptical.WriteSector(Sector.GetUserData(cmdBuf), badSector, false, SectorStatus.Dumped);
             }
         }
 
@@ -663,9 +662,9 @@ partial class Dump
                         Array.Copy(cmdBuf, sectorSize, sub,  0, subSize);
 
                         if(supportsLongSectors)
-                            outputOptical.WriteSectorLong(data, badSector, SectorStatus.Errored);
+                            outputOptical.WriteSectorLong(data, badSector, false, SectorStatus.Errored);
                         else
-                            outputOptical.WriteSector(Sector.GetUserData(data), badSector, SectorStatus.Errored);
+                            outputOptical.WriteSector(Sector.GetUserData(data), badSector, false, SectorStatus.Errored);
 
                         bool indexesChanged = Media.CompactDisc.WriteSubchannelToImage(supportedSubchannel,
                             desiredSubchannel,
@@ -696,9 +695,12 @@ partial class Dump
                     else
                     {
                         if(supportsLongSectors)
-                            outputOptical.WriteSectorLong(cmdBuf, badSector, SectorStatus.Errored);
+                            outputOptical.WriteSectorLong(cmdBuf, badSector, false, SectorStatus.Errored);
                         else
-                            outputOptical.WriteSector(Sector.GetUserData(cmdBuf), badSector, SectorStatus.Errored);
+                            outputOptical.WriteSector(Sector.GetUserData(cmdBuf),
+                                                      badSector,
+                                                      false,
+                                                      SectorStatus.Errored);
                     }
                 }
 

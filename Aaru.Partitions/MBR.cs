@@ -308,7 +308,7 @@ public sealed class MBR : IPartition
     {
         partitions = [];
 
-        ErrorNumber errno = imagePlugin.ReadSector(start, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(start, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -643,7 +643,7 @@ public sealed class MBR : IPartition
             divider    = 4;
         }
 
-        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -664,7 +664,7 @@ public sealed class MBR : IPartition
 
         if(mbr.magic != MBR_MAGIC) return false; // Not MBR
 
-        errno = imagePlugin.ReadSector(1 + sectorOffset, out byte[] hdrBytes, out _);
+        errno = imagePlugin.ReadSector(1 + sectorOffset, false, out byte[] hdrBytes, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -676,7 +676,7 @@ public sealed class MBR : IPartition
 
         if(imagePlugin.Info.MetadataMediaType == MetadataMediaType.OpticalDisc)
         {
-            errno = imagePlugin.ReadSector(sectorOffset, out hdrBytes, out _);
+            errno = imagePlugin.ReadSector(sectorOffset, false, out hdrBytes, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
@@ -824,7 +824,7 @@ public sealed class MBR : IPartition
 
             while(processingExtended)
             {
-                errno = imagePlugin.ReadSector(lbaStart, out sector, out _);
+                errno = imagePlugin.ReadSector(lbaStart, false, out sector, out _);
 
                 if(errno != ErrorNumber.NoError) break;
 

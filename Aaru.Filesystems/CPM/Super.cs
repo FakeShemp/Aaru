@@ -162,15 +162,15 @@ public sealed partial class CPM
                     _device.ReadSector((ulong)((int)partition.Start                        +
                                                p / _sectorMask.Length * _sectorMask.Length +
                                                _sectorMask[p % _sectorMask.Length]),
+                                       false,
                                        out byte[] readSector,
                                        out _);
 
                 if(errno != ErrorNumber.NoError) return errno;
 
                 if(_workingDefinition.complement)
-                {
-                    for(var b = 0; b < readSector.Length; b++) readSector[b] = (byte)(~readSector[b] & 0xFF);
-                }
+                    for(var b = 0; b < readSector.Length; b++)
+                        readSector[b] = (byte)(~readSector[b] & 0xFF);
 
                 deinterleavedSectors.Add((ulong)p, readSector);
             }

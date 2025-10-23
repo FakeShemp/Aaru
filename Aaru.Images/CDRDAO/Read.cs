@@ -724,30 +724,22 @@ public sealed partial class Cdrdao
                 if(_discimage.Tracks[i].Arranger == null)
                     AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Arranger_is_not_set);
                 else
-                {
                     AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Arranger_0, _discimage.Tracks[i].Arranger);
-                }
 
                 if(_discimage.Tracks[i].Composer == null)
                     AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Composer_is_not_set);
                 else
-                {
                     AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Composer_0, _discimage.Tracks[i].Composer);
-                }
 
                 if(_discimage.Tracks[i].Performer == null)
                     AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Performer_is_not_set);
                 else
-                {
                     AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Performer_0, _discimage.Tracks[i].Performer);
-                }
 
                 if(_discimage.Tracks[i].Songwriter == null)
                     AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Songwriter_is_not_set);
                 else
-                {
                     AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Songwriter_0, _discimage.Tracks[i].Songwriter);
-                }
 
                 if(_discimage.Tracks[i].Title == null)
                     AaruLogging.Debug(MODULE_NAME, "\t\t" + Localization.Title_is_not_set);
@@ -969,16 +961,16 @@ public sealed partial class Cdrdao
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
         sectorStatus = SectorStatus.Dumped;
 
-        return ReadSectors(sectorAddress, 1, out buffer, out _);
+        return ReadSectors(sectorAddress, negative, 1, out buffer, out _);
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorTag(ulong sectorAddress, SectorTagType tag, out byte[] buffer) =>
-        ReadSectorsTag(sectorAddress, 1, tag, out buffer);
+    public ErrorNumber ReadSectorTag(ulong sectorAddress, bool negative, SectorTagType tag, out byte[] buffer) =>
+        ReadSectorsTag(sectorAddress, negative, 1, tag, out buffer);
 
     /// <inheritdoc />
     public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus)
@@ -993,10 +985,13 @@ public sealed partial class Cdrdao
         ReadSectorsTag(sectorAddress, 1, track, tag, out buffer);
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         foreach(KeyValuePair<uint, ulong> kvp in from kvp in _offsetmap
                                                  where sectorAddress >= kvp.Value
@@ -1010,9 +1005,12 @@ public sealed partial class Cdrdao
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsTag(ulong sectorAddress, uint length, SectorTagType tag, out byte[] buffer)
+    public ErrorNumber ReadSectorsTag(ulong      sectorAddress, bool negative, uint length, SectorTagType tag,
+                                      out byte[] buffer)
     {
         buffer = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         foreach(KeyValuePair<uint, ulong> kvp in from kvp in _offsetmap
                                                  where sectorAddress >= kvp.Value
@@ -1364,11 +1362,12 @@ public sealed partial class Cdrdao
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSectorLong(ulong            sectorAddress, bool negative, out byte[] buffer,
+                                      out SectorStatus sectorStatus)
     {
         sectorStatus = SectorStatus.Dumped;
 
-        return ReadSectorsLong(sectorAddress, 1, out buffer, out _);
+        return ReadSectorsLong(sectorAddress, negative, 1, out buffer, out _);
     }
 
     /// <inheritdoc />
@@ -1380,11 +1379,13 @@ public sealed partial class Cdrdao
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
                                        out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         foreach(KeyValuePair<uint, ulong> kvp in from kvp in _offsetmap
                                                  where sectorAddress >= kvp.Value

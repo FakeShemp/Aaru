@@ -1349,10 +1349,12 @@ public sealed partial class Chd
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
         buffer       = null;
         sectorStatus = SectorStatus.NotDumped;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
@@ -1488,9 +1490,11 @@ public sealed partial class Chd
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorTag(ulong sectorAddress, SectorTagType tag, out byte[] buffer)
+    public ErrorNumber ReadSectorTag(ulong sectorAddress, bool negative, SectorTagType tag, out byte[] buffer)
     {
         buffer = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(_isHdd) return ErrorNumber.NotSupported;
 
@@ -1764,10 +1768,13 @@ public sealed partial class Chd
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
@@ -1778,7 +1785,7 @@ public sealed partial class Chd
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
+            ErrorNumber errno = ReadSector(sectorAddress + i, false, out byte[] sector, out SectorStatus status);
             sectorStatus[i] = status;
 
             if(errno != ErrorNumber.NoError) return errno;
@@ -1792,9 +1799,12 @@ public sealed partial class Chd
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsTag(ulong sectorAddress, uint length, SectorTagType tag, out byte[] buffer)
+    public ErrorNumber ReadSectorsTag(ulong      sectorAddress, bool negative, uint length, SectorTagType tag,
+                                      out byte[] buffer)
     {
         buffer = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
@@ -1804,7 +1814,7 @@ public sealed partial class Chd
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSectorTag(sectorAddress + i, tag, out byte[] sector);
+            ErrorNumber errno = ReadSectorTag(sectorAddress + i, false, tag, out byte[] sector);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -1817,12 +1827,15 @@ public sealed partial class Chd
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSectorLong(ulong            sectorAddress, bool negative, out byte[] buffer,
+                                      out SectorStatus sectorStatus)
     {
         buffer       = null;
         sectorStatus = SectorStatus.NotDumped;
 
-        if(_isHdd) return ReadSector(sectorAddress, out buffer, out sectorStatus);
+        if(negative) return ErrorNumber.NotSupported;
+
+        if(_isHdd) return ReadSector(sectorAddress, false, out buffer, out sectorStatus);
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
@@ -1918,11 +1931,13 @@ public sealed partial class Chd
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
                                        out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
@@ -1933,7 +1948,7 @@ public sealed partial class Chd
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSectorLong(sectorAddress + i, out byte[] sector, out SectorStatus status);
+            ErrorNumber errno = ReadSectorLong(sectorAddress + i, false, out byte[] sector, out SectorStatus status);
             sectorStatus[i] = status;
 
             if(errno != ErrorNumber.NoError) return errno;
@@ -1982,7 +1997,7 @@ public sealed partial class Chd
 
         return _isHdd
                    ? ErrorNumber.NotSupported
-                   : ReadSector(GetAbsoluteSector(sectorAddress, track), out buffer, out sectorStatus);
+                   : ReadSector(GetAbsoluteSector(sectorAddress, track), false, out buffer, out sectorStatus);
     }
 
     /// <inheritdoc />
@@ -1992,7 +2007,7 @@ public sealed partial class Chd
 
         return _isHdd
                    ? ErrorNumber.NotSupported
-                   : ReadSectorTag(GetAbsoluteSector(sectorAddress, track), tag, out buffer);
+                   : ReadSectorTag(GetAbsoluteSector(sectorAddress, track), false, tag, out buffer);
     }
 
     /// <inheritdoc />
@@ -2004,7 +2019,7 @@ public sealed partial class Chd
 
         return _isHdd
                    ? ErrorNumber.NotSupported
-                   : ReadSectors(GetAbsoluteSector(sectorAddress, track), length, out buffer, out sectorStatus);
+                   : ReadSectors(GetAbsoluteSector(sectorAddress, track), false, length, out buffer, out sectorStatus);
     }
 
     /// <inheritdoc />
@@ -2015,7 +2030,7 @@ public sealed partial class Chd
 
         return _isHdd
                    ? ErrorNumber.NotSupported
-                   : ReadSectorsTag(GetAbsoluteSector(sectorAddress, track), length, tag, out buffer);
+                   : ReadSectorsTag(GetAbsoluteSector(sectorAddress, track), false, length, tag, out buffer);
     }
 
     /// <inheritdoc />
@@ -2026,7 +2041,7 @@ public sealed partial class Chd
 
         return _isHdd
                    ? ErrorNumber.NotSupported
-                   : ReadSectorLong(GetAbsoluteSector(sectorAddress, track), out buffer, out sectorStatus);
+                   : ReadSectorLong(GetAbsoluteSector(sectorAddress, track), false, out buffer, out sectorStatus);
     }
 
     /// <inheritdoc />
@@ -2038,7 +2053,11 @@ public sealed partial class Chd
 
         return _isHdd
                    ? ErrorNumber.NotSupported
-                   : ReadSectorsLong(GetAbsoluteSector(sectorAddress, track), length, out buffer, out sectorStatus);
+                   : ReadSectorsLong(GetAbsoluteSector(sectorAddress, track),
+                                     false,
+                                     length,
+                                     out buffer,
+                                     out sectorStatus);
     }
 
 #endregion

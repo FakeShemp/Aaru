@@ -106,7 +106,7 @@ public sealed partial class SunDisklabel : IPartition
 
         bool useDkl = false, useDkl8 = false, useDkl16 = false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset, out byte[] sunSector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset, false, out byte[] sunSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -130,7 +130,7 @@ public sealed partial class SunDisklabel : IPartition
 
         if(!useDkl && !useDkl8 && !useDkl16)
         {
-            errno = imagePlugin.ReadSector(sectorOffset + 1, out sunSector, out _);
+            errno = imagePlugin.ReadSector(sectorOffset + 1, false, out sunSector, out _);
 
             if(errno == ErrorNumber.NoError)
             {

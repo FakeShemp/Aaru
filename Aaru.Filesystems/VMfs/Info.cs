@@ -57,7 +57,7 @@ public sealed partial class VMfs
 
         if(partition.Start + vmfsSuperOff > partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start + vmfsSuperOff, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start + vmfsSuperOff, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -70,11 +70,11 @@ public sealed partial class VMfs
     public void GetInformation(IMediaImage imagePlugin, Partition partition, Encoding encoding, out string information,
                                out FileSystem metadata)
     {
-        encoding    ??= Encoding.UTF8;
-        information =   "";
-        metadata    =   new FileSystem();
+        encoding ??= Encoding.UTF8;
+        information = "";
+        metadata = new FileSystem();
         ulong       vmfsSuperOff = VMFS_BASE / imagePlugin.Info.SectorSize;
-        ErrorNumber errno        = imagePlugin.ReadSector(partition.Start + vmfsSuperOff, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start + vmfsSuperOff, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

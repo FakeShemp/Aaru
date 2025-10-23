@@ -75,7 +75,11 @@ public sealed partial class UDF
                                                             partition.End &&
                                                             position[0] < partition.End)
                                     let errno =
-                                        imagePlugin.ReadSectors(position[0], (uint)position[1], out sector, out _)
+                                        imagePlugin.ReadSectors(position[0],
+                                                                false,
+                                                                (uint)position[1],
+                                                                out sector,
+                                                                out _)
                                     where errno == ErrorNumber.NoError
                                     select position)
         {
@@ -133,6 +137,7 @@ public sealed partial class UDF
                 imagePlugin.ReadSectors(partition.Start                                            +
                                         anchor.mainVolumeDescriptorSequenceExtent.location * ratio +
                                         count                                              * ratio,
+                                        false,
                                         ratio,
                                         out sector,
                                         out _);
@@ -197,7 +202,7 @@ public sealed partial class UDF
 
         foreach(ulong[] position in positions)
         {
-            errno = imagePlugin.ReadSectors(position[0], (uint)position[1], out sector, out _);
+            errno = imagePlugin.ReadSectors(position[0], false, (uint)position[1], out sector, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -224,6 +229,7 @@ public sealed partial class UDF
             errno = imagePlugin.ReadSectors(partition.Start                                            +
                                             anchor.mainVolumeDescriptorSequenceExtent.location * ratio +
                                             count                                              * ratio,
+                                            false,
                                             ratio,
                                             out sector,
                                             out _);
@@ -255,7 +261,7 @@ public sealed partial class UDF
             count++;
         }
 
-        errno = imagePlugin.ReadSectors(lvd.integritySequenceExtent.location * ratio, ratio, out sector, out _);
+        errno = imagePlugin.ReadSectors(lvd.integritySequenceExtent.location * ratio, false, ratio, out sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

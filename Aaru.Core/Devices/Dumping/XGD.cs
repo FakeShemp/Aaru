@@ -686,6 +686,7 @@ partial class Dump
 
                     outputFormat.WriteSectors(readBuffer,
                                               i,
+                                              false,
                                               blocksToRead,
                                               Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
 
@@ -707,6 +708,7 @@ partial class Dump
 
                     outputFormat.WriteSectors(new byte[blockSize * _skip],
                                               i,
+                                              false,
                                               _skip,
                                               Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
 
@@ -770,6 +772,7 @@ partial class Dump
 
                 outputFormat.WriteSectors(new byte[blockSize * blocksToRead],
                                           i,
+                                          false,
                                           blocksToRead,
                                           Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
 
@@ -820,6 +823,7 @@ partial class Dump
 
             outputFormat.WriteSectors(new byte[blockSize * blocksToRead],
                                       middle + currentSector,
+                                      false,
                                       blocksToRead,
                                       Enumerable.Repeat(SectorStatus.NotDumped, (int)blocksToRead).ToArray());
 
@@ -910,6 +914,7 @@ partial class Dump
 
                 outputFormat.WriteSectors(readBuffer,
                                           currentSector,
+                                          false,
                                           blocksToRead,
                                           Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
 
@@ -929,6 +934,7 @@ partial class Dump
 
                 outputFormat.WriteSectors(new byte[blockSize * _skip],
                                           currentSector,
+                                          false,
                                           _skip,
                                           Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
 
@@ -1060,7 +1066,7 @@ partial class Dump
 
                 _resume.BadBlocks.Remove(badSector);
                 extents.Add(badSector);
-                outputFormat.WriteSector(readBuffer, badSector, SectorStatus.Dumped);
+                outputFormat.WriteSector(readBuffer, badSector, false, SectorStatus.Dumped);
                 _mediaGraph?.PaintSectorGood(badSector);
             }
 
@@ -1080,9 +1086,8 @@ partial class Dump
             List<ulong> tmpList = [];
 
             foreach(ulong ur in _resume.BadBlocks)
-            {
-                for(ulong i = ur; i < ur + blocksToRead; i++) tmpList.Add(i);
-            }
+                for(ulong i = ur; i < ur + blocksToRead; i++)
+                    tmpList.Add(i);
 
             tmpList.Sort();
 
@@ -1261,14 +1266,14 @@ partial class Dump
                 {
                     _resume.BadBlocks.Remove(badSector);
                     extents.Add(badSector);
-                    outputFormat.WriteSector(readBuffer, badSector, SectorStatus.Dumped);
+                    outputFormat.WriteSector(readBuffer, badSector, false, SectorStatus.Dumped);
                     _mediaGraph?.PaintSectorGood(badSector);
 
                     UpdateStatus?.Invoke(string.Format(Localization.Core.Correctly_retried_block_0_in_pass_1,
                                                        badSector,
                                                        pass));
                 }
-                else if(runningPersistent) outputFormat.WriteSector(readBuffer, badSector, SectorStatus.Errored);
+                else if(runningPersistent) outputFormat.WriteSector(readBuffer, badSector, false, SectorStatus.Errored);
             }
 
             if(pass < _retryPasses && !_aborted && _resume.BadBlocks.Count > 0)

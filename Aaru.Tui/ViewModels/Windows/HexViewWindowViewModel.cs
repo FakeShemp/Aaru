@@ -168,7 +168,7 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
 
         if(_longMode)
         {
-            ErrorNumber errno = _imageFormat.ReadSectorLong(CurrentSector, out sector, out _);
+            ErrorNumber errno = _imageFormat.ReadSectorLong(CurrentSector, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError)
             {
@@ -178,7 +178,7 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
             }
         }
         else
-            _imageFormat.ReadSector(CurrentSector, out sector, out _);
+            _imageFormat.ReadSector(CurrentSector, false, out sector, out _);
 
         using var stream = new MemoryStream(sector);
         var       buffer = new byte[BYTES_PER_LINE];

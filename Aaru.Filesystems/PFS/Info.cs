@@ -48,7 +48,7 @@ public sealed partial class PFS
     {
         if(partition.Length < 3) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(2 + partition.Start, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(2 + partition.Start, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -64,7 +64,7 @@ public sealed partial class PFS
         information =   "";
         encoding    ??= Encoding.GetEncoding("iso-8859-1");
         metadata    =   new FileSystem();
-        ErrorNumber errno = imagePlugin.ReadSector(2 + partition.Start, out byte[] rootBlockSector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(2 + partition.Start, false, out byte[] rootBlockSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

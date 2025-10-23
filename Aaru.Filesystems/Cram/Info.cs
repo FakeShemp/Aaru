@@ -51,7 +51,7 @@ public sealed partial class Cram
     {
         if(partition.Start >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -66,7 +66,7 @@ public sealed partial class Cram
     {
         encoding    ??= Encoding.GetEncoding("iso-8859-15");
         information =   "";
-        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(partition.Start, false, out byte[] sector, out _);
         metadata = new FileSystem();
 
         if(errno != ErrorNumber.NoError) return;

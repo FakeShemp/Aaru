@@ -134,7 +134,7 @@ partial class Dump
                         CSS_CPRM.TitleKey? titleKey = CSS.DecodeTitleKey(tmpBuf, dvdDecrypt.BusKey);
 
                         if(titleKey.HasValue)
-                            outputFormat.WriteSectorTag([titleKey.Value.CMI], i + j, SectorTagType.DvdSectorCmi);
+                            outputFormat.WriteSectorTag([titleKey.Value.CMI], i + j, false, SectorTagType.DvdSectorCmi);
                         else
                             continue;
 
@@ -142,20 +142,23 @@ partial class Dump
                         // not encrypted even if the CMI says it is.
                         if(titleKey.Value.Key.All(static k => k == 0))
                         {
-                            outputFormat.WriteSectorTag([0, 0, 0, 0, 0], i + j, SectorTagType.DvdSectorTitleKey);
+                            outputFormat.WriteSectorTag([0, 0, 0, 0, 0], i + j, false, SectorTagType.DvdSectorTitleKey);
 
-                            outputFormat.WriteSectorTag([0, 0, 0, 0, 0], i + j, SectorTagType.DvdTitleKeyDecrypted);
+                            outputFormat.WriteSectorTag([0, 0, 0, 0, 0],
+                                                        i + j,
+                                                        false,
+                                                        SectorTagType.DvdTitleKeyDecrypted);
 
                             _resume.MissingTitleKeys.Remove(i + j);
 
                             continue;
                         }
 
-                        outputFormat.WriteSectorTag(titleKey.Value.Key, i + j, SectorTagType.DvdSectorTitleKey);
+                        outputFormat.WriteSectorTag(titleKey.Value.Key, i + j, false, SectorTagType.DvdSectorTitleKey);
                         _resume.MissingTitleKeys.Remove(i                 + j);
 
                         CSS.DecryptTitleKey(discKey, titleKey.Value.Key, out tmpBuf);
-                        outputFormat.WriteSectorTag(tmpBuf, i + j, SectorTagType.DvdTitleKeyDecrypted);
+                        outputFormat.WriteSectorTag(tmpBuf, i + j, false, SectorTagType.DvdTitleKeyDecrypted);
                     }
 
                     if(!_storeEncrypted)
@@ -163,13 +166,18 @@ partial class Dump
                         // Todo: Flag in the outputFormat that a sector has been decrypted
                     {
                         ErrorNumber errno =
-                            outputFormat.ReadSectorsTag(i, blocksToRead, SectorTagType.DvdSectorCmi, out byte[] cmi);
+                            outputFormat.ReadSectorsTag(i,
+                                                        false,
+                                                        blocksToRead,
+                                                        SectorTagType.DvdSectorCmi,
+                                                        out byte[] cmi);
 
                         if(errno != ErrorNumber.NoError)
                             ErrorMessage?.Invoke(string.Format(Localization.Core.Error_retrieving_CMI_for_sector_0, i));
                         else
                         {
                             errno = outputFormat.ReadSectorsTag(i,
+                                                                false,
                                                                 blocksToRead,
                                                                 SectorTagType.DvdTitleKeyDecrypted,
                                                                 out byte[] titleKey);
@@ -192,6 +200,7 @@ partial class Dump
 
                 outputFormat.WriteSectors(buffer,
                                           i,
+                                          false,
                                           blocksToRead,
                                           Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
 
@@ -225,6 +234,7 @@ partial class Dump
 
                 outputFormat.WriteSectors(new byte[blockSize * _skip],
                                           i,
+                                          false,
                                           _skip,
                                           Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
 

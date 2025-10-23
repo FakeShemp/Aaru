@@ -45,7 +45,7 @@ public sealed partial class OperaFS
     {
         if(2 + partition.Start >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] sbSector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, false, out byte[] sbSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -70,7 +70,7 @@ public sealed partial class OperaFS
         metadata    = new FileSystem();
         var superBlockmetadata = new StringBuilder();
 
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] sbSector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, false, out byte[] sbSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

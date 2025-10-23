@@ -1600,16 +1600,16 @@ public sealed partial class Nero
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
         sectorStatus = SectorStatus.Dumped;
 
-        return ReadSectors(sectorAddress, 1, out buffer, out _);
+        return ReadSectors(sectorAddress, negative, 1, out buffer, out _);
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorTag(ulong sectorAddress, SectorTagType tag, out byte[] buffer) =>
-        ReadSectorsTag(sectorAddress, 1, tag, out buffer);
+    public ErrorNumber ReadSectorTag(ulong sectorAddress, bool negative, SectorTagType tag, out byte[] buffer) =>
+        ReadSectorsTag(sectorAddress, negative, 1, tag, out buffer);
 
     /// <inheritdoc />
     public ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus)
@@ -1624,10 +1624,13 @@ public sealed partial class Nero
         ReadSectorsTag(sectorAddress, 1, track, tag, out buffer);
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         foreach(KeyValuePair<uint, ulong> kvp in from kvp in _offsetmap
                                                  where sectorAddress >= kvp.Value
@@ -1641,9 +1644,12 @@ public sealed partial class Nero
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsTag(ulong sectorAddress, uint length, SectorTagType tag, out byte[] buffer)
+    public ErrorNumber ReadSectorsTag(ulong      sectorAddress, bool negative, uint length, SectorTagType tag,
+                                      out byte[] buffer)
     {
         buffer = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         foreach(KeyValuePair<uint, ulong> kvp in from kvp in _offsetmap
                                                  where sectorAddress >= kvp.Value
@@ -2112,11 +2118,12 @@ public sealed partial class Nero
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSectorLong(ulong            sectorAddress, bool negative, out byte[] buffer,
+                                      out SectorStatus sectorStatus)
     {
         sectorStatus = SectorStatus.Dumped;
 
-        return ReadSectorsLong(sectorAddress, 1, out buffer, out _);
+        return ReadSectorsLong(sectorAddress, negative, 1, out buffer, out _);
     }
 
     /// <inheritdoc />
@@ -2128,11 +2135,13 @@ public sealed partial class Nero
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
                                        out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         foreach(KeyValuePair<uint, ulong> kvp in from kvp in _offsetmap
                                                  where sectorAddress >= kvp.Value

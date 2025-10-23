@@ -59,7 +59,7 @@ public sealed partial class BTRFS
         if(sbSectorOff + partition.Start >= partition.End) return false;
 
         ErrorNumber errno =
-            imagePlugin.ReadSectors(sbSectorOff + partition.Start, sbSectorSize, out byte[] sector, out _);
+            imagePlugin.ReadSectors(sbSectorOff + partition.Start, false, sbSectorSize, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -96,7 +96,7 @@ public sealed partial class BTRFS
         uint  sbSectorSize = 0x1000  / imagePlugin.Info.SectorSize;
 
         ErrorNumber errno =
-            imagePlugin.ReadSectors(sbSectorOff + partition.Start, sbSectorSize, out byte[] sector, out _);
+            imagePlugin.ReadSectors(sbSectorOff + partition.Start, false, sbSectorSize, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

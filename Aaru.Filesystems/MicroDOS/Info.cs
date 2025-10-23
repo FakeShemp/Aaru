@@ -54,7 +54,7 @@ public sealed partial class MicroDOS
 
         if(imagePlugin.Info.SectorSize < 512) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] bk0, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, false, out byte[] bk0, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -72,7 +72,7 @@ public sealed partial class MicroDOS
 
         var sb = new StringBuilder();
 
-        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] bk0, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(0 + partition.Start, false, out byte[] bk0, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

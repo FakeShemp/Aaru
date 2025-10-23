@@ -60,7 +60,7 @@ public sealed partial class AODOS
         // Does AO-DOS support any other kind of disk?
         if(imagePlugin.Info.Sectors != 800 && imagePlugin.Info.Sectors != 1600) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(0, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(0, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -75,7 +75,7 @@ public sealed partial class AODOS
     {
         information = "";
         encoding    = Encoding.GetEncoding("koi8-r");
-        ErrorNumber errno = imagePlugin.ReadSector(0, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(0, false, out byte[] sector, out _);
         metadata = new FileSystem();
 
         if(errno != ErrorNumber.NoError) return;

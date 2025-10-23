@@ -67,7 +67,7 @@ public sealed class Plan9 : IPartition
 
         if(sectorOffset + 2 >= imagePlugin.Info.Sectors) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset + 1, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(sectorOffset + 1, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 

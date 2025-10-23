@@ -144,10 +144,10 @@ public sealed partial class AaruFormat
 
             foreach(Track trk in tracks)
             {
-                ReadSector(trk.StartSector, out byte[] sector, out _);
+                ReadSector(trk.StartSector, false, out byte[] sector, out _);
                 trk.BytesPerSector = sector?.Length ?? (trk.Type == TrackType.Audio ? 2352 : 2048);
 
-                ErrorNumber errno = ReadSectorLong(trk.StartSector, out byte[] longSector, out _);
+                ErrorNumber errno = ReadSectorLong(trk.StartSector, false, out byte[] longSector, out _);
 
                 if(errno == ErrorNumber.NoError)
                     trk.RawBytesPerSector = longSector.Length;

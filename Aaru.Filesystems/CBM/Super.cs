@@ -84,7 +84,7 @@ public sealed partial class CBM
         // Commodore 1581
         if(imagePlugin.Info.Sectors == 3200)
         {
-            ErrorNumber errno = imagePlugin.ReadSector(1560, out _diskHeader, out _);
+            ErrorNumber errno = imagePlugin.ReadSector(1560, false, out _diskHeader, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -96,7 +96,7 @@ public sealed partial class CBM
             _bam = new byte[512];
 
             // Got to first BAM sector
-            errno = imagePlugin.ReadSector(1561, out sector, out _);
+            errno = imagePlugin.ReadSector(1561, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -105,7 +105,7 @@ public sealed partial class CBM
             if(_bam[0] > 0)
             {
                 // Got to next (and last) BAM sector
-                errno = imagePlugin.ReadSector((ulong)((_bam[0] - 1) * 40), out sector, out _);
+                errno = imagePlugin.ReadSector((ulong)((_bam[0] - 1) * 40), false, out sector, out _);
 
                 if(errno != ErrorNumber.NoError) return errno;
 
@@ -122,7 +122,7 @@ public sealed partial class CBM
         }
         else
         {
-            ErrorNumber errno = imagePlugin.ReadSector(357, out _bam, out _);
+            ErrorNumber errno = imagePlugin.ReadSector(357, false, out _bam, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -147,7 +147,7 @@ public sealed partial class CBM
 
         do
         {
-            ErrorNumber errno = imagePlugin.ReadSector(nextLba, out sector, out _);
+            ErrorNumber errno = imagePlugin.ReadSector(nextLba, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -241,9 +241,8 @@ public sealed partial class CBM
             _statfs.FreeFiles--;
 
             for(var i = 0; i < dirEntry.name.Length; i++)
-            {
-                if(dirEntry.name[i] == 0xA0) dirEntry.name[i] = 0;
-            }
+                if(dirEntry.name[i] == 0xA0)
+                    dirEntry.name[i] = 0;
 
             string name = StringHandlers.CToString(dirEntry.name, encoding);
 
@@ -263,7 +262,7 @@ public sealed partial class CBM
             {
                 if(dirEntry.firstFileBlockTrack == 0) break;
 
-                ErrorNumber errno = imagePlugin.ReadSector(nextLba, out sector, out _);
+                ErrorNumber errno = imagePlugin.ReadSector(nextLba, false, out sector, out _);
 
                 if(errno != ErrorNumber.NoError) break;
 

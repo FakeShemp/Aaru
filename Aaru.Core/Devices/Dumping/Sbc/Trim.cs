@@ -107,14 +107,14 @@ partial class Dump
 
                 if(key.All(static k => k == 0))
                 {
-                    outputFormat.WriteSectorTag([0, 0, 0, 0, 0], badSector, SectorTagType.DvdTitleKeyDecrypted);
+                    outputFormat.WriteSectorTag([0, 0, 0, 0, 0], badSector, false, SectorTagType.DvdTitleKeyDecrypted);
 
                     _resume.MissingTitleKeys?.Remove(badSector);
                 }
                 else
                 {
                     CSS.DecryptTitleKey(discKey, key, out byte[] tmpBuf);
-                    outputFormat.WriteSectorTag(tmpBuf, badSector, SectorTagType.DvdTitleKeyDecrypted);
+                    outputFormat.WriteSectorTag(tmpBuf, badSector, false, SectorTagType.DvdTitleKeyDecrypted);
                     _resume.MissingTitleKeys?.Remove(badSector);
 
                     cmi[0] = buffer[6];
@@ -124,6 +124,7 @@ partial class Dump
                 {
                     ErrorNumber errno =
                         outputFormat.ReadSectorsTag(badSector,
+                                                    false,
                                                     1,
                                                     SectorTagType.DvdTitleKeyDecrypted,
                                                     out byte[] titleKey);
@@ -138,10 +139,10 @@ partial class Dump
                 }
 
                 _resume.BadBlocks.Remove(badSector);
-                outputFormat.WriteSectorLong(buffer, badSector, SectorStatus.Dumped);
+                outputFormat.WriteSectorLong(buffer, badSector, false, SectorStatus.Dumped);
             }
             else
-                outputFormat.WriteSector(buffer, badSector, SectorStatus.Dumped);
+                outputFormat.WriteSector(buffer, badSector, false, SectorStatus.Dumped);
 
             _mediaGraph?.PaintSectorGood(badSector);
         }

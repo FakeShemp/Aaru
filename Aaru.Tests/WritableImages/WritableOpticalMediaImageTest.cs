@@ -115,6 +115,7 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                             if(image.Info.ReadableSectorTags.Contains(SectorTagType.CdTrackFlags))
                             {
                                 errno = image.ReadSectorTag(currentTrack.Sequence,
+                                                            false,
                                                             SectorTagType.CdTrackFlags,
                                                             out byte[] tmp);
 
@@ -249,9 +250,11 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                         {
                             errno = sectorsToDo == 1
                                         ? inputFormat.ReadSectorLong(doneSectors + track.StartSector,
+                                                                     false,
                                                                      out sector,
                                                                      out sectorStatus)
                                         : inputFormat.ReadSectorsLong(doneSectors + track.StartSector,
+                                                                      false,
                                                                       sectorsToDo,
                                                                       out sector,
                                                                       out sectorStatusArray);
@@ -261,9 +264,11 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                                 result = sectorsToDo == 1
                                              ? outputFormat.WriteSectorLong(sector,
                                                                             doneSectors + track.StartSector,
+                                                                            false,
                                                                             sectorStatus)
                                              : outputFormat.WriteSectorsLong(sector,
                                                                              doneSectors + track.StartSector,
+                                                                             false,
                                                                              sectorsToDo,
                                                                              sectorStatusArray);
                             }
@@ -277,9 +282,11 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                         {
                             errno = sectorsToDo == 1
                                         ? inputFormat.ReadSector(doneSectors + track.StartSector,
+                                                                 false,
                                                                  out sector,
                                                                  out sectorStatus)
                                         : inputFormat.ReadSectors(doneSectors + track.StartSector,
+                                                                  false,
                                                                   sectorsToDo,
                                                                   out sector,
                                                                   out sectorStatusArray);
@@ -289,9 +296,11 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                             result = sectorsToDo == 1
                                          ? outputFormat.WriteSector(sector,
                                                                     doneSectors + track.StartSector,
+                                                                    false,
                                                                     sectorStatus)
                                          : outputFormat.WriteSectors(sector,
                                                                      doneSectors + track.StartSector,
+                                                                     false,
                                                                      sectorsToDo,
                                                                      sectorStatusArray);
                         }
@@ -339,7 +348,7 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                 {
                     foreach(Track track in tracks)
                     {
-                        errno = inputFormat.ReadSectorTag(track.Sequence, tag, out byte[] isrc);
+                        errno = inputFormat.ReadSectorTag(track.Sequence, false, tag, out byte[] isrc);
 
                         if(errno != ErrorNumber.NoError) continue;
 
@@ -353,7 +362,7 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                 {
                     foreach(Track track in tracks)
                     {
-                        errno = inputFormat.ReadSectorTag(track.Sequence, tag, out byte[] flags);
+                        errno = inputFormat.ReadSectorTag(track.Sequence, false, tag, out byte[] flags);
 
                         if(errno != ErrorNumber.NoError) continue;
 
@@ -400,13 +409,13 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                         {
                             case SectorTagType.CdTrackFlags:
                             case SectorTagType.CdTrackIsrc:
-                                errno = inputFormat.ReadSectorTag(track.Sequence, tag, out sector);
+                                errno = inputFormat.ReadSectorTag(track.Sequence, false, tag, out sector);
 
                                 Assert.That(errno,
                                             Is.EqualTo(ErrorNumber.NoError),
                                             string.Format(Localization.Error_0_reading_tag_not_continuing, errno));
 
-                                result = outputFormat.WriteSectorTag(sector, track.Sequence, tag);
+                                result = outputFormat.WriteSectorTag(sector, track.Sequence, false, tag);
 
                                 Assert.That(result,
                                             string.Format(Localization.Error_0_writing_tag_not_continuing,
@@ -426,7 +435,10 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
 
                             if(sectorsToDo == 1)
                             {
-                                errno = inputFormat.ReadSectorTag(doneSectors + track.StartSector, tag, out sector);
+                                errno = inputFormat.ReadSectorTag(doneSectors + track.StartSector,
+                                                                  false,
+                                                                  tag,
+                                                                  out sector);
 
                                 Assert.That(errno,
                                             Is.EqualTo(ErrorNumber.NoError),
@@ -459,11 +471,15 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                                     result = true;
                                 }
                                 else
-                                    result = outputFormat.WriteSectorTag(sector, doneSectors + track.StartSector, tag);
+                                    result = outputFormat.WriteSectorTag(sector,
+                                                                         doneSectors + track.StartSector,
+                                                                         false,
+                                                                         tag);
                             }
                             else
                             {
                                 errno = inputFormat.ReadSectorsTag(doneSectors + track.StartSector,
+                                                                   false,
                                                                    sectorsToDo,
                                                                    tag,
                                                                    out sector);
@@ -502,6 +518,7 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                                 {
                                     result = outputFormat.WriteSectorsTag(sector,
                                                                           doneSectors + track.StartSector,
+                                                                          false,
                                                                           sectorsToDo,
                                                                           tag);
                                 }
@@ -521,13 +538,14 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                 {
                     outputFormat.WriteSectorTag(Encoding.UTF8.GetBytes(isrc.Value),
                                                 isrc.Key,
+                                                false,
                                                 SectorTagType.CdTrackIsrc);
                 }
 
                 if(trackFlags.Count > 0)
                 {
                     foreach((byte track, byte flags) in trackFlags)
-                        outputFormat.WriteSectorTag([flags], track, SectorTagType.CdTrackFlags);
+                        outputFormat.WriteSectorTag([flags], track, false, SectorTagType.CdTrackFlags);
                 }
 
                 if(mcn != null) outputFormat.WriteMediaTag(Encoding.UTF8.GetBytes(mcn), MediaTagType.CD_MCN);
@@ -660,6 +678,7 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                             if(image.Info.ReadableSectorTags.Contains(SectorTagType.CdTrackFlags))
                             {
                                 errno = image.ReadSectorTag(currentTrack.Sequence,
+                                                            false,
                                                             SectorTagType.CdTrackFlags,
                                                             out byte[] tmp);
 

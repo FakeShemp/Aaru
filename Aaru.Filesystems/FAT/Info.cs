@@ -74,11 +74,12 @@ public sealed partial class FAT
 
         uint sectorsPerBpb = imagePlugin.Info.SectorSize < 512 ? 512 / imagePlugin.Info.SectorSize : 1;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(0 + partition.Start, sectorsPerBpb, out byte[] bpbSector, out _);
+        ErrorNumber errno =
+            imagePlugin.ReadSectors(0 + partition.Start, false, sectorsPerBpb, out byte[] bpbSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
-        errno = imagePlugin.ReadSector(sectorsPerBpb + partition.Start, out byte[] fatSector, out _);
+        errno = imagePlugin.ReadSector(sectorsPerBpb + partition.Start, false, out byte[] fatSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -238,6 +239,7 @@ public sealed partial class FAT
         if(16 + partition.Start <= partition.End)
         {
             errno = imagePlugin.ReadSector(16 + partition.Start,
+                                           false,
                                            out byte[] hpfsSbSector,
                                            out _); // Seek to superblock, on logical sector 16
 
@@ -318,12 +320,12 @@ public sealed partial class FAT
             byte z80Di = bpbSector[0];
 
             // First FAT1 sector resides at LBA 0x14
-            errno = imagePlugin.ReadSector(0x14, out byte[] fat1Sector0, out _);
+            errno = imagePlugin.ReadSector(0x14, false, out byte[] fat1Sector0, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
             // First FAT2 sector resides at LBA 0x1A
-            errno = imagePlugin.ReadSector(0x1A, out byte[] fat2Sector0, out _);
+            errno = imagePlugin.ReadSector(0x1A, false, out byte[] fat2Sector0, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
@@ -337,7 +339,7 @@ public sealed partial class FAT
                         0x17, 0x19, 0x1B, 0x1D, 0x1E, 0x20
                     })
             {
-                errno = imagePlugin.ReadSector(rootSector, out byte[] tmp, out _);
+                errno = imagePlugin.ReadSector(rootSector, false, out byte[] tmp, out _);
 
                 if(errno != ErrorNumber.NoError) return false;
 
@@ -429,7 +431,7 @@ public sealed partial class FAT
 
         AaruLogging.Debug(MODULE_NAME, Localization.Second_fat_starts_at_0, fat2SectorNo);
 
-        errno = imagePlugin.ReadSector(fat2SectorNo, out byte[] fat2Sector, out _);
+        errno = imagePlugin.ReadSector(fat2SectorNo, false, out byte[] fat2Sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -454,7 +456,8 @@ public sealed partial class FAT
 
         uint sectorsPerBpb = imagePlugin.Info.SectorSize < 512 ? 512 / imagePlugin.Info.SectorSize : 1;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(0 + partition.Start, sectorsPerBpb, out byte[] bpbSector, out _);
+        ErrorNumber errno =
+            imagePlugin.ReadSectors(0 + partition.Start, false, sectorsPerBpb, out byte[] bpbSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -643,6 +646,7 @@ public sealed partial class FAT
                 if(fat32Bpb.fsinfo_sector + partition.Start <= partition.End)
                 {
                     errno = imagePlugin.ReadSector(fat32Bpb.fsinfo_sector + partition.Start,
+                                                   false,
                                                    out byte[] fsinfoSector,
                                                    out _);
 
@@ -781,7 +785,7 @@ public sealed partial class FAT
                     sectorsPerRealSector = fakeBpb.bps / imagePlugin.Info.SectorSize;
                     _fatFirstSector      = partition.Start + _reservedSectors * sectorsPerRealSector;
 
-                    errno = imagePlugin.ReadSectors(_fatFirstSector, fakeBpb.spfat, out byte[] fatBytes, out _);
+                    errno = imagePlugin.ReadSectors(_fatFirstSector, false, fakeBpb.spfat, out byte[] fatBytes, out _);
 
                     if(errno != ErrorNumber.NoError) return;
 
@@ -1033,6 +1037,7 @@ public sealed partial class FAT
            imagePlugin.Info.MetadataMediaType    != MetadataMediaType.OpticalDisc)
         {
             errno = imagePlugin.ReadSectors(rootDirectorySector + partition.Start,
+                                            false,
                                             sectorsForRootDirectory,
                                             out byte[] rootDirectory,
                                             out _);
@@ -1048,7 +1053,7 @@ public sealed partial class FAT
                             0x17, 0x19, 0x1B, 0x1D, 0x1E, 0x20
                         })
                 {
-                    errno = imagePlugin.ReadSector(rootSector, out byte[] tmp, out _);
+                    errno = imagePlugin.ReadSector(rootSector, false, out byte[] tmp, out _);
 
                     if(errno != ErrorNumber.NoError) return;
 

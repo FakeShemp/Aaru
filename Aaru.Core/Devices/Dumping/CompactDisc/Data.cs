@@ -776,11 +776,14 @@ partial class Dump
                             Array.Copy(cmdBuf, sectorSize, sub, 0, subSize);
 
                             if(supportsLongSectors)
+                            {
                                 outputFormat.WriteSectorsLong(data,
                                                               i + r,
+                                                              false,
                                                               1,
                                                               Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)
                                                                         .ToArray());
+                            }
                             else
                             {
                                 var cooked = new MemoryStream();
@@ -795,6 +798,7 @@ partial class Dump
 
                                 outputFormat.WriteSectors(cooked.ToArray(),
                                                           i,
+                                                          false,
                                                           blocksToRead,
                                                           Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)
                                                                     .ToArray());
@@ -844,7 +848,7 @@ partial class Dump
                         else
                         {
                             if(supportsLongSectors)
-                                outputFormat.WriteSectorsLong(cmdBuf, i + r, 1, [SectorStatus.Dumped]);
+                                outputFormat.WriteSectorsLong(cmdBuf, i + r, false, 1, [SectorStatus.Dumped]);
                             else
                             {
                                 var cooked = new MemoryStream();
@@ -859,6 +863,7 @@ partial class Dump
 
                                 outputFormat.WriteSectors(cooked.ToArray(),
                                                           i,
+                                                          false,
                                                           blocksToRead,
                                                           Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)
                                                                     .ToArray());
@@ -878,12 +883,17 @@ partial class Dump
 
                         if(supportedSubchannel != MmcSubchannel.None)
                         {
-                            outputFormat.WriteSectorsLong(new byte[sectorSize], i + r, 1, [SectorStatus.Errored]);
+                            outputFormat.WriteSectorsLong(new byte[sectorSize],
+                                                          i + r,
+                                                          false,
+                                                          1,
+                                                          [SectorStatus.Errored]);
 
                             if(desiredSubchannel != MmcSubchannel.None)
                             {
                                 outputFormat.WriteSectorsTag(new byte[subSize],
                                                              i + r,
+                                                             false,
                                                              1,
                                                              SectorTagType.CdSectorSubchannel);
                             }
@@ -891,16 +901,23 @@ partial class Dump
                         else
                         {
                             if(supportsLongSectors)
-                                outputFormat.WriteSectorsLong(new byte[blockSize], i + r, 1, [SectorStatus.Errored]);
+                                outputFormat.WriteSectorsLong(new byte[blockSize],
+                                                              i + r,
+                                                              false,
+                                                              1,
+                                                              [SectorStatus.Errored]);
                             else
                             {
                                 if(cmdBuf.Length % sectorSize == 0)
-                                    outputFormat.WriteSectors(new byte[2048], i + r, 1, [SectorStatus.Errored]);
+                                    outputFormat.WriteSectors(new byte[2048], i + r, false, 1, [SectorStatus.Errored]);
                                 else
+                                {
                                     outputFormat.WriteSectorsLong(new byte[blockSize],
                                                                   i + r,
+                                                                  false,
                                                                   1,
                                                                   [SectorStatus.Errored]);
+                                }
                             }
                         }
 
@@ -977,11 +994,14 @@ partial class Dump
                     }
 
                     if(supportsLongSectors)
+                    {
                         outputFormat.WriteSectorsLong(data,
                                                       i,
+                                                      false,
                                                       blocksToRead,
                                                       Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)
                                                                 .ToArray());
+                    }
                     else
                     {
                         var cooked = new MemoryStream();
@@ -996,6 +1016,7 @@ partial class Dump
 
                         outputFormat.WriteSectors(cooked.ToArray(),
                                                   i,
+                                                  false,
                                                   blocksToRead,
                                                   Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
                     }
@@ -1043,11 +1064,14 @@ partial class Dump
                 else
                 {
                     if(supportsLongSectors)
+                    {
                         outputFormat.WriteSectorsLong(cmdBuf,
                                                       i,
+                                                      false,
                                                       blocksToRead,
                                                       Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)
                                                                 .ToArray());
+                    }
                     else
                     {
                         var cooked = new MemoryStream();
@@ -1062,6 +1086,7 @@ partial class Dump
 
                         outputFormat.WriteSectors(cooked.ToArray(),
                                                   i,
+                                                  false,
                                                   blocksToRead,
                                                   Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
                     }
@@ -1097,6 +1122,7 @@ partial class Dump
                 {
                     outputFormat.WriteSectorsLong(new byte[sectorSize * _skip],
                                                   i,
+                                                  false,
                                                   _skip,
                                                   Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
 
@@ -1104,6 +1130,7 @@ partial class Dump
                     {
                         outputFormat.WriteSectorsTag(new byte[subSize * _skip],
                                                      i,
+                                                     false,
                                                      _skip,
                                                      SectorTagType.CdSectorSubchannel);
                     }
@@ -1111,23 +1138,32 @@ partial class Dump
                 else
                 {
                     if(supportsLongSectors)
+                    {
                         outputFormat.WriteSectorsLong(new byte[blockSize * _skip],
                                                       i,
+                                                      false,
                                                       _skip,
                                                       Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
+                    }
                     else
                     {
                         if(cmdBuf.Length % sectorSize == 0)
+                        {
                             outputFormat.WriteSectors(new byte[2048 * _skip],
                                                       i,
+                                                      false,
                                                       _skip,
                                                       Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
+                        }
                         else
+                        {
                             outputFormat.WriteSectorsLong(new byte[blockSize * _skip],
                                                           i,
+                                                          false,
                                                           _skip,
                                                           Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip)
                                                                     .ToArray());
+                        }
                     }
                 }
 

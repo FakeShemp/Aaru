@@ -93,9 +93,16 @@ public sealed partial class Apridisk
     }
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
+    public bool WriteSector(byte[] data, ulong sectorAddress, bool negative, SectorStatus sectorStatus)
     {
         (ushort cylinder, byte head, byte sector) = LbaToChs(sectorAddress);
+
+        if(negative)
+        {
+            ErrorMessage = Localization.Unsupported_feature;
+
+            return false;
+        }
 
         if(cylinder >= _sectorsData.Length)
         {
@@ -124,8 +131,15 @@ public sealed partial class Apridisk
     }
 
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, bool negative, uint length, SectorStatus[] sectorStatus)
     {
+        if(negative)
+        {
+            ErrorMessage = Localization.Unsupported_feature;
+
+            return false;
+        }
+
         for(uint i = 0; i < length; i++)
         {
             (ushort cylinder, byte head, byte sector) = LbaToChs(sectorAddress);
@@ -158,7 +172,7 @@ public sealed partial class Apridisk
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, bool negative, SectorStatus sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -166,7 +180,8 @@ public sealed partial class Apridisk
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
+    public bool WriteSectorsLong(byte[]         data, ulong sectorAddress, bool negative, uint length,
+                                 SectorStatus[] sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -312,7 +327,7 @@ public sealed partial class Apridisk
     }
 
     /// <inheritdoc />
-    public bool WriteSectorTag(byte[] data, ulong sectorAddress, SectorTagType tag)
+    public bool WriteSectorTag(byte[] data, ulong sectorAddress, bool negative, SectorTagType tag)
     {
         ErrorMessage = Localization.Unsupported_feature;
 
@@ -320,7 +335,7 @@ public sealed partial class Apridisk
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsTag(byte[] data, ulong sectorAddress, uint length, SectorTagType tag)
+    public bool WriteSectorsTag(byte[] data, ulong sectorAddress, bool negative, uint length, SectorTagType tag)
     {
         ErrorMessage = Localization.Unsupported_feature;
 

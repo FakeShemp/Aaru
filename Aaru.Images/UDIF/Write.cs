@@ -108,11 +108,18 @@ public sealed partial class Udif
     }
 
     /// <inheritdoc />
-    public bool WriteSector(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
+    public bool WriteSector(byte[] data, ulong sectorAddress, bool negative, SectorStatus sectorStatus)
     {
         if(!IsWriting)
         {
             ErrorMessage = Localization.Tried_to_write_on_a_non_writable_image;
+
+            return false;
+        }
+
+        if(negative)
+        {
+            ErrorMessage = Localization.Unsupported_feature;
 
             return false;
         }
@@ -179,11 +186,18 @@ public sealed partial class Udif
 
     // TODO: This can be optimized
     /// <inheritdoc />
-    public bool WriteSectors(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
+    public bool WriteSectors(byte[] data, ulong sectorAddress, bool negative, uint length, SectorStatus[] sectorStatus)
     {
         if(!IsWriting)
         {
             ErrorMessage = Localization.Tried_to_write_on_a_non_writable_image;
+
+            return false;
+        }
+
+        if(negative)
+        {
+            ErrorMessage = Localization.Unsupported_feature;
 
             return false;
         }
@@ -230,7 +244,7 @@ public sealed partial class Udif
             var tmp = new byte[_imageInfo.SectorSize];
             Array.Copy(data, i * _imageInfo.SectorSize, tmp, 0, _imageInfo.SectorSize);
 
-            if(!WriteSector(tmp, sectorAddress + i, sectorStatus[i])) return false;
+            if(!WriteSector(tmp, sectorAddress + i, false, sectorStatus[i])) return false;
         }
 
         ErrorMessage = "";
@@ -239,7 +253,7 @@ public sealed partial class Udif
     }
 
     /// <inheritdoc />
-    public bool WriteSectorLong(byte[] data, ulong sectorAddress, SectorStatus sectorStatus)
+    public bool WriteSectorLong(byte[] data, ulong sectorAddress, bool negative, SectorStatus sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -247,7 +261,8 @@ public sealed partial class Udif
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsLong(byte[] data, ulong sectorAddress, uint length, SectorStatus[] sectorStatus)
+    public bool WriteSectorsLong(byte[]         data, ulong sectorAddress, bool negative, uint length,
+                                 SectorStatus[] sectorStatus)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -418,7 +433,7 @@ public sealed partial class Udif
     public bool SetGeometry(uint cylinders, uint heads, uint sectorsPerTrack) => true;
 
     /// <inheritdoc />
-    public bool WriteSectorTag(byte[] data, ulong sectorAddress, SectorTagType tag)
+    public bool WriteSectorTag(byte[] data, ulong sectorAddress, bool negative, SectorTagType tag)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 
@@ -426,7 +441,7 @@ public sealed partial class Udif
     }
 
     /// <inheritdoc />
-    public bool WriteSectorsTag(byte[] data, ulong sectorAddress, uint length, SectorTagType tag)
+    public bool WriteSectorsTag(byte[] data, ulong sectorAddress, bool negative, uint length, SectorTagType tag)
     {
         ErrorMessage = Localization.Writing_sectors_with_tags_is_not_supported;
 

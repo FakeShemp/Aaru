@@ -58,9 +58,8 @@ public sealed partial class T98
         stream.EnsureRead(hdrB, 0, hdrB.Length);
 
         for(var i = 4; i < 256; i++)
-        {
-            if(hdrB[i] != 0) return ErrorNumber.InvalidArgument;
-        }
+            if(hdrB[i] != 0)
+                return ErrorNumber.InvalidArgument;
 
         var cylinders = BitConverter.ToInt32(hdrB, 0);
 
@@ -83,18 +82,21 @@ public sealed partial class T98
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
         sectorStatus = SectorStatus.Dumped;
 
-        return ReadSectors(sectorAddress, 1, out buffer, out _);
+        return ReadSectors(sectorAddress, negative, 1, out buffer, out _);
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 

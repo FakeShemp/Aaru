@@ -127,7 +127,7 @@ public sealed partial class LisaFS
         // If root catalog is not pointed in MDDF (unchecked) maybe it's always following S-Records File?
         for(ulong i = 0; i < _device.Info.Sectors; i++)
         {
-            errno = _device.ReadSectorTag(i, SectorTagType.AppleSonyTag, out byte[] tag);
+            errno = _device.ReadSectorTag(i, false, SectorTagType.AppleSonyTag, out byte[] tag);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -135,7 +135,7 @@ public sealed partial class LisaFS
 
             if(catTag.FileId != FILEID_CATALOG || catTag.RelPage != 0) continue;
 
-            errno = _device.ReadSectors(i, 4, out firstCatalogBlock, out _);
+            errno = _device.ReadSectors(i, false, 4, out firstCatalogBlock, out _);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -151,6 +151,7 @@ public sealed partial class LisaFS
         while(prevCatalogPointer != 0xFFFFFFFF)
         {
             errno = _device.ReadSectorTag(prevCatalogPointer + _mddf.mddf_block + _volumePrefix,
+                                          false,
                                           SectorTagType.AppleSonyTag,
                                           out byte[] tag);
 
@@ -161,6 +162,7 @@ public sealed partial class LisaFS
             if(prevTag.FileId != FILEID_CATALOG) return ErrorNumber.InvalidArgument;
 
             errno = _device.ReadSectors(prevCatalogPointer + _mddf.mddf_block + _volumePrefix,
+                                        false,
                                         4,
                                         out firstCatalogBlock,
                                         out _);
@@ -178,6 +180,7 @@ public sealed partial class LisaFS
         while(nextCatalogPointer != 0xFFFFFFFF)
         {
             errno = _device.ReadSectorTag(nextCatalogPointer + _mddf.mddf_block + _volumePrefix,
+                                          false,
                                           SectorTagType.AppleSonyTag,
                                           out byte[] tag);
 
@@ -188,6 +191,7 @@ public sealed partial class LisaFS
             if(nextTag.FileId != FILEID_CATALOG) return ErrorNumber.InvalidArgument;
 
             errno = _device.ReadSectors(nextCatalogPointer + _mddf.mddf_block + _volumePrefix,
+                                        false,
                                         4,
                                         out byte[] nextCatalogBlock,
                                         out _);

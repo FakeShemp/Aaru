@@ -84,7 +84,7 @@ public sealed partial class Xbox : IPartition
         // Xbox partitions always start on 0
         if(sectorOffset != 0) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSector(0, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(0, false, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError || sector.Length < 512) return false;
 
@@ -127,6 +127,7 @@ public sealed partial class Xbox : IPartition
         if(imagePlugin.Info.Sectors > (ulong)(MEMORY_UNIT_DATA_OFF / imagePlugin.Info.SectorSize))
         {
             errno = imagePlugin.ReadSector((ulong)(MEMORY_UNIT_DATA_OFF / imagePlugin.Info.SectorSize),
+                                           false,
                                            out sector,
                                            out _);
 
@@ -169,7 +170,10 @@ public sealed partial class Xbox : IPartition
         if(imagePlugin.Info.Sectors <= (ulong)(XBOX_360DATA_OFF / imagePlugin.Info.SectorSize)) return false;
 
         {
-            errno = imagePlugin.ReadSector((ulong)(XBOX_360DATA_OFF / imagePlugin.Info.SectorSize), out sector, out _);
+            errno = imagePlugin.ReadSector((ulong)(XBOX_360DATA_OFF / imagePlugin.Info.SectorSize),
+                                           false,
+                                           out sector,
+                                           out _);
 
             if(errno != ErrorNumber.NoError) return false;
 

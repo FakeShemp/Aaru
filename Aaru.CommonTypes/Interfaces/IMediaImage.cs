@@ -54,45 +54,53 @@ public interface IMediaImage : IBaseImage
     /// <summary>Reads a sector's user data.</summary>
     /// <returns>The sector's user data.</returns>
     /// <param name="sectorAddress">Sector address (LBA).</param>
+    /// <param name="negative"></param>
     /// <param name="buffer"></param>
     /// <param name="sectorStatus"></param>
-    ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus);
+    ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus);
 
     /// <summary>Reads a complete sector (user data + all tags).</summary>
     /// <returns>The complete sector. Format depends on disk type.</returns>
     /// <param name="sectorAddress">Sector address (LBA).</param>
+    /// <param name="negative"></param>
     /// <param name="buffer"></param>
     /// <param name="sectorStatus"></param>
-    ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus);
+    ErrorNumber ReadSectorLong(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus);
 
     /// <summary>Reads user data from several sectors.</summary>
     /// <returns>The sectors user data.</returns>
     /// <param name="sectorAddress">Starting sector address (LBA).</param>
+    /// <param name="negative"></param>
     /// <param name="length">How many sectors to read.</param>
     /// <param name="buffer"></param>
     /// <param name="sectorStatus"></param>
-    ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus);
+    ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                            out SectorStatus[] sectorStatus);
 
     /// <summary>Reads several complete sector (user data + all tags).</summary>
     /// <returns>The complete sectors. Format depends on disk type.</returns>
     /// <param name="sectorAddress">Starting sector address (LBA).</param>
+    /// <param name="negative"></param>
     /// <param name="length">How many sectors to read.</param>
     /// <param name="buffer"></param>
     /// <param name="sectorStatus"></param>
-    ErrorNumber ReadSectorsLong(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus);
+    ErrorNumber ReadSectorsLong(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                out SectorStatus[] sectorStatus);
 
     /// <summary>Reads tag from several sectors.</summary>
     /// <returns>The sectors tag.</returns>
     /// <param name="sectorAddress">Starting sector address (LBA).</param>
+    /// <param name="negative"></param>
     /// <param name="length">How many sectors to read.</param>
     /// <param name="tag">Tag type.</param>
     /// <param name="buffer"></param>
-    ErrorNumber ReadSectorsTag(ulong sectorAddress, uint length, SectorTagType tag, out byte[] buffer);
+    ErrorNumber ReadSectorsTag(ulong sectorAddress, bool negative, uint length, SectorTagType tag, out byte[] buffer);
 
     /// <summary>Reads a sector's tag.</summary>
     /// <returns>The sector's tag.</returns>
     /// <param name="sectorAddress">Sector address (LBA).</param>
+    /// <param name="negative"></param>
     /// <param name="tag">Tag type.</param>
     /// <param name="buffer"></param>
-    ErrorNumber ReadSectorTag(ulong sectorAddress, SectorTagType tag, out byte[] buffer);
+    ErrorNumber ReadSectorTag(ulong sectorAddress, bool negative, SectorTagType tag, out byte[] buffer);
 }

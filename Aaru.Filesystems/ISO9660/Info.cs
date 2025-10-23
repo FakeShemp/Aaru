@@ -55,7 +55,7 @@ public sealed partial class ISO9660
         if(partition.End <= 16 + partition.Start) return false;
 
         // Read to Volume Descriptor
-        ErrorNumber errno = imagePlugin.ReadSector(16 + partition.Start, out byte[] vdSector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(16 + partition.Start, false, out byte[] vdSector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -109,7 +109,7 @@ public sealed partial class ISO9660
 
         ulong counter = 0;
 
-        ErrorNumber errno = imagePlugin.ReadSector(16 + partition.Start, out byte[] vdSector, out _);
+        ErrorNumber errno = imagePlugin.ReadSector(16 + partition.Start, false, out byte[] vdSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -130,7 +130,7 @@ public sealed partial class ISO9660
 
             // Seek to Volume Descriptor
             AaruLogging.Debug(MODULE_NAME, Localization.Reading_sector_0, 16 + counter + partition.Start);
-            errno = imagePlugin.ReadSector(16 + counter + partition.Start, out byte[] vdSectorTmp, out _);
+            errno = imagePlugin.ReadSector(16 + counter + partition.Start, false, out byte[] vdSectorTmp, out _);
 
             if(errno != ErrorNumber.NoError) return;
 
@@ -290,7 +290,7 @@ public sealed partial class ISO9660
 
         if(rootLocation + rootSize < imagePlugin.Info.Sectors)
         {
-            errno = imagePlugin.ReadSectors(rootLocation, rootSize, out rootDir, out _);
+            errno = imagePlugin.ReadSectors(rootLocation, false, rootSize, out rootDir, out _);
 
             if(errno != ErrorNumber.NoError) return;
         }
@@ -454,7 +454,7 @@ public sealed partial class ISO9660
                0)
                 caLen++;
 
-            errno = imagePlugin.ReadSectors(ca.block_be, caLen, out byte[] caSectors, out _);
+            errno = imagePlugin.ReadSectors(ca.block_be, false, caLen, out byte[] caSectors, out _);
 
             if(errno != ErrorNumber.NoError) return;
 
@@ -531,7 +531,7 @@ public sealed partial class ISO9660
             }
         }
 
-        errno = imagePlugin.ReadSector(0 + partition.Start, out byte[] ipbinSector, out _);
+        errno = imagePlugin.ReadSector(0 + partition.Start, false, out byte[] ipbinSector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -680,7 +680,7 @@ public sealed partial class ISO9660
 
         if(torito != null)
         {
-            errno = imagePlugin.ReadSector(torito.Value.catalog_sector + partition.Start, out vdSector, out _);
+            errno = imagePlugin.ReadSector(torito.Value.catalog_sector + partition.Start, false, out vdSector, out _);
 
             if(errno != ErrorNumber.NoError) return;
 
@@ -713,6 +713,7 @@ public sealed partial class ISO9660
             if(initialEntry.load_rba + partition.Start + initialEntry.sector_count - 1 <= partition.End)
             {
                 imagePlugin.ReadSectors(initialEntry.load_rba + partition.Start,
+                                        false,
                                         initialEntry.sector_count,
                                         out bootImage,
                                         out _);
@@ -827,6 +828,7 @@ public sealed partial class ISO9660
                         if(sectionEntry.load_rba + partition.Start + sectionEntry.sector_count - 1 <= partition.End)
                         {
                             imagePlugin.ReadSectors(sectionEntry.load_rba + partition.Start,
+                                                    false,
                                                     sectionEntry.sector_count,
                                                     out bootImage,
                                                     out _);

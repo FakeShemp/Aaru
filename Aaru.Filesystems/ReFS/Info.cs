@@ -53,7 +53,7 @@ public sealed partial class ReFS
 
         if(partition.Start + sbSize >= partition.End) return false;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, false, sbSize, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -79,7 +79,7 @@ public sealed partial class ReFS
 
         if(partition.Start + sbSize >= partition.End) return;
 
-        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, sbSize, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSectors(partition.Start, false, sbSize, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return;
 

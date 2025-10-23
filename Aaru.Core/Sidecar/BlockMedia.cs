@@ -401,7 +401,7 @@ public sealed partial class Sidecar
 
                 if(sectors - doneSectors >= sectorsToRead)
                 {
-                    errno = image.ReadSectors(doneSectors, sectorsToRead, out sector, out _);
+                    errno = image.ReadSectors(doneSectors, false, sectorsToRead, out sector, out _);
 
                     if(errno != ErrorNumber.NoError)
                     {
@@ -416,7 +416,7 @@ public sealed partial class Sidecar
                 }
                 else
                 {
-                    errno = image.ReadSectors(doneSectors, (uint)(sectors - doneSectors), out sector, out _);
+                    errno = image.ReadSectors(doneSectors, false, (uint)(sectors - doneSectors), out sector, out _);
 
                     if(errno != ErrorNumber.NoError)
                     {
@@ -501,6 +501,7 @@ public sealed partial class Sidecar
                         if(sectors - doneSectors >= sectorsToRead)
                         {
                             errno = image.ReadSectors(tapePartition.FirstBlock + doneSectors,
+                                                      false,
                                                       sectorsToRead,
                                                       out sector,
                                                       out _);
@@ -522,6 +523,7 @@ public sealed partial class Sidecar
                         else
                         {
                             errno = image.ReadSectors(tapePartition.FirstBlock + doneSectors,
+                                                      false,
                                                       (uint)(sectors - doneSectors),
                                                       out sector,
                                                       out _);
@@ -605,6 +607,7 @@ public sealed partial class Sidecar
                             if(sectors - doneSectors >= sectorsToRead)
                             {
                                 errno = image.ReadSectors(tapeFile.FirstBlock + doneSectors,
+                                                          false,
                                                           sectorsToRead,
                                                           out sector,
                                                           out _);
@@ -629,6 +632,7 @@ public sealed partial class Sidecar
                             else
                             {
                                 errno = image.ReadSectors(tapeFile.FirstBlock + doneSectors,
+                                                          false,
                                                           (uint)(sectors - doneSectors),
                                                           out sector,
                                                           out _);

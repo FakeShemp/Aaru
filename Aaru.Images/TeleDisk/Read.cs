@@ -188,8 +188,9 @@ public sealed partial class TeleDisk
             for(var i = 0; i < _commentBlock.Length; i++)
 
                 // Replace NULLs, used by TeleDisk as newline markers, with UNIX newline marker
-                if(_commentBlock[i] == 0x00)
-                    _commentBlock[i] = 0x0A;
+            {
+                if(_commentBlock[i] == 0x00) _commentBlock[i] = 0x0A;
+            }
 
             _imageInfo.Comments = Encoding.ASCII.GetString(_commentBlock);
 
@@ -563,11 +564,13 @@ public sealed partial class TeleDisk
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
         buffer                                    = null;
         sectorStatus                              = SectorStatus.NotDumped;
         (ushort cylinder, byte head, byte sector) = LbaToChs(sectorAddress);
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(cylinder >= _sectorsData.Length) return ErrorNumber.SectorNotFound;
 
@@ -582,10 +585,13 @@ public sealed partial class TeleDisk
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
@@ -596,7 +602,7 @@ public sealed partial class TeleDisk
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
+            ErrorNumber errno = ReadSector(sectorAddress + i, false, out byte[] sector, out SectorStatus status);
 
             if(errno != ErrorNumber.NoError) return errno;
 
@@ -618,17 +624,18 @@ public sealed partial class TeleDisk
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorLong(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSectorLong(ulong            sectorAddress, bool negative, out byte[] buffer,
+                                      out SectorStatus sectorStatus)
     {
         sectorStatus = SectorStatus.Dumped;
 
-        return ReadSectors(sectorAddress, 1, out buffer, out _);
+        return ReadSectors(sectorAddress, negative, 1, out buffer, out _);
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, out byte[] buffer,
+    public ErrorNumber ReadSectorsLong(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
                                        out SectorStatus[] sectorStatus) =>
-        ReadSectors(sectorAddress, length, out buffer, out sectorStatus);
+        ReadSectors(sectorAddress, negative, length, out buffer, out sectorStatus);
 
     /// <inheritdoc />
     public ErrorNumber ReadMediaTag(MediaTagType tag, out byte[] buffer)

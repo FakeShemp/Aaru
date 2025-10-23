@@ -56,7 +56,7 @@ public sealed partial class AmigaDOSPlugin
         // However while you can set a block size different from the sector size on formatting, the bootblock block
         // size for floppies is the sector size, and for RDB is usually is the hard disk sector size,
         // so this is not entirely wrong...
-        ErrorNumber errno = imagePlugin.ReadSectors(0 + partition.Start, 2, out byte[] sector, out _);
+        ErrorNumber errno = imagePlugin.ReadSectors(0 + partition.Start, false, 2, out byte[] sector, out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -69,7 +69,7 @@ public sealed partial class AmigaDOSPlugin
            (bblk.diskType & FFS_MASK)  != FFS_MASK &&
            (bblk.diskType & MUFS_MASK) != MUFS_MASK)
         {
-            errno = imagePlugin.ReadSectors(1 + partition.Start, 2, out sector, out _);
+            errno = imagePlugin.ReadSectors(1 + partition.Start, false, 2, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
@@ -110,7 +110,7 @@ public sealed partial class AmigaDOSPlugin
         {
             AaruLogging.Debug(MODULE_NAME, Localization.Searching_for_Rootblock_in_sector_0, rootPtr);
 
-            errno = imagePlugin.ReadSector(rootPtr, out sector, out _);
+            errno = imagePlugin.ReadSector(rootPtr, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -133,7 +133,7 @@ public sealed partial class AmigaDOSPlugin
 
             if(rootPtr + sectorsPerBlock >= partition.End) continue;
 
-            errno = imagePlugin.ReadSectors(rootPtr, sectorsPerBlock, out sector, out _);
+            errno = imagePlugin.ReadSectors(rootPtr, false, sectorsPerBlock, out sector, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -162,7 +162,7 @@ public sealed partial class AmigaDOSPlugin
         var sbInformation = new StringBuilder();
         metadata    = new FileSystem();
         information = null;
-        ErrorNumber errno = imagePlugin.ReadSectors(0 + partition.Start, 2, out byte[] bootBlockSectors, out _);
+        ErrorNumber errno = imagePlugin.ReadSectors(0 + partition.Start, false, 2, out byte[] bootBlockSectors, out _);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -200,7 +200,7 @@ public sealed partial class AmigaDOSPlugin
         {
             AaruLogging.Debug(MODULE_NAME, Localization.Searching_for_Rootblock_in_sector_0, rootPtr);
 
-            errno = imagePlugin.ReadSector(rootPtr, out rootBlockSector, out _);
+            errno = imagePlugin.ReadSector(rootPtr, false, out rootBlockSector, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -223,7 +223,7 @@ public sealed partial class AmigaDOSPlugin
 
             if(rootPtr + sectorsPerBlock >= partition.End) continue;
 
-            errno = imagePlugin.ReadSectors(rootPtr, sectorsPerBlock, out rootBlockSector, out _);
+            errno = imagePlugin.ReadSectors(rootPtr, false, sectorsPerBlock, out rootBlockSector, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 
@@ -240,7 +240,7 @@ public sealed partial class AmigaDOSPlugin
 
             if(rootBlk.sec_type != SUBTYPE_ROOT || rootBlk.checksum != rsum) continue;
 
-            errno = imagePlugin.ReadSectors(rootPtr, sectorsPerBlock, out rootBlockSector, out _);
+            errno = imagePlugin.ReadSectors(rootPtr, false, sectorsPerBlock, out rootBlockSector, out _);
 
             if(errno != ErrorNumber.NoError) continue;
 

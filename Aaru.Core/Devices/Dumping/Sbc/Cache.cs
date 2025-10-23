@@ -126,7 +126,7 @@ partial class Dump
 
                     if(key.All(static k => k == 0))
                     {
-                        outputFormat.WriteSectorTag([0, 0, 0, 0, 0], i + j, SectorTagType.DvdTitleKeyDecrypted);
+                        outputFormat.WriteSectorTag([0, 0, 0, 0, 0], i + j, false, SectorTagType.DvdTitleKeyDecrypted);
 
                         _resume.MissingTitleKeys?.Remove(i + j);
 
@@ -134,7 +134,7 @@ partial class Dump
                     }
 
                     CSS.DecryptTitleKey(discKey, key, out tmpBuf);
-                    outputFormat.WriteSectorTag(tmpBuf, i + j, SectorTagType.DvdTitleKeyDecrypted);
+                    outputFormat.WriteSectorTag(tmpBuf, i + j, false, SectorTagType.DvdTitleKeyDecrypted);
                     _resume.MissingTitleKeys?.Remove(i    + j);
 
                     if(_storeEncrypted) continue;
@@ -147,6 +147,7 @@ partial class Dump
                 {
                     ErrorNumber errno =
                         outputFormat.ReadSectorsTag(i,
+                                                    false,
                                                     blocksToRead,
                                                     SectorTagType.DvdTitleKeyDecrypted,
                                                     out byte[] titleKey);
@@ -162,6 +163,7 @@ partial class Dump
 
                 outputFormat.WriteSectorsLong(buffer,
                                               i,
+                                              false,
                                               blocksToRead,
                                               Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
 
@@ -181,6 +183,7 @@ partial class Dump
 
                 outputFormat.WriteSectorsLong(new byte[blockSize * _skip],
                                               i,
+                                              false,
                                               _skip,
                                               Enumerable.Repeat(SectorStatus.NotDumped, (int)_skip).ToArray());
 

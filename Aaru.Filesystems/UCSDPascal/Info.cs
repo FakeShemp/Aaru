@@ -56,8 +56,11 @@ public sealed partial class PascalPlugin
         _multiplier = (uint)(imagePlugin.Info.SectorSize == 256 ? 2 : 1);
 
         // Blocks 0 and 1 are boot code
-        ErrorNumber errno =
-            imagePlugin.ReadSectors(_multiplier * 2 + partition.Start, _multiplier, out byte[] volBlock, out _);
+        ErrorNumber errno = imagePlugin.ReadSectors(_multiplier * 2 + partition.Start,
+                                                    false,
+                                                    _multiplier,
+                                                    out byte[] volBlock,
+                                                    out _);
 
         if(errno != ErrorNumber.NoError) return false;
 
@@ -126,8 +129,11 @@ public sealed partial class PascalPlugin
         if(imagePlugin.Info.Sectors < 3) return;
 
         // Blocks 0 and 1 are boot code
-        ErrorNumber errno =
-            imagePlugin.ReadSectors(_multiplier * 2 + partition.Start, _multiplier, out byte[] volBlock, out _);
+        ErrorNumber errno = imagePlugin.ReadSectors(_multiplier * 2 + partition.Start,
+                                                    false,
+                                                    _multiplier,
+                                                    out byte[] volBlock,
+                                                    out _);
 
         if(errno != ErrorNumber.NoError) return;
 
@@ -189,7 +195,7 @@ public sealed partial class PascalPlugin
 
         information = sbInformation.ToString();
 
-        imagePlugin.ReadSectors(partition.Start, _multiplier * 2, out byte[] boot, out _);
+        imagePlugin.ReadSectors(partition.Start, false, _multiplier * 2, out byte[] boot, out _);
 
         metadata = new FileSystem
         {

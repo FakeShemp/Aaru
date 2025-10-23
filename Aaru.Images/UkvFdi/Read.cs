@@ -182,11 +182,13 @@ public sealed partial class UkvFdi
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSector(ulong sectorAddress, out byte[] buffer, out SectorStatus sectorStatus)
+    public ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus)
     {
         buffer                                    = null;
         sectorStatus                              = SectorStatus.NotDumped;
         (ushort cylinder, byte head, byte sector) = LbaToChs(sectorAddress);
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(cylinder >= _sectorsData.Length) return ErrorNumber.SectorNotFound;
 
@@ -201,10 +203,13 @@ public sealed partial class UkvFdi
     }
 
     /// <inheritdoc />
-    public ErrorNumber ReadSectors(ulong sectorAddress, uint length, out byte[] buffer, out SectorStatus[] sectorStatus)
+    public ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
+                                   out SectorStatus[] sectorStatus)
     {
         buffer       = null;
         sectorStatus = null;
+
+        if(negative) return ErrorNumber.NotSupported;
 
         if(sectorAddress > _imageInfo.Sectors - 1) return ErrorNumber.OutOfRange;
 
@@ -215,7 +220,7 @@ public sealed partial class UkvFdi
 
         for(uint i = 0; i < length; i++)
         {
-            ErrorNumber errno = ReadSector(sectorAddress + i, out byte[] sector, out SectorStatus status);
+            ErrorNumber errno = ReadSector(sectorAddress + i, false, out byte[] sector, out SectorStatus status);
             sectorStatus[i] = status;
 
             if(errno != ErrorNumber.NoError) return errno;

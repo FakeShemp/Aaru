@@ -61,7 +61,7 @@ public sealed partial class CBM
 
         if(imagePlugin.Info.Sectors == 3200)
         {
-            ErrorNumber errno = imagePlugin.ReadSector(1560, out sector, out _);
+            ErrorNumber errno = imagePlugin.ReadSector(1560, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
@@ -71,7 +71,7 @@ public sealed partial class CBM
         }
         else
         {
-            ErrorNumber errno = imagePlugin.ReadSector(357, out sector, out _);
+            ErrorNumber errno = imagePlugin.ReadSector(357, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return false;
 
@@ -105,7 +105,7 @@ public sealed partial class CBM
 
         if(imagePlugin.Info.Sectors == 3200)
         {
-            ErrorNumber errno = imagePlugin.ReadSector(1560, out sector, out _);
+            ErrorNumber errno = imagePlugin.ReadSector(1560, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return;
 
@@ -147,7 +147,7 @@ public sealed partial class CBM
         }
         else
         {
-            ErrorNumber errno = imagePlugin.ReadSector(357, out sector, out _);
+            ErrorNumber errno = imagePlugin.ReadSector(357, false, out sector, out _);
 
             if(errno != ErrorNumber.NoError) return;
 
