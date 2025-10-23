@@ -621,6 +621,19 @@ public sealed class Spiral : IMediaGraph
         _canvas.DrawPath(path, paint);
     }
 
+    /// <summary>
+    ///     Paints the segment of the spiral that corresponds to the specified sector of a standard CD lead-in in the
+    ///     specified color. Uses the standard CD lead-in size of approximately 2,500-3,000 sectors
+    ///     (ECMA-130 specification: 46mm to 50mm radial distance with 1.6µm track pitch).
+    /// </summary>
+    /// <param name="sector">Sector within the lead-in (0-based, where 0 is LBA -150 equivalent)</param>
+    /// <param name="color">Color to paint the segment in</param>
+    public void PaintCdLeadInSector(ulong sector, SKColor color)
+    {
+        const int cdLeadInSize = 2750; // Approximate CD lead-in sectors (46-50mm at 1.6µm pitch, ~75 sectors/sec)
+        PaintLeadInSector(sector, color, cdLeadInSize);
+    }
+
     /// <summary>Gets all the points that are needed to draw a spiral with the specified parameters</summary>
     /// <param name="center">Center of the spiral start</param>
     /// <param name="minRadius">Minimum radius before which the spiral must have no points</param>
