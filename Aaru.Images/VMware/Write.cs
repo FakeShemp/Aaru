@@ -157,7 +157,7 @@ public sealed partial class VMware
 
             // TODO: Support split
             _writingStream = new FileStream(_writingBaseName + "-flat.vmdk",
-                                            FileMode.OpenOrCreate,
+                                            FileMode.CreateNew,
                                             FileAccess.ReadWrite,
                                             FileShare.None);
         }

@@ -68,7 +68,7 @@ public sealed partial class Apridisk
 
         try
         {
-            _writingStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+            _writingStream = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None);
         }
         catch(IOException ex)
         {

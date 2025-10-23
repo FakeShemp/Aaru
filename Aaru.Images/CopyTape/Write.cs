@@ -72,7 +72,7 @@ public sealed partial class CopyTape
 
         try
         {
-            _dataStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+            _dataStream = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None);
         }
         catch(IOException ex)
         {

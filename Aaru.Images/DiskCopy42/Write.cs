@@ -198,7 +198,7 @@ public sealed partial class DiskCopy42
 
         try
         {
-            writingStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+            writingStream = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None);
         }
         catch(IOException ex)
         {
