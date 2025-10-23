@@ -41,6 +41,7 @@ using System.Linq;
 using Aaru.Checksums;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Devices;
 using Aaru.Logging;
@@ -58,15 +59,17 @@ partial class Dump
     /// <param name="mediaTags">List of media tags</param>
     /// <param name="supportedSubchannel">Subchannel the drive can read</param>
     /// <param name="totalDuration">Total time spent sending commands to a drive</param>
+    /// <param name="outputOptical"></param>
     void ReadCdFirstTrackPregap(uint blockSize, ref double currentSpeed, Dictionary<MediaTagType, byte[]> mediaTags,
-                                MmcSubchannel supportedSubchannel, ref double totalDuration)
+                                MmcSubchannel supportedSubchannel, ref double totalDuration,
+                                IWritableOpticalImage outputOptical)
     {
         bool   sense;                           // Sense indicator
         byte[] cmdBuf;                          // Data buffer
         double cmdDuration;                     // Command execution time
         ulong  sectorSpeedStart            = 0; // Used to calculate correct speed
-        bool   gotFirstTrackPregap         = false;
-        int    firstTrackPregapSectorsGood = 0;
+        var    gotFirstTrackPregap         = false;
+        var    firstTrackPregapSectorsGood = 0;
         var    firstTrackPregapMs          = new MemoryStream();
 
         UpdateStatus?.Invoke(Localization.Core.Reading_first_track_pregap);
@@ -110,7 +113,26 @@ partial class Dump
 
             if(!sense && !_dev.Error)
             {
-                firstTrackPregapMs.Write(cmdBuf, 0, (int)blockSize);
+                if(outputOptical.OpticalCapabilities.HasFlag(OpticalImageCapabilities.CanStoreNegativeSectors))
+                {
+                    var data = new byte[2352];
+                    Array.Copy(cmdBuf, 0, data, 0, 2352);
+                    outputOptical.WriteSectorLong(data, (ulong)(firstTrackPregapBlock * -1), true, SectorStatus.Dumped);
+
+                    if(supportedSubchannel == MmcSubchannel.Raw)
+                    {
+                        var subchannel = new byte[96];
+                        Array.Copy(cmdBuf, 2352, subchannel, 0, 96);
+
+                        outputOptical.WriteSectorTag(subchannel,
+                                                     (ulong)(firstTrackPregapBlock * -1),
+                                                     true,
+                                                     SectorTagType.CdSectorSubchannel);
+                    }
+                }
+                else
+                    firstTrackPregapMs.Write(cmdBuf, 0, (int)blockSize);
+
                 gotFirstTrackPregap = true;
                 firstTrackPregapSectorsGood++;
                 totalDuration += cmdDuration;
@@ -118,7 +140,22 @@ partial class Dump
             else
             {
                 // Write empty data
-                if(gotFirstTrackPregap) firstTrackPregapMs.Write(new byte[blockSize], 0, (int)blockSize);
+                if(outputOptical.OpticalCapabilities.HasFlag(OpticalImageCapabilities.CanStoreNegativeSectors))
+                {
+                    outputOptical.WriteSectorLong(new byte[2352],
+                                                  (ulong)(firstTrackPregapBlock * -1),
+                                                  true,
+                                                  SectorStatus.Errored);
+
+                    if(supportedSubchannel == MmcSubchannel.Raw)
+                    {
+                        outputOptical.WriteSectorTag(new byte[96],
+                                                     (ulong)(firstTrackPregapBlock * -1),
+                                                     true,
+                                                     SectorTagType.CdSectorSubchannel);
+                    }
+                }
+                else if(gotFirstTrackPregap) firstTrackPregapMs.Write(new byte[blockSize], 0, (int)blockSize);
             }
 
             sectorSpeedStart++;
@@ -134,7 +171,8 @@ partial class Dump
 
         _speedStopwatch.Stop();
 
-        if(firstTrackPregapSectorsGood > 0)
+        if(firstTrackPregapSectorsGood > 0 &&
+           !outputOptical.OpticalCapabilities.HasFlag(OpticalImageCapabilities.CanStoreNegativeSectors))
             mediaTags.Add(MediaTagType.CD_FirstTrackPregap, firstTrackPregapMs.ToArray());
 
         EndProgress?.Invoke();
@@ -159,7 +197,7 @@ partial class Dump
                                          bool                   supportsPqSubchannel, bool supportsRwSubchannel,
                                          Database.Models.Device dbDev, out bool inexactPositioning, bool dumping)
     {
-        bool                  sense  = true; // Sense indicator
+        var                   sense  = true; // Sense indicator
         byte[]                subBuf = null;
         int                   posQ;
         uint                  retries;
@@ -203,10 +241,10 @@ partial class Dump
         // Initialize the dictionary
         foreach(Track t in tracks) pregaps[t.Sequence] = 0;
 
-        for(int t = 0; t < tracks.Length; t++)
+        for(var t = 0; t < tracks.Length; t++)
         {
             Track track        = tracks[t];
-            int   trackRetries = 0;
+            var   trackRetries = 0;
 
             // First track of each session has at least 150 sectors of pregap and is not always readable
             if(tracks.Where(trk => trk.Session == track.Session).MinBy(trk => trk.Sequence).Sequence == track.Sequence)
@@ -237,14 +275,14 @@ partial class Dump
             AaruLogging.Debug(PREGAP_MODULE_NAME, Localization.Core.Track_0, track.Sequence);
 
             int   lba           = (int)track.StartSector - 1;
-            bool  pregapFound   = false;
+            var   pregapFound   = false;
             Track previousTrack = tracks.FirstOrDefault(trk => trk.Sequence == track.Sequence - 1);
 
-            bool goneBack                      = false;
-            bool goFront                       = false;
-            bool forward                       = false;
-            bool crcOk                         = false;
-            bool previousPregapIsPreviousTrack = false;
+            var goneBack                      = false;
+            var goFront                       = false;
+            var forward                       = false;
+            var crcOk                         = false;
+            var previousPregapIsPreviousTrack = false;
 
             // Check if pregap is 0
             for(retries = 0; retries < 10 && !pregapFound; retries++)
@@ -307,7 +345,7 @@ partial class Dump
                         subBuf[6] = 0;
 
                         // Fix BCD numbering
-                        for(int i = 1; i < 10; i++)
+                        for(var i = 1; i < 10; i++)
                         {
                             if((subBuf[i] & 0xF0) > 0xA0) subBuf[i] &= 0x7F;
 
@@ -434,7 +472,7 @@ partial class Dump
                             subBuf[6] = 0;
 
                             // Fix BCD numbering
-                            for(int i = 1; i < 10; i++)
+                            for(var i = 1; i < 10; i++)
                             {
                                 if((subBuf[i] & 0xF0) > 0xA0) subBuf[i] &= 0x7F;
 
@@ -644,7 +682,7 @@ partial class Dump
             if(dumping)
             {
                 // Minus five, to ensure dumping will fix if there is a pregap LBA 0
-                int red = 5;
+                var red = 5;
 
                 while(trk.Pregap > 0 && red > 0)
                 {
@@ -758,7 +796,7 @@ partial class Dump
 
         if(!sense)
         {
-            byte[] tmpBuf = new byte[96];
+            var tmpBuf = new byte[96];
             Array.Copy(cmdBuf, 2352, tmpBuf, 0, 96);
             subBuf = DeinterleaveQ(tmpBuf);
         }
@@ -962,10 +1000,10 @@ partial class Dump
     /// <returns>De-interleaved Q subchannel</returns>
     static byte[] DeinterleaveQ(byte[] subchannel)
     {
-        int[] q = new int[subchannel.Length / 8];
+        var q = new int[subchannel.Length / 8];
 
         // De-interlace Q subchannel
-        for(int iq = 0; iq < subchannel.Length; iq += 8)
+        for(var iq = 0; iq < subchannel.Length; iq += 8)
         {
             q[iq / 8] =  (subchannel[iq] & 0x40) << 1;
             q[iq / 8] += subchannel[iq + 1] & 0x40;
@@ -977,9 +1015,9 @@ partial class Dump
             q[iq / 8] += (subchannel[iq + 7] & 0x40) >> 6;
         }
 
-        byte[] deQ = new byte[q.Length];
+        var deQ = new byte[q.Length];
 
-        for(int iq = 0; iq < q.Length; iq++) deQ[iq] = (byte)q[iq];
+        for(var iq = 0; iq < q.Length; iq++) deQ[iq] = (byte)q[iq];
 
         return deQ;
     }
