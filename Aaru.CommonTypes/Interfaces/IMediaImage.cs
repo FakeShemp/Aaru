@@ -54,53 +54,53 @@ public interface IMediaImage : IBaseImage
     /// <summary>Reads a sector's user data.</summary>
     /// <returns>The sector's user data.</returns>
     /// <param name="sectorAddress">Sector address (LBA).</param>
-    /// <param name="negative"></param>
-    /// <param name="buffer"></param>
-    /// <param name="sectorStatus"></param>
+    /// <param name="negative">If the sector address is a negative LBA.</param>
+    /// <param name="buffer">The sector's user data.</param>
+    /// <param name="sectorStatus">The status of the sector.</param>
     ErrorNumber ReadSector(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus);
 
     /// <summary>Reads a complete sector (user data + all tags).</summary>
     /// <returns>The complete sector. Format depends on disk type.</returns>
     /// <param name="sectorAddress">Sector address (LBA).</param>
-    /// <param name="negative"></param>
-    /// <param name="buffer"></param>
-    /// <param name="sectorStatus"></param>
+    /// <param name="negative">If the sector address is a negative LBA.</param>
+    /// <param name="buffer">The complete sector.</param>
+    /// <param name="sectorStatus">The status of the sector.</param>
     ErrorNumber ReadSectorLong(ulong sectorAddress, bool negative, out byte[] buffer, out SectorStatus sectorStatus);
 
     /// <summary>Reads user data from several sectors.</summary>
     /// <returns>The sectors user data.</returns>
     /// <param name="sectorAddress">Starting sector address (LBA).</param>
-    /// <param name="negative"></param>
+    /// <param name="negative">If the sector address is a negative LBA.</param>
     /// <param name="length">How many sectors to read.</param>
-    /// <param name="buffer"></param>
-    /// <param name="sectorStatus"></param>
+    /// <param name="buffer">The sectors user data.</param>
+    /// <param name="sectorStatus">The status of each sector.</param>
     ErrorNumber ReadSectors(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
                             out SectorStatus[] sectorStatus);
 
     /// <summary>Reads several complete sector (user data + all tags).</summary>
     /// <returns>The complete sectors. Format depends on disk type.</returns>
     /// <param name="sectorAddress">Starting sector address (LBA).</param>
-    /// <param name="negative"></param>
+    /// <param name="negative">If the sector address is a negative LBA.</param>
     /// <param name="length">How many sectors to read.</param>
-    /// <param name="buffer"></param>
-    /// <param name="sectorStatus"></param>
+    /// <param name="buffer">The complete sectors.</param>
+    /// <param name="sectorStatus">The status of each sector.</param>
     ErrorNumber ReadSectorsLong(ulong              sectorAddress, bool negative, uint length, out byte[] buffer,
                                 out SectorStatus[] sectorStatus);
 
     /// <summary>Reads tag from several sectors.</summary>
     /// <returns>The sectors tag.</returns>
     /// <param name="sectorAddress">Starting sector address (LBA).</param>
-    /// <param name="negative"></param>
+    /// <param name="negative">If the sector address is a negative LBA.</param>
     /// <param name="length">How many sectors to read.</param>
     /// <param name="tag">Tag type.</param>
-    /// <param name="buffer"></param>
+    /// <param name="buffer">The sectors tag.</param>
     ErrorNumber ReadSectorsTag(ulong sectorAddress, bool negative, uint length, SectorTagType tag, out byte[] buffer);
 
     /// <summary>Reads a sector's tag.</summary>
     /// <returns>The sector's tag.</returns>
     /// <param name="sectorAddress">Sector address (LBA).</param>
-    /// <param name="negative"></param>
+    /// <param name="negative">If the sector address is a negative LBA.</param>
     /// <param name="tag">Tag type.</param>
-    /// <param name="buffer"></param>
+    /// <param name="buffer">The sector's tag.</param>
     ErrorNumber ReadSectorTag(ulong sectorAddress, bool negative, SectorTagType tag, out byte[] buffer);
 }

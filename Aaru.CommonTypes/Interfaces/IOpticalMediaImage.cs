@@ -62,8 +62,8 @@ public interface IOpticalMediaImage : IMediaImage, IPartitionableMediaImage, IVe
     /// <returns>The sector's user data.</returns>
     /// <param name="sectorAddress">Sector address (relative LBA).</param>
     /// <param name="track">Track.</param>
-    /// <param name="buffer"></param>
-    /// <param name="sectorStatus"></param>
+    /// <param name="buffer">The sector's user data.</param>
+    /// <param name="sectorStatus">The status of the sector.</param>
     ErrorNumber ReadSector(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus);
 
     /// <summary>Reads a sector's tag, relative to track.</summary>
@@ -71,7 +71,7 @@ public interface IOpticalMediaImage : IMediaImage, IPartitionableMediaImage, IVe
     /// <param name="sectorAddress">Sector address (relative LBA).</param>
     /// <param name="track">Track.</param>
     /// <param name="tag">Tag type.</param>
-    /// <param name="buffer"></param>
+    /// <param name="buffer">The sector's tag.</param>
     ErrorNumber ReadSectorTag(ulong sectorAddress, uint track, SectorTagType tag, out byte[] buffer);
 
     /// <summary>Reads user data from several sectors, relative to track.</summary>
@@ -79,8 +79,8 @@ public interface IOpticalMediaImage : IMediaImage, IPartitionableMediaImage, IVe
     /// <param name="sectorAddress">Starting sector address (relative LBA).</param>
     /// <param name="length">How many sectors to read.</param>
     /// <param name="track">Track.</param>
-    /// <param name="buffer"></param>
-    /// <param name="sectorStatus"></param>
+    /// <param name="buffer">The sectors user data.</param>
+    /// <param name="sectorStatus">The status of each sector.</param>
     ErrorNumber ReadSectors(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
                             out SectorStatus[] sectorStatus);
 
@@ -90,15 +90,15 @@ public interface IOpticalMediaImage : IMediaImage, IPartitionableMediaImage, IVe
     /// <param name="length">How many sectors to read.</param>
     /// <param name="track">Track.</param>
     /// <param name="tag">Tag type.</param>
-    /// <param name="buffer"></param>
+    /// <param name="buffer">The sectors tag.</param>
     ErrorNumber ReadSectorsTag(ulong sectorAddress, uint length, uint track, SectorTagType tag, out byte[] buffer);
 
     /// <summary>Reads a complete sector (user data + all tags), relative to track.</summary>
     /// <returns>The complete sector. Format depends on disk type.</returns>
     /// <param name="sectorAddress">Sector address (relative LBA).</param>
     /// <param name="track">Track.</param>
-    /// <param name="buffer"></param>
-    /// <param name="sectorStatus"></param>
+    /// <param name="buffer">The complete sector.</param>
+    /// <param name="sectorStatus">The status of the sector.</param>
     ErrorNumber ReadSectorLong(ulong sectorAddress, uint track, out byte[] buffer, out SectorStatus sectorStatus);
 
     /// <summary>Reads several complete sector (user data + all tags), relative to track.</summary>
@@ -106,8 +106,8 @@ public interface IOpticalMediaImage : IMediaImage, IPartitionableMediaImage, IVe
     /// <param name="sectorAddress">Starting sector address (relative LBA).</param>
     /// <param name="length">How many sectors to read.</param>
     /// <param name="track">Track.</param>
-    /// <param name="buffer"></param>
-    /// <param name="sectorStatus"></param>
+    /// <param name="buffer">The complete sectors.</param>
+    /// <param name="sectorStatus">The status of each sector.</param>
     ErrorNumber ReadSectorsLong(ulong              sectorAddress, uint length, uint track, out byte[] buffer,
                                 out SectorStatus[] sectorStatus);
 
@@ -126,8 +126,8 @@ public interface IOpticalMediaImage : IMediaImage, IPartitionableMediaImage, IVe
     /// <param name="sectorAddress">Starting sector address (relative LBA).</param>
     /// <param name="length">How many sectors to read.</param>
     /// <param name="track">Track.</param>
-    /// <param name="failingLbas">List of incorrect sectors</param>
-    /// <param name="unknownLbas">List of uncheckable sectors</param>
+    /// <param name="failingLbas">List of incorrect sectors.</param>
+    /// <param name="unknownLbas">List of uncheckable sectors.</param>
     bool? VerifySectors(ulong           sectorAddress, uint length, uint track, out List<ulong> failingLbas,
                         out List<ulong> unknownLbas);
 }

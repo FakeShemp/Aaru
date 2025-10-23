@@ -70,8 +70,8 @@ public interface IReadOnlyFilesystem : IFilesystem
     ///     Initializes whatever internal structures the filesystem plugin needs to be able to read files and directories
     ///     from the filesystem.
     /// </summary>
-    /// <param name="imagePlugin"></param>
-    /// <param name="partition"></param>
+    /// <param name="imagePlugin">The image plugin containing the filesystem.</param>
+    /// <param name="partition">The partition containing the filesystem.</param>
     /// <param name="encoding">Which encoding to use for this filesystem.</param>
     /// <param name="options">Dictionary of key=value pairs containing options to pass to the filesystem</param>
     /// <param name="namespace">Filename namespace</param>
@@ -102,16 +102,19 @@ public interface IReadOnlyFilesystem : IFilesystem
 
     /// <summary>Gets information about the mounted volume.</summary>
     /// <param name="stat">Information about the mounted volume.</param>
+    /// <returns>Error number.</returns>
     ErrorNumber StatFs(out FileSystemInfo stat);
 
     /// <summary>Gets information about a file or directory.</summary>
     /// <param name="path">File path.</param>
     /// <param name="stat">File information.</param>
+    /// <returns>Error number.</returns>
     ErrorNumber Stat(string path, out FileEntryInfo stat);
 
     /// <summary>Solves a symbolic link.</summary>
     /// <param name="path">Link path.</param>
     /// <param name="dest">Link destination.</param>
+    /// <returns>Error number.</returns>
     ErrorNumber ReadLink(string path, out string dest);
 
     /// <summary>Opens a file for reading.</summary>
@@ -155,6 +158,7 @@ public interface IReadOnlyFilesystem : IFilesystem
     /// <param name="length">Bytes to read.</param>
     /// <param name="buffer">Buffer. Must exist and be of size equal or bigger than <see cref="length" /></param>
     /// <param name="read">How many bytes were read into the buffer</param>
+    /// <returns>Error number.</returns>
     ErrorNumber ReadFile(IFileNode node, long length, byte[] buffer, out long read);
 
     /// <summary>Opens a directory for listing.</summary>

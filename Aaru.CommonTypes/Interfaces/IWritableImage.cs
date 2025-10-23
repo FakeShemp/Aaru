@@ -65,41 +65,41 @@ public interface IWritableImage : IMediaImage, IBaseWritableImage
     /// <summary>Writes a sector to the image</summary>
     /// <param name="data">Sector data</param>
     /// <param name="sectorAddress">Sector address</param>
-    /// <param name="negative"></param>
-    /// <param name="sectorStatus"></param>
+    /// <param name="negative">If the sector address is a negative LBA.</param>
+    /// <param name="sectorStatus">The status of the sector.</param>
     /// <returns><c>true</c> if operating completed successfully, <c>false</c> otherwise</returns>
     bool WriteSector(byte[] data, ulong sectorAddress, bool negative, SectorStatus sectorStatus);
 
     /// <summary>Writes a sector to the image with main channel tags attached</summary>
     /// <param name="data">Sector data with its main channel tags attached</param>
     /// <param name="sectorAddress">Sector address</param>
-    /// <param name="negative"></param>
-    /// <param name="sectorStatus"></param>
+    /// <param name="negative">If the sector address is a negative LBA.</param>
+    /// <param name="sectorStatus">The status of the sector.</param>
     /// <returns><c>true</c> if operating completed successfully, <c>false</c> otherwise</returns>
     bool WriteSectorLong(byte[] data, ulong sectorAddress, bool negative, SectorStatus sectorStatus);
 
     /// <summary>Writes several sectors to the image</summary>
     /// <param name="data">Sectors data</param>
     /// <param name="sectorAddress">Sector starting address</param>
-    /// <param name="negative"></param>
+    /// <param name="negative">If the sector address is a negative LBA.</param>
     /// <param name="length">How many sectors to write</param>
-    /// <param name="sectorStatus"></param>
+    /// <param name="sectorStatus">The status of each sector.</param>
     /// <returns><c>true</c> if operating completed successfully, <c>false</c> otherwise</returns>
     bool WriteSectors(byte[] data, ulong sectorAddress, bool negative, uint length, SectorStatus[] sectorStatus);
 
     /// <summary>Writes several sectors to the image</summary>
     /// <param name="data">Sector data with their main channel tags attached</param>
     /// <param name="sectorAddress">Sector starting address</param>
-    /// <param name="negative"></param>
+    /// <param name="negative">If the sector address is a negative LBA.</param>
     /// <param name="length">How many sectors to write</param>
-    /// <param name="sectorStatus"></param>
+    /// <param name="sectorStatus">The status of each sector.</param>
     /// <returns><c>true</c> if operating completed successfully, <c>false</c> otherwise</returns>
     bool WriteSectorsLong(byte[] data, ulong sectorAddress, bool negative, uint length, SectorStatus[] sectorStatus);
 
     /// <summary>Writes parallel or subchannel sector tag for several sector</summary>
     /// <param name="data">Tag data to write</param>
     /// <param name="sectorAddress">Starting sector address</param>
-    /// <param name="negative"></param>
+    /// <param name="negative">If the sector address is a negative LBA.</param>
     /// <param name="length">How many sectors to write</param>
     /// <param name="tag">Tag type</param>
     /// <returns><c>true</c> if operating completed successfully, <c>false</c> otherwise</returns>
@@ -108,7 +108,7 @@ public interface IWritableImage : IMediaImage, IBaseWritableImage
     /// <summary>Writes parallel or subchannel sector tag for one sector</summary>
     /// <param name="data">Tag data to write</param>
     /// <param name="sectorAddress">Sector address</param>
-    /// <param name="negative"></param>
+    /// <param name="negative">If the sector address is a negative LBA.</param>
     /// <param name="tag">Tag type</param>
     /// <returns><c>true</c> if operating completed successfully, <c>false</c> otherwise</returns>
     bool WriteSectorTag(byte[] data, ulong sectorAddress, bool negative, SectorTagType tag);
