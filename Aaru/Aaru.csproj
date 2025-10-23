@@ -56,6 +56,10 @@
     <ProjectReference Include="..\Aaru.Core\Aaru.Core.csproj"/>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="..\LICENSE">
+      <Link>LICENSE</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="..\LICENSE.MIT">
       <Link>LICENSE.MIT</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -64,7 +68,6 @@
       <Link>LICENSE.LGPL</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <Folder Include="..\LICENSE"/>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.github\CODE_OF_CONDUCT.md"/>
