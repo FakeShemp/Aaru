@@ -16,6 +16,9 @@
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
   </PropertyGroup>
   <ItemGroup>
+    <Content Update="$(NuGetPackageRoot)\microsoft.codeanalysis.workspaces.msbuild\**\**" Visible="false" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Packaging.Targets"/>
   </ItemGroup>
   <ItemGroup>
