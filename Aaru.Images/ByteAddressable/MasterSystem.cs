@@ -139,8 +139,7 @@ public partial class MasterSystem : IByteAddressableImage
             MetadataMediaType    = MetadataMediaType.LinearMedia
         };
 
-        Header header =
-            Marshal.ByteArrayToStructureBigEndian<Header>(_data, headerPosition, Marshal.SizeOf<Header>());
+        Header header = Marshal.ByteArrayToStructureBigEndian<Header>(_data, headerPosition, Marshal.SizeOf<Header>());
 
         var sb = new StringBuilder();
 
@@ -252,8 +251,9 @@ public partial class MasterSystem : IByteAddressableImage
     public IEnumerable<SectorTagType> SupportedSectorTags => Array.Empty<SectorTagType>();
 
     /// <inheritdoc />
-    public bool Create(string path, MediaType mediaType, Dictionary<string, string> options, ulong sectors,
-                       uint   sectorSize) => Create(path, mediaType, options, (long)sectors) == ErrorNumber.NoError;
+    public bool Create(string path,            MediaType mediaType, Dictionary<string, string> options, ulong sectors,
+                       uint   negativeSectors, uint      overflowSectors, uint sectorSize) =>
+        Create(path, mediaType, options, (long)sectors) == ErrorNumber.NoError;
 
     /// <inheritdoc />
     public bool Close()

@@ -77,9 +77,12 @@ public interface IBaseWritableImage : IBaseImage
     /// <param name="mediaType"><see cref="MediaType" /> that will be written in the image</param>
     /// <param name="options">Options to be used when creating new image</param>
     /// <param name="sectors">How many sectors the media has.</param>
+    /// <param name="negativeSectors">How many negative sectors the image is prepared to store.</param>
+    /// <param name="overflowSectors">How many overflow sectors the image is prepared to store.</param>
     /// <param name="sectorSize">Size of each sector in bytes.</param>
     /// <returns><c>true</c> if operating completed successfully, <c>false</c> otherwise</returns>
-    bool Create(string path, MediaType mediaType, Dictionary<string, string> options, ulong sectors, uint sectorSize);
+    bool Create(string path,            MediaType mediaType,       Dictionary<string, string> options, ulong sectors,
+                uint   negativeSectors, uint      overflowSectors, uint                       sectorSize);
 
     /// <summary>Closes the image and flushes all data to disk</summary>
     /// <returns>Error number</returns>

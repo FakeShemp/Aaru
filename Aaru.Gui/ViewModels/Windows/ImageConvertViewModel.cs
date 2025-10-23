@@ -519,10 +519,13 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
             Progress2Indeterminate = true;
         });
 
+        // TODO: Get the source image number of negative and overflow sectors to convert them too
         if(!outputFormat.Create(DestinationText,
                                 _inputFormat.Info.MediaType,
                                 parsedOptions,
                                 _inputFormat.Info.Sectors,
+                                0,
+                                0,
                                 _inputFormat.Info.SectorSize))
         {
             await Dispatcher.UIThread.InvokeAsync(async () => await MessageBoxManager

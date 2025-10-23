@@ -407,7 +407,11 @@ public enum OpticalImageCapabilities : ulong
     /// <summary>Can store more than 1 track in media that is not CD based (DVD et al)?</summary>
     CanStoreNotCdTracks = 0x8000,
     /// <summary>Can store hidden tracks with a type different from track 1?</summary>
-    CanStoreHiddenTracks = 0x10000
+    CanStoreHiddenTracks = 0x10000,
+    /// <summary>Can store negative sectors (sectors before LBA 0)?</summary>
+    CanStoreNegativeSectors = 0x20000,
+    /// <summary>Can store overflow sectors (sectors after media reported size)?</summary>
+    CanStoreOverflowSectors = 0x40000
 }
 
 /// <summary>Enumeration of linear memory device types</summary>

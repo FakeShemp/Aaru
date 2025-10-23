@@ -47,8 +47,8 @@ public sealed partial class MaxiDisk
 #region IWritableImage Members
 
     /// <inheritdoc />
-    public bool Create(string path, MediaType mediaType, Dictionary<string, string> options, ulong sectors,
-                       uint   sectorSize)
+    public bool Create(string path,            MediaType mediaType, Dictionary<string, string> options, ulong sectors,
+                       uint   negativeSectors, uint      overflowSectors, uint sectorSize)
     {
         if(CountBits.Count(sectorSize) != 1 || sectorSize > 16384)
         {

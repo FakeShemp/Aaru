@@ -213,7 +213,7 @@ partial class Dump
                                   _dimensions);
 
         var ibgLog = new IbgLog(_outputPrefix + ".ibg", sbcProfile);
-        ret = outputFormat.Create(_outputPath, dskType, _formatOptions, blocks, blockSize);
+        ret = outputFormat.Create(_outputPath, dskType, _formatOptions, blocks, 0, 0, blockSize);
 
         // Cannot create image
         if(!ret)

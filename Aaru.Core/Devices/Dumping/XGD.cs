@@ -506,7 +506,7 @@ partial class Dump
                                   _dimensions);
 
         var ibgLog = new IbgLog(_outputPrefix + ".ibg", 0x0010);
-        ret = outputFormat.Create(_outputPath, dskType, _formatOptions, blocks, blockSize);
+        ret = outputFormat.Create(_outputPath, dskType, _formatOptions, blocks, 0, 0, blockSize);
 
         // Cannot create image
         if(!ret)
@@ -1086,8 +1086,9 @@ partial class Dump
             List<ulong> tmpList = [];
 
             foreach(ulong ur in _resume.BadBlocks)
-                for(ulong i = ur; i < ur + blocksToRead; i++)
-                    tmpList.Add(i);
+            {
+                for(ulong i = ur; i < ur + blocksToRead; i++) tmpList.Add(i);
+            }
 
             tmpList.Sort();
 

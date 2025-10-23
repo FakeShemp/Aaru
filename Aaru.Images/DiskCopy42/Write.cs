@@ -47,8 +47,8 @@ public sealed partial class DiskCopy42
 #region IWritableImage Members
 
     /// <inheritdoc />
-    public bool Create(string path, MediaType mediaType, Dictionary<string, string> options, ulong sectors,
-                       uint   sectorSize)
+    public bool Create(string path,            MediaType mediaType, Dictionary<string, string> options, ulong sectors,
+                       uint   negativeSectors, uint      overflowSectors, uint sectorSize)
     {
         header = new Header();
         var tags   = false;

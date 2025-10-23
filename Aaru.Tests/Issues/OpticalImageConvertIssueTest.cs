@@ -86,6 +86,8 @@ public abstract class OpticalImageConvertIssueTest
                                          inputFormat.Info.MediaType,
                                          ParsedOptions,
                                          inputFormat.Info.Sectors,
+                                         0,
+                                         0,
                                          inputFormat.Info.SectorSize),
                     string.Format(Localization.Error_0_creating_output_image, outputOptical.ErrorMessage));
 
@@ -435,10 +437,12 @@ public abstract class OpticalImageConvertIssueTest
         }
 
         foreach(KeyValuePair<byte, string> isrc in isrcs)
+        {
             outputOptical.WriteSectorTag(Encoding.UTF8.GetBytes(isrc.Value),
                                          isrc.Key,
                                          false,
                                          SectorTagType.CdTrackIsrc);
+        }
 
         if(trackFlags.Count > 0)
         {

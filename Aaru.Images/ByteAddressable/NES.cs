@@ -75,9 +75,9 @@ public class Nes : IByteAddressableImage
         if(stream.Length < 16) return false;
 
         stream.Position = 0;
-        byte[] magicBytes = new byte[4];
+        var magicBytes = new byte[4];
         stream.EnsureRead(magicBytes, 0, 8);
-        uint magic = BitConverter.ToUInt32(magicBytes, 0);
+        var magic = BitConverter.ToUInt32(magicBytes, 0);
 
         return magic == 0x1A53454E;
     }
@@ -93,9 +93,9 @@ public class Nes : IByteAddressableImage
         if(stream.Length < 16) return ErrorNumber.InvalidArgument;
 
         stream.Position = 0;
-        byte[] header = new byte[16];
+        var header = new byte[16];
         stream.EnsureRead(header, 0, 8);
-        uint magic = BitConverter.ToUInt32(header, 0);
+        var magic = BitConverter.ToUInt32(header, 0);
 
         if(magic != 0x1A53454E) return ErrorNumber.InvalidArgument;
 
@@ -294,8 +294,9 @@ public class Nes : IByteAddressableImage
     public IEnumerable<SectorTagType> SupportedSectorTags => Array.Empty<SectorTagType>();
 
     /// <inheritdoc />
-    public bool Create(string path, MediaType mediaType, Dictionary<string, string> options, ulong sectors,
-                       uint   sectorSize) => Create(path, mediaType, options, (long)sectors) == ErrorNumber.NoError;
+    public bool Create(string path,            MediaType mediaType, Dictionary<string, string> options, ulong sectors,
+                       uint   negativeSectors, uint      overflowSectors, uint sectorSize) =>
+        Create(path, mediaType, options, (long)sectors) == ErrorNumber.NoError;
 
     /// <inheritdoc />
     public bool Close()
@@ -314,7 +315,7 @@ public class Nes : IByteAddressableImage
             return false;
         }
 
-        byte[] header = new byte[16];
+        var header = new byte[16];
 
         if(_nesHeaderInfo is null)
         {
@@ -682,16 +683,16 @@ public class Nes : IByteAddressableImage
             return ErrorNumber.ReadOnly;
         }
 
-        bool foundRom       = false;
-        bool foundChrRom    = false;
-        bool foundInstRom   = false;
-        bool foundProm      = false;
-        bool foundRam       = false;
-        bool foundChrRam    = false;
-        bool foundNvram     = false;
-        bool foundChrNvram  = false;
-        bool foundMapper    = false;
-        bool foundSubMapper = false;
+        var foundRom       = false;
+        var foundChrRom    = false;
+        var foundInstRom   = false;
+        var foundProm      = false;
+        var foundRam       = false;
+        var foundChrRam    = false;
+        var foundNvram     = false;
+        var foundChrNvram  = false;
+        var foundMapper    = false;
+        var foundSubMapper = false;
 
         // Sanitize
         foreach(LinearMemoryDevice map in mappings.Devices)

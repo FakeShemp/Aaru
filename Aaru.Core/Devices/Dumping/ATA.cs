@@ -240,7 +240,8 @@ public partial class Dump
                                                            _dev.IsPcmcia,
                                                            blocks);
 
-                ret = outputFormat.Create(_outputPath, mediaType, _formatOptions, blocks, blockSize);
+                // TODO: HPA
+                ret = outputFormat.Create(_outputPath, mediaType, _formatOptions, blocks, 0, 0, blockSize);
 
                 // Cannot create image
                 if(!ret)

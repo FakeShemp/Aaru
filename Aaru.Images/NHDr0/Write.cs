@@ -49,8 +49,8 @@ public sealed partial class Nhdr0
 #region IWritableImage Members
 
     /// <inheritdoc />
-    public bool Create(string path, MediaType mediaType, Dictionary<string, string> options, ulong sectors,
-                       uint   sectorSize)
+    public bool Create(string path,            MediaType mediaType, Dictionary<string, string> options, ulong sectors,
+                       uint   negativeSectors, uint      overflowSectors, uint sectorSize)
     {
         if(sectorSize != 0)
         {

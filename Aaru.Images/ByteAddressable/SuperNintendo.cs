@@ -62,7 +62,7 @@ public class SuperNintendo : IByteAddressableImage
             return false;
 
         Header header;
-        byte[] headerBytes = new byte[48];
+        var    headerBytes = new byte[48];
 
         switch(stream.Length)
         {
@@ -110,8 +110,8 @@ public class SuperNintendo : IByteAddressableImage
         // Not sure but seems to be a multiple of at least this
         if(stream.Length % 32768 != 0) return ErrorNumber.InvalidArgument;
 
-        bool   found       = false;
-        byte[] headerBytes = new byte[48];
+        var found       = false;
+        var headerBytes = new byte[48];
 
         switch(stream.Length)
         {
@@ -271,8 +271,9 @@ public class SuperNintendo : IByteAddressableImage
     public IEnumerable<SectorTagType> SupportedSectorTags => Array.Empty<SectorTagType>();
 
     /// <inheritdoc />
-    public bool Create(string path, MediaType mediaType, Dictionary<string, string> options, ulong sectors,
-                       uint   sectorSize) => Create(path, mediaType, options, (long)sectors) == ErrorNumber.NoError;
+    public bool Create(string path,            MediaType mediaType, Dictionary<string, string> options, ulong sectors,
+                       uint   negativeSectors, uint      overflowSectors, uint sectorSize) =>
+        Create(path, mediaType, options, (long)sectors) == ErrorNumber.NoError;
 
     /// <inheritdoc />
     public bool Close()
@@ -375,7 +376,7 @@ public class SuperNintendo : IByteAddressableImage
         bool hasFlash    = _header is { OldMakerCode: 0x33, ExpansionFlashSize: > 0 };
         bool hasBattery  = chipset is 2 or 5 or 6 or 9 or 0xA;
 
-        int devices = 1;
+        var devices = 1;
 
         if(hasRam) devices++;
 
@@ -398,8 +399,8 @@ public class SuperNintendo : IByteAddressableImage
             }
         };
 
-        int   pos  = 1;
-        ulong addr = (ulong)_data.Length;
+        var pos  = 1;
+        var addr = (ulong)_data.Length;
 
         if(hasRam)
         {
@@ -539,10 +540,10 @@ public class SuperNintendo : IByteAddressableImage
             return ErrorNumber.ReadOnly;
         }
 
-        bool foundRom      = false;
-        bool foundRam      = false;
-        bool foundExtraRam = false;
-        bool foundFlash    = false;
+        var foundRom      = false;
+        var foundRam      = false;
+        var foundExtraRam = false;
+        var foundFlash    = false;
 
         // Sanitize
         foreach(LinearMemoryDevice map in mappings.Devices)

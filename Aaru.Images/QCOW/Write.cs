@@ -50,8 +50,8 @@ public sealed partial class Qcow
 #region IWritableImage Members
 
     /// <inheritdoc />
-    public bool Create(string path, MediaType mediaType, Dictionary<string, string> options, ulong sectors,
-                       uint   sectorSize)
+    public bool Create(string path,            MediaType mediaType, Dictionary<string, string> options, ulong sectors,
+                       uint   negativeSectors, uint      overflowSectors, uint sectorSize)
     {
         if(sectorSize != 512)
         {

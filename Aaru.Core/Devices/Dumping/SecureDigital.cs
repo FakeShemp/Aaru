@@ -446,6 +446,8 @@ public partial class Dump
                                   _dev.Type == DeviceType.SecureDigital ? MediaType.SecureDigital : MediaType.MMC,
                                   _formatOptions,
                                   blocks,
+                                  0,
+                                  0,
                                   blockSize);
 
         // Cannot create image

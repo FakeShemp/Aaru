@@ -157,7 +157,9 @@ public partial class Dump
                                   _dimensions);
 
         var ibgLog = new IbgLog(_outputPrefix + ".ibg", 0x0010);
-        ret = outputOptical.Create(_outputPath, dskType, _formatOptions, blocks, blockSize);
+
+        // TODO: Get the PFI from the UMD
+        ret = outputOptical.Create(_outputPath, dskType, _formatOptions, blocks, 0, 0, blockSize);
 
         // Cannot create image
         if(!ret)

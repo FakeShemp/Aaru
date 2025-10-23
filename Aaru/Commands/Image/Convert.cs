@@ -550,10 +550,13 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         {
             ctx.AddTask(UI.Invoke_Opening_image_file).IsIndeterminate();
 
+            // TODO: Get the source image number of negative and overflow sectors to convert them too
             created = outputFormat.Create(settings.OutputPath,
                                           mediaType,
                                           parsedOptions,
                                           inputFormat.Info.Sectors,
+                                          0,
+                                          0,
                                           inputFormat.Info.SectorSize);
         });
 
@@ -1339,10 +1342,12 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
             }
 
             foreach(KeyValuePair<byte, string> isrc in isrcs)
+            {
                 outputOptical.WriteSectorTag(Encoding.UTF8.GetBytes(isrc.Value),
                                              isrc.Key,
                                              false,
                                              SectorTagType.CdTrackIsrc);
+            }
 
             if(trackFlags.Count > 0)
             {

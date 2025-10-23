@@ -173,8 +173,8 @@ public sealed partial class Vhd
 
     /// <inheritdoc />
     /// TODO: Resume writing
-    public bool Create(string path, MediaType mediaType, Dictionary<string, string> options, ulong sectors,
-                       uint   sectorSize)
+    public bool Create(string path,            MediaType mediaType, Dictionary<string, string> options, ulong sectors,
+                       uint   negativeSectors, uint      overflowSectors, uint sectorSize)
     {
         if(options != null)
         {

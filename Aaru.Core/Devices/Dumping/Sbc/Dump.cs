@@ -78,7 +78,7 @@ partial class Dump
         bool               sense;
         byte               scsiMediumType     = 0;
         byte               scsiDensityCode    = 0;
-        bool               containsFloppyPage = false;
+        var                containsFloppyPage = false;
         const ushort       sbcProfile         = 0x0001;
         double             totalDuration      = 0;
         double             currentSpeed       = 0;
@@ -366,12 +366,12 @@ partial class Dump
                                   _private,
                                   _dimensions);
 
-        var  ibgLog       = new IbgLog(_outputPrefix + ".ibg", sbcProfile);
-        bool imageCreated = false;
+        var ibgLog       = new IbgLog(_outputPrefix + ".ibg", sbcProfile);
+        var imageCreated = false;
 
         if(!opticalDisc)
         {
-            ret = outputFormat.Create(_outputPath, dskType, _formatOptions, blocks, blockSize);
+            ret = outputFormat.Create(_outputPath, dskType, _formatOptions, blocks, 0, 0, blockSize);
 
             // Cannot create image
             if(!ret)
@@ -388,12 +388,23 @@ partial class Dump
 
         _dumpStopwatch.Restart();
         double imageWriteDuration      = 0;
-        bool   writeSingleOpticalTrack = true;
+        var    writeSingleOpticalTrack = true;
+        uint   nominalNegativeSectors  = 0;
 
         if(opticalDisc)
         {
             if(outputFormat is IWritableOpticalImage opticalPlugin)
             {
+                mediaTags.TryGetValue(MediaTagType.DVD_PFI, out byte[] pfi);
+                PFI.PhysicalFormatInformation? decodedPfi = PFI.Decode(pfi, dskType);
+
+                if(decodedPfi.HasValue) nominalNegativeSectors = decodedPfi.Value.DataAreaStartPSN;
+
+                mediaTags.TryGetValue(MediaTagType.BD_DI, out byte[] di);
+                DI.DiscInformation? decodedDi = DI.Decode(di);
+
+                if(decodedDi.HasValue) nominalNegativeSectors = decodedDi.Value.Units[0].FirstAun;
+
                 sense = _dev.ReadDiscInformation(out byte[] readBuffer,
                                                  out _,
                                                  MmcDiscInformationDataTypes.DiscInformation,
@@ -515,7 +526,19 @@ partial class Dump
                         else
                             tracks = tracks.OrderBy(t => t.Sequence).ToList();
 
-                        ret = outputFormat.Create(_outputPath, dskType, _formatOptions, blocks, blockSize);
+                        ret = outputFormat.Create(_outputPath,
+                                                  dskType,
+                                                  _formatOptions,
+                                                  blocks,
+                                                  (outputFormat as IWritableOpticalImage).OpticalCapabilities
+                                                 .HasFlag(OpticalImageCapabilities.CanStoreNegativeSectors)
+                                                      ? nominalNegativeSectors
+                                                      : 0,
+                                                  (outputFormat as IWritableOpticalImage).OpticalCapabilities
+                                                 .HasFlag(OpticalImageCapabilities.CanStoreOverflowSectors)
+                                                      ? 15000u
+                                                      : 0,
+                                                  blockSize);
 
                         // Cannot create image
                         if(!ret)
@@ -582,7 +605,7 @@ partial class Dump
         }
         else if(decMode?.Pages != null)
         {
-            bool setGeometry = false;
+            var setGeometry = false;
 
             foreach(Modes.ModePage page in decMode.Value.Pages)
             {
@@ -636,7 +659,21 @@ partial class Dump
 
         if(!imageCreated)
         {
-            ret = outputFormat.Create(_outputPath, dskType, _formatOptions, blocks, blockSize);
+            ret = outputFormat.Create(_outputPath,
+                                      dskType,
+                                      _formatOptions,
+                                      blocks,
+                                      (outputFormat as IWritableOpticalImage).OpticalCapabilities
+                                                                             .HasFlag(OpticalImageCapabilities
+                                                                                 .CanStoreNegativeSectors)
+                                          ? nominalNegativeSectors
+                                          : 0,
+                                      (outputFormat as IWritableOpticalImage).OpticalCapabilities
+                                                                             .HasFlag(OpticalImageCapabilities
+                                                                                 .CanStoreOverflowSectors)
+                                          ? 15000u
+                                          : 0,
+                                      blockSize);
 
             // Cannot create image
             if(!ret)
@@ -736,7 +773,7 @@ partial class Dump
 
         if(_resume?.BlankExtents != null) blankExtents = ExtentsConverter.FromMetadata(_resume.BlankExtents);
 
-        bool newTrim = false;
+        var newTrim = false;
 
         if(mediaTags.TryGetValue(MediaTagType.DVD_CMI, out byte[] cmi) &&
            Settings.Settings.Current.EnableDecryption                  &&

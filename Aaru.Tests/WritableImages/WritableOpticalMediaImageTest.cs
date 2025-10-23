@@ -209,6 +209,8 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                                                 inputFormat.Info.MediaType,
                                                 new Dictionary<string, string>(),
                                                 inputFormat.Info.Sectors,
+                                                0,
+                                                0,
                                                 inputFormat.Info.SectorSize),
                             string.Format(Localization.Error_0_creating_output_image, outputFormat.ErrorMessage));
 
@@ -471,10 +473,12 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                                     result = true;
                                 }
                                 else
+                                {
                                     result = outputFormat.WriteSectorTag(sector,
                                                                          doneSectors + track.StartSector,
                                                                          false,
                                                                          tag);
+                                }
                             }
                             else
                             {

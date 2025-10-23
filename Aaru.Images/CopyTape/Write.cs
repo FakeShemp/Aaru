@@ -53,8 +53,8 @@ public sealed partial class CopyTape
 #region IWritableTapeImage Members
 
     /// <inheritdoc />
-    public bool Create(string path, MediaType mediaType, Dictionary<string, string> options, ulong sectors,
-                       uint   sectorSize)
+    public bool Create(string path,            MediaType mediaType, Dictionary<string, string> options, ulong sectors,
+                       uint   negativeSectors, uint      overflowSectors, uint sectorSize)
     {
         if(!SupportedMediaTypes.Contains(mediaType))
         {
