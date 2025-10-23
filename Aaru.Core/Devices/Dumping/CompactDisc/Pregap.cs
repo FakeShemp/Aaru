@@ -43,10 +43,12 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
+using Aaru.Core.Graphics;
 using Aaru.Devices;
 using Aaru.Logging;
 using Humanizer;
 using Humanizer.Bytes;
+using SkiaSharp;
 
 namespace Aaru.Core.Devices.Dumping;
 
@@ -136,6 +138,7 @@ partial class Dump
                 gotFirstTrackPregap = true;
                 firstTrackPregapSectorsGood++;
                 totalDuration += cmdDuration;
+                (_mediaGraph as Spiral)?.PaintCdLeadInSector((ulong)(firstTrackPregapBlock * -1), SKColors.Green);
             }
             else
             {
@@ -156,6 +159,8 @@ partial class Dump
                     }
                 }
                 else if(gotFirstTrackPregap) firstTrackPregapMs.Write(new byte[blockSize], 0, (int)blockSize);
+
+                (_mediaGraph as Spiral)?.PaintCdLeadInSector((ulong)(firstTrackPregapBlock * -1), SKColors.Red);
             }
 
             sectorSpeedStart++;
