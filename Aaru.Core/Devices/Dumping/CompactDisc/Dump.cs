@@ -936,10 +936,6 @@ sealed partial class Dump
             dskType             = MediaType.CDI;
         }
 
-        // Try to read the first track pregap
-        if(_dumpFirstTrackPregap && readcd)
-            ReadCdFirstTrackPregap(blockSize, ref currentSpeed, mediaTags, supportedSubchannel, ref totalDuration);
-
         UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_0_sectors_at_a_time, _maximumReadable));
 
         UpdateStatus?.Invoke(string.Format(Localization.Core.Device_reports_0_blocks_1_bytes,
@@ -1240,6 +1236,10 @@ sealed partial class Dump
 
             _mediaGraph?.PaintSectorsBad(_resume.BadBlocks);
         }
+
+        // Try to read the first track pregap
+        if(_dumpFirstTrackPregap && readcd)
+            ReadCdFirstTrackPregap(blockSize, ref currentSpeed, mediaTags, supportedSubchannel, ref totalDuration);
 
         audioExtents = new ExtentsULong();
 
