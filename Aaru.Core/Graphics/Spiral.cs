@@ -287,109 +287,6 @@ public sealed class Spiral : IMediaGraph
 
     public SKBitmap Bitmap { get; }
 
-#region IMediaGraph Members
-
-    /// <inheritdoc />
-    /// <summary>Paints the segment of the spiral that corresponds to the specified sector in green</summary>
-    /// <param name="sector">Sector</param>
-    public void PaintSectorGood(ulong sector) => PaintSector(sector, SKColors.Green);
-
-    /// <inheritdoc />
-    /// <summary>Paints the segment of the spiral that corresponds to the specified sector in red</summary>
-    /// <param name="sector">Sector</param>
-    public void PaintSectorBad(ulong sector) => PaintSector(sector, SKColors.Red);
-
-    /// <inheritdoc />
-    /// <summary>Paints the segment of the spiral that corresponds to the specified sector in yellow</summary>
-    /// <param name="sector">Sector</param>
-    public void PaintSectorUnknown(ulong sector) => PaintSector(sector, SKColors.Yellow);
-
-    /// <inheritdoc />
-    /// <summary>Paints the segment of the spiral that corresponds to the specified sector in gray</summary>
-    /// <param name="sector">Sector</param>
-    public void PaintSectorUndumped(ulong sector) => PaintSector(sector, SKColors.Gray);
-
-    /// <inheritdoc />
-    public void PaintSector(ulong sector, byte red, byte green, byte blue, byte opacity = 255) =>
-        PaintSector(sector, new SKColor(red, green, blue, opacity));
-
-    /// <inheritdoc />
-    public void PaintSectorsUndumped(ulong startingSector, uint length) =>
-        PaintSectors(startingSector, length, SKColors.Gray);
-
-    /// <inheritdoc />
-    public void PaintSectorsGood(ulong startingSector, uint length) =>
-        PaintSectors(startingSector, length, SKColors.Green);
-
-    /// <inheritdoc />
-    public void PaintSectorsBad(ulong startingSector, uint length) =>
-        PaintSectors(startingSector, length, SKColors.Red);
-
-    /// <inheritdoc />
-    public void PaintSectorsUnknown(ulong startingSector, uint length) =>
-        PaintSectors(startingSector, length, SKColors.Yellow);
-
-    /// <inheritdoc />
-    public void PaintSectors(ulong startingSector, uint length, byte red, byte green, byte blue, byte opacity = 255) =>
-        PaintSectors(startingSector, length, new SKColor(red, green, blue, opacity));
-
-    /// <inheritdoc />
-    public void PaintSectorsUndumped(IEnumerable<ulong> sectors) => PaintSectors(sectors, SKColors.Gray);
-
-    /// <inheritdoc />
-    public void PaintSectorsGood(IEnumerable<ulong> sectors) => PaintSectors(sectors, SKColors.Green);
-
-    /// <inheritdoc />
-    public void PaintSectorsBad(IEnumerable<ulong> sectors) => PaintSectors(sectors, SKColors.Red);
-
-    /// <inheritdoc />
-    public void PaintSectorsUnknown(IEnumerable<ulong> sectors) => PaintSectors(sectors, SKColors.Yellow);
-
-    /// <inheritdoc />
-    public void PaintSectorsUnknown(IEnumerable<ulong> sectors, byte red, byte green, byte blue, byte opacity = 255) =>
-        PaintSectors(sectors, new SKColor(red, green, blue, opacity));
-
-    /// <inheritdoc />
-    /// <summary>Paints the segment of the spiral that corresponds to the information specific to recordable discs in green</summary>
-    public void PaintRecordableInformationGood()
-    {
-        if(_recordableInformationPoints is null) return;
-
-        var path = new SKPath();
-
-        path.MoveTo(_recordableInformationPoints[0]);
-
-        foreach(SKPoint point in _recordableInformationPoints) path.LineTo(point);
-
-        _canvas.DrawPath(path,
-                         new SKPaint
-                         {
-                             Style       = SKPaintStyle.Stroke,
-                             Color       = SKColors.Green,
-                             StrokeWidth = 2
-                         });
-    }
-
-    /// <inheritdoc />
-    public void WriteTo(string path)
-    {
-        using var fs = new FileStream(path, FileMode.Create);
-        WriteTo(fs);
-        fs.Close();
-    }
-
-    /// <inheritdoc />
-    /// <summary>Writes the spiral bitmap as a PNG into the specified stream</summary>
-    /// <param name="stream">Stream that will receive the spiral bitmap</param>
-    public void WriteTo(Stream stream)
-    {
-        var    image = SKImage.FromBitmap(Bitmap);
-        SKData data  = image.Encode();
-        data.SaveTo(stream);
-    }
-
-#endregion
-
     public static DiscParameters DiscParametersFromMediaType(MediaType mediaType, bool smallDisc = false) =>
         mediaType switch
         {
@@ -629,10 +526,10 @@ public sealed class Spiral : IMediaGraph
     /// </summary>
     /// <param name="sector">Sector within the lead-in (0-based, where 0 is LBA -150 equivalent)</param>
     /// <param name="color">Color to paint the segment in</param>
-    public void PaintCdLeadInSector(ulong sector, SKColor color)
+    public void PaintCdLeadInSector(long sector, SKColor color)
     {
         const int cdLeadInSize = 2750; // Approximate CD lead-in sectors (46-50mm at 1.6µm pitch, ~75 sectors/sec)
-        PaintLeadInSector(sector, color, cdLeadInSize);
+        PaintLeadInSector((ulong)(sector * -1), color, cdLeadInSize);
     }
 
     /// <summary>Gets all the points that are needed to draw a spiral with the specified parameters</summary>
@@ -698,6 +595,109 @@ public sealed class Spiral : IMediaGraph
         int     NominalMaxSectors,
         SKColor DiscColor
     );
+
+#endregion
+
+#region IMediaGraph Members
+
+    /// <inheritdoc />
+    /// <summary>Paints the segment of the spiral that corresponds to the specified sector in green</summary>
+    /// <param name="sector">Sector</param>
+    public void PaintSectorGood(ulong sector) => PaintSector(sector, SKColors.Green);
+
+    /// <inheritdoc />
+    /// <summary>Paints the segment of the spiral that corresponds to the specified sector in red</summary>
+    /// <param name="sector">Sector</param>
+    public void PaintSectorBad(ulong sector) => PaintSector(sector, SKColors.Red);
+
+    /// <inheritdoc />
+    /// <summary>Paints the segment of the spiral that corresponds to the specified sector in yellow</summary>
+    /// <param name="sector">Sector</param>
+    public void PaintSectorUnknown(ulong sector) => PaintSector(sector, SKColors.Yellow);
+
+    /// <inheritdoc />
+    /// <summary>Paints the segment of the spiral that corresponds to the specified sector in gray</summary>
+    /// <param name="sector">Sector</param>
+    public void PaintSectorUndumped(ulong sector) => PaintSector(sector, SKColors.Gray);
+
+    /// <inheritdoc />
+    public void PaintSector(ulong sector, byte red, byte green, byte blue, byte opacity = 255) =>
+        PaintSector(sector, new SKColor(red, green, blue, opacity));
+
+    /// <inheritdoc />
+    public void PaintSectorsUndumped(ulong startingSector, uint length) =>
+        PaintSectors(startingSector, length, SKColors.Gray);
+
+    /// <inheritdoc />
+    public void PaintSectorsGood(ulong startingSector, uint length) =>
+        PaintSectors(startingSector, length, SKColors.Green);
+
+    /// <inheritdoc />
+    public void PaintSectorsBad(ulong startingSector, uint length) =>
+        PaintSectors(startingSector, length, SKColors.Red);
+
+    /// <inheritdoc />
+    public void PaintSectorsUnknown(ulong startingSector, uint length) =>
+        PaintSectors(startingSector, length, SKColors.Yellow);
+
+    /// <inheritdoc />
+    public void PaintSectors(ulong startingSector, uint length, byte red, byte green, byte blue, byte opacity = 255) =>
+        PaintSectors(startingSector, length, new SKColor(red, green, blue, opacity));
+
+    /// <inheritdoc />
+    public void PaintSectorsUndumped(IEnumerable<ulong> sectors) => PaintSectors(sectors, SKColors.Gray);
+
+    /// <inheritdoc />
+    public void PaintSectorsGood(IEnumerable<ulong> sectors) => PaintSectors(sectors, SKColors.Green);
+
+    /// <inheritdoc />
+    public void PaintSectorsBad(IEnumerable<ulong> sectors) => PaintSectors(sectors, SKColors.Red);
+
+    /// <inheritdoc />
+    public void PaintSectorsUnknown(IEnumerable<ulong> sectors) => PaintSectors(sectors, SKColors.Yellow);
+
+    /// <inheritdoc />
+    public void PaintSectorsUnknown(IEnumerable<ulong> sectors, byte red, byte green, byte blue, byte opacity = 255) =>
+        PaintSectors(sectors, new SKColor(red, green, blue, opacity));
+
+    /// <inheritdoc />
+    /// <summary>Paints the segment of the spiral that corresponds to the information specific to recordable discs in green</summary>
+    public void PaintRecordableInformationGood()
+    {
+        if(_recordableInformationPoints is null) return;
+
+        var path = new SKPath();
+
+        path.MoveTo(_recordableInformationPoints[0]);
+
+        foreach(SKPoint point in _recordableInformationPoints) path.LineTo(point);
+
+        _canvas.DrawPath(path,
+                         new SKPaint
+                         {
+                             Style       = SKPaintStyle.Stroke,
+                             Color       = SKColors.Green,
+                             StrokeWidth = 2
+                         });
+    }
+
+    /// <inheritdoc />
+    public void WriteTo(string path)
+    {
+        using var fs = new FileStream(path, FileMode.Create);
+        WriteTo(fs);
+        fs.Close();
+    }
+
+    /// <inheritdoc />
+    /// <summary>Writes the spiral bitmap as a PNG into the specified stream</summary>
+    /// <param name="stream">Stream that will receive the spiral bitmap</param>
+    public void WriteTo(Stream stream)
+    {
+        var    image = SKImage.FromBitmap(Bitmap);
+        SKData data  = image.Encode();
+        data.SaveTo(stream);
+    }
 
 #endregion
 }
