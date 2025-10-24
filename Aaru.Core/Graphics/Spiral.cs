@@ -185,9 +185,9 @@ public sealed class Spiral : IMediaGraph
 
         // Draw the Lead-In
         _leadInPoints = GetSpiralPoints(center,
-                                        leadInEndDiameter            / 2,
                                         informationAreaStartDiameter / 2,
-                                        _gdrom ? a : a * 1.5f);
+                                        leadInEndDiameter            / 2,
+                                        _gdrom ? a * 1.5f : a);
 
         var path = new SKPath();
 
