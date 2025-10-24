@@ -194,6 +194,7 @@ public sealed class Spiral : IMediaGraph
         path.MoveTo(_leadInPoints[0]);
 
         foreach(SKPoint point in _leadInPoints) path.LineTo(point);
+        _leadInPoints.Reverse();
 
         _canvas.DrawPath(path,
                          new SKPaint
