@@ -251,6 +251,16 @@ public sealed partial class AaruFormat
     [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
     private static partial Status aaruf_get_readable_media_tags(IntPtr context, byte[] buffer, ref nuint length);
 
+    // AARU_EXPORT int32_t AARU_CALL aaruf_get_negative_sectors(const void *context, uint16_t *sectors);
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_negative_sectors", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_get_negative_sectors(IntPtr context, ref ushort sectors);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_get_overflow_sectors(const void *context, uint16_t *sectors);
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_overflow_sectors", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_get_overflow_sectors(IntPtr context, ref ushort sectors);
+
 #region IWritableOpticalImage Members
 
     /// <inheritdoc />
