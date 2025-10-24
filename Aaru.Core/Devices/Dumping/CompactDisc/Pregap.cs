@@ -138,7 +138,7 @@ partial class Dump
                 gotFirstTrackPregap = true;
                 firstTrackPregapSectorsGood++;
                 totalDuration += cmdDuration;
-                (_mediaGraph as Spiral)?.PaintCdLeadInSector((ulong)(firstTrackPregapBlock * -1), SKColors.Green);
+                (_mediaGraph as Spiral)?.PaintCdLeadInSector(firstTrackPregapBlock, SKColors.Green);
             }
             else
             {
@@ -160,7 +160,7 @@ partial class Dump
                 }
                 else if(gotFirstTrackPregap) firstTrackPregapMs.Write(new byte[blockSize], 0, (int)blockSize);
 
-                (_mediaGraph as Spiral)?.PaintCdLeadInSector((ulong)(firstTrackPregapBlock * -1), SKColors.Red);
+                (_mediaGraph as Spiral)?.PaintCdLeadInSector(firstTrackPregapBlock, SKColors.Red);
             }
 
             sectorSpeedStart++;
