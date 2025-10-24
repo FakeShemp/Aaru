@@ -58,6 +58,20 @@ public sealed partial class Anex86
             return false;
         }
 
+        if(negativeSectors != 0)
+        {
+            ErrorMessage = Localization.Negative_sectors_are_not_supported;
+
+            return false;
+        }
+
+        if(overflowSectors != 0)
+        {
+            ErrorMessage = Localization.Overflow_sectors_are_not_supported;
+
+            return false;
+        }
+
         if(sectors * sectorSize > int.MaxValue || sectors > (long)int.MaxValue * 8 * 33)
         {
             ErrorMessage = Localization.Too_many_sectors;

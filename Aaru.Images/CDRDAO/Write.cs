@@ -75,6 +75,20 @@ public sealed partial class Cdrdao
         else
             _separateTracksWriting = false;
 
+        if(negativeSectors != 0)
+        {
+            ErrorMessage = Localization.Negative_sectors_are_not_supported;
+
+            return false;
+        }
+
+        if(overflowSectors != 0)
+        {
+            ErrorMessage = Localization.Overflow_sectors_are_not_supported;
+
+            return false;
+        }
+
         if(!SupportedMediaTypes.Contains(mediaType))
         {
             ErrorMessage = string.Format(Localization.Unsupported_media_format_0, mediaType);
@@ -487,8 +501,9 @@ public sealed partial class Cdrdao
         }
 
         if(_writingTracks != null && _writingStreams != null)
-            foreach(FileStream oldTrack in _writingStreams.Select(t => t.Value).Distinct())
-                oldTrack.Close();
+        {
+            foreach(FileStream oldTrack in _writingStreams.Select(t => t.Value).Distinct()) oldTrack.Close();
+        }
 
         ulong currentOffset = 0;
         _writingTracks = [];

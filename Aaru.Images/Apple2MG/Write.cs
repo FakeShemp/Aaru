@@ -61,6 +61,20 @@ public sealed partial class Apple2Mg
             }
         }
 
+        if(negativeSectors != 0)
+        {
+            ErrorMessage = Localization.Negative_sectors_are_not_supported;
+
+            return false;
+        }
+
+        if(overflowSectors != 0)
+        {
+            ErrorMessage = Localization.Overflow_sectors_are_not_supported;
+
+            return false;
+        }
+
         if(!SupportedMediaTypes.Contains(mediaType))
         {
             ErrorMessage = string.Format(Localization.Unsupported_media_format_0, mediaType);

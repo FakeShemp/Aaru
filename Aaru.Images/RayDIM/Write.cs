@@ -59,6 +59,20 @@ public sealed partial class RayDim
             return false;
         }
 
+        if(negativeSectors != 0)
+        {
+            ErrorMessage = Localization.Negative_sectors_are_not_supported;
+
+            return false;
+        }
+
+        if(overflowSectors != 0)
+        {
+            ErrorMessage = Localization.Overflow_sectors_are_not_supported;
+
+            return false;
+        }
+
         if(sectors > 255 * 255 * 255)
         {
             ErrorMessage = Localization.Too_many_sectors;

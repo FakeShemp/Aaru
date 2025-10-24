@@ -2959,4 +2959,10 @@
     <data name="Vhd_Block_size_Must_be_a_power_of_2" xml:space="preserve">
         <value>Block size. Must be a power of 2. Only 2MiB and 512KiB are supported by VirtualPC</value>
     </data>
+    <data name="Negative_sectors_are_not_supported" xml:space="preserve">
+        <value>Negative sectors are not supported.</value>
+    </data>
+    <data name="Overflow_sectors_are_not_supported" xml:space="preserve">
+        <value>Overflow sectors are not supported.</value>
+    </data>
 </root>

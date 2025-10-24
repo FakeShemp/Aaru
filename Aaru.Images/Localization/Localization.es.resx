@@ -2952,4 +2952,10 @@
     <data name="A2R_Name" xml:space="preserve">
     <value>A2R</value>
   </data>
+    <data name="Negative_sectors_are_not_supported" xml:space="preserve">
+        <value>Los sectores negativos no están soportados.</value>
+    </data>
+    <data name="Overflow_sectors_are_not_supported" xml:space="preserve">
+        <value>Los sectores de sobrecarga no están soportados.</value>
+    </data>
 </root>

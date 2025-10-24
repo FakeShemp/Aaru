@@ -81,6 +81,20 @@ public sealed partial class CdrWin
             return false;
         }
 
+        if(negativeSectors != 0)
+        {
+            ErrorMessage = Localization.Negative_sectors_are_not_supported;
+
+            return false;
+        }
+
+        if(overflowSectors != 0)
+        {
+            ErrorMessage = Localization.Overflow_sectors_are_not_supported;
+
+            return false;
+        }
+
         _imageInfo = new ImageInfo
         {
             MediaType  = mediaType,
@@ -422,8 +436,9 @@ public sealed partial class CdrWin
         }
 
         if(_writingTracks != null && _writingStreams != null)
-            foreach(FileStream oldTrack in _writingStreams.Select(t => t.Value).Distinct())
-                oldTrack.Close();
+        {
+            foreach(FileStream oldTrack in _writingStreams.Select(t => t.Value).Distinct()) oldTrack.Close();
+        }
 
         _writingTracks = [];
 

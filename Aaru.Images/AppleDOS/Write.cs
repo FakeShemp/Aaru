@@ -56,6 +56,20 @@ public sealed partial class AppleDos
             return false;
         }
 
+        if(negativeSectors != 0)
+        {
+            ErrorMessage = Localization.Negative_sectors_are_not_supported;
+
+            return false;
+        }
+
+        if(overflowSectors != 0)
+        {
+            ErrorMessage = Localization.Overflow_sectors_are_not_supported;
+
+            return false;
+        }
+
         if(mediaType != MediaType.Apple32SS && mediaType != MediaType.Apple33SS)
         {
             ErrorMessage = string.Format(Localization.Unsupported_media_format_0, mediaType);
