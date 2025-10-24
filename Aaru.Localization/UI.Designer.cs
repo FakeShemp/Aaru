@@ -6147,5 +6147,77 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Error_connecting_to_host", resourceCulture);
             }
         }
+        
+        public static string Converting_negative_sector_0_of_1 {
+            get {
+                return ResourceManager.GetString("Converting_negative_sector_0_of_1", resourceCulture);
+            }
+        }
+        
+        public static string Error_0_reading_negative_sector_1_continuing {
+            get {
+                return ResourceManager.GetString("Error_0_reading_negative_sector_1_continuing", resourceCulture);
+            }
+        }
+        
+        public static string Error_0_reading_negative_sector_1_not_continuing {
+            get {
+                return ResourceManager.GetString("Error_0_reading_negative_sector_1_not_continuing", resourceCulture);
+            }
+        }
+        
+        public static string Error_0_writing_negative_sector_1_continuing {
+            get {
+                return ResourceManager.GetString("Error_0_writing_negative_sector_1_continuing", resourceCulture);
+            }
+        }
+        
+        public static string Error_0_writing_negative_sector_1_not_continuing {
+            get {
+                return ResourceManager.GetString("Error_0_writing_negative_sector_1_not_continuing", resourceCulture);
+            }
+        }
+        
+        public static string Converting_tag_1_for_negative_sector_0 {
+            get {
+                return ResourceManager.GetString("Converting_tag_1_for_negative_sector_0", resourceCulture);
+            }
+        }
+        
+        public static string Converting_overflow_sector_0_of_1 {
+            get {
+                return ResourceManager.GetString("Converting_overflow_sector_0_of_1", resourceCulture);
+            }
+        }
+        
+        public static string Error_0_reading_overflow_sector_1_continuing {
+            get {
+                return ResourceManager.GetString("Error_0_reading_overflow_sector_1_continuing", resourceCulture);
+            }
+        }
+        
+        public static string Error_0_reading_overflow_sector_1_not_continuing {
+            get {
+                return ResourceManager.GetString("Error_0_reading_overflow_sector_1_not_continuing", resourceCulture);
+            }
+        }
+        
+        public static string Error_0_writing_overflow_sector_1_continuing {
+            get {
+                return ResourceManager.GetString("Error_0_writing_overflow_sector_1_continuing", resourceCulture);
+            }
+        }
+        
+        public static string Error_0_writing_overflow_sector_1_not_continuing {
+            get {
+                return ResourceManager.GetString("Error_0_writing_overflow_sector_1_not_continuing", resourceCulture);
+            }
+        }
+        
+        public static string Converting_tag_1_for_overflow_sector_0 {
+            get {
+                return ResourceManager.GetString("Converting_tag_1_for_overflow_sector_0", resourceCulture);
+            }
+        }
     }
 }

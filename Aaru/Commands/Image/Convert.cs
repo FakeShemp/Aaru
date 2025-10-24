@@ -2016,7 +2016,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                             byte[] sector;
 
                             mediaTask.Description =
-                                string.Format("Converting sector -{0} of -{1}", i, nominalNegativeSectors);
+                                string.Format(UI.Converting_negative_sector_0_of_1, i, nominalNegativeSectors);
 
                             bool         result;
                             SectorStatus sectorStatus;
@@ -2033,17 +2033,13 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
                                     if(settings.Force)
                                     {
-                                        AaruLogging
-                                           .Error("[olive]Error [orange3]{0}[/] reading sector [lime]-{1}[/], continuing...",
-                                                  errno,
-                                                  i);
+                                        AaruLogging.Error(UI.Error_0_reading_negative_sector_1_continuing, errno, i);
                                     }
                                     else
                                     {
-                                        AaruLogging
-                                           .Error("[red]Error [orange3]{0}[/] reading sector [lime]-{1}[/], not continuing...",
-                                                  errno,
-                                                  i);
+                                        AaruLogging.Error(UI.Error_0_reading_negative_sector_1_not_continuing,
+                                                          errno,
+                                                          i);
 
                                         return;
                                     }
@@ -2061,17 +2057,13 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
                                     if(settings.Force)
                                     {
-                                        AaruLogging
-                                           .Error("[olive]Error [orange3]{0}[/] reading sector [lime]-{1}[/], continuing...",
-                                                  errno,
-                                                  i);
+                                        AaruLogging.Error(UI.Error_0_reading_negative_sector_1_continuing, errno, i);
                                     }
                                     else
                                     {
-                                        AaruLogging
-                                           .Error("[red]Error [orange3]{0}[/] reading sector [lime]-{1}[/], not continuing...",
-                                                  errno,
-                                                  i);
+                                        AaruLogging.Error(UI.Error_0_reading_negative_sector_1_not_continuing,
+                                                          errno,
+                                                          i);
 
                                         return;
                                     }
@@ -2082,17 +2074,15 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                             {
                                 if(settings.Force)
                                 {
-                                    AaruLogging
-                                       .Error("[olive]Error [orange3]{0}[/] writing sector [lime]-{1}[/], continuing...[/]",
-                                              outputMedia.ErrorMessage,
-                                              i);
+                                    AaruLogging.Error(UI.Error_0_writing_negative_sector_1_continuing,
+                                                      outputMedia.ErrorMessage,
+                                                      i);
                                 }
                                 else
                                 {
-                                    AaruLogging
-                                       .Error("[red]Error [orange3]{0}[/] writing sector [lime]-{1}[/], not continuing...[/]",
-                                              outputMedia.ErrorMessage,
-                                              i);
+                                    AaruLogging.Error(UI.Error_0_writing_negative_sector_1_not_continuing,
+                                                      outputMedia.ErrorMessage,
+                                                      i);
 
                                     errno = ErrorNumber.WriteError;
 
@@ -2130,11 +2120,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
                             for(uint i = 1; i <= nominalNegativeSectors; i++)
                             {
-                                tagsTask.Description =
-                                    string
-                                       .Format("[slateblue1]Converting tag [orange3]{1}[/] for sector [lime]-{0}[/][/]",
-                                               i,
-                                               tag);
+                                tagsTask.Description = string.Format(UI.Converting_tag_1_for_negative_sector_0, i, tag);
 
                                 bool result;
 
@@ -2148,17 +2134,13 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
                                     if(settings.Force)
                                     {
-                                        AaruLogging
-                                           .Error("[olive]Error [orange3]{0}[/] reading sector [lime]-{1}[/], continuing...",
-                                                  errno,
-                                                  i);
+                                        AaruLogging.Error(UI.Error_0_reading_negative_sector_1_continuing, errno, i);
                                     }
                                     else
                                     {
-                                        AaruLogging
-                                           .Error("[red]Error [orange3]{0}[/] reading sector [lime]-{1}[/], not continuing...",
-                                                  errno,
-                                                  i);
+                                        AaruLogging.Error(UI.Error_0_reading_negative_sector_1_not_continuing,
+                                                          errno,
+                                                          i);
 
                                         return;
                                     }
@@ -2168,17 +2150,15 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                 {
                                     if(settings.Force)
                                     {
-                                        AaruLogging
-                                           .Error("[olive]Error [orange3]{0}[/] writing sector [lime]-{1}[/], continuing...[/]",
-                                                  outputMedia.ErrorMessage,
-                                                  i);
+                                        AaruLogging.Error(UI.Error_0_writing_negative_sector_1_continuing,
+                                                          outputMedia.ErrorMessage,
+                                                          i);
                                     }
                                     else
                                     {
-                                        AaruLogging
-                                           .Error("[red]Error [orange3]{0}[/] writing sector [lime]-{1}[/], not continuing...[/]",
-                                                  outputMedia.ErrorMessage,
-                                                  i);
+                                        AaruLogging.Error(UI.Error_0_writing_negative_sector_1_not_continuing,
+                                                          outputMedia.ErrorMessage,
+                                                          i);
 
                                         errno = ErrorNumber.WriteError;
 
@@ -2220,7 +2200,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                             byte[] sector;
 
                             mediaTask.Description =
-                                string.Format("Converting overflow sector {0} of {1}", i, nominalOverflowSectors);
+                                string.Format(UI.Converting_overflow_sector_0_of_1, i, nominalOverflowSectors);
 
                             bool         result;
                             SectorStatus sectorStatus;
@@ -2233,27 +2213,25 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                                                    out sectorStatus);
 
                                 if(errno == ErrorNumber.NoError)
+                                {
                                     result = outputMedia.WriteSectorLong(sector,
                                                                          inputFormat.Info.Sectors + i,
                                                                          false,
                                                                          sectorStatus);
+                                }
                                 else
                                 {
                                     result = true;
 
                                     if(settings.Force)
                                     {
-                                        AaruLogging
-                                           .Error("[olive]Error [orange3]{0}[/] reading overflow sector [lime]{1}[/], continuing...",
-                                                  errno,
-                                                  i);
+                                        AaruLogging.Error(UI.Error_0_reading_overflow_sector_1_continuing, errno, i);
                                     }
                                     else
                                     {
-                                        AaruLogging
-                                           .Error("[red]Error [orange3]{0}[/] reading overflow sector [lime]{1}[/], not continuing...",
-                                                  errno,
-                                                  i);
+                                        AaruLogging.Error(UI.Error_0_reading_overflow_sector_1_not_continuing,
+                                                          errno,
+                                                          i);
 
                                         return;
                                     }
@@ -2267,27 +2245,25 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                                                out sectorStatus);
 
                                 if(errno == ErrorNumber.NoError)
+                                {
                                     result = outputMedia.WriteSector(sector,
                                                                      inputFormat.Info.Sectors + i,
                                                                      false,
                                                                      sectorStatus);
+                                }
                                 else
                                 {
                                     result = true;
 
                                     if(settings.Force)
                                     {
-                                        AaruLogging
-                                           .Error("[olive]Error [orange3]{0}[/] reading overflow sector [lime]{1}[/], continuing...",
-                                                  errno,
-                                                  i);
+                                        AaruLogging.Error(UI.Error_0_reading_overflow_sector_1_continuing, errno, i);
                                     }
                                     else
                                     {
-                                        AaruLogging
-                                           .Error("[red]Error [orange3]{0}[/] reading overflow sector [lime]{1}[/], not continuing...",
-                                                  errno,
-                                                  i);
+                                        AaruLogging.Error(UI.Error_0_reading_overflow_sector_1_not_continuing,
+                                                          errno,
+                                                          i);
 
                                         return;
                                     }
@@ -2298,17 +2274,15 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                             {
                                 if(settings.Force)
                                 {
-                                    AaruLogging
-                                       .Error("[olive]Error [orange3]{0}[/] writing overflow sector [lime]{1}[/], continuing...[/]",
-                                              outputMedia.ErrorMessage,
-                                              i);
+                                    AaruLogging.Error(UI.Error_0_writing_overflow_sector_1_continuing,
+                                                      outputMedia.ErrorMessage,
+                                                      i);
                                 }
                                 else
                                 {
-                                    AaruLogging
-                                       .Error("[red]Error [orange3]{0}[/] writing overflow sector [lime]{1}[/], not continuing...[/]",
-                                              outputMedia.ErrorMessage,
-                                              i);
+                                    AaruLogging.Error(UI.Error_0_writing_overflow_sector_1_not_continuing,
+                                                      outputMedia.ErrorMessage,
+                                                      i);
 
                                     errno = ErrorNumber.WriteError;
 
@@ -2346,11 +2320,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
                             for(uint i = 1; i <= nominalOverflowSectors; i++)
                             {
-                                tagsTask.Description =
-                                    string
-                                       .Format("[slateblue1]Converting tag [orange3]{1}[/] for overflow sector [lime]{0}[/][/]",
-                                               i,
-                                               tag);
+                                tagsTask.Description = string.Format(UI.Converting_tag_1_for_overflow_sector_0, i, tag);
 
                                 bool result;
 
@@ -2360,27 +2330,27 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                                                   out byte[] sector);
 
                                 if(errno == ErrorNumber.NoError)
+                                {
                                     result = outputMedia.WriteSectorTag(sector,
                                                                         inputFormat.Info.Sectors + i,
                                                                         false,
                                                                         tag);
+                                }
                                 else
                                 {
                                     result = true;
 
                                     if(settings.Force)
                                     {
-                                        AaruLogging
-                                           .Error("[olive]Error [orange3]{0}[/] reading overflow sector [lime]{1}[/], continuing...",
-                                                  errno,
-                                                  inputFormat.Info.Sectors + i);
+                                        AaruLogging.Error(UI.Error_0_reading_overflow_sector_1_continuing,
+                                                          errno,
+                                                          inputFormat.Info.Sectors + i);
                                     }
                                     else
                                     {
-                                        AaruLogging
-                                           .Error("[red]Error [orange3]{0}[/] reading overflow sector [lime]{1}[/], not continuing...",
-                                                  errno,
-                                                  inputFormat.Info.Sectors + i);
+                                        AaruLogging.Error(UI.Error_0_reading_overflow_sector_1_not_continuing,
+                                                          errno,
+                                                          inputFormat.Info.Sectors + i);
 
                                         return;
                                     }
@@ -2390,17 +2360,15 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                 {
                                     if(settings.Force)
                                     {
-                                        AaruLogging
-                                           .Error("[olive]Error [orange3]{0}[/] writing overflow sector [lime]{1}[/], continuing...[/]",
-                                                  outputMedia.ErrorMessage,
-                                                  inputFormat.Info.Sectors + i);
+                                        AaruLogging.Error(UI.Error_0_writing_overflow_sector_1_continuing,
+                                                          outputMedia.ErrorMessage,
+                                                          inputFormat.Info.Sectors + i);
                                     }
                                     else
                                     {
-                                        AaruLogging
-                                           .Error("[red]Error [orange3]{0}[/] writing overflow sector [lime]{1}[/], not continuing...[/]",
-                                                  outputMedia.ErrorMessage,
-                                                  inputFormat.Info.Sectors + i);
+                                        AaruLogging.Error(UI.Error_0_writing_overflow_sector_1_not_continuing,
+                                                          outputMedia.ErrorMessage,
+                                                          inputFormat.Info.Sectors + i);
 
                                         errno = ErrorNumber.WriteError;
 
@@ -2543,6 +2511,4 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         [CommandOption("--ignore-overflow-sectors")]
         public bool IgnoreOverflowSectors { get; init; }
     }
-
-#endregion
 }

@@ -3150,4 +3150,40 @@ Do you want to continue?</value>
     <data name="Error_connecting_to_host" xml:space="preserve">
         <value>[red]Error connecting to host.[/]</value>
     </data>
+    <data name="Converting_negative_sector_0_of_1" xml:space="preserve">
+        <value>[slateblue1]Converting sector [lime]-{0}[/] of [violet]-{1}[/][/]</value>
+    </data>
+    <data name="Error_0_reading_negative_sector_1_continuing" xml:space="preserve">
+        <value>[olive]Error [orange3]{0}[/] reading sector [lime]-{1}[/], continuing...[/]</value>
+    </data>
+    <data name="Error_0_reading_negative_sector_1_not_continuing" xml:space="preserve">
+        <value>[red]Error [orange3]{0}[/] reading sector [lime]-{1}[/], not continuing...[/]</value>
+    </data>
+    <data name="Error_0_writing_negative_sector_1_continuing" xml:space="preserve">
+        <value>[olive]Error [orange3]{0}[/] writing sector [lime]-{1}[/], continuing...[/]</value>
+    </data>
+    <data name="Error_0_writing_negative_sector_1_not_continuing" xml:space="preserve">
+        <value>[red]Error [orange3]{0}[/] writing sector [lime]-{1}[/], not continuing...[/]</value>
+    </data>
+    <data name="Converting_tag_1_for_negative_sector_0" xml:space="preserve">
+        <value>[slateblue1]Converting tag [orange3]{1}[/] for sector [lime]-{0}[/][/]</value>
+    </data>
+    <data name="Converting_overflow_sector_0_of_1" xml:space="preserve">
+        <value>[slateblue1]Converting overflow sector [lime]{0}[/] of [violet]{1}[/][/]</value>
+    </data>
+    <data name="Error_0_reading_overflow_sector_1_continuing" xml:space="preserve">
+        <value>[olive]Error [orange3]{0}[/] reading overflow sector [lime]{1}[/], continuing...[/]</value>
+    </data>
+    <data name="Error_0_reading_overflow_sector_1_not_continuing" xml:space="preserve">
+        <value>[red]Error [orange3]{0}[/] reading overflow sector [lime]{1}[/], not continuing...[/]</value>
+    </data>
+    <data name="Error_0_writing_overflow_sector_1_continuing" xml:space="preserve">
+        <value>[olive]Error [orange3]{0}[/] writing overflow sector [lime]{1}[/], continuing...[/]</value>
+    </data>
+    <data name="Error_0_writing_overflow_sector_1_not_continuing" xml:space="preserve">
+        <value>[red]Error [orange3]{0}[/] writing overflow sector [lime]{1}[/], not continuing...[/]</value>
+    </data>
+    <data name="Converting_tag_1_for_overflow_sector_0" xml:space="preserve">
+        <value>[slateblue1]Converting tag [orange3]{1}[/] for overflow sector [lime]{0}[/][/]</value>
+    </data>
 </root>

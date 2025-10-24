@@ -3074,4 +3074,40 @@ Probadores:
     <data name="Running_in_0_architecture" xml:space="preserve">
         <value>Ejecutándose en arquitectura {0}</value>
     </data>
+    <data name="Converting_negative_sector_0_of_1" xml:space="preserve">
+        <value>[slateblue1]Convirtiendo sector [lime]-{0}[/] of [violet]-{1}[/][/]</value>
+    </data>
+    <data name="Converting_overflow_sector_0_of_1" xml:space="preserve">
+        <value>[slateblue1]Convirtiendo sector de sobrecarga [lime]{0}[/] de [violet]{1}[/][/]</value>
+    </data>
+    <data name="Converting_tag_1_for_negative_sector_0" xml:space="preserve">
+        <value>[slateblue1]Convirtiendo etiqueta [orange3]{1}[/] del sector [lime]-{0}[/][/]</value>
+    </data>
+    <data name="Converting_tag_1_for_overflow_sector_0" xml:space="preserve">
+        <value>[slateblue1]Convirtiendo etiqueta [orange3]{1}[/] del sector de sobrecarga [lime]{0}[/][/]</value>
+    </data>
+    <data name="Error_0_reading_negative_sector_1_continuing" xml:space="preserve">
+        <value>[olive]Error [orange3]{0}[/] leyendo sector [lime]-{1}[/], se continuará...[/]</value>
+    </data>
+    <data name="Error_0_reading_negative_sector_1_not_continuing" xml:space="preserve">
+        <value>[red]Error [orange3]{0}[/] leyendo sector [lime]-{1}[/], no se continuará...[/]</value>
+    </data>
+    <data name="Error_0_reading_overflow_sector_1_continuing" xml:space="preserve">
+        <value>[olive]Error [orange3]{0}[/] leyendo sector de sobrecarga [lime]{1}[/], se continuará...[/]</value>
+    </data>
+    <data name="Error_0_reading_overflow_sector_1_not_continuing" xml:space="preserve">
+        <value>[red]Error [orange3]{0}[/] leyendo sector de sobrecarga [lime]{1}[/], no se continuará...[/]</value>
+    </data>
+    <data name="Error_0_writing_negative_sector_1_continuing" xml:space="preserve">
+        <value>[olive]Error [orange3]{0}[/] escribiendo sector [lime]-{1}[/], se continuará...[/]</value>
+    </data>
+    <data name="Error_0_writing_negative_sector_1_not_continuing" xml:space="preserve">
+        <value>[red]Error [orange3]{0}[/] escribiendo sector [lime]-{1}[/], no se continuará...[/]</value>
+    </data>
+    <data name="Error_0_writing_overflow_sector_1_continuing" xml:space="preserve">
+        <value>[olive]Error [orange3]{0}[/] escribiendo sector de sobrecarga [lime]{1}[/], se continuará...[/]</value>
+    </data>
+    <data name="Error_0_writing_overflow_sector_1_not_continuing" xml:space="preserve">
+        <value>[red]Error [orange3]{0}[/] escribiendo sector de sobrecarga [lime]{1}[/], no se continuará...[/]</value>
+    </data>
 </root>
