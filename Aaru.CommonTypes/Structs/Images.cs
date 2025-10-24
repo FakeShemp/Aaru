@@ -55,6 +55,10 @@ public struct ImageInfo
     public ulong ImageSize;
     /// <summary>Sectors contained in the image</summary>
     public ulong Sectors;
+    /// <summary>Negative sectors contained in the image</summary>
+    public uint NegativeSectors;
+    /// <summary>Overflow sectors contained in the image</summary>
+    public uint OverflowSectors;
     /// <summary>Size of sectors contained in the image</summary>
     public uint SectorSize;
     /// <summary>Media tags contained by the image</summary>
