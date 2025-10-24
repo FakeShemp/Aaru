@@ -174,6 +174,9 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         else
             AaruLogging.WriteLine(UI.Input_image_format_identified_by_0, inputFormat.Name);
 
+        uint nominalNegativeSectors = 0;
+        uint nominalOverflowSectors = 0;
+
         try
         {
             // Open the input image file for reading
@@ -192,6 +195,9 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
                 return (int)opened;
             }
+
+            nominalNegativeSectors = settings.IgnoreNegativeSectors ? 0 : inputFormat.Info.NegativeSectors;
+            nominalOverflowSectors = settings.IgnoreOverflowSectors ? 0 : inputFormat.Info.OverflowSectors;
 
             // Get media type and handle obsolete type mappings for backwards compatibility
             mediaType = inputFormat.Info.MediaType;
@@ -306,7 +312,9 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                              settings.OutputPath,
                                              mediaType,
                                              parsedOptions,
-                                             inputFormat);
+                                             inputFormat,
+                                             nominalNegativeSectors,
+                                             nominalOverflowSectors);
 
         if(createResult != (int)ErrorNumber.NoError) return createResult;
 
@@ -1285,6 +1293,27 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
             if(errno != ErrorNumber.NoError) return (int)errno;
         }
 
+        if(nominalNegativeSectors > 0)
+        {
+            var outputMedia = outputFormat as IWritableImage;
+
+            int negativeResult =
+                ConvertNegativeSectors(inputFormat, outputMedia, nominalNegativeSectors, useLong, settings);
+
+            if(negativeResult != (int)ErrorNumber.NoError) return negativeResult;
+        }
+
+
+        if(nominalOverflowSectors > 0)
+        {
+            var outputMedia = outputFormat as IWritableImage;
+
+            int overflowResult =
+                ConvertOverflowSectors(inputFormat, outputMedia, nominalOverflowSectors, useLong, settings);
+
+            if(overflowResult != (int)ErrorNumber.NoError) return overflowResult;
+        }
+
         if(resume != null || dumpHardware != null)
         {
             Core.Spectre.ProgressSingleSpinner(ctx =>
@@ -1548,6 +1577,8 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--generate-subchannels={0}", settings.GenerateSubchannels);
         AaruLogging.Debug(MODULE_NAME, "--decrypt={0}", settings.Decrypt);
         AaruLogging.Debug(MODULE_NAME, "--aaru-metadata={0}", Markup.Escape(settings.AaruMetadata ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--ignore-negative-sectors={0}", settings.IgnoreNegativeSectors);
+        AaruLogging.Debug(MODULE_NAME, "--ignore-overflow-sectors={0}", settings.IgnoreOverflowSectors);
 
         AaruLogging.Debug(MODULE_NAME, UI.Parsed_options);
 
@@ -1782,8 +1813,9 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         return (int)ErrorNumber.NoError;
     }
 
-    private int CreateOutputImage(IWritableImage             outputFormat,  string      outputPath, MediaType mediaType,
-                                  Dictionary<string, string> parsedOptions, IMediaImage inputFormat)
+    private int CreateOutputImage(IWritableImage             outputFormat,    string outputPath, MediaType mediaType,
+                                  Dictionary<string, string> parsedOptions,   IMediaImage inputFormat,
+                                  uint                       negativeSectors, uint overflowSectors)
     {
         // Creates output image file with specified parameters
         // Calls the output format plugin's Create() method with sector count and format options
@@ -1801,8 +1833,8 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                           mediaType,
                                           parsedOptions,
                                           inputFormat.Info.Sectors,
-                                          0,
-                                          0,
+                                          negativeSectors,
+                                          overflowSectors,
                                           inputFormat.Info.SectorSize);
         });
 
@@ -1959,7 +1991,432 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         return candidates[0];
     }
 
-#region Nested type: Settings
+    private int ConvertNegativeSectors(IMediaImage inputFormat, IWritableImage outputMedia, uint nominalNegativeSectors,
+                                       bool        useLong,     Settings       settings)
+    {
+        // Converts negative sectors (pre-gap) from input to output image
+        // Handles both long and short sector formats with progress indication
+        // Also converts associated sector tags if present
+        // Returns error code if conversion fails in non-force mode
+
+        ErrorNumber errno = ErrorNumber.NoError;
+
+        AnsiConsole.Progress()
+                   .AutoClear(true)
+                   .HideCompleted(true)
+                   .Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn())
+                   .Start(ctx =>
+                    {
+                        ProgressTask mediaTask = ctx.AddTask(UI.Converting_media);
+                        mediaTask.MaxValue = nominalNegativeSectors;
+
+                        // There's no -0
+                        for(uint i = 1; i <= nominalNegativeSectors; i++)
+                        {
+                            byte[] sector;
+
+                            mediaTask.Description =
+                                string.Format("Converting sector -{0} of -{1}", i, nominalNegativeSectors);
+
+                            bool         result;
+                            SectorStatus sectorStatus;
+
+                            if(useLong)
+                            {
+                                errno = inputFormat.ReadSectorLong(i, true, out sector, out sectorStatus);
+
+                                if(errno == ErrorNumber.NoError)
+                                    result = outputMedia.WriteSectorLong(sector, i, true, sectorStatus);
+                                else
+                                {
+                                    result = true;
+
+                                    if(settings.Force)
+                                    {
+                                        AaruLogging
+                                           .Error("[olive]Error [orange3]{0}[/] reading sector [lime]-{1}[/], continuing...",
+                                                  errno,
+                                                  i);
+                                    }
+                                    else
+                                    {
+                                        AaruLogging
+                                           .Error("[red]Error [orange3]{0}[/] reading sector [lime]-{1}[/], not continuing...",
+                                                  errno,
+                                                  i);
+
+                                        return;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                errno = inputFormat.ReadSector(i, true, out sector, out sectorStatus);
+
+                                if(errno == ErrorNumber.NoError)
+                                    result = outputMedia.WriteSector(sector, i, true, sectorStatus);
+                                else
+                                {
+                                    result = true;
+
+                                    if(settings.Force)
+                                    {
+                                        AaruLogging
+                                           .Error("[olive]Error [orange3]{0}[/] reading sector [lime]-{1}[/], continuing...",
+                                                  errno,
+                                                  i);
+                                    }
+                                    else
+                                    {
+                                        AaruLogging
+                                           .Error("[red]Error [orange3]{0}[/] reading sector [lime]-{1}[/], not continuing...",
+                                                  errno,
+                                                  i);
+
+                                        return;
+                                    }
+                                }
+                            }
+
+                            if(!result)
+                            {
+                                if(settings.Force)
+                                {
+                                    AaruLogging
+                                       .Error("[olive]Error [orange3]{0}[/] writing sector [lime]-{1}[/], continuing...[/]",
+                                              outputMedia.ErrorMessage,
+                                              i);
+                                }
+                                else
+                                {
+                                    AaruLogging
+                                       .Error("[red]Error [orange3]{0}[/] writing sector [lime]-{1}[/], not continuing...[/]",
+                                              outputMedia.ErrorMessage,
+                                              i);
+
+                                    errno = ErrorNumber.WriteError;
+
+                                    return;
+                                }
+                            }
+
+                            mediaTask.Value++;
+                        }
+
+                        mediaTask.StopTask();
+
+                        foreach(SectorTagType tag in inputFormat.Info.ReadableSectorTags.TakeWhile(_ => useLong))
+                        {
+                            switch(tag)
+                            {
+                                case SectorTagType.AppleSonyTag:
+                                case SectorTagType.AppleProfileTag:
+                                case SectorTagType.PriamDataTowerTag:
+                                case SectorTagType.CdSectorSync:
+                                case SectorTagType.CdSectorHeader:
+                                case SectorTagType.CdSectorSubHeader:
+                                case SectorTagType.CdSectorEdc:
+                                case SectorTagType.CdSectorEccP:
+                                case SectorTagType.CdSectorEccQ:
+                                case SectorTagType.CdSectorEcc:
+                                    // This tags are inline in long sector
+                                    continue;
+                            }
+
+                            if(settings.Force && !outputMedia.SupportedSectorTags.Contains(tag)) continue;
+
+                            ProgressTask tagsTask = ctx.AddTask(UI.Converting_tags);
+                            tagsTask.MaxValue = nominalNegativeSectors;
+
+                            for(uint i = 1; i <= nominalNegativeSectors; i++)
+                            {
+                                tagsTask.Description =
+                                    string
+                                       .Format("[slateblue1]Converting tag [orange3]{1}[/] for sector [lime]-{0}[/][/]",
+                                               i,
+                                               tag);
+
+                                bool result;
+
+                                errno = inputFormat.ReadSectorTag(i, true, tag, out byte[] sector);
+
+                                if(errno == ErrorNumber.NoError)
+                                    result = outputMedia.WriteSectorTag(sector, i, true, tag);
+                                else
+                                {
+                                    result = true;
+
+                                    if(settings.Force)
+                                    {
+                                        AaruLogging
+                                           .Error("[olive]Error [orange3]{0}[/] reading sector [lime]-{1}[/], continuing...",
+                                                  errno,
+                                                  i);
+                                    }
+                                    else
+                                    {
+                                        AaruLogging
+                                           .Error("[red]Error [orange3]{0}[/] reading sector [lime]-{1}[/], not continuing...",
+                                                  errno,
+                                                  i);
+
+                                        return;
+                                    }
+                                }
+
+                                if(!result)
+                                {
+                                    if(settings.Force)
+                                    {
+                                        AaruLogging
+                                           .Error("[olive]Error [orange3]{0}[/] writing sector [lime]-{1}[/], continuing...[/]",
+                                                  outputMedia.ErrorMessage,
+                                                  i);
+                                    }
+                                    else
+                                    {
+                                        AaruLogging
+                                           .Error("[red]Error [orange3]{0}[/] writing sector [lime]-{1}[/], not continuing...[/]",
+                                                  outputMedia.ErrorMessage,
+                                                  i);
+
+                                        errno = ErrorNumber.WriteError;
+
+                                        return;
+                                    }
+                                }
+
+                                tagsTask.Value++;
+                            }
+
+                            tagsTask.StopTask();
+                        }
+                    });
+
+        return (int)errno;
+    }
+
+    private int ConvertOverflowSectors(IMediaImage inputFormat, IWritableImage outputMedia, uint nominalOverflowSectors,
+                                       bool        useLong,     Settings       settings)
+    {
+        // Converts overflow sectors (lead-out) from input to output image
+        // Handles both long and short sector formats with progress indication
+        // Also converts associated sector tags if present
+        // Returns error code if conversion fails in non-force mode
+
+        ErrorNumber errno = ErrorNumber.NoError;
+
+        AnsiConsole.Progress()
+                   .AutoClear(true)
+                   .HideCompleted(true)
+                   .Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn())
+                   .Start(ctx =>
+                    {
+                        ProgressTask mediaTask = ctx.AddTask(UI.Converting_media);
+                        mediaTask.MaxValue = nominalOverflowSectors;
+
+                        for(uint i = 0; i < nominalOverflowSectors; i++)
+                        {
+                            byte[] sector;
+
+                            mediaTask.Description =
+                                string.Format("Converting overflow sector {0} of {1}", i, nominalOverflowSectors);
+
+                            bool         result;
+                            SectorStatus sectorStatus;
+
+                            if(useLong)
+                            {
+                                errno = inputFormat.ReadSectorLong(inputFormat.Info.Sectors + i,
+                                                                   false,
+                                                                   out sector,
+                                                                   out sectorStatus);
+
+                                if(errno == ErrorNumber.NoError)
+                                    result = outputMedia.WriteSectorLong(sector,
+                                                                         inputFormat.Info.Sectors + i,
+                                                                         false,
+                                                                         sectorStatus);
+                                else
+                                {
+                                    result = true;
+
+                                    if(settings.Force)
+                                    {
+                                        AaruLogging
+                                           .Error("[olive]Error [orange3]{0}[/] reading overflow sector [lime]{1}[/], continuing...",
+                                                  errno,
+                                                  i);
+                                    }
+                                    else
+                                    {
+                                        AaruLogging
+                                           .Error("[red]Error [orange3]{0}[/] reading overflow sector [lime]{1}[/], not continuing...",
+                                                  errno,
+                                                  i);
+
+                                        return;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                errno = inputFormat.ReadSector(inputFormat.Info.Sectors + i,
+                                                               false,
+                                                               out sector,
+                                                               out sectorStatus);
+
+                                if(errno == ErrorNumber.NoError)
+                                    result = outputMedia.WriteSector(sector,
+                                                                     inputFormat.Info.Sectors + i,
+                                                                     false,
+                                                                     sectorStatus);
+                                else
+                                {
+                                    result = true;
+
+                                    if(settings.Force)
+                                    {
+                                        AaruLogging
+                                           .Error("[olive]Error [orange3]{0}[/] reading overflow sector [lime]{1}[/], continuing...",
+                                                  errno,
+                                                  i);
+                                    }
+                                    else
+                                    {
+                                        AaruLogging
+                                           .Error("[red]Error [orange3]{0}[/] reading overflow sector [lime]{1}[/], not continuing...",
+                                                  errno,
+                                                  i);
+
+                                        return;
+                                    }
+                                }
+                            }
+
+                            if(!result)
+                            {
+                                if(settings.Force)
+                                {
+                                    AaruLogging
+                                       .Error("[olive]Error [orange3]{0}[/] writing overflow sector [lime]{1}[/], continuing...[/]",
+                                              outputMedia.ErrorMessage,
+                                              i);
+                                }
+                                else
+                                {
+                                    AaruLogging
+                                       .Error("[red]Error [orange3]{0}[/] writing overflow sector [lime]{1}[/], not continuing...[/]",
+                                              outputMedia.ErrorMessage,
+                                              i);
+
+                                    errno = ErrorNumber.WriteError;
+
+                                    return;
+                                }
+                            }
+
+                            mediaTask.Value++;
+                        }
+
+                        mediaTask.StopTask();
+
+                        foreach(SectorTagType tag in inputFormat.Info.ReadableSectorTags.TakeWhile(_ => useLong))
+                        {
+                            switch(tag)
+                            {
+                                case SectorTagType.AppleSonyTag:
+                                case SectorTagType.AppleProfileTag:
+                                case SectorTagType.PriamDataTowerTag:
+                                case SectorTagType.CdSectorSync:
+                                case SectorTagType.CdSectorHeader:
+                                case SectorTagType.CdSectorSubHeader:
+                                case SectorTagType.CdSectorEdc:
+                                case SectorTagType.CdSectorEccP:
+                                case SectorTagType.CdSectorEccQ:
+                                case SectorTagType.CdSectorEcc:
+                                    // This tags are inline in long sector
+                                    continue;
+                            }
+
+                            if(settings.Force && !outputMedia.SupportedSectorTags.Contains(tag)) continue;
+
+                            ProgressTask tagsTask = ctx.AddTask(UI.Converting_tags);
+                            tagsTask.MaxValue = nominalOverflowSectors;
+
+                            for(uint i = 1; i <= nominalOverflowSectors; i++)
+                            {
+                                tagsTask.Description =
+                                    string
+                                       .Format("[slateblue1]Converting tag [orange3]{1}[/] for overflow sector [lime]{0}[/][/]",
+                                               i,
+                                               tag);
+
+                                bool result;
+
+                                errno = inputFormat.ReadSectorTag(inputFormat.Info.Sectors + i,
+                                                                  false,
+                                                                  tag,
+                                                                  out byte[] sector);
+
+                                if(errno == ErrorNumber.NoError)
+                                    result = outputMedia.WriteSectorTag(sector,
+                                                                        inputFormat.Info.Sectors + i,
+                                                                        false,
+                                                                        tag);
+                                else
+                                {
+                                    result = true;
+
+                                    if(settings.Force)
+                                    {
+                                        AaruLogging
+                                           .Error("[olive]Error [orange3]{0}[/] reading overflow sector [lime]{1}[/], continuing...",
+                                                  errno,
+                                                  inputFormat.Info.Sectors + i);
+                                    }
+                                    else
+                                    {
+                                        AaruLogging
+                                           .Error("[red]Error [orange3]{0}[/] reading overflow sector [lime]{1}[/], not continuing...",
+                                                  errno,
+                                                  inputFormat.Info.Sectors + i);
+
+                                        return;
+                                    }
+                                }
+
+                                if(!result)
+                                {
+                                    if(settings.Force)
+                                    {
+                                        AaruLogging
+                                           .Error("[olive]Error [orange3]{0}[/] writing overflow sector [lime]{1}[/], continuing...[/]",
+                                                  outputMedia.ErrorMessage,
+                                                  inputFormat.Info.Sectors + i);
+                                    }
+                                    else
+                                    {
+                                        AaruLogging
+                                           .Error("[red]Error [orange3]{0}[/] writing overflow sector [lime]{1}[/], not continuing...[/]",
+                                                  outputMedia.ErrorMessage,
+                                                  inputFormat.Info.Sectors + i);
+
+                                        errno = ErrorNumber.WriteError;
+
+                                        return;
+                                    }
+                                }
+
+                                tagsTask.Value++;
+                            }
+
+                            tagsTask.StopTask();
+                        }
+                    });
+
+        return (int)errno;
+    }
 
     public class Settings : ImageFamily
     {
@@ -2077,6 +2534,14 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         [Description("Output image path")]
         [CommandArgument(1, "<output-image>")]
         public string OutputPath { get; init; }
+        [Description("Ignore negative sectors.")]
+        [DefaultValue(false)]
+        [CommandOption("--ignore-negative-sectors")]
+        public bool IgnoreNegativeSectors { get; init; }
+        [Description("Ignore overflow sectors.")]
+        [DefaultValue(false)]
+        [CommandOption("--ignore-overflow-sectors")]
+        public bool IgnoreOverflowSectors { get; init; }
     }
 
 #endregion
