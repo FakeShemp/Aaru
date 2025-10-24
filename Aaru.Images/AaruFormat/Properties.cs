@@ -15,21 +15,23 @@ public sealed partial class AaruFormat
 #region IWritableOpticalImage Members
 
     /// <inheritdoc />
-    public OpticalImageCapabilities OpticalCapabilities => OpticalImageCapabilities.CanStoreAudioTracks    |
-                                                           OpticalImageCapabilities.CanStoreDataTracks     |
-                                                           OpticalImageCapabilities.CanStorePregaps        |
-                                                           OpticalImageCapabilities.CanStoreSubchannelRw   |
-                                                           OpticalImageCapabilities.CanStoreSessions       |
-                                                           OpticalImageCapabilities.CanStoreIsrc           |
-                                                           OpticalImageCapabilities.CanStoreCdText         |
-                                                           OpticalImageCapabilities.CanStoreMcn            |
-                                                           OpticalImageCapabilities.CanStoreRawData        |
-                                                           OpticalImageCapabilities.CanStoreCookedData     |
-                                                           OpticalImageCapabilities.CanStoreMultipleTracks |
-                                                           OpticalImageCapabilities.CanStoreNotCdSessions  |
-                                                           OpticalImageCapabilities.CanStoreNotCdTracks    |
-                                                           OpticalImageCapabilities.CanStoreIndexes        |
-                                                           OpticalImageCapabilities.CanStoreHiddenTracks;
+    public OpticalImageCapabilities OpticalCapabilities => OpticalImageCapabilities.CanStoreAudioTracks     |
+                                                           OpticalImageCapabilities.CanStoreDataTracks      |
+                                                           OpticalImageCapabilities.CanStorePregaps         |
+                                                           OpticalImageCapabilities.CanStoreSubchannelRw    |
+                                                           OpticalImageCapabilities.CanStoreSessions        |
+                                                           OpticalImageCapabilities.CanStoreIsrc            |
+                                                           OpticalImageCapabilities.CanStoreCdText          |
+                                                           OpticalImageCapabilities.CanStoreMcn             |
+                                                           OpticalImageCapabilities.CanStoreRawData         |
+                                                           OpticalImageCapabilities.CanStoreCookedData      |
+                                                           OpticalImageCapabilities.CanStoreMultipleTracks  |
+                                                           OpticalImageCapabilities.CanStoreNotCdSessions   |
+                                                           OpticalImageCapabilities.CanStoreNotCdTracks     |
+                                                           OpticalImageCapabilities.CanStoreIndexes         |
+                                                           OpticalImageCapabilities.CanStoreHiddenTracks    |
+                                                           OpticalImageCapabilities.CanStoreNegativeSectors |
+                                                           OpticalImageCapabilities.CanStoreOverflowSectors;
 
     /// <inheritdoc />
 
