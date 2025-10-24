@@ -1650,7 +1650,7 @@
         <value>[red]Debe especificar más de 0 sectores para copiar de una vez[/]</value>
     </data>
     <data name="New_database_version_updating" xml:space="preserve">
-    <value>Nueva versión de la base de datos, actualizando...</value>
+    <value>[slateblue1]Nueva versión de la base de datos, actualizando...[/]</value>
   </data>
     <data name="Non_removable_device_commands_not_yet_implemented" xml:space="preserve">
     <value>Los comandos para el dispositivo no extraíble no están aún implementados</value>

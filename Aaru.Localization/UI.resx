@@ -24,7 +24,7 @@
         </value>
     </resheader>
     <data name="New_database_version_updating" xml:space="preserve">
-    <value>New database version, updating...</value>
+    <value>[slateblue1]New database version, updating...[/]</value>
   </data>
     <data name="Exception_trying_to_remove_old_database_version" xml:space="preserve">
     <value>Exception trying to remove old database version, cannot continue...</value>
@@ -1077,10 +1077,10 @@ In you are unsure, please press N to not continue.</value>
         <value>[slateblue1]Converting sectors [lime]{0}[/] to [violet]{1}[/] in track [teal]{2}[/][/]</value>
     </data>
     <data name="Error_0_reading_sector_1_continuing" xml:space="preserve">
-        <value>[olive]Error [orange3]{0}[/] reading sector [lime]{1}[/], continuing...</value>
+        <value>[olive]Error [orange3]{0}[/] reading sector [lime]{1}[/], continuing...[/]</value>
     </data>
     <data name="Error_0_reading_sector_1_not_continuing" xml:space="preserve">
-        <value>[red]Error [orange3]{0}[/] reading sector [lime]{1}[/], not continuing...</value>
+        <value>[red]Error [orange3]{0}[/] reading sector [lime]{1}[/], not continuing...[/]</value>
     </data>
     <data name="Input_image_is_not_returning_raw_sectors_use_force_if_you_want_to_continue" xml:space="preserve">
         <value>[red]Input image is not returning raw sectors, use force if you want to continue...[/]</value>
