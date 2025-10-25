@@ -126,10 +126,13 @@ public sealed partial class Cdrdao
                     BytesPerSector    = CdrdaoTrackTypeToCookedBytesPerSector(cdrTrack.Tracktype)
                 };
 
-                aaruTrack.EndSector = aaruTrack.StartSector + cdrTrack.Sectors - 1;
+                ulong aaruTrackStartSector = aaruTrack.StartSector;
+                aaruTrack.EndSector = aaruTrackStartSector + cdrTrack.Sectors - 1;
 
-                if(!cdrTrack.Indexes.TryGetValue(0, out aaruTrack.StartSector))
-                    cdrTrack.Indexes.TryGetValue(1, out aaruTrack.StartSector);
+                if(!cdrTrack.Indexes.TryGetValue(0, out aaruTrackStartSector))
+                    cdrTrack.Indexes.TryGetValue(1, out aaruTrackStartSector);
+
+                aaruTrack.StartSector = aaruTrackStartSector;
 
                 if(cdrTrack.Subchannel)
                 {

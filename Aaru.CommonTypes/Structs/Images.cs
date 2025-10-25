@@ -121,59 +121,59 @@ public struct ImageInfo
 public struct Session
 {
     /// <summary>Session number, 1-started</summary>
-    public ushort Sequence;
+    public ushort Sequence { get; set; }
     /// <summary>First track present on this session</summary>
-    public uint StartTrack;
+    public uint StartTrack { get; set; }
     /// <summary>Last track present on this session</summary>
-    public uint EndTrack;
+    public uint EndTrack { get; set; }
     /// <summary>First sector present on this session</summary>
-    public ulong StartSector;
+    public ulong StartSector { get; set; }
     /// <summary>Last sector present on this session</summary>
-    public ulong EndSector;
+    public ulong EndSector { get; set; }
 }
 
 /// <summary>Track defining structure.</summary>
 public class Track
 {
-    /// <summary>How many main channel / user data bytes are per sector in this track</summary>
-    public int BytesPerSector;
-    /// <summary>Information that does not find space in this struct</summary>
-    public string Description;
-    /// <summary>Track ending sector</summary>
-    public ulong EndSector;
-    /// <summary>Which file stores this track</summary>
-    public string File;
-    /// <summary>Starting at which byte is this track stored</summary>
-    public ulong FileOffset;
-    /// <summary>What kind of file is storing this track</summary>
-    public string FileType;
-    /// <summary>Which filter stores this track</summary>
-    public IFilter Filter;
-    /// <summary>Indexes, 00 to 99 and sector offset</summary>
-    public Dictionary<ushort, int> Indexes;
-    /// <summary>Track pre-gap</summary>
-    public ulong Pregap;
-    /// <summary>How many main channel bytes per sector are in the file with this track</summary>
-    public int RawBytesPerSector;
-    /// <summary>Track number, 1-started</summary>
-    public uint Sequence;
-    /// <summary>Session this track belongs to</summary>
-    public ushort Session;
-    /// <summary>Track starting sector</summary>
-    public ulong StartSector;
-    /// <summary>Which file stores this track's subchannel</summary>
-    public string SubchannelFile;
-    /// <summary>Which filter stores this track's subchannel</summary>
-    public IFilter SubchannelFilter;
-    /// <summary>Starting at which byte are this track's subchannel stored</summary>
-    public ulong SubchannelOffset;
-    /// <summary>Type of subchannel stored for this track</summary>
-    public TrackSubchannelType SubchannelType;
-    /// <summary>Partition type</summary>
-    public TrackType Type;
-
     /// <summary>Initializes an empty instance of this structure</summary>
-    public Track() => Indexes = new Dictionary<ushort, int>();
+    public Track() => Indexes = [];
+
+    /// <summary>How many main channel / user data bytes are per sector in this track</summary>
+    public int BytesPerSector { get; set; }
+    /// <summary>Information that does not find space in this struct</summary>
+    public string Description { get; set; }
+    /// <summary>Track ending sector</summary>
+    public ulong EndSector { get; set; }
+    /// <summary>Which file stores this track</summary>
+    public string File { get; set; }
+    /// <summary>Starting at which byte is this track stored</summary>
+    public ulong FileOffset { get; set; }
+    /// <summary>What kind of file is storing this track</summary>
+    public string FileType { get; set; }
+    /// <summary>Which filter stores this track</summary>
+    public IFilter Filter { get; set; }
+    /// <summary>Indexes, 00 to 99 and sector offset</summary>
+    public Dictionary<ushort, int> Indexes { get; set; }
+    /// <summary>Track pre-gap</summary>
+    public ulong Pregap { get; set; }
+    /// <summary>How many main channel bytes per sector are in the file with this track</summary>
+    public int RawBytesPerSector { get; set; }
+    /// <summary>Track number, 1-started</summary>
+    public uint Sequence { get; set; }
+    /// <summary>Session this track belongs to</summary>
+    public ushort Session { get; set; }
+    /// <summary>Track starting sector</summary>
+    public ulong StartSector { get; set; }
+    /// <summary>Which file stores this track's subchannel</summary>
+    public string SubchannelFile { get; set; }
+    /// <summary>Which filter stores this track's subchannel</summary>
+    public IFilter SubchannelFilter { get; set; }
+    /// <summary>Starting at which byte are this track's subchannel stored</summary>
+    public ulong SubchannelOffset { get; set; }
+    /// <summary>Type of subchannel stored for this track</summary>
+    public TrackSubchannelType SubchannelType { get; set; }
+    /// <summary>Partition type</summary>
+    public TrackType Type { get; set; }
 }
 
 /// <summary>Floppy physical characteristics structure.</summary>
