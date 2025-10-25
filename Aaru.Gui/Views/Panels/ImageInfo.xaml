@@ -123,29 +123,33 @@
                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Readable_media_tags}"
                                                FontWeight="Bold"
                                                IsVisible="{Binding !!MediaTagsList.Count, Mode=OneWay}" />
-                    <DataGrid ItemsSource="{Binding MediaTagsList, Mode=OneWay}"
-                              IsVisible="{Binding !!MediaTagsList.Count, Mode=OneWay}"
-                              IsReadOnly="True">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Tag}"
-                                                Binding="{Binding ., Mode=OneWay}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <ListBox ItemsSource="{Binding MediaTagsList, Mode=OneWay}"
+                             IsVisible="{Binding !!MediaTagsList.Count, Mode=OneWay}"
+                             MaxHeight="300"
+                             BorderThickness="1"
+                             BorderBrush="Gray">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ., Mode=OneWay}"
+                                           Padding="5" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Readable_sector_tags}"
                                                FontWeight="Bold"
                                                IsVisible="{Binding !!SectorTagsList.Count, Mode=OneWay}" />
-                    <DataGrid ItemsSource="{Binding SectorTagsList, Mode=OneWay}"
-                              IsVisible="{Binding !!SectorTagsList.Count, Mode=OneWay}"
-                              IsReadOnly="True">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Tag}"
-                                                Binding="{Binding ., Mode=OneWay}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <ListBox ItemsSource="{Binding SectorTagsList, Mode=OneWay}"
+                             IsVisible="{Binding !!SectorTagsList.Count, Mode=OneWay}"
+                             MaxHeight="300"
+                             BorderThickness="1"
+                             BorderBrush="Gray">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ., Mode=OneWay}"
+                                           Padding="5" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                 </StackPanel>
             </TabItem>
             <TabItem IsVisible="{Binding !!Sessions.Count, Mode=OneWay}">
