@@ -31,7 +31,6 @@
 // ****************************************************************************/
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
@@ -80,10 +79,7 @@ public sealed class ConsoleViewModel : ViewModelBase
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            FileTypeChoices = new List<FilePickerFileType>
-            {
-                FilePickerFileTypes.Log
-            }
+            FileTypeChoices = [FilePickerFileTypes.Log]
         });
 
         if(result is null) return;
@@ -93,7 +89,7 @@ public sealed class ConsoleViewModel : ViewModelBase
             var logFs = new FileStream(result.Path.AbsolutePath, FileMode.Create, FileAccess.ReadWrite);
             var logSw = new StreamWriter(logFs);
 
-            logSw.WriteLine(UI.Log_saved_at_0, DateTime.Now);
+            await logSw.WriteLineAsync(string.Format(UI.Log_saved_at_0, DateTime.Now));
 
             PlatformID platId  = DetectOS.GetRealPlatformID();
             string     platVer = DetectOS.GetVersion();
@@ -103,34 +99,34 @@ public sealed class ConsoleViewModel : ViewModelBase
                                              typeof(AssemblyInformationalVersionAttribute)) as
                     AssemblyInformationalVersionAttribute;
 
-            logSw.WriteLine(Localization.Core.System_information);
+            await logSw.WriteLineAsync(Localization.Core.System_information);
 
-            logSw.WriteLine("{0} {1} ({2}-bit)",
-                            DetectOS.GetPlatformName(platId, platVer),
-                            platVer,
-                            Environment.Is64BitOperatingSystem ? 64 : 32);
+            await
+                logSw.WriteLineAsync($"{DetectOS.GetPlatformName(platId, platVer)} {platVer} ({(Environment.Is64BitOperatingSystem ? 64 : 32)}-bit)");
 
-            logSw.WriteLine(".NET Core {0}", Version.GetNetCoreVersion());
+            await logSw.WriteLineAsync($".NET Core {Version.GetNetCoreVersion()}");
 
-            logSw.WriteLine();
+            await logSw.WriteLineAsync();
 
-            logSw.WriteLine(Localization.Core.Program_information);
-            logSw.WriteLine("Aaru {0}",                         assemblyVersion?.InformationalVersion);
-            logSw.WriteLine(Localization.Core.Running_in_0_bit, Environment.Is64BitProcess ? 64 : 32);
+            await logSw.WriteLineAsync(Localization.Core.Program_information);
+            await logSw.WriteLineAsync($"Aaru {assemblyVersion?.InformationalVersion}");
+
+            await logSw.WriteLineAsync(string.Format(Localization.Core.Running_in_0_bit,
+                                                     Environment.Is64BitProcess ? 64 : 32));
 #if DEBUG
-            logSw.WriteLine(Localization.Core.DEBUG_version);
+            await logSw.WriteLineAsync(Localization.Core.DEBUG_version);
 #endif
-            logSw.WriteLine(Localization.Core.Command_line_0, Environment.CommandLine);
-            logSw.WriteLine();
+            await logSw.WriteLineAsync(string.Format(Localization.Core.Command_line_0, Environment.CommandLine));
+            await logSw.WriteLineAsync();
 
-            logSw.WriteLine(UI.Console_with_ornament);
+            await logSw.WriteLineAsync(UI.Console_with_ornament);
 
             foreach(LogEntry entry in ConsoleHandler.Entries)
             {
                 if(entry.Type != UI.LogEntry_Type_Info)
-                    logSw.WriteLine("{0}: ({1}) {2}", entry.Timestamp, entry.Type.ToLower(), entry.Message);
+                    await logSw.WriteLineAsync($"{entry.Timestamp}: ({entry.Type.ToLower()}) {entry.Message}");
                 else
-                    logSw.WriteLine("{0}: {1}", entry.Timestamp, entry.Message);
+                    await logSw.WriteLineAsync($"{entry.Timestamp}: {entry.Message}");
             }
 
             logSw.Close();
