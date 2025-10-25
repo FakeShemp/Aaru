@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Aaru.CommonTypes;
-using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Interop;
@@ -16,6 +15,7 @@ using Aaru.Gui.Models;
 using Aaru.Gui.ViewModels.Dialogs;
 using Aaru.Gui.ViewModels.Panels;
 using Aaru.Gui.Views.Dialogs;
+using Aaru.Gui.Views.Panels;
 using Aaru.Localization;
 using Aaru.Logging;
 using Avalonia;
@@ -26,11 +26,14 @@ using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using JetBrains.Annotations;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Base;
 using MsBox.Avalonia.Enums;
 using Spectre.Console;
 using Console = Aaru.Gui.Views.Dialogs.Console;
+using FileSystem = Aaru.CommonTypes.AaruMetadata.FileSystem;
+using ImageInfo = Aaru.Gui.Views.Panels.ImageInfo;
 using Partition = Aaru.CommonTypes.Partition;
 using PlatformID = Aaru.CommonTypes.Interop.PlatformID;
 
@@ -46,6 +49,7 @@ public partial class MainWindowViewModel : ViewModelBase
     readonly Window _view;
     Console         _console;
     [ObservableProperty]
+    [CanBeNull]
     object _contentPanel;
     [ObservableProperty]
     bool _devicesSupported;
@@ -125,7 +129,46 @@ public partial class MainWindowViewModel : ViewModelBase
     public object TreeViewSelectedItem
     {
         get => _treeViewSelectedItem;
-        set => SetProperty(ref _treeViewSelectedItem, value);
+        set
+        {
+            if(value == _treeViewSelectedItem) return;
+
+            SetProperty(ref _treeViewSelectedItem, value);
+
+            ContentPanel = null;
+
+            switch(value)
+            {
+                case ImageModel imageModel:
+                    ContentPanel = new ImageInfo
+                    {
+                        DataContext = imageModel.ViewModel
+                    };
+
+                    break;
+                case PartitionModel partitionModel:
+                    ContentPanel = new Aaru.Gui.Views.Panels.Partition
+                    {
+                        DataContext = partitionModel.ViewModel
+                    };
+
+                    break;
+                case FileSystemModel fileSystemModel:
+                    ContentPanel = new Aaru.Gui.Views.Panels.FileSystem
+                    {
+                        DataContext = fileSystemModel.ViewModel
+                    };
+
+                    break;
+                case SubdirectoryModel subdirectoryModel:
+                    ContentPanel = new Subdirectory
+                    {
+                        DataContext = new SubdirectoryViewModel(subdirectoryModel, _view)
+                    };
+
+                    break;
+            }
+        }
     }
 
     async Task OpenAsync()
