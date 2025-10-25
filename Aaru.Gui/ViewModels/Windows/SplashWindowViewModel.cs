@@ -74,7 +74,7 @@ public sealed partial class SplashWindowViewModel(SplashWindow view) : ViewModel
         CurrentProgress++;
         Message = UI.Initializing_console;
 
-        Task.Run(() =>
+        _ = Task.Run(() =>
         {
             ConsoleHandler.Init();
             AaruLogging.WriteLine(UI.Aaru_started);
@@ -89,7 +89,7 @@ public sealed partial class SplashWindowViewModel(SplashWindow view) : ViewModel
         Message = UI.Loading_settings;
         AaruLogging.WriteLine(UI.Loading_settings);
 
-        Task.Run(() =>
+        _ = Task.Run(() =>
         {
             // TODO: Detect there are no settings yet
             Settings.Settings.LoadSettings();
@@ -104,7 +104,7 @@ public sealed partial class SplashWindowViewModel(SplashWindow view) : ViewModel
         Message = UI.Migrating_local_database;
         AaruLogging.WriteLine(UI.Migrating_local_database);
 
-        Task.Run(() =>
+        _ = Task.Run(() =>
         {
             AaruContext ctx = null;
 
@@ -183,7 +183,7 @@ public sealed partial class SplashWindowViewModel(SplashWindow view) : ViewModel
         Message = UI.Updating_main_database;
         AaruLogging.WriteLine(UI.Updating_main_database);
 
-        Task.Run(() =>
+        _ = Task.Run(() =>
         {
             bool mainDbUpdate = !File.Exists(Settings.Settings.MainDbPath);
 
@@ -241,7 +241,7 @@ public sealed partial class SplashWindowViewModel(SplashWindow view) : ViewModel
         Message = UI.Loading_statistics;
         AaruLogging.WriteLine(UI.Loading_statistics);
 
-        Task.Run(() =>
+        _ = Task.Run(() =>
         {
             Statistics.LoadStats();
 
@@ -255,7 +255,7 @@ public sealed partial class SplashWindowViewModel(SplashWindow view) : ViewModel
         Message = UI.Registering_encodings;
         AaruLogging.WriteLine(UI.Registering_encodings);
 
-        Task.Run(() =>
+        _ = Task.Run(() =>
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -270,7 +270,7 @@ public sealed partial class SplashWindowViewModel(SplashWindow view) : ViewModel
         Message = UI.Registering_plugins;
         AaruLogging.WriteLine(UI.Registering_plugins);
 
-        Task.Run(() =>
+        _ = Task.Run(() =>
         {
             PluginBase.Init();
             Dispatcher.UIThread.Post(SaveStatistics);
@@ -283,7 +283,7 @@ public sealed partial class SplashWindowViewModel(SplashWindow view) : ViewModel
         Message = UI.Saving_statistics;
         AaruLogging.WriteLine(UI.Saving_statistics);
 
-        Task.Run(async () =>
+        _ = Task.Run(async () =>
         {
             await Statistics.SaveStatsAsync();
 
