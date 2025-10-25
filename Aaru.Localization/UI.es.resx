@@ -1052,7 +1052,7 @@
         <value>[bold][blue]Estadísticas de filtros[/][/]</value>
     </data>
     <data name="Filter_0" xml:space="preserve">
-    <value>Filtro: {0}</value>
+    <value>[slateblue1]Filtro:[/] [darkgreen]{0}[/]</value>
   </data>
     <data name="Firmware_revision_of_drive_read_the_media_by_image" xml:space="preserve">
     <value>La revisión del firmware de la unidad usada para leer el medio representado por la imagen.</value>
@@ -1746,7 +1746,7 @@
         <value>[bold][olive]Ruta[/][/]</value>
     </data>
     <data name="Path_0" xml:space="preserve">
-    <value>Ruta: {0}</value>
+    <value>[slateblue1]Ruta:[/] [green]{0}[/]</value>
   </data>
     <data name="Pauses_before_exiting" xml:space="preserve">
     <value>Pausa antes de salir.</value>
@@ -2556,10 +2556,10 @@ Probadores:
     <value>Legible:</value>
   </data>
     <data name="Title_Readable_media_tags" xml:space="preserve">
-    <value>Etiquetas de medio legibles</value>
+    <value>[bold][slateblue1]Etiquetas de medio legibles[/][/]</value>
   </data>
     <data name="Title_Readable_sector_tags" xml:space="preserve">
-    <value>Etiquetas de sector legibles</value>
+    <value>[bold][slateblue1]Etiquetas de sector legibles[/][/]</value>
   </data>
     <data name="Title_Removable_media" xml:space="preserve">
     <value>Medio extraíble</value>

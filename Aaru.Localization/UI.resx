@@ -2083,10 +2083,10 @@ Testers:
     <value>Details</value>
   </data>
     <data name="Path_0" xml:space="preserve">
-    <value>Path: {0}</value>
+    <value>[slateblue1]Path:[/] [green]{0}[/]</value>
   </data>
     <data name="Filter_0" xml:space="preserve">
-    <value>Filter: {0}</value>
+    <value>[slateblue1]Filter:[/] [darkgreen]{0}[/]</value>
   </data>
     <data name="Format_0_version_1" xml:space="preserve">
     <value>Format: {0} version {1}</value>
@@ -2143,10 +2143,10 @@ Testers:
     <value>Drive information</value>
   </data>
     <data name="Title_Readable_media_tags" xml:space="preserve">
-    <value>Readable media tags</value>
+    <value>[bold][slateblue1]Readable media tags[/][/]</value>
   </data>
     <data name="Title_Readable_sector_tags" xml:space="preserve">
-    <value>Readable sector tags</value>
+    <value>[bold][slateblue1]Readable sector tags[/][/]</value>
   </data>
     <data name="Title_Sessions" xml:space="preserve">
     <value>Sessions</value>
