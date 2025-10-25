@@ -45,7 +45,8 @@
     <Design.DataContext>
         <panels:ImageInfoViewModel />
     </Design.DataContext>
-    <StackPanel>
+    <StackPanel Margin="12"
+                Spacing="8">
         <Image Width="128"
                Height="128"
                HorizontalAlignment="Center"
@@ -61,30 +62,7 @@
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_General}" />
                 </TabItem.Header>
-                <StackPanel>
-                    <TextBlock Text="{Binding ImageFormatText}"
-                               IsVisible="{Binding !!ImageFormatText}" />
-                    <TextBlock Text="{Binding ApplicationText}"
-                               IsVisible="{Binding !!ApplicationText}" />
-                    <TextBlock Text="{Binding ImageSizeText}"
-                               IsVisible="{Binding !!ImageSizeText}" />
-                    <TextBlock Text="{Binding SectorsText}"
-                               IsVisible="{Binding !!SectorsText}" />
-                    <TextBlock Text="{Binding CreatorText}"
-                               IsVisible="{Binding !!CreatorText}" />
-                    <TextBlock Text="{Binding CreationTimeText}"
-                               IsVisible="{Binding !!CreationTimeText}" />
-                    <TextBlock Text="{Binding LastModificationTimeText}"
-                               IsVisible="{Binding !!LastModificationTimeText}" />
-                    <TextBlock Text="{Binding MediaTypeText}"
-                               IsVisible="{Binding !!MediaTypeText}" />
-                    <TextBlock Text="{Binding HasPartitionsText}"
-                               IsVisible="{Binding !!HasPartitionsText}" />
-                    <TextBlock Text="{Binding HasSessionsText}"
-                               IsVisible="{Binding !!HasSessionsText}" />
-                    <TextBlock Text="{x:Static localization:UI.Title_Comments}"
-                               IsVisible="{Binding !!CommentsText}"
-                               FontWeight="Bold" />
+                <StackPanel Spacing="8">
                     <controls:SpectreTextBlock Text="{Binding ImageFormatText}"
                                                IsVisible="{Binding !!ImageFormatText}" />
                     <controls:SpectreTextBlock Text="{Binding ApplicationText}"
@@ -325,7 +303,7 @@
             </TabItem>
         </TabControl>
         <StackPanel Orientation="Horizontal"
-                    Spacing="5">
+                    Spacing="8">
             <Button Command="{Binding EntropyCommand}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Calculate_entropy}" />
             </Button>
