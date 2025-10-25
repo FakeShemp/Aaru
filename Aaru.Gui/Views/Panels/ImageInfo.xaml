@@ -51,278 +51,278 @@
                Height="128"
                HorizontalAlignment="Center"
                VerticalAlignment="Center"
-               Source="{Binding MediaLogo}" />
+               Source="{Binding MediaLogo, Mode=OneWay}" />
         <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Image_information}"
                                    FontWeight="Bold" />
-        <controls:SpectreTextBlock Text="{Binding ImagePathText}" />
-        <controls:SpectreTextBlock Text="{Binding FilterText}" />
-        <controls:SpectreTextBlock Text="{Binding ImageIdentifiedText}" />
+        <controls:SpectreTextBlock Text="{Binding ImagePathText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Text="{Binding FilterText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Text="{Binding ImageIdentifiedText, Mode=OneWay}" />
         <TabControl>
             <TabItem>
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_General}" />
                 </TabItem.Header>
                 <StackPanel Spacing="8">
-                    <controls:SpectreTextBlock Text="{Binding ImageFormatText}"
-                                               IsVisible="{Binding !!ImageFormatText}" />
-                    <controls:SpectreTextBlock Text="{Binding ApplicationText}"
-                                               IsVisible="{Binding !!ApplicationText}" />
-                    <controls:SpectreTextBlock Text="{Binding ImageSizeText}"
-                                               IsVisible="{Binding !!ImageSizeText}" />
-                    <controls:SpectreTextBlock Text="{Binding SectorsText}"
-                                               IsVisible="{Binding !!SectorsText}" />
-                    <controls:SpectreTextBlock Text="{Binding CreatorText}"
-                                               IsVisible="{Binding !!CreatorText}" />
-                    <controls:SpectreTextBlock Text="{Binding CreationTimeText}"
-                                               IsVisible="{Binding !!CreationTimeText}" />
-                    <controls:SpectreTextBlock Text="{Binding LastModificationTimeText}"
-                                               IsVisible="{Binding !!LastModificationTimeText}" />
-                    <controls:SpectreTextBlock Text="{Binding MediaTypeText}"
-                                               IsVisible="{Binding !!MediaTypeText}" />
-                    <controls:SpectreTextBlock Text="{Binding HasPartitionsText}"
-                                               IsVisible="{Binding !!HasPartitionsText}" />
-                    <controls:SpectreTextBlock Text="{Binding HasSessionsText}"
-                                               IsVisible="{Binding !!HasSessionsText}" />
+                    <controls:SpectreTextBlock Text="{Binding ImageFormatText, Mode=OneWay}"
+                                               IsVisible="{Binding !!ImageFormatText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding ApplicationText, Mode=OneWay}"
+                                               IsVisible="{Binding !!ApplicationText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding ImageSizeText, Mode=OneWay}"
+                                               IsVisible="{Binding !!ImageSizeText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding SectorsText, Mode=OneWay}"
+                                               IsVisible="{Binding !!SectorsText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding CreatorText, Mode=OneWay}"
+                                               IsVisible="{Binding !!CreatorText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding CreationTimeText, Mode=OneWay}"
+                                               IsVisible="{Binding !!CreationTimeText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding LastModificationTimeText, Mode=OneWay}"
+                                               IsVisible="{Binding !!LastModificationTimeText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding MediaTypeText, Mode=OneWay}"
+                                               IsVisible="{Binding !!MediaTypeText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding HasPartitionsText, Mode=OneWay}"
+                                               IsVisible="{Binding !!HasPartitionsText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding HasSessionsText, Mode=OneWay}"
+                                               IsVisible="{Binding !!HasSessionsText, Mode=OneWay}" />
                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Comments}"
-                                               IsVisible="{Binding !!CommentsText}"
+                                               IsVisible="{Binding !!CommentsText, Mode=OneWay}"
                                                FontWeight="Bold" />
                     <TextBox IsReadOnly="True"
                              TextWrapping="Wrap"
-                             Text="{Binding CommentsText}"
-                             IsVisible="{Binding !!CommentsText}" />
+                             Text="{Binding CommentsText, Mode=OneWay}"
+                             IsVisible="{Binding !!CommentsText, Mode=OneWay}" />
                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Media_information}"
                                                FontWeight="Bold"
-                                               IsVisible="{Binding MediaInformationVisible}" />
-                    <controls:SpectreTextBlock Text="{Binding MediaSequenceText}"
-                                               IsVisible="{Binding !!MediaSequenceText}" />
-                    <controls:SpectreTextBlock Text="{Binding MediaTitleText}"
-                                               IsVisible="{Binding !!MediaTitleText}" />
-                    <controls:SpectreTextBlock Text="{Binding MediaManufacturerText}"
-                                               IsVisible="{Binding !!MediaManufacturerText}" />
-                    <controls:SpectreTextBlock Text="{Binding MediaModelText}"
-                                               IsVisible="{Binding !!MediaModelText}" />
-                    <controls:SpectreTextBlock Text="{Binding MediaSerialNumberText}"
-                                               IsVisible="{Binding !!MediaSerialNumberText}" />
-                    <controls:SpectreTextBlock Text="{Binding MediaBarcodeText}"
-                                               IsVisible="{Binding !!MediaBarcodeText}" />
-                    <controls:SpectreTextBlock Text="{Binding MediaPartNumberText}"
-                                               IsVisible="{Binding !!MediaPartNumberText}" />
+                                               IsVisible="{Binding MediaInformationVisible, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding MediaSequenceText, Mode=OneWay}"
+                                               IsVisible="{Binding !!MediaSequenceText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding MediaTitleText, Mode=OneWay}"
+                                               IsVisible="{Binding !!MediaTitleText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding MediaManufacturerText, Mode=OneWay}"
+                                               IsVisible="{Binding !!MediaManufacturerText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding MediaModelText, Mode=OneWay}"
+                                               IsVisible="{Binding !!MediaModelText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding MediaSerialNumberText, Mode=OneWay}"
+                                               IsVisible="{Binding !!MediaSerialNumberText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding MediaBarcodeText, Mode=OneWay}"
+                                               IsVisible="{Binding !!MediaBarcodeText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding MediaPartNumberText, Mode=OneWay}"
+                                               IsVisible="{Binding !!MediaPartNumberText, Mode=OneWay}" />
                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Drive_information}"
                                                FontWeight="Bold"
-                                               IsVisible="{Binding DriveInformationVisible}" />
-                    <controls:SpectreTextBlock Text="{Binding DriveManufacturerText}"
-                                               IsVisible="{Binding !!DriveManufacturerText}" />
-                    <controls:SpectreTextBlock Text="{Binding DriveModelText}"
-                                               IsVisible="{Binding !!DriveModelText}" />
-                    <controls:SpectreTextBlock Text="{Binding DriveSerialNumberText}"
-                                               IsVisible="{Binding !!DriveSerialNumberText}" />
-                    <controls:SpectreTextBlock Text="{Binding DriveFirmwareRevisionText}"
-                                               IsVisible="{Binding !!DriveFirmwareRevisionText}" />
-                    <controls:SpectreTextBlock Text="{Binding MediaGeometryText}"
-                                               IsVisible="{Binding !!MediaGeometryText}" />
+                                               IsVisible="{Binding DriveInformationVisible, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding DriveManufacturerText, Mode=OneWay}"
+                                               IsVisible="{Binding !!DriveManufacturerText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding DriveModelText, Mode=OneWay}"
+                                               IsVisible="{Binding !!DriveModelText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding DriveSerialNumberText, Mode=OneWay}"
+                                               IsVisible="{Binding !!DriveSerialNumberText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding DriveFirmwareRevisionText, Mode=OneWay}"
+                                               IsVisible="{Binding !!DriveFirmwareRevisionText, Mode=OneWay}" />
+                    <controls:SpectreTextBlock Text="{Binding MediaGeometryText, Mode=OneWay}"
+                                               IsVisible="{Binding !!MediaGeometryText, Mode=OneWay}" />
                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Readable_media_tags}"
                                                FontWeight="Bold"
-                                               IsVisible="{Binding !!MediaTagsList.Count}" />
-                    <DataGrid ItemsSource="{Binding MediaTagsList}"
-                              IsVisible="{Binding !!MediaTagsList.Count}"
+                                               IsVisible="{Binding !!MediaTagsList.Count, Mode=OneWay}" />
+                    <DataGrid ItemsSource="{Binding MediaTagsList, Mode=OneWay}"
+                              IsVisible="{Binding !!MediaTagsList.Count, Mode=OneWay}"
                               IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="{x:Static localization:UI.Title_Tag}"
-                                                Binding="{Binding .}"
+                                                Binding="{Binding ., Mode=OneWay}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
                         </DataGrid.Columns>
                     </DataGrid>
                     <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Readable_sector_tags}"
                                                FontWeight="Bold"
-                                               IsVisible="{Binding !!SectorTagsList.Count}" />
-                    <DataGrid ItemsSource="{Binding SectorTagsList}"
-                              IsVisible="{Binding !!SectorTagsList.Count}"
+                                               IsVisible="{Binding !!SectorTagsList.Count, Mode=OneWay}" />
+                    <DataGrid ItemsSource="{Binding SectorTagsList, Mode=OneWay}"
+                              IsVisible="{Binding !!SectorTagsList.Count, Mode=OneWay}"
                               IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="{x:Static localization:UI.Title_Tag}"
-                                                Binding="{Binding .}"
+                                                Binding="{Binding ., Mode=OneWay}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </StackPanel>
             </TabItem>
-            <TabItem IsVisible="{Binding !!Sessions.Count}">
+            <TabItem IsVisible="{Binding !!Sessions.Count, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_Sessions}" />
                 </TabItem.Header>
-                <DataGrid ItemsSource="{Binding Sessions}"
-                          IsVisible="{Binding !!Sessions.Count}"
+                <DataGrid ItemsSource="{Binding Sessions, Mode=OneWay}"
+                          IsVisible="{Binding !!Sessions.Count, Mode=OneWay}"
                           IsReadOnly="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="{x:Static localization:Core.Title_Session}"
-                                            Binding="{Binding SessionSequence}"
+                                            Binding="{Binding SessionSequence, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:Core.Title_First_track}"
-                                            Binding="{Binding StartTrack}"
+                                            Binding="{Binding StartTrack, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:Core.Title_Last_track}"
-                                            Binding="{Binding EndTrack}"
+                                            Binding="{Binding EndTrack, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:Core.Title_Start}"
-                                            Binding="{Binding StartSector}"
+                                            Binding="{Binding StartSector, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:Core.Title_End}"
-                                            Binding="{Binding EndSector}"
+                                            Binding="{Binding EndSector, Mode=OneWay}"
                                             Width="Auto" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
-            <TabItem IsVisible="{Binding !!Tracks.Count}">
+            <TabItem IsVisible="{Binding !!Tracks.Count, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_Tracks}" />
                 </TabItem.Header>
-                <DataGrid ItemsSource="{Binding Tracks}"
-                          IsVisible="{Binding !!Tracks.Count}"
+                <DataGrid ItemsSource="{Binding Tracks, Mode=OneWay}"
+                          IsVisible="{Binding !!Tracks.Count, Mode=OneWay}"
                           IsReadOnly="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="{x:Static localization:Core.Title_Track}"
-                                            Binding="{Binding Sequence}"
+                                            Binding="{Binding Sequence, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:UI.Title_Type}"
-                                            Binding="{Binding Type}"
+                                            Binding="{Binding Type, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:Core.Title_Bps}"
-                                            Binding="{Binding BytesPerSector}"
+                                            Binding="{Binding BytesPerSector, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:Core.Title_Raw_bps}"
-                                            Binding="{Binding RawBytesPerSector}"
+                                            Binding="{Binding RawBytesPerSector, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:Core.Title_Subchannel}"
-                                            Binding="{Binding SubchannelType}"
+                                            Binding="{Binding SubchannelType, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:Core.Title_Pregap}"
-                                            Binding="{Binding Pregap}"
+                                            Binding="{Binding Pregap, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:Core.Title_Start}"
-                                            Binding="{Binding StartSector}"
+                                            Binding="{Binding StartSector, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:Core.Title_End}"
-                                            Binding="{Binding EndSector}"
+                                            Binding="{Binding EndSector, Mode=OneWay}"
                                             Width="Auto" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
-            <TabItem IsVisible="{Binding !!DumpHardwareList.Count}">
+            <TabItem IsVisible="{Binding !!DumpHardwareList.Count, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_Dump_hardware}" />
                 </TabItem.Header>
-                <DataGrid ItemsSource="{Binding DumpHardwareList}"
-                          IsVisible="{Binding !!DumpHardwareList.Count}"
+                <DataGrid ItemsSource="{Binding DumpHardwareList, Mode=OneWay}"
+                          IsVisible="{Binding !!DumpHardwareList.Count, Mode=OneWay}"
                           IsReadOnly="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="{x:Static localization:UI.Title_Manufacturer}"
-                                            Binding="{Binding Manufacturer}"
+                                            Binding="{Binding Manufacturer, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:UI.Title_Model}"
-                                            Binding="{Binding Model}"
+                                            Binding="{Binding Model, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:UI.Title_Revision}"
-                                            Binding="{Binding Revision}"
+                                            Binding="{Binding Revision, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:UI.Serial}"
-                                            Binding="{Binding Serial}"
+                                            Binding="{Binding Serial, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:UI.Title_Software}"
-                                            Binding="{Binding SoftwareName}"
+                                            Binding="{Binding SoftwareName, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
-                                            Binding="{Binding SoftwareVersion}"
+                                            Binding="{Binding SoftwareVersion, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:UI.Title_Operating_system}"
-                                            Binding="{Binding OperatingSystem}"
+                                            Binding="{Binding OperatingSystem, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:Core.Title_Start}"
-                                            Binding="{Binding TrackStartSector}"
+                                            Binding="{Binding TrackStartSector, Mode=OneWay}"
                                             Width="Auto" />
                         <DataGridTextColumn Header="{x:Static localization:Core.Title_End}"
-                                            Binding="{Binding TrackEndSector}"
+                                            Binding="{Binding TrackEndSector, Mode=OneWay}"
                                             Width="Auto" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
-            <TabItem IsVisible="{Binding !!ScsiInfo}">
+            <TabItem IsVisible="{Binding !!ScsiInfo, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_SCSI}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding ScsiInfo}" />
+                <ContentControl Content="{Binding ScsiInfo, Mode=OneWay}" />
             </TabItem>
-            <TabItem IsVisible="{Binding !!AtaInfo}">
+            <TabItem IsVisible="{Binding !!AtaInfo, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_ATA_ATAPI}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding AtaInfo}" />
+                <ContentControl Content="{Binding AtaInfo, Mode=OneWay}" />
             </TabItem>
-            <TabItem IsVisible="{Binding !!CompactDiscInfo}">
+            <TabItem IsVisible="{Binding !!CompactDiscInfo, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:Core.Title_CompactDisc}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding CompactDiscInfo}" />
+                <ContentControl Content="{Binding CompactDiscInfo, Mode=OneWay}" />
             </TabItem>
-            <TabItem IsVisible="{Binding !!DvdInfo}">
+            <TabItem IsVisible="{Binding !!DvdInfo, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:Core.Title_DVD_HD_DVD}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding DvdInfo}" />
+                <ContentControl Content="{Binding DvdInfo, Mode=OneWay}" />
             </TabItem>
-            <TabItem IsVisible="{Binding !!DvdWritableInfo}">
+            <TabItem IsVisible="{Binding !!DvdWritableInfo, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:Core.Title_DVD_Plus_Dash_R_W}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding DvdWritableInfo}" />
+                <ContentControl Content="{Binding DvdWritableInfo, Mode=OneWay}" />
             </TabItem>
-            <TabItem IsVisible="{Binding !!BlurayInfo}">
+            <TabItem IsVisible="{Binding !!BlurayInfo, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:Core.Title_Blu_ray}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding BlurayInfo}" />
+                <ContentControl Content="{Binding BlurayInfo, Mode=OneWay}" />
             </TabItem>
-            <TabItem IsVisible="{Binding !!PcmciaInfo}">
+            <TabItem IsVisible="{Binding !!PcmciaInfo, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_PCMCIA}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding PcmciaInfo}" />
+                <ContentControl Content="{Binding PcmciaInfo, Mode=OneWay}" />
             </TabItem>
-            <TabItem IsVisible="{Binding !!SdMmcInfo}">
+            <TabItem IsVisible="{Binding !!SdMmcInfo, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_SD_MMC}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding SdMmcInfo}" />
+                <ContentControl Content="{Binding SdMmcInfo, Mode=OneWay}" />
             </TabItem>
-            <TabItem IsVisible="{Binding !!XboxInfo}">
+            <TabItem IsVisible="{Binding !!XboxInfo, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:Core.Title_Xbox}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding XboxInfo}" />
+                <ContentControl Content="{Binding XboxInfo, Mode=OneWay}" />
             </TabItem>
         </TabControl>
         <StackPanel Orientation="Horizontal"
                     Spacing="8">
-            <Button Command="{Binding EntropyCommand}">
+            <Button Command="{Binding EntropyCommand, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Calculate_entropy}" />
             </Button>
-            <Button Command="{Binding VerifyCommand}">
+            <Button Command="{Binding VerifyCommand, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Verify}" />
             </Button>
-            <Button Command="{Binding ChecksumCommand}">
+            <Button Command="{Binding ChecksumCommand, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Checksum}" />
             </Button>
-            <Button Command="{Binding ConvertCommand}">
+            <Button Command="{Binding ConvertCommand, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Convert_to}" />
             </Button>
-            <Button Command="{Binding CreateSidecarCommand}">
+            <Button Command="{Binding CreateSidecarCommand, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Create_Aaru_Metadata_sidecar}" />
             </Button>
-            <Button Command="{Binding ViewSectorsCommand}">
+            <Button Command="{Binding ViewSectorsCommand, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_View_sectors}" />
             </Button>
-            <Button Command="{Binding DecodeMediaTagCommand}">
+            <Button Command="{Binding DecodeMediaTagCommand, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Decode_media_tags}" />
             </Button>
         </StackPanel>
