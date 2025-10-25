@@ -59,7 +59,7 @@ public sealed partial class AaruFormat
 
         Status res = aaruf_read_media_tag(_context, buffer, tag, ref length);
 
-        if(res != Status.Ok) return StatusToErrorNumber(res);
+        if(res != Status.BufferTooSmall) return StatusToErrorNumber(res);
 
         buffer = new byte[length];
 
