@@ -84,9 +84,9 @@ public sealed class App : Application
     {
         if(ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime
                                       {
-                                          MainWindow: MainWindow
+                                          MainWindow: OldMainWindow
                                                       {
-                                                          DataContext: MainWindowViewModel mainWindowViewModel
+                                                          DataContext: OldMainWindowViewModel mainWindowViewModel
                                                       }
                                       })
             return;
@@ -98,9 +98,9 @@ public sealed class App : Application
     {
         if(ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime
                                       {
-                                          MainWindow: MainWindow
+                                          MainWindow: OldMainWindow
                                                       {
-                                                          DataContext: MainWindowViewModel mainWindowViewModel
+                                                          DataContext: OldMainWindowViewModel mainWindowViewModel
                                                       }
                                       })
             return;
@@ -112,9 +112,9 @@ public sealed class App : Application
     {
         if(ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime
                                       {
-                                          MainWindow: MainWindow
+                                          MainWindow: OldMainWindow
                                                       {
-                                                          DataContext: MainWindowViewModel mainWindowViewModel
+                                                          DataContext: OldMainWindowViewModel mainWindowViewModel
                                                       }
                                       })
             return;

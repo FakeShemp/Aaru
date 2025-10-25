@@ -38,9 +38,9 @@ using Avalonia.Markup.Xaml;
 
 namespace Aaru.Gui.Views.Windows;
 
-public sealed class MainWindow : Window
+public sealed class OldMainWindow : Window
 {
-    public MainWindow()
+    public OldMainWindow()
     {
         InitializeComponent();
 #if DEBUG
@@ -54,6 +54,6 @@ public sealed class MainWindow : Window
     {
         base.OnOpened(e);
 
-        (DataContext as MainWindowViewModel)?.LoadComplete();
+        (DataContext as OldMainWindowViewModel)?.LoadComplete();
     }
 }

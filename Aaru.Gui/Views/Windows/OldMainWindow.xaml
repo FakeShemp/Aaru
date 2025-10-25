@@ -41,11 +41,11 @@
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
-        x:Class="Aaru.Gui.Views.Windows.MainWindow"
+        x:Class="Aaru.Gui.Views.Windows.OldMainWindow"
         Icon="/Assets/aaru-logo.png"
         Title="Aaru.Gui">
     <Design.DataContext>
-        <windows:MainWindowViewModel />
+        <windows:OldMainWindowViewModel />
     </Design.DataContext>
     <DockPanel>
         <Menu DockPanel.Dock="Top">

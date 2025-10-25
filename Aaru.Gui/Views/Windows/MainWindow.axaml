@@ -1,0 +1,80 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:windows="clr-namespace:Aaru.Gui.ViewModels.Windows"
+        xmlns:models="clr-namespace:Aaru.Gui.Models"
+        xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
+        mc:Ignorable="d"
+        d:DesignWidth="800"
+        d:DesignHeight="450"
+        x:Class="Aaru.Gui.Views.Windows.MainWindow"
+        Icon="/Assets/aaru-logo.png"
+        Title="Aaru">
+    <Design.DataContext>
+        <windows:MainWindowViewModel />
+    </Design.DataContext>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="{x:Static localization:UI.Menu_File}">
+                <MenuItem Header="{x:Static localization:UI.Menu_Open}"
+                          Command="{Binding OpenCommand, Mode=OneWay}" />
+                <Separator />
+                <MenuItem Header="{x:Static localization:UI.Menu_Settings}"
+                          IsVisible="{Binding !NativeMenuSupported, Mode=OneWay}"
+                          Command="{Binding SettingsCommand, Mode=OneWay}" />
+                <Separator />
+                <MenuItem Header="{x:Static localization:UI.Menu_Exit}"
+                          IsVisible="{Binding !NativeMenuSupported, Mode=OneWay}"
+                          Command="{Binding ExitCommand, Mode=OneWay}" />
+            </MenuItem>
+            <MenuItem Header="{x:Static localization:UI.Menu_Devices}"
+                      IsVisible="{Binding DevicesSupported, Mode=OneWay}">
+                <MenuItem Header="TODO" />
+            </MenuItem>
+            <MenuItem Header="{x:Static localization:UI.Menu_Window}">
+                <MenuItem Header="{x:Static localization:UI.Menu_Console}"
+                          Command="{Binding ConsoleCommand, Mode=OneWay}" />
+            </MenuItem>
+            <MenuItem Header="{x:Static localization:UI.Menu_Help}">
+                <MenuItem Header="{x:Static localization:UI.Menu_Encodings}"
+                          Command="{Binding EncodingsCommand, Mode=OneWay}" />
+                <MenuItem Header="{x:Static localization:UI.Menu_Plugins}"
+                          Command="{Binding PluginsCommand, Mode=OneWay}" />
+                <MenuItem Header="{x:Static localization:UI.Menu_Statistics}"
+                          Command="{Binding StatisticsCommand, Mode=OneWay}" />
+                <Separator IsVisible="{Binding !NativeMenuSupported, Mode=OneWay}" />
+                <MenuItem Header="{x:Static localization:UI.Menu_About}"
+                          Name="AboutMenuItem"
+                          IsVisible="{Binding !NativeMenuSupported, Mode=OneWay}"
+                          Command="{Binding AboutCommand, Mode=OneWay}" />
+            </MenuItem>
+        </Menu>
+        <Grid ColumnDefinitions="*,5,6*">
+            <TreeView ItemsSource="{Binding TreeRoot, Mode=OneWay}"
+                      SelectedItem="{Binding TreeViewSelectedItem, Mode=OneWay}"
+                      BorderBrush="LightGray"
+                      BorderThickness="1"
+                      CornerRadius="4">
+                <TreeView.DataTemplates>
+                    <DataTemplate DataType="models:RootModel">
+                        <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                    </DataTemplate>
+                </TreeView.DataTemplates>
+            </TreeView>
+            <GridSplitter Grid.Column="1"
+                          Width="5"
+                          HorizontalAlignment="Stretch"
+                          Background="#555555" />
+            <ContentControl Grid.Column="2"
+                            Content="{Binding ContentPanel, Mode=OneWay}"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            BorderBrush="LightGray"
+                            BorderThickness="1"
+                            CornerRadius="4" />
+        </Grid>
+    </DockPanel>
+</Window>
