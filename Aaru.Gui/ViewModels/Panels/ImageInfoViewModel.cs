@@ -193,16 +193,22 @@ public sealed class ImageInfoViewModel : ViewModelBase
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaBarcode))
+        {
             MediaBarcodeText =
                 string.Format(Localization.Core.Media_barcode_0_WithMarkup, imageFormat.Info.MediaBarcode);
+        }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaPartNumber))
+        {
             MediaPartNumberText = string.Format(Localization.Core.Media_part_number_0_WithMarkup,
                                                 imageFormat.Info.MediaPartNumber);
+        }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveManufacturer))
+        {
             DriveManufacturerText = string.Format(Localization.Core.Drive_manufacturer_0_WithMarkup,
                                                   imageFormat.Info.DriveManufacturer);
+        }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveModel))
             DriveModelText = string.Format(Localization.Core.Drive_model_0_WithMarkup, imageFormat.Info.DriveModel);
@@ -214,8 +220,10 @@ public sealed class ImageInfoViewModel : ViewModelBase
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveFirmwareRevision))
+        {
             DriveFirmwareRevisionText = string.Format(Localization.Core.Drive_firmware_info_0_WithMarkup,
                                                       imageFormat.Info.DriveFirmwareRevision);
+        }
 
         if(imageFormat.Info.Cylinders > 0                                      &&
            imageFormat.Info is { Heads: > 0, SectorsPerTrack: > 0 }            &&
@@ -229,14 +237,13 @@ public sealed class ImageInfoViewModel : ViewModelBase
         }
 
         if(imageFormat.Info.ReadableMediaTags is { Count: > 0 })
-        {
-            foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.Order()) MediaTagsList.Add(tag.ToString());
-        }
+            foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.Order())
+                MediaTagsList.Add(tag.Humanize());
 
         if(imageFormat.Info.ReadableSectorTags is { Count: > 0 })
         {
             foreach(SectorTagType tag in imageFormat.Info.ReadableSectorTags.Order())
-                SectorTagsList.Add(tag.ToString());
+                SectorTagsList.Add(tag.Humanize());
         }
 
         PeripheralDeviceTypes scsiDeviceType  = PeripheralDeviceTypes.DirectAccess;
@@ -706,8 +713,9 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Sessions is { Count: > 0 })
-                    foreach(Session session in opticalMediaImage.Sessions)
-                        Sessions.Add(session);
+                {
+                    foreach(Session session in opticalMediaImage.Sessions) Sessions.Add(session);
+                }
             }
             catch(Exception ex)
             {
@@ -717,8 +725,9 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Tracks is { Count: > 0 })
-                    foreach(Track track in opticalMediaImage.Tracks)
-                        Tracks.Add(track);
+                {
+                    foreach(Track track in opticalMediaImage.Tracks) Tracks.Add(track);
+                }
             }
             catch(Exception ex)
             {
