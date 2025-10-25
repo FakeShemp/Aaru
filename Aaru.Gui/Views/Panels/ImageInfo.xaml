@@ -158,23 +158,91 @@
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding Sessions, Mode=OneWay}"
                           IsVisible="{Binding !!Sessions.Count, Mode=OneWay}"
-                          IsReadOnly="True">
+                          IsReadOnly="True"
+                          Height="400"
+                          VerticalAlignment="Stretch"
+                          HorizontalAlignment="Stretch">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Session}"
-                                            Binding="{Binding SessionSequence, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:Core.Title_First_track}"
-                                            Binding="{Binding StartTrack, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Last_track}"
-                                            Binding="{Binding EndTrack, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Start}"
-                                            Binding="{Binding StartSector, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:Core.Title_End}"
-                                            Binding="{Binding EndSector, Mode=OneWay}"
-                                            Width="Auto" />
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Session}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Sequence, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_First_track}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding StartTrack, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Last_track}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding EndTrack, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Start}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding StartSector, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_End}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding EndSector, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
@@ -184,32 +252,139 @@
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding Tracks, Mode=OneWay}"
                           IsVisible="{Binding !!Tracks.Count, Mode=OneWay}"
-                          IsReadOnly="True">
+                          IsReadOnly="True"
+                          Height="400"
+                          VerticalAlignment="Stretch"
+                          HorizontalAlignment="Stretch">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Track}"
-                                            Binding="{Binding Sequence, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Type}"
-                                            Binding="{Binding Type, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Bps}"
-                                            Binding="{Binding BytesPerSector, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Raw_bps}"
-                                            Binding="{Binding RawBytesPerSector, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Subchannel}"
-                                            Binding="{Binding SubchannelType, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Pregap}"
-                                            Binding="{Binding Pregap, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Start}"
-                                            Binding="{Binding StartSector, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:Core.Title_End}"
-                                            Binding="{Binding EndSector, Mode=OneWay}"
-                                            Width="Auto" />
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Track}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Sequence, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Type}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Type, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Bps}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding BytesPerSector, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Raw_bps}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding RawBytesPerSector, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Subchannel}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding SubchannelType, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Pregap}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Pregap, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Start}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding StartSector, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_End}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding EndSector, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
@@ -221,33 +396,150 @@
                           IsVisible="{Binding !!DumpHardwareList.Count, Mode=OneWay}"
                           IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Manufacturer}"
-                                            Binding="{Binding Manufacturer, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Model}"
-                                            Binding="{Binding Model, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Revision}"
-                                            Binding="{Binding Revision, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:UI.Serial}"
-                                            Binding="{Binding Serial, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Software}"
-                                            Binding="{Binding SoftwareName, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
-                                            Binding="{Binding SoftwareVersion, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Operating_system}"
-                                            Binding="{Binding OperatingSystem, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Start}"
-                                            Binding="{Binding TrackStartSector, Mode=OneWay}"
-                                            Width="Auto" />
-                        <DataGridTextColumn Header="{x:Static localization:Core.Title_End}"
-                                            Binding="{Binding TrackEndSector, Mode=OneWay}"
-                                            Width="Auto" />
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Manufacturer}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Manufacturer, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Model}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Model, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Revision}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Revision, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Serial}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Serial, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Software}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding SoftwareName, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Version}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding SoftwareVersion, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Operating_system}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding OperatingSystem, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Start}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Start, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_End}"
+                                                               Padding="5"
+                                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding End, Mode=OneWay}"
+                                               Padding="5"
+                                               VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>

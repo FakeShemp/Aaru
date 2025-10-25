@@ -36,7 +36,7 @@
              xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
              x:Class="Aaru.Gui.App">
     <Application.Styles>
-        <FluentTheme />
+        <FluentTheme /> <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
         <!-- TODO: Abandoned project need to find replacement
         <StyleInclude Source="resm:OxyPlot.Avalonia.Themes.Default.xaml?assembly=OxyPlot.Avalonia" />
         -->
