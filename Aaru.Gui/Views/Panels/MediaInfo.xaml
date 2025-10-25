@@ -36,6 +36,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:panels="clr-namespace:Aaru.Gui.ViewModels.Panels"
+             xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -45,7 +46,7 @@
     </Design.DataContext>
     <StackPanel Orientation="Vertical">
         <TextBlock HorizontalAlignment="Center"
-                   Text="{Binding MediaInformationLabel}" />
+                   Text="{x:Static localization:UI.Title_Media_information}" />
         <Image Width="128"
                Height="128"
                HorizontalAlignment="Center"
@@ -53,11 +54,11 @@
         <TabControl>
             <TabItem IsVisible="{Binding GeneralVisible}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding GeneralLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.Title_General}" />
                 </TabItem.Header>
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding MediaTypeLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.Title_Media_type}" />
                         <TextBox Text="{Binding MediaType}"
                                  IsReadOnly="True" />
                     </StackPanel>
@@ -65,103 +66,105 @@
                                Text="{Binding MediaSize}" />
                     <StackPanel Orientation="Horizontal"
                                 IsVisible="{Binding !!MediaSerial}">
-                        <TextBlock Text="{Binding MediaSerialNumberLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.Title_Media_serial_number}" />
                         <TextBox Text="{Binding MediaSerial}"
                                  IsReadOnly="True" />
                     </StackPanel>
                     <Button IsVisible="{Binding SaveReadMediaSerialVisible}"
                             Command="{Binding SaveReadMediaSerialCommand}">
-                        <TextBlock Text="{Binding SaveReadMediaSerialLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_READ_MEDIA_SERIAL_NUMBER_response}" />
                     </Button>
                     <Button IsVisible="{Binding SaveReadCapacityVisible}"
                             Command="{Binding SaveReadCapacityCommand}">
-                        <TextBlock Text="{Binding SaveReadCapacityLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_READ_CAPACITY_response}" />
                     </Button>
                     <Button IsVisible="{Binding SaveReadCapacity16Visible}"
                             Command="{Binding SaveReadCapacity16Command}">
-                        <TextBlock Text="{Binding SaveReadCapacity16Label}" />
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_READ_CAPACITY_16_response}" />
                     </Button>
                 </StackPanel>
             </TabItem>
             <TabItem IsVisible="{Binding MmcVisible}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding MMCLabel}" />
+                    <TextBlock Text="{x:Static localization:Core.Title_MMC}" />
                 </TabItem.Header>
                 <StackPanel Orientation="Vertical">
                     <Button IsVisible="{Binding SaveGetConfigurationVisible}"
                             Command="{Binding SaveGetConfigurationCommand}">
-                        <TextBlock Text="{Binding SaveGetConfigurationLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_GET_CONFIGURATION_response}" />
                     </Button>
                     <Button IsVisible="{Binding SaveRecognizedFormatLayersVisible}"
                             Command="{Binding SaveRecognizedFormatLayersCommand}">
-                        <TextBlock Text="{Binding SaveRecognizedFormatLayersLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_RECOGNIZED_FORMAT_LAYERS_response}" />
                     </Button>
                     <Button IsVisible="{Binding SaveWriteProtectionStatusVisible}"
                             Command="{Binding SaveWriteProtectionStatusCommand}">
-                        <TextBlock Text="{Binding SaveWriteProtectionStatusLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_WRITE_PROTECTION_STATUS_response}" />
                     </Button>
                 </StackPanel>
             </TabItem>
             <TabItem IsVisible="{Binding SscVisible}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding SscLabel}" />
+                    <TextBlock Text="{x:Static localization:Core.Title_SSC}" />
                 </TabItem.Header>
                 <StackPanel Orientation="Vertical">
                     <TextBlock IsVisible="{Binding !!DensitySupport}"
-                               Text="{Binding DensitySupportLabel}" />
+                               Text="{x:Static localization:UI.Densities_supported_by_currently_inserted_media}" />
                     <TextBox IsVisible="{Binding !!DensitySupport}"
                              Text="{Binding DensitySupport}"
                              IsReadOnly="True" />
                     <TextBlock IsVisible="{Binding !!MediumSupport}"
-                               Text="{Binding MediumSupportLabel}" />
+                               Text="{x:Static localization:UI.Medium_types_currently_inserted_in_device}" />
                     <TextBox Text="{Binding MediumSupport}"
                              IsReadOnly="True" />
                     <Button IsVisible="{Binding SaveDensitySupportVisible}"
                             Command="{Binding SaveDensitySupportCommand}">
-                        <TextBlock Text="{Binding SaveDensitySupportLabel}" />
+                        <TextBlock
+                            Text="{x:Static localization:UI.ButtonLabel_Save_REPORT_DENSITY_SUPPORT_MEDIA_response}" />
                     </Button>
                     <Button IsVisible="{Binding SaveMediumSupportVisible}"
                             Command="{Binding SaveMediumSupportCommand}">
-                        <TextBlock Text="{Binding SaveMediumSupportLabel}" />
+                        <TextBlock
+                            Text="{x:Static localization:UI.ButtonLabel_Save_REPORT_DENSITY_SUPPORT_MEDIUM_MEDIA_response}" />
                     </Button>
                 </StackPanel>
             </TabItem>
             <TabItem IsVisible="{Binding !!CompactDiscInfo}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding CompactDiscLabel}" />
+                    <TextBlock Text="{x:Static localization:Core.Title_CompactDisc}" />
                 </TabItem.Header>
                 <ContentControl Content="{Binding CompactDiscInfo}" />
             </TabItem>
             <TabItem IsVisible="{Binding !!DvdInfo}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding DvdLabel}" />
+                    <TextBlock Text="{x:Static localization:Core.Title_DVD}" />
                 </TabItem.Header>
                 <ContentControl Content="{Binding DvdInfo}" />
             </TabItem>
             <TabItem IsVisible="{Binding !!DvdWritableInfo}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding Dvd_R_WLabel}" />
+                    <TextBlock Text="{x:Static localization:Core.Title_DVD_Plus_Dash_R_W}" />
                 </TabItem.Header>
                 <ContentControl Content="{Binding DvdWritableInfo}" />
             </TabItem>
             <TabItem IsVisible="{Binding !!XboxInfo}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding XboxLabel}" />
+                    <TextBlock Text="{x:Static localization:Core.Title_Xbox}" />
                 </TabItem.Header>
                 <ContentControl Content="{Binding XboxInfo}" />
             </TabItem>
             <TabItem IsVisible="{Binding !!BlurayInfo}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding BluRayLabel}" />
+                    <TextBlock Text="{x:Static localization:Core.Title_Blu_ray}" />
                 </TabItem.Header>
                 <ContentControl Content="{Binding BlurayInfo}" />
             </TabItem>
         </TabControl>
         <Button Command="{Binding DumpCommand}">
-            <TextBlock Text="{Binding DumpLabel}" />
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Dump_media_to_image}" />
         </Button>
         <Button Command="{Binding ScanCommand}">
-            <TextBlock Text="{Binding ScanLabel}" />
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Scan_media_surface}" />
         </Button>
     </StackPanel>
 </UserControl>

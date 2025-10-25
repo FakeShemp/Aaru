@@ -36,6 +36,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:windows="clr-namespace:Aaru.Gui.ViewModels.Windows"
+        xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
@@ -49,13 +50,13 @@
         <windows:ImageSidecarViewModel />
     </Design.DataContext>
     <StackPanel Orientation="Vertical">
-        <TextBlock Text="{Binding DestinationFileLabel}" />
+        <TextBlock Text="{x:Static localization:UI.Title_Destination_file}" />
         <StackPanel Orientation="Horizontal">
             <TextBox Text="{Binding DestinationText}"
                      IsReadOnly="True" />
             <Button Command="{Binding DestinationCommand}"
                     IsEnabled="{Binding DestinationEnabled}">
-                <TextBlock Text="{Binding ChooseLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Choose}" />
             </Button>
         </StackPanel>
         <StackPanel Orientation="Vertical"
@@ -80,16 +81,16 @@
         <StackPanel Orientation="Horizontal">
             <Button Command="{Binding StartCommand}"
                     IsVisible="{Binding StartVisible}">
-                <TextBlock Text="{Binding StartLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Start}" />
             </Button>
             <Button Command="{Binding CloseCommand}"
                     IsVisible="{Binding CloseVisible}">
-                <TextBlock Text="{Binding CloseLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
             </Button>
             <Button Command="{Binding StopCommand}"
                     IsEnabled="{Binding StopEnabled}"
                     IsVisible="{Binding StopVisible}">
-                <TextBlock Text="{Binding StopLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Stop}" />
             </Button>
         </StackPanel>
     </StackPanel>

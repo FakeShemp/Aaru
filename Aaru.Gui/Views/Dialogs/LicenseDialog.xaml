@@ -36,6 +36,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dialogs="clr-namespace:Aaru.Gui.ViewModels.Dialogs"
+        xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
@@ -44,16 +45,14 @@
         x:Class="Aaru.Gui.Views.Dialogs.LicenseDialog"
         Icon="/Assets/aaru-logo.png"
         CanResize="False"
-        Title="{Binding Title}">
+        Title="{x:Static localization:UI.Title_Aaru_license}">
     <Design.DataContext>
         <dialogs:LicenseViewModel />
     </Design.DataContext>
     <Border Padding="15">
         <Grid HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="260" /> <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+              VerticalAlignment="Stretch"
+              RowDefinitions="260,Auto">
             <TextBox Grid.Row="0"
                      IsReadOnly="True"
                      Text="{Binding LicenseText}" />
@@ -62,7 +61,7 @@
                 <Button HorizontalAlignment="Right"
                         VerticalAlignment="Bottom"
                         Command="{Binding CloseCommand}">
-                    <TextBlock Text="{Binding CloseLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
                 </Button>
             </Border>
         </Grid>

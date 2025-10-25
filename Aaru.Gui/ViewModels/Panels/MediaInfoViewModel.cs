@@ -138,7 +138,7 @@ public sealed partial class MediaInfoViewModel : ViewModelBase
         {
             var sbSerial = new StringBuilder();
 
-            for(int i = 4; i < scsiInfo.MediaSerialNumber.Length; i++)
+            for(var i = 4; i < scsiInfo.MediaSerialNumber.Length; i++)
                 sbSerial.Append($"{scsiInfo.MediaSerialNumber[i]:X2}");
 
             MediaSerial = sbSerial.ToString();
@@ -254,30 +254,6 @@ public sealed partial class MediaInfoViewModel : ViewModelBase
     public ICommand SaveMediumSupportCommand          { get; }
     public ICommand DumpCommand                       { get; }
     public ICommand ScanCommand                       { get; }
-
-    public string MediaInformationLabel           => UI.Title_Media_information;
-    public string GeneralLabel                    => UI.Title_General;
-    public string MediaTypeLabel                  => UI.Title_Media_type;
-    public string MediaSerialNumberLabel          => UI.Title_Media_serial_number;
-    public string SaveReadMediaSerialLabel        => UI.ButtonLabel_Save_READ_MEDIA_SERIAL_NUMBER_response;
-    public string SaveReadCapacityLabel           => UI.ButtonLabel_Save_READ_CAPACITY_response;
-    public string SaveReadCapacity16Label         => UI.ButtonLabel_Save_READ_CAPACITY_16_response;
-    public string MMCLabel                        => Localization.Core.Title_MMC;
-    public string SaveGetConfigurationLabel       => UI.ButtonLabel_Save_GET_CONFIGURATION_response;
-    public string SaveRecognizedFormatLayersLabel => UI.ButtonLabel_Save_RECOGNIZED_FORMAT_LAYERS_response;
-    public string SaveWriteProtectionStatusLabel  => UI.ButtonLabel_Save_WRITE_PROTECTION_STATUS_response;
-    public string SscLabel                        => Localization.Core.Title_SSC;
-    public string DensitySupportLabel             => UI.Densities_supported_by_currently_inserted_media;
-    public string MediumSupportLabel              => UI.Medium_types_currently_inserted_in_device;
-    public string SaveDensitySupportLabel         => UI.ButtonLabel_Save_REPORT_DENSITY_SUPPORT_MEDIA_response;
-    public string SaveMediumSupportLabel          => UI.ButtonLabel_Save_REPORT_DENSITY_SUPPORT_MEDIUM_MEDIA_response;
-    public string CompactDiscLabel                => Localization.Core.Title_CompactDisc;
-    public string DvdLabel                        => Localization.Core.Title_DVD;
-    public string Dvd_R_WLabel                    => Localization.Core.Title_DVD_Plus_Dash_R_W;
-    public string XboxLabel                       => Localization.Core.Title_Xbox;
-    public string BluRayLabel                     => Localization.Core.Title_Blu_ray;
-    public string DumpLabel                       => UI.ButtonLabel_Dump_media_to_image;
-    public string ScanLabel                       => UI.ButtonLabel_Scan_media_surface;
 
     async Task SaveElementAsync(byte[] data)
     {

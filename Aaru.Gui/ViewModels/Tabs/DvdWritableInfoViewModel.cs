@@ -35,7 +35,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Aaru.Decoders.DVD;
-using Aaru.Localization;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
@@ -228,26 +227,6 @@ public sealed class DvdWritableInfoViewModel
     public ICommand SaveDvdrDlRemapAnchorPointCommand        { get; }
     public ICommand SaveDvdPlusAdipCommand                   { get; }
     public ICommand SaveDvdPlusDcbCommand                    { get; }
-
-    public string DvdRamDdsLabel                         => UI.Disc_Definition_Structure;
-    public string DvdRamCartridgeStatusLabel             => UI.Cartridge_Status;
-    public string DvdRamSpareAreaInformationLabel        => UI.Spare_Area_Information;
-    public string SaveDvdRamDdsLabel                     => UI.ButtonLabel_Save_Disc_Definition_Structure;
-    public string SaveDvdRamCartridgeStatusLabel         => UI.ButtonLabel_Save_Cartridge_Status;
-    public string SaveDvdRamSpareAreaInformationLabel    => UI.ButtonLabel_Save_Spare_Area_Information;
-    public string SaveLastBorderOutRmdLabel              => UI.ButtonLabel_Save_Last_Border_Out_RMD;
-    public string SaveDvdPreRecordedInfoLabel            => UI.ButtonLabel_Save_Pre_Recorded_Physical_Information;
-    public string SaveDvdrMediaIdentifierLabel           => UI.ButtonLabel_Save_Media_Identifier;
-    public string SaveDvdrPhysicalInformationLabel       => UI.ButtonLabel_Save_Recordable_Physical_Information;
-    public string SaveHddvdrMediumStatusLabel            => UI.ButtonLabel_Save_Medium_Status;
-    public string SaveHddvdrLastRmdLabel                 => UI.ButtonLabel_Save_Last_Border_Out_RMD;
-    public string SaveDvdrLayerCapacityLabel             => UI.ButtonLabel_Save_Layer_Capacity;
-    public string SaveDvdrDlMiddleZoneStartLabel         => UI.ButtonLabel_Save_Middle_Zone_Start;
-    public string SaveDvdrDlJumpIntervalSizeLabel        => UI.ButtonLabel_Save_Jump_Interval_Size;
-    public string SaveDvdrDlManualLayerJumpStartLbaLabel => UI.ButtonLabel_Save_Manual_Layer_Jump_Start_LBA;
-    public string SaveDvdrDlRemapAnchorPointLabel        => UI.ButtonLabel_Save_Remap_Anchor_Point;
-    public string SaveDvdPlusAdipLabel                   => UI.ButtonLabel_Save_ADIP;
-    public string SaveDvdPlusDcbLabel                    => UI.ButtonLabel_Save_Disc_Control_Blocks;
 
     async Task SaveElementAsync(byte[] data)
     {

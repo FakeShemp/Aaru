@@ -36,12 +36,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:windows="clr-namespace:Aaru.Gui.ViewModels.Windows"
+        xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
         x:Class="Aaru.Gui.Views.Windows.ImageEntropy"
         Icon="/Assets/aaru-logo.png"
-        Title="{Binding Title}">
+        Title="{x:Static localization:UI.Title_Calculating_entropy}">
     <Design.DataContext>
         <windows:ImageEntropyViewModel />
     </Design.DataContext>
@@ -50,17 +51,17 @@
                     Orientation="Vertical">
             <CheckBox IsEnabled="{Binding DuplicatedSectorsEnabled}"
                       IsChecked="{Binding DuplicatedSectorsChecked}">
-                <TextBlock Text="{Binding DuplicatedSectorsLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Calculates_how_many_sectors_are_duplicated}" />
             </CheckBox>
             <CheckBox IsEnabled="{Binding SeparatedTracksEnabled}"
                       IsChecked="{Binding SeparatedTracksChecked}"
                       IsVisible="{Binding SeparatedTracksVisible}">
-                <TextBlock Text="{Binding SeparatedTracksLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Calculates_entropy_for_each_track_separately}" />
             </CheckBox>
             <CheckBox IsEnabled="{Binding WholeDiscEnabled}"
                       IsChecked="{Binding WholeDiscChecked}"
                       IsVisible="{Binding WholeDiscVisible}">
-                <TextBlock Text="{Binding WholeDiscLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Calculates_entropy_for_the_whole_disc}" />
             </CheckBox>
         </StackPanel>
         <StackPanel Orientation="Vertical"
@@ -69,16 +70,16 @@
                        IsVisible="{Binding MediaEntropyVisible}" />
             <TextBlock Text="{Binding MediaUniqueSectorsText}"
                        IsVisible="{Binding MediaUniqueSectorsVisible}" />
-            <TextBlock Text="{Binding TrackEntropyLabel}"
+            <TextBlock Text="{x:Static localization:UI.Title_Track_entropy}"
                        IsVisible="{Binding SeparatedTracksEnabled}" />
             <DataGrid IsVisible="{Binding SeparatedTracksEnabled}"
                       ItemsSource="{Binding TrackEntropy}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="{Binding TrackLabel}"
+                    <DataGridTextColumn Header="{x:Static localization:Core.Title_Track}"
                                         Binding="{Binding Track}" />
-                    <DataGridTextColumn Header="{Binding EntropyLabel}"
+                    <DataGridTextColumn Header="{x:Static localization:UI.Title_Entropy}"
                                         Binding="{Binding Entropy}" />
-                    <DataGridTextColumn Header="{Binding UniqueSectorsLabel}"
+                    <DataGridTextColumn Header="{x:Static localization:UI.Title_Unique_sectors}"
                                         Binding="{Binding UniqueSectors}" />
                 </DataGrid.Columns>
             </DataGrid>
@@ -102,15 +103,15 @@
         </StackPanel>
         <Button Command="{Binding StartCommand}"
                 IsVisible="{Binding StartVisible}">
-            <TextBlock Text="{Binding StartLabel}" />
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Start}" />
         </Button>
         <Button Command="{Binding CloseCommand}"
                 IsVisible="{Binding CloseVisible}">
-            <TextBlock Text="{Binding CloseLabel}" />
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
         </Button>
         <Button Command="{Binding StopCommand}"
                 IsVisible="{Binding StopVisible}">
-            <TextBlock Text="{Binding StopLabel}" />
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Stop}" />
         </Button>
     </StackPanel>
 </Window>

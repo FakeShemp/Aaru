@@ -261,56 +261,29 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
         ResumeFileText   = _dumpHardware == null ? "" : UI._From_image_;
     }
 
-    public string                                 SourceImageLabel => UI.Source_image;
-    public string                                 OutputFormatLabel => UI.Output_format;
-    public string                                 ChooseLabel => UI.ButtonLabel_Choose;
-    public string                                 SectorsLabel => UI.How_many_sectors_to_convert_at_once;
-    public string                                 ForceLabel => UI.Continue_conversion_even_if_data_lost;
-    public string                                 CreatorLabel => UI.Who_person_created_the_image;
-    public string                                 GetFromSourceImageLabel => UI.ButtonLabel_Get_from_source_image;
-    public string                                 MetadataLabel => UI.Title_Metadata;
-    public string                                 MediaLabel => UI.Title_Media;
-    public string                                 TitleLabel => UI.Title_Title;
-    public string                                 ManufacturerLabel => UI.Title_Manufacturer;
-    public string                                 ModelLabel => UI.Title_Model;
-    public string                                 SerialNumberLabel => UI.Title_Serial_number;
-    public string                                 BarcodeLabel => UI.Title_Barcode;
-    public string                                 PartNumberLabel => UI.Title_Part_number;
-    public string                                 NumberInSequenceLabel => UI.Title_Number_in_sequence;
-    public string                                 LastMediaOfTheSequenceLabel => UI.Title_Last_media_of_the_sequence;
-    public string                                 DriveLabel => UI.Title_Drive;
-    public string                                 FirmwareRevisionLabel => UI.Title_Firmware_revision;
-    public string                                 CommentsLabel => UI.Title_Comments;
-    public string                                 AaruMetadataLabel => UI.Title_Existing_Aaru_Metadata_sidecar;
-    public string                                 FromImageLabel => UI.Title_From_image;
-    public string                                 ResumeFileLabel => UI.Title_Existing_resume_file;
-    public string                                 StartLabel => UI.ButtonLabel_Start;
-    public string                                 CloseLabel => UI.ButtonLabel_Close;
-    public string                                 StopLabel => UI.ButtonLabel_Stop;
-    public ObservableCollection<ImagePluginModel> PluginsList { get; }
-
-    public ICommand DestinationCommand           { get; }
-    public ICommand CreatorCommand               { get; }
-    public ICommand MediaTitleCommand            { get; }
-    public ICommand MediaManufacturerCommand     { get; }
-    public ICommand MediaModelCommand            { get; }
-    public ICommand MediaSerialNumberCommand     { get; }
-    public ICommand MediaBarcodeCommand          { get; }
-    public ICommand MediaPartNumberCommand       { get; }
-    public ICommand MediaSequenceCommand         { get; }
-    public ICommand LastMediaSequenceCommand     { get; }
-    public ICommand DriveManufacturerCommand     { get; }
-    public ICommand DriveModelCommand            { get; }
-    public ICommand DriveSerialNumberCommand     { get; }
-    public ICommand DriveFirmwareRevisionCommand { get; }
-    public ICommand CommentsCommand              { get; }
-    public ICommand AaruMetadataFromImageCommand { get; }
-    public ICommand AaruMetadataCommand          { get; }
-    public ICommand ResumeFileFromImageCommand   { get; }
-    public ICommand ResumeFileCommand            { get; }
-    public ICommand StartCommand                 { get; }
-    public ICommand CloseCommand                 { get; }
-    public ICommand StopCommand                  { get; }
+    public ObservableCollection<ImagePluginModel> PluginsList                  { get; }
+    public ICommand                               DestinationCommand           { get; }
+    public ICommand                               CreatorCommand               { get; }
+    public ICommand                               MediaTitleCommand            { get; }
+    public ICommand                               MediaManufacturerCommand     { get; }
+    public ICommand                               MediaModelCommand            { get; }
+    public ICommand                               MediaSerialNumberCommand     { get; }
+    public ICommand                               MediaBarcodeCommand          { get; }
+    public ICommand                               MediaPartNumberCommand       { get; }
+    public ICommand                               MediaSequenceCommand         { get; }
+    public ICommand                               LastMediaSequenceCommand     { get; }
+    public ICommand                               DriveManufacturerCommand     { get; }
+    public ICommand                               DriveModelCommand            { get; }
+    public ICommand                               DriveSerialNumberCommand     { get; }
+    public ICommand                               DriveFirmwareRevisionCommand { get; }
+    public ICommand                               CommentsCommand              { get; }
+    public ICommand                               AaruMetadataFromImageCommand { get; }
+    public ICommand                               AaruMetadataCommand          { get; }
+    public ICommand                               ResumeFileFromImageCommand   { get; }
+    public ICommand                               ResumeFileCommand            { get; }
+    public ICommand                               StartCommand                 { get; }
+    public ICommand                               CloseCommand                 { get; }
+    public ICommand                               StopCommand                  { get; }
 
     async Task StartAsync()
     {

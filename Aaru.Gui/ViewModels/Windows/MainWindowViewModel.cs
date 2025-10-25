@@ -165,28 +165,6 @@ public sealed class MainWindowViewModel : ViewModelBase
             new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/media-eject.png")));
     }
 
-    public string FileLabel                 => UI.Menu_File;
-    public string OpenLabel                 => UI.Menu_Open;
-    public string SettingsLabel             => UI.Menu_Settings;
-    public string ExitLabel                 => UI.Menu_Exit;
-    public string DevicesLabel              => UI.Menu_Devices;
-    public string RefreshDevicesLabel       => UI.Menu_Refresh;
-    public string WindowLabel               => UI.Menu_Window;
-    public string ConsoleLabel              => UI.Menu_Console;
-    public string HelpLabel                 => UI.Menu_Help;
-    public string EncodingsLabel            => UI.Menu_Encodings;
-    public string PluginsLabel              => UI.Menu_Plugins;
-    public string StatisticsLabel           => UI.Menu_Statistics;
-    public string AboutLabel                => UI.Menu_About;
-    public string RefreshDevicesFullLabel   => UI.Menu_Refresh_devices;
-    public string CloseAllImagesLabel       => UI.Menu_Close_all_images;
-    public string CalculateEntropyLabel     => UI.ButtonLabel_Calculate_entropy;
-    public string VerifyImageLabel          => UI.ButtonLabel_Verify;
-    public string ChecksumImageLabel        => UI.ButtonLabel_Checksum;
-    public string CreateSidecarLabel        => UI.ButtonLabel_Create_Aaru_Metadata_sidecar;
-    public string ViewImageSectorsLabel     => UI.ButtonLabel_View_sectors;
-    public string DecodeImageMediaTagsLabel => UI.ButtonLabel_Decode_media_tags;
-
     public bool DevicesSupported
     {
         get => _devicesSupported;
@@ -609,7 +587,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                 List<CommonTypes.Partition> partitions = Core.Partitions.GetAll(imageFormat);
                 Core.Partitions.AddSchemesToStats(partitions);
 
-                bool           checkRaw = false;
+                var            checkRaw = false;
                 List<string>   idPlugins;
                 PluginRegister plugins = PluginRegister.Singleton;
 

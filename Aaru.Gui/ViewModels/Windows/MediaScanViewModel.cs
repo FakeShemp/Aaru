@@ -161,9 +161,6 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     public string SpeedLabel => UI.ButtonLabel_Stop;
     public string KbsLabel   => UI.Kb_s;
     public string BlockLabel => UI.Title_Block;
-    public string StartLabel => UI.ButtonLabel_Start;
-    public string CloseLabel => UI.ButtonLabel_Close;
-    public string StopLabel  => UI.ButtonLabel_Stop;
 
     public ObservableCollection<(ulong block, double duration)> BlockMapList { get; }
 

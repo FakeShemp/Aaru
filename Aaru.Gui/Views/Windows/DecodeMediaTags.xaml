@@ -36,6 +36,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:windows="clr-namespace:Aaru.Gui.ViewModels.Windows"
+        xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
@@ -50,7 +51,7 @@
     </Design.DataContext>
     <StackPanel Orientation="Vertical">
         <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{Binding TagLabel}" />
+            <TextBlock Text="{x:Static localization:UI.Title_Tag}" />
             <ComboBox ItemsSource="{Binding TagsList}"
                       SelectedItem="{Binding SelectedTag}">
                 <ComboBox.DataTemplates>
@@ -63,14 +64,14 @@
         <TabControl>
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock Text="{Binding HexViewLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.Title_HexView}" />
                 </TabItem.Header>
                 <TextBox IsReadOnly="True"
                          Text="{Binding HexViewText}" />
             </TabItem>
             <TabItem IsVisible="{Binding DecodedVisible}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding DecodedLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.Title_Decoded}" />
                 </TabItem.Header>
                 <TextBox IsReadOnly="True"
                          Text="{Binding DecodedText}" />

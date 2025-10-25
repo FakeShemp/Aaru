@@ -36,6 +36,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:tabs="clr-namespace:Aaru.Gui.ViewModels.Tabs"
+             xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -48,7 +49,7 @@
             <DataGrid ItemsSource="{Binding CisList}"
                       SelectedItem="{Binding SelectedCis}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="{Binding CisLabel}"
+                    <DataGridTextColumn Header="{x:Static localization:UI.Title_CIS}"
                                         Binding="{Binding Code}" />
                 </DataGrid.Columns>
             </DataGrid>
@@ -56,7 +57,7 @@
                      Text="{Binding PcmciaCisText}" />
         </StackPanel>
         <Button Command="{Binding SavePcmciaCisCommand}">
-            <TextBlock Text="{Binding SavePcmciaCisLabel}" />
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_PCMCIA_CIS_to_file}" />
         </Button>
     </StackPanel>
 </UserControl>

@@ -6219,5 +6219,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Converting_tag_1_for_overflow_sector_0", resourceCulture);
             }
         }
+        
+        public static string SSC_Label {
+            get {
+                return ResourceManager.GetString("SSC_Label", resourceCulture);
+            }
+        }
     }
 }

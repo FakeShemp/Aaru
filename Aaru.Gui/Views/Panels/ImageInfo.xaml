@@ -36,6 +36,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:panels="clr-namespace:Aaru.Gui.ViewModels.Panels"
+             xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -49,14 +50,14 @@
                HorizontalAlignment="Center"
                VerticalAlignment="Center"
                Source="{Binding MediaLogo}" />
-        <TextBlock Text="{Binding ImageInformationLabel}"
+        <TextBlock Text="{x:Static localization:UI.Title_Image_information}"
                    FontWeight="Bold" />
         <TextBlock Text="{Binding ImagePathText}" /> <TextBlock Text="{Binding FilterText}" />
         <TextBlock Text="{Binding ImageIdentifiedText}" />
         <TabControl>
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock Text="{Binding GeneralLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.Title_General}" />
                 </TabItem.Header>
                 <StackPanel>
                     <TextBlock Text="{Binding ImageFormatText}"
@@ -79,14 +80,14 @@
                                IsVisible="{Binding !!HasPartitionsText}" />
                     <TextBlock Text="{Binding HasSessionsText}"
                                IsVisible="{Binding !!HasSessionsText}" />
-                    <TextBlock Text="{Binding CommentsLabel}"
+                    <TextBlock Text="{x:Static localization:UI.Title_Comments}"
                                IsVisible="{Binding !!CommentsText}"
                                FontWeight="Bold" />
                     <TextBox IsReadOnly="True"
                              TextWrapping="Wrap"
                              Text="{Binding CommentsText}"
                              IsVisible="{Binding !!CommentsText}" />
-                    <TextBlock Text="{Binding MediaInformationLabel}"
+                    <TextBlock Text="{x:Static localization:UI.Title_Media_information}"
                                FontWeight="Bold"
                                IsVisible="{Binding MediaInformationVisible}" />
                     <TextBlock Text="{Binding MediaSequenceText}"
@@ -103,7 +104,7 @@
                                IsVisible="{Binding !!MediaBarcodeText}" />
                     <TextBlock Text="{Binding MediaPartNumberText}"
                                IsVisible="{Binding !!MediaPartNumberText}" />
-                    <TextBlock Text="{Binding DriveInformationLabel}"
+                    <TextBlock Text="{x:Static localization:UI.Title_Drive_information}"
                                FontWeight="Bold"
                                IsVisible="{Binding DriveInformationVisible}" />
                     <TextBlock Text="{Binding DriveManufacturerText}"
@@ -116,27 +117,27 @@
                                IsVisible="{Binding !!DriveFirmwareRevisionText}" />
                     <TextBlock Text="{Binding MediaGeometryText}"
                                IsVisible="{Binding !!MediaGeometryText}" />
-                    <TextBlock Text="{Binding ReadableMediaTagsLabel}"
+                    <TextBlock Text="{x:Static localization:UI.Title_Readable_media_tags}"
                                FontWeight="Bold"
                                IsVisible="{Binding !!MediaTagsList.Count}" />
                     <DataGrid ItemsSource="{Binding MediaTagsList}"
                               IsVisible="{Binding !!MediaTagsList.Count}"
                               IsReadOnly="True">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{Binding TagLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Tag}"
                                                 Binding="{Binding .}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
                         </DataGrid.Columns>
                     </DataGrid>
-                    <TextBlock Text="{Binding ReadableSectorTagsLabel}"
+                    <TextBlock Text="{x:Static localization:UI.Title_Readable_sector_tags}"
                                FontWeight="Bold"
                                IsVisible="{Binding !!SectorTagsList.Count}" />
                     <DataGrid ItemsSource="{Binding SectorTagsList}"
                               IsVisible="{Binding !!SectorTagsList.Count}"
                               IsReadOnly="True">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{Binding TagLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Tag}"
                                                 Binding="{Binding .}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
@@ -146,25 +147,25 @@
             </TabItem>
             <TabItem IsVisible="{Binding !!Sessions.Count}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding SessionsLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.Title_Sessions}" />
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding Sessions}"
                           IsVisible="{Binding !!Sessions.Count}"
                           IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="{Binding SessionLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Session}"
                                             Binding="{Binding SessionSequence}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding FirstTrackLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:Core.Title_First_track}"
                                             Binding="{Binding StartTrack}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding LastTrackLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Last_track}"
                                             Binding="{Binding EndTrack}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding StartLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Start}"
                                             Binding="{Binding StartSector}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding EndLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:Core.Title_End}"
                                             Binding="{Binding EndSector}"
                                             Width="Auto" />
                     </DataGrid.Columns>
@@ -172,34 +173,34 @@
             </TabItem>
             <TabItem IsVisible="{Binding !!Tracks.Count}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding TracksLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.Title_Tracks}" />
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding Tracks}"
                           IsVisible="{Binding !!Tracks.Count}"
                           IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="{Binding TrackLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Track}"
                                             Binding="{Binding Sequence}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding TypeLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Type}"
                                             Binding="{Binding Type}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding BpsLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Bps}"
                                             Binding="{Binding BytesPerSector}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding RawBpsLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Raw_bps}"
                                             Binding="{Binding RawBytesPerSector}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding SubchannelLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Subchannel}"
                                             Binding="{Binding SubchannelType}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding PregapLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Pregap}"
                                             Binding="{Binding Pregap}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding StartLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Start}"
                                             Binding="{Binding StartSector}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding EndLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:Core.Title_End}"
                                             Binding="{Binding EndSector}"
                                             Width="Auto" />
                     </DataGrid.Columns>
@@ -207,37 +208,37 @@
             </TabItem>
             <TabItem IsVisible="{Binding !!DumpHardwareList.Count}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding DumpHardwareLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.Title_Dump_hardware}" />
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding DumpHardwareList}"
                           IsVisible="{Binding !!DumpHardwareList.Count}"
                           IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="{Binding ManufacturerLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Manufacturer}"
                                             Binding="{Binding Manufacturer}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding ModelLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Model}"
                                             Binding="{Binding Model}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding RevisionLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Revision}"
                                             Binding="{Binding Revision}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding SerialLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Serial}"
                                             Binding="{Binding Serial}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding SoftwareLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Software}"
                                             Binding="{Binding SoftwareName}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding VersionLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
                                             Binding="{Binding SoftwareVersion}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding OperatingSystemLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Operating_system}"
                                             Binding="{Binding OperatingSystem}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding StartLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Start}"
                                             Binding="{Binding TrackStartSector}"
                                             Width="Auto" />
-                        <DataGridTextColumn Header="{Binding EndLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:Core.Title_End}"
                                             Binding="{Binding TrackEndSector}"
                                             Width="Auto" />
                     </DataGrid.Columns>
@@ -245,55 +246,55 @@
             </TabItem>
             <TabItem IsVisible="{Binding !!ScsiInfo}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding SCSILabel}" />
+                    <TextBlock Text="{x:Static localization:UI.Title_SCSI}" />
                 </TabItem.Header>
                 <ContentControl Content="{Binding ScsiInfo}" />
             </TabItem>
             <TabItem IsVisible="{Binding !!AtaInfo}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding ATA_ATAPILabel}" />
+                    <TextBlock Text="{x:Static localization:UI.Title_ATA_ATAPI}" />
                 </TabItem.Header>
                 <ContentControl Content="{Binding AtaInfo}" />
             </TabItem>
             <TabItem IsVisible="{Binding !!CompactDiscInfo}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding CompactDiscLabel}" />
+                    <TextBlock Text="{x:Static localization:Core.Title_CompactDisc}" />
                 </TabItem.Header>
                 <ContentControl Content="{Binding CompactDiscInfo}" />
             </TabItem>
             <TabItem IsVisible="{Binding !!DvdInfo}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding Dvd_Hd_DvdLabel}" />
+                    <TextBlock Text="{x:Static localization:Core.Title_DVD_HD_DVD}" />
                 </TabItem.Header>
                 <ContentControl Content="{Binding DvdInfo}" />
             </TabItem>
             <TabItem IsVisible="{Binding !!DvdWritableInfo}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding Dvd_R_WLabel}" />
+                    <TextBlock Text="{x:Static localization:Core.Title_DVD_Plus_Dash_R_W}" />
                 </TabItem.Header>
                 <ContentControl Content="{Binding DvdWritableInfo}" />
             </TabItem>
             <TabItem IsVisible="{Binding !!BlurayInfo}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding BluRayLabel}" />
+                    <TextBlock Text="{x:Static localization:Core.Title_Blu_ray}" />
                 </TabItem.Header>
                 <ContentControl Content="{Binding BlurayInfo}" />
             </TabItem>
             <TabItem IsVisible="{Binding !!PcmciaInfo}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding PcmciaLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.Title_PCMCIA}" />
                 </TabItem.Header>
                 <ContentControl Content="{Binding PcmciaInfo}" />
             </TabItem>
             <TabItem IsVisible="{Binding !!SdMmcInfo}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding Sd_MMCLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.Title_SD_MMC}" />
                 </TabItem.Header>
                 <ContentControl Content="{Binding SdMmcInfo}" />
             </TabItem>
             <TabItem IsVisible="{Binding !!XboxInfo}">
                 <TabItem.Header>
-                    <TextBlock Text="{Binding XboxLabel}" />
+                    <TextBlock Text="{x:Static localization:Core.Title_Xbox}" />
                 </TabItem.Header>
                 <ContentControl Content="{Binding XboxInfo}" />
             </TabItem>
@@ -301,25 +302,25 @@
         <StackPanel Orientation="Horizontal"
                     Spacing="5">
             <Button Command="{Binding EntropyCommand}">
-                <TextBlock Text="{Binding EntropyLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Calculate_entropy}" />
             </Button>
             <Button Command="{Binding VerifyCommand}">
-                <TextBlock Text="{Binding VerifyLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Verify}" />
             </Button>
             <Button Command="{Binding ChecksumCommand}">
-                <TextBlock Text="{Binding ChecksumLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Checksum}" />
             </Button>
             <Button Command="{Binding ConvertCommand}">
-                <TextBlock Text="{Binding ConvertLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Convert_to}" />
             </Button>
             <Button Command="{Binding CreateSidecarCommand}">
-                <TextBlock Text="{Binding CreateSidecarLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Create_Aaru_Metadata_sidecar}" />
             </Button>
             <Button Command="{Binding ViewSectorsCommand}">
-                <TextBlock Text="{Binding ViewSectorsLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_View_sectors}" />
             </Button>
             <Button Command="{Binding DecodeMediaTagCommand}">
-                <TextBlock Text="{Binding DecodeMediaTagLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Decode_media_tags}" />
             </Button>
         </StackPanel>
     </StackPanel>

@@ -141,20 +141,6 @@ public sealed partial class ImageEntropyViewModel : ViewModelBase
         }
     }
 
-    public string DuplicatedSectorsLabel => UI.Calculates_how_many_sectors_are_duplicated;
-    public string SeparatedTracksLabel   => UI.Calculates_entropy_for_each_track_separately;
-    public string WholeDiscLabel         => UI.Calculates_entropy_for_the_whole_disc;
-    public string TrackEntropyLabel      => UI.Title_Track_entropy;
-    public string TrackLabel             => Localization.Core.Title_Track;
-    public string EntropyLabel           => UI.Title_Entropy;
-    public string UniqueSectorsLabel     => UI.Title_Unique_sectors;
-    public string StartLabel             => UI.ButtonLabel_Start;
-    public string CloseLabel             => UI.ButtonLabel_Close;
-    public string StopLabel              => UI.ButtonLabel_Stop;
-
-    [JetBrains.Annotations.NotNull]
-    public string Title => UI.Title_Calculating_entropy;
-
     public ObservableCollection<TrackEntropyModel> TrackEntropy { get; }
     public ICommand                                StartCommand { get; }
     public ICommand                                CloseCommand { get; }

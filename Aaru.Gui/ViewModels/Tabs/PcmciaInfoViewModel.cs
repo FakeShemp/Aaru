@@ -153,9 +153,6 @@ public sealed partial class PcmciaInfoViewModel : ViewModelBase
             AaruLogging.Debug(MODULE_NAME, UI.PCMCIA_CIS_returned_no_tuples);
     }
 
-    public string CisLabel           => UI.Title_CIS;
-    public string SavePcmciaCisLabel => UI.ButtonLabel_Save_PCMCIA_CIS_to_file;
-
     public ObservableCollection<PcmciaCisModel> CisList { get; }
 
     public PcmciaCisModel SelectedCis

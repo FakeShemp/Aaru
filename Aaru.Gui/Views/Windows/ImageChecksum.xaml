@@ -36,6 +36,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:windows="clr-namespace:Aaru.Gui.ViewModels.Windows"
+        xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
@@ -50,86 +51,86 @@
             <CheckBox IsEnabled="{Binding OptionsEnabled}"
                       IsVisible="{Binding ChecksumTracksVisible}"
                       IsChecked="{Binding ChecksumMediaChecked}">
-                <TextBlock Text="{Binding ChecksumMediaLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Checksums_the_whole_disc}" />
             </CheckBox>
             <CheckBox IsEnabled="{Binding OptionsEnabled}"
                       IsVisible="{Binding ChecksumTracksVisible}"
                       IsChecked="{Binding ChecksumTracksChecked}">
-                <TextBlock Text="{Binding ChecksumTracksLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Checksums_each_track_separately}" />
             </CheckBox>
             <CheckBox IsEnabled="{Binding OptionsEnabled}"
                       IsChecked="{Binding Adler32Checked}">
-                <TextBlock Text="{Binding Adler32Label}" />
+                <TextBlock Text="{x:Static localization:UI.Calculates_Adler_32}" />
             </CheckBox>
             <CheckBox IsEnabled="{Binding OptionsEnabled}"
                       IsChecked="{Binding Crc16Checked}">
-                <TextBlock Text="{Binding Crc16Label}" />
+                <TextBlock Text="{x:Static localization:UI.Calculates_CRC16}" />
             </CheckBox>
             <CheckBox IsEnabled="{Binding OptionsEnabled}"
                       IsChecked="{Binding Crc32Checked}">
-                <TextBlock Text="{Binding Crc32Label}" />
+                <TextBlock Text="{x:Static localization:UI.Calculates_CRC32}" />
             </CheckBox>
             <CheckBox IsEnabled="{Binding OptionsEnabled}"
                       IsChecked="{Binding Crc64Checked}">
-                <TextBlock Text="{Binding Crc64Label}" />
+                <TextBlock Text="{x:Static localization:UI.Calculates_CRC64_ECMA}" />
             </CheckBox>
             <CheckBox IsEnabled="{Binding OptionsEnabled}"
                       IsChecked="{Binding Fletcher16Checked}">
-                <TextBlock Text="{Binding Fletcher16Label}" />
+                <TextBlock Text="{x:Static localization:UI.Calculates_Fletcher_16}" />
             </CheckBox>
             <CheckBox IsEnabled="{Binding OptionsEnabled}"
                       IsChecked="{Binding Fletcher32Checked}">
-                <TextBlock Text="{Binding Fletcher32Label}" />
+                <TextBlock Text="{x:Static localization:UI.Calculates_Fletcher_32}" />
             </CheckBox>
             <CheckBox IsEnabled="{Binding OptionsEnabled}"
                       IsChecked="{Binding Md5Checked}">
-                <TextBlock Text="{Binding Md5Label}" />
+                <TextBlock Text="{x:Static localization:UI.Calculates_MD5}" />
             </CheckBox>
             <CheckBox IsEnabled="{Binding OptionsEnabled}"
                       IsChecked="{Binding Sha1Checked}">
-                <TextBlock Text="{Binding Sha1Label}" />
+                <TextBlock Text="{x:Static localization:UI.Calculates_SHA1}" />
             </CheckBox>
             <CheckBox IsEnabled="{Binding OptionsEnabled}"
                       IsChecked="{Binding Sha256Checked}">
-                <TextBlock Text="{Binding Sha256Label}" />
+                <TextBlock Text="{x:Static localization:UI.Calculates_SHA256}" />
             </CheckBox>
             <CheckBox IsEnabled="{Binding OptionsEnabled}"
                       IsChecked="{Binding Sha384Checked}">
-                <TextBlock Text="{Binding Sha384Label}" />
+                <TextBlock Text="{x:Static localization:UI.Calculates_SHA384}" />
             </CheckBox>
             <CheckBox IsEnabled="{Binding OptionsEnabled}"
                       IsChecked="{Binding Sha512Checked}">
-                <TextBlock Text="{Binding Sha512Label}" />
+                <TextBlock Text="{x:Static localization:UI.Calculates_SHA512}" />
             </CheckBox>
             <CheckBox IsEnabled="{Binding OptionsEnabled}"
                       IsChecked="{Binding SpamsumChecked}">
-                <TextBlock Text="{Binding SpamSumLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Calculates_SpamSum_fuzzy_hash}" />
             </CheckBox>
         </StackPanel>
         <StackPanel Orientation="Vertical"
                     IsVisible="{Binding ResultsVisible}">
             <StackPanel Orientation="Vertical"
                         IsVisible="{Binding TrackChecksumsVisible}">
-                <TextBlock Text="{Binding TrackChecksumsLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Title_Track_checksums}" />
                 <DataGrid ItemsSource="{Binding TrackChecksums}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="{Binding TrackLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:Core.Title_Track}"
                                             Binding="{Binding Track}" />
-                        <DataGridTextColumn Header="{Binding AlgorithmsLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Algorithms}"
                                             Binding="{Binding Algorithm}" />
-                        <DataGridTextColumn Header="{Binding HashLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Hash}"
                                             Binding="{Binding Value}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
             <StackPanel Orientation="Vertical"
                         IsVisible="{Binding MediaChecksumsVisible}">
-                <TextBlock Text="{Binding MediaChecksumsLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Title_Media_checksums}" />
                 <DataGrid ItemsSource="{Binding MediaChecksums}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="{Binding AlgorithmsLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Algorithms}"
                                             Binding="{Binding Algorithm}" />
-                        <DataGridTextColumn Header="{Binding HashLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Hash}"
                                             Binding="{Binding Value}" />
                     </DataGrid.Columns>
                 </DataGrid>
@@ -154,17 +155,17 @@
             <Button Command="{Binding StartCommand}"
                     IsEnabled="{Binding StartCommandEnabled}"
                     IsVisible="{Binding StartCommandVisible}">
-                <TextBlock Text="{Binding StartLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Start}" />
             </Button>
             <Button Command="{Binding CloseCommand}"
                     IsEnabled="{Binding CloseCommandEnabled}"
                     IsVisible="{Binding CloseCommandVisible}">
-                <TextBlock Text="{Binding CloseLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
             </Button>
             <Button Command="{Binding StopCommand}"
                     IsEnabled="{Binding StopCommandEnabled}"
                     IsVisible="{Binding StopCommandVisible}">
-                <TextBlock Text="{Binding StopLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Stop}" />
             </Button>
         </StackPanel>
     </StackPanel>

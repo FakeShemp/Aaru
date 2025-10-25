@@ -33,7 +33,6 @@
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
-using Aaru.Localization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using JetBrains.Annotations;
 
@@ -70,10 +69,6 @@ public sealed partial class ViewSectorViewModel : ViewModelBase
         TotalSectorsText = $"of {inputFormat.Info.Sectors}";
         SectorNumber     = 0;
     }
-
-    public string SectorLabel     => UI.Title_Sector;
-    public string LongSectorLabel => UI.Show_long_sector;
-
 
     public double SectorNumber
     {

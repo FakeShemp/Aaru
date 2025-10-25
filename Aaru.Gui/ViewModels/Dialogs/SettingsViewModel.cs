@@ -32,11 +32,9 @@
 
 using System.Windows.Input;
 using Aaru.Gui.Views.Dialogs;
-using Aaru.Localization;
 using Aaru.Settings;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using JetBrains.Annotations;
 
 namespace Aaru.Gui.ViewModels.Dialogs;
 
@@ -105,81 +103,6 @@ public sealed partial class SettingsViewModel : ViewModelBase
     }
 
     // TODO: Show Preferences in macOS
-    [NotNull]
-    public string Title => UI.Title_Settings;
-
-    [NotNull]
-    public string GdprLabel => UI.Title_GDPR;
-
-    [NotNull]
-    public string ReportsLabel => UI.Title_Reports;
-
-    [NotNull]
-    public string StatisticsLabel => UI.Title_Statistics;
-
-    [NotNull]
-    public string SaveLabel => UI.ButtonLabel_Save;
-
-    [NotNull]
-    public string CancelLabel => UI.ButtonLabel_Cancel;
-
-    [NotNull]
-    public string GdprText1 => UI.GDPR_Compliance;
-
-    [NotNull]
-    public string GdprText2 => UI.GDPR_Open_Source_Disclaimer;
-
-    [NotNull]
-    public string GdprText3 => UI.GDPR_Information_sharing;
-
-    [NotNull]
-    public string ReportsGloballyText => UI.Configure_Device_Report_information_disclaimer;
-
-    [NotNull]
-    public string SaveReportsGloballyText => UI.Save_device_reports_in_shared_folder_of_your_computer_Q;
-
-    [NotNull]
-    public string ReportsText => UI.Configure_share_report_disclaimer;
-
-    [NotNull]
-    public string ShareReportsText => UI.Share_your_device_reports_with_us_Q;
-
-    [NotNull]
-    public string StatisticsText => UI.Statistics_disclaimer;
-
-    [NotNull]
-    public string SaveStatsText => UI.Save_stats_about_your_Aaru_usage_Q;
-
-    [NotNull]
-    public string ShareStatsText => UI.Share_your_stats_anonymously_Q;
-
-    [NotNull]
-    public string CommandStatsText => UI.Gather_statistics_about_command_usage_Q;
-
-    [NotNull]
-    public string DeviceStatsText => UI.Gather_statistics_about_found_devices_Q;
-
-    [NotNull]
-    public string FilesystemStatsText => UI.Gather_statistics_about_found_filesystems_Q;
-
-    [NotNull]
-    public string FilterStatsText => UI.Gather_statistics_about_found_file_filters_Q;
-
-    [NotNull]
-    public string MediaImageStatsText => UI.Gather_statistics_about_found_media_image_formats_Q;
-
-    [NotNull]
-    public string MediaScanStatsText => UI.Gather_statistics_about_scanned_media_Q;
-
-    [NotNull]
-    public string PartitionStatsText => UI.Gather_statistics_about_found_partitioning_schemes_Q;
-
-    [NotNull]
-    public string MediaStatsText => UI.Gather_statistics_about_media_types_Q;
-
-    [NotNull]
-    public string VerifyStatsText => UI.Gather_statistics_about_media_image_verifications_Q;
-
     public ICommand CancelCommand { get; }
     public ICommand SaveCommand   { get; }
 

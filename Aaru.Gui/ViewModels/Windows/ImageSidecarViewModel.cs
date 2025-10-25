@@ -121,12 +121,6 @@ public sealed partial class ImageSidecarViewModel : ViewModelBase
         StopCommand        = new RelayCommand(Stop);
     }
 
-    public string DestinationFileLabel => UI.Title_Destination_file;
-    public string ChooseLabel          => UI.ButtonLabel_Choose;
-    public string StartLabel           => UI.ButtonLabel_Start;
-    public string CloseLabel           => UI.ButtonLabel_Close;
-    public string StopLabel            => UI.ButtonLabel_Stop;
-
     public string   Title              { get; }
     public ICommand DestinationCommand { get; }
     public ICommand StartCommand       { get; }

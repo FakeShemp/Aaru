@@ -37,9 +37,7 @@ using Aaru.CommonTypes;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Gui.Models;
 using Aaru.Gui.Views.Dialogs;
-using Aaru.Localization;
 using CommunityToolkit.Mvvm.Input;
-using JetBrains.Annotations;
 
 namespace Aaru.Gui.ViewModels.Dialogs;
 
@@ -165,41 +163,6 @@ public sealed class PluginsViewModel : ViewModelBase
             });
         }
     }
-
-    [NotNull]
-    public string Title => UI.Title_Plugins;
-
-    [NotNull]
-    public string FiltersLabel => UI.Title_Filters;
-
-    [NotNull]
-    public string PartitionsLabel => UI.Title_Partitions;
-
-    [NotNull]
-    public string FilesystemsLabel => UI.Title_Filesystems;
-
-    [NotNull]
-    public string IdentifyLabel => UI.Title_Identify_only;
-
-    [NotNull]
-    public string ImagesLabel => UI.Title_Media_images;
-
-    [NotNull]
-    public string FloppyImagesLabel => UI.Title_Floppy_images;
-
-    [NotNull]
-    public string ReadableLabel => UI.Title_Readable;
-
-    [NotNull]
-    public string WritableLabel => UI.Title_Writable;
-
-    [NotNull]
-    public string CloseLabel => UI.ButtonLabel_Close;
-
-    public string NameLabel    => UI.Title_Name;
-    public string UuidLabel    => UI.Title_UUID;
-    public string VersionLabel => UI.Title_Version;
-    public string AuthorLabel  => UI.Title_Author;
 
     public ICommand                          CloseCommand         { get; }
     public ObservableCollection<PluginModel> Filters              { get; }

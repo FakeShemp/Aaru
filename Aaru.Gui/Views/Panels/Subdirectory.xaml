@@ -36,6 +36,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:panels="clr-namespace:Aaru.Gui.ViewModels.Panels"
+             xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -49,60 +50,60 @@
         <DataGrid.ContextMenu>
             <ContextMenu>
                 <Button Command="{Binding ExtractFilesCommand}">
-                    <TextBlock Text="{Binding ExtractFilesLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Extract_to}" />
                 </Button>
             </ContextMenu>
         </DataGrid.ContextMenu>
         <DataGrid.Columns>
-            <DataGridTextColumn Header="{Binding NameLabel}"
+            <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
                                 Binding="{Binding Name}"
                                 Width="Auto"
                                 IsReadOnly="True" />
-            <DataGridTextColumn Header="{Binding LengthLabel}"
+            <DataGridTextColumn Header="{x:Static localization:UI.Title_Length}"
                                 Binding="{Binding Size}"
                                 Width="Auto"
                                 IsReadOnly="True" />
-            <DataGridTextColumn Header="{Binding CreationLabel}"
+            <DataGridTextColumn Header="{x:Static localization:UI.Title_Creation}"
                                 Binding="{Binding CreationTime}"
                                 Width="Auto"
                                 IsReadOnly="True" />
-            <DataGridTextColumn Header="{Binding LastAccessLabel}"
+            <DataGridTextColumn Header="{x:Static localization:UI.Title_Last_access}"
                                 Binding="{Binding LastAccessTime}"
                                 Width="Auto"
                                 IsReadOnly="True" />
-            <DataGridTextColumn Header="{Binding ChangedLabel}"
+            <DataGridTextColumn Header="{x:Static localization:UI.Title_Changed}"
                                 Binding="{Binding ChangedTime}"
                                 Width="Auto"
                                 IsReadOnly="True" />
-            <DataGridTextColumn Header="{Binding LastBackupLabel}"
+            <DataGridTextColumn Header="{x:Static localization:UI.Title_Last_backup}"
                                 Binding="{Binding LastBackupTime}"
                                 Width="Auto"
                                 IsReadOnly="True" />
-            <DataGridTextColumn Header="{Binding LastWriteLabel}"
+            <DataGridTextColumn Header="{x:Static localization:UI.Title_Last_write}"
                                 Binding="{Binding LastWriteTime}"
                                 Width="Auto"
                                 IsReadOnly="True" />
-            <DataGridTextColumn Header="{Binding AttributesLabel}"
+            <DataGridTextColumn Header="{x:Static localization:UI.Title_Attributes}"
                                 Binding="{Binding Attributes}"
                                 Width="Auto"
                                 IsReadOnly="True" />
-            <DataGridTextColumn Header="{Binding GIDLabel}"
+            <DataGridTextColumn Header="{x:Static localization:UI.Title_GID}"
                                 Binding="{Binding Gid}"
                                 Width="Auto"
                                 IsReadOnly="True" />
-            <DataGridTextColumn Header="{Binding UIDLabel}"
+            <DataGridTextColumn Header="{x:Static localization:UI.Title_UID}"
                                 Binding="{Binding Uid}"
                                 Width="Auto"
                                 IsReadOnly="True" />
-            <DataGridTextColumn Header="{Binding InodeLabel}"
+            <DataGridTextColumn Header="{x:Static localization:UI.Title_Inode}"
                                 Binding="{Binding Inode}"
                                 Width="Auto"
                                 IsReadOnly="True" />
-            <DataGridTextColumn Header="{Binding LinksLabel}"
+            <DataGridTextColumn Header="{x:Static localization:UI.Title_Links}"
                                 Binding="{Binding Links}"
                                 Width="Auto"
                                 IsReadOnly="True" />
-            <DataGridTextColumn Header="{Binding ModeLabel}"
+            <DataGridTextColumn Header="{x:Static localization:UI.Title_Mode}"
                                 Binding="{Binding Mode}"
                                 Width="Auto"
                                 IsReadOnly="True" />

@@ -42,7 +42,6 @@ using Aaru.Localization;
 using Aaru.Logging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
-using JetBrains.Annotations;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using Console = Aaru.Gui.Views.Dialogs.Console;
@@ -63,26 +62,9 @@ public sealed class ConsoleViewModel : ViewModelBase
         ClearCommand = new RelayCommand(Clear);
     }
 
-    [NotNull]
-    public string Title => UI.Title_Console;
-
     public ICommand                       ClearCommand { get; }
     public ICommand                       SaveCommand  { get; }
     public ObservableCollection<LogEntry> Entries      => ConsoleHandler.Entries;
-
-    [NotNull]
-    public string DebugText => UI.Enable_debug_console;
-
-    [NotNull]
-    public string SaveLabel => UI.ButtonLabel_Save;
-
-    [NotNull]
-    public string ClearLabel => UI.ButtonLabel_Clear;
-
-    public string TimeLabel    => UI.Title_Time;
-    public string TypeLabel    => UI.Title_Type;
-    public string ModuleLabel  => UI.Title_Module;
-    public string MessageLabel => UI.Title_Message;
 
     public bool DebugChecked
     {

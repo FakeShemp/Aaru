@@ -149,13 +149,6 @@ public sealed partial class ImageVerifyViewModel : ViewModelBase
         OptionsVisible       = true;
     }
 
-    public string VerifyImageLabel   => UI.Verify_media_image_if_supported;
-    public string VerifySectorsLabel => UI.Verify_all_sectors_if_supported;
-    public string LBALabel           => UI.Title_LBA;
-    public string StartLabel         => UI.ButtonLabel_Start;
-    public string CloseLabel         => UI.ButtonLabel_Close;
-    public string StopLabel          => UI.ButtonLabel_Stop;
-
     public ObservableCollection<LbaModel> ErrorList    { get; }
     public ObservableCollection<LbaModel> UnknownList  { get; }
     public ICommand                       StartCommand { get; }

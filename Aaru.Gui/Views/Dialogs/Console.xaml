@@ -36,6 +36,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dialogs="clr-namespace:Aaru.Gui.ViewModels.Dialogs"
+        xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
@@ -43,7 +44,7 @@
         Height="450"
         x:Class="Aaru.Gui.Views.Dialogs.Console"
         Icon="/Assets/aaru-logo.png"
-        Title="{Binding Title}">
+        Title="{x:Static localization:UI.Title_Console}">
     <Design.DataContext>
         <dialogs:ConsoleViewModel />
     </Design.DataContext>
@@ -54,19 +55,19 @@
             </Grid.RowDefinitions>
             <DataGrid ItemsSource="{Binding Entries}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="{Binding TimeLabel}"
+                    <DataGridTextColumn Header="{x:Static localization:UI.Title_Time}"
                                         Binding="{Binding Timestamp}"
                                         Width="Auto"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Header="{Binding TypeLabel}"
+                    <DataGridTextColumn Header="{x:Static localization:UI.Title_Type}"
                                         Binding="{Binding Type}"
                                         Width="Auto"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Header="{Binding ModuleLabel}"
+                    <DataGridTextColumn Header="{x:Static localization:UI.Title_Module}"
                                         Binding="{Binding Module}"
                                         Width="Auto"
                                         IsReadOnly="True" />
-                    <DataGridTextColumn Header="{Binding MessageLabel}"
+                    <DataGridTextColumn Header="{x:Static localization:UI.Title_Message}"
                                         Binding="{Binding Message}"
                                         Width="Auto"
                                         IsReadOnly="True" />
@@ -74,17 +75,17 @@
             </DataGrid>
             <CheckBox Grid.Row="1"
                       IsChecked="{Binding DebugChecked}">
-                <TextBlock Text="{Binding DebugText}" />
+                <TextBlock Text="{x:Static localization:UI.Enable_debug_console}" />
             </CheckBox>
             <StackPanel Grid.Row="2"
                         Spacing="10"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right">
                 <Button Command="{Binding ClearCommand}">
-                    <TextBlock Text="{Binding ClearLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Clear}" />
                 </Button>
                 <Button Command="{Binding SaveCommand}">
-                    <TextBlock Text="{Binding SaveLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save}" />
                 </Button>
             </StackPanel>
         </Grid>

@@ -36,6 +36,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:tabs="clr-namespace:Aaru.Gui.ViewModels.Tabs"
+             xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -47,56 +48,56 @@
         <StackPanel IsVisible="{Binding XboxInformationVisible}">
             <StackPanel Orientation="Horizontal"
                         IsVisible="{Binding !!XboxL0VideoText}">
-                <TextBlock Text="{Binding XboxL0VideoLabel}" />
+                <TextBlock Text="{x:Static localization:Core.Video_layer_zero_size}" />
                 <TextBox IsReadOnly="True"
                          Text="{Binding XboxL0VideoText}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal"
                         IsVisible="{Binding !!XboxL1VideoText}">
-                <TextBlock Text="{Binding XboxL1VideoLabel}" />
+                <TextBlock Text="{x:Static localization:Core.Video_layer_one_size}" />
                 <TextBox IsReadOnly="True"
                          Text="{Binding XboxL1VideoText}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal"
                         IsVisible="{Binding !!XboxMiddleZoneText}">
-                <TextBlock Text="{Binding XboxMiddleZoneLabel}" />
+                <TextBlock Text="{x:Static localization:Core.Middle_zone_size}" />
                 <TextBox IsReadOnly="True"
                          Text="{Binding XboxMiddleZoneText}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal"
                         IsVisible="{Binding !!XboxGameSizeText}">
-                <TextBlock Text="{Binding XboxGameSizeLabel}" />
+                <TextBlock Text="{x:Static localization:Core.Game_data_size}" />
                 <TextBox IsReadOnly="True"
                          Text="{Binding XboxGameSizeText}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal"
                         IsVisible="{Binding !!XboxTotalSizeText}">
-                <TextBlock Text="{Binding XboxTotalSizeLabel}" />
+                <TextBlock Text="{x:Static localization:Core.Total_size}" />
                 <TextBox IsReadOnly="True"
                          Text="{Binding XboxTotalSizeText}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal"
                         IsVisible="{Binding !!XboxRealBreakText}">
-                <TextBlock Text="{Binding XboxRealBreakLabel}" />
+                <TextBlock Text="{x:Static localization:Core.Real_layer_break}" />
                 <TextBox IsReadOnly="True"
                          Text="{Binding XboxRealBreakText}" />
             </StackPanel>
         </StackPanel>
         <StackPanel>
             <StackPanel IsVisible="{Binding !!XboxDmiText}">
-                <TextBlock Text="{Binding XboxDmiLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Title_Disc_Manufacturing_Information}" />
                 <TextBox IsReadOnly="True"
                          Text="{Binding XboxDmiText}" />
             </StackPanel>
             <StackPanel IsVisible="{Binding !!XboxSsText}">
-                <TextBlock Text="{Binding XboxSsLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Title_Security_Sector}" />
                 <TextBox IsReadOnly="True"
                          Text="{Binding XboxSsText}" />
             </StackPanel>
             <Button HorizontalAlignment="Right"
                     IsVisible="{Binding SaveXboxSsVisible}"
                     Command="{Binding SaveXboxSsCommand}">
-                <TextBlock Text="{Binding SaveXboxSsLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Xbox_Security_Sector}" />
             </Button>
         </StackPanel>
     </StackPanel>

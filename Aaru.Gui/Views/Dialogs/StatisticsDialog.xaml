@@ -36,6 +36,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dialogs="clr-namespace:Aaru.Gui.ViewModels.Dialogs"
+        xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
@@ -44,21 +45,18 @@
         x:Class="Aaru.Gui.Views.Dialogs.StatisticsDialog"
         Icon="/Assets/aaru-logo.png"
         CanResize="False"
-        Title="{Binding Title}">
+        Title="{x:Static localization:UI.Title_Statistics}">
     <Design.DataContext>
         <dialogs:StatisticsViewModel />
     </Design.DataContext>
     <Border Padding="15">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" /> <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+        <Grid RowDefinitions="*,Auto">
             <TabControl Grid.Row="0"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch">
                 <TabItem IsVisible="{Binding CommandsVisible}">
                     <TabItem.Header>
-                        <TextBlock Text="{Binding CommandsLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.Title_Commands}" />
                     </TabItem.Header>
                     <StackPanel VerticalAlignment="Top"
                                 HorizontalAlignment="Stretch">
@@ -98,17 +96,17 @@
                 </TabItem>
                 <TabItem IsVisible="{Binding FiltersVisible}">
                     <TabItem.Header>
-                        <TextBlock Text="{Binding FiltersLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.Title_Filters}" />
                     </TabItem.Header>
                     <DataGrid ItemsSource="{Binding Filters}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
                             <!-- TODO: Bind header -->
-                            <DataGridTextColumn Header="{Binding FilterLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Filter}"
                                                 Binding="{Binding Name}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding TimesFoundLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Times_used}"
                                                 Binding="{Binding Count}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
@@ -117,17 +115,17 @@
                 </TabItem>
                 <TabItem IsVisible="{Binding FormatsVisible}">
                     <TabItem.Header>
-                        <TextBlock Text="{Binding FormatsLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.Title_Formats}" />
                     </TabItem.Header>
                     <DataGrid ItemsSource="{Binding Formats}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
                             <!-- TODO: Bind header -->
-                            <DataGridTextColumn Header="{Binding FormatLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Format}"
                                                 Binding="{Binding Name}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding TimesFoundLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Times_used}"
                                                 Binding="{Binding Count}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
@@ -136,17 +134,17 @@
                 </TabItem>
                 <TabItem IsVisible="{Binding PartitionsVisible}">
                     <TabItem.Header>
-                        <TextBlock Text="{Binding PartitionsLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.Title_Partitions}" />
                     </TabItem.Header>
                     <DataGrid ItemsSource="{Binding Partitions}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
                             <!-- TODO: Bind header -->
-                            <DataGridTextColumn Header="{Binding PartitionLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Partition}"
                                                 Binding="{Binding Name}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding TimesFoundLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Times_used}"
                                                 Binding="{Binding Count}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
@@ -155,17 +153,17 @@
                 </TabItem>
                 <TabItem IsVisible="{Binding FilesystemsVisible}">
                     <TabItem.Header>
-                        <TextBlock Text="{Binding FilesystemsLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.Title_Filesystems}" />
                     </TabItem.Header>
                     <DataGrid ItemsSource="{Binding Filesystems}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
                             <!-- TODO: Bind header -->
-                            <DataGridTextColumn Header="{Binding FilesystemLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Filesystem}"
                                                 Binding="{Binding Name}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding TimesFoundLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Times_used}"
                                                 Binding="{Binding Count}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
@@ -174,25 +172,25 @@
                 </TabItem>
                 <TabItem IsVisible="{Binding DevicesVisible}">
                     <TabItem.Header>
-                        <TextBlock Text="{Binding DevicesLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.Title_Devices}" />
                     </TabItem.Header>
                     <DataGrid ItemsSource="{Binding Devices}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
                             <!-- TODO: Bind header -->
-                            <DataGridTextColumn Header="{Binding DeviceLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Device}"
                                                 Binding="{Binding Model}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding ManufacturerLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Manufacturer}"
                                                 Binding="{Binding Manufacturer}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding RevisionLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Revision}"
                                                 Binding="{Binding Revision}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding BusLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Bus}"
                                                 Binding="{Binding Bus}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
@@ -201,21 +199,21 @@
                 </TabItem>
                 <TabItem IsVisible="{Binding MediasVisible}">
                     <TabItem.Header>
-                        <TextBlock Text="{Binding MediasLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.Title_Medias}" />
                     </TabItem.Header>
                     <DataGrid ItemsSource="{Binding Medias}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
                             <!-- TODO: Bind header -->
-                            <DataGridTextColumn Header="{Binding MediaLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Media}"
                                                 Binding="{Binding Name}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding TimesFoundLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Times_used}"
                                                 Binding="{Binding Count}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding TypeLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:Core.Title_Type_for_media}"
                                                 Binding="{Binding Type}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
@@ -228,7 +226,7 @@
                     VerticalAlignment="Center"
                     Command="{Binding CloseCommand}"
                     Padding="10">
-                <TextBlock Text="{Binding CloseLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
             </Button>
         </Grid>
     </Border>

@@ -36,6 +36,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:windows="clr-namespace:Aaru.Gui.ViewModels.Windows"
+        xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
@@ -46,10 +47,10 @@
         <windows:ImageConvertViewModel />
     </Design.DataContext>
     <StackPanel Orientation="Vertical">
-        <TextBlock Text="{Binding SourceImageLabel}" />
+        <TextBlock Text="{x:Static localization:UI.Source_image}" />
         <TextBox Text="{Binding SourceText}"
                  IsReadOnly="True" />
-        <TextBlock Text="{Binding OutputFormatLabel}" />
+        <TextBlock Text="{x:Static localization:UI.Output_format}" />
         <ComboBox ItemsSource="{Binding PluginsList}"
                   SelectedItem="{Binding SelectedPlugin}"
                   IsEnabled="{Binding FormatReadOnly}">
@@ -65,7 +66,7 @@
             <Button Command="{Binding DestinationCommand}"
                     IsEnabled="{Binding DestinationEnabled}"
                     IsVisible="{Binding DestinationVisible}">
-                <TextBlock Text="{Binding ChooseLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Choose}" />
             </Button>
         </StackPanel>
         <StackPanel Orientation="Vertical"
@@ -75,167 +76,171 @@
                                Minimum="1"
                                Maximum="16384"
                                Value="{Binding SectorsValue}" />
-                <TextBlock Text="{Binding SectorsLabel}" />
+                <TextBlock Text="{x:Static localization:UI.How_many_sectors_to_convert_at_once}" />
             </StackPanel>
             <CheckBox IsChecked="{Binding ForceChecked}">
-                <TextBlock Text="{Binding ForceLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Continue_conversion_even_if_data_lost}" />
             </CheckBox>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding CreatorLabel}" /> <TextBox Text="{Binding CreatorText}" />
+                <TextBlock Text="{x:Static localization:UI.Who_person_created_the_image}" />
+                <TextBox Text="{Binding CreatorText}" />
                 <Button Command="{Binding CreatorCommand}"
                         IsVisible="{Binding CreatorVisible}">
-                    <TextBlock Text="{Binding GetFromSourceImageLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                 </Button>
             </StackPanel>
             <StackPanel>
-                <TextBlock Text="{Binding MetadataLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Title_Metadata}" />
                 <TabControl>
                     <TabItem>
                         <TabItem.Header>
-                            <TextBlock Text="{Binding MediaLabel}" />
+                            <TextBlock Text="{x:Static localization:UI.Title_Media}" />
                         </TabItem.Header>
                         <StackPanel Orientation="Vertical">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding TitleLabel}" /> <TextBox Text="{Binding MediaTitleText}" />
+                                <TextBlock Text="{x:Static localization:UI.Title_Title}" />
+                                <TextBox Text="{Binding MediaTitleText}" />
                                 <Button Command="{Binding MediaTitleCommand}"
                                         IsVisible="{Binding MediaTitleVisible}">
-                                    <TextBlock Text="{Binding GetFromSourceImageLabel}" />
+                                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding ManufacturerLabel}" />
+                                <TextBlock Text="{x:Static localization:UI.Title_Manufacturer}" />
                                 <TextBox Text="{Binding MediaManufacturerText}" />
                                 <Button Command="{Binding MediaManufacturerCommand}"
                                         IsVisible="{Binding MediaManufacturerVisible}">
-                                    <TextBlock Text="{Binding GetFromSourceImageLabel}" />
+                                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding ModelLabel}" /> <TextBox Text="{Binding MediaModelText}" />
+                                <TextBlock Text="{x:Static localization:UI.Title_Model}" />
+                                <TextBox Text="{Binding MediaModelText}" />
                                 <Button Command="{Binding MediaModelCommand}"
                                         IsVisible="{Binding MediaModelVisible}">
-                                    <TextBlock Text="{Binding GetFromSourceImageLabel}" />
+                                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding SerialNumberLabel}" />
+                                <TextBlock Text="{x:Static localization:UI.Title_Serial_number}" />
                                 <TextBox Text="{Binding MediaSerialNumberText}" />
                                 <Button Command="{Binding MediaSerialNumberCommand}"
                                         IsVisible="{Binding MediaSerialNumberVisible}">
-                                    <TextBlock Text="{Binding GetFromSourceImageLabel}" />
+                                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding BarcodeLabel}" />
+                                <TextBlock Text="{x:Static localization:UI.Title_Barcode}" />
                                 <TextBox Text="{Binding MediaBarcodeText}" />
                                 <Button Command="{Binding MediaBarcodeCommand}"
                                         IsVisible="{Binding MediaBarcodeVisible}">
-                                    <TextBlock Text="{Binding GetFromSourceImageLabel}" />
+                                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding PartNumberLabel}" />
+                                <TextBlock Text="{x:Static localization:UI.Title_Part_number}" />
                                 <TextBox Text="{Binding MediaPartNumberText}" />
                                 <Button Command="{Binding MediaPartNumberCommand}"
                                         IsVisible="{Binding MediaPartNumberVisible}">
-                                    <TextBlock Text="{Binding GetFromSourceImageLabel}" />
+                                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding NumberInSequenceLabel}" />
+                                <TextBlock Text="{x:Static localization:UI.Title_Number_in_sequence}" />
                                 <NumericUpDown Increment="1"
                                                Value="{Binding MediaSequenceValue}"
                                                Minimum="0" />
                                 <Button Command="{Binding MediaSequenceCommand}"
                                         IsVisible="{Binding MediaSequenceVisible}">
-                                    <TextBlock Text="{Binding GetFromSourceImageLabel}" />
+                                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding LastMediaOfTheSequenceLabel}" />
+                                <TextBlock Text="{x:Static localization:UI.Title_Last_media_of_the_sequence}" />
                                 <NumericUpDown Increment="1"
                                                Value="{Binding LastMediaSequenceValue}"
                                                Minimum="0" />
                                 <Button Command="{Binding LastMediaSequenceCommand}"
                                         IsVisible="{Binding LastMediaSequenceVisible}">
-                                    <TextBlock Text="{Binding GetFromSourceImageLabel}" />
+                                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
                             </StackPanel>
                         </StackPanel>
                     </TabItem>
                     <TabItem>
                         <TabItem.Header>
-                            <TextBlock Text="{Binding DriveLabel}" />
+                            <TextBlock Text="{x:Static localization:UI.Title_Drive}" />
                         </TabItem.Header>
                         <StackPanel Orientation="Vertical">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding ManufacturerLabel}" />
+                                <TextBlock Text="{x:Static localization:UI.Title_Manufacturer}" />
                                 <TextBox Text="{Binding DriveManufacturerText}" />
                                 <Button Command="{Binding DriveManufacturerCommand}"
                                         IsVisible="{Binding DriveManufacturerVisible}">
-                                    <TextBlock Text="{Binding GetFromSourceImageLabel}" />
+                                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding ModelLabel}" /> <TextBox Text="{Binding DriveModelText}" />
+                                <TextBlock Text="{x:Static localization:UI.Title_Model}" />
+                                <TextBox Text="{Binding DriveModelText}" />
                                 <Button Command="{Binding DriveModelCommand}"
                                         IsVisible="{Binding DriveModelVisible}">
-                                    <TextBlock Text="{Binding GetFromSourceImageLabel}" />
+                                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding SerialNumberLabel}" />
+                                <TextBlock Text="{x:Static localization:UI.Title_Serial_number}" />
                                 <TextBox Text="{Binding DriveSerialNumberText}" />
                                 <Button Command="{Binding DriveSerialNumberCommand}"
                                         IsVisible="{Binding DriveSerialNumberVisible}">
-                                    <TextBlock Text="{Binding GetFromSourceImageLabel}" />
+                                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding FirmwareRevisionLabel}" />
+                                <TextBlock Text="{x:Static localization:UI.Title_Firmware_revision}" />
                                 <TextBox Text="{Binding DriveFirmwareRevisionText}" />
                                 <Button Command="{Binding DriveFirmwareRevisionCommand}"
                                         IsVisible="{Binding DriveFirmwareRevisionVisible}">
-                                    <TextBlock Text="{Binding GetFromSourceImageLabel}" />
+                                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
                             </StackPanel>
                         </StackPanel>
                     </TabItem>
                     <TabItem>
                         <TabItem.Header>
-                            <TextBlock Text="{Binding CommentsLabel}" />
+                            <TextBlock Text="{x:Static localization:UI.Title_Comments}" />
                         </TabItem.Header>
                         <StackPanel Orientation="Vertical">
                             <TextBox Text="{Binding CommentsText}" />
                             <Button Command="{Binding CommentsCommand}"
                                     IsVisible="{Binding CommentsVisible}">
-                                <TextBlock Text="{Binding GetFromSourceImageLabel}" />
+                                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                             </Button>
                         </StackPanel>
                     </TabItem>
                 </TabControl>
-                <TextBlock Text="{Binding AaruMetadataLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Title_Existing_Aaru_Metadata_sidecar}" />
                 <StackPanel Orientation="Horizontal">
                     <TextBox Text="{Binding MetadataJsonText}"
                              IsReadOnly="True" />
                     <Button Command="{Binding AaruMetadataFromImageCommand}"
                             IsVisible="{Binding AaruMetadataFromImageVisible}">
-                        <TextBlock Text="{Binding FromImageLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.Title_From_image}" />
                     </Button>
                     <Button Command="{Binding AaruMetadataCommand}">
-                        <TextBlock Text="{Binding ChooseLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Choose}" />
                     </Button>
                 </StackPanel>
-                <TextBlock Text="{Binding ResumeFileLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Title_Existing_resume_file}" />
                 <StackPanel Orientation="Horizontal">
                     <TextBox Text="{Binding ResumeFileText}"
                              IsReadOnly="True" />
                     <Button Command="{Binding ResumeFileFromImageCommand}"
                             IsVisible="{Binding ResumeFileFromImageVisible}">
-                        <TextBlock Text="{Binding FromImageLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.Title_From_image}" />
                     </Button>
                     <Button Command="{Binding ResumeFileCommand}">
-                        <TextBlock Text="{Binding ChooseLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Choose}" />
                     </Button>
                 </StackPanel>
             </StackPanel>
@@ -260,16 +265,16 @@
         <StackPanel Orientation="Horizontal">
             <Button Command="{Binding StartCommand}"
                     IsVisible="{Binding StartVisible}">
-                <TextBlock Text="{Binding StartLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Start}" />
             </Button>
             <Button Command="{Binding CloseCommand}"
                     IsVisible="{Binding CloseVisible}">
-                <TextBlock Text="{Binding CloseLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
             </Button>
             <Button Command="{Binding StopCommand}"
                     IsVisible="{Binding StopVisible}"
                     IsEnabled="{Binding StopEnabled}">
-                <TextBlock Text="{Binding StopLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Stop}" />
             </Button>
         </StackPanel>
     </StackPanel>

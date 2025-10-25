@@ -36,6 +36,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:windows="clr-namespace:Aaru.Gui.ViewModels.Windows"
+        xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
@@ -48,7 +49,7 @@
     <StackPanel Orientation="Vertical">
         <StackPanel Orientation="Vertical"
                     IsVisible="{Binding OptionsVisible}">
-            <TextBlock Text="{Binding OutputFormatLabel}" />
+            <TextBlock Text="{x:Static localization:UI.Output_format}" />
             <ComboBox ItemsSource="{Binding PluginsList}"
                       SelectedItem="{Binding SelectedPlugin}"
                       IsEnabled="{Binding FormatReadOnly}">
@@ -63,44 +64,44 @@
                          IsReadOnly="True" />
                 <Button Command="{Binding DestinationCommand}"
                         IsEnabled="{Binding DestinationEnabled}">
-                    <TextBlock Text="{Binding ChooseLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Choose}" />
                 </Button>
             </StackPanel>
             <CheckBox IsChecked="{Binding StopOnError}">
-                <TextBlock Text="{Binding StopOnErrorLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Stop_media_dump_on_first_error}" />
             </CheckBox>
             <CheckBox IsChecked="{Binding Force}">
-                <TextBlock Text="{Binding ForceLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Continue_dumping_whatever_happens}" />
             </CheckBox>
-            <NumericUpDown Text="{Binding RetriesLabel}"
+            <NumericUpDown Text="{x:Static localization:UI.Retry_passes}"
                            Value="{Binding Retries}"
                            Increment="1"
                            Minimum="0" />
             <CheckBox IsChecked="{Binding Persistent}">
-                <TextBlock Text="{Binding PersistentLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Try_to_recover_partial_or_incorrect_data}" />
             </CheckBox>
             <CheckBox IsChecked="{Binding Resume}">
-                <TextBlock Text="{Binding ResumeLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Create_or_use_resume_mapfile}" />
             </CheckBox>
             <CheckBox IsChecked="{Binding Track1Pregap}"
                       IsVisible="{Binding Track1PregapVisible}">
-                <TextBlock Text="{Binding Track1PregapLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Try_to_read_track_1_pregap}" />
             </CheckBox>
-            <NumericUpDown Text="{Binding SkippedLabel}"
+            <NumericUpDown Text="{x:Static localization:UI.Skipped_sectors_on_error}"
                            Increment="1"
                            Minimum="1"
                            Value="{Binding Skipped}" />
             <CheckBox IsChecked="{Binding Sidecar}">
-                <TextBlock Text="{Binding SidecarLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Create_Aaru_Metadata_sidecar}" />
             </CheckBox>
             <CheckBox IsChecked="{Binding Trim}">
-                <TextBlock Text="{Binding TrimLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Trim_errors_from_skipped_sectors}" />
             </CheckBox>
             <CheckBox IsChecked="{Binding ExistingMetadata}">
-                <TextBlock Text="{Binding ExistingMetadataLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Take_metadata_from_existing_CICM_XML_sidecar}" />
             </CheckBox>
             <StackPanel IsVisible="{Binding EncodingVisible}">
-                <TextBox Text="{Binding EncodingLabel}" />
+                <TextBox Text="{x:Static localization:UI.Encoding_to_use_on_metadata_sidecar_creation}" />
                 <ComboBox ItemsSource="{Binding Encodings}"
                           SelectedItem="{Binding SelectedEncoding}"
                           IsEnabled="{Binding EncodingEnabled}">
@@ -116,9 +117,10 @@
         <StackPanel Orientation="Vertical"
                     IsVisible="{Binding ProgressVisible}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding DestinationLabel}" /> <TextBlock Text="{Binding Destination}" />
+                <TextBlock Text="{x:Static localization:UI.Writing_image_to}" />
+                <TextBlock Text="{Binding Destination}" />
             </StackPanel>
-            <TextBlock Text="{Binding LogLabel}" />
+            <TextBlock Text="{x:Static localization:UI.Title_Log}" />
             <TextBox Text="{Binding Log}"
                      IsReadOnly="True" />
             <StackPanel Orientation="Vertical"
@@ -139,16 +141,16 @@
         <StackPanel Orientation="Horizontal">
             <Button Command="{Binding StartCommand}"
                     IsVisible="{Binding StartVisible}">
-                <TextBlock Text="{Binding StartLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Start}" />
             </Button>
             <Button Command="{Binding CloseCommand}"
                     IsVisible="{Binding CloseVisible}">
-                <TextBlock Text="{Binding CloseLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
             </Button>
             <Button Command="{Binding StopCommand}"
                     IsVisible="{Binding StopVisible}"
                     IsEnabled="{Binding StopEnabled}">
-                <TextBlock Text="{Binding StopLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Stop}" />
             </Button>
         </StackPanel>
     </StackPanel>

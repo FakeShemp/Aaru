@@ -36,6 +36,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:windows="clr-namespace:Aaru.Gui.ViewModels.Windows"
+        xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
@@ -50,12 +51,12 @@
                     IsVisible="{Binding OptionsVisible}">
             <CheckBox IsChecked="{Binding VerifyImageChecked}"
                       IsEnabled="{Binding VerifyImageEnabled}">
-                <TextBlock Text="{Binding VerifyImageLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Verify_media_image_if_supported}" />
             </CheckBox>
             <CheckBox IsChecked="{Binding VerifySectorsChecked}"
                       IsEnabled="{Binding VerifySectorsEnabled}"
                       IsVisible="{Binding VerifySectorsVisible}">
-                <TextBlock Text="{Binding VerifySectorsLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Verify_all_sectors_if_supported}" />
             </CheckBox>
         </StackPanel>
         <StackPanel Orientation="Vertical"
@@ -66,7 +67,7 @@
                     <TextBlock Text="{Binding SectorErrorsText}" />
                     <DataGrid ItemsSource="{Binding ErrorList}">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{Binding LBALabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_LBA}"
                                                 Binding="{Binding Lba}" />
                         </DataGrid.Columns>
                     </DataGrid>
@@ -76,7 +77,7 @@
                     <TextBlock Text="{Binding SectorsUnknownsText}" />
                     <DataGrid ItemsSource="{Binding UnknownList}">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{Binding LBALabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_LBA}"
                                                 Binding="{Binding Lba}" />
                         </DataGrid.Columns>
                     </DataGrid>
@@ -113,16 +114,16 @@
         <StackPanel Orientation="Horizontal">
             <Button Command="{Binding StartCommand}"
                     IsVisible="{Binding StartVisible}">
-                <TextBlock Text="{Binding StartLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Start}" />
             </Button>
             <Button Command="{Binding CloseCommand}"
                     IsVisible="{Binding CloseVisible}">
-                <TextBlock Text="{Binding CloseLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
             </Button>
             <Button Command="{Binding StopCommand}"
                     IsVisible="{Binding StopVisible}"
                     IsEnabled="{Binding StopEnabled}">
-                <TextBlock Text="{Binding StopLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Stop}" />
             </Button>
         </StackPanel>
     </StackPanel>

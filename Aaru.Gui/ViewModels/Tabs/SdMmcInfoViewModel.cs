@@ -31,7 +31,6 @@
 // ****************************************************************************/
 
 using Aaru.CommonTypes.Enums;
-using Aaru.Localization;
 using JetBrains.Annotations;
 
 namespace Aaru.Gui.ViewModels.Tabs;
@@ -79,10 +78,4 @@ public sealed class SdMmcInfoViewModel
     public string OcrText         { get; }
     public string ExtendedCsdText { get; }
     public string ScrText         { get; }
-
-    public string CidLabel         => UI.Title_CID;
-    public string CsdLabel         => UI.Title_CSD;
-    public string OcrLabel         => UI.Title_OCR;
-    public string ExtendedCsdLabel => UI.Title_Extended_CSD;
-    public string ScrLabel         => UI.Title_SCR;
 }

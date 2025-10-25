@@ -36,6 +36,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:tabs="clr-namespace:Aaru.Gui.ViewModels.Tabs"
+             xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -46,35 +47,35 @@
     <TabControl>
         <TabItem IsVisible="{Binding !!CidText}">
             <TabItem.Header>
-                <TextBlock Text="{Binding CidLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Title_CID}" />
             </TabItem.Header>
             <TextBox IsReadOnly="True"
                      Text="{Binding CidText}" />
         </TabItem>
         <TabItem IsVisible="{Binding !!CsdText}">
             <TabItem.Header>
-                <TextBlock Text="{Binding CsdLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Title_CSD}" />
             </TabItem.Header>
             <TextBox IsReadOnly="True"
                      Text="{Binding CsdText}" />
         </TabItem>
         <TabItem IsVisible="{Binding !!OcrText}">
             <TabItem.Header>
-                <TextBlock Text="{Binding OcrLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Title_OCR}" />
             </TabItem.Header>
             <TextBox IsReadOnly="True"
                      Text="{Binding OcrText}" />
         </TabItem>
         <TabItem IsVisible="{Binding !!ExtendedCsdText}">
             <TabItem.Header>
-                <TextBlock Text="{Binding ExtendedCsdLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Title_Extended_CSD}" />
             </TabItem.Header>
             <TextBox IsReadOnly="True"
                      Text="{Binding ExtendedCsdText}" />
         </TabItem>
         <TabItem IsVisible="{Binding !!ScrText}">
             <TabItem.Header>
-                <TextBlock Text="{Binding ScrLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Title_SCR}" />
             </TabItem.Header>
             <TextBox IsReadOnly="True"
                      Text="{Binding ScrText}" />

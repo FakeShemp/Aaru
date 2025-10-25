@@ -89,18 +89,6 @@ public sealed partial class AboutViewModel : ViewModelBase
     }
 
     [NotNull]
-    public string AboutLabel => UI.Label_About;
-
-    [NotNull]
-    public string LibrariesLabel => UI.Label_Libraries;
-
-    [NotNull]
-    public string AuthorsLabel => UI.Label_Authors;
-
-    [NotNull]
-    public string Title => UI.Title_About_Aaru;
-
-    [NotNull]
     public string SoftwareName => "Aaru";
 
     [NotNull]

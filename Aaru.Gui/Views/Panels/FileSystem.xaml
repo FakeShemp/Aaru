@@ -36,6 +36,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:panels="clr-namespace:Aaru.Gui.ViewModels.Panels"
+             xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -75,12 +76,13 @@
         <TextBlock Text="{Binding FilesText}"
                    IsVisible="{Binding FilesVisible}" />
         <CheckBox IsEnabled="{Binding BootableChecked}">
-            <TextBlock Text="{Binding BootableLabel}" />
+            <TextBlock Text="{x:Static localization:Core.Filesystem_contains_boot_code}" />
         </CheckBox>
         <CheckBox IsEnabled="{Binding DirtyChecked}">
-            <TextBlock Text="{Binding DirtyLabel}" />
+            <TextBlock
+                Text="{x:Static localization:Core.Filesystem_has_not_been_unmounted_correctly_or_contains_errors}" />
         </CheckBox>
-        <TextBlock Text="{Binding DetailsLabel}"
+        <TextBlock Text="{x:Static localization:UI.Title_Details}"
                    IsVisible="{Binding !!InformationText}" />
         <TextBox Text="{Binding InformationText}"
                  IsReadOnly="True" />

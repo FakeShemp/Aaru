@@ -37,9 +37,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Aaru.Gui.Models;
 using Aaru.Gui.Views.Dialogs;
-using Aaru.Localization;
 using CommunityToolkit.Mvvm.Input;
-using JetBrains.Annotations;
 
 namespace Aaru.Gui.ViewModels.Dialogs;
 
@@ -73,15 +71,6 @@ public sealed class EncodingsViewModel : ViewModelBase
             foreach(EncodingModel encoding in encodings.OrderBy(t => t.DisplayName)) Encodings.Add(encoding);
         });
     }
-
-    [NotNull]
-    public string Title => UI.Encodings;
-
-    [NotNull]
-    public string CloseLabel => UI.ButtonLabel_Close;
-
-    public string CodeLabel => UI.Title_Code_for_encoding;
-    public string NameLabel => UI.Title_Name;
 
     public ICommand                            CloseCommand { get; }
     public ObservableCollection<EncodingModel> Encodings    { get; }

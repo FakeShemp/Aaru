@@ -36,6 +36,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:tabs="clr-namespace:Aaru.Gui.ViewModels.Tabs"
+             xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -45,75 +46,75 @@
     </Design.DataContext>
     <StackPanel>
         <StackPanel IsVisible="{Binding !!BlurayDiscInformationText}">
-            <TextBlock Text="{Binding DiscInformationLabel}" />
+            <TextBlock Text="{x:Static localization:UI.Disc_information}" />
             <TextBox IsReadOnly="True"
                      Text="{Binding BlurayDiscInformationText}" />
         </StackPanel>
         <StackPanel IsVisible="{Binding !!BlurayBurstCuttingAreaText}">
-            <TextBlock Text="{Binding BurstCuttingAreaLabel}" />
+            <TextBlock Text="{x:Static localization:UI.Burst_Cutting_Area}" />
             <TextBox IsReadOnly="True"
                      Text="{Binding BlurayBurstCuttingAreaText}" />
         </StackPanel>
         <StackPanel IsVisible="{Binding !!BlurayDdsText}">
-            <TextBlock Text="{Binding DiscDefinitionStructureLabel}" />
+            <TextBlock Text="{x:Static localization:UI.Disc_Definition_Structure}" />
             <TextBox IsReadOnly="True"
                      Text="{Binding BlurayDdsText}" />
         </StackPanel>
         <StackPanel IsVisible="{Binding !!BlurayCartridgeStatusText}">
-            <TextBlock Text="{Binding CartridgeStatusLabel}" />
+            <TextBlock Text="{x:Static localization:UI.Cartridge_Status}" />
             <TextBox IsReadOnly="True"
                      Text="{Binding BlurayCartridgeStatusText}" />
         </StackPanel>
         <StackPanel IsVisible="{Binding !!BluraySpareAreaInformationText}">
-            <TextBlock Text="{Binding SpareAreaInformationLabel}" />
+            <TextBlock Text="{x:Static localization:UI.Spare_Area_Information}" />
             <TextBox IsReadOnly="True"
                      Text="{Binding BluraySpareAreaInformationText}" />
         </StackPanel>
         <StackPanel IsVisible="{Binding !!BlurayPowResourcesText}">
-            <TextBlock Text="{Binding PseudoOverWriteResourcesLabel}" />
+            <TextBlock Text="{x:Static localization:UI.Pseudo_OverWrite_Resources}" />
             <TextBox IsReadOnly="True"
                      Text="{Binding BlurayPowResourcesText}" />
         </StackPanel>
         <StackPanel IsVisible="{Binding !!BlurayTrackResourcesText}">
-            <TextBlock Text="{Binding TrackResourcesLabel}" />
+            <TextBlock Text="{x:Static localization:UI.Track_Resources}" />
             <TextBox IsReadOnly="True"
                      Text="{Binding BlurayTrackResourcesText}" />
         </StackPanel>
         <Button Command="{Binding SaveBlurayDiscInformationCommand}"
                 IsVisible="{Binding SaveBlurayDiscInformationVisible}">
-            <TextBlock Text="{Binding SaveBlurayDiscInformationLabel}" />
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Disc_Information}" />
         </Button>
         <Button Command="{Binding SaveBlurayBurstCuttingAreaCommand}"
                 IsVisible="{Binding SaveBlurayBurstCuttingAreaVisible}">
-            <TextBlock Text="{Binding SaveBlurayBurstCuttingAreaLabel}" />
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Burst_Cutting_Area}" />
         </Button>
         <Button Command="{Binding SaveBlurayDdsCommand}"
                 IsVisible="{Binding SaveBlurayDdsVisible}">
-            <TextBlock Text="{Binding SaveBlurayDdsLabel}" />
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Disc_Definition_Structure}" />
         </Button>
         <Button Command="{Binding SaveBlurayCartridgeStatusCommand}"
                 IsVisible="{Binding SaveBlurayCartridgeStatusVisible}">
-            <TextBlock Text="{Binding SaveBlurayCartridgeStatusLabel}" />
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Cartridge_Status}" />
         </Button>
         <Button Command="{Binding SaveBluraySpareAreaInformationCommand}"
                 IsVisible="{Binding SaveBluraySpareAreaInformationVisible}">
-            <TextBlock Text="{Binding SaveBluraySpareAreaInformationLabel}" />
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Spare_Area_Information}" />
         </Button>
         <Button Command="{Binding SaveBlurayPowResourcesCommand}"
                 IsVisible="{Binding SaveBlurayPowResourcesVisible}">
-            <TextBlock Text="{Binding SaveBlurayPowResourcesLabel}" />
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Pseudo_OverWrite_Resources}" />
         </Button>
         <Button Command="{Binding SaveBlurayTrackResourcesCommand}"
                 IsVisible="{Binding SaveBlurayTrackResourcesVisible}">
-            <TextBlock Text="{Binding SaveBlurayTrackResourcesLabel}" />
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Track_Resources}" />
         </Button>
         <Button Command="{Binding SaveBlurayRawDflCommand}"
                 IsVisible="{Binding SaveBlurayRawDflVisible}">
-            <TextBlock Text="{Binding SaveBlurayRawDflLabel}" />
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_raw_DFL}" />
         </Button>
         <Button Command="{Binding SaveBlurayPacCommand}"
                 IsVisible="{Binding SaveBlurayPacVisible}">
-            <TextBlock Text="{Binding SaveBlurayPacLabel}" />
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_PAC}" />
         </Button>
     </StackPanel>
 </UserControl>

@@ -36,6 +36,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dialogs="clr-namespace:Aaru.Gui.ViewModels.Dialogs"
+        xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
@@ -44,7 +45,7 @@
         x:Class="Aaru.Gui.Views.Dialogs.About"
         Icon="/Assets/aaru-logo.png"
         CanResize="False"
-        Title="{Binding Title}">
+        Title="{x:Static localization:UI.Title_About_Aaru}">
     <Design.DataContext>
         <dialogs:AboutViewModel />
     </Design.DataContext>
@@ -86,7 +87,7 @@
                         VerticalAlignment="Stretch">
                 <TabItem>
                     <TabItem.Header>
-                        <TextBlock Text="{Binding AboutLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.Label_About}" />
                     </TabItem.Header>
                     <Grid>
                         <Grid.RowDefinitions>
@@ -125,7 +126,7 @@
                 </TabItem>
                 <TabItem>
                     <TabItem.Header>
-                        <TextBlock Text="{Binding LibrariesLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.Label_Libraries}" />
                     </TabItem.Header>
                     <DataGrid ItemsSource="{Binding Assemblies}"
                               HorizontalScrollBarVisibility="Visible">
@@ -149,7 +150,7 @@
                 </TabItem>
                 <TabItem>
                     <TabItem.Header>
-                        <TextBlock Text="{Binding AuthorsLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.Label_Authors}" />
                     </TabItem.Header>
                     <TextBox IsReadOnly="True"
                              Text="{Binding Authors}" />

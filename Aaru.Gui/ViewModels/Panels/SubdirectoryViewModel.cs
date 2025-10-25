@@ -123,21 +123,6 @@ public sealed class SubdirectoryViewModel
     public List<FileModel>                 SelectedEntries     { get; }
     public ICommand                        ExtractFilesCommand { get; }
 
-    public string ExtractFilesLabel => UI.ButtonLabel_Extract_to;
-    public string NameLabel         => UI.Title_Name;
-    public string LengthLabel       => UI.Title_Length;
-    public string CreationLabel     => UI.Title_Creation;
-    public string LastAccessLabel   => UI.Title_Last_access;
-    public string ChangedLabel      => UI.Title_Changed;
-    public string LastBackupLabel   => UI.Title_Last_backup;
-    public string LastWriteLabel    => UI.Title_Last_write;
-    public string AttributesLabel   => UI.Title_Attributes;
-    public string GIDLabel          => UI.Title_GID;
-    public string UIDLabel          => UI.Title_UID;
-    public string InodeLabel        => UI.Title_Inode;
-    public string LinksLabel        => UI.Title_Links;
-    public string ModeLabel         => UI.Title_Mode;
-
     async Task ExtractFiles()
     {
         if(SelectedEntries.Count == 0) return;
@@ -203,7 +188,7 @@ public sealed class SubdirectoryViewModel
                     else
                         chars = new char[filename.Length];
 
-                    for(int ci = 0; ci < chars.Length; ci++)
+                    for(var ci = 0; ci < chars.Length; ci++)
                     {
                         chars[ci] = filename[ci] switch
                                     {
@@ -328,7 +313,7 @@ public sealed class SubdirectoryViewModel
 
             try
             {
-                byte[] outBuf = new byte[file.Stat.Length];
+                var outBuf = new byte[file.Stat.Length];
 
                 ErrorNumber error = _model.Plugin.OpenFile(_model.Path + "/" + file.Name, out IFileNode fileNode);
 

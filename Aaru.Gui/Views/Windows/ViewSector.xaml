@@ -36,6 +36,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:windows="clr-namespace:Aaru.Gui.ViewModels.Windows"
+        xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
@@ -50,12 +51,12 @@
     </Design.DataContext>
     <StackPanel Orientation="Vertical">
         <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{Binding SectorLabel}" /> <NumericUpDown Value="{Binding SectorNumber}" />
-            <TextBlock Text="{Binding TotalSectorsText}" />
+            <TextBlock Text="{x:Static localization:UI.Title_Sector}" />
+            <NumericUpDown Value="{Binding SectorNumber}" /> <TextBlock Text="{Binding TotalSectorsText}" />
         </StackPanel>
         <CheckBox IsChecked="{Binding LongSectorChecked}"
                   IsVisible="{Binding LongSectorVisible}">
-            <TextBlock Text="{Binding LongSectorLabel}" />
+            <TextBlock Text="{x:Static localization:UI.Show_long_sector}" />
         </CheckBox>
         <TextBox IsReadOnly="True"
                  Text="{Binding PrintHexText}" />

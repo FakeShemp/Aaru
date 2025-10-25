@@ -3110,4 +3110,7 @@ Probadores:
     <data name="Error_0_writing_overflow_sector_1_not_continuing" xml:space="preserve">
         <value>[red]Error [orange3]{0}[/] escribiendo sector de sobrecarga [lime]{1}[/], no se continuará...[/]</value>
     </data>
+    <data name="SSC_Label" xml:space="preserve">
+        <value>SSC</value>
+    </data>
 </root>

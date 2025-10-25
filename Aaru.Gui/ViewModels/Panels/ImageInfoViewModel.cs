@@ -695,8 +695,9 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Sessions is { Count: > 0 })
-                    foreach(Session session in opticalMediaImage.Sessions)
-                        Sessions.Add(session);
+                {
+                    foreach(Session session in opticalMediaImage.Sessions) Sessions.Add(session);
+                }
             }
             catch(Exception ex)
             {
@@ -706,8 +707,9 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Tracks is { Count: > 0 })
-                    foreach(Track track in opticalMediaImage.Tracks)
-                        Tracks.Add(track);
+                {
+                    foreach(Track track in opticalMediaImage.Tracks) Tracks.Add(track);
+                }
             }
             catch(Exception ex)
             {
@@ -799,52 +801,6 @@ public sealed class ImageInfoViewModel : ViewModelBase
                                            MediaSerialNumberText != null ||
                                            MediaBarcodeText      != null ||
                                            MediaPartNumberText   != null;
-
-    public string ImageInformationLabel   => UI.Title_Image_information;
-    public string GeneralLabel            => UI.Title_General;
-    public string CommentsLabel           => UI.Title_Comments;
-    public string MediaInformationLabel   => UI.Title_Media_information;
-    public string DriveInformationLabel   => UI.Title_Drive_information;
-    public string ReadableMediaTagsLabel  => UI.Title_Readable_media_tags;
-    public string TagLabel                => UI.Title_Readable_media_tags;
-    public string ReadableSectorTagsLabel => UI.Title_Readable_sector_tags;
-    public string SessionsLabel           => UI.Title_Sessions;
-    public string SessionLabel            => Localization.Core.Title_Session;
-    public string FirstTrackLabel         => Localization.Core.Title_First_track;
-    public string LastTrackLabel          => Localization.Core.Title_Last_track;
-    public string StartLabel              => Localization.Core.Title_Start;
-    public string EndLabel                => Localization.Core.Title_End;
-    public string TracksLabel             => UI.Title_Tracks;
-    public string TrackLabel              => Localization.Core.Title_Track;
-    public string TypeLabel               => UI.Title_Type;
-    public string BpsLabel                => Localization.Core.Title_Bps;
-    public string RawBpsLabel             => Localization.Core.Title_Raw_bps;
-    public string SubchannelLabel         => Localization.Core.Title_Subchannel;
-    public string PregapLabel             => Localization.Core.Title_Pregap;
-    public string DumpHardwareLabel       => UI.Title_Dump_hardware;
-    public string ManufacturerLabel       => UI.Title_Manufacturer;
-    public string ModelLabel              => UI.Title_Model;
-    public string RevisionLabel           => UI.Title_Revision;
-    public string SerialLabel             => UI.Serial;
-    public string SoftwareLabel           => UI.Title_Software;
-    public string VersionLabel            => UI.Title_Version;
-    public string OperatingSystemLabel    => UI.Title_Operating_system;
-    public string SCSILabel               => UI.Title_SCSI;
-    public string ATA_ATAPILabel          => UI.Title_ATA_ATAPI;
-    public string CompactDiscLabel        => Localization.Core.Title_CompactDisc;
-    public string Dvd_Hd_DvdLabel         => Localization.Core.Title_DVD_HD_DVD;
-    public string Dvd_R_WLabel            => Localization.Core.Title_DVD_Plus_Dash_R_W;
-    public string BluRayLabel             => Localization.Core.Title_Blu_ray;
-    public string PcmciaLabel             => UI.Title_PCMCIA;
-    public string Sd_MMCLabel             => UI.Title_SD_MMC;
-    public string XboxLabel               => Localization.Core.Title_Xbox;
-    public string EntropyLabel            => UI.ButtonLabel_Calculate_entropy;
-    public string VerifyLabel             => UI.ButtonLabel_Verify;
-    public string ChecksumLabel           => UI.ButtonLabel_Checksum;
-    public string ConvertLabel            => UI.ButtonLabel_Convert_to;
-    public string CreateSidecarLabel      => UI.ButtonLabel_Create_Aaru_Metadata_sidecar;
-    public string ViewSectorsLabel        => UI.ButtonLabel_View_sectors;
-    public string DecodeMediaTagLabel     => UI.ButtonLabel_Decode_media_tags;
 
     void Entropy()
     {

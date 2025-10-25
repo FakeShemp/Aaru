@@ -37,6 +37,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:windows="clr-namespace:Aaru.Gui.ViewModels.Windows"
+        xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
@@ -48,36 +49,36 @@
     </Design.DataContext>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="{Binding FileLabel}">
-                <MenuItem Header="{Binding OpenLabel}"
+            <MenuItem Header="{x:Static localization:UI.Menu_File}">
+                <MenuItem Header="{x:Static localization:UI.Menu_Open}"
                           Command="{Binding OpenCommand}" />
                 <Separator />
-                <MenuItem Header="{Binding SettingsLabel}"
+                <MenuItem Header="{x:Static localization:UI.Menu_Settings}"
                           IsVisible="{Binding !NativeMenuSupported}"
                           Command="{Binding SettingsCommand}" />
                 <Separator />
-                <MenuItem Header="{Binding ExitLabel}"
+                <MenuItem Header="{x:Static localization:UI.Menu_Exit}"
                           IsVisible="{Binding !NativeMenuSupported}"
                           Command="{Binding ExitCommand}" />
             </MenuItem>
-            <MenuItem Header="{Binding DevicesLabel}"
+            <MenuItem Header="{x:Static localization:UI.Menu_Devices}"
                       IsVisible="{Binding DevicesSupported}">
-                <MenuItem Header="{Binding RefreshDevicesLabel}"
+                <MenuItem Header="{x:Static localization:UI.Menu_Refresh}"
                           Command="{Binding RefreshDevicesCommand}" />
             </MenuItem>
-            <MenuItem Header="{Binding WindowLabel}">
-                <MenuItem Header="{Binding ConsoleLabel}"
+            <MenuItem Header="{x:Static localization:UI.Menu_Window}">
+                <MenuItem Header="{x:Static localization:UI.Menu_Console}"
                           Command="{Binding ConsoleCommand}" />
             </MenuItem>
-            <MenuItem Header="{Binding HelpLabel}">
-                <MenuItem Header="{Binding EncodingsLabel}"
+            <MenuItem Header="{x:Static localization:UI.Menu_Help}">
+                <MenuItem Header="{x:Static localization:UI.Menu_Encodings}"
                           Command="{Binding EncodingsCommand}" />
-                <MenuItem Header="{Binding PluginsLabel}"
+                <MenuItem Header="{x:Static localization:UI.Menu_Plugins}"
                           Command="{Binding PluginsCommand}" />
-                <MenuItem Header="{Binding StatisticsLabel}"
+                <MenuItem Header="{x:Static localization:UI.Menu_Statistics}"
                           Command="{Binding StatisticsCommand}" />
                 <Separator IsVisible="{Binding !NativeMenuSupported}" />
-                <MenuItem Header="{Binding AboutLabel}"
+                <MenuItem Header="{x:Static localization:UI.Menu_About}"
                           Name="AboutMenuItem"
                           IsVisible="{Binding !NativeMenuSupported}"
                           Command="{Binding AboutCommand}" />
@@ -95,7 +96,7 @@
                         <StackPanel Orientation="Horizontal">
                             <StackPanel.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="{Binding RefreshDevicesFullLabel}"
+                                    <MenuItem Header="{x:Static localization:UI.Menu_Refresh_devices}"
                                               Command="{Binding RefreshDevicesCommand}" />
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
@@ -110,7 +111,7 @@
                         <StackPanel Orientation="Horizontal">
                             <StackPanel.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="{Binding CloseAllImagesLabel}"
+                                    <MenuItem Header="{x:Static localization:UI.Menu_Close_all_images}"
                                               Command="{Binding CloseAllImages}" />
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
@@ -126,19 +127,19 @@
                             <StackPanel.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Command="{Binding CalculateEntropyCommand}"
-                                              Header="{Binding CalculateEntropyLabel}" />
+                                              Header="{x:Static localization:UI.ButtonLabel_Calculate_entropy}" />
                                     <MenuItem Command="{Binding VerifyImageCommand}"
-                                              Header="{Binding VerifyImageLabel}" />
+                                              Header="{x:Static localization:UI.ButtonLabel_Verify}" />
                                     <MenuItem Command="{Binding ChecksumImageCommand}"
-                                              Header="{Binding ChecksumImageLabel}" />
+                                              Header="{x:Static localization:UI.ButtonLabel_Checksum}" />
                                     <MenuItem Command="{Binding ConvertImageCommand}"
-                                              Header="{Binding ConvertImageLabel}" />
+                                              Header="{x:Static localization:UI.ButtonLabel_Convert_to}" />
                                     <MenuItem Command="{Binding CreateSidecarCommand}"
-                                              Header="{Binding CreateSidecarLabel}" />
+                                              Header="{x:Static localization:UI.ButtonLabel_Create_Aaru_Metadata_sidecar}" />
                                     <MenuItem Command="{Binding ViewImageSectorsCommand}"
-                                              Header="{Binding ViewImageSectorsLabel}" />
+                                              Header="{x:Static localization:UI.ButtonLabel_View_sectors}" />
                                     <MenuItem Command="{Binding DecodeImageMediaTagsCommand}"
-                                              Header="{Binding DecodeImageMediaTagsLabel}" />
+                                              Header="{x:Static localization:UI.ButtonLabel_Decode_media_tags}" />
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
                             <Image Width="24"

@@ -442,7 +442,7 @@ public sealed partial class ScsiInfoViewModel : ViewModelBase
         {
             foreach(KeyValuePair<byte, byte[]> page in scsiEvpdPages.OrderBy(t => t.Key))
             {
-                string evpdPageTitle = "";
+                var    evpdPageTitle = "";
                 string evpdDecodedPage;
 
                 switch(page.Key)
@@ -637,7 +637,7 @@ public sealed partial class ScsiInfoViewModel : ViewModelBase
         {
             foreach(Features.FeatureDescriptor desc in ftr.Descriptors)
             {
-                string featureNumber = string.Format(Localization.Core.Feature_0, desc.Code);
+                var featureNumber = string.Format(Localization.Core.Feature_0, desc.Code);
                 AaruLogging.Debug(MODULE_NAME, Localization.Core.Feature_0, desc.Code);
 
                 string featureDescription = desc.Code switch
@@ -764,20 +764,6 @@ public sealed partial class ScsiInfoViewModel : ViewModelBase
             SetProperty(ref _selectedMmcFeature, value);
         }
     }
-
-    public string InquiryLabel           => UI.Title_INQUIRY;
-    public string ScsiInquiryLabel       => UI.Title_SCSI_INQUIRY;
-    public string SaveInquiryBinaryLabel => UI.ButtonLabel_Save_binary_to_file;
-    public string SaveInquiryTextLabel   => UI.ButtonLabel_Save_text_to_file;
-    public string ModeSenseLabel         => UI.Title_MODE_SENSE;
-    public string PageLabel              => UI.Title_Page;
-    public string SaveModeSense6Label    => UI.ButtonLabel_Save_MODE_SENSE_6_response_to_file;
-    public string SaveModeSense10Label   => UI.ButtonLabel_Save_MODE_SENSE_10_response_to_file;
-    public string EvpdLabel              => UI.Title_EVPD;
-    public string SaveEvpdPageLabel      => UI.ButtonLabel_Save_EVPD_page_to_file;
-    public string MmcFeaturesLabel       => UI.Title_MMC_FEATURES;
-    public string FeatureLabel           => UI.Title_Feature;
-    public string SaveMmcFeaturesLabel   => UI.ButtonLabel_Save_MMC_GET_CONFIGURATION_response_to_file;
 
     async Task SaveInquiryBinaryAsync()
     {

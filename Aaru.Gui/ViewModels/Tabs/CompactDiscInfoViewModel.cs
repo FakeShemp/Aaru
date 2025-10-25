@@ -38,7 +38,6 @@ using System.Windows.Input;
 using Aaru.Decoders.CD;
 using Aaru.Decoders.SCSI.MMC;
 using Aaru.Gui.Models;
-using Aaru.Localization;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
@@ -128,25 +127,6 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
     public ICommand                        SaveCdAtipCommand        { get; }
     public ICommand                        SaveCdPmaCommand         { get; }
     public ObservableCollection<IsrcModel> IsrcList                 { get; }
-
-    public string CdInformationLabel     => UI.Title_Information;
-    public string SaveCdInformationLabel => UI.ButtonLabel_Save_READ_DISC_INFORMATION_response;
-    public string CdTocLabel             => UI.Title_TOC;
-    public string SaveCdTocLabel         => UI.ButtonLabel_Save_READ_TOC_response;
-    public string CdFullTocLabel         => UI.Title_TOC_full;
-    public string SaveCdFullTocLabel     => UI.ButtonLabel_Save_READ_RAW_TOC_response;
-    public string CdSessionLabel         => Localization.Core.Title_Session;
-    public string SaveCdSessionLabel     => UI.ButtonLabel_Save_READ_SESSION_response;
-    public string CdTextLabel            => UI.Title_CD_TEXT;
-    public string SaveCdTextLabel        => UI.ButtonLabel_Save_Lead_In_CD_TEXT;
-    public string CdAtipLabel            => UI.Title_ATIP;
-    public string SaveCdAtipLabel        => UI.ButtonLabel_Save_READ_ATIP_response;
-    public string MiscellaneousLabel     => UI.Title_Miscellaneous;
-    public string McnLabel               => UI.Title_Media_catalog_number;
-    public string IsrCsLabel             => UI.Title_ISRCs;
-    public string TrackLabel             => Localization.Core.Title_Track;
-    public string ISRCLabel              => UI.Title_ISRC;
-    public string SaveCdPmaLabel         => UI.ButtonLabel_Save_READ_PMA_response;
 
     async Task SaveCdInformationAsync()
     {

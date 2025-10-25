@@ -35,7 +35,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Aaru.Decoders.DVD;
-using Aaru.Localization;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
@@ -116,13 +115,6 @@ public sealed class DvdInfoViewModel
     public bool     SaveHdDvdCmiVisible { get; }
     public bool     SaveDvdBcaVisible   { get; }
     public bool     SaveDvdAacsVisible  { get; }
-
-    public string SaveDvdPfiLabel   => UI.ButtonLabel_Save_Physical_Format_Information;
-    public string SaveDvdDmiLabel   => UI.ButtonLabel_Save_Disc_Manufacturer_Information;
-    public string SaveDvdCmiLabel   => UI.ButtonLabel_Save_Copyright_Management_Information;
-    public string SaveHdDvdCmiLabel => UI.ButtonLabel_Save_Copyright_Management_Information;
-    public string SaveDvdBcaLabel   => UI.ButtonLabel_Save_Burst_Cutting_Area;
-    public string SaveDvdAacsLabel  => UI.ButtonLabel_Save_AACS_Information;
 
     async Task SaveElementAsync(byte[] data)
     {

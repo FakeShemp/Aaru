@@ -36,7 +36,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Aaru.Core.Media.Info;
 using Aaru.Decoders.Xbox;
-using Aaru.Localization;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
@@ -90,16 +89,6 @@ public sealed class XboxInfoViewModel
     public string   XboxRealBreakText      { get; }
     public string   XboxDmiText            { get; }
     public string   XboxSsText             { get; }
-
-    public string XboxL0VideoLabel    => Localization.Core.Video_layer_zero_size;
-    public string XboxL1VideoLabel    => Localization.Core.Video_layer_one_size;
-    public string XboxMiddleZoneLabel => Localization.Core.Middle_zone_size;
-    public string XboxGameSizeLabel   => Localization.Core.Game_data_size;
-    public string XboxTotalSizeLabel  => Localization.Core.Total_size;
-    public string XboxRealBreakLabel  => Localization.Core.Real_layer_break;
-    public string XboxDmiLabel        => UI.Title_Disc_Manufacturing_Information;
-    public string XboxSsLabel         => UI.Title_Security_Sector;
-    public string SaveXboxSsLabel     => UI.ButtonLabel_Save_Xbox_Security_Sector;
 
     async Task SaveElementAsync(byte[] data)
     {

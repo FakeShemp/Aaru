@@ -34,9 +34,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Input;
 using Aaru.Gui.Views.Dialogs;
-using Aaru.Localization;
 using CommunityToolkit.Mvvm.Input;
-using JetBrains.Annotations;
 
 namespace Aaru.Gui.ViewModels.Dialogs;
 
@@ -59,12 +57,6 @@ public sealed class LicenseViewModel : ViewModelBase
 
         LicenseText = reader.ReadToEnd();
     }
-
-    [NotNull]
-    public string Title => UI.Title_Aaru_license;
-
-    [NotNull]
-    public string CloseLabel => UI.ButtonLabel_Close;
 
     public string   LicenseText  { get; }
     public ICommand CloseCommand { get; }

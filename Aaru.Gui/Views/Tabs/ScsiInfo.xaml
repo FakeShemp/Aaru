@@ -36,6 +36,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:tabs="clr-namespace:Aaru.Gui.ViewModels.Tabs"
+             xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -46,26 +47,26 @@
     <TabControl>
         <TabItem IsVisible="{Binding !!InquiryData}">
             <TabItem.Header>
-                <TextBlock Text="{Binding InquiryLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Title_INQUIRY}" />
             </TabItem.Header>
             <StackPanel>
-                <TextBlock Text="{Binding ScsiInquiryLabel}"
+                <TextBlock Text="{x:Static localization:UI.Title_SCSI_INQUIRY}"
                            HorizontalAlignment="Center" />
                 <TextBox Text="{Binding ScsiInquiryText}"
                          IsReadOnly="True" />
                 <StackPanel Orientation="Horizontal">
                     <Button Command="{Binding SaveInquiryBinaryCommand}">
-                        <TextBlock Text="{Binding SaveInquiryBinaryLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_binary_to_file}" />
                     </Button>
                     <Button Command="{Binding SaveInquiryTextCommand}">
-                        <TextBlock Text="{Binding SaveInquiryTextLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_text_to_file}" />
                     </Button>
                 </StackPanel>
             </StackPanel>
         </TabItem>
         <TabItem IsVisible="{Binding !!ModeSensePages.Count}">
             <TabItem.Header>
-                <TextBlock Text="{Binding ModeSenseLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Title_MODE_SENSE}" />
             </TabItem.Header>
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
@@ -75,7 +76,7 @@
                               SelectedItem="{Binding SelectedModeSensePage}"
                               IsReadOnly="True">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{Binding PageLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Page}"
                                                 Binding="{Binding Page}" />
                         </DataGrid.Columns>
                     </DataGrid>
@@ -86,17 +87,17 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Button Command="{Binding SaveModeSense6Command}">
-                        <TextBlock Text="{Binding SaveModeSense6Label}" />
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_MODE_SENSE_6_response_to_file}" />
                     </Button>
                     <Button Command="{Binding SaveModeSense10Command}">
-                        <TextBlock Text="{Binding SaveModeSense10Label}" />
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_MODE_SENSE_10_response_to_file}" />
                     </Button>
                 </StackPanel>
             </StackPanel>
         </TabItem>
         <TabItem IsVisible="{Binding !!EvpdPages.Count}">
             <TabItem.Header>
-                <TextBlock Text="{Binding EvpdLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Title_EVPD}" />
             </TabItem.Header>
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
@@ -106,7 +107,7 @@
                               SelectedItem="{Binding SelectedEvpdPage}"
                               IsReadOnly="True">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{Binding PageLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Page}"
                                                 Binding="{Binding Page}" />
                         </DataGrid.Columns>
                     </DataGrid>
@@ -117,14 +118,14 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Button Command="{Binding SaveEvpdPageCommand}">
-                        <TextBlock Text="{Binding SaveEvpdPageLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_EVPD_page_to_file}" />
                     </Button>
                 </StackPanel>
             </StackPanel>
         </TabItem>
         <TabItem IsVisible="{Binding !!MmcFeatures.Count}">
             <TabItem.Header>
-                <TextBlock Text="{Binding MmcFeaturesLabel}" />
+                <TextBlock Text="{x:Static localization:UI.Title_MMC_FEATURES}" />
             </TabItem.Header>
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
@@ -134,7 +135,7 @@
                               SelectedItem="{Binding SelectedMmcFeature}"
                               IsReadOnly="True">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{Binding FeatureLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Feature}"
                                                 Binding="{Binding Page}" />
                         </DataGrid.Columns>
                     </DataGrid>
@@ -145,7 +146,8 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Button Command="{Binding SaveMmcFeaturesCommand}">
-                        <TextBlock Text="{Binding SaveMmcFeaturesLabel}" />
+                        <TextBlock
+                            Text="{x:Static localization:UI.ButtonLabel_Save_MMC_GET_CONFIGURATION_response_to_file}" />
                     </Button>
                 </StackPanel>
             </StackPanel>

@@ -36,6 +36,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dialogs="clr-namespace:Aaru.Gui.ViewModels.Dialogs"
+        xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
@@ -43,7 +44,7 @@
         Height="450"
         x:Class="Aaru.Gui.Views.Dialogs.PluginsDialog"
         Icon="/Assets/aaru-logo.png"
-        Title="{Binding Title}"
+        Title="{x:Static localization:UI.Title_Plugins}"
         Padding="10">
     <Design.DataContext>
         <dialogs:PluginsViewModel />
@@ -58,24 +59,24 @@
                     VerticalAlignment="Stretch">
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock Text="{Binding FiltersLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.Title_Filters}" />
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding Filters}"
                           HorizontalScrollBarVisibility="Visible">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="{Binding NameLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
                                             Binding="{Binding Name}"
                                             Width="Auto"
                                             IsReadOnly="True" />
-                        <DataGridTextColumn Header="{Binding UuidLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_UUID}"
                                             Binding="{Binding Uuid}"
                                             Width="Auto"
                                             IsReadOnly="True" />
-                        <DataGridTextColumn Header="{Binding VersionLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
                                             Binding="{Binding Version}"
                                             Width="Auto"
                                             IsReadOnly="True" />
-                        <DataGridTextColumn Header="{Binding AuthorLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Author}"
                                             Binding="{Binding Author}"
                                             Width="Auto"
                                             IsReadOnly="True" />
@@ -84,24 +85,24 @@
             </TabItem>
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock Text="{Binding PartitionsLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.Title_Partitions}" />
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding PartitionSchemes}"
                           HorizontalScrollBarVisibility="Visible">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="{Binding NameLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
                                             Binding="{Binding Name}"
                                             Width="Auto"
                                             IsReadOnly="True" />
-                        <DataGridTextColumn Header="{Binding UuidLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_UUID}"
                                             Binding="{Binding Uuid}"
                                             Width="Auto"
                                             IsReadOnly="True" />
-                        <DataGridTextColumn Header="{Binding VersionLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
                                             Binding="{Binding Version}"
                                             Width="Auto"
                                             IsReadOnly="True" />
-                        <DataGridTextColumn Header="{Binding AuthorLabel}"
+                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Author}"
                                             Binding="{Binding Author}"
                                             Width="Auto"
                                             IsReadOnly="True" />
@@ -110,7 +111,7 @@
             </TabItem>
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock Text="{Binding FilesystemsLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.Title_Filesystems}" />
                 </TabItem.Header>
                 <Grid>
                     <Grid.RowDefinitions>
@@ -118,50 +119,50 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0"
-                               Text="{Binding IdentifyLabel}"
+                               Text="{x:Static localization:UI.Title_Identify_only}"
                                FontWeight="Bold" />
                     <DataGrid Grid.Row="1"
                               ItemsSource="{Binding Filesystems}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{Binding NameLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
                                                 Binding="{Binding Name}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding UuidLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_UUID}"
                                                 Binding="{Binding Uuid}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding VersionLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
                                                 Binding="{Binding Version}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding AuthorLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Author}"
                                                 Binding="{Binding Author}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
                         </DataGrid.Columns>
                     </DataGrid>
                     <TextBlock Grid.Row="2"
-                               Text="{Binding ReadableLabel}"
+                               Text="{x:Static localization:UI.Title_Readable}"
                                FontWeight="Bold" />
                     <DataGrid Grid.Row="3"
                               ItemsSource="{Binding ReadOnlyFilesystems}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{Binding NameLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
                                                 Binding="{Binding Name}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding UuidLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_UUID}"
                                                 Binding="{Binding Uuid}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding VersionLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
                                                 Binding="{Binding Version}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding AuthorLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Author}"
                                                 Binding="{Binding Author}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
@@ -171,7 +172,7 @@
             </TabItem>
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock Text="{Binding ImagesLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.Title_Media_images}" />
                 </TabItem.Header>
                 <Grid>
                     <Grid.RowDefinitions>
@@ -179,50 +180,50 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0"
-                               Text="{Binding ReadableLabel}"
+                               Text="{x:Static localization:UI.Title_Readable}"
                                FontWeight="Bold" />
                     <DataGrid Grid.Row="1"
                               ItemsSource="{Binding Images}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{Binding NameLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
                                                 Binding="{Binding Name}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding UuidLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_UUID}"
                                                 Binding="{Binding Uuid}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding VersionLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
                                                 Binding="{Binding Version}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding AuthorLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Author}"
                                                 Binding="{Binding Author}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
                         </DataGrid.Columns>
                     </DataGrid>
                     <TextBlock Grid.Row="2"
-                               Text="{Binding WritableLabel}"
+                               Text="{x:Static localization:UI.Title_Writable}"
                                FontWeight="Bold" />
                     <DataGrid Grid.Row="3"
                               ItemsSource="{Binding WritableImages}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{Binding NameLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
                                                 Binding="{Binding Name}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding UuidLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_UUID}"
                                                 Binding="{Binding Uuid}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding VersionLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
                                                 Binding="{Binding Version}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding AuthorLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Author}"
                                                 Binding="{Binding Author}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
@@ -232,7 +233,7 @@
             </TabItem>
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock Text="{Binding FloppyImagesLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.Title_Floppy_images}" />
                 </TabItem.Header>
                 <Grid>
                     <Grid.RowDefinitions>
@@ -240,50 +241,50 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0"
-                               Text="{Binding ReadableLabel}"
+                               Text="{x:Static localization:UI.Title_Readable}"
                                FontWeight="Bold" />
                     <DataGrid Grid.Row="1"
                               ItemsSource="{Binding FloppyImages}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{Binding NameLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
                                                 Binding="{Binding Name}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding UuidLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_UUID}"
                                                 Binding="{Binding Uuid}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding VersionLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
                                                 Binding="{Binding Version}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding AuthorLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Author}"
                                                 Binding="{Binding Author}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
                         </DataGrid.Columns>
                     </DataGrid>
                     <TextBlock Grid.Row="2"
-                               Text="{Binding WritableLabel}"
+                               Text="{x:Static localization:UI.Title_Writable}"
                                FontWeight="Bold" />
                     <DataGrid Grid.Row="3"
                               ItemsSource="{Binding WritableFloppyImages}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{Binding NameLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
                                                 Binding="{Binding Name}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding UuidLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_UUID}"
                                                 Binding="{Binding Uuid}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding VersionLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
                                                 Binding="{Binding Version}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
-                            <DataGridTextColumn Header="{Binding AuthorLabel}"
+                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Author}"
                                                 Binding="{Binding Author}"
                                                 Width="Auto"
                                                 IsReadOnly="True" />
@@ -297,7 +298,7 @@
             <Button HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
                     Command="{Binding CloseCommand}">
-                <TextBlock Text="{Binding CloseLabel}" />
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
             </Button>
         </Border>
     </Grid>

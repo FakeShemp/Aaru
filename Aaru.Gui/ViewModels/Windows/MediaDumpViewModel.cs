@@ -289,25 +289,6 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         _devicePath = devicePath;
     }
 
-    public string OutputFormatLabel     => UI.Output_format;
-    public string ChooseLabel           => UI.ButtonLabel_Choose;
-    public string StopOnErrorLabel      => UI.Stop_media_dump_on_first_error;
-    public string ForceLabel            => UI.Continue_dumping_whatever_happens;
-    public string RetriesLabel          => UI.Retry_passes;
-    public string PersistentLabel       => UI.Try_to_recover_partial_or_incorrect_data;
-    public string ResumeLabel           => UI.Create_or_use_resume_mapfile;
-    public string Track1PregapLabel     => UI.Try_to_read_track_1_pregap;
-    public string SkippedLabel          => UI.Skipped_sectors_on_error;
-    public string SidecarLabel          => UI.Create_Aaru_Metadata_sidecar;
-    public string TrimLabel             => UI.Trim_errors_from_skipped_sectors;
-    public string ExistingMetadataLabel => UI.Take_metadata_from_existing_CICM_XML_sidecar;
-    public string EncodingLabel         => UI.Encoding_to_use_on_metadata_sidecar_creation;
-    public string DestinationLabel      => UI.Writing_image_to;
-    public string LogLabel              => UI.Title_Log;
-    public string StartLabel            => UI.ButtonLabel_Start;
-    public string CloseLabel            => UI.ButtonLabel_Close;
-    public string StopLabel             => UI.ButtonLabel_Stop;
-
     public ICommand StartCommand       { get; }
     public ICommand CloseCommand       { get; }
     public ICommand StopCommand        { get; }

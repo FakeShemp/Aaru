@@ -31,17 +31,12 @@
 // ****************************************************************************/
 
 using Aaru.CommonTypes.AaruMetadata;
-using Aaru.Localization;
 using JetBrains.Annotations;
 
 namespace Aaru.Gui.ViewModels.Panels;
 
 public sealed class FileSystemViewModel([NotNull] FileSystem metadata, string information)
 {
-    public string BootableLabel => Localization.Core.Filesystem_contains_boot_code;
-    public string DirtyLabel    => Localization.Core.Filesystem_has_not_been_unmounted_correctly_or_contains_errors;
-    public string DetailsLabel  => UI.Title_Details;
-
     public string TypeText         { get; } = string.Format(Localization.Core.Filesystem_type_0, metadata.Type);
     public string VolumeNameText   { get; } = string.Format(Localization.Core.Volume_name_0,     metadata.VolumeName);
     public string SerialNumberText { get; } = string.Format(Localization.Core.Volume_serial_0,   metadata.VolumeSerial);

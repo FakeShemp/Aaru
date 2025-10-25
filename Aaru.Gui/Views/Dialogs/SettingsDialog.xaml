@@ -36,6 +36,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dialogs="clr-namespace:Aaru.Gui.ViewModels.Dialogs"
+        xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
@@ -44,7 +45,7 @@
         x:Class="Aaru.Gui.Views.Dialogs.SettingsDialog"
         Icon="/Assets/aaru-logo.png"
         CanResize="False"
-        Title="{Binding Title}">
+        Title="{x:Static localization:UI.Title_Settings}">
     <Design.DataContext>
         <dialogs:SettingsViewModel />
     </Design.DataContext>
@@ -59,73 +60,80 @@
                         SelectedIndex="{Binding TabControlSelectedIndex}">
                 <TabItem IsVisible="{Binding GdprVisible}">
                     <TabItem.Header>
-                        <TextBlock Text="{Binding GdprLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.Title_GDPR}" />
                     </TabItem.Header>
                     <StackPanel Spacing="5">
-                        <TextBlock Text="{Binding GdprText1}" /> <Border Padding="10" />
-                        <TextBlock Text="{Binding GdprText2}" /> <Border Padding="10" />
-                        <TextBlock Text="{Binding GdprText3}" />
+                        <TextBlock Text="{x:Static localization:UI.GDPR_Compliance}" /> <Border Padding="10" />
+                        <TextBlock Text="{x:Static localization:UI.GDPR_Open_Source_Disclaimer}" />
+                        <Border Padding="10" />
+                        <TextBlock Text="{x:Static localization:UI.GDPR_Information_sharing}" />
                     </StackPanel>
                 </TabItem>
                 <TabItem>
                     <TabItem.Header>
-                        <TextBlock Text="{Binding ReportsLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.Title_Reports}" />
                     </TabItem.Header>
                     <StackPanel Spacing="15">
                         <StackPanel Spacing="5">
-                            <TextBlock Text="{Binding ReportsGloballyText}" />
+                            <TextBlock Text="{x:Static localization:UI.Configure_Device_Report_information_disclaimer}" />
                             <CheckBox IsChecked="{Binding SaveReportsGloballyChecked}">
-                                <TextBlock Text="{Binding SaveReportsGloballyText}" />
+                                <TextBlock
+                                    Text="{x:Static localization:UI.Save_device_reports_in_shared_folder_of_your_computer_Q}" />
                             </CheckBox>
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock Text="{Binding ReportsText}" />
+                            <TextBlock Text="{x:Static localization:UI.Configure_share_report_disclaimer}" />
                             <CheckBox IsChecked="{Binding ShareReportsChecked}">
-                                <TextBlock Text="{Binding ShareReportsText}" />
+                                <TextBlock Text="{x:Static localization:UI.Share_your_device_reports_with_us_Q}" />
                             </CheckBox>
                         </StackPanel>
                     </StackPanel>
                 </TabItem>
                 <TabItem>
                     <TabItem.Header>
-                        <TextBlock Text="{Binding StatisticsLabel}" />
+                        <TextBlock Text="{x:Static localization:UI.Title_Statistics}" />
                     </TabItem.Header>
                     <StackPanel Spacing="15">
-                        <TextBlock Text="{Binding StatisticsText}" />
+                        <TextBlock Text="{x:Static localization:UI.Statistics_disclaimer}" />
                         <CheckBox IsChecked="{Binding SaveStatsChecked}">
-                            <TextBlock Text="{Binding SaveStatsText}" />
+                            <TextBlock Text="{x:Static localization:UI.Save_stats_about_your_Aaru_usage_Q}" />
                         </CheckBox>
                         <StackPanel IsVisible="{Binding SaveStatsChecked}"
                                     Spacing="5">
                             <CheckBox IsChecked="{Binding ShareStatsChecked}">
-                                <TextBlock Text="{Binding ShareStatsText}" />
+                                <TextBlock Text="{x:Static localization:UI.Share_your_stats_anonymously_Q}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding CommandStatsChecked}">
-                                <TextBlock Text="{Binding CommandStatsText}" />
+                                <TextBlock Text="{x:Static localization:UI.Gather_statistics_about_command_usage_Q}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding DeviceStatsChecked}">
-                                <TextBlock Text="{Binding DeviceStatsText}" />
+                                <TextBlock Text="{x:Static localization:UI.Gather_statistics_about_found_devices_Q}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding FilesystemStatsChecked}">
-                                <TextBlock Text="{Binding FilesystemStatsText}" />
+                                <TextBlock
+                                    Text="{x:Static localization:UI.Gather_statistics_about_found_filesystems_Q}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding FilesystemStatsChecked}">
-                                <TextBlock Text="{Binding FilterStatsText}" />
+                                <TextBlock
+                                    Text="{x:Static localization:UI.Gather_statistics_about_found_file_filters_Q}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding MediaImageStatsChecked}">
-                                <TextBlock Text="{Binding MediaImageStatsText}" />
+                                <TextBlock
+                                    Text="{x:Static localization:UI.Gather_statistics_about_found_media_image_formats_Q}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding MediaScanStatsChecked}">
-                                <TextBlock Text="{Binding MediaScanStatsText}" />
+                                <TextBlock Text="{x:Static localization:UI.Gather_statistics_about_scanned_media_Q}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding PartitionStatsChecked}">
-                                <TextBlock Text="{Binding PartitionStatsText}" />
+                                <TextBlock
+                                    Text="{x:Static localization:UI.Gather_statistics_about_found_partitioning_schemes_Q}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding MediaStatsChecked}">
-                                <TextBlock Text="{Binding MediaStatsText}" />
+                                <TextBlock Text="{x:Static localization:UI.Gather_statistics_about_media_types_Q}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding VerifyStatsChecked}">
-                                <TextBlock Text="{Binding VerifyStatsText}" />
+                                <TextBlock
+                                    Text="{x:Static localization:UI.Gather_statistics_about_media_image_verifications_Q}" />
                             </CheckBox>
                         </StackPanel>
                     </StackPanel>
@@ -137,10 +145,10 @@
                         Orientation="Horizontal"
                         Spacing="5">
                 <Button Command="{Binding SaveCommand}">
-                    <TextBlock Text="{Binding SaveLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save}" />
                 </Button>
                 <Button Command="{Binding CancelCommand}">
-                    <TextBlock Text="{Binding CancelLabel}" />
+                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Cancel}" />
                 </Button>
             </StackPanel>
         </Grid>

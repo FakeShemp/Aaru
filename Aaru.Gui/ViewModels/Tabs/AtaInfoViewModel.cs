@@ -35,7 +35,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Aaru.Decoders.ATA;
-using Aaru.Localization;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
@@ -82,8 +81,7 @@ public sealed class AtaInfoViewModel : ViewModelBase
 
                 AtaMcptWriteProtectionChecked = (ataMcptError.Value.DeviceHead & 0x08) == 0x08;
 
-                ushort specificData =
-                    (ushort)(ataMcptError.Value.CylinderHigh * 0x100 + ataMcptError.Value.CylinderLow);
+                var specificData = (ushort)(ataMcptError.Value.CylinderHigh * 0x100 + ataMcptError.Value.CylinderLow);
 
                 AtaMcptSpecificDataText = string.Format(Localization.Core.Card_specific_data_0, specificData);
             }
@@ -105,13 +103,7 @@ public sealed class AtaInfoViewModel : ViewModelBase
     public bool     AtaMcptVisible                { get; }
     public ICommand SaveAtaBinaryCommand          { get; }
     public ICommand SaveAtaTextCommand            { get; }
-
-    public string AtaOrAtapiText { get; }
-
-    public string AtaMcptLabel                => Localization.Core.Device_supports_MCPT_Command_Set;
-    public string AtaMcptWriteProtectionLabel => Localization.Core.Media_card_is_write_protected;
-    public string SaveAtaBinaryLabel          => UI.ButtonLabel_Save_binary_to_file;
-    public string SaveAtaTextLabel            => UI.ButtonLabel_Save_text_to_file;
+    public string   AtaOrAtapiText                { get; }
 
     async Task SaveAtaBinaryAsync()
     {
