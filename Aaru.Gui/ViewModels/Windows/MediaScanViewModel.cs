@@ -68,7 +68,6 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     string _b;
     [ObservableProperty]
     ulong _blocks;
-    [ObservableProperty]
     ulong _blocksToRead;
     [ObservableProperty]
     string _c;
@@ -76,7 +75,6 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     bool _closeVisible;
     [ObservableProperty]
     string _d;
-    [ObservableProperty]
     string _devicePath;
     [ObservableProperty]
     string _e;
@@ -84,7 +82,6 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     string _f;
     [ObservableProperty]
     Color _lineColor;
-    [ObservableProperty]
     ScanResults _localResults;
     [ObservableProperty]
     string _maxSpeed;
@@ -122,7 +119,6 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     bool _progressVisible;
     [ObservableProperty]
     bool _resultsVisible;
-    [ObservableProperty]
     MediaScan _scanner;
     [ObservableProperty]
     bool _startVisible;

@@ -81,10 +81,8 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
     string _destination;
     [ObservableProperty]
     bool _destinationEnabled;
-    [ObservableProperty]
     Device _dev;
-    [ObservableProperty]
-    Dump _dumper;
+    Dump   _dumper;
     [ObservableProperty]
     string _encodingEnabled;
     [ObservableProperty]
@@ -98,7 +96,6 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
     string _log;
     [ObservableProperty]
     bool _optionsVisible;
-    [ObservableProperty]
     string _outputPrefix;
     [ObservableProperty]
     bool _persistent;

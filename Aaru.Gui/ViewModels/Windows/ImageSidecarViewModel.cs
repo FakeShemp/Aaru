@@ -87,7 +87,6 @@ public sealed partial class ImageSidecarViewModel : ViewModelBase
     double _progressValue;
     [ObservableProperty]
     bool _progressVisible;
-    [ObservableProperty]
     Sidecar _sidecarClass;
     [ObservableProperty]
     bool _startVisible;

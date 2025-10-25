@@ -58,7 +58,6 @@ public sealed partial class ImageEntropyViewModel : ViewModelBase
     bool _duplicatedSectorsChecked;
     [ObservableProperty]
     bool _duplicatedSectorsEnabled;
-    [ObservableProperty]
     EntropyResults _entropy;
     [ObservableProperty]
     string _mediaEntropyText;
@@ -104,7 +103,6 @@ public sealed partial class ImageEntropyViewModel : ViewModelBase
     bool _startVisible;
     [ObservableProperty]
     bool _stopVisible;
-    [ObservableProperty]
     EntropyResults[] _tracksEntropy;
     [ObservableProperty]
     bool _wholeDiscChecked;

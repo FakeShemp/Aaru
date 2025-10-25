@@ -71,11 +71,9 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
 {
     readonly IMediaImage _inputFormat;
     readonly Window      _view;
-    [ObservableProperty]
-    Metadata _aaruMetadata;
+    Metadata             _aaruMetadata;
     [ObservableProperty]
     bool _aaruMetadataFromImageVisible;
-    [ObservableProperty]
     bool _cancel;
     [ObservableProperty]
     bool _closeVisible;
@@ -109,7 +107,6 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
     string _driveSerialNumberText;
     [ObservableProperty]
     bool _driveSerialNumberVisible;
-    [ObservableProperty]
     List<DumpHardware> _dumpHardware;
     [ObservableProperty]
     bool _forceChecked;
