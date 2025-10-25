@@ -89,48 +89,70 @@ public enum TrackSubchannelType : byte
 public enum SectorTagType
 {
     /// <summary>Apple's Sony GCR sector tags, 12 bytes</summary>
+    [Description("Sony GCR sector tags")]
     AppleSonyTag = 0,
     /// <summary>Sync frame from CD sector, 12 bytes</summary>
+    [Description("Sync frame")]
     CdSectorSync = 1,
     /// <summary>CD sector header, 4 bytes</summary>
+    [Description("Sector header")]
     CdSectorHeader = 2,
     /// <summary>CD mode 2 sector subheader</summary>
+    [Description("MODE 2 Subheader")]
     CdSectorSubHeader = 3,
     /// <summary>CD sector EDC, 4 bytes</summary>
+    [Description("Error Detection Code")]
     CdSectorEdc = 4,
     /// <summary>CD sector ECC P, 172 bytes</summary>
+    [Description("Error Correction Code P")]
     CdSectorEccP = 5,
     /// <summary>CD sector ECC Q, 104 bytes</summary>
+    [Description("Error Correction Code Q")]
     CdSectorEccQ = 6,
     /// <summary>CD sector ECC (P and Q), 276 bytes</summary>
+    [Description("Error Correction Code")]
     CdSectorEcc = 7,
     /// <summary>CD sector subchannel, 96 bytes</summary>
+    [Description("Subchannel")]
     CdSectorSubchannel = 8,
     /// <summary>CD track ISRC, string, 12 bytes</summary>
+    [Description("International Standard Recording Code")]
     CdTrackIsrc = 9,
     /// <summary>CD track text, string, 13 bytes</summary>
+    [Description("Track text")]
     CdTrackText = 10,
     /// <summary>CD track flags, 1 byte</summary>
+    [Description("Track flags")]
     CdTrackFlags = 11,
     /// <summary>DVD sector copyright information</summary>
+    [Description("Copyright Management Information")]
     DvdSectorCmi = 12,
     /// <summary>Floppy address mark (contents depend on underlying floppy format)</summary>
+    [Description("Address mark")]
     FloppyAddressMark = 13,
     /// <summary>DVD sector title key, 5 bytes</summary>
+    [Description("Title key")]
     DvdSectorTitleKey = 14,
     /// <summary>Decrypted DVD sector title key, 5 bytes</summary>
+    [Description("Title key (Decrypted)")]
     DvdTitleKeyDecrypted = 15,
     /// <summary>DVD sector information, 1 bytes</summary>
+    [Description("Sector information")]
     DvdSectorInformation = 16,
     /// <summary>DVD sector number, 3 bytes</summary>
+    [Description("Sector number")]
     DvdSectorNumber = 17,
     /// <summary>DVD sector ID error detection, 2 bytes</summary>
+    [Description("ID error detection")]
     DvdSectorIed = 18,
     /// <summary>DVD sector EDC, 4 bytes</summary>
+    [Description("Error Detection Code")]
     DvdSectorEdc = 19,
     /// <summary>Apple's Profile sector tag, 20 bytes</summary>
+    [Description("Profile sector tag")]
     AppleProfileTag = 20,
     /// <summary>Priam Data Tower sector tag, 24 bytes</summary>
+    [Description("Priam Data Tower sector tag")]
     PriamDataTowerTag = 21
 }
 
@@ -139,155 +161,229 @@ public enum SectorTagType
 public enum MediaTagType
 {
     /// <summary>CD table of contents</summary>
+    [Description("Table of contents")]
     CD_TOC = 0,
     /// <summary>CD session information</summary>
+    [Description("Session information")]
     CD_SessionInfo = 1,
     /// <summary>CD full table of contents</summary>
+    [Description("Full table of contents")]
     CD_FullTOC = 2,
     /// <summary>CD PMA</summary>
+    [Description("Program Memory Area")]
     CD_PMA = 3,
     /// <summary>CD Address-Time-In-Pregroove</summary>
+    [Description("Address-Time-In-Pregroove")]
     CD_ATIP = 4,
     /// <summary>CD-Text</summary>
+    [Description("CD-Text")]
     CD_TEXT = 5,
     /// <summary>CD Media Catalogue Number</summary>
+    [Description("Media Catalogue Number")]
     CD_MCN = 6,
     /// <summary>DVD/HD DVD Physical Format Information</summary>
+    [Description("Physical Format Information")]
     DVD_PFI = 7,
     /// <summary>DVD Lead-in Copyright Management Information</summary>
+    [Description("Lead-in Copyright Management Information")]
     DVD_CMI = 8,
     /// <summary>DVD disc key</summary>
+    [Description("Disc key")]
     DVD_DiscKey = 9,
     /// <summary>DVD/HD DVD Burst Cutting Area</summary>
+    [Description("Burst Cutting Area")]
     DVD_BCA = 10,
     /// <summary>DVD/HD DVD Lead-in Disc Manufacturer Information</summary>
+    [Description("Lead-in Disc Manufacturer Information")]
     DVD_DMI = 11,
     /// <summary>Media identifier</summary>
+    [Description("Media identifier")]
     DVD_MediaIdentifier = 12,
     /// <summary>Media key block</summary>
+    [Description("Media key block")]
     DVD_MKB = 13,
     /// <summary>DVD-RAM/HD DVD-RAM DDS information</summary>
+    [Description("DDS information")]
     DVDRAM_DDS = 14,
     /// <summary>DVD-RAM/HD DVD-RAM Medium status</summary>
+    [Description("Medium status")]
     DVDRAM_MediumStatus = 15,
     /// <summary>DVD-RAM/HD DVD-RAM Spare area information</summary>
+    [Description("Spare area information")]
     DVDRAM_SpareArea = 16,
     /// <summary>DVD-R/-RW/HD DVD-R RMD in last border-out</summary>
+    [Description("RMD in last border-out")]
     DVDR_RMD = 17,
     /// <summary>Pre-recorded information from DVD-R/-RW lead-in</summary>
+    [Description("Pre-recorded information from lead-in")]
     DVDR_PreRecordedInfo = 18,
     /// <summary>DVD-R/-RW/HD DVD-R media identifier</summary>
+    [Description("Media identifier")]
     DVDR_MediaIdentifier = 19,
     /// <summary>DVD-R/-RW/HD DVD-R physical format information</summary>
+    [Description("Physical format information")]
     DVDR_PFI = 20,
     /// <summary>ADIP information</summary>
+    [Description("ADIP information")]
     DVD_ADIP = 21,
     /// <summary>HD DVD Lead-in copyright protection information</summary>
+    [Description("Lead-in copyright protection information")]
     HDDVD_CPI = 22,
     /// <summary>HD DVD-R Medium Status</summary>
+    [Description("Medium Status")]
     HDDVD_MediumStatus = 23,
     /// <summary>DVD+/-R DL Layer capacity</summary>
+    [Description("Layer capacity")]
     DVDDL_LayerCapacity = 24,
     /// <summary>DVD-R DL Middle Zone start address</summary>
+    [Description("Middle Zone start address")]
     DVDDL_MiddleZoneAddress = 25,
     /// <summary>DVD-R DL Jump Interval Size</summary>
+    [Description("Jump Interval Size")]
     DVDDL_JumpIntervalSize = 26,
     /// <summary>DVD-R DL Start LBA of the manual layer jump</summary>
+    [Description("Start LBA of the manual layer jump")]
     DVDDL_ManualLayerJumpLBA = 27,
     /// <summary>Blu-ray Disc Information</summary>
+    [Description("Disc Information")]
     BD_DI = 28,
     /// <summary>Blu-ray Burst Cutting Area</summary>
+    [Description("Burst Cutting Area")]
     BD_BCA = 29,
     /// <summary>Blu-ray Disc Definition Structure</summary>
+    [Description("Disc Definition Structure")]
     BD_DDS = 30,
     /// <summary>Blu-ray Cartridge Status</summary>
+    [Description("Cartridge Status")]
     BD_CartridgeStatus = 31,
     /// <summary>Blu-ray Status of Spare Area</summary>
+    [Description("Status of Spare Area")]
     BD_SpareArea = 32,
     /// <summary>AACS volume identifier</summary>
+    [Description("Volume identifier")]
     AACS_VolumeIdentifier = 33,
     /// <summary>AACS pre-recorded media serial number</summary>
+    [Description("Pre-recorded media serial number")]
     AACS_SerialNumber = 34,
     /// <summary>AACS media identifier</summary>
+    [Description("Media identifier")]
     AACS_MediaIdentifier = 35,
     /// <summary>Lead-in AACS media key block</summary>
+    [Description("Lead-in media key block")]
     AACS_MKB = 36,
     /// <summary>AACS data keys</summary>
+    [Description("AACS Data keys")]
     AACS_DataKeys = 37,
     /// <summary>LBA extents flagged for bus encryption by AACS</summary>
+    [Description("LBA extents flagged for bus encryption")]
     AACS_LBAExtents = 38,
     /// <summary>CPRM media key block in Lead-in</summary>
+    [Description("CPRM media key block in Lead-in")]
     AACS_CPRM_MKB = 39,
     /// <summary>Recognized layer formats in hybrid discs</summary>
+    [Description("Recognized layer formats in hybrid discs")]
     Hybrid_RecognizedLayers = 40,
     /// <summary>Disc write protection status</summary>
+    [Description("Write protection status")]
     MMC_WriteProtection = 41,
     /// <summary>Disc standard information</summary>
+    [Description("Standard information")]
     MMC_DiscInformation = 42,
     /// <summary>Disc track resources information</summary>
+    [Description("Track resources information")]
     MMC_TrackResourcesInformation = 43,
     /// <summary>BD-R Pseudo-overwrite information</summary>
+    [Description("Pseudo-overwrite information")]
     MMC_POWResourcesInformation = 44,
     /// <summary>SCSI INQUIRY response</summary>
+    [Description("INQUIRY response")]
     SCSI_INQUIRY = 45,
     /// <summary>SCSI MODE PAGE 2Ah</summary>
+    [Description("MODE PAGE 2Ah")]
     SCSI_MODEPAGE_2A = 46,
     /// <summary>ATA IDENTIFY DEVICE response</summary>
+    [Description("IDENTIFY DEVICE response")]
     ATA_IDENTIFY = 47,
     /// <summary>ATA IDENTIFY PACKET DEVICE response</summary>
+    [Description("IDENTIFY PACKET DEVICE response")]
     ATAPI_IDENTIFY = 48,
     /// <summary>PCMCIA/CardBus Card Information Structure</summary>
+    [Description("Card Information Structure")]
     PCMCIA_CIS = 49,
     /// <summary>SecureDigital CID</summary>
+    [Description("SD Card Information Data")]
     SD_CID = 50,
     /// <summary>SecureDigital CSD</summary>
+    [Description("SD Card Specific Data")]
     SD_CSD = 51,
     /// <summary>SecureDigital SCR</summary>
+    [Description("SD Specific Conditions Register")]
     SD_SCR = 52,
     /// <summary>SecureDigital OCR</summary>
+    [Description("Operating Conditions Register")]
     SD_OCR = 53,
     /// <summary>MultiMediaCard CID</summary>
+    [Description("MMC Card Information Data")]
     MMC_CID = 54,
     /// <summary>MultiMediaCard CSD</summary>
+    [Description("MMC Card Specific Data")]
     MMC_CSD = 55,
     /// <summary>MultiMediaCard OCR</summary>
+    [Description("MMC Operating Conditions Register")]
     MMC_OCR = 56,
     /// <summary>MultiMediaCard Extended CSD</summary>
+    [Description("MMC Extended CSD")]
     MMC_ExtendedCSD = 57,
     /// <summary>Xbox Security Sector</summary>
+    [Description("Xbox Security Sector")]
     Xbox_SecuritySector = 58,
     /// <summary>
     ///     On floppy disks, data in last cylinder usually in a different format that contains duplication or
     ///     manufacturing information
     /// </summary>
+    [Description("Lead-Out")]
     Floppy_LeadOut = 59,
     /// <summary>DVD Disc Control Blocks</summary>
+    [Description("Disc Control Blocks")]
     DCB = 60,
     /// <summary>Compact Disc First Track Pregap</summary>
+    [Description("First Track Pregap")]
     CD_FirstTrackPregap = 61,
     /// <summary>Compact Disc Lead-out</summary>
+    [Description("Lead-out")]
     CD_LeadOut = 62,
     /// <summary>SCSI MODE SENSE (6)</summary>
+    [Description("MODE SENSE (6)")]
     SCSI_MODESENSE_6 = 63,
     /// <summary>SCSI MODE SENSE (10)</summary>
+    [Description("MODE SENSE (10)")]
     SCSI_MODESENSE_10 = 64,
     /// <summary>USB descriptors</summary>
+    [Description("USB descriptors")]
     USB_Descriptors = 65,
     /// <summary>XGD unlocked DMI</summary>
+    [Description("Unlocked DMI")]
     Xbox_DMI = 66,
     /// <summary>XDG unlocked PFI</summary>
+    [Description("Unlocked PFI")]
     Xbox_PFI = 67,
     /// <summary>Compact Disc Lead-in</summary>
+    [Description("Lead-in")]
     CD_LeadIn = 68,
     /// <summary>8 bytes response that seems to define type of MiniDisc</summary>
+    [Description("MiniDisc type definition")]
     MiniDiscType = 69,
     /// <summary>4 bytes response to vendor command D5h</summary>
+    [Description("Vendor command D5h response")]
     MiniDiscD5 = 70,
     /// <summary>User TOC, contains fragments, track names, and can be from 1 to 3 sectors of 2336 bytes</summary>
+    [Description("MD-DATA User TOC")]
     MiniDiscUTOC = 71,
     /// <summary>Not entirely clear kind of TOC that only appears on MD-DATA discs</summary>
+    [Description("MD-DATA DTOC")]
     MiniDiscDTOC = 72,
     /// <summary>Decrypted DVD disc key</summary>
+    [Description("Disc key (Decrypted)")]
     DVD_DiscKey_Decrypted = 73
 }
 
