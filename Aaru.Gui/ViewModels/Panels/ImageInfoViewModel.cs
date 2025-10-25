@@ -119,8 +119,10 @@ public sealed class ImageInfoViewModel : ViewModelBase
         ImageIdentifiedText = string.Format(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
 
         ImageFormatText = !string.IsNullOrWhiteSpace(imageFormat.Info.Version)
-                              ? string.Format(UI.Format_0_version_1, imageFormat.Format, imageFormat.Info.Version)
-                              : string.Format(UI.Format_0,           imageFormat.Format);
+                              ? string.Format(Localization.Core.Format_0_version_1_WithMarkup,
+                                              imageFormat.Format,
+                                              imageFormat.Info.Version)
+                              : string.Format(Localization.Core.Format_0_WithMarkup, imageFormat.Format);
 
         ImageSizeText = string.Format(Localization.Core.Image_without_headers_is_0_bytes_long,
                                       imageFormat.Info.ImageSize);
@@ -131,24 +133,30 @@ public sealed class ImageInfoViewModel : ViewModelBase
                           imageFormat.Info.SectorSize,
                           ByteSize.FromBytes(imageFormat.Info.Sectors * imageFormat.Info.SectorSize).Humanize());
 
-        MediaTypeText = string.Format(Localization.Core.Contains_a_media_of_type_0_and_XML_type_1,
+        MediaTypeText = string.Format(Localization.Core.Contains_a_media_of_type_0_and_XML_type_1_WithMarkup,
                                       imageFormat.Info.MediaType.Humanize(),
                                       imageFormat.Info.MetadataMediaType);
 
-        HasPartitionsText = imageFormat.Info.HasPartitions ? UI.Has_partitions : UI.Doesnt_have_partitions;
-        HasSessionsText   = imageFormat.Info.HasSessions ? UI.Has_sessions : UI.Doesnt_have_sessions;
+        HasPartitionsText = imageFormat.Info.HasPartitions
+                                ? Localization.Core.Has_partitions
+                                : Localization.Core.Doesnt_have_partitions;
+
+        HasSessionsText = imageFormat.Info.HasSessions
+                              ? Localization.Core.Has_sessions
+                              : Localization.Core.Doesnt_have_sessions;
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.Application))
         {
             ApplicationText = !string.IsNullOrWhiteSpace(imageFormat.Info.ApplicationVersion)
-                                  ? string.Format(Localization.Core.Was_created_with_0_version_1,
+                                  ? string.Format(Localization.Core.Was_created_with_0_version_1_WithMarkup,
                                                   imageFormat.Info.Application,
                                                   imageFormat.Info.ApplicationVersion)
-                                  : string.Format(Localization.Core.Was_created_with_0, imageFormat.Info.Application);
+                                  : string.Format(Localization.Core.Was_created_with_0_WithMarkup,
+                                                  imageFormat.Info.Application);
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.Creator))
-            CreatorText = string.Format(Localization.Core.Created_by_0, imageFormat.Info.Creator);
+            CreatorText = string.Format(Localization.Core.Created_by_0_WithMarkup, imageFormat.Info.Creator);
 
         if(imageFormat.Info.CreationTime != DateTime.MinValue)
             CreationTimeText = string.Format(Localization.Core.Created_on_0, imageFormat.Info.CreationTime);
@@ -167,43 +175,47 @@ public sealed class ImageInfoViewModel : ViewModelBase
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaTitle))
-            MediaTitleText = string.Format(UI.Media_title_0, imageFormat.Info.MediaTitle);
+            MediaTitleText = string.Format(Localization.Core.Media_title_0_WithMarkup, imageFormat.Info.MediaTitle);
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaManufacturer))
         {
-            MediaManufacturerText =
-                string.Format(Localization.Core.Media_manufacturer_0, imageFormat.Info.MediaManufacturer);
+            MediaManufacturerText = string.Format(Localization.Core.Media_manufacturer_0_WithMarkup,
+                                                  imageFormat.Info.MediaManufacturer);
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaModel))
-            MediaModelText = string.Format(UI.Media_model_0, imageFormat.Info.MediaModel);
+            MediaModelText = string.Format(Localization.Core.Media_model_0_WithMarkup, imageFormat.Info.MediaModel);
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaSerialNumber))
         {
-            MediaSerialNumberText =
-                string.Format(Localization.Core.Media_serial_number_0, imageFormat.Info.MediaSerialNumber);
+            MediaSerialNumberText = string.Format(Localization.Core.Media_serial_number_0_WithMarkup,
+                                                  imageFormat.Info.MediaSerialNumber);
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaBarcode))
-            MediaBarcodeText = string.Format(UI.Media_barcode_0, imageFormat.Info.MediaBarcode);
+            MediaBarcodeText =
+                string.Format(Localization.Core.Media_barcode_0_WithMarkup, imageFormat.Info.MediaBarcode);
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaPartNumber))
-            MediaPartNumberText = string.Format(UI.Media_part_number_0, imageFormat.Info.MediaPartNumber);
+            MediaPartNumberText = string.Format(Localization.Core.Media_part_number_0_WithMarkup,
+                                                imageFormat.Info.MediaPartNumber);
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveManufacturer))
-            DriveManufacturerText = string.Format(UI.Drive_manufacturer_0, imageFormat.Info.DriveManufacturer);
+            DriveManufacturerText = string.Format(Localization.Core.Drive_manufacturer_0_WithMarkup,
+                                                  imageFormat.Info.DriveManufacturer);
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveModel))
-            DriveModelText = string.Format(UI.Drive_model_0, imageFormat.Info.DriveModel);
+            DriveModelText = string.Format(Localization.Core.Drive_model_0_WithMarkup, imageFormat.Info.DriveModel);
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveSerialNumber))
         {
-            DriveSerialNumberText =
-                string.Format(Localization.Core.Drive_serial_number_0, imageFormat.Info.DriveSerialNumber);
+            DriveSerialNumberText = string.Format(Localization.Core.Drive_serial_number_0_WithMarkup,
+                                                  imageFormat.Info.DriveSerialNumber);
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveFirmwareRevision))
-            DriveFirmwareRevisionText = string.Format(UI.Drive_firmware_info_0, imageFormat.Info.DriveFirmwareRevision);
+            DriveFirmwareRevisionText = string.Format(Localization.Core.Drive_firmware_info_0_WithMarkup,
+                                                      imageFormat.Info.DriveFirmwareRevision);
 
         if(imageFormat.Info.Cylinders > 0                                      &&
            imageFormat.Info is { Heads: > 0, SectorsPerTrack: > 0 }            &&
@@ -218,13 +230,12 @@ public sealed class ImageInfoViewModel : ViewModelBase
 
         if(imageFormat.Info.ReadableMediaTags is { Count: > 0 })
         {
-            foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.OrderBy(t => t))
-                MediaTagsList.Add(tag.ToString());
+            foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.Order()) MediaTagsList.Add(tag.ToString());
         }
 
         if(imageFormat.Info.ReadableSectorTags is { Count: > 0 })
         {
-            foreach(SectorTagType tag in imageFormat.Info.ReadableSectorTags.OrderBy(t => t))
+            foreach(SectorTagType tag in imageFormat.Info.ReadableSectorTags.Order())
                 SectorTagsList.Add(tag.ToString());
         }
 
@@ -695,9 +706,8 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Sessions is { Count: > 0 })
-                {
-                    foreach(Session session in opticalMediaImage.Sessions) Sessions.Add(session);
-                }
+                    foreach(Session session in opticalMediaImage.Sessions)
+                        Sessions.Add(session);
             }
             catch(Exception ex)
             {
@@ -707,9 +717,8 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Tracks is { Count: > 0 })
-                {
-                    foreach(Track track in opticalMediaImage.Tracks) Tracks.Add(track);
-                }
+                    foreach(Track track in opticalMediaImage.Tracks)
+                        Tracks.Add(track);
             }
             catch(Exception ex)
             {
