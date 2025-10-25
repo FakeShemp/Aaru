@@ -524,7 +524,7 @@ public partial class SpectreTextBlock : TextBlock
         return result;
     }
 
-    [GeneratedRegex(@"^(?<fg>#[0-9a-fA-F]{6}|rgb\(\d{1,3},\d{1,3},\d{1,3}\)|[a-zA-Z]+)(\s+on\s+(?<bg>#[0-9a-fA-F]{6}|rgb\(\d{1,3},\d{1,3},\d{1,3}\)|[a-zA-Z]+))?$",
+    [GeneratedRegex(@"^(?<fg>#[0-9a-fA-F]{6}|rgb\(\d{1,3},\d{1,3},\d{1,3}\)|[a-zA-Z0-9_]+)(\s+on\s+(?<bg>#[0-9a-fA-F]{6}|rgb\(\d{1,3},\d{1,3},\d{1,3}\)|[a-zA-Z0-9_]+))?$",
                     RegexOptions.Compiled)]
     private static partial Regex ColorRegex();
 
