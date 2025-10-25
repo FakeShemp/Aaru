@@ -33,6 +33,7 @@
 using System.Collections.ObjectModel;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Gui.ViewModels.Panels;
+using Avalonia.Media.Imaging;
 
 namespace Aaru.Gui.Models;
 
@@ -45,4 +46,5 @@ public sealed class FileSystemModel : RootModel
     public IReadOnlyFilesystem                     ReadOnlyFilesystem { get; set; }
     public FileSystemViewModel                     ViewModel          { get; set; }
     public ObservableCollection<SubdirectoryModel> Roots              { get; set; }
+    public Bitmap                                  Icon               { get; set; }
 }

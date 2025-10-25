@@ -37,7 +37,7 @@ using Avalonia.Media.Imaging;
 
 namespace Aaru.Gui.Models;
 
-public sealed class ImageModel
+public sealed class ImageModel : RootModel
 {
     public ImageModel() => PartitionSchemesOrFileSystems = [];
 

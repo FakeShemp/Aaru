@@ -32,6 +32,7 @@
 
 using System.Collections.ObjectModel;
 using Aaru.CommonTypes.Interfaces;
+using Avalonia.Media.Imaging;
 
 namespace Aaru.Gui.Models;
 
@@ -44,4 +45,5 @@ public sealed class SubdirectoryModel
     public ObservableCollection<SubdirectoryModel> Subdirectories { get; set; }
     public IReadOnlyFilesystem                     Plugin         { get; set; }
     public bool                                    Listed         { get; set; }
+    public Bitmap                                  Icon           { get; set; }
 }
