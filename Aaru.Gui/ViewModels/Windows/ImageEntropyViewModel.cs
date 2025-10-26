@@ -30,11 +30,10 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Core;
@@ -167,8 +166,9 @@ public sealed partial class ImageEntropyViewModel : ViewModelBase
             WholeDiscChecked = false;
         }
 
-        // ReSharper disable once AsyncVoidLambda
-        var thread = new Thread(async () =>
+        Statistics.AddCommand("entropy");
+
+        _ = Task.Run(async () =>
         {
             if(SeparatedTracksChecked)
             {
@@ -194,10 +194,6 @@ public sealed partial class ImageEntropyViewModel : ViewModelBase
 
             await Dispatcher.UIThread.InvokeAsync(Finish);
         });
-
-        Statistics.AddCommand("entropy");
-
-        thread.Start();
     }
 
     void Finish()
@@ -247,7 +243,7 @@ public sealed partial class ImageEntropyViewModel : ViewModelBase
 
     void EndProgress2() => Progress2Visible = false;
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
+    [SuppressMessage("ReSharper", "AsyncVoidMethod", Justification = "Used as direct event handler for dispatcher")]
     async void UpdateProgress(string text, long current, long maximum) => await Dispatcher.UIThread.InvokeAsync(() =>
     {
         ProgressText = text;
@@ -265,7 +261,7 @@ public sealed partial class ImageEntropyViewModel : ViewModelBase
         ProgressValue = current;
     });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
+    [SuppressMessage("ReSharper", "AsyncVoidMethod", Justification = "Used as direct event handler for dispatcher")]
     async void UpdateProgress2(string text, long current, long maximum) => await Dispatcher.UIThread.InvokeAsync(() =>
     {
         Progress2Text = text;
