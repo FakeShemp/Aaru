@@ -2775,13 +2775,13 @@ Do you want to continue?</value>
     <value>Resume file does not contain dump hardware information...</value>
   </data>
     <data name="Title_Track_entropy" xml:space="preserve">
-    <value>Track entropy</value>
+    <value>[bold][slateblue1]Track entropy[/][/]</value>
   </data>
     <data name="Title_Entropy" xml:space="preserve">
-    <value>Entropy</value>
+    <value>[bold][green]Entropy[/][/]</value>
   </data>
     <data name="Title_Unique_sectors" xml:space="preserve">
-    <value>Unique sectors</value>
+    <value>[bold][aqua]Unique sectors[/][/]</value>
   </data>
     <data name="Title_Calculating_entropy" xml:space="preserve">
     <value>Calculating entropy</value>

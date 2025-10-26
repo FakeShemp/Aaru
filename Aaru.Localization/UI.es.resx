@@ -2268,7 +2268,7 @@ Probadores:
     <value>Hardware de volcado</value>
   </data>
     <data name="Title_Entropy" xml:space="preserve">
-    <value>Entropía</value>
+    <value>[bold][green]Entropía[/][/]</value>
   </data>
     <data name="Title_Error" xml:space="preserve">
     <value>Error</value>
@@ -2646,7 +2646,7 @@ Probadores:
     <value>Checksums de pista:</value>
   </data>
     <data name="Title_Track_entropy" xml:space="preserve">
-    <value>Entropía de pista</value>
+    <value>[bold][slateblue1]Entropía de pista[/][/]</value>
   </data>
     <data name="Title_Type" xml:space="preserve">
         <value>[bold][olive]Tipo[/][/]</value>
@@ -2655,7 +2655,7 @@ Probadores:
     <value>UID</value>
   </data>
     <data name="Title_Unique_sectors" xml:space="preserve">
-    <value>Sectores únicos</value>
+    <value>[bold][aqua]Sectores únicos[/][/]</value>
   </data>
     <data name="Title_USB" xml:space="preserve">
     <value>USB</value>
