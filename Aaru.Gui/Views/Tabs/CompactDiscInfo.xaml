@@ -45,6 +45,11 @@
         <tabs:CompactDiscInfoViewModel />
     </Design.DataContext>
     <TabControl>
+        <TabItem IsVisible="False">
+            <TabItem.Header>
+                <TextBlock Text="Landing placeholder" />
+            </TabItem.Header>
+        </TabItem>
         <TabItem IsVisible="{Binding !!CdInformationText}">
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:UI.Title_Information}" />
