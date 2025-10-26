@@ -37,6 +37,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:tabs="clr-namespace:Aaru.Gui.ViewModels.Tabs"
              xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
+             xmlns:controls="clr-namespace:Aaru.Gui.Controls"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -44,41 +45,76 @@
     <Design.DataContext>
         <tabs:SdMmcInfoViewModel />
     </Design.DataContext>
-    <TabControl>
-        <TabItem IsVisible="{Binding !!CidText}">
+    <TabControl Margin="8">
+        <TabItem IsVisible="{Binding !!CidText, Mode=OneWay}">
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:UI.Title_CID}" />
             </TabItem.Header>
-            <TextBox IsReadOnly="True"
-                     Text="{Binding CidText}" />
+            <Border Margin="8"
+                    BorderThickness="1"
+                    BorderBrush="LightGray"
+                    CornerRadius="8">
+                <ScrollViewer Padding="8">
+                    <controls:SpectreTextBlock Text="{Binding CidText, Mode=OneWay}"
+                                               TextWrapping="Wrap" />
+                </ScrollViewer>
+            </Border>
         </TabItem>
-        <TabItem IsVisible="{Binding !!CsdText}">
+        <TabItem IsVisible="{Binding !!CsdText, Mode=OneWay}">
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:UI.Title_CSD}" />
             </TabItem.Header>
-            <TextBox IsReadOnly="True"
-                     Text="{Binding CsdText}" />
+            <Border BorderThickness="1"
+                    Margin="8"
+                    BorderBrush="LightGray"
+                    CornerRadius="8">
+                <ScrollViewer Padding="8">
+                    <controls:SpectreTextBlock Text="{Binding CsdText, Mode=OneWay}"
+                                               TextWrapping="Wrap" />
+                </ScrollViewer>
+            </Border>
         </TabItem>
-        <TabItem IsVisible="{Binding !!OcrText}">
+        <TabItem IsVisible="{Binding !!OcrText, Mode=OneWay}">
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:UI.Title_OCR}" />
             </TabItem.Header>
-            <TextBox IsReadOnly="True"
-                     Text="{Binding OcrText}" />
+            <Border BorderThickness="1"
+                    Margin="8"
+                    BorderBrush="LightGray"
+                    CornerRadius="8">
+                <ScrollViewer Padding="8">
+                    <controls:SpectreTextBlock Text="{Binding OcrText, Mode=OneWay}"
+                                               TextWrapping="Wrap" />
+                </ScrollViewer>
+            </Border>
         </TabItem>
-        <TabItem IsVisible="{Binding !!ExtendedCsdText}">
+        <TabItem IsVisible="{Binding !!ExtendedCsdText, Mode=OneWay}">
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:UI.Title_Extended_CSD}" />
             </TabItem.Header>
-            <TextBox IsReadOnly="True"
-                     Text="{Binding ExtendedCsdText}" />
+            <Border BorderThickness="1"
+                    Margin="8"
+                    BorderBrush="LightGray"
+                    CornerRadius="8">
+                <ScrollViewer Padding="8">
+                    <controls:SpectreTextBlock Text="{Binding ExtendedCsdText, Mode=OneWay}"
+                                               TextWrapping="Wrap" />
+                </ScrollViewer>
+            </Border>
         </TabItem>
-        <TabItem IsVisible="{Binding !!ScrText}">
+        <TabItem IsVisible="{Binding !!ScrText, Mode=OneWay}">
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:UI.Title_SCR}" />
             </TabItem.Header>
-            <TextBox IsReadOnly="True"
-                     Text="{Binding ScrText}" />
+            <Border BorderThickness="1"
+                    Margin="8"
+                    BorderBrush="LightGray"
+                    CornerRadius="8">
+                <ScrollViewer Padding="8">
+                    <controls:SpectreTextBlock Text="{Binding ScrText, Mode=OneWay}"
+                                               TextWrapping="Wrap" />
+                </ScrollViewer>
+            </Border>
         </TabItem>
     </TabControl>
 </UserControl>
