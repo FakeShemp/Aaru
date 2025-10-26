@@ -37,6 +37,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:tabs="clr-namespace:Aaru.Gui.ViewModels.Tabs"
              xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
+             xmlns:controls="clr-namespace:Aaru.Gui.Controls"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -44,40 +45,85 @@
     <Design.DataContext>
         <tabs:DvdInfoViewModel />
     </Design.DataContext>
-    <StackPanel>
-        <TextBlock IsVisible="{Binding !!DvdPfiText}"
-                   Text="Physical Format Information" />
-        <TextBox IsReadOnly="True"
-                 IsVisible="{Binding !!DvdPfiText}"
-                 Text="{Binding DvdPfiText}" />
-        <TextBlock IsVisible="{Binding !!DvdCmiText}"
-                   Text="Copyright Management Information" />
-        <TextBox IsReadOnly="True"
-                 IsVisible="{Binding !!DvdCmiText}"
-                 Text="{Binding DvdCmiText}" />
-        <Button Command="{Binding SaveDvdPfiCommand}"
-                IsVisible="{Binding SaveDvdPfiVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Physical_Format_Information}" />
-        </Button>
-        <Button Command="{Binding SaveDvdDmiCommand}"
-                IsVisible="{Binding SaveDvdDmiVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Disc_Manufacturer_Information}" />
-        </Button>
-        <Button Command="{Binding SaveDvdCmiCommand}"
-                IsVisible="{Binding SaveDvdCmiVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Copyright_Management_Information}" />
-        </Button>
-        <Button Command="{Binding SaveHdDvdCmiCommand}"
-                IsVisible="{Binding SaveHdDvdCmiVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Copyright_Management_Information}" />
-        </Button>
-        <Button Command="{Binding SaveDvdBcaCommand}"
-                IsVisible="{Binding SaveDvdBcaVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Burst_Cutting_Area}" />
-        </Button>
-        <Button Command="{Binding SaveDvdAacsCommand}"
-                IsVisible="{Binding SaveDvdAacsVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_AACS_Information}" />
-        </Button>
-    </StackPanel>
+    <Grid RowDefinitions="*, Auto"
+          Margin="8"
+          RowSpacing="8">
+        <TabControl Grid.Row="0">
+            <TabItem IsVisible="False">
+                <TabItem.Header>
+                    <TextBlock Text="Landing placeholder" />
+                </TabItem.Header>
+            </TabItem>
+            <TabItem IsVisible="{Binding !!DvdPfiText, Mode=OneWay}">
+                <TabItem.Header>
+                    <controls:SpectreTextBlock Text="Physical Format Information" />
+                </TabItem.Header>
+                <Grid RowDefinitions="*, Auto"
+                      Margin="8"
+                      RowSpacing="8">
+                    <Border Grid.Row="0"
+                            BorderThickness="1"
+                            BorderBrush="LightGray"
+                            CornerRadius="8">
+                        <ScrollViewer Padding="8">
+                            <controls:SpectreTextBlock TextWrapping="Wrap"
+                                                       Text="{Binding DvdPfiText, Mode=OneWay}" />
+                        </ScrollViewer>
+                    </Border>
+                    <Button Grid.Row="1"
+                            Command="{Binding SaveDvdPfiCommand, Mode=OneWay}"
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Left">
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Physical_Format_Information}" />
+                    </Button>
+                </Grid>
+            </TabItem>
+            <TabItem IsVisible="{Binding !!DvdCmiText, Mode=OneWay}">
+                <TabItem.Header>
+                    <controls:SpectreTextBlock Text="Copyright Management Information" />
+                </TabItem.Header>
+                <Grid RowDefinitions="*, Auto"
+                      Margin="8"
+                      RowSpacing="8">
+                    <Border Grid.Row="0"
+                            BorderThickness="1"
+                            BorderBrush="LightGray"
+                            CornerRadius="8">
+                        <ScrollViewer Padding="8">
+                            <controls:SpectreTextBlock TextWrapping="Wrap"
+                                                       Text="{Binding DvdCmiText, Mode=OneWay}" />
+                        </ScrollViewer>
+                    </Border>
+                    <Button Grid.Row="1"
+                            Command="{Binding SaveDvdCmiCommand, Mode=OneWay}"
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Left">
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Copyright_Management_Information}" />
+                    </Button>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    Spacing="8"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Bottom">
+            <Button Command="{Binding SaveDvdDmiCommand, Mode=OneWay}"
+                    IsVisible="{Binding SaveDvdDmiVisible, Mode=OneWay}">
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Disc_Manufacturer_Information}" />
+            </Button>
+            <Button Command="{Binding SaveHdDvdCmiCommand, Mode=OneWay}"
+                    IsVisible="{Binding SaveHdDvdCmiVisible, Mode=OneWay}">
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Copyright_Management_Information}" />
+            </Button>
+            <Button Command="{Binding SaveDvdBcaCommand, Mode=OneWay}"
+                    IsVisible="{Binding SaveDvdBcaVisible, Mode=OneWay}">
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Burst_Cutting_Area}" />
+            </Button>
+            <Button Command="{Binding SaveDvdAacsCommand, Mode=OneWay}"
+                    IsVisible="{Binding SaveDvdAacsVisible, Mode=OneWay}">
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_AACS_Information}" />
+            </Button>
+        </StackPanel>
+    </Grid>
 </UserControl>
