@@ -9030,7 +9030,7 @@
     <value>ID de tipo de disco desconocida ({0})</value>
   </data>
     <data name="Unknown_DVD_RAM_case_type_key_0" xml:space="preserve">
-        <value>[slateblue1]Código de tipo de carcasa de DVD-RAM desconocido ([teal]{0}[/])</value>
+        <value>[slateblue1]Código de tipo de carcasa de DVD-RAM desconocido ([teal]{0}[/])[/]</value>
     </data>
     <data name="Unknown_enabled_boot_partition_code_0" xml:space="preserve">
     <value>Código desconocido ({0}) de activación de la partición de arranque</value>
