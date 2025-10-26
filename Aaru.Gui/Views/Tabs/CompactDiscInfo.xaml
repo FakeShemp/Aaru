@@ -37,6 +37,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:tabs="clr-namespace:Aaru.Gui.ViewModels.Tabs"
              xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
+             xmlns:controls="clr-namespace:Aaru.Gui.Controls"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -52,103 +53,202 @@
         </TabItem>
         <TabItem IsVisible="{Binding !!CdInformationText, Mode=OneWay}">
             <TabItem.Header>
-                <TextBlock Text="{x:Static localization:UI.Title_Information}" />
+                <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Information}" />
             </TabItem.Header>
-            <StackPanel>
-                <TextBox IsReadOnly="True"
-                         Text="{Binding CdInformationText, Mode=OneWay}" />
-                <Button Command="{Binding SaveCdInformationCommand, Mode=OneWay}">
+            <Grid RowDefinitions="*, Auto"
+                  Margin="8"
+                  RowSpacing="8">
+                <Border Grid.Row="0"
+                        BorderThickness="1"
+                        BorderBrush="LightGray"
+                        CornerRadius="8">
+                    <ScrollViewer Padding="8">
+                        <controls:SpectreTextBlock TextWrapping="Wrap"
+                                                   Text="{Binding CdInformationText, Mode=OneWay}" />
+                    </ScrollViewer>
+                </Border>
+                <Button Grid.Row="1"
+                        Command="{Binding SaveCdInformationCommand, Mode=OneWay}"
+                        VerticalAlignment="Bottom"
+                        HorizontalAlignment="Left">
                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_READ_DISC_INFORMATION_response}" />
                 </Button>
-            </StackPanel>
+            </Grid>
         </TabItem>
         <TabItem IsVisible="{Binding !!CdTocText, Mode=OneWay}">
             <TabItem.Header>
-                <TextBlock Text="{x:Static localization:UI.Title_TOC}" />
+                <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_TOC}" />
             </TabItem.Header>
-            <StackPanel>
-                <TextBox IsReadOnly="True"
-                         Text="{Binding CdTocText, Mode=OneWay}" />
-                <Button Command="{Binding SaveCdTocCommand, Mode=OneWay}">
+            <Grid RowDefinitions="*, Auto"
+                  Margin="8"
+                  RowSpacing="8">
+                <Border Grid.Row="0"
+                        BorderThickness="1"
+                        BorderBrush="LightGray"
+                        CornerRadius="8">
+                    <ScrollViewer Padding="8">
+                        <controls:SpectreTextBlock TextWrapping="Wrap"
+                                                   Text="{Binding CdTocText, Mode=OneWay}" />
+                    </ScrollViewer>
+                </Border>
+                <Button Grid.Row="1"
+                        Command="{Binding SaveCdTocCommand, Mode=OneWay}">
                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_READ_TOC_response}" />
                 </Button>
-            </StackPanel>
+            </Grid>
         </TabItem>
         <TabItem IsVisible="{Binding !!CdFullTocText, Mode=OneWay}">
             <TabItem.Header>
-                <TextBlock Text="{x:Static localization:UI.Title_TOC_full}" />
+                <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_TOC_full}" />
             </TabItem.Header>
-            <StackPanel>
-                <TextBox IsReadOnly="True"
-                         Text="{Binding CdFullTocText, Mode=OneWay}" />
-                <Button Command="{Binding SaveCdFullTocCommand, Mode=OneWay}">
+            <Grid RowDefinitions="*, Auto"
+                  Margin="8"
+                  RowSpacing="8">
+                <Border Grid.Row="0"
+                        BorderThickness="1"
+                        BorderBrush="LightGray"
+                        CornerRadius="8">
+                    <ScrollViewer Padding="8">
+                        <controls:SpectreTextBlock TextWrapping="Wrap"
+                                                   Text="{Binding CdFullTocText, Mode=OneWay}" />
+                    </ScrollViewer>
+                </Border>
+                <Button Grid.Row="1"
+                        Command="{Binding SaveCdFullTocCommand, Mode=OneWay}">
                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_READ_RAW_TOC_response}" />
                 </Button>
-            </StackPanel>
+            </Grid>
         </TabItem>
         <TabItem IsVisible="{Binding !!CdSessionText, Mode=OneWay}">
             <TabItem.Header>
-                <TextBlock Text="{x:Static localization:Core.Title_Session}" />
+                <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Session}" />
             </TabItem.Header>
-            <StackPanel>
-                <TextBox IsReadOnly="True"
-                         Text="{Binding CdSessionText, Mode=OneWay}" />
-                <Button Command="{Binding SaveCdSessionCommand, Mode=OneWay}">
+            <Grid RowDefinitions="*, Auto"
+                  Margin="8"
+                  RowSpacing="8">
+                <Border Grid.Row="0"
+                        BorderThickness="1"
+                        BorderBrush="LightGray"
+                        CornerRadius="8">
+                    <ScrollViewer Padding="8">
+                        <controls:SpectreTextBlock TextWrapping="Wrap"
+                                                   Text="{Binding CdSessionText, Mode=OneWay}" />
+                    </ScrollViewer>
+                </Border>
+                <Button Grid.Row="1"
+                        Command="{Binding SaveCdSessionCommand, Mode=OneWay}">
                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_READ_SESSION_response}" />
                 </Button>
-            </StackPanel>
+            </Grid>
         </TabItem>
         <TabItem IsVisible="{Binding !!CdTextText, Mode=OneWay}">
             <TabItem.Header>
-                <TextBlock Text="{x:Static localization:UI.Title_CD_TEXT}" />
+                <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_CD_TEXT}" />
             </TabItem.Header>
-            <StackPanel>
-                <TextBox IsReadOnly="True"
-                         Text="{Binding CdTextText, Mode=OneWay}" />
-                <Button Command="{Binding SaveCdTextCommand, Mode=OneWay}">
+            <Grid RowDefinitions="*, Auto"
+                  Margin="8"
+                  RowSpacing="8">
+                <Border Grid.Row="0"
+                        BorderThickness="1"
+                        BorderBrush="LightGray"
+                        CornerRadius="8">
+                    <ScrollViewer Padding="8">
+                        <controls:SpectreTextBlock TextWrapping="Wrap"
+                                                   Text="{Binding CdTextText, Mode=OneWay}" />
+                    </ScrollViewer>
+                </Border>
+                <Button Grid.Row="1"
+                        Command="{Binding SaveCdTextCommand, Mode=OneWay}">
                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Lead_In_CD_TEXT}" />
                 </Button>
-            </StackPanel>
+            </Grid>
         </TabItem>
         <TabItem IsVisible="{Binding !!CdAtipText, Mode=OneWay}">
             <TabItem.Header>
-                <TextBlock Text="{x:Static localization:UI.Title_ATIP}" />
+                <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_ATIP}" />
             </TabItem.Header>
-            <StackPanel>
-                <TextBox IsReadOnly="True"
-                         Text="{Binding CdAtipText, Mode=OneWay}" />
-                <Button Command="{Binding SaveCdAtipCommand, Mode=OneWay}">
+            <Grid RowDefinitions="*, Auto"
+                  Margin="8"
+                  RowSpacing="8">
+                <Border Grid.Row="0"
+                        BorderThickness="1"
+                        BorderBrush="LightGray"
+                        CornerRadius="8">
+                    <ScrollViewer Padding="8">
+                        <controls:SpectreTextBlock TextWrapping="Wrap"
+                                                   Text="{Binding CdAtipText, Mode=OneWay}" />
+                    </ScrollViewer>
+                </Border>
+                <Button Grid.Row="1"
+                        Command="{Binding SaveCdAtipCommand, Mode=OneWay}">
                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_READ_ATIP_response}" />
                 </Button>
-            </StackPanel>
+            </Grid>
         </TabItem>
         <TabItem IsVisible="{Binding MiscellaneousVisible, Mode=OneWay}">
             <TabItem.Header>
-                <TextBlock Text="{x:Static localization:UI.Title_Miscellaneous}" />
+                <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Miscellaneous}" />
             </TabItem.Header>
-            <StackPanel>
-                <StackPanel Orientation="Horizontal"
-                            IsVisible="{Binding !!McnText, Mode=OneWay}">
-                    <TextBlock Text="{x:Static localization:UI.Title_Media_catalog_number}" />
-                    <TextBox IsReadOnly="True"
+            <Grid RowDefinitions="Auto, *, Auto"
+                  Margin="8"
+                  RowSpacing="8">
+                <Grid ColumnDefinitions="Auto, *"
+                      Grid.Row="0"
+                      IsVisible="{Binding !!McnText, Mode=OneWay}"
+                      ColumnSpacing="8">
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Media_catalog_number}"
+                                               VerticalAlignment="Center"
+                                               Grid.Column="0" />
+                    <TextBox Grid.Column="1"
+                             IsReadOnly="True"
+                             VerticalAlignment="Center"
+                             HorizontalAlignment="Stretch"
                              Text="{Binding McnText, Mode=OneWay}" />
-                </StackPanel>
-                <StackPanel IsVisible="{Binding !!IsrcList.Count, Mode=OneWay}">
-                    <TextBlock Text="{x:Static localization:UI.Title_ISRCs}" />
-                    <DataGrid ItemsSource="{Binding IsrcList, Mode=OneWay}">
+                </Grid>
+                <Grid Grid.Row="1"
+                      IsVisible="{Binding !!IsrcList.Count, Mode=OneWay}"
+                      RowDefinitions="Auto, *"
+                      RowSpacing="8">
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_ISRCs}"
+                                               Grid.Row="0" />
+                    <DataGrid ItemsSource="{Binding IsrcList, Mode=OneWay}"
+                              Grid.Row="1"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding Track, Mode=OneWay}"
-                                                Header="{x:Static localization:Core.Title_Track}" />
-                            <DataGridTextColumn Binding="{Binding ISRC, Mode=OneWay}"
-                                                Header="{x:Static localization:UI.Title_ISRC}" />
+                            <DataGridTemplateColumn Header="{x:Static localization:Core.Title_Track}">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Track}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{Binding Track, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="{x:Static localization:UI.Title_ISRC}">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_ISRC}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{Binding Isrc, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                </StackPanel>
-                <Button Command="{Binding SaveCdPmaCommand, Mode=OneWay}"
+                </Grid>
+                <Button Grid.Row="2"
+                        Command="{Binding SaveCdPmaCommand, Mode=OneWay}"
                         IsVisible="{Binding CdPmaVisible, Mode=OneWay}">
                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_READ_PMA_response}" />
                 </Button>
-            </StackPanel>
+            </Grid>
         </TabItem>
     </TabControl>
 </UserControl>
