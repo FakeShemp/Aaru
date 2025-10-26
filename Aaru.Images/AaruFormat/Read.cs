@@ -77,6 +77,14 @@ public sealed partial class AaruFormat
 
         Status res = aaruf_read_sector(_context, sectorAddress, negative, buffer, ref length, out _);
 
+        // Sector not dumped
+        if(res == Status.SectorNotDumped && length > 0)
+        {
+            buffer = new byte[length];
+
+            return ErrorNumber.NoError;
+        }
+
         if(res != Status.BufferTooSmall) return StatusToErrorNumber(res);
 
         buffer = new byte[length];
@@ -101,6 +109,14 @@ public sealed partial class AaruFormat
         sectorStatus = SectorStatus.NotDumped;
 
         Status res = aaruf_read_track_sector(_context, buffer, sectorAddress, ref length, (byte)track, out _);
+
+        // Sector not dumped
+        if(res == Status.SectorNotDumped && length > 0)
+        {
+            buffer = new byte[length];
+
+            return ErrorNumber.NoError;
+        }
 
         if(res != Status.BufferTooSmall) return StatusToErrorNumber(res);
 
@@ -132,6 +148,14 @@ public sealed partial class AaruFormat
         sectorStatus = SectorStatus.NotDumped;
 
         Status res = aaruf_read_sector_long(_context, sectorAddress, negative, buffer, ref length, out _);
+
+        // Sector not dumped
+        if(res == Status.SectorNotDumped && length > 0)
+        {
+            buffer = new byte[length];
+
+            return ErrorNumber.NoError;
+        }
 
         if(res != Status.BufferTooSmall) return StatusToErrorNumber(res);
 
