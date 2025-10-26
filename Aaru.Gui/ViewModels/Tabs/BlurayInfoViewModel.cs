@@ -30,6 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -62,69 +63,79 @@ public sealed class BlurayInfoViewModel
                                [CanBeNull] byte[] blurayTrackResources,       [CanBeNull] byte[] blurayRawDfl,
                                [CanBeNull] byte[] blurayPac,                  Window             view)
     {
-        _view                             = view;
-        _discInformation                  = blurayDiscInformation;
-        _burstCuttingArea                 = blurayBurstCuttingArea;
-        _dds                              = blurayDds;
-        _cartridgeStatus                  = blurayCartridgeStatus;
-        _spareAreaInformation             = bluraySpareAreaInformation;
-        _powResources                     = blurayPowResources;
-        _trackResources                   = blurayTrackResources;
-        _rawDfl                           = blurayRawDfl;
-        _pac                              = blurayPac;
-        SaveBlurayDiscInformationCommand  = new AsyncRelayCommand(SaveBlurayDiscInformationAsync);
-        SaveBlurayBurstCuttingAreaCommand = new AsyncRelayCommand(SaveBlurayBurstCuttingAreaAsync);
-        SaveBlurayDdsCommand              = new AsyncRelayCommand(SaveBlurayDdsAsync);
-        SaveBlurayCartridgeStatusCommand  = new AsyncRelayCommand(SaveBlurayCartridgeStatusAsync);
-
+        _view                                 = view;
+        _discInformation                      = blurayDiscInformation;
+        _burstCuttingArea                     = blurayBurstCuttingArea;
+        _dds                                  = blurayDds;
+        _cartridgeStatus                      = blurayCartridgeStatus;
+        _spareAreaInformation                 = bluraySpareAreaInformation;
+        _powResources                         = blurayPowResources;
+        _trackResources                       = blurayTrackResources;
+        _rawDfl                               = blurayRawDfl;
+        _pac                                  = blurayPac;
+        SaveBlurayDiscInformationCommand      = new AsyncRelayCommand(SaveBlurayDiscInformationAsync);
+        SaveBlurayBurstCuttingAreaCommand     = new AsyncRelayCommand(SaveBlurayBurstCuttingAreaAsync);
+        SaveBlurayDdsCommand                  = new AsyncRelayCommand(SaveBlurayDdsAsync);
+        SaveBlurayCartridgeStatusCommand      = new AsyncRelayCommand(SaveBlurayCartridgeStatusAsync);
         SaveBluraySpareAreaInformationCommand = new AsyncRelayCommand(SaveBluraySpareAreaInformationAsync);
-
-        SaveBlurayPowResourcesCommand   = new AsyncRelayCommand(SaveBlurayPowResourcesAsync);
-        SaveBlurayTrackResourcesCommand = new AsyncRelayCommand(SaveBlurayTrackResourcesAsync);
-        SaveBlurayRawDflCommand         = new AsyncRelayCommand(SaveBlurayRawDflAsync);
-        SaveBlurayPacCommand            = new AsyncRelayCommand(SaveBlurayPacAsync);
+        SaveBlurayPowResourcesCommand         = new AsyncRelayCommand(SaveBlurayPowResourcesAsync);
+        SaveBlurayTrackResourcesCommand       = new AsyncRelayCommand(SaveBlurayTrackResourcesAsync);
+        SaveBlurayRawDflCommand               = new AsyncRelayCommand(SaveBlurayRawDflAsync);
+        SaveBlurayPacCommand                  = new AsyncRelayCommand(SaveBlurayPacAsync);
 
         if(blurayDiscInformation != null)
         {
-            SaveBlurayDiscInformationVisible = true;
-            BlurayDiscInformationText        = DI.Prettify(blurayDiscInformation);
+            if(blurayDiscInformation.Length == 4096)
+            {
+                var tmp = new byte[4100];
+                Array.Copy(blurayDiscInformation, 0, tmp, 4, 4096);
+                blurayDiscInformation = tmp;
+            }
+
+            BlurayDiscInformationText = DI.Prettify(blurayDiscInformation);
         }
 
         if(blurayBurstCuttingArea != null)
         {
-            SaveBlurayBurstCuttingAreaVisible = true;
-            BlurayBurstCuttingAreaText        = BCA.Prettify(blurayBurstCuttingArea);
+            if(blurayBurstCuttingArea.Length == 64)
+            {
+                var tmp = new byte[68];
+                Array.Copy(blurayBurstCuttingArea, 0, tmp, 4, 64);
+                blurayBurstCuttingArea = tmp;
+            }
+
+            BlurayBurstCuttingAreaText = BCA.Prettify(blurayBurstCuttingArea);
         }
 
         if(blurayDds != null)
         {
-            SaveBlurayDdsVisible = true;
-            BlurayDdsText        = DDS.Prettify(blurayDds);
+            if(blurayDds.Length == 96)
+            {
+                var tmp = new byte[100];
+                Array.Copy(blurayDds, 0, tmp, 4, 96);
+                blurayDds = tmp;
+            }
+
+            BlurayDdsText = DDS.Prettify(blurayDds);
         }
 
-        if(blurayCartridgeStatus != null)
-        {
-            SaveBlurayCartridgeStatusVisible = true;
-            BlurayCartridgeStatusText        = Cartridge.Prettify(blurayCartridgeStatus);
-        }
+        if(blurayCartridgeStatus != null) BlurayCartridgeStatusText = Cartridge.Prettify(blurayCartridgeStatus);
 
         if(bluraySpareAreaInformation != null)
         {
-            SaveBluraySpareAreaInformationVisible = true;
-            BluraySpareAreaInformationText        = Spare.Prettify(bluraySpareAreaInformation);
+            if(bluraySpareAreaInformation.Length == 12)
+            {
+                var tmp = new byte[16];
+                Array.Copy(bluraySpareAreaInformation, 0, tmp, 4, 12);
+                bluraySpareAreaInformation = tmp;
+            }
+
+            BluraySpareAreaInformationText = Spare.Prettify(bluraySpareAreaInformation);
         }
 
-        if(blurayPowResources != null)
-        {
-            SaveBlurayPowResourcesVisible = true;
-            BlurayPowResourcesText        = DiscInformation.Prettify(blurayPowResources);
-        }
+        if(blurayPowResources != null) BlurayPowResourcesText = DiscInformation.Prettify(blurayPowResources);
 
-        if(blurayTrackResources != null)
-        {
-            SaveBlurayTrackResourcesVisible = true;
-            BlurayTrackResourcesText        = DiscInformation.Prettify(blurayTrackResources);
-        }
+        if(blurayTrackResources != null) BlurayTrackResourcesText = DiscInformation.Prettify(blurayTrackResources);
 
         SaveBlurayRawDflVisible = blurayRawDfl != null;
         SaveBlurayPacVisible    = blurayPac    != null;
@@ -146,13 +157,6 @@ public sealed class BlurayInfoViewModel
     public ICommand SaveBlurayTrackResourcesCommand       { get; }
     public ICommand SaveBlurayRawDflCommand               { get; }
     public ICommand SaveBlurayPacCommand                  { get; }
-    public bool     SaveBlurayDiscInformationVisible      { get; }
-    public bool     SaveBlurayBurstCuttingAreaVisible     { get; }
-    public bool     SaveBlurayDdsVisible                  { get; }
-    public bool     SaveBlurayCartridgeStatusVisible      { get; }
-    public bool     SaveBluraySpareAreaInformationVisible { get; }
-    public bool     SaveBlurayPowResourcesVisible         { get; }
-    public bool     SaveBlurayTrackResourcesVisible       { get; }
     public bool     SaveBlurayRawDflVisible               { get; }
     public bool     SaveBlurayPacVisible                  { get; }
 
