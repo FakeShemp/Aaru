@@ -243,16 +243,13 @@ public sealed class DvdWritableInfoViewModel
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            FileTypeChoices = new List<FilePickerFileType>
-            {
-                FilePickerFileTypes.Binary
-            }
+            FileTypeChoices = [FilePickerFileTypes.Binary]
         });
 
         if(result is null) return;
 
         var saveFs = new FileStream(result.Path.AbsolutePath, FileMode.Create);
-        saveFs.Write(data, 0, data.Length);
+        await saveFs.WriteAsync(data, 0, data.Length);
 
         saveFs.Close();
     }
