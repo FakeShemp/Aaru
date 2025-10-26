@@ -37,6 +37,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:tabs="clr-namespace:Aaru.Gui.ViewModels.Tabs"
              xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
+             xmlns:controls="clr-namespace:Aaru.Gui.Controls"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -44,20 +45,35 @@
     <Design.DataContext>
         <tabs:PcmciaInfoViewModel />
     </Design.DataContext>
-    <StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <DataGrid ItemsSource="{Binding CisList}"
-                      SelectedItem="{Binding SelectedCis}">
+    <Grid RowDefinitions="*, Auto"
+          RowSpacing="8"
+          Margin="8">
+        <Grid Grid.Row="1"
+              ColumnDefinitions="Auto, *"
+              ColumnSpacing="8">
+            <DataGrid Grid.Column="0"
+                      ItemsSource="{Binding CisList, Mode=OneWay}"
+                      SelectedItem="{Binding SelectedCis, Mode=TwoWay}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="{x:Static localization:UI.Title_CIS}"
-                                        Binding="{Binding Code}" />
+                                        Binding="{Binding Code, Mode=OneWay}" />
                 </DataGrid.Columns>
             </DataGrid>
-            <TextBox IsReadOnly="True"
-                     Text="{Binding PcmciaCisText}" />
-        </StackPanel>
-        <Button Command="{Binding SavePcmciaCisCommand}">
+            <Border Grid.Column="1"
+                    BorderThickness="1"
+                    BorderBrush="LightGray"
+                    CornerRadius="8">
+                <ScrollViewer Padding="8">
+                    <controls:SpectreTextBlock HorizontalAlignment="Stretch"
+                                               VerticalAlignment="Stretch"
+                                               Text="{Binding PcmciaCisText, Mode=OneWay}"
+                                               TextWrapping="Wrap" />
+                </ScrollViewer>
+            </Border>
+        </Grid>
+        <Button Grid.Row="1"
+                Command="{Binding SavePcmciaCisCommand, Mode=OneWay}">
             <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_PCMCIA_CIS_to_file}" />
         </Button>
-    </StackPanel>
+    </Grid>
 </UserControl>
