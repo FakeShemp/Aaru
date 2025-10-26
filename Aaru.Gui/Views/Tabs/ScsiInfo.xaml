@@ -37,6 +37,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:tabs="clr-namespace:Aaru.Gui.ViewModels.Tabs"
              xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
+             xmlns:controls="clr-namespace:Aaru.Gui.Controls"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -49,108 +50,165 @@
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:UI.Title_INQUIRY}" />
             </TabItem.Header>
-            <StackPanel>
-                <TextBlock Text="{x:Static localization:UI.Title_SCSI_INQUIRY}"
-                           HorizontalAlignment="Center" />
-                <TextBox Text="{Binding ScsiInquiryText}"
-                         IsReadOnly="True" />
-                <StackPanel Orientation="Horizontal">
-                    <Button Command="{Binding SaveInquiryBinaryCommand}">
+            <Grid RowDefinitions="*, Auto"
+                  RowSpacing="8"
+                  Margin="8">
+                <Border Grid.Row="0"
+                        BorderThickness="1"
+                        BorderBrush="LightGray"
+                        CornerRadius="8">
+                    <ScrollViewer Padding="8">
+                        <controls:SpectreTextBlock Text="{Binding ScsiInquiryText, Mode=OneWay}"
+                                                   TextWrapping="Wrap" />
+                    </ScrollViewer>
+                </Border>
+                <StackPanel Orientation="Horizontal"
+                            Grid.Row="1"
+                            Spacing="8">
+                    <Button Command="{Binding SaveInquiryBinaryCommand, Mode=OneWay}">
                         <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_binary_to_file}" />
                     </Button>
-                    <Button Command="{Binding SaveInquiryTextCommand}">
+                    <Button Command="{Binding SaveInquiryTextCommand, Mode=OneWay}">
                         <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_text_to_file}" />
                     </Button>
                 </StackPanel>
-            </StackPanel>
+            </Grid>
         </TabItem>
-        <TabItem IsVisible="{Binding !!ModeSensePages.Count}">
+        <TabItem IsVisible="{Binding !!ModeSensePages.Count, Mode=OneWay}">
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:UI.Title_MODE_SENSE}" />
             </TabItem.Header>
-            <StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <DataGrid HorizontalAlignment="Left"
+            <Grid RowDefinitions="*, Auto"
+                  RowSpacing="8"
+                  Margin="8">
+                <Grid Grid.Row="0"
+                      ColumnDefinitions="Auto, *"
+                      ColumnSpacing="8">
+                    <DataGrid Grid.Column="0"
+                              HorizontalAlignment="Left"
+                              Width="250"
                               VerticalAlignment="Stretch"
-                              ItemsSource="{Binding ModeSensePages}"
-                              SelectedItem="{Binding SelectedModeSensePage}"
+                              ItemsSource="{Binding ModeSensePages, Mode=OneWay}"
+                              SelectedItem="{Binding SelectedModeSensePage, Mode=TwoWay}"
                               IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="{x:Static localization:UI.Title_Page}"
-                                                Binding="{Binding Page}" />
+                                                Binding="{Binding Page, Mode=OneWay}" />
                         </DataGrid.Columns>
                     </DataGrid>
-                    <TextBox HorizontalAlignment="Right"
-                             VerticalAlignment="Stretch"
-                             Text="{Binding ModeSensePageText}"
-                             IsReadOnly="True" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Button Command="{Binding SaveModeSense6Command}">
+                    <Border Grid.Column="1"
+                            BorderThickness="1"
+                            BorderBrush="LightGray"
+                            CornerRadius="8">
+                        <ScrollViewer Padding="8">
+                            <controls:SpectreTextBlock HorizontalAlignment="Stretch"
+                                                       VerticalAlignment="Stretch"
+                                                       Text="{Binding ModeSensePageText, Mode=OneWay}"
+                                                       TextWrapping="Wrap" />
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+                <StackPanel Grid.Row="1"
+                            Orientation="Horizontal"
+                            Spacing="8"
+                            VerticalAlignment="Bottom">
+                    <Button Command="{Binding SaveModeSense6Command, Mode=OneWay}">
                         <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_MODE_SENSE_6_response_to_file}" />
                     </Button>
-                    <Button Command="{Binding SaveModeSense10Command}">
+                    <Button Command="{Binding SaveModeSense10Command, Mode=OneWay}">
                         <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_MODE_SENSE_10_response_to_file}" />
                     </Button>
                 </StackPanel>
-            </StackPanel>
+            </Grid>
         </TabItem>
-        <TabItem IsVisible="{Binding !!EvpdPages.Count}">
+        <TabItem IsVisible="{Binding !!EvpdPages.Count, Mode=OneWay}">
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:UI.Title_EVPD}" />
             </TabItem.Header>
-            <StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <DataGrid HorizontalAlignment="Left"
+            <Grid RowDefinitions="*, Auto"
+                  RowSpacing="8"
+                  Margin="8">
+                <Grid Grid.Row="0"
+                      ColumnDefinitions="Auto, *"
+                      ColumnSpacing="8">
+                    <DataGrid Grid.Column="0"
+                              HorizontalAlignment="Left"
+                              Width="250"
                               VerticalAlignment="Stretch"
-                              ItemsSource="{Binding EvpdPages}"
-                              SelectedItem="{Binding SelectedEvpdPage}"
+                              ItemsSource="{Binding EvpdPages, Mode=OneWay}"
+                              SelectedItem="{Binding SelectedEvpdPage, Mode=TwoWay}"
                               IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="{x:Static localization:UI.Title_Page}"
-                                                Binding="{Binding Page}" />
+                                                Binding="{Binding Page, Mode=OneWay}" />
                         </DataGrid.Columns>
                     </DataGrid>
-                    <TextBox HorizontalAlignment="Right"
-                             VerticalAlignment="Stretch"
-                             Text="{Binding EvpdPageText}"
-                             IsReadOnly="True" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Button Command="{Binding SaveEvpdPageCommand}">
+                    <Border Grid.Column="1"
+                            BorderThickness="1"
+                            BorderBrush="LightGray"
+                            CornerRadius="8">
+                        <ScrollViewer Padding="8">
+                            <controls:SpectreTextBlock HorizontalAlignment="Stretch"
+                                                       VerticalAlignment="Stretch"
+                                                       Text="{Binding EvpdPageText, Mode=OneWay}"
+                                                       TextWrapping="Wrap" />
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+                <StackPanel Grid.Row="1"
+                            Orientation="Horizontal"
+                            Spacing="8"
+                            VerticalAlignment="Bottom">
+                    <Button Command="{Binding SaveEvpdPageCommand, Mode=OneWay}">
                         <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_EVPD_page_to_file}" />
                     </Button>
                 </StackPanel>
-            </StackPanel>
+            </Grid>
         </TabItem>
-        <TabItem IsVisible="{Binding !!MmcFeatures.Count}">
+        <TabItem IsVisible="{Binding !!MmcFeatures.Count, Mode=OneWay}">
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:UI.Title_MMC_FEATURES}" />
             </TabItem.Header>
-            <StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <DataGrid HorizontalAlignment="Left"
+            <Grid RowDefinitions="*, Auto"
+                  RowSpacing="8"
+                  Margin="8">
+                <Grid Grid.Row="0"
+                      ColumnDefinitions="Auto, *"
+                      ColumnSpacing="8">
+                    <DataGrid Grid.Column="0"
+                              HorizontalAlignment="Left"
+                              Width="250"
                               VerticalAlignment="Stretch"
-                              ItemsSource="{Binding MmcFeatures}"
-                              SelectedItem="{Binding SelectedMmcFeature}"
+                              ItemsSource="{Binding MmcFeatures, Mode=OneWay}"
+                              SelectedItem="{Binding SelectedMmcFeature, Mode=TwoWay}"
                               IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="{x:Static localization:UI.Title_Feature}"
-                                                Binding="{Binding Page}" />
+                                                Binding="{Binding Page, Mode=OneWay}" />
                         </DataGrid.Columns>
                     </DataGrid>
-                    <TextBox HorizontalAlignment="Right"
-                             VerticalAlignment="Stretch"
-                             Text="{Binding MmcFeatureText}"
-                             IsReadOnly="True" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Button Command="{Binding SaveMmcFeaturesCommand}">
+                    <Border Grid.Column="1"
+                            BorderThickness="1"
+                            BorderBrush="LightGray"
+                            CornerRadius="8">
+                        <ScrollViewer Padding="8">
+                            <controls:SpectreTextBlock HorizontalAlignment="Stretch"
+                                                       VerticalAlignment="Stretch"
+                                                       Text="{Binding MmcFeatureText, Mode=OneWay}"
+                                                       TextWrapping="Wrap" />
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+                <StackPanel Grid.Row="1"
+                            Orientation="Horizontal"
+                            Spacing="8"
+                            VerticalAlignment="Bottom">
+                    <Button Command="{Binding SaveMmcFeaturesCommand, Mode=OneWay}">
                         <TextBlock
                             Text="{x:Static localization:UI.ButtonLabel_Save_MMC_GET_CONFIGURATION_response_to_file}" />
                     </Button>
                 </StackPanel>
-            </StackPanel>
+            </Grid>
         </TabItem>
     </TabControl>
 </UserControl>
