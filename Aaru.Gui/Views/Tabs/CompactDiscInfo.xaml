@@ -50,102 +50,102 @@
                 <TextBlock Text="Landing placeholder" />
             </TabItem.Header>
         </TabItem>
-        <TabItem IsVisible="{Binding !!CdInformationText}">
+        <TabItem IsVisible="{Binding !!CdInformationText, Mode=OneWay}">
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:UI.Title_Information}" />
             </TabItem.Header>
             <StackPanel>
                 <TextBox IsReadOnly="True"
-                         Text="{Binding CdInformationText}" />
-                <Button Command="{Binding SaveCdInformationCommand}">
+                         Text="{Binding CdInformationText, Mode=OneWay}" />
+                <Button Command="{Binding SaveCdInformationCommand, Mode=OneWay}">
                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_READ_DISC_INFORMATION_response}" />
                 </Button>
             </StackPanel>
         </TabItem>
-        <TabItem IsVisible="{Binding !!CdTocText}">
+        <TabItem IsVisible="{Binding !!CdTocText, Mode=OneWay}">
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:UI.Title_TOC}" />
             </TabItem.Header>
             <StackPanel>
                 <TextBox IsReadOnly="True"
-                         Text="{Binding CdTocText}" />
-                <Button Command="{Binding SaveCdTocCommand}">
+                         Text="{Binding CdTocText, Mode=OneWay}" />
+                <Button Command="{Binding SaveCdTocCommand, Mode=OneWay}">
                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_READ_TOC_response}" />
                 </Button>
             </StackPanel>
         </TabItem>
-        <TabItem IsVisible="{Binding !!CdFullTocText}">
+        <TabItem IsVisible="{Binding !!CdFullTocText, Mode=OneWay}">
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:UI.Title_TOC_full}" />
             </TabItem.Header>
             <StackPanel>
                 <TextBox IsReadOnly="True"
-                         Text="{Binding CdFullTocText}" />
-                <Button Command="{Binding SaveCdFullTocCommand}">
+                         Text="{Binding CdFullTocText, Mode=OneWay}" />
+                <Button Command="{Binding SaveCdFullTocCommand, Mode=OneWay}">
                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_READ_RAW_TOC_response}" />
                 </Button>
             </StackPanel>
         </TabItem>
-        <TabItem IsVisible="{Binding !!CdSessionText}">
+        <TabItem IsVisible="{Binding !!CdSessionText, Mode=OneWay}">
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:Core.Title_Session}" />
             </TabItem.Header>
             <StackPanel>
                 <TextBox IsReadOnly="True"
-                         Text="{Binding CdSessionText}" />
-                <Button Command="{Binding SaveCdSessionCommand}">
+                         Text="{Binding CdSessionText, Mode=OneWay}" />
+                <Button Command="{Binding SaveCdSessionCommand, Mode=OneWay}">
                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_READ_SESSION_response}" />
                 </Button>
             </StackPanel>
         </TabItem>
-        <TabItem IsVisible="{Binding !!CdTextText}">
+        <TabItem IsVisible="{Binding !!CdTextText, Mode=OneWay}">
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:UI.Title_CD_TEXT}" />
             </TabItem.Header>
             <StackPanel>
                 <TextBox IsReadOnly="True"
-                         Text="{Binding CdTextText}" />
-                <Button Command="{Binding SaveCdTextCommand}">
+                         Text="{Binding CdTextText, Mode=OneWay}" />
+                <Button Command="{Binding SaveCdTextCommand, Mode=OneWay}">
                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Lead_In_CD_TEXT}" />
                 </Button>
             </StackPanel>
         </TabItem>
-        <TabItem IsVisible="{Binding !!CdAtipText}">
+        <TabItem IsVisible="{Binding !!CdAtipText, Mode=OneWay}">
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:UI.Title_ATIP}" />
             </TabItem.Header>
             <StackPanel>
                 <TextBox IsReadOnly="True"
-                         Text="{Binding CdAtipText}" />
-                <Button Command="{Binding SaveCdAtipCommand}">
+                         Text="{Binding CdAtipText, Mode=OneWay}" />
+                <Button Command="{Binding SaveCdAtipCommand, Mode=OneWay}">
                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_READ_ATIP_response}" />
                 </Button>
             </StackPanel>
         </TabItem>
-        <TabItem IsVisible="{Binding MiscellaneousVisible}">
+        <TabItem IsVisible="{Binding MiscellaneousVisible, Mode=OneWay}">
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:UI.Title_Miscellaneous}" />
             </TabItem.Header>
             <StackPanel>
                 <StackPanel Orientation="Horizontal"
-                            IsVisible="{Binding !!McnText}">
+                            IsVisible="{Binding !!McnText, Mode=OneWay}">
                     <TextBlock Text="{x:Static localization:UI.Title_Media_catalog_number}" />
                     <TextBox IsReadOnly="True"
-                             Text="{Binding McnText}" />
+                             Text="{Binding McnText, Mode=OneWay}" />
                 </StackPanel>
-                <StackPanel IsVisible="{Binding !!IsrcList.Count}">
+                <StackPanel IsVisible="{Binding !!IsrcList.Count, Mode=OneWay}">
                     <TextBlock Text="{x:Static localization:UI.Title_ISRCs}" />
-                    <DataGrid ItemsSource="{Binding IsrcList}">
+                    <DataGrid ItemsSource="{Binding IsrcList, Mode=OneWay}">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding Track}"
+                            <DataGridTextColumn Binding="{Binding Track, Mode=OneWay}"
                                                 Header="{x:Static localization:Core.Title_Track}" />
-                            <DataGridTextColumn Binding="{Binding ISRC}"
+                            <DataGridTextColumn Binding="{Binding ISRC, Mode=OneWay}"
                                                 Header="{x:Static localization:UI.Title_ISRC}" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </StackPanel>
-                <Button Command="{Binding SaveCdPmaCommand}"
-                        IsVisible="{Binding CdPmaVisible}">
+                <Button Command="{Binding SaveCdPmaCommand, Mode=OneWay}"
+                        IsVisible="{Binding CdPmaVisible, Mode=OneWay}">
                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_READ_PMA_response}" />
                 </Button>
             </StackPanel>
