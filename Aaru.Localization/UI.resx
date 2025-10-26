@@ -2634,16 +2634,16 @@ Do you want to continue?</value>
     <value>Decoded</value>
   </data>
     <data name="Title_Track_checksums" xml:space="preserve">
-    <value>Track checksums:</value>
+    <value>[bold][slateblue1]Track checksums:[/][/]</value>
   </data>
     <data name="Title_Algorithms" xml:space="preserve">
-    <value>Algorithms</value>
+    <value>[bold][green]Algorithms[/][/]</value>
   </data>
     <data name="Title_Hash" xml:space="preserve">
-    <value>Hash</value>
+    <value>[bold][fuchsia]Hash[/][/]</value>
   </data>
     <data name="Title_Media_checksums" xml:space="preserve">
-    <value>Media checksums:</value>
+    <value>[bold][slateblue1]Media checksums:[/][/]</value>
   </data>
     <data name="ButtonLabel_Start" xml:space="preserve">
     <value>Start</value>

@@ -2145,7 +2145,7 @@ Probadores:
     <value>Acerca de Aaru</value>
   </data>
     <data name="Title_Algorithms" xml:space="preserve">
-    <value>Algoritmos</value>
+    <value>[bold][green]Algoritmos[/][/]</value>
   </data>
     <data name="Title_ATA_ATAPI" xml:space="preserve">
     <value>ATA / ATAPI</value>
@@ -2340,7 +2340,7 @@ Probadores:
         <value>[bold][slateblue1]GUID[/][/]</value>
     </data>
     <data name="Title_Hash" xml:space="preserve">
-    <value>Hash</value>
+    <value>[bold][fuchsia]Hash[/][/]</value>
   </data>
     <data name="Title_Header" xml:space="preserve">
     <value>Cabecera</value>
@@ -2445,7 +2445,7 @@ Probadores:
     <value>[bold][slateblue1]Número de catálogo del medio[/][/]</value>
   </data>
     <data name="Title_Media_checksums" xml:space="preserve">
-    <value>Checksums del medio:</value>
+    <value>[bold][slateblue1]Checksums del medio:[/][/]</value>
   </data>
     <data name="Title_Media_images" xml:space="preserve">
     <value>Imágenes de medios</value>
@@ -2643,7 +2643,7 @@ Probadores:
     <value>Pistas</value>
   </data>
     <data name="Title_Track_checksums" xml:space="preserve">
-    <value>Checksums de pista:</value>
+    <value>[bold][slateblue1]Checksums de pista:[/][/]</value>
   </data>
     <data name="Title_Track_entropy" xml:space="preserve">
     <value>[bold][slateblue1]Entropía de pista[/][/]</value>
