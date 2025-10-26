@@ -233,7 +233,10 @@ public sealed partial class ImageEntropyViewModel : ViewModelBase
 
     void Close() => _view.Close();
 
-    internal void Stop() => throw new NotImplementedException();
+    internal void Stop()
+    {
+        // Not implemented
+    }
 
     void InitProgress() => Progress1Visible = true;
 
