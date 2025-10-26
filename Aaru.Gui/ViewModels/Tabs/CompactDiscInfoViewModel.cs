@@ -132,10 +132,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            FileTypeChoices = new List<FilePickerFileType>
-            {
-                FilePickerFileTypes.Binary
-            }
+            FileTypeChoices = [FilePickerFileTypes.Binary]
         });
 
         if(result is null) return;
@@ -150,10 +147,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            FileTypeChoices = new List<FilePickerFileType>
-            {
-                FilePickerFileTypes.Binary
-            }
+            FileTypeChoices = [FilePickerFileTypes.Binary]
         });
 
         if(result is null) return;
@@ -168,10 +162,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            FileTypeChoices = new List<FilePickerFileType>
-            {
-                FilePickerFileTypes.Binary
-            }
+            FileTypeChoices = [FilePickerFileTypes.Binary]
         });
 
         if(result is null) return;
@@ -186,10 +177,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            FileTypeChoices = new List<FilePickerFileType>
-            {
-                FilePickerFileTypes.Binary
-            }
+            FileTypeChoices = [FilePickerFileTypes.Binary]
         });
 
         if(result is null) return;
@@ -204,10 +192,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            FileTypeChoices = new List<FilePickerFileType>
-            {
-                FilePickerFileTypes.Binary
-            }
+            FileTypeChoices = [FilePickerFileTypes.Binary]
         });
 
         if(result is null) return;
@@ -222,10 +207,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            FileTypeChoices = new List<FilePickerFileType>
-            {
-                FilePickerFileTypes.Binary
-            }
+            FileTypeChoices = [FilePickerFileTypes.Binary]
         });
 
         if(result is null) return;
@@ -240,10 +222,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
     {
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            FileTypeChoices = new List<FilePickerFileType>
-            {
-                FilePickerFileTypes.Binary
-            }
+            FileTypeChoices = [FilePickerFileTypes.Binary]
         });
 
         if(result is null) return;
