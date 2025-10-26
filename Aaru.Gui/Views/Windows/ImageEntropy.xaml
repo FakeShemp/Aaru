@@ -37,81 +37,138 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:windows="clr-namespace:Aaru.Gui.ViewModels.Windows"
         xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
+        xmlns:controls="clr-namespace:Aaru.Gui.Controls"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
+        Width="640"
+        Height="320"
         x:Class="Aaru.Gui.Views.Windows.ImageEntropy"
         Icon="/Assets/aaru-logo.png"
         Title="{x:Static localization:UI.Title_Calculating_entropy}">
     <Design.DataContext>
         <windows:ImageEntropyViewModel />
     </Design.DataContext>
-    <StackPanel Orientation="Vertical">
-        <StackPanel IsVisible="{Binding OptionsVisible}"
-                    Orientation="Vertical">
-            <CheckBox IsEnabled="{Binding DuplicatedSectorsEnabled}"
-                      IsChecked="{Binding DuplicatedSectorsChecked}">
+    <Grid RowDefinitions="*, Auto,Auto"
+          Margin="12"
+          RowSpacing="8">
+        <Grid Grid.Row="0"
+              RowDefinitions="Auto,Auto,Auto"
+              IsVisible="{Binding OptionsVisible, Mode=OneWay}"
+              RowSpacing="8">
+            <CheckBox Grid.Row="0"
+                      IsEnabled="{Binding DuplicatedSectorsEnabled, Mode=OneWay}"
+                      IsChecked="{Binding DuplicatedSectorsChecked, Mode=TwoWay}">
                 <TextBlock Text="{x:Static localization:UI.Calculates_how_many_sectors_are_duplicated}" />
             </CheckBox>
-            <CheckBox IsEnabled="{Binding SeparatedTracksEnabled}"
-                      IsChecked="{Binding SeparatedTracksChecked}"
-                      IsVisible="{Binding SeparatedTracksVisible}">
+            <CheckBox Grid.Row="1"
+                      IsEnabled="{Binding SeparatedTracksEnabled, Mode=OneWay}"
+                      IsChecked="{Binding SeparatedTracksChecked, Mode=TwoWay}"
+                      IsVisible="{Binding SeparatedTracksVisible, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.Calculates_entropy_for_each_track_separately}" />
             </CheckBox>
-            <CheckBox IsEnabled="{Binding WholeDiscEnabled}"
-                      IsChecked="{Binding WholeDiscChecked}"
-                      IsVisible="{Binding WholeDiscVisible}">
+            <CheckBox Grid.Row="2"
+                      IsEnabled="{Binding WholeDiscEnabled, Mode=OneWay}"
+                      IsChecked="{Binding WholeDiscChecked, Mode=TwoWay}"
+                      IsVisible="{Binding WholeDiscVisible, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.Calculates_entropy_for_the_whole_disc}" />
             </CheckBox>
-        </StackPanel>
-        <StackPanel Orientation="Vertical"
-                    IsVisible="{Binding ResultsVisible}">
-            <TextBlock Text="{Binding MediaEntropyText}"
-                       IsVisible="{Binding MediaEntropyVisible}" />
-            <TextBlock Text="{Binding MediaUniqueSectorsText}"
-                       IsVisible="{Binding MediaUniqueSectorsVisible}" />
-            <TextBlock Text="{x:Static localization:UI.Title_Track_entropy}"
-                       IsVisible="{Binding SeparatedTracksEnabled}" />
-            <DataGrid IsVisible="{Binding SeparatedTracksEnabled}"
-                      ItemsSource="{Binding TrackEntropy}">
+        </Grid>
+        <Grid Grid.Row="0"
+              RowDefinitions="Auto,Auto,Auto,*"
+              RowSpacing="8"
+              IsVisible="{Binding ResultsVisible, Mode=OneWay}">
+            <controls:SpectreTextBlock Grid.Row="0"
+                                       Text="{Binding MediaEntropyText, Mode=OneWay}"
+                                       IsVisible="{Binding MediaEntropyVisible, Mode=OneWay}" />
+            <controls:SpectreTextBlock Grid.Row="1"
+                                       Text="{Binding MediaUniqueSectorsText, Mode=OneWay}"
+                                       IsVisible="{Binding MediaUniqueSectorsVisible, Mode=OneWay}" />
+            <controls:SpectreTextBlock Grid.Row="2"
+                                       Text="{x:Static localization:UI.Title_Track_entropy}"
+                                       IsVisible="{Binding SeparatedTracksChecked, Mode=OneWay}" />
+            <DataGrid Grid.Row="3"
+                      IsVisible="{Binding SeparatedTracksChecked, Mode=OneWay}"
+                      ItemsSource="{Binding TrackEntropy, Mode=OneWay}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="{x:Static localization:Core.Title_Track}"
-                                        Binding="{Binding Track}" />
-                    <DataGridTextColumn Header="{x:Static localization:UI.Title_Entropy}"
-                                        Binding="{Binding Entropy}" />
-                    <DataGridTextColumn Header="{x:Static localization:UI.Title_Unique_sectors}"
-                                        Binding="{Binding UniqueSectors}" />
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.Header>
+                            <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Track}" />
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Track, Mode=OneWay}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.Header>
+                            <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Entropy}" />
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Entropy, Mode=OneWay}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.Header>
+                            <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Unique_sectors}" />
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding UniqueSectors, Mode=OneWay}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
+        </Grid>
+        <Grid Grid.Row="1"
+              RowDefinitions="Auto,Auto"
+              RowSpacing="8"
+              VerticalAlignment="Center"
+              IsVisible="{Binding ProgressVisible, Mode=OneWay}">
+            <Grid Grid.Row="0"
+                  RowDefinitions="Auto, Auto"
+                  RowSpacing="8"
+                  IsVisible="{Binding Progress1Visible, Mode=OneWay}">
+                <controls:SpectreTextBlock Grid.Row="0"
+                                           Text="{Binding ProgressText, Mode=OneWay}" />
+                <ProgressBar Grid.Row="1"
+                             Maximum="{Binding ProgressMax, Mode=OneWay}"
+                             Value="{Binding ProgressValue, Mode=OneWay}"
+                             IsIndeterminate="{Binding ProgressIndeterminate, Mode=OneWay}" />
+            </Grid>
+            <Grid Grid.Row="1"
+                  RowDefinitions="Auto, Auto"
+                  RowSpacing="8"
+                  IsVisible="{Binding Progress2Visible, Mode=OneWay}">
+                <controls:SpectreTextBlock Grid.Row="0"
+                                           Text="{Binding Progress2Text, Mode=OneWay}" />
+                <ProgressBar Grid.Row="1"
+                             Maximum="{Binding Progress2Max, Mode=OneWay}"
+                             Value="{Binding Progress2Value, Mode=OneWay}"
+                             IsIndeterminate="{Binding Progress2Indeterminate, Mode=OneWay}" />
+            </Grid>
+        </Grid>
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Bottom"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
+            <Button Command="{Binding StartCommand, Mode=OneWay}"
+                    IsVisible="{Binding StartVisible, Mode=OneWay}">
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Start}" />
+            </Button>
+            <Button Command="{Binding CloseCommand, Mode=OneWay}"
+                    IsVisible="{Binding CloseVisible, Mode=OneWay}">
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
+            </Button>
+            <Button Command="{Binding StopCommand, Mode=OneWay}"
+                    IsVisible="{Binding StopVisible, Mode=OneWay}">
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Stop}" />
+            </Button>
         </StackPanel>
-        <StackPanel Orientation="Vertical"
-                    IsVisible="{Binding ProgressVisible}">
-            <StackPanel Orientation="Vertical"
-                        IsVisible="{Binding Progress1Visible}">
-                <TextBlock Text="{Binding ProgressText}" />
-                <ProgressBar Maximum="{Binding ProgressMax}"
-                             Value="{Binding ProgressValue}"
-                             IsIndeterminate="{Binding ProgressIndeterminate}" />
-            </StackPanel>
-            <StackPanel Orientation="Vertical"
-                        IsVisible="{Binding Progress2Visible}">
-                <TextBlock Text="{Binding Progress2Text}" />
-                <ProgressBar Maximum="{Binding Progress2Max}"
-                             Value="{Binding Progress2Value}"
-                             IsIndeterminate="{Binding Progress2Indeterminate}" />
-            </StackPanel>
-        </StackPanel>
-        <Button Command="{Binding StartCommand}"
-                IsVisible="{Binding StartVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Start}" />
-        </Button>
-        <Button Command="{Binding CloseCommand}"
-                IsVisible="{Binding CloseVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
-        </Button>
-        <Button Command="{Binding StopCommand}"
-                IsVisible="{Binding StopVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Stop}" />
-        </Button>
-    </StackPanel>
+    </Grid>
 </Window>
