@@ -3192,4 +3192,7 @@ Do you want to continue?</value>
     <data name="Title_Verify_image" xml:space="preserve">
         <value>Verify image</value>
     </data>
+    <data name="Title_Checksum_image_contents" xml:space="preserve">
+        <value>Checksum image contents</value>
+    </data>
 </root>
