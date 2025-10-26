@@ -2151,7 +2151,7 @@ Probadores:
     <value>ATA / ATAPI</value>
   </data>
     <data name="Title_ATIP" xml:space="preserve">
-        <value>[bold][blue]ATIP:[/][/]</value>
+        <value>[bold][purple_2]ATIP[/][/]</value>
     </data>
     <data name="Title_Attributes" xml:space="preserve">
         <value>[bold][gold3]Atributos[/][/]</value>
@@ -2172,7 +2172,7 @@ Probadores:
     <value>Calculando entropía</value>
   </data>
     <data name="Title_CD_TEXT" xml:space="preserve">
-    <value>CD-TEXT</value>
+    <value>[bold][yellow4]CD-TEXT[/][/]</value>
   </data>
     <data name="Title_Changed" xml:space="preserve">
     <value>Modificación</value>
@@ -2379,7 +2379,7 @@ Probadores:
         <value>[slateblue1]Versión de la imagen[/]</value>
     </data>
     <data name="Title_Information" xml:space="preserve">
-    <value>Información</value>
+    <value>[bold][darkslategray1]Información[/][/]</value>
   </data>
     <data name="Title_Inode" xml:space="preserve">
     <value>inodo</value>
@@ -2388,10 +2388,10 @@ Probadores:
     <value>INQUIRY</value>
   </data>
     <data name="Title_ISRC" xml:space="preserve">
-    <value>ISRC</value>
+    <value>[bold][aqua]ISRC[/][/]</value>
   </data>
     <data name="Title_ISRCs" xml:space="preserve">
-    <value>ISRCs</value>
+    <value>[bold][slateblue1]ISRCs[/][/]</value>
   </data>
     <data name="Title_Kreon" xml:space="preserve">
     <value>Kreon</value>
@@ -2442,7 +2442,7 @@ Probadores:
         <value>[slateblue1]Código de barras del medio[/]</value>
     </data>
     <data name="Title_Media_catalog_number" xml:space="preserve">
-    <value>Número de catálogo del medio</value>
+    <value>[bold][slateblue1]Número de catálogo del medio[/][/]</value>
   </data>
     <data name="Title_Media_checksums" xml:space="preserve">
     <value>Checksums del medio:</value>
@@ -2481,7 +2481,7 @@ Probadores:
     <value>Metadato</value>
   </data>
     <data name="Title_Miscellaneous" xml:space="preserve">
-    <value>Miscelánea</value>
+    <value>[bold][darkorange3]Miscelánea[/][/]</value>
   </data>
     <data name="Title_MMC_FEATURES" xml:space="preserve">
     <value>MMC FEATURES</value>
@@ -2634,10 +2634,10 @@ Probadores:
     <value>Título</value>
   </data>
     <data name="Title_TOC" xml:space="preserve">
-        <value>[bold][blue]Tabla de contenidos:[/][/]</value>
+        <value>[bold][blue]Tabla de contenidos[/][/]</value>
     </data>
     <data name="Title_TOC_full" xml:space="preserve">
-    <value>Tabla de contenidos completa</value>
+    <value>[bold][green]Tabla de contenidos completa[/][/]</value>
   </data>
     <data name="Title_Tracks" xml:space="preserve">
     <value>Pistas</value>

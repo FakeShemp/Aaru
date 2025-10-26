@@ -2352,19 +2352,19 @@ Do you want to continue?</value>
     <value>Save PAC</value>
   </data>
     <data name="Title_Information" xml:space="preserve">
-    <value>Information</value>
+    <value>[bold][darkslategray1]Information[/][/]</value>
   </data>
     <data name="ButtonLabel_Save_READ_DISC_INFORMATION_response" xml:space="preserve">
     <value>Save READ DISC INFORMATION response</value>
   </data>
     <data name="Title_TOC" xml:space="preserve">
-        <value>[bold][blue]TOC:[/][/]</value>
+        <value>[bold][blue]TOC[/][/]</value>
     </data>
     <data name="ButtonLabel_Save_READ_TOC_response" xml:space="preserve">
     <value>Save READ TOC response</value>
   </data>
     <data name="Title_TOC_full" xml:space="preserve">
-    <value>TOC (full)</value>
+    <value>[bold][green]TOC (full)[/][/]</value>
   </data>
     <data name="ButtonLabel_Save_READ_RAW_TOC_response" xml:space="preserve">
     <value>Save READ RAW TOC response</value>
@@ -2373,28 +2373,28 @@ Do you want to continue?</value>
     <value>Save READ SESSION response</value>
   </data>
     <data name="Title_CD_TEXT" xml:space="preserve">
-    <value>CD-TEXT</value>
+    <value>[bold][yellow4]CD-TEXT[/][/]</value>
   </data>
     <data name="ButtonLabel_Save_Lead_In_CD_TEXT" xml:space="preserve">
     <value>Save Lead-In CD-TEXT</value>
   </data>
     <data name="Title_ATIP" xml:space="preserve">
-        <value>[bold][blue]ATIP:[/][/]</value>
+        <value>[bold][purple_2]ATIP[/][/]</value>
     </data>
     <data name="ButtonLabel_Save_READ_ATIP_response" xml:space="preserve">
     <value>Save READ ATIP response</value>
   </data>
     <data name="Title_Miscellaneous" xml:space="preserve">
-    <value>Miscellaneous</value>
+    <value>[bold][darkorange3]Miscellaneous</value>
   </data>
     <data name="Title_Media_catalog_number" xml:space="preserve">
-    <value>Media catalog number</value>
+    <value>[bold][slateblue1]Media catalog number[/][/]</value>
   </data>
     <data name="Title_ISRCs" xml:space="preserve">
-    <value>ISRCs</value>
+    <value>[bold][slateblue1]ISRCs[/][/]</value>
   </data>
     <data name="Title_ISRC" xml:space="preserve">
-    <value>ISRC</value>
+    <value>[bold][aqua]ISRC[/][/]</value>
   </data>
     <data name="ButtonLabel_Save_READ_PMA_response" xml:space="preserve">
     <value>Save READ PMA response</value>
