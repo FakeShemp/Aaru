@@ -37,6 +37,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:tabs="clr-namespace:Aaru.Gui.ViewModels.Tabs"
              xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
+             xmlns:controls="clr-namespace:Aaru.Gui.Controls"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -44,77 +45,195 @@
     <Design.DataContext>
         <tabs:BlurayInfoViewModel />
     </Design.DataContext>
-    <StackPanel>
-        <StackPanel IsVisible="{Binding !!BlurayDiscInformationText}">
-            <TextBlock Text="{x:Static localization:UI.Disc_information}" />
-            <TextBox IsReadOnly="True"
-                     Text="{Binding BlurayDiscInformationText}" />
+    <Grid RowDefinitions="*, Auto"
+          RowSpacing="8">
+        <TabControl Grid.Row="0">
+            <TabItem IsVisible="False">
+                <TabItem.Header>
+                    <TextBlock Text="Landing placeholder" />
+                </TabItem.Header>
+            </TabItem>
+            <TabItem IsVisible="{Binding !!BlurayDiscInformationText, Mode=OneWay}">
+                <TabItem.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Disc_information}" />
+                </TabItem.Header>
+                <Grid RowDefinitions="*, Auto"
+                      Margin="8"
+                      RowSpacing="8">
+                    <Border Grid.Row="0"
+                            BorderThickness="1"
+                            BorderBrush="LightGray"
+                            CornerRadius="8">
+                        <ScrollViewer Padding="8">
+                            <controls:SpectreTextBlock TextWrapping="Wrap"
+                                                       Text="{Binding BlurayDiscInformationText, Mode=OneWay}" />
+                        </ScrollViewer>
+                    </Border>
+                    <Button Grid.Row="1"
+                            Command="{Binding SaveBlurayDiscInformationCommand, Mode=OneWay}"
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Left">
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Disc_Information}" />
+                    </Button>
+                </Grid>
+            </TabItem>
+            <TabItem IsVisible="{Binding !!BlurayBurstCuttingAreaText, Mode=OneWay}">
+                <TabItem.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Burst_Cutting_Area}" />
+                </TabItem.Header>
+                <Grid RowDefinitions="*, Auto"
+                      Margin="8"
+                      RowSpacing="8">
+                    <Border Grid.Row="0"
+                            BorderThickness="1"
+                            BorderBrush="LightGray"
+                            CornerRadius="8">
+                        <ScrollViewer Padding="8">
+                            <controls:SpectreTextBlock TextWrapping="Wrap"
+                                                       Text="{Binding BlurayBurstCuttingAreaText, Mode=OneWay}" />
+                        </ScrollViewer>
+                    </Border>
+                    <Button Grid.Row="1"
+                            Command="{Binding SaveBlurayBurstCuttingAreaCommand, Mode=OneWay}"
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Left">
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Burst_Cutting_Area}" />
+                    </Button>
+                </Grid>
+            </TabItem>
+            <TabItem IsVisible="{Binding !!BlurayDdsText, Mode=OneWay}">
+                <TabItem.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Disc_Definition_Structure}" />
+                </TabItem.Header>
+                <Grid RowDefinitions="*, Auto"
+                      Margin="8"
+                      RowSpacing="8">
+                    <Border Grid.Row="0"
+                            BorderThickness="1"
+                            BorderBrush="LightGray"
+                            CornerRadius="8">
+                        <ScrollViewer Padding="8">
+                            <controls:SpectreTextBlock TextWrapping="Wrap"
+                                                       Text="{Binding BlurayDdsText, Mode=OneWay}" />
+                        </ScrollViewer>
+                    </Border>
+                    <Button Grid.Row="1"
+                            Command="{Binding SaveBlurayDdsCommand, Mode=OneWay}"
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Left">
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Disc_Definition_Structure}" />
+                    </Button>
+                </Grid>
+            </TabItem>
+            <TabItem IsVisible="{Binding !!BlurayCartridgeStatusText, Mode=OneWay}">
+                <TabItem.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Cartridge_Status}" />
+                </TabItem.Header>
+                <Grid RowDefinitions="*, Auto"
+                      Margin="8"
+                      RowSpacing="8">
+                    <Border Grid.Row="0"
+                            BorderThickness="1"
+                            BorderBrush="LightGray"
+                            CornerRadius="8">
+                        <ScrollViewer Padding="8">
+                            <controls:SpectreTextBlock TextWrapping="Wrap"
+                                                       Text="{Binding BlurayCartridgeStatusText, Mode=OneWay}" />
+                        </ScrollViewer>
+                    </Border>
+                    <Button Grid.Row="1"
+                            Command="{Binding SaveBlurayCartridgeStatusCommand, Mode=OneWay}"
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Left">
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Cartridge_Status}" />
+                    </Button>
+                </Grid>
+            </TabItem>
+            <TabItem IsVisible="{Binding !!BluraySpareAreaInformationText, Mode=OneWay}">
+                <TabItem.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Spare_Area_Information}" />
+                </TabItem.Header>
+                <Grid RowDefinitions="*, Auto"
+                      Margin="8"
+                      RowSpacing="8">
+                    <Border Grid.Row="0"
+                            BorderThickness="1"
+                            BorderBrush="LightGray"
+                            CornerRadius="8">
+                        <ScrollViewer Padding="8">
+                            <controls:SpectreTextBlock TextWrapping="Wrap"
+                                                       Text="{Binding BluraySpareAreaInformationText, Mode=OneWay}" />
+                        </ScrollViewer>
+                    </Border>
+                    <Button Grid.Row="1"
+                            Command="{Binding SaveBluraySpareAreaInformationCommand, Mode=OneWay}"
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Left">
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Spare_Area_Information}" />
+                    </Button>
+                </Grid>
+            </TabItem>
+            <TabItem IsVisible="{Binding !!BlurayPowResourcesText, Mode=OneWay}">
+                <TabItem.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Pseudo_OverWrite_Resources}" />
+                </TabItem.Header>
+                <Grid RowDefinitions="*, Auto"
+                      Margin="8"
+                      RowSpacing="8">
+                    <Border Grid.Row="0"
+                            BorderThickness="1"
+                            BorderBrush="LightGray"
+                            CornerRadius="8">
+                        <ScrollViewer Padding="8">
+                            <controls:SpectreTextBlock TextWrapping="Wrap"
+                                                       Text="{Binding BlurayPowResourcesText, Mode=OneWay}" />
+                        </ScrollViewer>
+                    </Border>
+                    <Button Grid.Row="1"
+                            Command="{Binding SaveBlurayPowResourcesCommand, Mode=OneWay}"
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Left">
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Pseudo_OverWrite_Resources}" />
+                    </Button>
+                </Grid>
+            </TabItem>
+            <TabItem IsVisible="{Binding !!BlurayTrackResourcesText, Mode=OneWay}">
+                <TabItem.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Track_Resources}" />
+                </TabItem.Header>
+                <Grid RowDefinitions="*, Auto"
+                      Margin="8"
+                      RowSpacing="8">
+                    <Border Grid.Row="0"
+                            BorderThickness="1"
+                            BorderBrush="LightGray"
+                            CornerRadius="8">
+                        <ScrollViewer Padding="8">
+                            <controls:SpectreTextBlock TextWrapping="Wrap"
+                                                       Text="{Binding BlurayTrackResourcesText, Mode=OneWay}" />
+                        </ScrollViewer>
+                    </Border>
+                    <Button Grid.Row="1"
+                            Command="{Binding SaveBlurayTrackResourcesCommand, Mode=OneWay}"
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Left">
+                        <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Track_Resources}" />
+                    </Button>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
+            <Button Command="{Binding SaveBlurayRawDflCommand, Mode=OneWay}"
+                    IsVisible="{Binding SaveBlurayRawDflVisible, Mode=OneWay}">
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_raw_DFL}" />
+            </Button>
+            <Button Command="{Binding SaveBlurayPacCommand, Mode=OneWay}"
+                    IsVisible="{Binding SaveBlurayPacVisible, Mode=OneWay}">
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_PAC}" />
+            </Button>
         </StackPanel>
-        <StackPanel IsVisible="{Binding !!BlurayBurstCuttingAreaText}">
-            <TextBlock Text="{x:Static localization:UI.Burst_Cutting_Area}" />
-            <TextBox IsReadOnly="True"
-                     Text="{Binding BlurayBurstCuttingAreaText}" />
-        </StackPanel>
-        <StackPanel IsVisible="{Binding !!BlurayDdsText}">
-            <TextBlock Text="{x:Static localization:UI.Disc_Definition_Structure}" />
-            <TextBox IsReadOnly="True"
-                     Text="{Binding BlurayDdsText}" />
-        </StackPanel>
-        <StackPanel IsVisible="{Binding !!BlurayCartridgeStatusText}">
-            <TextBlock Text="{x:Static localization:UI.Cartridge_Status}" />
-            <TextBox IsReadOnly="True"
-                     Text="{Binding BlurayCartridgeStatusText}" />
-        </StackPanel>
-        <StackPanel IsVisible="{Binding !!BluraySpareAreaInformationText}">
-            <TextBlock Text="{x:Static localization:UI.Spare_Area_Information}" />
-            <TextBox IsReadOnly="True"
-                     Text="{Binding BluraySpareAreaInformationText}" />
-        </StackPanel>
-        <StackPanel IsVisible="{Binding !!BlurayPowResourcesText}">
-            <TextBlock Text="{x:Static localization:UI.Pseudo_OverWrite_Resources}" />
-            <TextBox IsReadOnly="True"
-                     Text="{Binding BlurayPowResourcesText}" />
-        </StackPanel>
-        <StackPanel IsVisible="{Binding !!BlurayTrackResourcesText}">
-            <TextBlock Text="{x:Static localization:UI.Track_Resources}" />
-            <TextBox IsReadOnly="True"
-                     Text="{Binding BlurayTrackResourcesText}" />
-        </StackPanel>
-        <Button Command="{Binding SaveBlurayDiscInformationCommand}"
-                IsVisible="{Binding SaveBlurayDiscInformationVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Disc_Information}" />
-        </Button>
-        <Button Command="{Binding SaveBlurayBurstCuttingAreaCommand}"
-                IsVisible="{Binding SaveBlurayBurstCuttingAreaVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Burst_Cutting_Area}" />
-        </Button>
-        <Button Command="{Binding SaveBlurayDdsCommand}"
-                IsVisible="{Binding SaveBlurayDdsVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Disc_Definition_Structure}" />
-        </Button>
-        <Button Command="{Binding SaveBlurayCartridgeStatusCommand}"
-                IsVisible="{Binding SaveBlurayCartridgeStatusVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Cartridge_Status}" />
-        </Button>
-        <Button Command="{Binding SaveBluraySpareAreaInformationCommand}"
-                IsVisible="{Binding SaveBluraySpareAreaInformationVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Spare_Area_Information}" />
-        </Button>
-        <Button Command="{Binding SaveBlurayPowResourcesCommand}"
-                IsVisible="{Binding SaveBlurayPowResourcesVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Pseudo_OverWrite_Resources}" />
-        </Button>
-        <Button Command="{Binding SaveBlurayTrackResourcesCommand}"
-                IsVisible="{Binding SaveBlurayTrackResourcesVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Track_Resources}" />
-        </Button>
-        <Button Command="{Binding SaveBlurayRawDflCommand}"
-                IsVisible="{Binding SaveBlurayRawDflVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_raw_DFL}" />
-        </Button>
-        <Button Command="{Binding SaveBlurayPacCommand}"
-                IsVisible="{Binding SaveBlurayPacVisible}">
-            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_PAC}" />
-        </Button>
-    </StackPanel>
+    </Grid>
 </UserControl>
