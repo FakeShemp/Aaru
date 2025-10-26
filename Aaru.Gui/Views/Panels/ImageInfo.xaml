@@ -159,7 +159,6 @@
                 <DataGrid ItemsSource="{Binding Sessions, Mode=OneWay}"
                           IsVisible="{Binding !!Sessions.Count, Mode=OneWay}"
                           IsReadOnly="True"
-                          Height="400"
                           VerticalAlignment="Stretch"
                           HorizontalAlignment="Stretch" Margin="8">
                     <DataGrid.Columns>
@@ -253,7 +252,6 @@
                 <DataGrid ItemsSource="{Binding Tracks, Mode=OneWay}"
                           IsVisible="{Binding !!Tracks.Count, Mode=OneWay}"
                           IsReadOnly="True"
-                          Height="400"
                           VerticalAlignment="Stretch"
                           HorizontalAlignment="Stretch" Margin="8">
                     <DataGrid.Columns>
