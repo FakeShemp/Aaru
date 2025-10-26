@@ -371,8 +371,10 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
                             {
                                 Progress2Value = doneSectorsToInvoke;
 
-                                Progress2Text = $"Hashing sectors {doneSectorsToInvoke} to {
-                                    doneSectorsToInvoke + SECTORS_TO_READ} of track {currentTrack.Sequence}";
+                                Progress2Text = string.Format(UI.Hashing_sectors_0_to_2_of_track_1,
+                                                              doneSectorsToInvoke,
+                                                              currentTrack.Sequence,
+                                                              doneSectorsToInvoke + SECTORS_TO_READ);
                             });
 
                             doneSectors += SECTORS_TO_READ;
@@ -402,9 +404,10 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
                             {
                                 Progress2Value = (int)doneSectorsToInvoke;
 
-                                Progress2Text = $"Hashing sectors {doneSectorsToInvoke} to {
-                                    doneSectorsToInvoke + (sectors - doneSectorsToInvoke)} of track {
-                                        currentTrack.Sequence}";
+                                Progress2Text = string.Format(UI.Hashing_sectors_0_to_2_of_track_1,
+                                                              doneSectorsToInvoke,
+                                                              currentTrack.Sequence,
+                                                              doneSectorsToInvoke + (sectors - doneSectorsToInvoke));
                             });
 
                             doneSectors += sectors - doneSectors;
