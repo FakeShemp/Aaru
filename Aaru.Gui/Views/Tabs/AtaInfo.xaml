@@ -37,6 +37,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:tabs="clr-namespace:Aaru.Gui.ViewModels.Tabs"
              xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
+             xmlns:controls="clr-namespace:Aaru.Gui.Controls"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -44,30 +45,48 @@
     <Design.DataContext>
         <tabs:AtaInfoViewModel />
     </Design.DataContext>
-    <StackPanel>
-        <TextBlock Text="{Binding AtaOrAtapiText}" />
-        <TextBox IsReadOnly="True"
-                 Text="{Binding AtaIdentifyText}"
-                 TextWrapping="Wrap" />
+    <Grid RowDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto"
+          Margin="8"
+          RowSpacing="8">
+        <TextBlock Grid.Row="0"
+                   FontWeight="Bold"
+                   Text="{Binding AtaOrAtapiText, Mode=OneWay}" />
+        <Border Grid.Row="1"
+                BorderThickness="1"
+                BorderBrush="LightGray"
+                CornerRadius="8">
+            <ScrollViewer Padding="8">
+                <controls:SpectreTextBlock Text="{Binding AtaIdentifyText, Mode=OneWay}"
+                                           TextWrapping="Wrap" />
+            </ScrollViewer>
+        </Border>
         <CheckBox IsEnabled="False"
-                  IsChecked="{Binding AtaMcptChecked}"
-                  IsVisible="{Binding AtaMcptVisible}">
+                  Grid.Row="2"
+                  IsChecked="{Binding AtaMcptChecked, Mode=OneWay}"
+                  IsVisible="{Binding AtaMcptVisible, Mode=OneWay}">
             <TextBlock Text="{x:Static localization:Core.Device_supports_MCPT_Command_Set}" />
         </CheckBox>
-        <TextBlock Text="{Binding AtaMcptText}" />
-        <CheckBox IsEnabled="False"
-                  IsChecked="{Binding AtaMcptWriteProtectionChecked}"
-                  IsVisible="{Binding AtaMcptChecked}">
+        <TextBlock Grid.Row="3"
+                   Text="{Binding AtaMcptText}" />
+        <CheckBox Grid.Row="4"
+                  IsEnabled="False"
+                  IsChecked="{Binding AtaMcptWriteProtectionChecked, Mode=OneWay}"
+                  IsVisible="{Binding AtaMcptChecked, Mode=OneWay}">
             <TextBlock Text="{x:Static localization:Core.Media_card_is_write_protected}" />
         </CheckBox>
-        <TextBlock Text="{Binding AtaMcptSpecificDataText}" />
-        <StackPanel Orientation="Horizontal">
-            <Button Command="{Binding SaveAtaBinaryCommand}">
+        <TextBlock Grid.Row="5"
+                   Text="{Binding AtaMcptSpecificDataText}" />
+        <StackPanel Grid.Row="6"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Bottom"
+                    Spacing="8">
+            <Button Command="{Binding SaveAtaBinaryCommand, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_binary_to_file}" />
             </Button>
-            <Button Command="{Binding SaveAtaTextCommand}">
+            <Button Command="{Binding SaveAtaTextCommand, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_text_to_file}" />
             </Button>
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </UserControl>
