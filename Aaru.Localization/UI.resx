@@ -2802,13 +2802,13 @@ Do you want to continue?</value>
     <value>Verifying track {0} of {1}</value>
   </data>
     <data name="All_sectors_contain_errors" xml:space="preserve">
-    <value>All sectors contain errors</value>
+    <value>[red]All sectors contain errors[/]</value>
   </data>
     <data name="All_sectors_are_unknown" xml:space="preserve">
-    <value>All sectors are unknown</value>
+    <value>[olive]All sectors are unknown[/]</value>
   </data>
     <data name="Unknown_LBAs" xml:space="preserve">
-    <value>Unknown LBAs:</value>
+    <value>[bold][slateblue1]Unknown LBAs:[/][/]</value>
   </data>
     <data name="Title_Images" xml:space="preserve">
     <value>Images</value>
@@ -3188,5 +3188,8 @@ Do you want to continue?</value>
     </data>
     <data name="SSC_Label" xml:space="preserve">
         <value>SSC</value>
+    </data>
+    <data name="Title_Verify_image" xml:space="preserve">
+        <value>Verify image</value>
     </data>
 </root>

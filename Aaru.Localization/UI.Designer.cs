@@ -6225,5 +6225,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("SSC_Label", resourceCulture);
             }
         }
+        
+        public static string Title_Verify_image {
+            get {
+                return ResourceManager.GetString("Title_Verify_image", resourceCulture);
+            }
+        }
     }
 }

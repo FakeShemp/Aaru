@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading;
 using System.Windows.Input;
 using Aaru.CommonTypes.Interfaces;
@@ -146,6 +147,8 @@ public sealed partial class ImageVerifyViewModel : ViewModelBase
         CloseVisible         = true;
         StartVisible         = true;
         OptionsVisible       = true;
+
+        VerifySectorsVisible = _inputFormat is IOpticalMediaImage or IVerifiableSectorsImage;
     }
 
     public ObservableCollection<LbaModel> ErrorList    { get; }
@@ -164,8 +167,6 @@ public sealed partial class ImageVerifyViewModel : ViewModelBase
         StopVisible          = true;
         ProgressVisible      = true;
         Progress2Visible     = false;
-
-        VerifySectorsVisible = _inputFormat is IOpticalMediaImage or IVerifiableSectorsImage;
 
         // TODO: Do not offer the option to use this form if the image does not support any kind of verification
         new Thread(DoWork).Start();
@@ -343,9 +344,9 @@ public sealed partial class ImageVerifyViewModel : ViewModelBase
                                                        out tempUnknownLbas);
                         }
 
-                        failingLbas.AddRange(tempFailingLbas);
+                        failingLbas.AddRange(tempFailingLbas.Select(lba => lba + currentTrack.StartSector));
 
-                        unknownLbas.AddRange(tempUnknownLbas);
+                        unknownLbas.AddRange(tempUnknownLbas.Select(lba => lba + currentTrack.StartSector));
 
                         if(remainingSectors < 512)
                         {
@@ -435,7 +436,7 @@ public sealed partial class ImageVerifyViewModel : ViewModelBase
 
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                if(failingLbas.Count > 0)
+                if(failingLbas.Count > 0 || unknownLbas.Count > 0)
                 {
                     if(failingLbas.Count == (int)_inputFormat.Info.Sectors)
                     {
@@ -444,7 +445,6 @@ public sealed partial class ImageVerifyViewModel : ViewModelBase
                     }
                     else
                     {
-                        SectorErrorsText    = UI.LBAs_with_error;
                         SectorErrorsVisible = true;
 
                         foreach(ulong t in failingLbas)
@@ -457,7 +457,7 @@ public sealed partial class ImageVerifyViewModel : ViewModelBase
                     }
                 }
 
-                if(unknownLbas.Count > 0)
+                if(failingLbas.Count > 0 || unknownLbas.Count > 0)
                 {
                     if(unknownLbas.Count == (int)_inputFormat.Info.Sectors)
                     {
@@ -466,7 +466,6 @@ public sealed partial class ImageVerifyViewModel : ViewModelBase
                     }
                     else
                     {
-                        SectorsUnknownsText    = UI.Unknown_LBAs;
                         SectorsUnknownsVisible = true;
 
                         foreach(ulong t in unknownLbas)
@@ -479,13 +478,11 @@ public sealed partial class ImageVerifyViewModel : ViewModelBase
                     }
                 }
 
-                SectorSummaryVisible    = true;
-                TotalSectorsText        = string.Format(UI.Total_sectors,  _inputFormat.Info.Sectors);
-                TotalSectorErrorsText   = string.Format(UI.Total_errors,   failingLbas.Count);
-                TotalSectorUnknownsText = string.Format(UI.Total_unknowns, unknownLbas.Count);
-
-                TotalSectorErrorsUnknownsText =
-                    string.Format(UI.Total_errors_plus_unknowns, failingLbas.Count + unknownLbas.Count);
+                SectorSummaryVisible          = true;
+                TotalSectorsText              = $"[lime]{_inputFormat.Info.Sectors}[/]";
+                TotalSectorErrorsText         = $"[red]{failingLbas.Count}[/]";
+                TotalSectorUnknownsText       = $"[olive]{unknownLbas.Count}[/]";
+                TotalSectorErrorsUnknownsText = $"[fuchsia]{failingLbas.Count + unknownLbas.Count}[/]";
             });
         }
 
