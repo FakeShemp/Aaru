@@ -285,6 +285,8 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
                                                      currentTrack.Sequence,
                                                      opticalMediaImage.Tracks.Count);
 
+                        Progress2Max = currentTrack.EndSector - currentTrack.StartSector + 1;
+
                         ProgressValue++;
                     });
 
@@ -365,7 +367,7 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
 
                             await Dispatcher.UIThread.InvokeAsync(() =>
                             {
-                                Progress2Value = (int)(doneSectorsToInvoke / SECTORS_TO_READ);
+                                Progress2Value = doneSectorsToInvoke;
 
                                 Progress2Text = $"Hashing sectors {doneSectorsToInvoke} to {
                                     doneSectorsToInvoke + SECTORS_TO_READ} of track {currentTrack.Sequence}";
@@ -396,7 +398,7 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
 
                             await Dispatcher.UIThread.InvokeAsync(() =>
                             {
-                                Progress2Value = (int)(doneSectorsToInvoke / SECTORS_TO_READ);
+                                Progress2Value = (int)doneSectorsToInvoke;
 
                                 Progress2Text = $"Hashing sectors {doneSectorsToInvoke} to {
                                     doneSectorsToInvoke + (sectors - doneSectorsToInvoke)} of track {
