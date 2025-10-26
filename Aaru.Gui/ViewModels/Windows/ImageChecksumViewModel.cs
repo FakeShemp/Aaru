@@ -87,6 +87,8 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
     [ObservableProperty]
     bool _optionsEnabled;
     [ObservableProperty]
+    bool _optionsVisible;
+    [ObservableProperty]
     bool _progress1Visible;
     [ObservableProperty]
     double _progress2Max;
@@ -135,6 +137,7 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
         _cancel               = false;
         _inputFormat          = inputFormat;
         ChecksumTracksChecked = ChecksumTracksVisible;
+        OptionsVisible        = true;
         OptionsEnabled        = true;
         ChecksumMediaChecked  = true;
         ChecksumTracksChecked = true;
@@ -586,7 +589,7 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
 
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
-            OptionsEnabled      = false;
+            OptionsVisible      = false;
             ResultsVisible      = true;
             ProgressVisible     = false;
             StartCommandVisible = false;
