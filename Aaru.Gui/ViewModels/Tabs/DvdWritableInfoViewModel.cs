@@ -30,6 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -172,7 +173,17 @@ public sealed class DvdWritableInfoViewModel
 
         if(cartridgeStatus != null) DvdRamCartridgeStatusText = Cartridge.Prettify(cartridgeStatus);
 
-        if(spareArea != null) DvdRamSpareAreaInformationText = Spare.Prettify(spareArea);
+        if(spareArea != null)
+        {
+            if(spareArea.Length == 12)
+            {
+                var tmp = new byte[16];
+                Array.Copy(spareArea, 0, tmp, 4, 12);
+                spareArea = tmp;
+            }
+
+            DvdRamSpareAreaInformationText = Spare.Prettify(spareArea);
+        }
 
         SaveDvdRamDdsVisible                     = dds                     != null;
         SaveDvdRamCartridgeStatusVisible         = cartridgeStatus         != null;
