@@ -83,7 +83,7 @@
                             <Image Width="24"
                                    Height="24"
                                    Source="{Binding Icon, Mode=OneWay}" />
-                            <TextBlock Text="{Binding FileName, Mode=OneWay}" />
+                            <TextBlock Text="{Binding FileName, Mode=OneWay}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </TreeDataTemplate>
                     <TreeDataTemplate DataType="models:PartitionSchemeModel"
@@ -92,7 +92,7 @@
                             <Image Width="24"
                                    Height="24"
                                    Source="{Binding Icon, Mode=OneWay}" />
-                            <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                            <TextBlock Text="{Binding Name, Mode=OneWay}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </TreeDataTemplate>
                     <TreeDataTemplate DataType="models:PartitionModel"
@@ -101,7 +101,7 @@
                             <Image Width="24"
                                    Height="24"
                                    Source="{Binding Icon, Mode=OneWay}" />
-                            <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                            <TextBlock Text="{Binding Name, Mode=OneWay}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </TreeDataTemplate>
                     <TreeDataTemplate DataType="models:FileSystemModel"
@@ -110,7 +110,7 @@
                             <Image Width="24"
                                    Height="24"
                                    Source="{Binding Icon, Mode=OneWay}" />
-                            <TextBlock Text="{Binding VolumeName, Mode=OneWay}" />
+                            <TextBlock Text="{Binding VolumeName, Mode=OneWay}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </TreeDataTemplate>
                     <TreeDataTemplate DataType="models:SubdirectoryModel"
@@ -119,7 +119,7 @@
                             <Image Width="24"
                                    Height="24"
                                    Source="{Binding Icon, Mode=OneWay}" />
-                            <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                            <TextBlock Text="{Binding Name, Mode=OneWay}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </TreeDataTemplate>
                     <DataTemplate DataType="models:RootModel">
