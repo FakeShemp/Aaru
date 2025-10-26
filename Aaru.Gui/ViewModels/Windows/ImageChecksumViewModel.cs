@@ -290,6 +290,7 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
                         ProgressValue++;
                     });
 
+                    /*
                     if(currentTrack.StartSector - previousTrackEnd != 0 && ChecksumMediaChecked)
                     {
                         for(ulong i = previousTrackEnd + 1; i < currentTrack.StartSector; i++)
@@ -316,6 +317,7 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
                             mediaChecksum?.Update(hiddenSector);
                         }
                     }
+*/
 
                     AaruLogging.Debug(MODULE_NAME,
                                       UI.Track_0_starts_at_sector_1_and_ends_at_sector_2,
@@ -433,6 +435,7 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
                     previousTrackEnd = currentTrack.EndSector;
                 }
 
+                /*
                 if(opticalMediaImage.Info.Sectors - previousTrackEnd != 0 && ChecksumMediaChecked)
                 {
                     for(ulong i = previousTrackEnd + 1; i < opticalMediaImage.Info.Sectors; i++)
@@ -459,6 +462,7 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
                         mediaChecksum?.Update(hiddenSector);
                     }
                 }
+                */
 
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
