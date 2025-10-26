@@ -138,7 +138,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
         if(result is null) return;
 
         var saveFs = new FileStream(result.Path.AbsolutePath, FileMode.Create);
-        saveFs.Write(_compactDiscInformationData, 0, _compactDiscInformationData.Length);
+        await saveFs.WriteAsync(_compactDiscInformationData, 0, _compactDiscInformationData.Length);
 
         saveFs.Close();
     }
@@ -153,7 +153,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
         if(result is null) return;
 
         var saveFs = new FileStream(result.Path.AbsolutePath, FileMode.Create);
-        saveFs.Write(_tocData, 0, _tocData.Length);
+        await saveFs.WriteAsync(_tocData, 0, _tocData.Length);
 
         saveFs.Close();
     }
@@ -168,7 +168,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
         if(result is null) return;
 
         var saveFs = new FileStream(result.Path.AbsolutePath, FileMode.Create);
-        saveFs.Write(_rawTocData, 0, _rawTocData.Length);
+        await saveFs.WriteAsync(_rawTocData, 0, _rawTocData.Length);
 
         saveFs.Close();
     }
@@ -183,7 +183,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
         if(result is null) return;
 
         var saveFs = new FileStream(result.Path.AbsolutePath, FileMode.Create);
-        saveFs.Write(_sessionData, 0, _sessionData.Length);
+        await saveFs.WriteAsync(_sessionData, 0, _sessionData.Length);
 
         saveFs.Close();
     }
@@ -198,7 +198,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
         if(result is null) return;
 
         var saveFs = new FileStream(result.Path.AbsolutePath, FileMode.Create);
-        saveFs.Write(_cdTextLeadInData, 0, _cdTextLeadInData.Length);
+        await saveFs.WriteAsync(_cdTextLeadInData, 0, _cdTextLeadInData.Length);
 
         saveFs.Close();
     }
@@ -213,7 +213,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
         if(result is null) return;
 
         var saveFs = new FileStream(result.Path.AbsolutePath, FileMode.Create);
-        saveFs.Write(_atipData, 0, _atipData.Length);
+        await saveFs.WriteAsync(_atipData, 0, _atipData.Length);
 
         saveFs.Close();
     }
@@ -228,7 +228,7 @@ public sealed class CompactDiscInfoViewModel : ViewModelBase
         if(result is null) return;
 
         var saveFs = new FileStream(result.Path.AbsolutePath, FileMode.Create);
-        saveFs.Write(_pmaData, 0, _pmaData.Length);
+        await saveFs.WriteAsync(_pmaData, 0, _pmaData.Length);
 
         saveFs.Close();
     }
