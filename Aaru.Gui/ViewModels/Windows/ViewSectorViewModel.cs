@@ -50,8 +50,6 @@ public sealed partial class ViewSectorViewModel : ViewModelBase
     string _printHexText;
     double _sectorNumber;
     [ObservableProperty]
-    string _title;
-    [ObservableProperty]
     string _totalSectorsText;
 
     // TODO: Show message when sector was not dumped
@@ -61,13 +59,27 @@ public sealed partial class ViewSectorViewModel : ViewModelBase
 
         ErrorNumber errno = inputFormat.ReadSectorLong(0, false, out _, out _);
 
-        if(errno == ErrorNumber.NoError)
-            LongSectorChecked = true;
-        else
-            LongSectorVisible = false;
+        LongSectorVisible = errno == ErrorNumber.NoError;
+        TotalSectorsText  = $"of {inputFormat.Info.Sectors}";
+        SectorNumber      = 0;
+    }
 
-        TotalSectorsText = $"of {inputFormat.Info.Sectors}";
-        SectorNumber     = 0;
+    public bool LongSectorChecked
+    {
+        get => _longSectorChecked;
+        set
+        {
+            SetProperty(ref _longSectorChecked, value);
+
+            ErrorNumber errno = LongSectorChecked
+                                    ? _inputFormat.ReadSectorLong((ulong)SectorNumber, false, out byte[] sector, out _)
+                                    : _inputFormat.ReadSector((ulong)SectorNumber, false, out sector, out _);
+
+            if(errno != ErrorNumber.NoError) return;
+
+            SectorData = sector;
+            ColorSector();
+        }
     }
 
     public double SectorNumber
