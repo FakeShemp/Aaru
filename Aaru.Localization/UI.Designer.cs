@@ -6255,5 +6255,29 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Title_Decode_media_tags", resourceCulture);
             }
         }
+        
+        public static string Title_Image_sidecar_creation {
+            get {
+                return ResourceManager.GetString("Title_Image_sidecar_creation", resourceCulture);
+            }
+        }
+        
+        public static string Menu_Preferences {
+            get {
+                return ResourceManager.GetString("Menu_Preferences", resourceCulture);
+            }
+        }
+        
+        public static string Menu_Quit {
+            get {
+                return ResourceManager.GetString("Menu_Quit", resourceCulture);
+            }
+        }
+        
+        public static string Nothing_opened {
+            get {
+                return ResourceManager.GetString("Nothing_opened", resourceCulture);
+            }
+        }
     }
 }

@@ -3128,4 +3128,16 @@ Probadores:
     <data name="Title_Decode_media_tags" xml:space="preserve">
         <value>Decodificar etiquetas del medio</value>
     </data>
+    <data name="Title_Image_sidecar_creation" xml:space="preserve">
+        <value>Creación de sidecar de imagen</value>
+    </data>
+    <data name="Menu_Preferences" xml:space="preserve">
+        <value>_Preferencias</value>
+    </data>
+    <data name="Menu_Quit" xml:space="preserve">
+        <value>_Salir</value>
+    </data>
+    <data name="Nothing_opened" xml:space="preserve">
+        <value>Nada abierto.</value>
+    </data>
 </root>

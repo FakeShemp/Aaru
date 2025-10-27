@@ -3204,4 +3204,16 @@ Do you want to continue?</value>
     <data name="Title_Decode_media_tags" xml:space="preserve">
         <value>Decode media tags</value>
     </data>
+    <data name="Title_Image_sidecar_creation" xml:space="preserve">
+        <value>Image sidecar creation</value>
+    </data>
+    <data name="Menu_Preferences" xml:space="preserve">
+        <value>_Preferences</value>
+    </data>
+    <data name="Menu_Quit" xml:space="preserve">
+        <value>_Quit</value>
+    </data>
+    <data name="Nothing_opened" xml:space="preserve">
+        <value>Nothing opened.</value>
+    </data>
 </root>

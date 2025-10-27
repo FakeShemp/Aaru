@@ -45,9 +45,9 @@
         <NativeMenu>
             <NativeMenuItem Header="{x:Static localization:UI.Menu_About}"
                             Click="OnAboutClicked" />
-            <NativeMenuItem Header="_Preferences"
+            <NativeMenuItem Header="{x:Static localization:UI.Menu_Preferences}"
                             Click="OnPreferencesClicked" />
-            <NativeMenuItem Header="_Quit"
+            <NativeMenuItem Header="{x:Static localization:UI.Menu_Quit}"
                             Click="OnQuitClicked" />
         </NativeMenu>
     </NativeMenu.Menu>

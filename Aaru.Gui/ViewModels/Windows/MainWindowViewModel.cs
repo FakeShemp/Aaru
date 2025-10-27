@@ -109,7 +109,7 @@ public partial class MainWindowViewModel : ViewModelBase
         [
             new RootModel
             {
-                Name = "Nothing opened."
+                Name = UI.Nothing_opened
             }
         ];
 
