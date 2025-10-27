@@ -40,6 +40,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Aaru.Gui.Models;
 using Aaru.Gui.Views.Dialogs;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
@@ -78,10 +79,13 @@ public sealed partial class AboutViewModel : ViewModelBase
 
                 if(name is null || version is null) continue;
 
-                Assemblies.Add(new AssemblyModel
+                Dispatcher.UIThread.Invoke(() =>
                 {
-                    Name    = name,
-                    Version = version
+                    Assemblies.Add(new AssemblyModel
+                    {
+                        Name    = name,
+                        Version = version
+                    });
                 });
             }
         });
