@@ -36,6 +36,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dialogs="clr-namespace:Aaru.Gui.ViewModels.Dialogs"
+        xmlns:controls="clr-namespace:Aaru.Gui.Controls"
         xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
@@ -49,185 +50,299 @@
     <Design.DataContext>
         <dialogs:StatisticsViewModel />
     </Design.DataContext>
-    <Border Padding="15">
-        <Grid RowDefinitions="*,Auto">
-            <TabControl Grid.Row="0"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch">
-                <TabItem IsVisible="{Binding CommandsVisible}">
-                    <TabItem.Header>
-                        <TextBlock Text="{x:Static localization:UI.Title_Commands}" />
-                    </TabItem.Header>
-                    <StackPanel VerticalAlignment="Top"
-                                HorizontalAlignment="Stretch">
-                        <TextBlock Text="{Binding FsInfoText}"
-                                   IsVisible="{Binding FsInfoVisible}" />
-                        <TextBlock Text="{Binding ChecksumText}"
-                                   IsVisible="{Binding ChecksumVisible}" />
-                        <TextBlock Text="{Binding CompareText}"
-                                   IsVisible="{Binding CompareVisible}" />
-                        <TextBlock Text="{Binding ConvertImageText}"
-                                   IsVisible="{Binding ConvertImageVisible}" />
-                        <TextBlock Text="{Binding CreateSidecarText}"
-                                   IsVisible="{Binding CreateSidecarVisible}" />
-                        <TextBlock Text="{Binding DecodeText}"
-                                   IsVisible="{Binding DecodeVisible}" />
-                        <TextBlock Text="{Binding DeviceInfoText}"
-                                   IsVisible="{Binding DeviceInfoVisible}" />
-                        <TextBlock Text="{Binding DeviceReportText}"
-                                   IsVisible="{Binding DeviceReportVisible}" />
-                        <TextBlock Text="{Binding DumpMediaText}"
-                                   IsVisible="{Binding DumpMediaVisible}" />
-                        <TextBlock Text="{Binding EntropyText}"
-                                   IsVisible="{Binding EntropyVisible}" />
-                        <TextBlock Text="{Binding FormatsCommandText}"
-                                   IsVisible="{Binding FormatsCommandVisible}" />
-                        <TextBlock Text="{Binding ImageInfoText}"
-                                   IsVisible="{Binding ImageInfoVisible}" />
-                        <TextBlock Text="{Binding MediaInfoText}"
-                                   IsVisible="{Binding MediaInfoVisible}" />
-                        <TextBlock Text="{Binding MediaScanText}"
-                                   IsVisible="{Binding MediaScanVisible}" />
-                        <TextBlock Text="{Binding PrintHexText}"
-                                   IsVisible="{Binding PrintHexVisible}" />
-                        <TextBlock Text="{Binding VerifyText}"
-                                   IsVisible="{Binding VerifyVisible}" />
-                    </StackPanel>
-                </TabItem>
-                <TabItem IsVisible="{Binding FiltersVisible}">
-                    <TabItem.Header>
-                        <TextBlock Text="{x:Static localization:UI.Title_Filters}" />
-                    </TabItem.Header>
-                    <DataGrid ItemsSource="{Binding Filters}"
-                              HorizontalScrollBarVisibility="Visible">
-                        <DataGrid.Columns>
-                            <!-- TODO: Bind header -->
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Filter}"
-                                                Binding="{Binding Name}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Times_used}"
-                                                Binding="{Binding Count}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </TabItem>
-                <TabItem IsVisible="{Binding FormatsVisible}">
-                    <TabItem.Header>
-                        <TextBlock Text="{x:Static localization:UI.Title_Formats}" />
-                    </TabItem.Header>
-                    <DataGrid ItemsSource="{Binding Formats}"
-                              HorizontalScrollBarVisibility="Visible">
-                        <DataGrid.Columns>
-                            <!-- TODO: Bind header -->
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Format}"
-                                                Binding="{Binding Name}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Times_used}"
-                                                Binding="{Binding Count}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </TabItem>
-                <TabItem IsVisible="{Binding PartitionsVisible}">
-                    <TabItem.Header>
-                        <TextBlock Text="{x:Static localization:UI.Title_Partitions}" />
-                    </TabItem.Header>
-                    <DataGrid ItemsSource="{Binding Partitions}"
-                              HorizontalScrollBarVisibility="Visible">
-                        <DataGrid.Columns>
-                            <!-- TODO: Bind header -->
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Partition}"
-                                                Binding="{Binding Name}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Times_used}"
-                                                Binding="{Binding Count}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </TabItem>
-                <TabItem IsVisible="{Binding FilesystemsVisible}">
-                    <TabItem.Header>
-                        <TextBlock Text="{x:Static localization:UI.Title_Filesystems}" />
-                    </TabItem.Header>
-                    <DataGrid ItemsSource="{Binding Filesystems}"
-                              HorizontalScrollBarVisibility="Visible">
-                        <DataGrid.Columns>
-                            <!-- TODO: Bind header -->
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Filesystem}"
-                                                Binding="{Binding Name}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Times_used}"
-                                                Binding="{Binding Count}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </TabItem>
-                <TabItem IsVisible="{Binding DevicesVisible}">
-                    <TabItem.Header>
-                        <TextBlock Text="{x:Static localization:UI.Title_Devices}" />
-                    </TabItem.Header>
-                    <DataGrid ItemsSource="{Binding Devices}"
-                              HorizontalScrollBarVisibility="Visible">
-                        <DataGrid.Columns>
-                            <!-- TODO: Bind header -->
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Device}"
-                                                Binding="{Binding Model}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Manufacturer}"
-                                                Binding="{Binding Manufacturer}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Revision}"
-                                                Binding="{Binding Revision}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Bus}"
-                                                Binding="{Binding Bus}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </TabItem>
-                <TabItem IsVisible="{Binding MediasVisible}">
-                    <TabItem.Header>
-                        <TextBlock Text="{x:Static localization:UI.Title_Medias}" />
-                    </TabItem.Header>
-                    <DataGrid ItemsSource="{Binding Medias}"
-                              HorizontalScrollBarVisibility="Visible">
-                        <DataGrid.Columns>
-                            <!-- TODO: Bind header -->
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Media}"
-                                                Binding="{Binding Name}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Times_used}"
-                                                Binding="{Binding Count}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:Core.Title_Type_for_media}"
-                                                Binding="{Binding Type}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </TabItem>
-            </TabControl>
-            <Button Grid.Row="1"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    Command="{Binding CloseCommand}"
-                    Padding="10">
-                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
-            </Button>
-        </Grid>
-    </Border>
+    <Grid Margin="12"
+          RowSpacing="8"
+          RowDefinitions="*,Auto">
+        <TabControl Grid.Row="0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch">
+            <TabItem IsVisible="{Binding CommandsVisible, Mode=OneWay}">
+                <TabItem.Header>
+                    <TextBlock Text="{x:Static localization:UI.Title_Commands}" />
+                </TabItem.Header>
+                <StackPanel VerticalAlignment="Top"
+                            HorizontalAlignment="Stretch">
+                    <TextBlock Text="{Binding FsInfoText, Mode=OneWay}"
+                               IsVisible="{Binding FsInfoVisible, Mode=OneWay}" />
+                    <TextBlock Text="{Binding ChecksumText, Mode=OneWay}"
+                               IsVisible="{Binding ChecksumVisible, Mode=OneWay}" />
+                    <TextBlock Text="{Binding CompareText, Mode=OneWay}"
+                               IsVisible="{Binding CompareVisible, Mode=OneWay}" />
+                    <TextBlock Text="{Binding ConvertImageText, Mode=OneWay}"
+                               IsVisible="{Binding ConvertImageVisible, Mode=OneWay}" />
+                    <TextBlock Text="{Binding CreateSidecarText, Mode=OneWay}"
+                               IsVisible="{Binding CreateSidecarVisible, Mode=OneWay}" />
+                    <TextBlock Text="{Binding DecodeText, Mode=OneWay}"
+                               IsVisible="{Binding DecodeVisible, Mode=OneWay}" />
+                    <TextBlock Text="{Binding DeviceInfoText, Mode=OneWay}"
+                               IsVisible="{Binding DeviceInfoVisible, Mode=OneWay}" />
+                    <TextBlock Text="{Binding DeviceReportText, Mode=OneWay}"
+                               IsVisible="{Binding DeviceReportVisible, Mode=OneWay}" />
+                    <TextBlock Text="{Binding DumpMediaText, Mode=OneWay}"
+                               IsVisible="{Binding DumpMediaVisible, Mode=OneWay}" />
+                    <TextBlock Text="{Binding EntropyText, Mode=OneWay}"
+                               IsVisible="{Binding EntropyVisible, Mode=OneWay}" />
+                    <TextBlock Text="{Binding FormatsCommandText, Mode=OneWay}"
+                               IsVisible="{Binding FormatsCommandVisible, Mode=OneWay}" />
+                    <TextBlock Text="{Binding ImageInfoText, Mode=OneWay}"
+                               IsVisible="{Binding ImageInfoVisible, Mode=OneWay}" />
+                    <TextBlock Text="{Binding MediaInfoText, Mode=OneWay}"
+                               IsVisible="{Binding MediaInfoVisible, Mode=OneWay}" />
+                    <TextBlock Text="{Binding MediaScanText, Mode=OneWay}"
+                               IsVisible="{Binding MediaScanVisible, Mode=OneWay}" />
+                    <TextBlock Text="{Binding PrintHexText, Mode=OneWay}"
+                               IsVisible="{Binding PrintHexVisible, Mode=OneWay}" />
+                    <TextBlock Text="{Binding VerifyText, Mode=OneWay}"
+                               IsVisible="{Binding VerifyVisible, Mode=OneWay}" />
+                </StackPanel>
+            </TabItem>
+            <TabItem IsVisible="{Binding FiltersVisible, Mode=OneWay}">
+                <TabItem.Header>
+                    <TextBlock Text="{x:Static localization:UI.Title_Filters}" />
+                </TabItem.Header>
+                <DataGrid ItemsSource="{Binding Filters, Mode=OneWay}"
+                          HorizontalScrollBarVisibility="Visible">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Filter}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Times_used}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Count, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem IsVisible="{Binding FormatsVisible, Mode=OneWay}">
+                <TabItem.Header>
+                    <TextBlock Text="{x:Static localization:UI.Title_Formats}" />
+                </TabItem.Header>
+                <DataGrid ItemsSource="{Binding Formats, Mode=OneWay}"
+                          HorizontalScrollBarVisibility="Visible">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Format}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Times_used}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Count, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem IsVisible="{Binding PartitionsVisible, Mode=OneWay}">
+                <TabItem.Header>
+                    <TextBlock Text="{x:Static localization:UI.Title_Partitions}" />
+                </TabItem.Header>
+                <DataGrid ItemsSource="{Binding Partitions, Mode=OneWay}"
+                          HorizontalScrollBarVisibility="Visible">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Partition}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Times_used}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Count, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem IsVisible="{Binding FilesystemsVisible, Mode=OneWay}">
+                <TabItem.Header>
+                    <TextBlock Text="{x:Static localization:UI.Title_Filesystems}" />
+                </TabItem.Header>
+                <DataGrid ItemsSource="{Binding Filesystems, Mode=OneWay}"
+                          HorizontalScrollBarVisibility="Visible">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Filesystem}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Times_used}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Count, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem IsVisible="{Binding DevicesVisible, Mode=OneWay}">
+                <TabItem.Header>
+                    <TextBlock Text="{x:Static localization:UI.Title_Devices}" />
+                </TabItem.Header>
+                <DataGrid ItemsSource="{Binding Devices, Mode=OneWay}"
+                          HorizontalScrollBarVisibility="Visible">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Device}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Model, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Manufacturer}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Manufacturer, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Revision}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Revision, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Bus}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Bus, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem IsVisible="{Binding MediasVisible, Mode=OneWay}">
+                <TabItem.Header>
+                    <TextBlock Text="{x:Static localization:UI.Title_Medias}" />
+                </TabItem.Header>
+                <DataGrid ItemsSource="{Binding Medias, Mode=OneWay}"
+                          HorizontalScrollBarVisibility="Visible">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Media}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Times_used}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Count, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Type_for_media}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Type, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </TabControl>
+        <Button Grid.Row="1"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Command="{Binding CloseCommand, Mode=OneWay}"
+                Padding="10">
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
+        </Button>
+    </Grid>
 </Window>
