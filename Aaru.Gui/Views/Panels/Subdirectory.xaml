@@ -37,6 +37,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:panels="clr-namespace:Aaru.Gui.ViewModels.Panels"
              xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
+             xmlns:controls="clr-namespace:Aaru.Gui.Controls"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -44,69 +45,109 @@
     <Design.DataContext>
         <panels:SubdirectoryViewModel />
     </Design.DataContext>
-    <DataGrid ItemsSource="{Binding Entries}"
+    <DataGrid Margin="12"
+              ItemsSource="{Binding Entries, Mode=OneWay}"
               IsReadOnly="True"
               SelectionMode="Extended"> <!-- TODO: SelectedItemsSource="{Binding SelectedEntries}" -->
         <DataGrid.ContextMenu>
             <ContextMenu>
-                <Button Command="{Binding ExtractFilesCommand}">
+                <Button Command="{Binding ExtractFilesCommand, Mode=OneWay}">
                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Extract_to}" />
                 </Button>
             </ContextMenu>
         </DataGrid.ContextMenu>
         <DataGrid.Columns>
-            <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
-                                Binding="{Binding Name}"
+            <DataGridTextColumn Binding="{Binding Name, Mode=OneWay}"
                                 Width="Auto"
-                                IsReadOnly="True" />
-            <DataGridTextColumn Header="{x:Static localization:UI.Title_Length}"
-                                Binding="{Binding Size}"
+                                IsReadOnly="True">
+                <DataGridTextColumn.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Name}" />
+                </DataGridTextColumn.Header>
+            </DataGridTextColumn>
+            <DataGridTextColumn Binding="{Binding Size, Mode=OneWay}"
                                 Width="Auto"
-                                IsReadOnly="True" />
-            <DataGridTextColumn Header="{x:Static localization:UI.Title_Creation}"
-                                Binding="{Binding CreationTime}"
+                                IsReadOnly="True">
+                <DataGridTextColumn.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Length}" />
+                </DataGridTextColumn.Header>
+            </DataGridTextColumn>
+            <DataGridTextColumn Binding="{Binding CreationTime, Mode=OneWay}"
                                 Width="Auto"
-                                IsReadOnly="True" />
-            <DataGridTextColumn Header="{x:Static localization:UI.Title_Last_access}"
-                                Binding="{Binding LastAccessTime}"
+                                IsReadOnly="True">
+                <DataGridTextColumn.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Creation}" />
+                </DataGridTextColumn.Header>
+            </DataGridTextColumn>
+            <DataGridTextColumn Binding="{Binding LastAccessTime, Mode=OneWay}"
                                 Width="Auto"
-                                IsReadOnly="True" />
-            <DataGridTextColumn Header="{x:Static localization:UI.Title_Changed}"
-                                Binding="{Binding ChangedTime}"
+                                IsReadOnly="True">
+                <DataGridTextColumn.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Last_access}" />
+                </DataGridTextColumn.Header>
+            </DataGridTextColumn>
+            <DataGridTextColumn Binding="{Binding ChangedTime, Mode=OneWay}"
                                 Width="Auto"
-                                IsReadOnly="True" />
-            <DataGridTextColumn Header="{x:Static localization:UI.Title_Last_backup}"
-                                Binding="{Binding LastBackupTime}"
+                                IsReadOnly="True">
+                <DataGridTextColumn.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Changed}" />
+                </DataGridTextColumn.Header>
+            </DataGridTextColumn>
+            <DataGridTextColumn Binding="{Binding LastBackupTime, Mode=OneWay}"
                                 Width="Auto"
-                                IsReadOnly="True" />
-            <DataGridTextColumn Header="{x:Static localization:UI.Title_Last_write}"
-                                Binding="{Binding LastWriteTime}"
+                                IsReadOnly="True">
+                <DataGridTextColumn.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Last_backup}" />
+                </DataGridTextColumn.Header>
+            </DataGridTextColumn>
+            <DataGridTextColumn Binding="{Binding LastWriteTime, Mode=OneWay}"
                                 Width="Auto"
-                                IsReadOnly="True" />
-            <DataGridTextColumn Header="{x:Static localization:UI.Title_Attributes}"
-                                Binding="{Binding Attributes}"
+                                IsReadOnly="True">
+                <DataGridTextColumn.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Last_write}" />
+                </DataGridTextColumn.Header>
+            </DataGridTextColumn>
+            <DataGridTextColumn Binding="{Binding Attributes, Mode=OneWay}"
                                 Width="Auto"
-                                IsReadOnly="True" />
-            <DataGridTextColumn Header="{x:Static localization:UI.Title_GID}"
-                                Binding="{Binding Gid}"
+                                IsReadOnly="True">
+                <DataGridTextColumn.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Attributes}" />
+                </DataGridTextColumn.Header>
+            </DataGridTextColumn>
+            <DataGridTextColumn Binding="{Binding Gid, Mode=OneWay}"
                                 Width="Auto"
-                                IsReadOnly="True" />
-            <DataGridTextColumn Header="{x:Static localization:UI.Title_UID}"
-                                Binding="{Binding Uid}"
+                                IsReadOnly="True">
+                <DataGridTextColumn.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_GID}" />
+                </DataGridTextColumn.Header>
+            </DataGridTextColumn>
+            <DataGridTextColumn Binding="{Binding Uid, Mode=OneWay}"
                                 Width="Auto"
-                                IsReadOnly="True" />
-            <DataGridTextColumn Header="{x:Static localization:UI.Title_Inode}"
-                                Binding="{Binding Inode}"
+                                IsReadOnly="True">
+                <DataGridTextColumn.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_UID}" />
+                </DataGridTextColumn.Header>
+            </DataGridTextColumn>
+            <DataGridTextColumn Binding="{Binding Inode, Mode=OneWay}"
                                 Width="Auto"
-                                IsReadOnly="True" />
-            <DataGridTextColumn Header="{x:Static localization:UI.Title_Links}"
-                                Binding="{Binding Links}"
+                                IsReadOnly="True">
+                <DataGridTextColumn.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Inode}" />
+                </DataGridTextColumn.Header>
+            </DataGridTextColumn>
+            <DataGridTextColumn Binding="{Binding Links, Mode=OneWay}"
                                 Width="Auto"
-                                IsReadOnly="True" />
-            <DataGridTextColumn Header="{x:Static localization:UI.Title_Mode}"
-                                Binding="{Binding Mode}"
+                                IsReadOnly="True">
+                <DataGridTextColumn.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Links}" />
+                </DataGridTextColumn.Header>
+            </DataGridTextColumn>
+            <DataGridTextColumn Binding="{Binding Mode, Mode=OneWay}"
                                 Width="Auto"
-                                IsReadOnly="True" />
+                                IsReadOnly="True">
+                <DataGridTextColumn.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Mode}" />
+                </DataGridTextColumn.Header>
+            </DataGridTextColumn>
         </DataGrid.Columns>
     </DataGrid>
 </UserControl>
