@@ -37,28 +37,38 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:windows="clr-namespace:Aaru.Gui.ViewModels.Windows"
         xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
+        xmlns:controls="clr-namespace:Aaru.Gui.Controls"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
-        Width="480"
-        Height="320"
+        Width="640"
+        Height="480"
         x:Class="Aaru.Gui.Views.Windows.ViewSector"
         Icon="/Assets/aaru-logo.png"
-        CanResize="False"
-        Title="{Binding Title}">
+        Title="{x:Static localization:UI.Title_Sector_viewer}">
     <Design.DataContext>
         <windows:ViewSectorViewModel />
     </Design.DataContext>
-    <StackPanel Orientation="Vertical">
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{x:Static localization:UI.Title_Sector}" />
-            <NumericUpDown Value="{Binding SectorNumber}" /> <TextBlock Text="{Binding TotalSectorsText}" />
+    <Grid RowDefinitions="Auto,Auto,*"
+          Margin="12"
+          RowSpacing="8">
+        <StackPanel Grid.Row="0"
+                    Orientation="Horizontal"
+                    Spacing="8">
+            <TextBlock Text="{x:Static localization:UI.Title_Sector}"
+                       VerticalAlignment="Center" />
+            <NumericUpDown Value="{Binding SectorNumber, Mode=TwoWay}"
+                           Width="120" />
+            <TextBlock Text="{Binding TotalSectorsText, Mode=OneWay}"
+                       VerticalAlignment="Center" />
         </StackPanel>
-        <CheckBox IsChecked="{Binding LongSectorChecked}"
-                  IsVisible="{Binding LongSectorVisible}">
+        <CheckBox Grid.Row="1"
+                  IsChecked="{Binding LongSectorChecked, Mode=TwoWay}"
+                  IsVisible="{Binding LongSectorVisible, Mode=OneWay}">
             <TextBlock Text="{x:Static localization:UI.Show_long_sector}" />
         </CheckBox>
-        <TextBox IsReadOnly="True"
-                 Text="{Binding PrintHexText}" />
-    </StackPanel>
+        <controls:HexViewPanel Grid.Row="2"
+                               ColorRanges="{Binding HighlightRanges, Mode=OneWay}"
+                               Data="{Binding SectorData, Mode=OneWay}" />
+    </Grid>
 </Window>

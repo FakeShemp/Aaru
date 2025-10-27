@@ -3122,4 +3122,7 @@ Probadores:
     <data name="Title_Convert_image" xml:space="preserve">
         <value>Convertir imagen</value>
     </data>
+    <data name="Title_Sector_viewer" xml:space="preserve">
+        <value>Visor de sectores</value>
+    </data>
 </root>
