@@ -527,7 +527,7 @@
         <value>[slateblue1]Convirtiendo sectores del [lime]{0}[/] al [violet]{1}[/] en la pista [teal]{2}[/] ([aqua]{3:P2}[/] completado)[/]</value>
     </data>
     <data name="Converting_sectors_in_track_0" xml:space="preserve">
-        <value>[slateblue1]Convirtiendo sectores en la pista [teal]{0}[/]</value>
+        <value>[slateblue1]Convirtiendo sectores en la pista [teal]{0}[/][/]</value>
     </data>
     <data name="Converting_sectors_in_track_0_of_1" xml:space="preserve">
         <value>[slateblue1]Convirtiendo sectores en la pista [teal]{0}[/] de [teal]{1}[/][/]</value>
