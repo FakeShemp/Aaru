@@ -37,6 +37,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:panels="clr-namespace:Aaru.Gui.ViewModels.Panels"
              xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
+             xmlns:controls="clr-namespace:Aaru.Gui.Controls"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -44,47 +45,78 @@
     <Design.DataContext>
         <panels:FileSystemViewModel />
     </Design.DataContext>
-    <StackPanel>
-        <TextBlock Text="{Binding TypeText}" />
-        <TextBlock Text="{Binding VolumeNameText}"
-                   IsVisible="{Binding !!VolumeNameText}" />
-        <TextBlock Text="{Binding SerialNumberText}"
-                   IsVisible="{Binding !!VolumeNameText}" />
-        <TextBlock Text="{Binding ApplicationIdentifierText}"
-                   IsVisible="{Binding !!VolumeNameText}" />
-        <TextBlock Text="{Binding SystemIdentifierText}"
-                   IsVisible="{Binding !!VolumeNameText}" />
-        <TextBlock Text="{Binding VolumeSetIdentifierText}"
-                   IsVisible="{Binding !!VolumeNameText}" />
-        <TextBlock Text="{Binding DataPreparerIdentifierText}"
-                   IsVisible="{Binding !!VolumeNameText}" />
-        <TextBlock Text="{Binding PublisherIdentifierText}"
-                   IsVisible="{Binding !!VolumeNameText}" />
-        <TextBlock Text="{Binding CreationDateText}"
-                   IsVisible="{Binding CreationDateVisible}" />
-        <TextBlock Text="{Binding EffectiveDateText}"
-                   IsVisible="{Binding EffectiveDateVisible}" />
-        <TextBlock Text="{Binding ModificationDateText}"
-                   IsVisible="{Binding ModificationDateVisible}" />
-        <TextBlock Text="{Binding ExpirationDateText}"
-                   IsVisible="{Binding ExpirationDateVisible}" />
-        <TextBlock Text="{Binding BackupDateText}"
-                   IsVisible="{Binding BackupDateVisible}" />
-        <TextBlock Text="{Binding ClustersText}" />
-        <TextBlock Text="{Binding FreeClustersText}"
-                   IsVisible="{Binding FreeClustersVisible}" />
-        <TextBlock Text="{Binding FilesText}"
-                   IsVisible="{Binding FilesVisible}" />
-        <CheckBox IsEnabled="{Binding BootableChecked}">
-            <TextBlock Text="{x:Static localization:Core.Filesystem_contains_boot_code}" />
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*"
+          Margin="12"
+          RowSpacing="8">
+        <controls:SpectreTextBlock Grid.Row="0"
+                                   Text="{Binding TypeText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="1"
+                                   Text="{Binding VolumeNameText, Mode=OneWay}"
+                                   IsVisible="{Binding !!VolumeNameText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="2"
+                                   Text="{Binding SerialNumberText, Mode=OneWay}"
+                                   IsVisible="{Binding !!VolumeNameText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="3"
+                                   Text="{Binding ApplicationIdentifierText, Mode=OneWay}"
+                                   IsVisible="{Binding !!VolumeNameText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="4"
+                                   Text="{Binding SystemIdentifierText, Mode=OneWay}"
+                                   IsVisible="{Binding !!VolumeNameText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="5"
+                                   Text="{Binding VolumeSetIdentifierText, Mode=OneWay}"
+                                   IsVisible="{Binding !!VolumeNameText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="6"
+                                   Text="{Binding DataPreparerIdentifierText, Mode=OneWay}"
+                                   IsVisible="{Binding !!VolumeNameText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="7"
+                                   Text="{Binding PublisherIdentifierText, Mode=OneWay}"
+                                   IsVisible="{Binding !!VolumeNameText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="8"
+                                   Text="{Binding CreationDateText, Mode=OneWay}"
+                                   IsVisible="{Binding CreationDateVisible, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="9"
+                                   Text="{Binding EffectiveDateText, Mode=OneWay}"
+                                   IsVisible="{Binding EffectiveDateVisible, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="10"
+                                   Text="{Binding ModificationDateText, Mode=OneWay}"
+                                   IsVisible="{Binding ModificationDateVisible, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="11"
+                                   Text="{Binding ExpirationDateText, Mode=OneWay}"
+                                   IsVisible="{Binding ExpirationDateVisible, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="12"
+                                   Text="{Binding BackupDateText, Mode=OneWay}"
+                                   IsVisible="{Binding BackupDateVisible, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="13"
+                                   Text="{Binding ClustersText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="0"
+                                   Text="{Binding FreeClustersText, Mode=OneWay}"
+                                   IsVisible="{Binding FreeClustersVisible, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="14"
+                                   Text="{Binding FilesText, Mode=OneWay}"
+                                   IsVisible="{Binding FilesVisible, Mode=OneWay}" />
+        <CheckBox Grid.Row="15"
+                  IsEnabled="{Binding BootableChecked, Mode=OneWay}">
+            <TextBlock Foreground="SlateBlue"
+                       Text="{x:Static localization:Core.Filesystem_contains_boot_code}" />
         </CheckBox>
-        <CheckBox IsEnabled="{Binding DirtyChecked}">
-            <TextBlock
-                Text="{x:Static localization:Core.Filesystem_has_not_been_unmounted_correctly_or_contains_errors}" />
+        <CheckBox Grid.Row="16"
+                  IsEnabled="{Binding DirtyChecked, Mode=OneWay}">
+            <TextBlock Foreground="SlateBlue"
+                       Text="{x:Static localization:Core.Filesystem_has_not_been_unmounted_correctly_or_contains_errors}" />
         </CheckBox>
-        <TextBlock Text="{x:Static localization:UI.Title_Details}"
-                   IsVisible="{Binding !!InformationText}" />
-        <TextBox Text="{Binding InformationText}"
-                 IsReadOnly="True" />
-    </StackPanel>
+        <controls:SpectreTextBlock Grid.Row="17"
+                                   FontWeight="Bold"
+                                   Foreground="SlateBlue"
+                                   Text="{x:Static localization:UI.Title_Details}"
+                                   IsVisible="{Binding !!InformationText, Mode=OneWay}" />
+        <Border Grid.Row="18"
+                BorderThickness="1"
+                BorderBrush="LightGray"
+                CornerRadius="8">
+            <ScrollViewer Padding="8">
+                <controls:SpectreTextBlock Text="{Binding InformationText, Mode=OneWay}"
+                                           TextWrapping="Wrap" />
+            </ScrollViewer>
+        </Border>
+    </Grid>
 </UserControl>
