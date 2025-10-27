@@ -43,9 +43,11 @@ using Aaru.CommonTypes.Interop;
 using Aaru.CommonTypes.Structs;
 using Aaru.Core;
 using Aaru.Gui.Models;
+using Aaru.Helpers;
 using Aaru.Localization;
 using Aaru.Logging;
 using Avalonia.Controls;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
@@ -112,7 +114,13 @@ public sealed class SubdirectoryViewModel
             Entries.Add(new FileModel
             {
                 Name = dirent,
-                Stat = stat
+                Stat = stat,
+                Color =
+                    new SolidColorBrush(Color.Parse(DirColorsParser.Instance.ExtensionColors
+                                                                   .TryGetValue(Path.GetExtension(dirent),
+                                                                                    out string hex)
+                                                        ? hex
+                                                        : DirColorsParser.Instance.NormalColor))
             });
         }
 

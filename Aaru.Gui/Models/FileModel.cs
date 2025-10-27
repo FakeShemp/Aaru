@@ -32,6 +32,7 @@
 
 using System;
 using Aaru.CommonTypes.Structs;
+using Avalonia.Media;
 using JetBrains.Annotations;
 
 namespace Aaru.Gui.Models;
@@ -76,5 +77,6 @@ public sealed class FileModel
     [NotNull]
     public string Mode => $"{Stat.Mode}";
 
-    public FileEntryInfo Stat { get; set; }
+    public FileEntryInfo Stat  { get; set; }
+    public IBrush        Color { get; set; }
 }
