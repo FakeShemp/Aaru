@@ -30,9 +30,11 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
-using Aaru.Helpers;
+using Aaru.Gui.Controls;
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using JetBrains.Annotations;
 
@@ -40,14 +42,16 @@ namespace Aaru.Gui.ViewModels.Windows;
 
 public sealed partial class ViewSectorViewModel : ViewModelBase
 {
-    const    int         HEX_COLUMNS = 32;
     readonly IMediaImage _inputFormat;
     [ObservableProperty]
+    List<ColorRange> _highlightRanges;
     bool _longSectorChecked;
     [ObservableProperty]
     bool _longSectorVisible;
     [ObservableProperty]
     string _printHexText;
+    [ObservableProperty]
+    byte[] _sectorData;
     double _sectorNumber;
     [ObservableProperty]
     string _totalSectorsText;
@@ -93,7 +97,178 @@ public sealed partial class ViewSectorViewModel : ViewModelBase
                                     ? _inputFormat.ReadSectorLong((ulong)SectorNumber, false, out byte[] sector, out _)
                                     : _inputFormat.ReadSector((ulong)SectorNumber, false, out sector, out _);
 
-            if(errno == ErrorNumber.NoError) PrintHexText = PrintHex.ByteArrayToHexArrayString(sector, HEX_COLUMNS);
+            if(errno != ErrorNumber.NoError) return;
+
+            SectorData = sector;
+            ColorSector();
         }
+    }
+
+    void ColorSector()
+    {
+        // Not a standard CD sector
+        if(SectorData.Length != 2352) return;
+
+        // Not a data sector
+        if(SectorData[0]  != 0x00 ||
+           SectorData[1]  != 0xFF ||
+           SectorData[2]  != 0xFF ||
+           SectorData[3]  != 0xFF ||
+           SectorData[4]  != 0xFF ||
+           SectorData[5]  != 0xFF ||
+           SectorData[6]  != 0xFF ||
+           SectorData[7]  != 0xFF ||
+           SectorData[8]  != 0xFF ||
+           SectorData[9]  != 0xFF ||
+           SectorData[10] != 0xFF ||
+           SectorData[11] != 0x00)
+            return;
+
+        List<ColorRange> ranges = [];
+
+        var sync = new ColorRange
+        {
+            Color = Brushes.DeepPink,
+            Start = 0,
+            End   = 11
+        };
+
+        // Synchronization field
+        ranges.Add(sync);
+
+        var msf = new ColorRange
+        {
+            Color = Brushes.Orange,
+            Start = 12,
+            End   = 14
+        };
+
+        // Block MSF address
+        ranges.Add(msf);
+
+        var mode = new ColorRange
+        {
+            Color = Brushes.Yellow,
+            Start = 15,
+            End   = 15
+        };
+
+        // Data mode
+        ranges.Add(mode);
+
+        ColorRange edc;
+        ColorRange ecc_P;
+        ColorRange ecc_Q;
+
+        switch(SectorData[15])
+        {
+            // MODE 1
+            case 1:
+                edc = new ColorRange
+                {
+                    Color = Brushes.LimeGreen,
+                    Start = 2064,
+                    End   = 2067
+                };
+
+                ecc_P = new ColorRange
+                {
+                    Color = Brushes.Cyan,
+                    Start = 2076,
+                    End   = 2247
+                };
+
+                ecc_Q = new ColorRange
+                {
+                    Color = Brushes.Blue,
+                    Start = 2248,
+                    End   = 2351
+                };
+
+                // EDC
+                ranges.Add(edc);
+
+                // P parity symbols
+                ranges.Add(ecc_P);
+
+                // Q parity symbols
+                ranges.Add(ecc_Q);
+
+                break;
+
+            // MODE 2
+            case 2:
+                // MODE 2 FORM 2
+                if((SectorData[18] & 0x20) == 0x20)
+                {
+                    var subheader = new ColorRange
+                    {
+                        Color = Brushes.Red,
+                        Start = 16,
+                        End   = 23
+                    };
+
+                    edc = new ColorRange
+                    {
+                        Color = Brushes.LimeGreen,
+                        Start = 2348,
+                        End   = 2351
+                    };
+
+                    // Subheader
+                    ranges.Add(subheader);
+
+                    // EDC
+                    ranges.Add(edc);
+                }
+
+                // MODE 2 FORM 1
+                else
+                {
+                    var subheader = new ColorRange
+                    {
+                        Color = Brushes.Red,
+                        Start = 16,
+                        End   = 23
+                    };
+
+                    edc = new ColorRange
+                    {
+                        Color = Brushes.LimeGreen,
+                        Start = 2072,
+                        End   = 2075
+                    };
+
+                    ecc_P = new ColorRange
+                    {
+                        Color = Brushes.Cyan,
+                        Start = 2076,
+                        End   = 2247
+                    };
+
+                    ecc_Q = new ColorRange
+                    {
+                        Color = Brushes.Blue,
+                        Start = 2248,
+                        End   = 2351
+                    };
+
+                    // Subheader
+                    ranges.Add(subheader);
+
+                    // EDC
+                    ranges.Add(edc);
+
+                    // P parity symbols
+                    ranges.Add(ecc_P);
+
+                    // Q parity symbols
+                    ranges.Add(ecc_Q);
+                }
+
+                break;
+        }
+
+        HighlightRanges = ranges;
     }
 }
