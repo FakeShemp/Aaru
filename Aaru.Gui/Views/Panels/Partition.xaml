@@ -36,6 +36,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:panels="clr-namespace:Aaru.Gui.ViewModels.Panels"
+             xmlns:controls="clr-namespace:Aaru.Gui.Controls"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -43,13 +44,29 @@
     <Design.DataContext>
         <panels:PartitionViewModel />
     </Design.DataContext>
-    <StackPanel>
-        <TextBlock Text="{Binding NameText}" /> <TextBlock Text="{Binding TypeText}" />
-        <TextBlock Text="{Binding StartText}" /> <TextBlock Text="{Binding LengthText}" />
-        <TextBlock Text="{Binding DescriptionLabelText}"
-                   IsVisible="{Binding !!DescriptionText}" />
-        <TextBox Text="{Binding DescriptionText}"
-                 IsVisible="{Binding !!DescriptionText}"
-                 IsReadOnly="True" />
-    </StackPanel>
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*"
+          Margin="12"
+          RowSpacing="8">
+        <controls:SpectreTextBlock Grid.Row="0"
+                                   Text="{Binding NameText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="1"
+                                   Text="{Binding TypeText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="2"
+                                   Text="{Binding StartText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="3"
+                                   Text="{Binding LengthText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="4"
+                                   Text="{Binding DescriptionLabelText, Mode=OneWay}"
+                                   IsVisible="{Binding !!DescriptionText, Mode=OneWay}" />
+        <Border Grid.Row="5"
+                IsVisible="{Binding !!DescriptionText, Mode=OneWay}"
+                BorderThickness="1"
+                BorderBrush="LightGray"
+                CornerRadius="8">
+            <ScrollViewer Padding="8">
+                <controls:SpectreTextBlock Text="{Binding DescriptionText, Mode=OneWay}"
+                                           TextWrapping="Wrap" />
+            </ScrollViewer>
+        </Border>
+    </Grid>
 </UserControl>
