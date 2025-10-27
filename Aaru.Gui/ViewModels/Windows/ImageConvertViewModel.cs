@@ -384,7 +384,7 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
             {
                 ProgressMaxValue += tracks.Count;
 
-                foreach(SectorTagType tag in _inputFormat.Info.ReadableSectorTags.OrderBy(t => t))
+                foreach(SectorTagType tag in _inputFormat.Info.ReadableSectorTags.Order())
                 {
                     switch(tag)
                     {
@@ -875,7 +875,7 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
             Dictionary<byte, int>    smallestPregapLbaPerTrack = new();
 
             foreach(SectorTagType tag in _inputFormat.Info.ReadableSectorTags.Where(t => t == SectorTagType.CdTrackIsrc)
-                                                     .OrderBy(t => t))
+                                                     .Order())
             {
                 foreach(Track track in inputOptical.Tracks)
                 {
@@ -889,7 +889,7 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
 
             foreach(SectorTagType tag in _inputFormat.Info.ReadableSectorTags
                                                      .Where(t => t == SectorTagType.CdTrackFlags)
-                                                     .OrderBy(t => t))
+                                                     .Order())
             {
                 foreach(Track track in inputOptical.Tracks)
                 {
@@ -1352,7 +1352,7 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
                 Progress2Value = Progress2MaxValue;
             });
 
-            foreach(SectorTagType tag in _inputFormat.Info.ReadableSectorTags.OrderBy(t => t)
+            foreach(SectorTagType tag in _inputFormat.Info.ReadableSectorTags.Order()
                                                      .TakeWhile(_ => useLong && !_cancel))
             {
                 switch(tag)
