@@ -37,6 +37,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Aaru.Gui.Models;
 using Aaru.Gui.Views.Dialogs;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 
 namespace Aaru.Gui.ViewModels.Dialogs;
@@ -54,7 +55,7 @@ public sealed class EncodingsViewModel : ViewModelBase
         _ = Task.Run(() =>
         {
             var encodings = Encoding.GetEncodings()
-                                    .Select(info => new EncodingModel
+                                    .Select(static info => new EncodingModel
                                      {
                                          Name        = info.Name,
                                          DisplayName = info.GetEncoding().EncodingName
@@ -62,13 +63,16 @@ public sealed class EncodingsViewModel : ViewModelBase
                                     .ToList();
 
             encodings.AddRange(Claunia.Encoding.Encoding.GetEncodings()
-                                      .Select(info => new EncodingModel
+                                      .Select(static info => new EncodingModel
                                        {
                                            Name        = info.Name,
                                            DisplayName = info.DisplayName
                                        }));
 
-            foreach(EncodingModel encoding in encodings.OrderBy(t => t.DisplayName)) Encodings.Add(encoding);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                foreach(EncodingModel encoding in encodings.OrderBy(static t => t.DisplayName)) Encodings.Add(encoding);
+            });
         });
     }
 
