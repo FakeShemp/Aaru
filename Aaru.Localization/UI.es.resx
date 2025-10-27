@@ -2157,7 +2157,7 @@ Probadores:
         <value>[bold][purple_2]Atributos[/][/]</value>
     </data>
     <data name="Title_Author" xml:space="preserve">
-    <value>Autor</value>
+    <value>[bold][rosybrown]Autor[/][/]</value>
   </data>
     <data name="Title_Barcode" xml:space="preserve">
     <value>Código de barras</value>
@@ -2184,7 +2184,7 @@ Probadores:
     <value>CIS</value>
   </data>
     <data name="Title_Code_for_encoding" xml:space="preserve">
-    <value>Código</value>
+    <value>[bold][blue]Código[/][/]</value>
   </data>
     <data name="Title_Command" xml:space="preserve">
         <value>[bold][purple]Comando[/][/]</value>
@@ -2229,7 +2229,7 @@ Probadores:
     <value>Detalles</value>
   </data>
     <data name="Title_Device" xml:space="preserve">
-    <value>Dispositivo</value>
+    <value>[bold][green]Dispositivo[/][/]</value>
   </data>
     <data name="Title_Devices" xml:space="preserve">
     <value>Dispositivos</value>
@@ -2349,7 +2349,7 @@ Probadores:
     <value>Vista hex.</value>
   </data>
     <data name="Title_Identify_only" xml:space="preserve">
-    <value>Sólo identificar:</value>
+    <value>[bold][slateblue1]Sólo identificar:[/][/]</value>
   </data>
     <data name="Title_Images" xml:space="preserve">
     <value>Imágenes</value>
@@ -2433,7 +2433,7 @@ Probadores:
         <value>[bold][blue]Fabricante[/][/]</value>
     </data>
     <data name="Title_Media" xml:space="preserve">
-    <value>Medio</value>
+    <value>[bold][green]Medio[/][/]</value>
   </data>
     <data name="Title_Medias" xml:space="preserve">
     <value>Medios</value>
@@ -2475,7 +2475,7 @@ Probadores:
         <value>[slateblue1]Tipo de medio[/]</value>
     </data>
     <data name="Title_Message" xml:space="preserve">
-    <value>Mensaje</value>
+    <value>[bold][blue]Mensaje[/][/]</value>
   </data>
     <data name="Title_Metadata" xml:space="preserve">
     <value>Metadato</value>
@@ -2499,7 +2499,7 @@ Probadores:
     <value>MODE SENSE</value>
   </data>
     <data name="Title_Module" xml:space="preserve">
-    <value>Módulo</value>
+    <value>[bold][green]Módulo[/][/]</value>
   </data>
     <data name="Title_Name" xml:space="preserve">
         <value>[bold][darkgreen]Nombre[/][/]</value>
@@ -2523,7 +2523,7 @@ Probadores:
     <value>Página</value>
   </data>
     <data name="Title_Partition" xml:space="preserve">
-    <value>Partición</value>
+    <value>[bold][green]Partición[/][/]</value>
   </data>
     <data name="Title_Partitions" xml:space="preserve">
     <value>Particiones</value>
@@ -2553,7 +2553,7 @@ Probadores:
         <value>[bold][slateblue1]ID de producto[/][/]</value>
     </data>
     <data name="Title_Readable" xml:space="preserve">
-    <value>Legible:</value>
+    <value>[bold][slateblue1]Legible:[/][/]</value>
   </data>
     <data name="Title_Readable_media_tags" xml:space="preserve">
     <value>[bold][slateblue1]Etiquetas de medio legibles[/][/]</value>
@@ -2664,7 +2664,7 @@ Probadores:
         <value>[bold][blue]Dispositivo USB[/][/]</value>
     </data>
     <data name="Title_UUID" xml:space="preserve">
-    <value>UUID</value>
+    <value>[bold][yellow]UUID[/][/]</value>
   </data>
     <data name="Title_Vendor" xml:space="preserve">
         <value>[bold][slateblue1]Fabricante[/][/]</value>
@@ -2673,13 +2673,13 @@ Probadores:
         <value>[bold][slateblue1]ID de fabricante[/][/]</value>
     </data>
     <data name="Title_Version" xml:space="preserve">
-    <value>Versión</value>
+    <value>[bold][cyan]Versión[/][/]</value>
   </data>
     <data name="Title_Warning" xml:space="preserve">
     <value>Atención</value>
   </data>
     <data name="Title_Writable" xml:space="preserve">
-    <value>Escribible</value>
+    <value>[bold][slateblue1]Escribible:[/][/]</value>
   </data>
     <data name="Total_errors_plus_unknowns" xml:space="preserve">
         <value>[bold][italic][slateblue1]Total desconocidos+errores[/][/][/]</value>

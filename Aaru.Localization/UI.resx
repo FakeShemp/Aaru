@@ -1697,7 +1697,7 @@ pool with no way of using them to identify you.</value>
     <value>Library</value>
   </data>
     <data name="Title_Version" xml:space="preserve">
-    <value>Version</value>
+    <value>[bold][cyan]Version[/][/]</value>
   </data>
     <data name="Text_Authors" xml:space="preserve">
     <value>Developers:
@@ -1724,10 +1724,10 @@ Testers:
         <value>[bold][dodgerblue1]Time[/][/]</value>
     </data>
     <data name="Title_Module" xml:space="preserve">
-    <value>Module</value>
+    <value>[bold][green]Module[/][/]</value>
   </data>
     <data name="Title_Message" xml:space="preserve">
-    <value>Message</value>
+    <value>[bold][blue]Message[/][/]</value>
   </data>
     <data name="Dialog_Log_files" xml:space="preserve">
     <value>Log files</value>
@@ -1752,7 +1752,7 @@ Testers:
     <value>Encodings</value>
   </data>
     <data name="Title_Code_for_encoding" xml:space="preserve">
-    <value>Code</value>
+    <value>[bold][blue]Code[/][/]</value>
   </data>
     <data name="Title_Aaru_license" xml:space="preserve">
     <value>Aaru's license</value>
@@ -1770,7 +1770,7 @@ Testers:
     <value>Filesystems</value>
   </data>
     <data name="Title_Identify_only" xml:space="preserve">
-    <value>Identify only:</value>
+    <value>[bold][slateblue1]Identify only:[/][/]</value>
   </data>
     <data name="Title_Media_images" xml:space="preserve">
     <value>Media images</value>
@@ -1779,16 +1779,16 @@ Testers:
     <value>Floppy images</value>
   </data>
     <data name="Title_Readable" xml:space="preserve">
-    <value>Readable:</value>
+    <value>[bold][slateblue1]Readable:[/][/]</value>
   </data>
     <data name="Title_Writable" xml:space="preserve">
-    <value>Writable:</value>
+    <value>[bold][slateblue1]Writable:[/][/]</value>
   </data>
     <data name="Title_UUID" xml:space="preserve">
-    <value>UUID</value>
+    <value>[bold][yellow]UUID[/][/]</value>
   </data>
     <data name="Title_Author" xml:space="preserve">
-    <value>Author</value>
+    <value>[bold][rosybrown]Author[/][/]</value>
   </data>
     <data name="Title_Settings" xml:space="preserve">
     <value>Settings</value>
@@ -1902,7 +1902,7 @@ Testers:
     <value>Commands</value>
   </data>
     <data name="Title_Partition" xml:space="preserve">
-    <value>Partition</value>
+    <value>[bold][green]Partition[/][/]</value>
   </data>
     <data name="Title_Formats" xml:space="preserve">
     <value>Formats</value>
@@ -1911,13 +1911,13 @@ Testers:
     <value>Devices</value>
   </data>
     <data name="Title_Device" xml:space="preserve">
-    <value>Device</value>
+    <value>[bold][green]Device[/][/]</value>
   </data>
     <data name="Title_Medias" xml:space="preserve">
     <value>Medias</value>
   </data>
     <data name="Title_Media" xml:space="preserve">
-    <value>Media</value>
+    <value>[bold][green]Media[/][/]</value>
   </data>
     <data name="_0_Kb_sec" xml:space="preserve">
     <value>{0} Kb/sec.</value>
