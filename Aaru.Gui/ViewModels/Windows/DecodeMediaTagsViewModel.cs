@@ -30,6 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System;
 using System.Collections.ObjectModel;
 using System.Text;
 using Aaru.CommonTypes;
@@ -44,6 +45,7 @@ using Aaru.Decoders.SCSI;
 using Aaru.Decoders.SCSI.MMC;
 using Aaru.Decoders.Xbox;
 using Aaru.Gui.Models;
+using Aaru.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using JetBrains.Annotations;
 using BCA = Aaru.Decoders.Bluray.BCA;
@@ -109,117 +111,237 @@ public sealed partial class DecodeMediaTagsViewModel : ViewModelBase
                 return;
             }
 
+            uint dataLen;
+
             switch(value.Tag)
             {
                 case MediaTagType.CD_TOC:
+                    dataLen = Swapping.Swap(BitConverter.ToUInt16(value.Data, 0));
+
+                    if(dataLen + 2 != value.Data.Length)
+                    {
+                        var tmp = new byte[value.Data.Length + 2];
+                        Array.Copy(value.Data, 0, tmp, 2, value.Data.Length);
+                        tmp[0]     = (byte)((value.Data.Length & 0xFF00) >> 8);
+                        tmp[1]     = (byte)(value.Data.Length & 0xFF);
+                        value.Data = tmp;
+                    }
+
                     DecodedText = TOC.Prettify(value.Data);
+
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.CD_SessionInfo:
                     DecodedText = Session.Prettify(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.CD_FullTOC:
+                    dataLen = Swapping.Swap(BitConverter.ToUInt16(value.Data, 0));
+
+                    if(dataLen + 2 != value.Data.Length)
+                    {
+                        var tmp = new byte[value.Data.Length + 2];
+                        Array.Copy(value.Data, 0, tmp, 2, value.Data.Length);
+                        tmp[0]     = (byte)((value.Data.Length & 0xFF00) >> 8);
+                        tmp[1]     = (byte)(value.Data.Length & 0xFF);
+                        value.Data = tmp;
+                    }
+
                     DecodedText = FullTOC.Prettify(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.CD_PMA:
+                    dataLen = Swapping.Swap(BitConverter.ToUInt16(value.Data, 0));
+
+                    if(dataLen + 2 != value.Data.Length)
+                    {
+                        var tmp = new byte[value.Data.Length + 2];
+                        Array.Copy(value.Data, 0, tmp, 2, value.Data.Length);
+                        tmp[0]     = (byte)((value.Data.Length & 0xFF00) >> 8);
+                        tmp[1]     = (byte)(value.Data.Length & 0xFF);
+                        value.Data = tmp;
+                    }
+
                     DecodedText = PMA.Prettify(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.CD_ATIP:
+                    dataLen = Swapping.Swap(BitConverter.ToUInt32(value.Data, 0));
+
+                    if(dataLen + 4 != value.Data.Length)
+                    {
+                        var tmp = new byte[value.Data.Length + 4];
+                        Array.Copy(value.Data, 0, tmp, 4, value.Data.Length);
+                        tmp[0]     = (byte)((value.Data.Length & 0xFF000000) >> 24);
+                        tmp[1]     = (byte)((value.Data.Length & 0xFF0000)   >> 16);
+                        tmp[2]     = (byte)((value.Data.Length & 0xFF00)     >> 8);
+                        tmp[3]     = (byte)(value.Data.Length & 0xFF);
+                        value.Data = tmp;
+                    }
+
                     DecodedText = ATIP.Prettify(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.CD_TEXT:
+                    dataLen = Swapping.Swap(BitConverter.ToUInt32(value.Data, 0));
+
+                    if(dataLen + 4 != value.Data.Length)
+                    {
+                        var tmp = new byte[value.Data.Length + 4];
+                        Array.Copy(value.Data, 0, tmp, 4, value.Data.Length);
+                        tmp[0]     = (byte)((value.Data.Length & 0xFF000000) >> 24);
+                        tmp[1]     = (byte)((value.Data.Length & 0xFF0000)   >> 16);
+                        tmp[2]     = (byte)((value.Data.Length & 0xFF00)     >> 8);
+                        tmp[3]     = (byte)(value.Data.Length & 0xFF);
+                        value.Data = tmp;
+                    }
+
                     DecodedText = CDTextOnLeadIn.Prettify(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.CD_MCN:
-                    DecodedText = Encoding.ASCII.GetString(value.Data);
+                    DecodedText = Encoding.UTF8.GetString(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.DVD_PFI:
                     DecodedText = PFI.Prettify(value.Data, _mediaType);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.DVD_CMI:
                     DecodedText = CSS_CPRM.PrettifyLeadInCopyright(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.DVDRAM_DDS:
                     DecodedText = DDS.Prettify(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.DVDRAM_SpareArea:
                     DecodedText = Spare.Prettify(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.DVDR_PFI:
                     DecodedText = PFI.Prettify(value.Data, _mediaType);
-
-                    break;
-                case MediaTagType.HDDVD_MediumStatus:
-                    DecodedText = PFI.Prettify(value.Data, _mediaType);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.BD_DI:
+                    if(value.Data.Length == 4096)
+                    {
+                        var tmp = new byte[4100];
+                        Array.Copy(value.Data, 0, tmp, 4, 4096);
+                        value.Data = tmp;
+                    }
+
                     DecodedText = DI.Prettify(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.BD_BCA:
+                    if(value.Data.Length == 64)
+                    {
+                        var tmp = new byte[68];
+                        Array.Copy(value.Data, 0, tmp, 4, 64);
+                        value.Data = tmp;
+                    }
+
                     DecodedText = BCA.Prettify(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.BD_DDS:
+                    if(value.Data.Length == 96)
+                    {
+                        var tmp = new byte[100];
+                        Array.Copy(value.Data, 0, tmp, 4, 96);
+                        value.Data = tmp;
+                    }
+
                     DecodedText = Decoders.Bluray.DDS.Prettify(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.BD_CartridgeStatus:
+                    if(value.Data.Length == 4)
+                    {
+                        var tmp = new byte[8];
+                        Array.Copy(value.Data, 0, tmp, 4, 4);
+                        value.Data = tmp;
+                    }
+
                     DecodedText = Cartridge.Prettify(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.BD_SpareArea:
+                    if(value.Data.Length == 12)
+                    {
+                        var tmp = new byte[16];
+                        Array.Copy(value.Data, 0, tmp, 4, 12);
+                        value.Data = tmp;
+                    }
+
                     DecodedText = Decoders.Bluray.Spare.Prettify(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.MMC_WriteProtection:
                     DecodedText = WriteProtect.PrettifyWriteProtectionStatus(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.MMC_DiscInformation:
                     DecodedText = DiscInformation.Prettify(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.SCSI_INQUIRY:
                     DecodedText = Inquiry.Prettify(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.SCSI_MODEPAGE_2A:
                     DecodedText = Modes.PrettifyModePage_2A(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.ATA_IDENTIFY:
                 case MediaTagType.ATAPI_IDENTIFY:
                     DecodedText = Identify.Prettify(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.Xbox_SecuritySector:
                     DecodedText = SS.Prettify(value.Data);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.SCSI_MODESENSE_6:
                     DecodedText = Modes.PrettifyModeHeader6(value.Data, PeripheralDeviceTypes.DirectAccess);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.SCSI_MODESENSE_10:
                     DecodedText = Modes.PrettifyModeHeader10(value.Data, PeripheralDeviceTypes.DirectAccess);
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 case MediaTagType.Xbox_DMI:
                     DecodedText = DMI.IsXbox360(value.Data)
                                       ? DMI.PrettifyXbox360(value.Data)
                                       : DMI.PrettifyXbox(value.Data);
+
+                    if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 
                     break;
                 default:

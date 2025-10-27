@@ -31,7 +31,6 @@
 // ****************************************************************************/
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -119,7 +118,17 @@ public sealed class BlurayInfoViewModel
             BlurayDdsText = DDS.Prettify(blurayDds);
         }
 
-        if(blurayCartridgeStatus != null) BlurayCartridgeStatusText = Cartridge.Prettify(blurayCartridgeStatus);
+        if(blurayCartridgeStatus != null)
+        {
+            if(blurayCartridgeStatus.Length == 4)
+            {
+                var tmp = new byte[8];
+                Array.Copy(blurayCartridgeStatus, 0, tmp, 4, 4);
+                blurayCartridgeStatus = tmp;
+            }
+
+            BlurayCartridgeStatusText = Cartridge.Prettify(blurayCartridgeStatus);
+        }
 
         if(bluraySpareAreaInformation != null)
         {
