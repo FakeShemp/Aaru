@@ -1,3 +1,9 @@
+# [6.0.0-alpha.14] - 2025-10-27
+
+## Added
+
+- GUI.
+
 # [6.0.0-alpha.13] - 2025-10-21
 
 ## Added
@@ -2602,6 +2608,8 @@
 - Apple Partition Map (aka APM).
 - Master Boot Record (aka MBR).
 - NeXT disklabels.
+
+[6.0.0-alpha.14]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.14
 
 [6.0.0-alpha.13]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.13
 
