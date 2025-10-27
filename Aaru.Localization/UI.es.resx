@@ -2154,7 +2154,7 @@ Probadores:
         <value>[bold][purple_2]ATIP[/][/]</value>
     </data>
     <data name="Title_Attributes" xml:space="preserve">
-        <value>[bold][gold3]Atributos[/][/]</value>
+        <value>[bold][purple_2]Atributos[/][/]</value>
     </data>
     <data name="Title_Author" xml:space="preserve">
     <value>Autor</value>
@@ -2175,7 +2175,7 @@ Probadores:
     <value>[bold][yellow4]CD-TEXT[/][/]</value>
   </data>
     <data name="Title_Changed" xml:space="preserve">
-    <value>Modificación</value>
+    <value>[bold][yellow3]Modificación[/][/]</value>
   </data>
     <data name="Title_CID" xml:space="preserve">
     <value>CID</value>
@@ -2205,7 +2205,7 @@ Probadores:
     <value>Conversión exitosa</value>
   </data>
     <data name="Title_Creation" xml:space="preserve">
-    <value>Creación</value>
+    <value>[bold][yellow]Creación[/][/]</value>
   </data>
     <data name="Title_Creation_time" xml:space="preserve">
         <value>[slateblue1]Tiempo de creación[/]</value>
@@ -2334,7 +2334,7 @@ Probadores:
     <value>General</value>
   </data>
     <data name="Title_GID" xml:space="preserve">
-    <value>GID</value>
+    <value>[bold][red]GID[/][/]</value>
   </data>
     <data name="Title_GUID" xml:space="preserve">
         <value>[bold][slateblue1]GUID[/][/]</value>
@@ -2382,7 +2382,7 @@ Probadores:
     <value>[bold][darkslategray1]Información[/][/]</value>
   </data>
     <data name="Title_Inode" xml:space="preserve">
-    <value>inodo</value>
+    <value>[bold][rosybrown]inodo[/][/]</value>
   </data>
     <data name="Title_INQUIRY" xml:space="preserve">
     <value>INQUIRY</value>
@@ -2397,10 +2397,10 @@ Probadores:
     <value>Kreon</value>
   </data>
     <data name="Title_Last_access" xml:space="preserve">
-    <value>Último acceso</value>
+    <value>[bold][yellow3]Último acceso[/][/]</value>
   </data>
     <data name="Title_Last_backup" xml:space="preserve">
-    <value>Último respaldo</value>
+    <value>[bold][yellow3]Último respaldo[/][/]</value>
   </data>
     <data name="Title_Last_media_of_the_sequence" xml:space="preserve">
     <value>Último medio de la secuencia</value>
@@ -2418,13 +2418,13 @@ Probadores:
     <value>LBA</value>
   </data>
     <data name="Title_Length" xml:space="preserve">
-        <value>[green]Longitud[/]</value>
+        <value>[bold][blue]Longitud[/][/]</value>
     </data>
     <data name="Title_Library" xml:space="preserve">
     <value>Libreria</value>
   </data>
     <data name="Title_Links" xml:space="preserve">
-    <value>Enlaces</value>
+    <value>[bold][aqua]Enlaces[/][/]</value>
   </data>
     <data name="Title_Log" xml:space="preserve">
     <value>Registro</value>
@@ -2487,7 +2487,7 @@ Probadores:
     <value>MMC FEATURES</value>
   </data>
     <data name="Title_Mode" xml:space="preserve">
-    <value>Modo</value>
+    <value>[bold][purple_2]Modo[/][/]</value>
   </data>
     <data name="Title_Model" xml:space="preserve">
         <value>[bold][purple]Modelo[/][/]</value>
@@ -2652,7 +2652,7 @@ Probadores:
         <value>[bold][olive]Tipo[/][/]</value>
     </data>
     <data name="Title_UID" xml:space="preserve">
-    <value>UID</value>
+    <value>[bold][red]UID[/][/]</value>
   </data>
     <data name="Title_Unique_sectors" xml:space="preserve">
     <value>[bold][aqua]Sectores únicos[/][/]</value>

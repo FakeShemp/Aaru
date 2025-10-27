@@ -519,7 +519,7 @@ In you are unsure, please press N to not continue.</value>
     <value>[bold][olive]Type[/][/]</value>
   </data>
     <data name="Title_Length" xml:space="preserve">
-        <value>[green]Length[/]</value>
+        <value>[bold][blue]Length[/][/]</value>
     </data>
     <data name="sector_0_byte_1" xml:space="preserve">
         <value>[slateblue1]sector [violet]{0}[/], byte [lime]{1}[/][/]</value>
@@ -2224,7 +2224,7 @@ Testers:
     <value>Extract to...</value>
   </data>
     <data name="Title_Creation" xml:space="preserve">
-    <value>Creation</value>
+    <value>[bold][yellow3]Creation[/][/]</value>
   </data>
     <data name="Title_Last_access" xml:space="preserve">
     <value>Last access</value>
@@ -2233,28 +2233,28 @@ Testers:
     <value>Changed</value>
   </data>
     <data name="Title_Last_backup" xml:space="preserve">
-    <value>Last backup</value>
+    <value>[bold][yellow3]Last backup[/][/]</value>
   </data>
     <data name="Title_Last_write" xml:space="preserve">
-    <value>Last write</value>
+    <value>[bold][yellow3]Last write[/][/]</value>
   </data>
     <data name="Title_Attributes" xml:space="preserve">
-        <value>[bold][gold3]Attributes[/][/]</value>
+        <value>[bold][purple_2]Attributes[/][/]</value>
     </data>
     <data name="Title_GID" xml:space="preserve">
-    <value>GID</value>
+    <value>[bold][red]GID[/][/]</value>
   </data>
     <data name="Title_UID" xml:space="preserve">
-    <value>UID</value>
+    <value>[bold][red]UID[/][/]</value>
   </data>
     <data name="Title_Inode" xml:space="preserve">
-    <value>Inode</value>
+    <value>[bold][rosybrown]Inode[/][/]</value>
   </data>
     <data name="Title_Links" xml:space="preserve">
-    <value>Links</value>
+    <value>[bold][aqua]Links[/][/]</value>
   </data>
     <data name="Title_Mode" xml:space="preserve">
-    <value>Mode</value>
+    <value>[bold][purple_2]Mode[/][/]</value>
   </data>
     <data name="Dialog_Choose_destination_folder" xml:space="preserve">
     <value>Choose destination folder...</value>
