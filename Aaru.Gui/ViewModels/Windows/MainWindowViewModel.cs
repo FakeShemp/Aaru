@@ -16,6 +16,7 @@ using Aaru.Gui.ViewModels.Dialogs;
 using Aaru.Gui.ViewModels.Panels;
 using Aaru.Gui.Views.Dialogs;
 using Aaru.Gui.Views.Panels;
+using Aaru.Gui.Views.Windows;
 using Aaru.Localization;
 using Aaru.Logging;
 using Avalonia;
@@ -54,23 +55,32 @@ public partial class MainWindowViewModel : ViewModelBase
     object _contentPanel;
     [ObservableProperty]
     bool _devicesSupported;
+    ImageModel _image;
+    [ObservableProperty]
+    bool _imageLoaded;
     [ObservableProperty]
     string _title;
     [ObservableProperty]
     ObservableCollection<RootModel> _treeRoot;
     object _treeViewSelectedItem;
 
-
     public MainWindowViewModel(Window view)
     {
-        AboutCommand      = new AsyncRelayCommand(AboutAsync);
-        EncodingsCommand  = new AsyncRelayCommand(EncodingsAsync);
-        PluginsCommand    = new AsyncRelayCommand(PluginsAsync);
-        StatisticsCommand = new AsyncRelayCommand(StatisticsAsync);
-        ExitCommand       = new RelayCommand(Exit);
-        SettingsCommand   = new AsyncRelayCommand(SettingsAsync);
-        ConsoleCommand    = new RelayCommand(Console);
-        OpenCommand       = new AsyncRelayCommand(OpenAsync);
+        AboutCommand                = new AsyncRelayCommand(AboutAsync);
+        EncodingsCommand            = new AsyncRelayCommand(EncodingsAsync);
+        PluginsCommand              = new AsyncRelayCommand(PluginsAsync);
+        StatisticsCommand           = new AsyncRelayCommand(StatisticsAsync);
+        ExitCommand                 = new RelayCommand(Exit);
+        SettingsCommand             = new AsyncRelayCommand(SettingsAsync);
+        ConsoleCommand              = new RelayCommand(Console);
+        OpenCommand                 = new AsyncRelayCommand(OpenAsync);
+        CalculateEntropyCommand     = new RelayCommand(CalculateEntropy);
+        VerifyImageCommand          = new RelayCommand(VerifyImage);
+        ChecksumImageCommand        = new RelayCommand(ChecksumImage);
+        ConvertImageCommand         = new RelayCommand(ConvertImage);
+        CreateSidecarCommand        = new RelayCommand(CreateSidecar);
+        ViewImageSectorsCommand     = new RelayCommand(ViewImageSectors);
+        DecodeImageMediaTagsCommand = new RelayCommand(DecodeImageMediaTags);
 
         _genericHddIcon =
             new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/drive-harddisk.png")));
@@ -107,14 +117,21 @@ public partial class MainWindowViewModel : ViewModelBase
         Title = "Aaru";
     }
 
-    public ICommand OpenCommand       { get; }
-    public ICommand SettingsCommand   { get; }
-    public ICommand ExitCommand       { get; }
-    public ICommand ConsoleCommand    { get; }
-    public ICommand EncodingsCommand  { get; }
-    public ICommand PluginsCommand    { get; }
-    public ICommand StatisticsCommand { get; }
-    public ICommand AboutCommand      { get; }
+    public ICommand OpenCommand                 { get; }
+    public ICommand SettingsCommand             { get; }
+    public ICommand ExitCommand                 { get; }
+    public ICommand ConsoleCommand              { get; }
+    public ICommand EncodingsCommand            { get; }
+    public ICommand PluginsCommand              { get; }
+    public ICommand StatisticsCommand           { get; }
+    public ICommand AboutCommand                { get; }
+    public ICommand CalculateEntropyCommand     { get; }
+    public ICommand VerifyImageCommand          { get; }
+    public ICommand ChecksumImageCommand        { get; }
+    public ICommand ConvertImageCommand         { get; }
+    public ICommand CreateSidecarCommand        { get; }
+    public ICommand ViewImageSectorsCommand     { get; }
+    public ICommand DecodeImageMediaTagsCommand { get; }
 
     public bool NativeMenuSupported
     {
@@ -446,7 +463,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
                 TreeRoot.Clear();
                 TreeRoot.Add(imageModel);
-                Title = $"Aaru - {imageModel.FileName}";
+                Title       = $"Aaru - {imageModel.FileName}";
+                ImageLoaded = true;
+                _image      = imageModel;
             }
             catch(Exception ex)
             {
@@ -544,5 +563,92 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         _console.Show();
+    }
+
+    void CalculateEntropy()
+    {
+        if(_image is not {} imageModel) return;
+
+        var imageEntropyWindow = new ImageEntropy();
+        imageEntropyWindow.DataContext = new ImageEntropyViewModel(imageModel.Image, imageEntropyWindow);
+
+        imageEntropyWindow.Closed += (_, _) => imageEntropyWindow = null;
+
+        imageEntropyWindow.Show();
+    }
+
+    void VerifyImage()
+    {
+        if(_image is not {} imageModel) return;
+
+        var imageVerifyWindow = new ImageVerify();
+        imageVerifyWindow.DataContext = new ImageVerifyViewModel(imageModel.Image, imageVerifyWindow);
+
+        imageVerifyWindow.Closed += (_, _) => imageVerifyWindow = null;
+
+        imageVerifyWindow.Show();
+    }
+
+    void ChecksumImage()
+    {
+        if(_image is not {} imageModel) return;
+
+        var imageChecksumWindow = new ImageChecksum();
+        imageChecksumWindow.DataContext = new ImageChecksumViewModel(imageModel.Image, imageChecksumWindow);
+
+        imageChecksumWindow.Closed += (_, _) => imageChecksumWindow = null;
+
+        imageChecksumWindow.Show();
+    }
+
+    void ConvertImage()
+    {
+        if(_image is not {} imageModel) return;
+
+        var imageConvertWindow = new ImageConvert();
+
+        imageConvertWindow.DataContext =
+            new ImageConvertViewModel(imageModel.Image, imageModel.Path, imageConvertWindow);
+
+        imageConvertWindow.Closed += (_, _) => imageConvertWindow = null;
+
+        imageConvertWindow.Show();
+    }
+
+    void CreateSidecar()
+    {
+        if(_image is not {} imageModel) return;
+
+        var imageSidecarWindow = new ImageSidecar();
+
+        // TODO: Pass thru chosen default encoding
+        imageSidecarWindow.DataContext =
+            new ImageSidecarViewModel(imageModel.Image,
+                                      imageModel.Path,
+                                      imageModel.Filter.Id,
+                                      null,
+                                      imageSidecarWindow);
+
+        imageSidecarWindow.Show();
+    }
+
+    void ViewImageSectors()
+    {
+        if(_image is not {} imageModel) return;
+
+        new ViewSector
+        {
+            DataContext = new ViewSectorViewModel(imageModel.Image)
+        }.Show();
+    }
+
+    void DecodeImageMediaTags()
+    {
+        if(_image is not {} imageModel) return;
+
+        new DecodeMediaTags
+        {
+            DataContext = new DecodeMediaTagsViewModel(imageModel.Image)
+        }.Show();
     }
 }

@@ -32,6 +32,23 @@
                       IsVisible="{Binding DevicesSupported, Mode=OneWay}">
                 <MenuItem Header="TODO" />
             </MenuItem>
+            <MenuItem Header="Image"
+                      IsEnabled="{Binding ImageLoaded, Mode=OneWay}">
+                <MenuItem Command="{Binding CalculateEntropyCommand, Mode=OneWay}"
+                          Header="{x:Static localization:UI.ButtonLabel_Calculate_entropy}" />
+                <MenuItem Command="{Binding VerifyImageCommand, Mode=OneWay}"
+                          Header="{x:Static localization:UI.ButtonLabel_Verify}" />
+                <MenuItem Command="{Binding ChecksumImageCommand, Mode=OneWay}"
+                          Header="{x:Static localization:UI.ButtonLabel_Checksum}" />
+                <MenuItem Command="{Binding ConvertImageCommand, Mode=OneWay}"
+                          Header="{x:Static localization:UI.ButtonLabel_Convert_to}" />
+                <MenuItem Command="{Binding CreateSidecarCommand, Mode=OneWay}"
+                          Header="{x:Static localization:UI.ButtonLabel_Create_Aaru_Metadata_sidecar}" />
+                <MenuItem Command="{Binding ViewImageSectorsCommand, Mode=OneWay}"
+                          Header="{x:Static localization:UI.ButtonLabel_View_sectors}" />
+                <MenuItem Command="{Binding DecodeImageMediaTagsCommand, Mode=OneWay}"
+                          Header="{x:Static localization:UI.ButtonLabel_Decode_media_tags}" />
+            </MenuItem>
             <MenuItem Header="{x:Static localization:UI.Menu_Window}">
                 <MenuItem Header="{x:Static localization:UI.Menu_Console}"
                           Command="{Binding ConsoleCommand, Mode=OneWay}" />
@@ -83,7 +100,8 @@
                             <Image Width="24"
                                    Height="24"
                                    Source="{Binding Icon, Mode=OneWay}" />
-                            <TextBlock Text="{Binding FileName, Mode=OneWay}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding FileName, Mode=OneWay}"
+                                       VerticalAlignment="Center" />
                         </StackPanel>
                     </TreeDataTemplate>
                     <TreeDataTemplate DataType="models:PartitionSchemeModel"
@@ -92,7 +110,8 @@
                             <Image Width="24"
                                    Height="24"
                                    Source="{Binding Icon, Mode=OneWay}" />
-                            <TextBlock Text="{Binding Name, Mode=OneWay}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Name, Mode=OneWay}"
+                                       VerticalAlignment="Center" />
                         </StackPanel>
                     </TreeDataTemplate>
                     <TreeDataTemplate DataType="models:PartitionModel"
@@ -101,7 +120,8 @@
                             <Image Width="24"
                                    Height="24"
                                    Source="{Binding Icon, Mode=OneWay}" />
-                            <TextBlock Text="{Binding Name, Mode=OneWay}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Name, Mode=OneWay}"
+                                       VerticalAlignment="Center" />
                         </StackPanel>
                     </TreeDataTemplate>
                     <TreeDataTemplate DataType="models:FileSystemModel"
@@ -110,7 +130,8 @@
                             <Image Width="24"
                                    Height="24"
                                    Source="{Binding Icon, Mode=OneWay}" />
-                            <TextBlock Text="{Binding VolumeName, Mode=OneWay}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding VolumeName, Mode=OneWay}"
+                                       VerticalAlignment="Center" />
                         </StackPanel>
                     </TreeDataTemplate>
                     <TreeDataTemplate DataType="models:SubdirectoryModel"
@@ -119,7 +140,8 @@
                             <Image Width="24"
                                    Height="24"
                                    Source="{Binding Icon, Mode=OneWay}" />
-                            <TextBlock Text="{Binding Name, Mode=OneWay}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Name, Mode=OneWay}"
+                                       VerticalAlignment="Center" />
                         </StackPanel>
                     </TreeDataTemplate>
                     <DataTemplate DataType="models:RootModel">
