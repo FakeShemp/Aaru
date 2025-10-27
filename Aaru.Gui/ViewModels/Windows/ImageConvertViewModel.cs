@@ -1861,16 +1861,15 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
         _aaruMetadata    = null;
         MetadataJsonText = "";
 
-        IReadOnlyList<IStorageFile> result = _view.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-                                                   {
-                                                       Title         = UI.Dialog_Choose_existing_metadata_sidecar,
-                                                       AllowMultiple = false,
-                                                       FileTypeFilter = new List<FilePickerFileType>
-                                                       {
-                                                           FilePickerFileTypes.AaruMetadata
-                                                       }
-                                                   })
-                                                  .Result;
+        IReadOnlyList<IStorageFile> result = await _view.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title         = UI.Dialog_Choose_existing_metadata_sidecar,
+            AllowMultiple = false,
+            FileTypeFilter = new List<FilePickerFileType>
+            {
+                FilePickerFileTypes.AaruMetadata
+            }
+        });
 
         if(result.Count != 1) return;
 
@@ -1906,16 +1905,15 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
         _dumpHardware  = null;
         ResumeFileText = "";
 
-        IReadOnlyList<IStorageFile> result = _view.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-                                                   {
-                                                       Title         = UI.Dialog_Choose_existing_resume_file,
-                                                       AllowMultiple = false,
-                                                       FileTypeFilter = new List<FilePickerFileType>
-                                                       {
-                                                           FilePickerFileTypes.AaruResumeFile
-                                                       }
-                                                   })
-                                                  .Result;
+        IReadOnlyList<IStorageFile> result = await _view.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title         = UI.Dialog_Choose_existing_resume_file,
+            AllowMultiple = false,
+            FileTypeFilter = new List<FilePickerFileType>
+            {
+                FilePickerFileTypes.AaruResumeFile
+            }
+        });
 
         if(result.Count != 1) return;
 
