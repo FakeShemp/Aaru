@@ -36,6 +36,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dialogs="clr-namespace:Aaru.Gui.ViewModels.Dialogs"
+        xmlns:controls="clr-namespace:Aaru.Gui.Controls"
         xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
@@ -49,33 +50,46 @@
     <Design.DataContext>
         <dialogs:EncodingsViewModel />
     </Design.DataContext>
-    <Border Padding="15">
-        <Grid HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="260" /> <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <DataGrid ItemsSource="{Binding Encodings}"
-                      HorizontalScrollBarVisibility="Visible">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="{x:Static localization:UI.Title_Code_for_encoding}"
-                                        Binding="{Binding Name}"
-                                        Width="Auto"
-                                        IsReadOnly="True" />
-                    <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
-                                        Binding="{Binding DisplayName}"
-                                        Width="Auto"
-                                        IsReadOnly="True" />
-                </DataGrid.Columns>
-            </DataGrid>
-            <Border Grid.Row="1"
-                    Padding="10">
-                <Button HorizontalAlignment="Right"
-                        VerticalAlignment="Bottom"
-                        Command="{Binding CloseCommand}">
-                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
-                </Button>
-            </Border>
-        </Grid>
-    </Border>
+    <Grid Margin="12"
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch"
+          RowDefinitions="*,Auto"
+          RowSpacing="8">
+        <DataGrid Grid.Row="0"
+                  ItemsSource="{Binding Encodings, Mode=OneWay}"
+                  HorizontalScrollBarVisibility="Visible">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Width="Auto">
+                    <DataGridTemplateColumn.HeaderTemplate>
+                        <DataTemplate>
+                            <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Code_for_encoding}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.HeaderTemplate>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="Auto">
+                    <DataGridTemplateColumn.HeaderTemplate>
+                        <DataTemplate>
+                            <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Name}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.HeaderTemplate>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding DisplayName, Mode=OneWay}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button Grid.Row="1"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Command="{Binding CloseCommand, Mode=OneWay}">
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
+        </Button>
+    </Grid>
 </Window>
