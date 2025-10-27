@@ -453,58 +453,58 @@
     <value>Device's needs a block size granularity of 2^{0} ({1} bytes)</value>
   </data>
     <data name="Filesystem_type_0" xml:space="preserve">
-    <value>Filesystem type: {0}</value>
+    <value>[bold][slateblue1]Filesystem type:[/][/] [green]{0}[/]</value>
   </data>
     <data name="Volume_name_0" xml:space="preserve">
-    <value>Volume name: {0}</value>
+    <value>[bold][slateblue1]Volume name:[/][/] [rosybrown]{0}[/]</value>
   </data>
     <data name="Volume_serial_0" xml:space="preserve">
-    <value>Volume serial: {0}</value>
+    <value>[bold[slateblue1]Volume serial:[/][/] [fuchsia]{0}[/]</value>
   </data>
     <data name="Application_identifier_0" xml:space="preserve">
-    <value>Application identifier: {0}</value>
+    <value>[bold][slateblue1]Application identifier:[/][/] [blue]{0}[/]</value>
   </data>
     <data name="System_identifier_0" xml:space="preserve">
     <value>System identifier: {0}</value>
   </data>
     <data name="Volume_set_identifier_0" xml:space="preserve">
-    <value>Volume set identifier: {0}</value>
+    <value>[bold][slateblue1]Volume set identifier:[/][/] [blue]{0}[/]</value>
   </data>
     <data name="Data_preparer_identifier_0" xml:space="preserve">
-    <value>Data preparer identifier: {0}</value>
+    <value>[bold][slateblue1]Data preparer identifier:[/][/] [blue]{0}[/]</value>
   </data>
     <data name="Publisher_identifier_0" xml:space="preserve">
-    <value>Publisher identifier: {0}</value>
+    <value>[bold][slateblue1]Publisher identifier:[/][/] [blue]{0}[/]</value>
   </data>
     <data name="Volume_created_on_0" xml:space="preserve">
-    <value>Volume created on {0:F}</value>
+    <value>[slateblue1]Volume created on[/] [yellow3]{0:F}[/]</value>
         <comment>{0} is date and time</comment>
   </data>
     <data name="Volume_effective_from_0" xml:space="preserve">
-    <value>Volume effective from {0:F}</value>
+    <value>[slateblue1]Volume effective from[/] [yellow3]{0:F}[/]</value>
         <comment>{0} is date and time</comment>
   </data>
     <data name="Volume_last_modified_on_0" xml:space="preserve">
-    <value>Volume last modified on {0:F}</value>
+    <value>[slateblue1]Volume last modified on[/] [yellow3]{0:F}[/]</value>
         <comment>{0} is date and time</comment>
   </data>
     <data name="Volume_expired_on_0" xml:space="preserve">
-    <value>Volume expired on {0:F}</value>
+    <value>[slateblue1]Volume expired on[/] [yellow3]{0:F}[/]</value>
         <comment>{0} is date and time</comment>
   </data>
     <data name="Volume_last_backed_up_on_0" xml:space="preserve">
-    <value>Volume last backed up on {0:F}</value>
+    <value>[slateblue1]Volume last backed up on[/] [yellow3]{0:F}[/]</value>
         <comment>{0} is date and time</comment>
   </data>
     <data name="Volume_has_0_clusters_of_1_bytes_each_total_of_2_bytes" xml:space="preserve">
-    <value>Volume has {0} clusters of {1} bytes each (total of {2} bytes)</value>
+    <value>[slateblue1]Volume has [lime]{0}[/] clusters of [teal]{1}[/] bytes each (total of [aqua]{2}[/] bytes)[/]</value>
   </data>
     <data name="Volume_has_0_clusters_free_1" xml:space="preserve">
-    <value>Volume has {0} clusters free ({1:P})</value>
+    <value>[slateblue1]Volume has [lime]{0}[/] clusters free ([aqua]{1:P}[/])[/]</value>
         <comment>{1} is a percentage</comment>
   </data>
     <data name="Volume_contains_0_files" xml:space="preserve">
-    <value>Volume contains {0} files</value>
+    <value>[slateblue1]Volume contains [violet]{0}[/] files[/]</value>
   </data>
     <data name="Filesystem_contains_boot_code" xml:space="preserve">
     <value>Filesystem contains boot code</value>

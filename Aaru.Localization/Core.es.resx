@@ -65,7 +65,7 @@
     <value>Todo el Q está vacío para el LBA {0}</value>
   </data>
     <data name="Application_identifier_0" xml:space="preserve">
-    <value>Identificador de aplicación: {0}</value>
+    <value>[bold][slateblue1]Identificador de aplicación:[/][/] [blue]{0}[/]</value>
   </data>
     <data name="Architecture_0" xml:space="preserve">
     <value>Arquitectura: {0}</value>
@@ -546,7 +546,7 @@
     <value>¡La longitud de los datos no es válida!</value>
   </data>
     <data name="Data_preparer_identifier_0" xml:space="preserve">
-    <value>Identificador del preparador de datos: {0}</value>
+    <value>[bold][slateblue1]Identificador del preparador de datos:[/][/] [blue]{0}[/]</value>
   </data>
     <data name="Data_Transfer_Device_Element_Address_0" xml:space="preserve">
         <value>[bold][blue]Dirección del Elemento del Dispositivo de Transferencia de Datos:[/][/] [italic][teal]0x{0}[/][/]</value>
@@ -1097,7 +1097,7 @@
     <value>El sistema de ficheros no se desmontó correctamente o contiene errores</value>
   </data>
     <data name="Filesystem_type_0" xml:space="preserve">
-    <value>Tipo de sistema de ficheros: {0}</value>
+    <value>[bold][slateblue1]Tipo de sistema de ficheros:[/][/] [green]{0}[/]</value>
   </data>
     <data name="Finished_partition_0" xml:space="preserve">
         <value>[slateblue1]Partición [teal]{0}[/] finalizada[/]</value>
@@ -1818,7 +1818,7 @@
     <value>Versión del protocolo: {0}</value>
   </data>
     <data name="Publisher_identifier_0" xml:space="preserve">
-    <value>Identificador del publicador: {0}</value>
+    <value>[bold][slateblue1]Identificador del publicador:[/][/] [blue]{0}[/]</value>
   </data>
     <data name="Querying_SCSI_INQUIRY" xml:space="preserve">
     <value>Obteniendo SCSI INQUIRY...</value>
@@ -2738,7 +2738,7 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
         <value>[bold][blue]Sumario[/][/]</value>
     </data>
     <data name="System_identifier_0" xml:space="preserve">
-    <value>Identificador del sistema: {0}</value>
+    <value>[bold][slateblue1]Identificador del sistema:[/][/] [blue]{0}[/]</value>
   </data>
     <data name="System_information" xml:space="preserve">
     <value>###################### Información del sistema #####################</value>
@@ -3323,37 +3323,37 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
         <value>[slateblue1]Tamaño total de la partición de video: [violet]{0}[/] sectores[/]</value>
     </data>
     <data name="Volume_contains_0_files" xml:space="preserve">
-    <value>El volumen contiene {0} ficheros</value>
+    <value>[slateblue1]El volumen contiene [violet]{0}[/] ficheros[/]</value>
   </data>
     <data name="Volume_created_on_0" xml:space="preserve">
-    <value>Volumen creado el {0:F}</value>
+    <value>[slateblue1]Volumen creado el[/] [yellow3]{0:F}[/]</value>
   </data>
     <data name="Volume_effective_from_0" xml:space="preserve">
-    <value>Volumen efectivo desde el {0:F}</value>
+    <value>[slateblue1]Volumen efectivo desde el[/] [yellow3]{0:F}[/]</value>
   </data>
     <data name="Volume_expired_on_0" xml:space="preserve">
-    <value>Volumen expirado el {0:F}</value>
+    <value>[slateblue1]Volumen expirado el[/] [yellow3]{0:F}[/]</value>
   </data>
     <data name="Volume_has_0_clusters_free_1" xml:space="preserve">
-    <value>El volumen tiene {0} clústeres libres ({1:P})</value>
+    <value>[slateblue1]El volumen tiene [lime]{0}[/] clústeres libres ([aqua]{1:P}[/])[/]</value>
   </data>
     <data name="Volume_has_0_clusters_of_1_bytes_each_total_of_2_bytes" xml:space="preserve">
-    <value>El volumen tiene {0} clústeres de {1} bytes cada uno (por un total de {2} bytes)</value>
+    <value>[slateblue1]El volumen tiene [lime]{0}[/] clústeres de [teal]{1}[/] bytes cada uno (por un total de [aqua]{2}[/] bytes)[/]</value>
   </data>
     <data name="Volume_last_backed_up_on_0" xml:space="preserve">
-    <value>Volumen respaldado por última vez el {0:F}</value>
+    <value>[slateblue1]Volumen respaldado por última vez el[/] [yellow3]{0:F}[/]</value>
   </data>
     <data name="Volume_last_modified_on_0" xml:space="preserve">
-    <value>Volumen modificado por última vez el {0:F}</value>
+    <value>[slateblue1]Volumen modificado por última vez el[/] [yellow3]{0:F}[/]</value>
   </data>
     <data name="Volume_name_0" xml:space="preserve">
-    <value>Nombre del volumen: {0}</value>
+    <value>[bold][slateblue1]Nombre del volumen:[/][/] [rosybrown]{0}[/]</value>
   </data>
     <data name="Volume_serial_0" xml:space="preserve">
-    <value>Número de serie del volumen: {0}</value>
+    <value>[bold][slateblue1]Número de serie del volumen:[/][/] [fuchsia]{0}[/]</value>
   </data>
     <data name="Volume_set_identifier_0" xml:space="preserve">
-    <value>Identificador del conjunto del volumen: {0}</value>
+    <value>[bold][slateblue1]Identificador del conjunto del volumen:[/][/] [blue]{0}[/]</value>
   </data>
     <data name="Waiting_5_seconds" xml:space="preserve">
     <value>Esperando 5 segundos...</value>
