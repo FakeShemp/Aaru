@@ -36,24 +36,24 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dialogs="clr-namespace:Aaru.Gui.ViewModels.Dialogs"
+        xmlns:controls="clr-namespace:Aaru.Gui.Controls"
         xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
-        Width="600"
-        Height="450"
+        Width="720"
+        Height="600"
         x:Class="Aaru.Gui.Views.Dialogs.PluginsDialog"
         Icon="/Assets/aaru-logo.png"
-        Title="{x:Static localization:UI.Title_Plugins}"
-        Padding="10">
+        Title="{x:Static localization:UI.Title_Plugins}">
     <Design.DataContext>
         <dialogs:PluginsViewModel />
     </Design.DataContext>
-    <Grid HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" /> <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <Grid Margin="12"
+          RowSpacing="8"
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch"
+          RowDefinitions="*,Auto">
         <TabControl Grid.Row="0"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch">
@@ -61,25 +61,60 @@
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_Filters}" />
                 </TabItem.Header>
-                <DataGrid ItemsSource="{Binding Filters}"
+                <DataGrid ItemsSource="{Binding Filters, Mode=OneWay}"
+                          Margin="8"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
                           HorizontalScrollBarVisibility="Visible">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
-                                            Binding="{Binding Name}"
-                                            Width="Auto"
-                                            IsReadOnly="True" />
-                        <DataGridTextColumn Header="{x:Static localization:UI.Title_UUID}"
-                                            Binding="{Binding Uuid}"
-                                            Width="Auto"
-                                            IsReadOnly="True" />
-                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
-                                            Binding="{Binding Version}"
-                                            Width="Auto"
-                                            IsReadOnly="True" />
-                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Author}"
-                                            Binding="{Binding Author}"
-                                            Width="Auto"
-                                            IsReadOnly="True" />
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Name}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_UUID}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Uuid, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Version}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Version, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Author}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Author, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
@@ -87,25 +122,58 @@
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_Partitions}" />
                 </TabItem.Header>
-                <DataGrid ItemsSource="{Binding PartitionSchemes}"
+                <DataGrid ItemsSource="{Binding PartitionSchemes, Mode=OneWay}"
+                          Margin="8"
                           HorizontalScrollBarVisibility="Visible">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
-                                            Binding="{Binding Name}"
-                                            Width="Auto"
-                                            IsReadOnly="True" />
-                        <DataGridTextColumn Header="{x:Static localization:UI.Title_UUID}"
-                                            Binding="{Binding Uuid}"
-                                            Width="Auto"
-                                            IsReadOnly="True" />
-                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
-                                            Binding="{Binding Version}"
-                                            Width="Auto"
-                                            IsReadOnly="True" />
-                        <DataGridTextColumn Header="{x:Static localization:UI.Title_Author}"
-                                            Binding="{Binding Author}"
-                                            Width="Auto"
-                                            IsReadOnly="True" />
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Name}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_UUID}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Uuid, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Version}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Version, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="Auto">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Author}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Author, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
@@ -113,59 +181,121 @@
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_Filesystems}" />
                 </TabItem.Header>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" /> <RowDefinition Height="*" /> <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0"
-                               Text="{x:Static localization:UI.Title_Identify_only}"
-                               FontWeight="Bold" />
+                <Grid Margin="8"
+                      RowSpacing="8"
+                      RowDefinitions="Auto,*,Auto,*">
+                    <controls:SpectreTextBlock Grid.Row="0"
+                                               Text="{x:Static localization:UI.Title_Identify_only}"
+                                               FontWeight="Bold" />
                     <DataGrid Grid.Row="1"
-                              ItemsSource="{Binding Filesystems}"
+                              ItemsSource="{Binding Filesystems, Mode=OneWay}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
-                                                Binding="{Binding Name}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_UUID}"
-                                                Binding="{Binding Uuid}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
-                                                Binding="{Binding Version}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Author}"
-                                                Binding="{Binding Author}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Name}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_UUID}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Uuid, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Version}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Version, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Author}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Author, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <TextBlock Grid.Row="2"
-                               Text="{x:Static localization:UI.Title_Readable}"
-                               FontWeight="Bold" />
+                    <controls:SpectreTextBlock Grid.Row="2"
+                                               Text="{x:Static localization:UI.Title_Readable}"
+                                               FontWeight="Bold" />
                     <DataGrid Grid.Row="3"
-                              ItemsSource="{Binding ReadOnlyFilesystems}"
+                              ItemsSource="{Binding ReadOnlyFilesystems, Mode=OneWay}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
-                                                Binding="{Binding Name}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_UUID}"
-                                                Binding="{Binding Uuid}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
-                                                Binding="{Binding Version}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Author}"
-                                                Binding="{Binding Author}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Name}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_UUID}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Uuid, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Version}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Version, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Author}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Author, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -174,59 +304,121 @@
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_Media_images}" />
                 </TabItem.Header>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" /> <RowDefinition Height="*" /> <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0"
-                               Text="{x:Static localization:UI.Title_Readable}"
-                               FontWeight="Bold" />
+                <Grid Margin="8"
+                      RowSpacing="8"
+                      RowDefinitions="Auto,*,Auto,*">
+                    <controls:SpectreTextBlock Grid.Row="0"
+                                               Text="{x:Static localization:UI.Title_Readable}"
+                                               FontWeight="Bold" />
                     <DataGrid Grid.Row="1"
-                              ItemsSource="{Binding Images}"
+                              ItemsSource="{Binding Images, Mode=OneWay}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
-                                                Binding="{Binding Name}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_UUID}"
-                                                Binding="{Binding Uuid}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
-                                                Binding="{Binding Version}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Author}"
-                                                Binding="{Binding Author}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Name}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_UUID}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Uuid, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Version}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Version, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Author}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Author, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <TextBlock Grid.Row="2"
-                               Text="{x:Static localization:UI.Title_Writable}"
-                               FontWeight="Bold" />
+                    <controls:SpectreTextBlock Grid.Row="2"
+                                               Text="{x:Static localization:UI.Title_Writable}"
+                                               FontWeight="Bold" />
                     <DataGrid Grid.Row="3"
-                              ItemsSource="{Binding WritableImages}"
+                              ItemsSource="{Binding WritableImages, Mode=OneWay}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
-                                                Binding="{Binding Name}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_UUID}"
-                                                Binding="{Binding Uuid}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
-                                                Binding="{Binding Version}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Author}"
-                                                Binding="{Binding Author}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Name}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_UUID}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Uuid, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Version}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Version, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Author}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Author, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -235,59 +427,121 @@
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_Floppy_images}" />
                 </TabItem.Header>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" /> <RowDefinition Height="*" /> <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0"
-                               Text="{x:Static localization:UI.Title_Readable}"
-                               FontWeight="Bold" />
+                <Grid Margin="8"
+                      RowSpacing="8"
+                      RowDefinitions="Auto,*,Auto,*">
+                    <controls:SpectreTextBlock Grid.Row="0"
+                                               Text="{x:Static localization:UI.Title_Readable}"
+                                               FontWeight="Bold" />
                     <DataGrid Grid.Row="1"
-                              ItemsSource="{Binding FloppyImages}"
+                              ItemsSource="{Binding FloppyImages, Mode=OneWay}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
-                                                Binding="{Binding Name}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_UUID}"
-                                                Binding="{Binding Uuid}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
-                                                Binding="{Binding Version}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Author}"
-                                                Binding="{Binding Author}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Name}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_UUID}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Uuid, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Version}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Version, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Author}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Author, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <TextBlock Grid.Row="2"
-                               Text="{x:Static localization:UI.Title_Writable}"
-                               FontWeight="Bold" />
+                    <controls:SpectreTextBlock Grid.Row="2"
+                                               Text="{x:Static localization:UI.Title_Writable}"
+                                               FontWeight="Bold" />
                     <DataGrid Grid.Row="3"
-                              ItemsSource="{Binding WritableFloppyImages}"
+                              ItemsSource="{Binding WritableFloppyImages, Mode=OneWay}"
                               HorizontalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Name}"
-                                                Binding="{Binding Name}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_UUID}"
-                                                Binding="{Binding Uuid}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Version}"
-                                                Binding="{Binding Version}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
-                            <DataGridTextColumn Header="{x:Static localization:UI.Title_Author}"
-                                                Binding="{Binding Author}"
-                                                Width="Auto"
-                                                IsReadOnly="True" />
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Name}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_UUID}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Uuid, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Version}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Version, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="Auto">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Author}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Author, Mode=OneWay}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -297,7 +551,7 @@
                 Padding="10">
             <Button HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
-                    Command="{Binding CloseCommand}">
+                    Command="{Binding CloseCommand, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
             </Button>
         </Border>
