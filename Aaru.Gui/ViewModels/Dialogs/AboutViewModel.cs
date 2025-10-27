@@ -40,7 +40,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Aaru.Gui.Models;
 using Aaru.Gui.Views.Dialogs;
-using Aaru.Localization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
@@ -99,21 +98,6 @@ public sealed partial class AboutViewModel : ViewModelBase
 
     [NotNull]
     public string Website => "https://aaru.app";
-
-    [NotNull]
-    public string License => UI.Label_License;
-
-    [NotNull]
-    public string CloseLabel => UI.ButtonLabel_Close;
-
-    [NotNull]
-    public string AssembliesLibraryText => UI.Title_Library;
-
-    [NotNull]
-    public string AssembliesVersionText => UI.Title_Version;
-
-    [NotNull]
-    public string Authors => UI.Text_Authors;
 
     public ICommand                            WebsiteCommand { get; }
     public ICommand                            LicenseCommand { get; }

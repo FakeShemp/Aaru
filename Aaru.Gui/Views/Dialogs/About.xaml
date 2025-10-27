@@ -36,6 +36,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dialogs="clr-namespace:Aaru.Gui.ViewModels.Dialogs"
+        xmlns:controls="clr-namespace:Aaru.Gui.Controls"
         xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
         mc:Ignorable="d"
         d:DesignWidth="800"
@@ -49,119 +50,117 @@
     <Design.DataContext>
         <dialogs:AboutViewModel />
     </Design.DataContext>
-    <Border Padding="15">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" /> <RowDefinition Height="*" /> <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" /> <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Border Grid.Column="0"
-                        BorderThickness="5">
-                    <Image Source="/Assets/aaru-logo.png"
-                           Width="48"
-                           Height="48" />
-                </Border>
-                <Grid Grid.Column="1"
-                      HorizontalAlignment="Left"
-                      VerticalAlignment="Center">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" /> <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0"
-                               Text="{Binding SoftwareName}"
-                               HorizontalAlignment="Left"
-                               VerticalAlignment="Center"
-                               FontSize="16"
-                               FontWeight="Bold" />
-                    <TextBlock Grid.Row="1"
-                               Text="{Binding VersionText}"
-                               HorizontalAlignment="Left"
-                               VerticalAlignment="Center" />
-                </Grid>
+    <Grid Margin="12"
+          RowSpacing="8"
+          RowDefinitions="Auto,*,Auto">
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto,*"
+              ColumnSpacing="8">
+            <Border Grid.Column="0"
+                    BorderThickness="5">
+                <Image Source="/Assets/aaru-logo.png"
+                       Width="48"
+                       Height="48" />
+            </Border>
+            <Grid Grid.Column="1"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Center"
+                  RowDefinitions="Auto,Auto">
+                <TextBlock Grid.Row="0"
+                           Text="{Binding SoftwareName, Mode=OneWay}"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           FontSize="16"
+                           FontWeight="Bold" />
+                <TextBlock Grid.Row="1"
+                           Text="{Binding VersionText, Mode=OneWay}"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center" />
             </Grid>
-            <TabControl Grid.Row="1"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch">
-                <TabItem>
-                    <TabItem.Header>
-                        <TextBlock Text="{x:Static localization:UI.Label_About}" />
-                    </TabItem.Header>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" /> <RowDefinition Height="12" />
-                            <RowDefinition Height="Auto" /> <RowDefinition Height="12" />
-                            <RowDefinition Height="Auto" /> <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0"
-                                   Text="{Binding SuiteName}" />
-                        <TextBlock Grid.Row="2"
-                                   Text="{Binding Copyright}" />
-                        <Button Grid.Row="4"
-                                BorderThickness="0"
-                                Background="Transparent"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Padding="0"
-                                Command="{Binding WebsiteCommand}">
-                            <!-- TODO: TextDecorations="Underline" in next Avalonia UI version -->
-                            <TextBlock Text="{Binding Website}"
-                                       Foreground="Blue" />
-                        </Button>
-                        <Button Grid.Row="5"
-                                BorderThickness="0"
-                                Background="Transparent"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Padding="0"
-                                Command="{Binding LicenseCommand}">
-                            <!-- TODO: TextDecorations="Underline" in next Avalonia UI version -->
-                            <TextBlock Text="{Binding License}"
-                                       Foreground="Blue" />
-                        </Button>
-                    </Grid>
-                </TabItem>
-                <TabItem>
-                    <TabItem.Header>
-                        <TextBlock Text="{x:Static localization:UI.Label_Libraries}" />
-                    </TabItem.Header>
-                    <DataGrid ItemsSource="{Binding Assemblies}"
-                              HorizontalScrollBarVisibility="Visible">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding Name}"
-                                                Width="Auto"
-                                                IsReadOnly="True">
-                                <DataGridTextColumn.Header>
-                                    <TextBlock Text="{Binding AssembliesLibraryText}" />
-                                </DataGridTextColumn.Header>
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Binding="{Binding Version}"
-                                                Width="Auto"
-                                                IsReadOnly="True">
-                                <DataGridTextColumn.Header>
-                                    <TextBlock Text="{Binding AssembliesVersionText}" />
-                                </DataGridTextColumn.Header>
-                            </DataGridTextColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </TabItem>
-                <TabItem>
-                    <TabItem.Header>
-                        <TextBlock Text="{x:Static localization:UI.Label_Authors}" />
-                    </TabItem.Header>
-                    <TextBox IsReadOnly="True"
-                             Text="{Binding Authors}" />
-                </TabItem>
-            </TabControl>
-            <Button Grid.Row="2"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    Command="{Binding CloseCommand}">
-                <TextBlock Text="{Binding CloseLabel}" />
-            </Button>
         </Grid>
-    </Border>
+        <TabControl Grid.Row="1"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch">
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="{x:Static localization:UI.Label_About}" />
+                </TabItem.Header>
+                <Grid RowDefinitions="Auto,12,Auto,12,Auto,Auto,*"
+                      RowSpacing="8"
+                      Margin="8">
+                    <TextBlock Grid.Row="0"
+                               Text="{Binding SuiteName, Mode=OneWay}" />
+                    <TextBlock Grid.Row="2"
+                               Text="{Binding Copyright, Mode=OneWay}" />
+                    <Button Grid.Row="4"
+                            BorderThickness="0"
+                            Background="Transparent"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Padding="0"
+                            Command="{Binding WebsiteCommand, Mode=OneWay}">
+                        <TextBlock Text="{Binding Website, Mode=OneWay}"
+                                   TextDecorations="Underline"
+                                   Foreground="Blue" />
+                    </Button>
+                    <Button Grid.Row="5"
+                            BorderThickness="0"
+                            Background="Transparent"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Padding="0"
+                            Command="{Binding LicenseCommand, Mode=OneWay}">
+                        <TextBlock Text="{x:Static localization:UI.Label_License}"
+                                   TextDecorations="Underline"
+                                   Foreground="Blue" />
+                    </Button>
+                </Grid>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="{x:Static localization:UI.Label_Libraries}" />
+                </TabItem.Header>
+                <DataGrid ItemsSource="{Binding Assemblies, Mode=OneWay}"
+                          Margin="8"
+                          HorizontalScrollBarVisibility="Visible">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding Name, Mode=OneWay}"
+                                            Width="Auto"
+                                            IsReadOnly="True">
+                            <DataGridTextColumn.Header>
+                                <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Library}" />
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Binding="{Binding Version, Mode=OneWay}"
+                                            Width="Auto"
+                                            IsReadOnly="True">
+                            <DataGridTextColumn.Header>
+                                <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Version}" />
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="{x:Static localization:UI.Label_Authors}" />
+                </TabItem.Header>
+                <Border Margin="8"
+                        BorderThickness="1"
+                        BorderBrush="LightGray"
+                        CornerRadius="8">
+                    <ScrollViewer Padding="8">
+                        <controls:SpectreTextBlock TextWrapping="Wrap"
+                                                   Text="{x:Static localization:UI.Text_Authors}" />
+                    </ScrollViewer>
+                </Border>
+            </TabItem>
+        </TabControl>
+        <Button Grid.Row="2"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Command="{Binding CloseCommand, Mode=OneWay}">
+            <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
+        </Button>
+    </Grid>
 </Window>
