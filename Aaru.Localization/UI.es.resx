@@ -3125,4 +3125,7 @@ Probadores:
     <data name="Title_Sector_viewer" xml:space="preserve">
         <value>Visor de sectores</value>
     </data>
+    <data name="Title_Decode_media_tags" xml:space="preserve">
+        <value>Decodificar etiquetas del medio</value>
+    </data>
 </root>

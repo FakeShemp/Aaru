@@ -44,7 +44,6 @@ using Aaru.Decoders.SCSI;
 using Aaru.Decoders.SCSI.MMC;
 using Aaru.Decoders.Xbox;
 using Aaru.Gui.Models;
-using Aaru.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using JetBrains.Annotations;
 using BCA = Aaru.Decoders.Bluray.BCA;
@@ -58,14 +57,13 @@ namespace Aaru.Gui.ViewModels.Windows;
 
 public sealed partial class DecodeMediaTagsViewModel : ViewModelBase
 {
-    const    int       HEX_COLUMNS = 32;
     readonly MediaType _mediaType;
     [ObservableProperty]
     string _decodedText;
     [ObservableProperty]
     bool _decodedVisible;
     [ObservableProperty]
-    string _hexViewText;
+    byte[] _hexData;
     MediaTagModel _selectedTag;
 
     public DecodeMediaTagsViewModel([NotNull] IMediaImage inputFormat)
@@ -89,7 +87,6 @@ public sealed partial class DecodeMediaTagsViewModel : ViewModelBase
         }
     }
 
-    public string                              Title    { get; }
     public ObservableCollection<MediaTagModel> TagsList { get; }
 
     public MediaTagModel SelectedTag
@@ -102,7 +99,7 @@ public sealed partial class DecodeMediaTagsViewModel : ViewModelBase
             if(value is null) return;
 
             // TODO: Decoders should be able to handle tags with/without length header
-            HexViewText    = PrintHex.ByteArrayToHexArrayString(value.Data, HEX_COLUMNS);
+            HexData        = value.Data;
             DecodedVisible = true;
 
             if(value.Decoded != null)

@@ -6249,5 +6249,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Title_Sector_viewer", resourceCulture);
             }
         }
+        
+        public static string Title_Decode_media_tags {
+            get {
+                return ResourceManager.GetString("Title_Decode_media_tags", resourceCulture);
+            }
+        }
     }
 }

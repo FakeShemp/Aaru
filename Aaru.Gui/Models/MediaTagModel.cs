@@ -31,6 +31,7 @@
 // ****************************************************************************/
 
 using Aaru.CommonTypes.Enums;
+using Humanizer;
 using JetBrains.Annotations;
 
 namespace Aaru.Gui.Models;
@@ -42,5 +43,5 @@ public sealed class MediaTagModel
     public string       Decoded { get; set; }
 
     [NotNull]
-    public string Name => Tag.ToString();
+    public string Name => Tag.Humanize();
 }
