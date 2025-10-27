@@ -1816,7 +1816,7 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
             return;
         }
 
-        DestinationText = result.Path.AbsolutePath;
+        DestinationText = result.Path.LocalPath;
 
         if(string.IsNullOrEmpty(Path.GetExtension(DestinationText)))
             DestinationText += SelectedPlugin.Plugin.KnownExtensions.First();
@@ -1876,14 +1876,14 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
 
         try
         {
-            var fs = new FileStream(result[0].Path.AbsolutePath, FileMode.Open);
+            var fs = new FileStream(result[0].Path.LocalPath, FileMode.Open);
 
             _aaruMetadata =
                 (await JsonSerializer.DeserializeAsync(fs, typeof(MetadataJson), MetadataJsonContext.Default) as
                      MetadataJson)?.AaruMetadata;
 
             fs.Close();
-            MetadataJsonText = result[0].Path.AbsolutePath;
+            MetadataJsonText = result[0].Path.LocalPath;
         }
         catch(Exception ex)
         {
@@ -1921,7 +1921,7 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
 
         try
         {
-            var fs = new FileStream(result[0].Path.AbsolutePath, FileMode.Open);
+            var fs = new FileStream(result[0].Path.LocalPath, FileMode.Open);
 
             Resume resume =
                 (await JsonSerializer.DeserializeAsync(fs, typeof(ResumeJson), ResumeJsonContext.Default) as ResumeJson)
@@ -1932,7 +1932,7 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
             if(resume?.Tries?.Any() == false)
             {
                 _dumpHardware  = resume.Tries;
-                ResumeFileText = result[0].Path.AbsolutePath;
+                ResumeFileText = result[0].Path.LocalPath;
             }
             else
             {
