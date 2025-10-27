@@ -37,6 +37,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dialogs="clr-namespace:Aaru.Gui.ViewModels.Dialogs"
         xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
+        xmlns:controls="clr-namespace:Aaru.Gui.Controls"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
@@ -49,21 +50,26 @@
     <Design.DataContext>
         <dialogs:LicenseViewModel />
     </Design.DataContext>
-    <Border Padding="15">
-        <Grid HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch"
-              RowDefinitions="260,Auto">
-            <TextBox Grid.Row="0"
-                     IsReadOnly="True"
-                     Text="{Binding LicenseText}" />
-            <Border Grid.Row="1"
-                    Padding="10">
-                <Button HorizontalAlignment="Right"
-                        VerticalAlignment="Bottom"
-                        Command="{Binding CloseCommand}">
-                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
-                </Button>
-            </Border>
-        </Grid>
-    </Border>
+    <Grid Margin="12"
+          RowSpacing="8"
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch"
+          RowDefinitions="*,Auto">
+        <Border Grid.Row="0"
+                BorderThickness="1"
+                BorderBrush="LightGray"
+                CornerRadius="8">
+            <ScrollViewer Padding="8">
+                <controls:SpectreTextBlock TextWrapping="Wrap"
+                                           Text="{Binding LicenseText, Mode=OneWay}" />
+            </ScrollViewer>
+        </Border>
+        <Border Grid.Row="1">
+            <Button HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Command="{Binding CloseCommand, Mode=OneWay}">
+                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
+            </Button>
+        </Border>
+    </Grid>
 </Window>
