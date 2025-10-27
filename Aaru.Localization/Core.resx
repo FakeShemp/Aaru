@@ -615,19 +615,19 @@
     <value>Scanning Xbox discs is not yet supported.</value>
   </data>
     <data name="Partition_name_0" xml:space="preserve">
-    <value>Partition name: {0}</value>
+    <value>[bold][slateblue1]Partition name:[/][/] [green]{0}[/]</value>
   </data>
     <data name="Partition_type_0" xml:space="preserve">
-    <value>Partition type: {0}</value>
+    <value>[bold][slateblue1]Partition type:[/][/] [yellow]{0}[/]</value>
   </data>
     <data name="Partition_start_sector_0_byte_1" xml:space="preserve">
-    <value>Partition start: sector {0}, byte {1}</value>
+    <value>[slateblue1][bold]Partition start:[/] sector [lime]{0}[/], byte [aqua]{1}[/][/]</value>
   </data>
     <data name="Partition_length_0_sectors_1_bytes" xml:space="preserve">
-    <value>Partition length: {0} sectors, {1} bytes</value>
+    <value>[slateblue1][bold]Partition length:[/] [violet]{0}[/] sectors, [teal]{1}[/] bytes[/]</value>
   </data>
     <data name="Title_Partition_description" xml:space="preserve">
-    <value>Partition description:</value>
+    <value>[bold][slateblue1]Partition description:[/][/]</value>
   </data>
     <data name="Drive_identifies_as_Apple_OEM_drive" xml:space="preserve">
     <value>Drive identifies as Apple OEM drive</value>

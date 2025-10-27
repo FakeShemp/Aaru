@@ -1737,16 +1737,16 @@
         <value>[red]El formato de salida sólo soporta las pistas modo 1, no se continuará...[/]</value>
     </data>
     <data name="Partition_length_0_sectors_1_bytes" xml:space="preserve">
-    <value>Longitud de la partición: {0} sectores, {1} bytes</value>
+    <value>[slateblue1][bold]Longitud de la partición:[/] [violet]{0}[/] sectores, [teal]{1}[/] bytes[/]</value>
   </data>
     <data name="Partition_name_0" xml:space="preserve">
-    <value>Nombre de la partición: {0}</value>
+    <value>[bold][slateblue1]Nombre de la partición:[/][/] [green]{0}[/]</value>
   </data>
     <data name="Partition_start_sector_0_byte_1" xml:space="preserve">
-    <value>Comienzo de la partición: sector {0}, byte {1}</value>
+    <value>[slateblue1][bold]Comienzo de la partición:[/] sector [lime]{0}[/], byte [aqua]{1}[/][/]</value>
   </data>
     <data name="Partition_type_0" xml:space="preserve">
-    <value>Tipo de la partición: {0}</value>
+    <value>[bold][slateblue1]Tipo de la partición:[/][/] [yellow]{0}[/]</value>
   </data>
     <data name="PCMCIA_CIS_WithMarkup" xml:space="preserve">
         <value>[bold][blue]CIS de PCMCIA:[/][/]</value>
@@ -2858,7 +2858,7 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
         <value>[bold][red3]Sistema operativo[/][/]</value>
     </data>
     <data name="Title_Partition_description" xml:space="preserve">
-    <value>Descripción de la partición:</value>
+    <value>[bold][slateblue1]Descripción de la partición:[/][/]</value>
   </data>
     <data name="Title_Pregap" xml:space="preserve">
         <value>[bold][darkgreen]Hueco anterior[/][/]</value>
