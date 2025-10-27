@@ -27,9 +27,10 @@
     <PackageReference Include="Humanizer.Core"/>
     <PackageReference Include="JetBrains.Annotations"/>
     <PackageReference Include="MessageBox.Avalonia"/>
-    <PackageReference Include="Sentry" />
+    <PackageReference Include="Sentry"/>
     <PackageReference Include="Avalonia"/>
     <PackageReference Include="Avalonia.Desktop"/>
+    <PackageReference Include="Svg.Controls.Avalonia"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Aaru.Core\Aaru.Core.csproj"/>

@@ -51,8 +51,10 @@ using Aaru.Gui.Views.Windows;
 using Aaru.Helpers;
 using Aaru.Localization;
 using Avalonia.Controls;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Svg;
 using CommunityToolkit.Mvvm.Input;
 using Humanizer;
 using Humanizer.Bytes;
@@ -104,10 +106,13 @@ public sealed class ImageInfoViewModel : ViewModelBase
         var genericFolderIcon =
             new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/inode-directory.png")));
 
-        var mediaResource = new Uri($"avares://Aaru.Gui/Assets/Logos/Media/{imageFormat.Info.MediaType}.png");
+        var mediaResource = new Uri($"avares://Aaru.Gui/Assets/Logos/Media/{imageFormat.Info.MediaType}.svg");
 
         MediaLogo = AssetLoader.Exists(mediaResource)
-                        ? new Bitmap(AssetLoader.Open(mediaResource))
+                        ? new SvgImage
+                        {
+                            Source = SvgSource.Load(AssetLoader.Open(mediaResource))
+                        }
                         : imageFormat.Info.MetadataMediaType == MetadataMediaType.BlockMedia
                             ? genericHddIcon
                             : imageFormat.Info.MetadataMediaType == MetadataMediaType.OpticalDisc
@@ -237,9 +242,8 @@ public sealed class ImageInfoViewModel : ViewModelBase
         }
 
         if(imageFormat.Info.ReadableMediaTags is { Count: > 0 })
-        {
-            foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.Order()) MediaTagsList.Add(tag.Humanize());
-        }
+            foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.Order())
+                MediaTagsList.Add(tag.Humanize());
 
         if(imageFormat.Info.ReadableSectorTags is { Count: > 0 })
         {
@@ -758,8 +762,9 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Sessions is { Count: > 0 })
-                    foreach(Session session in opticalMediaImage.Sessions)
-                        Sessions.Add(session);
+                {
+                    foreach(Session session in opticalMediaImage.Sessions) Sessions.Add(session);
+                }
             }
             catch(Exception ex)
             {
@@ -769,8 +774,9 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Tracks is { Count: > 0 })
-                    foreach(Track track in opticalMediaImage.Tracks)
-                        Tracks.Add(track);
+                {
+                    foreach(Track track in opticalMediaImage.Tracks) Tracks.Add(track);
+                }
             }
             catch(Exception ex)
             {
@@ -809,7 +815,7 @@ public sealed class ImageInfoViewModel : ViewModelBase
     public XboxInfo                                XboxInfo                  { get; }
     public PcmciaInfo                              PcmciaInfo                { get; }
     public SdMmcInfo                               SdMmcInfo                 { get; }
-    public Bitmap                                  MediaLogo                 { get; }
+    public IImage                                  MediaLogo                 { get; }
     public string                                  ImagePathText             { get; }
     public string                                  FilterText                { get; }
     public string                                  ImageIdentifiedText       { get; }

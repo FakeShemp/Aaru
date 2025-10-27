@@ -24,6 +24,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
+using Avalonia.Svg;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
@@ -147,14 +148,14 @@ public partial class MainWindowViewModel : ViewModelBase
 
                     break;
                 case PartitionModel partitionModel:
-                    ContentPanel = new Aaru.Gui.Views.Panels.Partition
+                    ContentPanel = new Views.Panels.Partition
                     {
                         DataContext = partitionModel.ViewModel
                     };
 
                     break;
                 case FileSystemModel fileSystemModel:
-                    ContentPanel = new Aaru.Gui.Views.Panels.FileSystem
+                    ContentPanel = new Views.Panels.FileSystem
                     {
                         DataContext = fileSystemModel.ViewModel
                     };
@@ -239,13 +240,16 @@ public partial class MainWindowViewModel : ViewModelBase
                 }
 
                 // Create image model with appropriate icon based on media type
-                var mediaResource = new Uri($"avares://Aaru.Gui/Assets/Logos/Media/{imageFormat.Info.MediaType}.png");
+                var mediaResource = new Uri($"avares://Aaru.Gui/Assets/Logos/Media/{imageFormat.Info.MediaType}.svg");
 
                 var imageModel = new ImageModel
                 {
                     Path = result[0].Path.LocalPath,
                     Icon = AssetLoader.Exists(mediaResource)
-                               ? new Bitmap(AssetLoader.Open(mediaResource))
+                               ? new SvgImage
+                               {
+                                   Source = SvgSource.Load(AssetLoader.Open(mediaResource))
+                               }
                                : imageFormat.Info.MetadataMediaType == MetadataMediaType.BlockMedia
                                    ? _genericHddIcon
                                    : imageFormat.Info.MetadataMediaType == MetadataMediaType.OpticalDisc
