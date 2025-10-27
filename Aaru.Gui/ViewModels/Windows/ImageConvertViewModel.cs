@@ -255,6 +255,14 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
 
         MetadataJsonText = _aaruMetadata == null ? "" : UI._From_image_;
         ResumeFileText   = _dumpHardware == null ? "" : UI._From_image_;
+
+        SelectedPlugin     = PluginsList[0];
+        SectorsValue       = 512;
+        DestinationVisible = true;
+        DestinationEnabled = true;
+        OptionsVisible     = true;
+        StartVisible       = true;
+        CloseVisible       = true;
     }
 
     public ObservableCollection<ImagePluginModel> PluginsList                  { get; }
@@ -336,6 +344,8 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
             StopEnabled        = true;
             FormatReadOnly     = true;
             DestinationVisible = false;
+            Progress1Visible   = true;
+            Progress2Visible   = true;
 
             ProgressMaxValue =  1d;
             ProgressMaxValue += _inputFormat.Info.ReadableMediaTags.Count;
