@@ -230,6 +230,7 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
         DriveModelVisible            = !string.IsNullOrWhiteSpace(inputFormat.Info.DriveModel);
         DriveSerialNumberVisible     = !string.IsNullOrWhiteSpace(inputFormat.Info.DriveSerialNumber);
         DriveFirmwareRevisionVisible = !string.IsNullOrWhiteSpace(inputFormat.Info.DriveFirmwareRevision);
+        PluginsList                  = [];
 
         PluginRegister plugins = PluginRegister.Singleton;
 
