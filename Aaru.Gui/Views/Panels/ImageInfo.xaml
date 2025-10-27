@@ -47,11 +47,16 @@
     </Design.DataContext>
     <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto" Margin="12"
                 RowSpacing="8">
-        <Image Grid.Row="0" Width="128"
-               Height="128"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Center"
-               Source="{Binding MediaLogo, Mode=OneWay}" />
+        <Border Grid.Row="0" Width="160" Height="160"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="LightGray"
+                CornerRadius="80"
+                Padding="16">
+            <Image Width="128"
+                   Height="128"
+                   Source="{Binding MediaLogo, Mode=OneWay}" />
+        </Border>
         <controls:SpectreTextBlock Grid.Row="1" Text="{x:Static localization:UI.Title_Image_information}"
                                    FontWeight="Bold" />
         <controls:SpectreTextBlock Grid.Row="2" Text="{Binding ImagePathText, Mode=OneWay}" />
