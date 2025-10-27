@@ -457,7 +457,7 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
             return;
         }
 
-        Dictionary<string, string> parsedOptions = new();
+        Dictionary<string, string> parsedOptions = [];
 
         /* TODO:
         if(grpOptions.Content is StackLayout stkImageOptions)
@@ -868,11 +868,11 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
                 Progress2Value = Progress2MaxValue;
             });
 
-            Dictionary<byte, string> isrcs                     = new();
-            Dictionary<byte, byte>   trackFlags                = new();
+            Dictionary<byte, string> isrcs                     = [];
+            Dictionary<byte, byte>   trackFlags                = [];
             string                   mcn                       = null;
             HashSet<int>             subchannelExtents         = [];
-            Dictionary<byte, int>    smallestPregapLbaPerTrack = new();
+            Dictionary<byte, int>    smallestPregapLbaPerTrack = [];
 
             foreach(SectorTagType tag in _inputFormat.Info.ReadableSectorTags.Where(t => t == SectorTagType.CdTrackIsrc)
                                                      .Order())
@@ -1800,13 +1800,13 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             Title = UI.Dialog_Choose_destination_file,
-            FileTypeChoices = new List<FilePickerFileType>
-            {
-                new(SelectedPlugin.Plugin.Name)
+            FileTypeChoices =
+            [
+                new FilePickerFileType(SelectedPlugin.Plugin.Name)
                 {
                     Patterns = SelectedPlugin.Plugin.KnownExtensions.ToList()
                 }
-            }
+            ]
         });
 
         if(result is null)
@@ -1863,12 +1863,9 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
 
         IReadOnlyList<IStorageFile> result = await _view.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title         = UI.Dialog_Choose_existing_metadata_sidecar,
-            AllowMultiple = false,
-            FileTypeFilter = new List<FilePickerFileType>
-            {
-                FilePickerFileTypes.AaruMetadata
-            }
+            Title          = UI.Dialog_Choose_existing_metadata_sidecar,
+            AllowMultiple  = false,
+            FileTypeFilter = [FilePickerFileTypes.AaruMetadata]
         });
 
         if(result.Count != 1) return;
@@ -1907,12 +1904,9 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
 
         IReadOnlyList<IStorageFile> result = await _view.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title         = UI.Dialog_Choose_existing_resume_file,
-            AllowMultiple = false,
-            FileTypeFilter = new List<FilePickerFileType>
-            {
-                FilePickerFileTypes.AaruResumeFile
-            }
+            Title          = UI.Dialog_Choose_existing_resume_file,
+            AllowMultiple  = false,
+            FileTypeFilter = [FilePickerFileTypes.AaruResumeFile]
         });
 
         if(result.Count != 1) return;
