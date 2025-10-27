@@ -186,8 +186,6 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
     bool _stopEnabled;
     [ObservableProperty]
     bool _stopVisible;
-    [ObservableProperty]
-    string _title;
 
     public ImageConvertViewModel([JetBrains.Annotations.NotNull] IMediaImage inputFormat, string imageSource,
                                  Window                                      view)

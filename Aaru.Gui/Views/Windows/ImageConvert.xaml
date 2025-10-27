@@ -37,131 +37,218 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:windows="clr-namespace:Aaru.Gui.ViewModels.Windows"
         xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
+        xmlns:controls="clr-namespace:Aaru.Gui.Controls"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
+        Width="1000"
+        Height="832"
         x:Class="Aaru.Gui.Views.Windows.ImageConvert"
         Icon="/Assets/aaru-logo.png"
-        Title="{Binding Title}">
+        Title="{x:Static localization:UI.Title_Convert_image}">
     <Design.DataContext>
         <windows:ImageConvertViewModel />
     </Design.DataContext>
-    <StackPanel Orientation="Vertical">
-        <TextBlock Text="{x:Static localization:UI.Source_image}" />
-        <TextBox Text="{Binding SourceText}"
-                 IsReadOnly="True" />
-        <TextBlock Text="{x:Static localization:UI.Output_format}" />
-        <ComboBox ItemsSource="{Binding PluginsList}"
-                  SelectedItem="{Binding SelectedPlugin}"
-                  IsEnabled="{Binding FormatReadOnly}">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Name}" />
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
-        <StackPanel Orientation="Horizontal">
-            <TextBox Text="{Binding DestinationText}"
-                     IsReadOnly="True" />
-            <Button Command="{Binding DestinationCommand}"
-                    IsEnabled="{Binding DestinationEnabled}"
-                    IsVisible="{Binding DestinationVisible}">
+    <Grid Margin="12"
+          RowSpacing="8"
+          RowDefinitions="Auto,Auto,Auto,*,Auto,Auto">
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto,*"
+              ColumnSpacing="8">
+            <TextBlock Grid.Column="0"
+                       FontWeight="Bold"
+                       Text="{x:Static localization:UI.Source_image}" />
+            <TextBlock Grid.Column="1"
+                       Text="{Binding SourceText, Mode=OneWay}" />
+        </Grid>
+        <Grid Grid.Row="1"
+              ColumnDefinitions="Auto,*"
+              ColumnSpacing="8"
+              HorizontalAlignment="Stretch">
+            <TextBlock Grid.Column="0"
+                       FontWeight="Bold"
+                       Text="{x:Static localization:UI.Output_format}"
+                       VerticalAlignment="Center" />
+            <ComboBox Grid.Column="1"
+                      ItemsSource="{Binding PluginsList, Mode=OneWay}"
+                      SelectedItem="{Binding SelectedPlugin, Mode=TwoWay}"
+                      IsEnabled="{Binding !FormatReadOnly, Mode=OneWay}"
+                      HorizontalAlignment="Stretch">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </Grid>
+        <Grid Grid.Row="2"
+              ColumnDefinitions="Auto,*"
+              ColumnSpacing="8">
+            <Button Grid.Column="0"
+                    Command="{Binding DestinationCommand, Mode=OneWay}"
+                    IsEnabled="{Binding DestinationEnabled, Mode=OneWay}"
+                    IsVisible="{Binding DestinationVisible, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Choose}" />
             </Button>
-        </StackPanel>
-        <StackPanel Orientation="Vertical"
-                    IsVisible="{Binding OptionsVisible}">
-            <StackPanel Orientation="Horizontal">
+            <TextBox Grid.Column="1"
+                     Text="{Binding DestinationText, Mode=OneWay}"
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch"
+                     Watermark="Destination image file path"
+                     IsReadOnly="True" />
+        </Grid>
+        <Grid Grid.Row="3"
+              RowDefinitions="Auto,Auto,Auto,*"
+              RowSpacing="8"
+              IsVisible="{Binding OptionsVisible, Mode=OneWay}">
+            <StackPanel Grid.Row="0"
+                        Orientation="Horizontal"
+                        Spacing="8">
                 <NumericUpDown Increment="1"
                                Minimum="1"
                                Maximum="16384"
-                               Value="{Binding SectorsValue}" />
-                <TextBlock Text="{x:Static localization:UI.How_many_sectors_to_convert_at_once}" />
+                               Value="{Binding SectorsValue, Mode=TwoWay}"
+                               Width="120" />
+                <TextBlock Text="{x:Static localization:UI.How_many_sectors_to_convert_at_once}"
+                           VerticalAlignment="Center" />
             </StackPanel>
-            <CheckBox IsChecked="{Binding ForceChecked}">
+            <CheckBox Grid.Row="1"
+                      IsChecked="{Binding ForceChecked, Mode=TwoWay}">
                 <TextBlock Text="{x:Static localization:UI.Continue_conversion_even_if_data_lost}" />
             </CheckBox>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{x:Static localization:UI.Who_person_created_the_image}" />
-                <TextBox Text="{Binding CreatorText}" />
-                <Button Command="{Binding CreatorCommand}"
-                        IsVisible="{Binding CreatorVisible}">
+            <Grid Grid.Row="2"
+                  ColumnDefinitions="Auto,*,Auto"
+                  ColumnSpacing="8">
+                <TextBlock Grid.Column="0"
+                           Text="{x:Static localization:UI.Who_person_created_the_image}"
+                           VerticalAlignment="Center" />
+                <TextBox Grid.Column="1"
+                         Text="{Binding CreatorText, Mode=OneWay}"
+                         HorizontalAlignment="Stretch" />
+                <Button Grid.Column="2"
+                        Command="{Binding CreatorCommand, Mode=OneWay}"
+                        HorizontalAlignment="Right"
+                        IsVisible="{Binding CreatorVisible, Mode=OneWay}">
                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                 </Button>
-            </StackPanel>
-            <StackPanel>
-                <TextBlock Text="{x:Static localization:UI.Title_Metadata}" />
-                <TabControl>
+            </Grid>
+            <Grid Grid.Row="3"
+                  RowDefinitions="Auto,*,Auto,Auto,Auto,Auto"
+                  RowSpacing="8">
+                <TextBlock Grid.Row="0"
+                           FontWeight="Bold"
+                           Text="{x:Static localization:UI.Title_Metadata}" />
+                <TabControl Grid.Row="1">
                     <TabItem>
                         <TabItem.Header>
-                            <TextBlock Text="{x:Static localization:UI.Title_Media}" />
+                            <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Media}" />
                         </TabItem.Header>
-                        <StackPanel Orientation="Vertical">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static localization:UI.Title_Title}" />
-                                <TextBox Text="{Binding MediaTitleText}" />
-                                <Button Command="{Binding MediaTitleCommand}"
-                                        IsVisible="{Binding MediaTitleVisible}">
+                        <StackPanel Orientation="Vertical"
+                                    Spacing="8"
+                                    Margin="8"
+                                    MinHeight="330">
+                            <Grid ColumnDefinitions="Auto,*,Auto"
+                                  ColumnSpacing="8">
+                                <controls:SpectreTextBlock Grid.Column="0"
+                                                           Text="{x:Static localization:UI.Title_Title}"
+                                                           VerticalAlignment="Center" />
+                                <TextBox Grid.Column="1"
+                                         Text="{Binding MediaTitleText, Mode=OneWay}" />
+                                <Button Grid.Column="2"
+                                        Command="{Binding MediaTitleCommand, Mode=OneWay}"
+                                        IsVisible="{Binding MediaTitleVisible, Mode=OneWay}">
                                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static localization:UI.Title_Manufacturer}" />
-                                <TextBox Text="{Binding MediaManufacturerText}" />
-                                <Button Command="{Binding MediaManufacturerCommand}"
-                                        IsVisible="{Binding MediaManufacturerVisible}">
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*,Auto"
+                                  ColumnSpacing="8">
+                                <controls:SpectreTextBlock Grid.Column="0"
+                                                           Text="{x:Static localization:UI.Title_Manufacturer}"
+                                                           VerticalAlignment="Center" />
+                                <TextBox Grid.Column="1"
+                                         Text="{Binding MediaManufacturerText, Mode=OneWay}" />
+                                <Button Grid.Column="2"
+                                        Command="{Binding MediaManufacturerCommand, Mode=OneWay}"
+                                        IsVisible="{Binding MediaManufacturerVisible, Mode=OneWay}">
                                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static localization:UI.Title_Model}" />
-                                <TextBox Text="{Binding MediaModelText}" />
-                                <Button Command="{Binding MediaModelCommand}"
-                                        IsVisible="{Binding MediaModelVisible}">
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*,Auto"
+                                  ColumnSpacing="8">
+                                <controls:SpectreTextBlock Grid.Column="0"
+                                                           Text="{x:Static localization:UI.Title_Model}"
+                                                           VerticalAlignment="Center" />
+                                <TextBox Grid.Column="1"
+                                         Text="{Binding MediaModelText, Mode=OneWay}" />
+                                <Button Grid.Column="2"
+                                        Command="{Binding MediaModelCommand, Mode=OneWay}"
+                                        IsVisible="{Binding MediaModelVisible, Mode=OneWay}">
                                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static localization:UI.Title_Serial_number}" />
-                                <TextBox Text="{Binding MediaSerialNumberText}" />
-                                <Button Command="{Binding MediaSerialNumberCommand}"
-                                        IsVisible="{Binding MediaSerialNumberVisible}">
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*,Auto"
+                                  ColumnSpacing="8">
+                                <controls:SpectreTextBlock Grid.Column="0"
+                                                           Text="{x:Static localization:UI.Title_Serial_number}"
+                                                           VerticalAlignment="Center" />
+                                <TextBox Grid.Column="1"
+                                         Text="{Binding MediaSerialNumberText, Mode=OneWay}" />
+                                <Button Grid.Column="2"
+                                        Command="{Binding MediaSerialNumberCommand, Mode=OneWay}"
+                                        IsVisible="{Binding MediaSerialNumberVisible, Mode=OneWay}">
                                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static localization:UI.Title_Barcode}" />
-                                <TextBox Text="{Binding MediaBarcodeText}" />
-                                <Button Command="{Binding MediaBarcodeCommand}"
-                                        IsVisible="{Binding MediaBarcodeVisible}">
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*,Auto"
+                                  ColumnSpacing="8">
+                                <controls:SpectreTextBlock Grid.Column="0"
+                                                           Text="{x:Static localization:UI.Title_Barcode}"
+                                                           VerticalAlignment="Center" />
+                                <TextBox Grid.Column="1"
+                                         Text="{Binding MediaBarcodeText, Mode=OneWay}" />
+                                <Button Grid.Column="2"
+                                        Command="{Binding MediaBarcodeCommand, Mode=OneWay}"
+                                        IsVisible="{Binding MediaBarcodeVisible, Mode=OneWay}">
                                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static localization:UI.Title_Part_number}" />
-                                <TextBox Text="{Binding MediaPartNumberText}" />
-                                <Button Command="{Binding MediaPartNumberCommand}"
-                                        IsVisible="{Binding MediaPartNumberVisible}">
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*,Auto"
+                                  ColumnSpacing="8">
+                                <controls:SpectreTextBlock Grid.Column="0"
+                                                           Text="{x:Static localization:UI.Title_Part_number}"
+                                                           VerticalAlignment="Center" />
+                                <TextBox Grid.Column="1"
+                                         Text="{Binding MediaPartNumberText, Mode=OneWay}" />
+                                <Button Grid.Column="2"
+                                        Command="{Binding MediaPartNumberCommand, Mode=OneWay}"
+                                        IsVisible="{Binding MediaPartNumberVisible, Mode=OneWay}">
                                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static localization:UI.Title_Number_in_sequence}" />
-                                <NumericUpDown Increment="1"
-                                               Value="{Binding MediaSequenceValue}"
+                            </Grid>
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8">
+                                <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Number_in_sequence}"
+                                                           VerticalAlignment="Center" />
+                                <NumericUpDown Width="120"
+                                               Increment="1"
+                                               Value="{Binding MediaSequenceValue, Mode=TwoWay}"
                                                Minimum="0" />
-                                <Button Command="{Binding MediaSequenceCommand}"
-                                        IsVisible="{Binding MediaSequenceVisible}">
+                                <Button Command="{Binding MediaSequenceCommand, Mode=OneWay}"
+                                        IsVisible="{Binding MediaSequenceVisible, Mode=OneWay}">
                                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static localization:UI.Title_Last_media_of_the_sequence}" />
-                                <NumericUpDown Increment="1"
-                                               Value="{Binding LastMediaSequenceValue}"
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8">
+                                <controls:SpectreTextBlock
+                                    Text="{x:Static localization:UI.Title_Last_media_of_the_sequence}"
+                                    VerticalAlignment="Center" />
+                                <NumericUpDown Width="120"
+                                               Increment="1"
+                                               Value="{Binding LastMediaSequenceValue, Mode=TwoWay                                               }"
                                                Minimum="0" />
-                                <Button Command="{Binding LastMediaSequenceCommand}"
-                                        IsVisible="{Binding LastMediaSequenceVisible}">
+                                <Button Command="{Binding LastMediaSequenceCommand, Mode=OneWay}"
+                                        IsVisible="{Binding LastMediaSequenceVisible, Mode=OneWay}">
                                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
                             </StackPanel>
@@ -169,113 +256,166 @@
                     </TabItem>
                     <TabItem>
                         <TabItem.Header>
-                            <TextBlock Text="{x:Static localization:UI.Title_Drive}" />
+                            <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Drive}" />
                         </TabItem.Header>
-                        <StackPanel Orientation="Vertical">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static localization:UI.Title_Manufacturer}" />
-                                <TextBox Text="{Binding DriveManufacturerText}" />
-                                <Button Command="{Binding DriveManufacturerCommand}"
-                                        IsVisible="{Binding DriveManufacturerVisible}">
+                        <StackPanel Orientation="Vertical"
+                                    Spacing="8"
+                                    Margin="8"
+                                    MinHeight="330">
+                            <Grid ColumnDefinitions="Auto,*,Auto"
+                                  ColumnSpacing="8">
+                                <controls:SpectreTextBlock Grid.Column="0"
+                                                           Text="{x:Static localization:UI.Title_Manufacturer}"
+                                                           VerticalAlignment="Center" />
+                                <TextBox Grid.Column="1"
+                                         Text="{Binding DriveManufacturerText, Mode=OneWay}" />
+                                <Button Grid.Column="2"
+                                        Command="{Binding DriveManufacturerCommand, Mode=OneWay}"
+                                        IsVisible="{Binding DriveManufacturerVisible, Mode=OneWay}">
                                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static localization:UI.Title_Model}" />
-                                <TextBox Text="{Binding DriveModelText}" />
-                                <Button Command="{Binding DriveModelCommand}"
-                                        IsVisible="{Binding DriveModelVisible}">
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*,Auto"
+                                  ColumnSpacing="8">
+                                <controls:SpectreTextBlock Grid.Column="0"
+                                                           Text="{x:Static localization:UI.Title_Model}"
+                                                           VerticalAlignment="Center" />
+                                <TextBox Grid.Column="1"
+                                         Text="{Binding DriveModelText, Mode=OneWay}" />
+                                <Button Grid.Column="2"
+                                        Command="{Binding DriveModelCommand, Mode=OneWay}"
+                                        IsVisible="{Binding DriveModelVisible, Mode=OneWay}">
                                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static localization:UI.Title_Serial_number}" />
-                                <TextBox Text="{Binding DriveSerialNumberText}" />
-                                <Button Command="{Binding DriveSerialNumberCommand}"
-                                        IsVisible="{Binding DriveSerialNumberVisible}">
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*,Auto"
+                                  ColumnSpacing="8">
+                                <controls:SpectreTextBlock Grid.Column="0"
+                                                           Text="{x:Static localization:UI.Title_Serial_number}"
+                                                           VerticalAlignment="Center" />
+                                <TextBox Grid.Column="1"
+                                         Text="{Binding DriveSerialNumberText, Mode=OneWay}" />
+                                <Button Grid.Column="2"
+                                        Command="{Binding DriveSerialNumberCommand, Mode=OneWay}"
+                                        IsVisible="{Binding DriveSerialNumberVisible, Mode=OneWay}">
                                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static localization:UI.Title_Firmware_revision}" />
-                                <TextBox Text="{Binding DriveFirmwareRevisionText}" />
-                                <Button Command="{Binding DriveFirmwareRevisionCommand}"
-                                        IsVisible="{Binding DriveFirmwareRevisionVisible}">
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*,Auto"
+                                  ColumnSpacing="8">
+                                <controls:SpectreTextBlock Grid.Column="0"
+                                                           Text="{x:Static localization:UI.Title_Firmware_revision}"
+                                                           VerticalAlignment="Center" />
+                                <TextBox Grid.Column="1"
+                                         Text="{Binding DriveFirmwareRevisionText, Mode=OneWay}" />
+                                <Button Grid.Column="2"
+                                        Command="{Binding DriveFirmwareRevisionCommand, Mode=OneWay}"
+                                        IsVisible="{Binding DriveFirmwareRevisionVisible, Mode=OneWay}">
                                     <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                                 </Button>
-                            </StackPanel>
+                            </Grid>
                         </StackPanel>
                     </TabItem>
                     <TabItem>
                         <TabItem.Header>
-                            <TextBlock Text="{x:Static localization:UI.Title_Comments}" />
+                            <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Comments}" />
                         </TabItem.Header>
-                        <StackPanel Orientation="Vertical">
-                            <TextBox Text="{Binding CommentsText}" />
-                            <Button Command="{Binding CommentsCommand}"
-                                    IsVisible="{Binding CommentsVisible}">
+                        <StackPanel Orientation="Vertical"
+                                    Spacing="8"
+                                    Margin="8"
+                                    MinHeight="330">
+                            <TextBox Text="{Binding CommentsText, Mode=OneWay}"
+                                     MinHeight="300" />
+                            <Button Command="{Binding CommentsCommand, Mode=OneWay}"
+                                    IsVisible="{Binding CommentsVisible, Mode=OneWay}">
                                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Get_from_source_image}" />
                             </Button>
                         </StackPanel>
                     </TabItem>
                 </TabControl>
-                <TextBlock Text="{x:Static localization:UI.Title_Existing_Aaru_Metadata_sidecar}" />
-                <StackPanel Orientation="Horizontal">
-                    <TextBox Text="{Binding MetadataJsonText}"
+                <TextBlock Grid.Row="2"
+                           FontWeight="Bold"
+                           Text="{x:Static localization:UI.Title_Existing_Aaru_Metadata_sidecar}" />
+                <Grid Grid.Row="3"
+                      ColumnDefinitions="*,Auto,Auto"
+                      ColumnSpacing="8">
+                    <TextBox Grid.Column="0"
+                             Text="{Binding MetadataJsonText, Mode=OneWay}"
                              IsReadOnly="True" />
-                    <Button Command="{Binding AaruMetadataFromImageCommand}"
-                            IsVisible="{Binding AaruMetadataFromImageVisible}">
+                    <Button Grid.Column="1"
+                            Command="{Binding AaruMetadataFromImageCommand, Mode=OneWay}"
+                            IsVisible="{Binding AaruMetadataFromImageVisible, Mode=OneWay}">
                         <TextBlock Text="{x:Static localization:UI.Title_From_image}" />
                     </Button>
-                    <Button Command="{Binding AaruMetadataCommand}">
+                    <Button Grid.Column="1"
+                            Command="{Binding AaruMetadataCommand, Mode=OneWay}">
                         <TextBlock Text="{x:Static localization:UI.ButtonLabel_Choose}" />
                     </Button>
-                </StackPanel>
-                <TextBlock Text="{x:Static localization:UI.Title_Existing_resume_file}" />
-                <StackPanel Orientation="Horizontal">
-                    <TextBox Text="{Binding ResumeFileText}"
+                </Grid>
+                <TextBlock Grid.Row="4"
+                           FontWeight="Bold"
+                           Text="{x:Static localization:UI.Title_Existing_resume_file}" />
+                <Grid Grid.Row="5"
+                      ColumnDefinitions="*,Auto,Auto"
+                      ColumnSpacing="8">
+                    <TextBox Grid.Column="0"
+                             Text="{Binding ResumeFileText, Mode=OneWay}"
                              IsReadOnly="True" />
-                    <Button Command="{Binding ResumeFileFromImageCommand}"
-                            IsVisible="{Binding ResumeFileFromImageVisible}">
+                    <Button Grid.Column="1"
+                            Command="{Binding ResumeFileFromImageCommand, Mode=OneWay}"
+                            IsVisible="{Binding ResumeFileFromImageVisible, Mode=OneWay}">
                         <TextBlock Text="{x:Static localization:UI.Title_From_image}" />
                     </Button>
-                    <Button Command="{Binding ResumeFileCommand}">
+                    <Button Grid.Column="2"
+                            Command="{Binding ResumeFileCommand, Mode=OneWay}">
                         <TextBlock Text="{x:Static localization:UI.ButtonLabel_Choose}" />
                     </Button>
-                </StackPanel>
-            </StackPanel>
-        </StackPanel>
-        <StackPanel Orientation="Vertical"
-                    IsVisible="{Binding ProgressVisible}">
-            <StackPanel Orientation="Vertical"
-                        IsVisible="{Binding Progress1Visible}">
-                <TextBox Text="{Binding ProgressText}" />
-                <ProgressBar Value="{Binding ProgressValue}"
-                             Maximum="{Binding ProgressMaxValue}"
-                             IsIndeterminate="{Binding ProgressIndeterminate}" />
-            </StackPanel>
-            <StackPanel Orientation="Vertical"
-                        IsVisible="{Binding Progress2Visible}">
-                <TextBox Text="{Binding Progress2Text}" />
-                <ProgressBar Value="{Binding Progress2Value}"
-                             Maximum="{Binding Progress2MaxValue}"
-                             IsIndeterminate="{Binding Progress2Indeterminate}" />
-            </StackPanel>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <Button Command="{Binding StartCommand}"
-                    IsVisible="{Binding StartVisible}">
+                </Grid>
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="4"
+              RowDefinitions="Auto,Auto"
+              RowSpacing="8"
+              IsVisible="{Binding ProgressVisible, Mode=OneWay}">
+            <Grid Grid.Row="0"
+                  RowDefinitions="Auto,Auto"
+                  RowSpacing="8"
+                  IsVisible="{Binding Progress1Visible, Mode=OneWay}">
+                <controls:SpectreTextBlock Grid.Row="0"
+                                           Text="{Binding ProgressText, Mode=OneWay}" />
+                <ProgressBar Grid.Row="1"
+                             Maximum="{Binding ProgressMaxValue, Mode=OneWay}"
+                             Value="{Binding ProgressValue, Mode=OneWay}" />
+            </Grid>
+            <Grid Grid.Row="1"
+                  RowDefinitions="Auto,Auto"
+                  RowSpacing="8"
+                  IsVisible="{Binding Progress2Visible, Mode=OneWay}">
+                <controls:SpectreTextBlock Grid.Row="0"
+                                           Text="{Binding Progress2Text, Mode=OneWay}" />
+                <ProgressBar Grid.Row="1"
+                             Maximum="{Binding Progress2MaxValue, Mode=OneWay}"
+                             Value="{Binding Progress2Value, Mode=OneWay}" />
+            </Grid>
+        </Grid>
+        <StackPanel Grid.Row="5"
+                    Spacing="8"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Bottom"
+                    HorizontalAlignment="Right">
+            <Button Command="{Binding StartCommand, Mode=OneWay}"
+                    IsVisible="{Binding StartVisible, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Start}" />
             </Button>
-            <Button Command="{Binding CloseCommand}"
-                    IsVisible="{Binding CloseVisible}">
+            <Button Command="{Binding CloseCommand, Mode=OneWay}"
+                    IsVisible="{Binding CloseVisible, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Close}" />
             </Button>
-            <Button Command="{Binding StopCommand}"
-                    IsVisible="{Binding StopVisible}"
-                    IsEnabled="{Binding StopEnabled}">
+            <Button Command="{Binding StopCommand, Mode=OneWay}"
+                    IsVisible="{Binding StopVisible, Mode=OneWay}"
+                    IsEnabled="{Binding StopEnabled, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Stop}" />
             </Button>
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </Window>

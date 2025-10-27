@@ -6237,5 +6237,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Title_Checksum_image_contents", resourceCulture);
             }
         }
+        
+        public static string Title_Convert_image {
+            get {
+                return ResourceManager.GetString("Title_Convert_image", resourceCulture);
+            }
+        }
     }
 }

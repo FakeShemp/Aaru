@@ -3119,4 +3119,7 @@ Probadores:
     <data name="Title_Checksum_image_contents" xml:space="preserve">
         <value>Generar checksum de la imagen</value>
     </data>
+    <data name="Title_Convert_image" xml:space="preserve">
+        <value>Convertir imagen</value>
+    </data>
 </root>
