@@ -30,7 +30,7 @@ body:
     id:   commit
     attributes:
       label:       Commit hash
-      description: If using a developmen commit, which one
+      description: If using a development commit, which one
   - type: checkboxes
     id:   debug
     attributes:

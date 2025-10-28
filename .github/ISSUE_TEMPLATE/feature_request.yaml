@@ -7,7 +7,7 @@ assignees:
 body:
   - type: dropdown
     attributes:
-      description: Type of feture you're requesting
+      description: Type of feature you're requesting
       label:       Type
       options:
         - Support for a new media image format...
