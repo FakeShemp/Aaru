@@ -2309,7 +2309,7 @@
     <value>Extensión del sistema de ficheros UNICOS</value>
   </data>
     <data name="Universal_Disk_Format" xml:space="preserve">
-    <value>Formato de Disco Universal</value>
+    <value>[bold][fuchsia]Formato de Disco Universal[/][/]</value>
   </data>
     <data name="UNIX_7th_Edition_filesystem" xml:space="preserve">
     <value>Sistema de ficheros de UNIX 7ª edición</value>
@@ -2513,7 +2513,7 @@
     <value>El tamaño de bloque del volumen es {0} bytes</value>
   </data>
     <data name="Volume_cannot_be_written_by_any_UDF_version_higher_than_0_1" xml:space="preserve">
-    <value>El volumen no puede ser escrito por ninguna versión de UDF mayor que {0}.{1:X2}</value>
+    <value>[slateblue1]El volumen no puede ser escrito por ninguna versión de [fuchsia]UDF[/] mayor que[/] [aqua]{0}.{1:X2}[/]</value>
   </data>
     <data name="Volume_can_be_destroyed" xml:space="preserve">
     <value>El volumen puede ser destruido</value>
@@ -2546,7 +2546,7 @@
     <value>El volumen graba vagamente</value>
   </data>
     <data name="Volume_conforms_to_0" xml:space="preserve">
-    <value>El volumen expresa conformidad con {0}</value>
+    <value>[slateblue1]El volumen expresa conformidad con[/] [fuchsia]{0}[/]</value>
   </data>
     <data name="Volume_contains_0_blocks_1_bytes" xml:space="preserve">
     <value>El volumen contiene {0} bloques ({1} bytes)</value>
@@ -2558,10 +2558,10 @@
     <value>El volumen contiene {0} ficheros</value>
   </data>
     <data name="Volume_contains_0_files_and_1_directories" xml:space="preserve">
-    <value>El volumen contiene {0} ficheros y {1} directorios</value>
+    <value>[slateblue1]El volumen contiene [cyan]{0}[/] ficheros y [darkgreen]{1}[/] directorios[/]</value>
   </data>
     <data name="Volume_contains_0_partitions" xml:space="preserve">
-    <value>El volumen contiene {0} particiones</value>
+    <value>[slateblue1]El volumen contiene [teal]{0}[/] particiones[/]</value>
   </data>
     <data name="Volume_continues_on_error" xml:space="preserve">
     <value>El volumen continúa ante los errores</value>
@@ -2837,7 +2837,7 @@
     <value>El volumen no usa ningún registro</value>
   </data>
     <data name="Volume_is_number_0_of_1" xml:space="preserve">
-    <value>El volumen es el nº {0} de {1}</value>
+    <value>[slateblue1]El volumen es el nº [aqua]{0}[/] de [teal]{1}[/][/]</value>
   </data>
     <data name="Volume_is_read_only" xml:space="preserve">
     <value>El volumen es de sólo lectura</value>
@@ -2900,7 +2900,7 @@
     <value>El volumen debe ser respaldado</value>
   </data>
     <data name="Volume_name_0" xml:space="preserve">
-    <value>Nombre del volumen: {0}</value>
+    <value>[slateblue1]Nombre del volumen:[/] [rosybrown]{0}[/]</value>
   </data>
     <data name="Volume_name_is_0" xml:space="preserve">
     <value>El nombre del volumen es {0}</value>
@@ -2939,10 +2939,10 @@
     <value>El volumen se remonta en sólo lectura ante un error</value>
   </data>
     <data name="Volume_requires_UDF_version_0_1_to_be_read" xml:space="preserve">
-    <value>El volumen requiere la versión {0}.{1:X2} de UDF para ser leído</value>
+    <value>[slateblue1]El volumen requiere la versión [aqua]{0}.{1:X2}[/] de [fuchsia]UDF[/] para ser leído[/]</value>
   </data>
     <data name="Volume_requires_UDF_version_0_1_to_be_written_to" xml:space="preserve">
-    <value>El volumen requiere la versión {0}.{1:X2} de UDF para ser escrito</value>
+    <value>[slateblue1]El volumen requiere la versión [aqua]{0}.{1:X2}[/] de [fuchsia]UDF[/] para ser escrito[/]</value>
   </data>
     <data name="Volume_reserves_0_sectors_for_system" xml:space="preserve">
     <value>El volumen reserva {0} sectores para el sistema</value>
@@ -2969,7 +2969,7 @@
     <value>El volumen debería comprobarse en el siguiente montaje.</value>
   </data>
     <data name="Volume_set_identifier_0" xml:space="preserve">
-    <value>Identificador del conjunto del volumen: {0}</value>
+    <value>[slateblue1]Identificador del conjunto del volumen:[/] [green]{0}[/]</value>
   </data>
     <data name="Volume_serial_number_0_X8" xml:space="preserve">
     <value>Número de serie del volumen: {0:X8}</value>
@@ -3014,7 +3014,7 @@
     <value>El volumen fue actualizado el {0}</value>
   </data>
     <data name="Volume_uses_0_bytes_per_block" xml:space="preserve">
-    <value>El volumen usa {0} bytes por bloque</value>
+    <value>[slateblue1]El volumen usa [lime]{0}[/] bytes por bloque[/]</value>
   </data>
     <data name="Volume_uses_0_bytes_per_sector" xml:space="preserve">
     <value>El volumen usa {0} bytes por sector</value>
@@ -3071,13 +3071,13 @@
     <value>El volumen fue actualizado por última vez el {0}</value>
   </data>
     <data name="Volume_was_last_written_by_0" xml:space="preserve">
-    <value>El volumen fue escrito la última vez por: {0}</value>
+    <value>[slateblue1]El volumen fue escrito la última vez por:[/] [red]{0}[/]</value>
   </data>
     <data name="Volume_was_unmonted" xml:space="preserve">
     <value>El volumen fue desmontado</value>
   </data>
     <data name="Volume_was_last_written_on_0" xml:space="preserve">
-    <value>El volumen fue escrito por última vez el {0}</value>
+    <value>[slateblue1]El volumen fue escrito por última vez el[/] [yellow]{0}[/]</value>
   </data>
     <data name="Volume_wraps_a_HFS_Plus_volume" xml:space="preserve">
     <value>El volumen envuelve un volumen HFS+.</value>
