@@ -10,10 +10,19 @@ body:
       label:       Version
       description: What version of Aaru are you running?
       options:
-        - 5.3.0
+        - 5.4.x
+        - 5.3.x
         - 5.2.0
         - Older
-        - 6.0.0-alpha6
+        - 6.0.0-alpha.6
+        - 6.0.0-alpha.7
+        - 6.0.0-alpha.8
+        - 6.0.0-alpha.8
+        - 6.0.0-alpha.10
+        - 6.0.0-alpha.11
+        - 6.0.0-alpha.12
+        - 6.0.0-alpha.13
+        - 6.0.0-alpha.14
         - Development commit
     validations:
       required: true
