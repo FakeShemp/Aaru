@@ -702,208 +702,208 @@
     <value>Reading sector {0}</value>
   </data>
     <data name="Unknown_specification" xml:space="preserve">
-    <value>Unknown</value>
+    <value>[yellow]Unknown[/]</value>
   </data>
     <data name="Found_unknown_supplementary_volume_descriptor" xml:space="preserve">
     <value>Found unknown supplementary volume descriptor</value>
   </data>
     <data name="ERROR_Could_not_find_primary_volume_descriptor" xml:space="preserve">
-    <value>ERROR: Could not find primary volume descriptor</value>
+    <value>[red]ERROR: Could not find primary volume descriptor[/]</value>
   </data>
     <data name="SYSTEM_USE_SHARING_PROTOCOL_INFORMATION" xml:space="preserve">
-    <value>SYSTEM USE SHARING PROTOCOL INFORMATION:</value>
+    <value>[slateblue1]SYSTEM USE SHARING PROTOCOL INFORMATION:[/]</value>
   </data>
     <data name="SYSTEM_USE_SHARING_PROTOCOL_INFORMATION_border" xml:space="preserve">
-    <value>----------------------------------------</value>
+    <value>[slateblue1]----------------------------------------[/]</value>
   </data>
     <data name="Extension_0" xml:space="preserve">
-    <value>Extension: {0}</value>
+    <value>[slateblue1]Extension:[/] [green]{0}[/]</value>
   </data>
     <data name="ID_0_version_1" xml:space="preserve">
-    <value>ID: {0}, version {1}</value>
+    <value>[slateblue1]ID: [lime]{0}[/], version [blue]{1}[/][/]</value>
   </data>
     <data name="Description_0" xml:space="preserve">
-    <value>Description: {0}</value>
+    <value>[slateblue1]Description:[/] [navy]{0}[/]</value>
   </data>
     <data name="Source_0" xml:space="preserve">
-    <value>Source: {0}</value>
+    <value>[slateblue1]Source:[/] [red]{0}[/]</value>
   </data>
     <data name="High_Sierra_Format_file_system" xml:space="preserve">
-    <value>High Sierra Format file system</value>
+    <value>[bold][fuchsia]High Sierra Format file system[/][/]</value>
   </data>
     <data name="CD_i_file_system" xml:space="preserve">
-    <value>CD-i file system</value>
+    <value>[bold][fuchsia]CD-i file system[/][/]</value>
   </data>
     <data name="ISO9660_file_system" xml:space="preserve">
-    <value>ISO9660 file system</value>
+    <value>[bold][fuchsia]ISO9660 file system[/][/]</value>
   </data>
     <data name="CD_ROM_XA_extensions_present" xml:space="preserve">
-    <value>CD-ROM XA extensions present.</value>
+    <value>[fuchsia]CD-ROM XA extensions present.[/]</value>
   </data>
     <data name="Amiga_extensions_present" xml:space="preserve">
-    <value>Amiga extensions present.</value>
+    <value>[fuchsia]Amiga extensions present.[/]</value>
   </data>
     <data name="Apple_extensions_present" xml:space="preserve">
-    <value>Apple extensions present.</value>
+    <value>[fuchsia]Apple extensions present.[/]</value>
   </data>
     <data name="Joliet_extensions_present" xml:space="preserve">
-    <value>Joliet extensions present.</value>
+    <value>[fuchsia]Joliet extensions present.[/]</value>
   </data>
     <data name="System_Use_Sharing_Protocol_present" xml:space="preserve">
-    <value>System Use Sharing Protocol present.</value>
+    <value>[fuchsia]System Use Sharing Protocol present.[/]</value>
   </data>
     <data name="Rock_Ridge_Interchange_Protocol_present" xml:space="preserve">
-    <value>Rock Ridge Interchange Protocol present.</value>
+    <value>[fuchsia]Rock Ridge Interchange Protocol present.[/]</value>
   </data>
     <data name="Arbitrary_Attribute_Interchange_Protocol_present" xml:space="preserve">
-    <value>Arbitrary Attribute Interchange Protocol present.</value>
+    <value>[fuchsia]Arbitrary Attribute Interchange Protocol present.[/]</value>
   </data>
     <data name="zisofs_compression_present" xml:space="preserve">
-    <value>zisofs compression present.</value>
+    <value>[fuchsia]zisofs compression present.[/]</value>
   </data>
     <data name="Contains_Enhanced_Volume_Descriptor" xml:space="preserve">
-    <value>Contains Enhanced Volume Descriptor.</value>
+    <value>[fuchsia]Contains Enhanced Volume Descriptor.[/]</value>
   </data>
     <data name="Contains_Volume_Partition_Descriptor" xml:space="preserve">
-    <value>Contains Volume Partition Descriptor.</value>
+    <value>[fuchsia]Contains Volume Partition Descriptor.[/]</value>
   </data>
     <data name="Disc_bootable_following_0_specifications" xml:space="preserve">
-    <value>Disc bootable following {0} specifications.</value>
+    <value>[fuchsia]Disc bootable following {0} specifications.[/]</value>
   </data>
     <data name="This_is_a_SegaCD_MegaCD_disc" xml:space="preserve">
-    <value>This is a SegaCD / MegaCD disc.</value>
+    <value>[fuchsia]This is a SegaCD / MegaCD disc.[/]</value>
   </data>
     <data name="This_is_a_Sega_Saturn_disc" xml:space="preserve">
-    <value>This is a Sega Saturn disc.</value>
+    <value>[fuchsia]This is a Sega Saturn disc.[/]</value>
   </data>
     <data name="This_is_a_Sega_Dreamcast_disc" xml:space="preserve">
-    <value>This is a Sega Dreamcast disc.</value>
+    <value>[fuchsia]This is a Sega Dreamcast disc.[/]</value>
   </data>
     <data name="FILE_STRUCTURE_VOLUME_DESCRIPTOR_INFORMATION" xml:space="preserve">
-    <value>FILE STRUCTURE VOLUME DESCRIPTOR INFORMATION:</value>
+    <value>[slateblue1]FILE STRUCTURE VOLUME DESCRIPTOR INFORMATION:[/]</value>
   </data>
     <data name="FILE_STRUCTURE_VOLUME_DESCRIPTOR_INFORMATION_border" xml:space="preserve">
-    <value>---------------------------------------------</value>
+    <value>[slateblue1]---------------------------------------------[/]</value>
   </data>
     <data name="VOLUME_DESCRIPTOR_INFORMATION" xml:space="preserve">
-    <value>VOLUME DESCRIPTOR INFORMATION:</value>
+    <value>[slateblue1]VOLUME DESCRIPTOR INFORMATION:[/]</value>
   </data>
     <data name="VOLUME_DESCRIPTOR_INFORMATION_border" xml:space="preserve">
-    <value>------------------------------</value>
+    <value>[slateblue1]------------------------------[/]</value>
   </data>
     <data name="System_identifier_0" xml:space="preserve">
-    <value>System identifier: {0}</value>
+    <value>[slateblue1]System identifier:[/] [green]{0}[/]</value>
   </data>
     <data name="Volume_identifier_0" xml:space="preserve">
-    <value>Volume identifier: {0}</value>
+    <value>[slateblue1]Volume identifier:[/] [green]{0}[/]</value>
   </data>
     <data name="Volume_set_identifier_0" xml:space="preserve">
     <value>[slateblue1]Volume set identifier:[/] [green]{0}[/]</value>
   </data>
     <data name="Publisher_identifier_0" xml:space="preserve">
-    <value>Publisher identifier: {0}</value>
+    <value>[slateblue1]Publisher identifier:[/] [green]{0}[/]</value>
   </data>
     <data name="Data_preparer_identifier_0" xml:space="preserve">
-    <value>Data preparer identifier: {0}</value>
+    <value>[slateblue1]Data preparer identifier:[/] [green]{0}[/]</value>
   </data>
     <data name="Application_identifier_0" xml:space="preserve">
-    <value>Application identifier: {0}</value>
+    <value>[slateblue1]Application identifier:[/] [green]{0}[/]</value>
   </data>
     <data name="Volume_creation_date_0" xml:space="preserve">
-    <value>Volume creation date: {0}</value>
+    <value>[slateblue1]Volume creation date:[/] [yellow]{0}[/]</value>
   </data>
     <data name="Volume_modification_date_0" xml:space="preserve">
-    <value>Volume modification date: {0}</value>
+    <value>[slateblue1]Volume modification date:[/] [yellow]{0}[/]</value>
   </data>
     <data name="Volume_has_not_been_modified" xml:space="preserve">
-    <value>Volume has not been modified.</value>
+    <value>[slateblue1]Volume has not been modified.[/]</value>
   </data>
     <data name="Volume_expiration_date_0" xml:space="preserve">
-    <value>Volume expiration date: {0}</value>
+    <value>[slateblue1]Volume expiration date:[/] [yellow]{0}[/]</value>
   </data>
     <data name="Volume_does_not_expire" xml:space="preserve">
-    <value>Volume does not expire.</value>
+    <value>[slateblue1]Volume does not expire.[/]</value>
   </data>
     <data name="Volume_effective_date_0" xml:space="preserve">
-    <value>Volume effective date: {0}</value>
+    <value>[slateblue1]Volume effective date:[/] [yellow]{0}[/]</value>
   </data>
     <data name="Volume_has_always_been_effective" xml:space="preserve">
-    <value>Volume has always been effective.</value>
+    <value>[slateblue1]Volume has always been effective.[/]</value>
   </data>
     <data name="Volume_has_0_blocks_of_1_bytes_each" xml:space="preserve">
-    <value>Volume has {0} blocks of {1} bytes each</value>
+    <value>[slateblue1]Volume has [violet]{0}[/] blocks of [lime]{1}[/] bytes each[/]</value>
   </data>
     <data name="JOLIET_VOLUME_DESCRIPTOR_INFORMATION" xml:space="preserve">
-    <value>JOLIET VOLUME DESCRIPTOR INFORMATION:</value>
+    <value>[slateblue1]JOLIET VOLUME DESCRIPTOR INFORMATION:[/]</value>
   </data>
     <data name="JOLIET_VOLUME_DESCRIPTOR_INFORMATION_border" xml:space="preserve">
-    <value>-------------------------------------</value>
+    <value>[slateblue1]-------------------------------------[/]</value>
   </data>
     <data name="EL_TORITO_INFORMATION" xml:space="preserve">
-    <value>EL TORITO INFORMATION:</value>
+    <value>[slateblue1]EL TORITO INFORMATION:[/]</value>
   </data>
     <data name="EL_TORITO_INFORMATION_border" xml:space="preserve">
-    <value>----------------------</value>
+    <value>[slateblue1]----------------------[/]</value>
   </data>
     <data name="Initial_entry" xml:space="preserve">
-    <value>Initial entry:</value>
+    <value>[slateblue1]Initial entry:[/]</value>
   </data>
     <data name="Developer_ID_0" xml:space="preserve">
-    <value>Developer ID: {0}</value>
+    <value>[slateblue1]Developer ID: [green]{0}[/]</value>
   </data>
     <data name="Bootable_on_0" xml:space="preserve">
-    <value>Bootable on {0}</value>
+    <value>[slateblue1]Bootable on[/] [rosybrown]{0}[/]</value>
   </data>
     <data name="Bootable_image_starts_at_sector_0_and_runs_for_1_sectors" xml:space="preserve">
-    <value>Bootable image starts at sector {0} and runs for {1} sectors</value>
+    <value>[slateblue1]Bootable image starts at sector [violet]{0}[/] and runs for [lime]{1}[/] sectors[/]</value>
   </data>
     <data name="Bootable_image_will_be_loaded_at_segment_0" xml:space="preserve">
-    <value>Bootable image will be loaded at segment {0:X4}h</value>
+    <value>[slateblue1]Bootable image will be loaded at segment[/] [aqua]{0:X4}h[/]</value>
   </data>
     <data name="Bootable_image_will_be_loaded_at_0" xml:space="preserve">
-    <value>Bootable image will be loaded at 0x{0:X8}</value>
+    <value>[slateblue1]Bootable image will be loaded at[/] [aqua]0x{0:X8}[/]</value>
   </data>
     <data name="Image_uses_no_emulation" xml:space="preserve">
-    <value>Image uses no emulation</value>
+    <value>[slateblue1]Image uses no emulation[/]</value>
   </data>
     <data name="Image_emulates_a_high_density_MD2HD_floppy" xml:space="preserve">
-    <value>Image emulates a 5.25" high-density (MD2HD, 1.2Mb) floppy</value>
+    <value>[slateblue1]Image emulates a 5.25" high-density (MD2HD, 1.2Mb) floppy[/]</value>
   </data>
     <data name="Image_emulates_a_high_density_MF2HD_floppy" xml:space="preserve">
-    <value>Image emulates a 3.5" high-density (MF2HD, 1.44Mb) floppy</value>
+    <value>[slateblue1]Image emulates a 3.5" high-density (MF2HD, 1.44Mb) floppy[/]</value>
   </data>
     <data name="Image_emulates_a_extra_density_MF2ED_floppy" xml:space="preserve">
-    <value>Image emulates a 3.5" extra-density (MF2ED, 2.88Mb) floppy</value>
+    <value>[slateblue1]Image emulates a 3.5" extra-density (MF2ED, 2.88Mb) floppy[/]</value>
   </data>
     <data name="Image_uses_unknown_emulation_type_0" xml:space="preserve">
-    <value>Image uses unknown emulation type {0}</value>
+    <value>[slateblue1]Image uses unknown emulation type[/] [yellow]{0}[/]</value>
   </data>
     <data name="System_type_0" xml:space="preserve">
-    <value>System type: 0x{0:X2}</value>
+    <value>[slateblue1]System type:[/] [red]0x{0:X2}[/]</value>
   </data>
     <data name="Bootable_image_SHA1_0" xml:space="preserve">
-    <value>Bootable image's SHA1: {0}</value>
+    <value>[slateblue1]Bootable image's SHA1:[/] [purple]{0}[/]</value>
   </data>
     <data name="Not_bootable" xml:space="preserve">
-    <value>Not bootable</value>
+    <value>[red]Not bootable[/]</value>
   </data>
     <data name="Boot_section_0" xml:space="preserve">
-    <value>Boot section {0}:</value>
+    <value>[slateblue1]Boot section [fuchsia]{0}[/]:[/]</value>
   </data>
     <data name="Section_ID_0" xml:space="preserve">
-    <value>Section ID: {0}</value>
+    <value>[slateblue1]Section ID:[/] [darkgreen]{0}[/]</value>
   </data>
     <data name="Entry_0" xml:space="preserve">
-    <value>Entry {0}:</value>
+    <value>[slateblue1]Entry [cyan]{0}[/]:[/]</value>
   </data>
     <data name="Selection_criteria_type_0" xml:space="preserve">
-    <value>Selection criteria type: {0}</value>
+    <value>[slateblue1]Selection criteria type:[/] [gold3]{0}[/]</value>
   </data>
     <data name="Image_contains_ATAPI_drivers" xml:space="preserve">
-    <value>Image contains ATAPI drivers</value>
+    <value>[slateblue1]Image contains ATAPI drivers[/]</value>
   </data>
     <data name="Image_contains_SCSI_drivers" xml:space="preserve">
-    <value>Image contains SCSI drivers</value>
+    <value>[slateblue1]Image contains SCSI drivers[/]</value>
   </data>
     <data name="tor_Sector_0_Cooked_Mode_zero_one_Mode_two_Form_one" xml:space="preserve">
     <value>Sector {0}, Cooked, Mode 0/1 / Mode 2 Form 1</value>

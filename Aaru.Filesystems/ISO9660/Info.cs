@@ -171,7 +171,7 @@ public sealed partial class ISO9660
 
                     if(encoding.GetString(bvd.Value.system_id)[..23] == "EL TORITO SPECIFICATION")
                     {
-                        bootSpec = "El Torito";
+                        bootSpec = "[green]El Torito[/]";
 
                         torito =
                             Marshal.ByteArrayToStructureLittleEndian<ElToritoBootRecord>(vdSector, hsOff, 2048 - hsOff);

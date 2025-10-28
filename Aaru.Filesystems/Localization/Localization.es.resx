@@ -63,7 +63,7 @@
     <value>Sistema de ficheros de Amiga DOS</value>
   </data>
     <data name="Amiga_extensions_present" xml:space="preserve">
-    <value>Extensiones de Amiga presentes.</value>
+    <value>[fuchsia]Extensiones de Amiga presentes.[/]</value>
   </data>
     <data name="Amiga_Fast_File_System" xml:space="preserve">
     <value>Sistema de ficheros rápido de Amiga</value>
@@ -105,19 +105,19 @@
     <value>Sistema de ficheros de Apple Macintosh</value>
   </data>
     <data name="Apple_extensions_present" xml:space="preserve">
-    <value>Extensiones de Apple presentes.</value>
+    <value>[fuchsia]Extensiones de Apple presentes.[/]</value>
   </data>
     <data name="Apple_File_System" xml:space="preserve">
     <value>Sistema de ficheros Apple (APFS)</value>
   </data>
     <data name="Application_identifier_0" xml:space="preserve">
-    <value>Identificador de aplicación: {0}</value>
+    <value>[slateblue1]Identificador de aplicación:[/] [green]{0}[/]</value>
   </data>
     <data name="Apricot_FAT12" xml:space="preserve">
     <value>FAT12 de Apricot</value>
   </data>
     <data name="Arbitrary_Attribute_Interchange_Protocol_present" xml:space="preserve">
-    <value>Protocolo de Intercambio de Atributos Arbitrarios presente.</value>
+    <value>[fuchsia]Protocolo de Intercambio de Atributos Arbitrarios presente.[/]</value>
   </data>
     <data name="ASCII" xml:space="preserve">
     <value>ASCII</value>
@@ -207,19 +207,19 @@
     <value>Tamaño del bloque: {0} bytes</value>
   </data>
     <data name="Bootable_image_SHA1_0" xml:space="preserve">
-    <value>SHA1 de la imagen de arranque: {0}</value>
+    <value>[slateblue1]SHA1 de la imagen de arranque:[/] [purple]{0}[/]</value>
   </data>
     <data name="Bootable_image_starts_at_sector_0_and_runs_for_1_sectors" xml:space="preserve">
-    <value>La imagen de arranque comienza en el sector {0} y ocupa {1} sectores</value>
+    <value>[slateblue1]La imagen de arranque comienza en el sector [violet]{0}[/] y ocupa [lime]{1}[/] sectores[/]</value>
   </data>
     <data name="Bootable_image_will_be_loaded_at_0" xml:space="preserve">
-    <value>La imagen de arranque se cargará en 0x{0:X8}</value>
+    <value>[slateblue1]La imagen de arranque se cargará en[/] [aqua]0x{0:X8}[/]</value>
   </data>
     <data name="Bootable_image_will_be_loaded_at_segment_0" xml:space="preserve">
-    <value>La imagen de arranque se cargará en el segmento {0:X4}h</value>
+    <value>[slateblue1]La imagen de arranque se cargará en el segmento[/] [aqua]{0:X4}h[/]</value>
   </data>
     <data name="Bootable_on_0" xml:space="preserve">
-    <value>Arrancable en {0}</value>
+    <value>[slateblue1]Arrancable en[/] [rosybrown]{0}[/]</value>
   </data>
     <data name="Bootblock_points_to_0_as_Rootblock" xml:space="preserve">
     <value>El bloque de arranque apunta a {0} como el bloque raíz</value>
@@ -267,7 +267,7 @@
     <value>El programa de arranque se cargará en la dirección {0:X4}h</value>
   </data>
     <data name="Boot_section_0" xml:space="preserve">
-    <value>Sección de arranque {0}:</value>
+    <value>[slateblue1]Sección de arranque [fuchsia]{0}[/]:[/]</value>
   </data>
     <data name="Boot_volume_is_inconsistent" xml:space="preserve">
     <value>El volumen de arranque es inconsistente.</value>
@@ -318,10 +318,10 @@
     <value>Sistema de ficheros de Commodore</value>
   </data>
     <data name="CD_i_file_system" xml:space="preserve">
-    <value>Sistema de ficheros de CD-i</value>
+    <value>[bold][fuchsia]Sistema de ficheros de CD-i[/][/]</value>
   </data>
     <data name="CD_ROM_XA_extensions_present" xml:space="preserve">
-    <value>Extensiones CD-ROM XA presentes.</value>
+    <value>[fuchsia]Extensiones CD-ROM XA presentes.[/]</value>
   </data>
     <data name="channel" xml:space="preserve">
     <value>canal</value>
@@ -399,10 +399,10 @@
     <value>El contenedor tiene {0} bytes en {1} bloques.</value>
   </data>
     <data name="Contains_Enhanced_Volume_Descriptor" xml:space="preserve">
-    <value>Contiene Descriptor Mejorado de Volumen.</value>
+    <value>[fuchsia]Contiene Descriptor Mejorado de Volumen.[/]</value>
   </data>
     <data name="Contains_Volume_Partition_Descriptor" xml:space="preserve">
-    <value>Contiene Descriptor de Partición de Volumen.</value>
+    <value>[fuchsia]Contiene Descriptor de Partición de Volumen.[/]</value>
   </data>
     <data name="Copyright_0" xml:space="preserve">
     <value>Copyright: {0}</value>
@@ -477,7 +477,7 @@
     <value>Tamaño del grupo del fork de datos: {0} bytes</value>
   </data>
     <data name="Data_preparer_identifier_0" xml:space="preserve">
-    <value>Identificador del preparador de los datos: {0}</value>
+    <value>[slateblue1]Identificador del preparador de los datos:[/] [green]{0}[/]</value>
   </data>
     <data name="Data_starts_at_block_0" xml:space="preserve">
     <value>Los datos comienzan en el bloque {0}</value>
@@ -531,10 +531,10 @@
     <value>Código de densidad: {0}</value>
   </data>
     <data name="Description_0" xml:space="preserve">
-    <value>Descripción: {0}</value>
+    <value>[slateblue1]Descripción:[/] [navy]{0}[/]</value>
   </data>
     <data name="Developer_ID_0" xml:space="preserve">
-    <value>ID del desarrollador: {0}</value>
+    <value>[slateblue1]ID del desarrollador:[/] [green]{0}[/]</value>
   </data>
     <data name="Device_is_too_small" xml:space="preserve">
     <value>El dispositivo es demasiado pequeño</value>
@@ -580,7 +580,7 @@
     <value>Nombre de fichero del desensamblador: {0}</value>
   </data>
     <data name="Disc_bootable_following_0_specifications" xml:space="preserve">
-    <value>El disco arranca siguiendo las especificaciones {0}.</value>
+    <value>[fuchsia]El disco arranca siguiendo las especificaciones {0}.[fuchsia]</value>
   </data>
     <data name="Disc_ID_is_0" xml:space="preserve">
     <value>El ID del disco es {0}</value>
@@ -718,13 +718,13 @@
     <value>Extensión del Sistema de Ficheros de Extents (EFS)</value>
   </data>
     <data name="EL_TORITO_INFORMATION" xml:space="preserve">
-    <value>INFORMACIÓN DE EL TORITO:</value>
+    <value>[slateblue1]INFORMACIÓN DE EL TORITO:[/]</value>
   </data>
     <data name="EL_TORITO_INFORMATION_border" xml:space="preserve">
-    <value>-------------------------</value>
+    <value>[slateblue1]-------------------------[/]</value>
   </data>
     <data name="Entry_0" xml:space="preserve">
-    <value>Entrada {0}:</value>
+    <value>[slateblue1]Entrada [cyan]{0}[/]:[/]</value>
   </data>
     <data name="Epoch_high_0" xml:space="preserve">
     <value>Época alta {0}</value>
@@ -736,7 +736,7 @@
     <value>Error {0} leyendo el fichero de Registros-S</value>
   </data>
     <data name="ERROR_Could_not_find_primary_volume_descriptor" xml:space="preserve">
-    <value>ERROR: No se pudo encontrar el descriptor primario de volumen</value>
+    <value>[red]ERROR: No se pudo encontrar el descriptor primario de volumen[/]</value>
   </data>
     <data name="ESRB_age_rating_is_0" xml:space="preserve">
     <value>La recomendación de edad del ESRB es {0}</value>
@@ -772,7 +772,7 @@
     <value>Los atributos extendidos puede residir en el inodo (ext4)</value>
   </data>
     <data name="Extension_0" xml:space="preserve">
-    <value>Extensión: {0}</value>
+    <value>[slateblue1]Extensión:[/] [green]{0}[/]</value>
   </data>
     <data name="Extents_File_is_0_bytes" xml:space="preserve">
     <value>El Archivo de Extents ocupa {0} bytes.</value>
@@ -901,10 +901,10 @@
     <value>Protección de fichero: 0x{0:X4}</value>
   </data>
     <data name="FILE_STRUCTURE_VOLUME_DESCRIPTOR_INFORMATION" xml:space="preserve">
-    <value>DESCRIPTOR DE INFORMACIÓN DE LA ESTRUCTURA DE FICHEROS DEL VOLUMEN:</value>
+    <value>[slateblue1]DESCRIPTOR DE INFORMACIÓN DE LA ESTRUCTURA DE FICHEROS DEL VOLUMEN:[/]</value>
   </data>
     <data name="FILE_STRUCTURE_VOLUME_DESCRIPTOR_INFORMATION_border" xml:space="preserve">
-    <value>-------------------------------------------------------------------</value>
+    <value>[slateblue1]-------------------------------------------------------------------[/]</value>
   </data>
     <data name="File_system_initialized_by_DOS_release_0" xml:space="preserve">
     <value>El sistema de ficheros fue inicializado por la versión de DOS {0}</value>
@@ -1138,7 +1138,7 @@
     <value>La marca de nivel máximo se desactivará</value>
   </data>
     <data name="High_Sierra_Format_file_system" xml:space="preserve">
-    <value>Sistema de ficheros del Formato High Sierra</value>
+    <value>[bold][fuchsia]Sistema de ficheros del Formato High Sierra[/][/]</value>
   </data>
     <data name="Hotfixes_are_in_use" xml:space="preserve">
     <value>Hay revisiones en uso</value>
@@ -1168,28 +1168,28 @@
     <value>Identificador: {0}</value>
   </data>
     <data name="ID_0_version_1" xml:space="preserve">
-    <value>ID: {0}, versión {1}</value>
+    <value>[slateblue1]ID: [lime]{0}[/], versión [blue]{1}[/][/]</value>
   </data>
     <data name="Image_contains_ATAPI_drivers" xml:space="preserve">
-    <value>La imagen contiene controladores ATAPI</value>
+    <value>[slateblue1]La imagen contiene controladores ATAPI[/]</value>
   </data>
     <data name="Image_contains_SCSI_drivers" xml:space="preserve">
-    <value>La imagen contiene controladores SCSI</value>
+    <value>[slateblue1]La imagen contiene controladores SCSI[/]</value>
   </data>
     <data name="Image_emulates_a_extra_density_MF2ED_floppy" xml:space="preserve">
-    <value>La imagen emula un disquete de 3,5" de densidad extra (MF2ED, 2,88Mb)</value>
+    <value>[slateblue1]La imagen emula un disquete de 3,5" de densidad extra (MF2ED, 2,88Mb)[/]</value>
   </data>
     <data name="Image_emulates_a_high_density_MD2HD_floppy" xml:space="preserve">
-    <value>La imagen emula un disquete de 5,25" de alta densidad (MD2HD, 1,2Mb)</value>
+    <value>[slateblue1]La imagen emula un disquete de 5,25" de alta densidad (MD2HD, 1,2Mb)[/]</value>
   </data>
     <data name="Image_emulates_a_high_density_MF2HD_floppy" xml:space="preserve">
-    <value>La imagen emula un disquete de 3,5" de alta densidad (MF2HD, 1,44Mb)</value>
+    <value>[slateblue1]La imagen emula un disquete de 3,5" de alta densidad (MF2HD, 1,44Mb)[/]</value>
   </data>
     <data name="Image_uses_no_emulation" xml:space="preserve">
-    <value>La imagen no usa emulación</value>
+    <value>[slateblue1]La imagen no usa emulación[/]</value>
   </data>
     <data name="Image_uses_unknown_emulation_type_0" xml:space="preserve">
-    <value>La imagen usa un tipo de emulación desconocido ({0})</value>
+    <value>[slateblue1]La imagen usa un tipo de emulación desconocido ([yellow]{0}[/])[/]</value>
   </data>
     <data name="imagic_inodes__" xml:space="preserve">
     <value>Tiene un mapa entre inodos y AFS (tabla de inodos i-mágicos)</value>
@@ -1226,7 +1226,7 @@
     <value>Tamaño de los índices de inodos: {0} bloques (debería ser 1)</value>
   </data>
     <data name="Initial_entry" xml:space="preserve">
-    <value>Entrada inicial:</value>
+    <value>[slateblue1]Entrada inicial:[/]</value>
   </data>
     <data name="inode_block_LBA_0" xml:space="preserve">
     <value>LBA del bloque de inodo: {0}</value>
@@ -1244,7 +1244,7 @@
     <value>Instalar límites DASD</value>
   </data>
     <data name="ISO9660_file_system" xml:space="preserve">
-    <value>Sistema de ficheros ISO9660</value>
+    <value>[bold][fuchsia]Sistema de ficheros ISO9660[/][/]</value>
   </data>
     <data name="I_will_try_to_guess_which_one_it_is_but_unless_its_UFS2_I_may_be_surely_wrong" xml:space="preserve">
     <value>Intentaré adivinar cuál es, pero si no es UFS2, probablemente me equivoque</value>
@@ -1259,13 +1259,13 @@
     <value>Extensión JFS</value>
   </data>
     <data name="Joliet_extensions_present" xml:space="preserve">
-    <value>Extensiones Joliet presentes.</value>
+    <value>[fuchsia]Extensiones Joliet presentes.[/]</value>
   </data>
     <data name="JOLIET_VOLUME_DESCRIPTOR_INFORMATION" xml:space="preserve">
-    <value>DESCRIPTOR JOLIET DE INFORMACIÓN DEL VOLUMEN:</value>
+    <value>[slateblue1]DESCRIPTOR JOLIET DE INFORMACIÓN DEL VOLUMEN:[/]</value>
   </data>
     <data name="JOLIET_VOLUME_DESCRIPTOR_INFORMATION_border" xml:space="preserve">
-    <value>---------------------------------------------</value>
+    <value>[slateblue1]---------------------------------------------[/]</value>
   </data>
     <data name="Journal_backup_type_0" xml:space="preserve">
     <value>Tipo de respaldo del registro: {0}</value>
@@ -1643,7 +1643,7 @@
     <value>No es un sistema de ficheros UFS, ¡no debería haber llegado aquí!</value>
   </data>
     <data name="Not_bootable" xml:space="preserve">
-    <value>No es arrancable</value>
+    <value>[red]No es arrancable[/]</value>
   </data>
     <data name="NSPF_0" xml:space="preserve">
     <value>NSPF: 0x{0:X8}</value>
@@ -1772,7 +1772,7 @@
     <value>Publicado por {0}</value>
   </data>
     <data name="Publisher_identifier_0" xml:space="preserve">
-    <value>Identificador del publicador: {0}</value>
+    <value>[slateblue1]Identificador del publicador:[/] [green]{0}[/]</value>
   </data>
     <data name="PVD_does_not_point_to_correct_root_directory_checking_path_table" xml:space="preserve">
     <value>DVP no apunta a un directorio raíz correcto, comprobando tabla de rutas...</value>
@@ -1880,7 +1880,7 @@
     <value>Resincronizar límites DASD</value>
   </data>
     <data name="Rock_Ridge_Interchange_Protocol_present" xml:space="preserve">
-    <value>Protocolo de Intercambio Rock Ridge presente.</value>
+    <value>[fuchsia]Protocolo de Intercambio Rock Ridge presente.[/]</value>
   </data>
     <data name="Root_block_checksum_is_0" xml:space="preserve">
     <value>El checksum del bloque raíz es 0x{0:X8}</value>
@@ -1959,7 +1959,7 @@
     <value>La 2ª FAT comienza en {0}</value>
   </data>
     <data name="Section_ID_0" xml:space="preserve">
-    <value>ID de sección: {0}</value>
+    <value>[slateblue1]ID de sección:[/] [darkgreen]{0}[/]</value>
   </data>
     <data name="Sectors_allocated_at_most_in_track_0" xml:space="preserve">
     <value>Máximo de {0} sectores asginados en una pista</value>
@@ -2004,7 +2004,7 @@
     <value>Máscara de seguridad: 0x{0:X8}</value>
   </data>
     <data name="Selection_criteria_type_0" xml:space="preserve">
-    <value>Tipo de criterio de selección: {0}</value>
+    <value>[slateblue1]Tipo de criterio de selección:[/] [gold3]{0}[/]</value>
   </data>
     <data name="Serial_0_X16" xml:space="preserve">
     <value>Serie: 0x{0:X16}</value>
@@ -2055,7 +2055,7 @@
     <value>Sistema de ficheros Solar_OS</value>
   </data>
     <data name="Source_0" xml:space="preserve">
-    <value>Origen: {0}</value>
+    <value>[slateblue1]Origen:[/] [red]{0}[/]</value>
   </data>
     <data name="SpareBlock_CRC32_0" xml:space="preserve">
     <value>CRC32 del Bloque Reserva: {0:X8}</value>
@@ -2133,22 +2133,22 @@
     <value>La pila del sistema se extenderá {0} bytes y una {1} fracción de la RAM disponible</value>
   </data>
     <data name="System_identifier_0" xml:space="preserve">
-    <value>Identificador del sistema: {0}</value>
+    <value>[slateblue1]Identificador del sistema:[/] [green]{0}[/]</value>
   </data>
     <data name="System_owner_group_world" xml:space="preserve">
     <value>Sistema, dueño, grupo, mundo</value>
   </data>
     <data name="System_type_0" xml:space="preserve">
-    <value>Tipo de sistema: 0x{0:X2}</value>
+    <value>[slateblue1]Tipo de sistema:[/] [red]0x{0:X2}[/]</value>
   </data>
     <data name="SYSTEM_USE_SHARING_PROTOCOL_INFORMATION" xml:space="preserve">
-    <value>INFORMACIÓN DEL PROTOCOLO DE USO COMPARTIDO DE SISTEMA:</value>
+    <value>[slateblue1]INFORMACIÓN DEL PROTOCOLO DE USO COMPARTIDO DE SISTEMA:[/]</value>
   </data>
     <data name="SYSTEM_USE_SHARING_PROTOCOL_INFORMATION_border" xml:space="preserve">
-    <value>-------------------------------------------------------</value>
+    <value>[slateblue1]-------------------------------------------------------[/]</value>
   </data>
     <data name="System_Use_Sharing_Protocol_present" xml:space="preserve">
-    <value>El Procolo de Uso Compartido de Sistema está presente.</value>
+    <value>[fuchsia]El Procolo de Uso Compartido de Sistema está presente.[/]</value>
   </data>
     <data name="System_V_Release_2_filesystem" xml:space="preserve">
     <value>Sistema de ficheros System V Release 2</value>
@@ -2190,13 +2190,13 @@
     <value>El bloque hogar está en el sector {0} (VBN {1})</value>
   </data>
     <data name="This_is_a_SegaCD_MegaCD_disc" xml:space="preserve">
-    <value>Este es un disco de SegaCD / MegaCD.</value>
+    <value>[fuchsia]Este es un disco de SegaCD / MegaCD.[/]</value>
   </data>
     <data name="This_is_a_Sega_Dreamcast_disc" xml:space="preserve">
-    <value>Este es un disco de Sega Dreamcast.</value>
+    <value>[fuchsia]Este es un disco de Sega Dreamcast.[/]</value>
   </data>
     <data name="This_is_a_Sega_Saturn_disc" xml:space="preserve">
-    <value>Este es un disco de Sega Saturn.</value>
+    <value>[fuchsia]Este es un disco de Sega Saturn.[/]</value>
   </data>
     <data name="This_is_the_primary_pack" xml:space="preserve">
     <value>Este es el paquete primario</value>
@@ -2378,7 +2378,7 @@
     <value>Banderas activadas desconocidas: {0:X8}</value>
   </data>
     <data name="Unknown_specification" xml:space="preserve">
-    <value>Desconocida</value>
+    <value>[yellow]Desconocida[/]</value>
   </data>
     <data name="Unknown_structures" xml:space="preserve">
     <value>Estructuras desconocidas:</value>
@@ -2576,13 +2576,13 @@
     <value>El volumen se creó usando el núcleo versión: {0}</value>
   </data>
     <data name="Volume_creation_date_0" xml:space="preserve">
-    <value>Fecha de creación del volumen: {0}</value>
+    <value>[slateblue1]Fecha de creación del volumen:[/] [yellow]{0}[/]</value>
   </data>
     <data name="VOLUME_DESCRIPTOR_INFORMATION" xml:space="preserve">
-    <value>INFORMACIÓN DEL DESCRIPTOR DEL VOLUMEN:</value>
+    <value>[slateblue1]INFORMACIÓN DEL DESCRIPTOR DEL VOLUMEN:[/]</value>
   </data>
     <data name="VOLUME_DESCRIPTOR_INFORMATION_border" xml:space="preserve">
-    <value>---------------------------------------</value>
+    <value>[slateblue1]---------------------------------------[/]</value>
   </data>
     <data name="Volume_disk_format_0" xml:space="preserve">
     <value>Formato del disco del volumen: {0}</value>
@@ -2591,7 +2591,7 @@
     <value>El volumen no graba en el registro</value>
   </data>
     <data name="Volume_does_not_expire" xml:space="preserve">
-    <value>El volumen no caduca.</value>
+    <value>[slateblue1]El volumen no caduca.[/]</value>
   </data>
     <data name="Volume_does_not_need_cache" xml:space="preserve">
     <value>El volumen no necesita caché.</value>
@@ -2600,13 +2600,13 @@
     <value>Volumen edición {0}</value>
   </data>
     <data name="Volume_effective_date_0" xml:space="preserve">
-    <value>Fecha efectiva del volumen: {0}</value>
+    <value>[slateblue1]Fecha efectiva del volumen:[/] [yellow]{0}[/]</value>
   </data>
     <data name="Volume_ends_at_0" xml:space="preserve">
     <value>El volumen termina en el {0}</value>
   </data>
     <data name="Volume_expiration_date_0" xml:space="preserve">
-    <value>Fecha de expiración del volumen: {0}</value>
+    <value>[slateblue1]Fecha de expiración del volumen:[/] [yellow]{0}[/]</value>
   </data>
     <data name="Volume_flags_0_X2" xml:space="preserve">
     <value>Banderas del volumen: 0x{0:X2}</value>
@@ -2627,7 +2627,7 @@
     <value>El volumen tiene {0} bloques ({1} bytes)</value>
   </data>
     <data name="Volume_has_0_blocks_of_1_bytes_each" xml:space="preserve">
-    <value>El volumen tiene {0} bloques de {1} bytes cada uno</value>
+    <value>[slateblue1]El volumen tiene [violet]{0}[/] bloques de [lime]{1}[/] bytes cada uno[/]</value>
   </data>
     <data name="Volume_has_0_blocks_of_1_bytes_each_total_2_bytes" xml:space="preserve">
     <value>El volumen tiene {0} bloques de {1} bytes cada uno ({2} bytes totales)</value>
@@ -2681,7 +2681,7 @@
     <value>El volumen tiene {0} sectores de {1} bytes cada uno para un total de {2} bytes</value>
   </data>
     <data name="Volume_has_always_been_effective" xml:space="preserve">
-    <value>El volumen siempre ha sido efectivo.</value>
+    <value>[slateblue1]El volumen siempre ha sido efectivo.[/]</value>
   </data>
     <data name="Volume_has_bad_current_secondary_ait" xml:space="preserve">
     <value>El volumen tiene la AIT secundaria actual dañada</value>
@@ -2729,7 +2729,7 @@
     <value>El volumen no ha sido desmontado limpiamente</value>
   </data>
     <data name="Volume_has_not_been_modified" xml:space="preserve">
-    <value>El volumen no ha sido modificado.</value>
+    <value>[slateblue1]El volumen no ha sido modificado.[/]</value>
   </data>
     <data name="Volume_has_no_maximum_no_of_mounts_before_checking" xml:space="preserve">
     <value>El volumen no tiene un nº máximo de montajes antes de ser comprobado</value>
@@ -2747,7 +2747,7 @@
     <value>El bloque de identificación del volumen fue escrito por última vez el {0}</value>
   </data>
     <data name="Volume_identifier_0" xml:space="preserve">
-    <value>Identificador del volumen: {0}</value>
+    <value>[slateblue1]Identificador del volumen:[/] [green]{0}[/]</value>
   </data>
     <data name="Volume_identifier_0_X8" xml:space="preserve">
     <value>Identificador del volumen: 0x{0:X8}</value>
@@ -2891,7 +2891,7 @@
     <value>El volumen fue escrito por última vez el {0}</value>
   </data>
     <data name="Volume_modification_date_0" xml:space="preserve">
-    <value>Fecha de modificación del volumen: {0}</value>
+    <value>[slateblue1]Fecha de modificación del volumen:[/] [yellow]{0}[/]</value>
   </data>
     <data name="Volume_moves_deleted_files_to_a_recycled_folder" xml:space="preserve">
     <value>El volumen mueve los archivos eliminados a una carpeta de reciclaje</value>
@@ -3156,7 +3156,7 @@
     <value>Extensión del sistema de ficheros ZFS</value>
   </data>
     <data name="zisofs_compression_present" xml:space="preserve">
-    <value>Compresión zisofs presente.</value>
+    <value>[fuchsia]Compresión zisofs presente.[/]</value>
   </data>
     <data name="_0_1_equals_unknown_data_type_2" xml:space="preserve">
     <value>{0}[{1}] = Tipo de datos desconocido {2}</value>
