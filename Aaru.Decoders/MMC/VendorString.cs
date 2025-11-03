@@ -43,9 +43,21 @@ public static class VendorString
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public static string Prettify(byte mmcVendorId) => mmcVendorId switch
                                                        {
+                                                           0x01 => "Samsung",
+                                                           0x02 => "Toshiba",
+                                                           0x04 => "SanDisk",
+                                                           0x06 => "",
                                                            0x07 => "Nokia",
+                                                           0x13 => "Kingston",
                                                            0x15 => "Samsung",
+                                                           0x18 => "Intel",
+                                                           0x1B => "Micron",
+                                                           0x1D => "STMicroelectronics",
+                                                           0x1F => "Numonyx",
                                                            0x2C => "extreMEmory",
+                                                           0x45 => "SKHynix",
+                                                           0x88 => "Intel",
+                                                           0x90 => "Western Digital",
                                                            _ => string.Format(Localization.Unknown_manufacturer_ID_0,
                                                                               mmcVendorId)
                                                        };
