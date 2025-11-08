@@ -213,10 +213,8 @@ public static class ImageInfo
             AaruLogging.WriteLine(Localization.Core.Contains_0_readable_media_tags_WithMarkup,
                                   imageFormat.Info.ReadableMediaTags.Count);
 
-            foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.OrderBy(t => t))
-                AaruLogging.Write("[italic][rosybrown]{0}[/][/] ", Markup.Escape(tag.ToString()));
-
-            AaruLogging.WriteLine();
+            foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.OrderBy(static t => t.Humanize()))
+                AaruLogging.WriteLine("[italic][rosybrown]{0}[/][/]", Markup.Escape(tag.Humanize()));
         }
 
         if(imageFormat.Info.ReadableSectorTags is { Count: > 0 })
@@ -224,10 +222,8 @@ public static class ImageInfo
             AaruLogging.WriteLine(Localization.Core.Contains_0_readable_sector_tags_WithMarkup,
                                   imageFormat.Info.ReadableSectorTags.Count);
 
-            foreach(SectorTagType tag in imageFormat.Info.ReadableSectorTags.OrderBy(t => t))
-                AaruLogging.Write("[italic][rosybrown]{0}[/][/] ", Markup.Escape(tag.ToString()));
-
-            AaruLogging.WriteLine();
+            foreach(SectorTagType tag in imageFormat.Info.ReadableSectorTags.OrderBy(static t => t.Humanize()))
+                AaruLogging.WriteLine("[italic][rosybrown]{0}[/][/]", Markup.Escape(tag.Humanize()));
         }
 
         AaruLogging.WriteLine();
