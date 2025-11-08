@@ -76,15 +76,14 @@ public static class PMA
         if(decoded.DataLength + 2 != CDPMAResponse.Length)
         {
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization
-                                          .Expected_CD_PMA_size_0_bytes_is_not_received_size_1_bytes_not_decoding,
-                                       decoded.DataLength + 2,
-                                       CDPMAResponse.Length);
+                              Localization.Expected_CD_PMA_size_0_bytes_is_not_received_size_1_bytes_not_decoding,
+                              decoded.DataLength + 2,
+                              CDPMAResponse.Length);
 
             return null;
         }
 
-        for(int i = 0; i < (decoded.DataLength - 2) / 11; i++)
+        for(var i = 0; i < (decoded.DataLength - 2) / 11; i++)
         {
             decoded.PMADescriptors[i].Reserved = CDPMAResponse[0 + i * 11 + 4];
             decoded.PMADescriptors[i].ADR      = (byte)((CDPMAResponse[1 + i * 11 + 4] & 0xF0) >> 4);
@@ -319,7 +318,7 @@ public static class PMA
 
                     break;
                 case 2:
-                    uint id = (uint)((descriptor.Min << 16) + (descriptor.Sec << 8) + descriptor.Frame);
+                    var id = (uint)((descriptor.Min << 16) + (descriptor.Sec << 8) + descriptor.Frame);
                     sb.AppendFormat(Localization.Disc_ID_0_X6, id & 0x00FFFFFF).AppendLine();
 
                     break;
@@ -423,18 +422,18 @@ public static class PMA
                     break;
                 default:
 
-                    sb.AppendLine($"ADR = {descriptor.ADR}");
-                    sb.AppendLine($"CONTROL = {descriptor.CONTROL}");
-                    sb.AppendLine($"TNO = {descriptor.TNO}");
-                    sb.AppendLine($"POINT = {descriptor.POINT}");
-                    sb.AppendLine($"Min = {descriptor.Min}");
-                    sb.AppendLine($"Sec = {descriptor.Sec}");
-                    sb.AppendLine($"Frame = {descriptor.Frame}");
-                    sb.AppendLine($"HOUR = {descriptor.HOUR}");
-                    sb.AppendLine($"PHOUR = {descriptor.PHOUR}");
-                    sb.AppendLine($"PMIN = {descriptor.PMIN}");
-                    sb.AppendLine($"PSEC = {descriptor.PSEC}");
-                    sb.AppendLine($"PFRAME = {descriptor.PFRAME}");
+                    sb.AppendLine($"    [rosybrown]ADR[/] = [teal]{descriptor.ADR}[/]");
+                    sb.AppendLine($"[rosybrown]CONTROL[/] = [teal]{descriptor.CONTROL}[/]");
+                    sb.AppendLine($"    [rosybrown]TNO[/] = [teal]{descriptor.TNO}[/]");
+                    sb.AppendLine($"  [rosybrown]POINT[/] = [teal]{descriptor.POINT}[/]");
+                    sb.AppendLine($"    [rosybrown]Min[/] = [teal]{descriptor.Min}[/]");
+                    sb.AppendLine($"    [rosybrown]Sec[/] = [teal]{descriptor.Sec}[/]");
+                    sb.AppendLine($"  [rosybrown]Frame[/] = [teal]{descriptor.Frame}[/]");
+                    sb.AppendLine($"   [rosybrown]HOUR[/] = [teal]{descriptor.HOUR}[/]");
+                    sb.AppendLine($"  [rosybrown]PHOUR[/] = [teal]{descriptor.PHOUR}[/]");
+                    sb.AppendLine($"   [rosybrown]PMIN[/] = [teal]{descriptor.PMIN}[/]");
+                    sb.AppendLine($"   [rosybrown]PSEC[/] = [teal]{descriptor.PSEC}[/]");
+                    sb.AppendLine($" [rosybrown]PFRAME[/] = [teal]{descriptor.PFRAME}[/]");
 
                     break;
             }
