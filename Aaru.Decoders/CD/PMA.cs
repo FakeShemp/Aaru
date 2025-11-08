@@ -9,7 +9,7 @@
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     Decodes CD Power Management Area.
+//     Decodes CD Program Memory Area.
 //
 // --[ License ] --------------------------------------------------------------
 //

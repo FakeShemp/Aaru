@@ -6803,9 +6803,9 @@ namespace Aaru.Localization {
             }
         }
         
-        public static string CompactDisc_Power_Management_Area_contained_in_image_WithMarkup {
+        public static string CompactDisc_Program_Memory_Area_contained_in_image_WithMarkup {
             get {
-                return ResourceManager.GetString("CompactDisc_Power_Management_Area_contained_in_image_WithMarkup", resourceCulture);
+                return ResourceManager.GetString("CompactDisc_Program_Memory_Area_contained_in_image_WithMarkup", resourceCulture);
             }
         }
         

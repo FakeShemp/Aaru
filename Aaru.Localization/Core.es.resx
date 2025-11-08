@@ -373,7 +373,7 @@
     <data name="CompactDisc_Media_Catalogue_Number_contained_in_image_0_WithMarkup" xml:space="preserve">
         <value>[bold][blue]Número de catálogo del CompactDisc contenido en la imagen:[/][/] [teal]{0}[/]</value>
     </data>
-    <data name="CompactDisc_Power_Management_Area_contained_in_image_WithMarkup" xml:space="preserve">
+    <data name="CompactDisc_Program_Memory_Area_contained_in_image_WithMarkup" xml:space="preserve">
         <value>[bold][blue]PMA del CompactDisc contenida en la imagen:[/][/]</value>
     </data>
     <data name="CompactDisc_Table_of_Contents_contained_in_image_WithMarkup" xml:space="preserve">

@@ -3472,8 +3472,8 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <data name="Drive_serial_number_0_WithMarkup" xml:space="preserve">
     <value>[bold]Drive serial number:[/] [italic]{0}[/]</value>
   </data>
-    <data name="CompactDisc_Power_Management_Area_contained_in_image_WithMarkup" xml:space="preserve">
-        <value>[bold][blue]CompactDisc Power Management Area contained in image:[/][/]</value>
+    <data name="CompactDisc_Program_Memory_Area_contained_in_image_WithMarkup" xml:space="preserve">
+        <value>[bold][blue]CompactDisc Program Memory Area contained in image:[/][/]</value>
     </data>
     <data name="Output_format_does_not_support_hidden_tracks" xml:space="preserve">
         <value>[red]Output format does not properly support storing hidden tracks, this will end in a loss of data, not continuing...[/]</value>

@@ -474,8 +474,7 @@ public static class ImageInfo
                     pma    = tmp;
                 }
 
-                AaruLogging.WriteLine(Localization.Core
-                                                  .CompactDisc_Power_Management_Area_contained_in_image_WithMarkup);
+                AaruLogging.WriteLine(Localization.Core.CompactDisc_Program_Memory_Area_contained_in_image_WithMarkup);
 
                 AaruLogging.Write("{0}", PMA.Prettify(pma));
                 AaruLogging.WriteLine();
