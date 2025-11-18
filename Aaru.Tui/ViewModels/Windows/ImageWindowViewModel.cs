@@ -31,14 +31,17 @@ using System.Windows.Input;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Tui.Models;
+using Aaru.Tui.ViewModels.Dialogs;
+using Aaru.Tui.Views.Dialogs;
 using Aaru.Tui.Views.Windows;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Humanizer;
 using Humanizer.Bytes;
-using Iciclecreek.Avalonia.WindowManager;
+using Prism.DryIoc;
 using Partition = Aaru.CommonTypes.Partition;
 
 namespace Aaru.Tui.ViewModels.Windows;
@@ -46,7 +49,6 @@ namespace Aaru.Tui.ViewModels.Windows;
 public sealed partial class ImageWindowViewModel : ViewModelBase
 {
     readonly IRegionManager _regionManager;
-    readonly ManagedWindow  _view;
     [ObservableProperty]
     public string _filePath;
     [ObservableProperty]
@@ -177,8 +179,12 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
         _ = Task.Run(Worker);
     }
 
-    Task HelpAsync() =>
-        /*
+    Task HelpAsync()
+    {
+        AvaloniaObject? view = (Application.Current as PrismApplication)?.MainWindow;
+
+        if(view is null) return Task.CompletedTask;
+
         var dialog = new ImageHelpDialog
         {
             DataContext = new ImageHelpDialogViewModel(null!)
@@ -187,8 +193,8 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
         // Set the dialog reference after creation
         ((ImageHelpDialogViewModel)dialog.DataContext!)._dialog = dialog;
 
-        return dialog.ShowDialog(_view);*/
-        Task.CompletedTask;
+        return dialog.ShowDialog(view as Window);
+    }
 
     void Worker()
     {

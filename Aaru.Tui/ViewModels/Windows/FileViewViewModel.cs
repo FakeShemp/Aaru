@@ -8,14 +8,18 @@ using Aaru.CommonTypes.Interfaces;
 using Aaru.Core;
 using Aaru.Helpers;
 using Aaru.Tui.Models;
+using Aaru.Tui.ViewModels.Dialogs;
+using Aaru.Tui.Views.Dialogs;
 using Aaru.Tui.Views.Windows;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Humanizer;
 using Humanizer.Bytes;
+using Prism.DryIoc;
 using Spectre.Console;
 using Color = Avalonia.Media.Color;
 
@@ -91,8 +95,13 @@ public sealed partial class FileViewViewModel : ViewModelBase
 
     public string? SelectedFileInformation => SelectedFile?.Information;
 
-    Task HelpAsync() =>
-        /*   var dialog = new MainHelpDialog
+    Task HelpAsync()
+    {
+        AvaloniaObject? view = (Application.Current as PrismApplication)?.MainWindow;
+
+        if(view is null) return Task.CompletedTask;
+
+        var dialog = new MainHelpDialog
         {
             DataContext = new MainHelpDialogViewModel(null!)
         };
@@ -100,11 +109,16 @@ public sealed partial class FileViewViewModel : ViewModelBase
         // Set the dialog reference after creation
         ((MainHelpDialogViewModel)dialog.DataContext!)._dialog = dialog;
 
-        return dialog.ShowDialog(_view);*/
-        Task.CompletedTask;
+        return dialog.ShowDialog(view as Window);
+    }
 
-    Task GoToPathAsync() =>
-        /*    var dialog = new GoToPathDialog
+    async Task GoToPathAsync()
+    {
+        AvaloniaObject? view = (Application.Current as PrismApplication)?.MainWindow;
+
+        if(view is null) return;
+
+        var dialog = new GoToPathDialog
         {
             DataContext = new GoToPathDialogViewModel(null!)
         };
@@ -112,7 +126,7 @@ public sealed partial class FileViewViewModel : ViewModelBase
         // Set the dialog reference after creation
         ((GoToPathDialogViewModel)dialog.DataContext!)._dialog = dialog;
 
-        bool? result = await dialog.ShowDialog<bool?>(_view);
+        bool? result = await dialog.ShowDialog<bool?>(view as Window);
 
         if(result == true)
         {
@@ -123,8 +137,8 @@ public sealed partial class FileViewViewModel : ViewModelBase
                 Environment.CurrentDirectory = viewModel.Path;
                 LoadFiles();
             }
-        }*/
-        Task.CompletedTask;
+        }
+    }
 
     void SectorView()
     {

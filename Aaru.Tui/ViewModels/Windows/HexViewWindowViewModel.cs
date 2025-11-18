@@ -33,10 +33,11 @@ using Aaru.Tui.ViewModels.Dialogs;
 using Aaru.Tui.Views.Dialogs;
 using Aaru.Tui.Views.Windows;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Iciclecreek.Avalonia.WindowManager;
+using Prism.DryIoc;
 using GoToSectorDialog = Aaru.Tui.Views.Dialogs.GoToSectorDialog;
 
 namespace Aaru.Tui.ViewModels.Windows;
@@ -45,7 +46,6 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
 {
     private const int            BYTES_PER_LINE = 16;
     readonly      IRegionManager _regionManager;
-    readonly      ManagedWindow  _view;
     [ObservableProperty]
     ulong _currentSector;
     [ObservableProperty]
@@ -102,6 +102,10 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
 
     Task HelpAsync()
     {
+        AvaloniaObject? view = (Application.Current as PrismApplication)?.MainWindow;
+
+        if(view is null) return Task.CompletedTask;
+
         var dialog = new HexViewHelpDialog
         {
             DataContext = new HexViewHelpDialogViewModel(null!)
@@ -110,11 +114,15 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
         // Set the dialog reference after creation
         ((HexViewHelpDialogViewModel)dialog.DataContext!)._dialog = dialog;
 
-        return dialog.ShowDialog(_view);
+        return dialog.ShowDialog(view as Window);
     }
 
     async Task GoToAsync()
     {
+        AvaloniaObject? view = (Application.Current as PrismApplication)?.MainWindow;
+
+        if(view is null) return;
+
         var dialog = new GoToSectorDialog
         {
             DataContext = new GoToSectorDialogViewModel(null!, _imageFormat.Info.Sectors - 1)
@@ -123,7 +131,7 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
         // Set the dialog reference after creation
         ((GoToSectorDialogViewModel)dialog.DataContext!)._dialog = dialog;
 
-        bool? result = await dialog.ShowDialog<bool?>(_view);
+        bool? result = await dialog.ShowDialog<bool?>(view as Window);
 
         if(result == true)
         {
