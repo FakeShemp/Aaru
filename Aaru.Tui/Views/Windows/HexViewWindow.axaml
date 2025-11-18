@@ -1,12 +1,12 @@
-<windowManager:ManagedWindow xmlns="https://github.com/avaloniaui"
-                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                             xmlns:console="https://github.com/jinek/consolonia"
-                             xmlns:windows="clr-namespace:Aaru.Tui.ViewModels.Windows"
-                             xmlns:windowManager="clr-namespace:Iciclecreek.Avalonia.WindowManager;assembly=Iciclecreek.Avalonia.WindowManager"
-                             xmlns:localization="clr-namespace:Aaru.Tui.Localization"
-                             x:Class="Aaru.Tui.Views.Windows.HexViewWindow"
-                             WindowState="FullScreen"
-                             CanResize="False">
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:console="https://github.com/jinek/consolonia"
+             xmlns:windows="clr-namespace:Aaru.Tui.ViewModels.Windows"
+             xmlns:localization="clr-namespace:Aaru.Tui.Localization"
+             xmlns:mvvm="http://prismlibrary.com/"
+             x:Class="Aaru.Tui.Views.Windows.HexViewWindow"
+             x:DataType="windows:HexViewWindowViewModel"
+             mvvm:ViewModelLocator.AutoWireViewModel="True">
     <Design.DataContext>
         <windows:HexViewWindowViewModel />
     </Design.DataContext>
@@ -101,4 +101,4 @@
             </Grid>
         </Border>
     </DockPanel>
-</windowManager:ManagedWindow>
+</UserControl>

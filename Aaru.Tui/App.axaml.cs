@@ -28,12 +28,50 @@
 using Aaru.Tui.ViewModels.Windows;
 using Aaru.Tui.Views.Windows;
 using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Prism.DryIoc;
 
 namespace Aaru.Tui;
 
-public class App : Application
+public class App : PrismApplication
+{
+    /// <inheritdoc />
+    public override void Initialize()
+    {
+        AvaloniaXamlLoader.Load(this);
+
+        base.Initialize();
+    }
+
+    /// <inheritdoc />
+    protected override void RegisterTypes(IContainerRegistry containerRegistry)
+    {
+        // Register your Services, Views, Dialogs, etc. here
+
+        // Views - Region Navigation
+        containerRegistry.RegisterForNavigation<FileView, FileViewViewModel>();
+        containerRegistry.RegisterForNavigation<HexViewWindow, HexViewWindowViewModel>();
+        containerRegistry.RegisterForNavigation<ImageWindow, ImageWindowViewModel>();
+    }
+
+    /// <inheritdoc />
+    protected override AvaloniaObject CreateShell() => Container.Resolve<MainWindow>();
+
+
+    /// <summary>Called after Initialize.</summary>
+    protected override void OnInitialized()
+    {
+        // Register Views to the Region it will appear in. Don't register them in the ViewModel.
+        IRegionManager regionManager = Container.Resolve<IRegionManager>();
+
+        // WARNING: Prism v11.0.0
+        // - DataTemplates MUST define a DataType or else an XAML error will be thrown
+        // - Error: DataTemplate inside of DataTemplates must have a DataType set
+        regionManager.RegisterViewWithRegion("ContentRegion", typeof(FileView));
+    }
+}
+
+/*public class App : Application
 {
     public override void Initialize()
     {
@@ -52,4 +90,4 @@ public class App : Application
 
         base.OnFrameworkInitializationCompleted();
     }
-}
+}*/

@@ -1,0 +1,196 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:console="https://github.com/jinek/consolonia"
+             xmlns:windows="clr-namespace:Aaru.Tui.ViewModels.Windows"
+             xmlns:models="clr-namespace:Aaru.Tui.Models"
+             xmlns:controls="clr-namespace:Aaru.Tui.Controls"
+             xmlns:localization="clr-namespace:Aaru.Tui.Localization"
+             xmlns:mvvm="http://prismlibrary.com/"
+             x:Class="Aaru.Tui.Views.Windows.FileView"
+             x:DataType="windows:FileViewViewModel"
+             mvvm:ViewModelLocator.AutoWireViewModel="True">
+    <Design.DataContext>
+        <windows:FileViewViewModel />
+    </Design.DataContext>
+    <DockPanel>
+        <Menu DockPanel.Dock="Bottom">
+            <MenuItem Header="ESC     " />
+            <MenuItem Header="{x:Static localization:Resources.Help_Header}"
+                      Command="{Binding HelpCommand, Mode=OneWay}"
+                      HotKey="F1" />
+            <MenuItem Header="{x:Static localization:Resources.SectorViewer_Header}"
+                      Command="{Binding SectorViewCommand, Mode=OneWay}"
+                      HotKey="F2" />
+            <MenuItem Header="F3      " />
+            <MenuItem Header="{x:Static localization:Resources.GoTo_Header}"
+                      Command="{Binding GoToPathCommand, Mode=OneWay}"
+                      HotKey="F4" />
+            <MenuItem Header="{x:Static localization:Resources.Exit_Header}"
+                      Command="{Binding ExitCommand, Mode=OneWay}"
+                      HotKey="F10" />
+        </Menu>
+        <Border BorderThickness="1">
+            <Border.BorderBrush>
+                <console:LineBrush LineStyle="DoubleLine"
+                                   Brush="Blue" />
+            </Border.BorderBrush>
+            <Grid RowDefinitions="*,Auto">
+                <Grid ColumnDefinitions="*,*"
+                      Grid.Row="0">
+                    <ListBox Grid.Column="0"
+                             ItemsSource="{Binding Files, Mode=OneWay}"
+                             BorderThickness="1"
+                             Background="Transparent"
+                             SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
+                             KeyDown="ListBox_OnKeyDown">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="models:FileModel">
+                                <TextBox Text="{Binding Filename, Mode=OneWay}"
+                                         Foreground="{Binding ForegroundBrush, Mode=OneWay}"
+                                         Background="Transparent" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        <ListBox.BorderBrush>
+                            <console:LineBrush LineStyle="DoubleLine"
+                                               Brush="Blue" />
+                        </ListBox.BorderBrush>
+                    </ListBox>
+                    <Border Grid.Column="1"
+                            BorderThickness="1">
+                        <Border.BorderBrush>
+                            <console:LineBrush LineStyle="DoubleLine"
+                                               Brush="Blue" />
+                        </Border.BorderBrush>
+                        <Grid RowDefinitions="Auto,Auto,Auto,*"
+                              VerticalAlignment="Top">
+                            <Border Grid.Row="0"
+                                    BorderThickness="1">
+                                <Border.BorderBrush>
+                                    <console:LineBrush LineStyle="DoubleLine"
+                                                       Brush="Blue" />
+                                </Border.BorderBrush>
+                                <StackPanel VerticalAlignment="Top"
+                                            HorizontalAlignment="Center">
+                                    <TextBlock Text="Aaru Data Preservation Suite"
+                                               Foreground="Red"
+                                               FontWeight="Bold" />
+                                    <TextBlock Text="{Binding InformationalVersion, Mode=OneWay}"
+                                               Foreground="Green"
+                                               FontWeight="Bold" />
+                                    <TextBlock Text="{Binding Copyright, Mode=OneWay}"
+                                               Foreground="Blue"
+                                               FontWeight="Bold" />
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Row="1"
+                                    BorderThickness="1">
+                                <Border.BorderBrush>
+                                    <console:LineBrush LineStyle="DoubleLine"
+                                                       Brush="Blue" />
+                                </Border.BorderBrush>
+                                <Grid ColumnDefinitions="Auto, *">
+                                    <TextBlock Grid.Column="0"
+                                               Text="Path: "
+                                               Foreground="SlateBlue" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding CurrentPath, Mode=OneWay}"
+                                               Foreground="Green" />
+                                </Grid>
+                            </Border>
+                            <Border Grid.Row="2"
+                                    BorderThickness="1"
+                                    IsVisible="{Binding IsFileInfoAvailable, Mode=OneWay}">
+                                <Border.BorderBrush>
+                                    <console:LineBrush LineStyle="DoubleLine"
+                                                       Brush="Blue" />
+                                </Border.BorderBrush>
+                                <Grid RowDefinitions="Auto, *, *, *, *">
+                                    <TextBlock Text="{x:Static localization:Resources.FileInformation_Text}"
+                                               Grid.Row="0"
+                                               HorizontalAlignment="Center"
+                                               Foreground="SlateBlue" />
+                                    <Grid ColumnDefinitions="Auto, *"
+                                          Grid.Row="1"
+                                          ColumnSpacing="1"
+                                          IsVisible="{Binding SelectedFileIsNotDirectory, Mode=OneWay}">
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:Resources.FileLength_Text}" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding SelectedFileLength, Mode=OneWay}"
+                                                   Foreground="Aqua" />
+                                    </Grid>
+                                    <Grid ColumnDefinitions="Auto, *"
+                                          Grid.Row="2"
+                                          ColumnSpacing="1">
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:Resources.FileCreationTime_Text}" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding SelectedFileCreationTime, Mode=OneWay}"
+                                                   Foreground="Yellow" />
+                                    </Grid>
+                                    <Grid ColumnDefinitions="Auto, *"
+                                          Grid.Row="3"
+                                          ColumnSpacing="1">
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:Resources.FileLastWriteTime_Text}" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding SelectedFileLastWriteTime, Mode=OneWay}"
+                                                   Foreground="Yellow" />
+                                    </Grid>
+                                    <OnPlatform>
+                                        <OnPlatform.Windows>
+                                            <Grid ColumnDefinitions="Auto, *"
+                                                  Grid.Row="4"
+                                                  ColumnSpacing="1">
+                                                <TextBlock Grid.Column="0"
+                                                           Text="{x:Static localization:Resources.FileAttributes_Text}" />
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding SelectedFileAttributes, Mode=OneWay}"
+                                                           Foreground="Green" />
+                                            </Grid>
+                                        </OnPlatform.Windows>
+                                        <OnPlatform.Default>
+                                            <Grid ColumnDefinitions="Auto, *"
+                                                  Grid.Row="4"
+                                                  ColumnSpacing="1">
+                                                <TextBlock Grid.Column="0"
+                                                           Text="{x:Static localization:Resources.FileMode_Text}" />
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding SelectedFileUnixMode, Mode=OneWay}"
+                                                           Foreground="Green" />
+                                            </Grid>
+                                        </OnPlatform.Default>
+                                    </OnPlatform>
+                                </Grid>
+                            </Border>
+                            <Border Grid.Row="3"
+                                    IsVisible="{Binding SelectedFileHasInformation, Mode=OneWay}"
+                                    BorderThickness="1">
+                                <Border.BorderBrush>
+                                    <console:LineBrush LineStyle="DoubleLine"
+                                                       Brush="Blue" />
+                                </Border.BorderBrush>
+                                <ScrollViewer>
+                                    <StackPanel VerticalAlignment="Top"
+                                                HorizontalAlignment="Stretch">
+                                        <TextBlock Text="{x:Static localization:Resources.FileInformation_Text}"
+                                                   Foreground="SlateBlue"
+                                                   FontWeight="Bold"
+                                                   HorizontalAlignment="Center" />
+                                        <controls:SpectreTextBlock
+                                            Text="{Binding SelectedFileInformation, Mode=OneWay}"
+                                            HorizontalAlignment="Left"
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </Grid>
+                <TextBlock Grid.Row="1"
+                           Text="{Binding Status, Mode=OneWay}"
+                           IsVisible="{Binding IsStatusVisible, Mode=OneWay}" />
+            </Grid>
+        </Border>
+    </DockPanel>
+</UserControl>

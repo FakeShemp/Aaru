@@ -31,6 +31,7 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Tui.ViewModels.Dialogs;
 using Aaru.Tui.Views.Dialogs;
+using Aaru.Tui.Views.Windows;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -42,22 +43,23 @@ namespace Aaru.Tui.ViewModels.Windows;
 
 public sealed partial class HexViewWindowViewModel : ViewModelBase
 {
-    private const int           BYTES_PER_LINE = 16;
-    readonly      IMediaImage   _imageFormat;
-    readonly      ManagedWindow _view;
+    private const int            BYTES_PER_LINE = 16;
+    readonly      IRegionManager _regionManager;
+    readonly      ManagedWindow  _view;
     [ObservableProperty]
     ulong _currentSector;
     [ObservableProperty]
     string _filePath;
     [ObservableProperty]
     long _fileSize;
+    IMediaImage _imageFormat;
     [ObservableProperty]
     ObservableCollection<HexViewLine> _lines = [];
     bool _longMode;
 
-    internal HexViewWindowViewModel(ManagedWindow view, IMediaImage imageFormat, string filePath,
-                                    ulong         currentSector = 0)
+    internal HexViewWindowViewModel(IRegionManager regionManager)
     {
+        _regionManager        = regionManager;
         ExitCommand           = new RelayCommand(Exit);
         BackCommand           = new RelayCommand(Back);
         NextSectorCommand     = new RelayCommand(NextSector);
@@ -65,12 +67,6 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
         GoToCommand           = new AsyncRelayCommand(GoToAsync);
         HelpCommand           = new AsyncRelayCommand(HelpAsync);
         ToggleLongCommand     = new RelayCommand(ToggleLong);
-
-        _view          = view;
-        _imageFormat   = imageFormat;
-        _currentSector = currentSector;
-        FilePath       = filePath;
-        LoadSector();
     }
 
     public ICommand BackCommand           { get; }
@@ -80,6 +76,17 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
     public ICommand GoToCommand           { get; }
     public ICommand HelpCommand           { get; }
     public ICommand ToggleLongCommand     { get; }
+
+    /// <inheritdoc />
+    public override void OnNavigatedTo(NavigationContext navigationContext)
+    {
+        base.OnNavigatedTo(navigationContext);
+
+        _imageFormat = navigationContext.Parameters.GetValue<IMediaImage>("imageFormat");
+        FilePath     = navigationContext.Parameters.GetValue<string>("filePath");
+
+        LoadSector();
+    }
 
     void ToggleLong()
     {
@@ -150,7 +157,16 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
 
     void Back()
     {
-        _view.Close();
+        IRegion?                  region            = _regionManager.Regions["ContentRegion"];
+        IRegionNavigationService? navigationService = region.NavigationService;
+
+        if(navigationService?.Journal.CanGoBack == true)
+            navigationService.Journal.GoBack();
+        else
+        {
+            // No history - navigate directly to FileView
+            _regionManager.RequestNavigate("ContentRegion", nameof(FileView));
+        }
     }
 
     void Exit()
@@ -202,8 +218,6 @@ public sealed partial class HexViewWindowViewModel : ViewModelBase
             offset += bytesRead;
         }
     }
-
-    public void LoadComplete() {}
 }
 
 public sealed class HexViewLine

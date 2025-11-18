@@ -31,8 +31,7 @@ using System.Windows.Input;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Tui.Models;
-using Aaru.Tui.ViewModels.Dialogs;
-using Aaru.Tui.Views.Dialogs;
+using Aaru.Tui.Views.Windows;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -46,12 +45,13 @@ namespace Aaru.Tui.ViewModels.Windows;
 
 public sealed partial class ImageWindowViewModel : ViewModelBase
 {
-    readonly IMediaImage   _imageFormat;
-    readonly ManagedWindow _view;
+    readonly IRegionManager _regionManager;
+    readonly ManagedWindow  _view;
     [ObservableProperty]
     public string _filePath;
     [ObservableProperty]
     string _filesystemInformation;
+    IMediaImage _imageFormat;
     [ObservableProperty]
     bool _isFilesystemInformationVisible;
     [ObservableProperty]
@@ -82,15 +82,12 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
     [ObservableProperty]
     string? _status;
 
-    public ImageWindowViewModel(ManagedWindow view, IMediaImage imageFormat, string filePath)
+    public ImageWindowViewModel(IRegionManager regionManager)
     {
-        _imageFormat = imageFormat;
-        FilePath     = filePath;
-        _view        = view;
-
-        ExitCommand = new RelayCommand(Exit);
-        BackCommand = new RelayCommand(Back);
-        HelpCommand = new AsyncRelayCommand(HelpAsync);
+        _regionManager = regionManager;
+        ExitCommand    = new RelayCommand(Exit);
+        BackCommand    = new RelayCommand(Back);
+        HelpCommand    = new AsyncRelayCommand(HelpAsync);
     }
 
     public FileSystemModelNode? SelectedNode
@@ -153,7 +150,16 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
 
     void Back()
     {
-        _view.Close();
+        IRegion?                  region            = _regionManager.Regions["ContentRegion"];
+        IRegionNavigationService? navigationService = region.NavigationService;
+
+        if(navigationService?.Journal.CanGoBack == true)
+            navigationService.Journal.GoBack();
+        else
+        {
+            // No history - navigate directly to FileView
+            _regionManager.RequestNavigate("ContentRegion", nameof(FileView));
+        }
     }
 
     void Exit()
@@ -162,13 +168,17 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
         lifetime!.Shutdown();
     }
 
-    public void LoadComplete()
+    /// <inheritdoc />
+    public override void OnNavigatedTo(NavigationContext navigationContext)
     {
+        _imageFormat = navigationContext.Parameters.GetValue<IMediaImage>("imageFormat");
+        FilePath     = navigationContext.Parameters.GetValue<string>("filePath");
+
         _ = Task.Run(Worker);
     }
 
-    Task HelpAsync()
-    {
+    Task HelpAsync() =>
+        /*
         var dialog = new ImageHelpDialog
         {
             DataContext = new ImageHelpDialogViewModel(null!)
@@ -177,8 +187,8 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
         // Set the dialog reference after creation
         ((ImageHelpDialogViewModel)dialog.DataContext!)._dialog = dialog;
 
-        return dialog.ShowDialog(_view);
-    }
+        return dialog.ShowDialog(_view);*/
+        Task.CompletedTask;
 
     void Worker()
     {

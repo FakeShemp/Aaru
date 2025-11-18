@@ -25,24 +25,14 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using Aaru.Tui.ViewModels.Windows;
-using Avalonia.Interactivity;
-using Iciclecreek.Avalonia.WindowManager;
+using Avalonia.Controls;
 
 namespace Aaru.Tui.Views.Windows;
 
-public partial class ImageWindow : ManagedWindow
+public partial class ImageWindow : UserControl
 {
     public ImageWindow()
     {
         InitializeComponent();
-    }
-
-    /// <inheritdoc />
-    protected override void OnLoaded(RoutedEventArgs e)
-    {
-        base.OnLoaded(e);
-
-        (DataContext as ImageWindowViewModel)?.LoadComplete();
     }
 }

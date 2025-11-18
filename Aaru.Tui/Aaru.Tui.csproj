@@ -13,6 +13,8 @@
 
   <ItemGroup>
     <PackageReference Include="Consolonia"/>
+    <PackageReference Include="Prism.Avalonia"/>
+    <PackageReference Include="Prism.DryIoc.Avalonia"/>
   </ItemGroup>
 
   <ItemGroup>

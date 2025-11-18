@@ -25,25 +25,14 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using Aaru.Tui.ViewModels.Windows;
-using Avalonia.Interactivity;
-using Iciclecreek.Avalonia.WindowManager;
+using Avalonia.Controls;
 
 namespace Aaru.Tui.Views.Windows;
 
-public partial class HexViewWindow : ManagedWindow
+public partial class HexViewWindow : UserControl
 {
     public HexViewWindow()
     {
         InitializeComponent();
-    }
-
-
-    /// <inheritdoc />
-    protected override void OnLoaded(RoutedEventArgs e)
-    {
-        base.OnLoaded(e);
-
-        (DataContext as HexViewWindowViewModel)?.LoadComplete();
     }
 }

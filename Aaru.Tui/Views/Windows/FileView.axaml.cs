@@ -25,6 +25,36 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-namespace Aaru.Tui.ViewModels.Windows;
+using Aaru.Tui.ViewModels.Windows;
+using Avalonia.Controls;
+using Avalonia.Input;
 
-public sealed class MainWindowViewModel {}
+namespace Aaru.Tui.Views.Windows;
+
+public partial class FileView : UserControl
+{
+    public FileView()
+    {
+        InitializeComponent();
+    }
+
+    private void ListBox_OnKeyDown(object sender, KeyEventArgs e)
+    {
+        if(e.Key == Key.Enter)
+        {
+            if(DataContext is FileViewViewModel vm && vm.OpenSelectedFileCommand.CanExecute(null))
+            {
+                vm.OpenSelectedFileCommand.Execute(null);
+                e.Handled = true;
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    protected override void OnDataContextChanged(EventArgs e)
+    {
+        base.OnDataContextChanged(e);
+
+        (DataContext as FileViewViewModel)?.LoadComplete();
+    }
+}
