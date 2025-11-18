@@ -14,17 +14,24 @@
     <Design.DataContext>
         <vm:GoToSectorDialogViewModel />
     </Design.DataContext>
-    <Border BorderThickness="1">
+    <Border BorderThickness="1"
+            Background="{DynamicResource CyberBackgroundPrimaryBrush}">
         <Border.BorderBrush>
             <brushes:LineBrush LineStyle="DoubleLine"
-                               Brush="Blue" />
+                               Brush="Cyan" />
         </Border.BorderBrush>
         <StackPanel>
-            <TextBlock Text="{x:Static localization:Resources.SectorNumber_Text}" />
+            <TextBlock Text="{x:Static localization:Resources.SectorNumber_Text}"
+                       Foreground="{DynamicResource CyberNeonMagentaBrush}"
+                       FontWeight="Bold" />
             <TextBox Text="{Binding SectorNumber, Mode=TwoWay}"
+                     Background="{DynamicResource CyberBackgroundTertiaryBrush}"
+                     Foreground="{DynamicResource CyberNeonCyanBrush}"
+                     BorderBrush="{DynamicResource CyberNeonCyanBrush}"
+                     BorderThickness="1"
                      Watermark="{x:Static localization:Resources.SectorNumber_Watermark}" />
             <TextBlock Text="{Binding ErrorMessage, Mode=OneWay}"
-                       Foreground="Red"
+                       Foreground="{DynamicResource CyberNeonPinkBrush}"
                        IsVisible="{Binding HasError, Mode=OneWay}" />
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Right"

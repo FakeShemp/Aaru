@@ -16,17 +16,24 @@
     <Design.DataContext>
         <dialogs:GoToPathDialogViewModel />
     </Design.DataContext>
-    <Border BorderThickness="1">
+    <Border BorderThickness="1"
+            Background="{DynamicResource CyberBackgroundPrimaryBrush}">
         <Border.BorderBrush>
             <brushes:LineBrush LineStyle="DoubleLine"
-                               Brush="Blue" />
+                               Brush="Cyan" />
         </Border.BorderBrush>
         <StackPanel>
-            <TextBlock Text="{x:Static localization:Resources.DestinationPath_Text}" />
+            <TextBlock Text="{x:Static localization:Resources.DestinationPath_Text}"
+                       Foreground="{DynamicResource CyberNeonMagentaBrush}"
+                       FontWeight="Bold" />
             <TextBox Text="{Binding Path, Mode=TwoWay}"
+                     Background="{DynamicResource CyberBackgroundTertiaryBrush}"
+                     Foreground="{DynamicResource CyberNeonCyanBrush}"
+                     BorderBrush="{DynamicResource CyberNeonCyanBrush}"
+                     BorderThickness="1"
                      Watermark="{x:Static localization:Resources.DestinationPath_Watermark}" />
             <TextBlock Text="{Binding ErrorMessage, Mode=OneWay}"
-                       Foreground="Red"
+                       Foreground="{DynamicResource CyberNeonPinkBrush}"
                        IsVisible="{Binding HasError, Mode=OneWay}" />
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Right"

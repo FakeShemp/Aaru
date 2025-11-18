@@ -13,7 +13,10 @@
         <windows:FileViewViewModel />
     </Design.DataContext>
     <DockPanel>
-        <Menu DockPanel.Dock="Bottom">
+        <Menu DockPanel.Dock="Bottom"
+              Background="{DynamicResource CyberBackgroundPrimaryBrush}"
+              Foreground="{DynamicResource CyberNeonCyanBrush}"
+              HorizontalAlignment="Stretch">
             <MenuItem Header="ESC     " />
             <MenuItem Header="{x:Static localization:Resources.Help_Header}"
                       Command="{Binding HelpCommand, Mode=OneWay}"
@@ -29,86 +32,94 @@
                       Command="{Binding ExitCommand, Mode=OneWay}"
                       HotKey="F10" />
         </Menu>
-        <Border BorderThickness="1">
+        <Border BorderThickness="1"
+                Background="{DynamicResource CyberBackgroundPrimaryBrush}">
             <Border.BorderBrush>
                 <console:LineBrush LineStyle="DoubleLine"
-                                   Brush="Blue" />
+                                   Brush="Cyan" />
             </Border.BorderBrush>
             <Grid RowDefinitions="*,Auto">
                 <Grid ColumnDefinitions="*,*"
                       Grid.Row="0">
-                    <ListBox Grid.Column="0"
-                             ItemsSource="{Binding Files, Mode=OneWay}"
-                             BorderThickness="1"
-                             Background="Transparent"
-                             SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
-                             KeyDown="ListBox_OnKeyDown">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate DataType="models:FileModel">
-                                <TextBox Text="{Binding Filename, Mode=OneWay}"
-                                         Foreground="{Binding ForegroundBrush, Mode=OneWay}"
-                                         Background="Transparent" />
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                        <ListBox.BorderBrush>
-                            <console:LineBrush LineStyle="DoubleLine"
-                                               Brush="Blue" />
-                        </ListBox.BorderBrush>
-                    </ListBox>
-                    <Border Grid.Column="1"
-                            BorderThickness="1">
+                    <Border Grid.Column="0"
+                            BorderThickness="1"
+                            Background="{DynamicResource CyberBackgroundPrimaryBrush}">
                         <Border.BorderBrush>
                             <console:LineBrush LineStyle="DoubleLine"
-                                               Brush="Blue" />
+                                               Brush="Cyan" />
+                        </Border.BorderBrush>
+                        <ListBox ItemsSource="{Binding Files, Mode=OneWay}"
+                                 Background="{DynamicResource CyberBackgroundPrimaryBrush}"
+                                 SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
+                                 KeyDown="ListBox_OnKeyDown"
+                                 BorderThickness="0">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate DataType="models:FileModel">
+                                    <TextBox Text="{Binding Filename, Mode=OneWay}"
+                                             Foreground="{Binding ForegroundBrush, Mode=OneWay}"
+                                             Background="{DynamicResource CyberBackgroundPrimaryBrush}" />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Border>
+                    <Border Grid.Column="1"
+                            BorderThickness="1"
+                            Background="{DynamicResource CyberBackgroundPrimaryBrush}">
+                        <Border.BorderBrush>
+                            <console:LineBrush LineStyle="DoubleLine"
+                                               Brush="Magenta" />
                         </Border.BorderBrush>
                         <Grid RowDefinitions="Auto,Auto,Auto,*"
                               VerticalAlignment="Top">
                             <Border Grid.Row="0"
-                                    BorderThickness="1">
+                                    BorderThickness="1"
+                                    Background="{DynamicResource CyberBackgroundPrimaryBrush}">
                                 <Border.BorderBrush>
                                     <console:LineBrush LineStyle="DoubleLine"
-                                                       Brush="Blue" />
+                                                       Brush="Magenta" />
                                 </Border.BorderBrush>
                                 <StackPanel VerticalAlignment="Top"
                                             HorizontalAlignment="Center">
                                     <TextBlock Text="Aaru Data Preservation Suite"
-                                               Foreground="Red"
+                                               Foreground="{DynamicResource CyberNeonMagentaBrush}"
                                                FontWeight="Bold" />
                                     <TextBlock Text="{Binding InformationalVersion, Mode=OneWay}"
-                                               Foreground="Green"
+                                               Foreground="{DynamicResource CyberNeonLimeBrush}"
                                                FontWeight="Bold" />
                                     <TextBlock Text="{Binding Copyright, Mode=OneWay}"
-                                               Foreground="Blue"
+                                               Foreground="{DynamicResource CyberNeonCyanBrush}"
                                                FontWeight="Bold" />
                                 </StackPanel>
                             </Border>
                             <Border Grid.Row="1"
-                                    BorderThickness="1">
+                                    BorderThickness="1"
+                                    Background="{DynamicResource CyberBackgroundPrimaryBrush}">
                                 <Border.BorderBrush>
                                     <console:LineBrush LineStyle="DoubleLine"
-                                                       Brush="Blue" />
+                                                       Brush="Magenta" />
                                 </Border.BorderBrush>
                                 <Grid ColumnDefinitions="Auto, *">
                                     <TextBlock Grid.Column="0"
                                                Text="Path: "
-                                               Foreground="SlateBlue" />
+                                               Foreground="{DynamicResource CyberNeonCyanBrush}" />
                                     <TextBlock Grid.Column="1"
                                                Text="{Binding CurrentPath, Mode=OneWay}"
-                                               Foreground="Green" />
+                                               Foreground="{DynamicResource CyberNeonLimeBrush}" />
                                 </Grid>
                             </Border>
                             <Border Grid.Row="2"
                                     BorderThickness="1"
-                                    IsVisible="{Binding IsFileInfoAvailable, Mode=OneWay}">
+                                    IsVisible="{Binding IsFileInfoAvailable, Mode=OneWay}"
+                                    Background="{DynamicResource CyberBackgroundPrimaryBrush}">
                                 <Border.BorderBrush>
                                     <console:LineBrush LineStyle="DoubleLine"
-                                                       Brush="Blue" />
+                                                       Brush="Magenta" />
                                 </Border.BorderBrush>
                                 <Grid RowDefinitions="Auto, *, *, *, *">
                                     <TextBlock Text="{x:Static localization:Resources.FileInformation_Text}"
                                                Grid.Row="0"
                                                HorizontalAlignment="Center"
-                                               Foreground="SlateBlue" />
+                                               Foreground="{DynamicResource CyberNeonCyanBrush}" />
                                     <Grid ColumnDefinitions="Auto, *"
                                           Grid.Row="1"
                                           ColumnSpacing="1"
@@ -117,7 +128,7 @@
                                                    Text="{x:Static localization:Resources.FileLength_Text}" />
                                         <TextBlock Grid.Column="1"
                                                    Text="{Binding SelectedFileLength, Mode=OneWay}"
-                                                   Foreground="Aqua" />
+                                                   Foreground="{DynamicResource CyberNeonCyanBrush}" />
                                     </Grid>
                                     <Grid ColumnDefinitions="Auto, *"
                                           Grid.Row="2"
@@ -126,7 +137,7 @@
                                                    Text="{x:Static localization:Resources.FileCreationTime_Text}" />
                                         <TextBlock Grid.Column="1"
                                                    Text="{Binding SelectedFileCreationTime, Mode=OneWay}"
-                                                   Foreground="Yellow" />
+                                                   Foreground="{DynamicResource CyberNeonYellowBrush}" />
                                     </Grid>
                                     <Grid ColumnDefinitions="Auto, *"
                                           Grid.Row="3"
@@ -135,46 +146,47 @@
                                                    Text="{x:Static localization:Resources.FileLastWriteTime_Text}" />
                                         <TextBlock Grid.Column="1"
                                                    Text="{Binding SelectedFileLastWriteTime, Mode=OneWay}"
-                                                   Foreground="Yellow" />
+                                                   Foreground="{DynamicResource CyberNeonYellowBrush}" />
                                     </Grid>
-                                    <OnPlatform>
-                                        <OnPlatform.Windows>
-                                            <Grid ColumnDefinitions="Auto, *"
-                                                  Grid.Row="4"
-                                                  ColumnSpacing="1">
-                                                <TextBlock Grid.Column="0"
-                                                           Text="{x:Static localization:Resources.FileAttributes_Text}" />
-                                                <TextBlock Grid.Column="1"
-                                                           Text="{Binding SelectedFileAttributes, Mode=OneWay}"
-                                                           Foreground="Green" />
-                                            </Grid>
-                                        </OnPlatform.Windows>
-                                        <OnPlatform.Default>
-                                            <Grid ColumnDefinitions="Auto, *"
-                                                  Grid.Row="4"
-                                                  ColumnSpacing="1">
-                                                <TextBlock Grid.Column="0"
-                                                           Text="{x:Static localization:Resources.FileMode_Text}" />
-                                                <TextBlock Grid.Column="1"
-                                                           Text="{Binding SelectedFileUnixMode, Mode=OneWay}"
-                                                           Foreground="Green" />
-                                            </Grid>
-                                        </OnPlatform.Default>
-                                    </OnPlatform>
+                                    <Grid Grid.Row="4">
+                                        <OnPlatform>
+                                            <OnPlatform.Windows>
+                                                <Grid ColumnDefinitions="Auto, *"
+                                                      ColumnSpacing="1">
+                                                    <TextBlock Grid.Column="0"
+                                                               Text="{x:Static localization:Resources.FileAttributes_Text}" />
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding SelectedFileAttributes, Mode=OneWay}"
+                                                               Foreground="{DynamicResource CyberNeonLimeBrush}" />
+                                                </Grid>
+                                            </OnPlatform.Windows>
+                                            <OnPlatform.Default>
+                                                <Grid ColumnDefinitions="Auto, *"
+                                                      ColumnSpacing="1">
+                                                    <TextBlock Grid.Column="0"
+                                                               Text="{x:Static localization:Resources.FileMode_Text}" />
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding SelectedFileUnixMode, Mode=OneWay}"
+                                                               Foreground="{DynamicResource CyberNeonLimeBrush}" />
+                                                </Grid>
+                                            </OnPlatform.Default>
+                                        </OnPlatform>
+                                    </Grid>
                                 </Grid>
                             </Border>
                             <Border Grid.Row="3"
                                     IsVisible="{Binding SelectedFileHasInformation, Mode=OneWay}"
-                                    BorderThickness="1">
+                                    BorderThickness="1"
+                                    Background="{DynamicResource CyberBackgroundPrimaryBrush}">
                                 <Border.BorderBrush>
                                     <console:LineBrush LineStyle="DoubleLine"
-                                                       Brush="Blue" />
+                                                       Brush="Magenta" />
                                 </Border.BorderBrush>
                                 <ScrollViewer>
                                     <StackPanel VerticalAlignment="Top"
                                                 HorizontalAlignment="Stretch">
                                         <TextBlock Text="{x:Static localization:Resources.FileInformation_Text}"
-                                                   Foreground="SlateBlue"
+                                                   Foreground="{DynamicResource CyberNeonCyanBrush}"
                                                    FontWeight="Bold"
                                                    HorizontalAlignment="Center" />
                                         <controls:SpectreTextBlock
@@ -189,7 +201,8 @@
                 </Grid>
                 <TextBlock Grid.Row="1"
                            Text="{Binding Status, Mode=OneWay}"
-                           IsVisible="{Binding IsStatusVisible, Mode=OneWay}" />
+                           IsVisible="{Binding IsStatusVisible, Mode=OneWay}"
+                           Foreground="{DynamicResource CyberNeonMagentaBrush}" />
             </Grid>
         </Border>
     </DockPanel>

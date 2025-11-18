@@ -10,8 +10,11 @@
     <Design.DataContext>
         <windows:HexViewWindowViewModel />
     </Design.DataContext>
-    <DockPanel>
-        <Menu DockPanel.Dock="Bottom">
+    <DockPanel Background="{DynamicResource CyberBackgroundPrimaryBrush}">
+        <Menu DockPanel.Dock="Bottom"
+              Background="{DynamicResource CyberBackgroundPrimaryBrush}"
+              Foreground="{DynamicResource CyberNeonCyanBrush}"
+              HorizontalAlignment="Stretch">
             <MenuItem Header="{x:Static localization:Resources.Back_Header}"
                       HotKey="Escape"
                       Command="{Binding BackCommand, Mode=OneWay}" />
@@ -34,14 +37,15 @@
                       HotKey="F10"
                       Command="{Binding ExitCommand, Mode=OneWay}" />
         </Menu>
-        <Border BorderThickness="1">
+        <Border BorderThickness="1"
+                Background="{DynamicResource CyberBackgroundPrimaryBrush}">
             <Border.BorderBrush>
                 <console:LineBrush LineStyle="DoubleLine"
-                                   Brush="Blue" />
+                                   Brush="Cyan" />
             </Border.BorderBrush>
             <Grid RowDefinitions="Auto,Auto,*,Auto">
                 <TextBlock Grid.Row="0"
-                           Foreground="Green"
+                           Foreground="{DynamicResource CyberNeonLimeBrush}"
                            Text="{Binding FilePath, Mode=OneWay}" />
                 <!-- Header -->
                 <Grid Grid.Row="1"
@@ -49,23 +53,23 @@
                     <TextBlock Grid.Column="0"
                                Text="{x:Static localization:Resources.Offset_Text}"
                                HorizontalAlignment="Left"
-                               Foreground="Cyan"
+                               Foreground="{DynamicResource CyberNeonCyanBrush}"
                                FontWeight="Bold" />
                     <TextBlock Grid.Column="1"
                                HorizontalAlignment="Center"
                                Text="00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F"
-                               Foreground="Cyan"
+                               Foreground="{DynamicResource CyberNeonCyanBrush}"
                                FontWeight="Bold" />
                     <TextBlock Grid.Column="2"
                                Text="{x:Static localization:Resources.ASCII_Text}"
                                HorizontalAlignment="Left"
-                               Foreground="Cyan"
+                               Foreground="{DynamicResource CyberNeonCyanBrush}"
                                FontWeight="Bold" />
                 </Grid>
 
                 <!-- Hex View Content -->
                 <ScrollViewer Grid.Row="2"
-                              Background="Transparent"
+                              Background="{DynamicResource CyberBackgroundPrimaryBrush}"
                               x:Name="HexScrollViewer">
                     <ItemsControl ItemsSource="{Binding Lines, Mode=OneWay}">
                         <ItemsControl.ItemTemplate>
@@ -74,28 +78,29 @@
                                     <!-- Offset Column -->
                                     <TextBlock Grid.Column="0"
                                                Text="{Binding OffsetString, Mode=OneWay}"
-                                               Foreground="Yellow" />
+                                               Foreground="{DynamicResource CyberNeonYellowBrush}" />
 
                                     <!-- Hex Column -->
                                     <TextBlock Grid.Column="1"
                                                HorizontalAlignment="Center"
                                                Text="{Binding HexString, Mode=OneWay}"
-                                               Foreground="White" />
+                                               Foreground="{DynamicResource CyberNeonMagentaBrush}" />
 
                                     <!-- ASCII Column -->
                                     <TextBlock Grid.Column="2"
                                                Text="{Binding AsciiString, Mode=OneWay}"
-                                               Foreground="LightGreen" />
+                                               Foreground="{DynamicResource CyberNeonLimeBrush}" />
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </ScrollViewer>
                 <StackPanel Orientation="Horizontal"
-                            Grid.Row="3">
-                    <TextBlock Foreground="SlateBlue"
+                            Grid.Row="3"
+                            Background="{DynamicResource CyberBackgroundPrimaryBrush}">
+                    <TextBlock Foreground="{DynamicResource CyberNeonCyanBrush}"
                                Text="{x:Static localization:Resources.CurrentSector_Text}" />
-                    <TextBlock Foreground="Lime"
+                    <TextBlock Foreground="{DynamicResource CyberNeonLimeBrush}"
                                Text="{Binding CurrentSector, Mode=OneWay}" />
                 </StackPanel>
             </Grid>

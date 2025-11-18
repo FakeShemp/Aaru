@@ -15,8 +15,11 @@
     <Design.DataContext>
         <windows:ImageWindowViewModel />
     </Design.DataContext>
-    <DockPanel>
-        <Menu DockPanel.Dock="Bottom">
+    <DockPanel Background="{DynamicResource CyberBackgroundPrimaryBrush}">
+        <Menu DockPanel.Dock="Bottom"
+              Background="{DynamicResource CyberBackgroundPrimaryBrush}"
+              Foreground="{DynamicResource CyberNeonCyanBrush}"
+              HorizontalAlignment="Stretch">
             <MenuItem Header="{x:Static localization:Resources.Back_Header}"
                       Command="{Binding BackCommand, Mode=OneWay}"
                       HotKey="Escape" />
@@ -28,149 +31,166 @@
                       Command="{Binding ExitCommand, Mode=OneWay}"
                       HotKey="F10" />
         </Menu>
-        <Border BorderThickness="1">
+        <Border BorderThickness="1"
+                Background="{DynamicResource CyberBackgroundPrimaryBrush}">
             <Border.BorderBrush>
                 <brushes:LineBrush LineStyle="DoubleLine"
-                                   Brush="Blue" />
+                                   Brush="Cyan" />
             </Border.BorderBrush>
             <Grid RowDefinitions="Auto,*,Auto">
                 <TextBlock Grid.Row="0"
                            Text="{Binding FilePath, Mode=OneWay}"
-                           Foreground="Green"
+                           Foreground="{DynamicResource CyberNeonLimeBrush}"
                            HorizontalAlignment="Center" />
                 <Grid ColumnDefinitions="*,*"
                       Grid.Row="1">
-                    <TreeView Grid.Column="0"
-                              ItemsSource="{Binding Nodes, Mode=OneWay}"
-                              BorderThickness="1"
-                              SelectedItem="{Binding SelectedNode, Mode=TwoWay}">
-                        <TreeView.BorderBrush>
-                            <brushes:LineBrush LineStyle="DoubleLine"
-                                               Brush="Blue" />
-                        </TreeView.BorderBrush>
-                        <TreeView.ItemTemplate>
-                            <TreeDataTemplate ItemsSource="{Binding SubNodes, Mode=OneWay}">
-                                <TextBlock Text="{Binding Title, Mode=OneWay}" />
-                            </TreeDataTemplate>
-                        </TreeView.ItemTemplate>
-                    </TreeView>
                     <Border BorderThickness="1"
-                            Grid.Column="1"
-                            IsVisible="{Binding IsPartitionInformationVisible, Mode=OneWay}">
+                            Grid.Column="0"
+                            Background="{DynamicResource CyberBackgroundPrimaryBrush}">
                         <Border.BorderBrush>
                             <brushes:LineBrush LineStyle="DoubleLine"
-                                               Brush="Blue" />
+                                               Brush="Cyan" />
                         </Border.BorderBrush>
-                        <StackPanel HorizontalAlignment="Stretch">
-                            <TextBlock Text="{x:Static localization:Resources.PartitionInformation_Text}"
-                                       Foreground="SlateBlue"
-                                       HorizontalAlignment="Center" />
-                            <Grid ColumnDefinitions="Auto,*"
-                                  ColumnSpacing="1">
-                                <TextBlock Grid.Column="0"
-                                           Foreground="SlateBlue"
-                                           Text="{x:Static localization:Resources.PartitionSequence_Text}" />
-                                <TextBlock Grid.Column="1"
-                                           Foreground="LawnGreen"
-                                           Text="{Binding PartitionSequence, Mode=OneWay}" />
-                            </Grid>
-                            <Grid ColumnDefinitions="Auto,*"
-                                  ColumnSpacing="1">
-                                <TextBlock Grid.Column="0"
-                                           Foreground="SlateBlue"
-                                           Text="{x:Static localization:Resources.PartitionName_Text}" />
-                                <TextBlock Grid.Column="1"
-                                           Foreground="DarkGreen"
-                                           Text="{Binding PartitionName, Mode=OneWay}" />
-                            </Grid>
-                            <Grid ColumnDefinitions="Auto,*"
-                                  ColumnSpacing="1">
-                                <TextBlock Grid.Column="0"
-                                           Foreground="SlateBlue"
-                                           Text="{x:Static localization:Resources.PartitionType_Text}" />
-                                <TextBlock Grid.Column="1"
-                                           Foreground="Olive"
-                                           Text="{Binding PartitionType, Mode=OneWay}" />
-                            </Grid>
-                            <Grid ColumnDefinitions="Auto,*"
-                                  ColumnSpacing="1">
-                                <TextBlock Grid.Column="0"
-                                           Foreground="SlateBlue"
-                                           Text="{x:Static localization:Resources.PartitionStartingSector_Text}" />
-                                <TextBlock Grid.Column="1"
-                                           Foreground="Violet"
-                                           Text="{Binding PartitionStart, Mode=OneWay}" />
-                            </Grid>
-                            <Grid ColumnDefinitions="Auto,*"
-                                  ColumnSpacing="1">
-                                <TextBlock Grid.Column="0"
-                                           Foreground="SlateBlue"
-                                           Text="{x:Static localization:Resources.PartitionOffset_Text}" />
-                                <TextBlock Grid.Column="1"
-                                           Foreground="Lime"
-                                           Text="{Binding PartitionOffset, Mode=OneWay}" />
-                            </Grid>
-                            <Grid ColumnDefinitions="Auto,*"
-                                  ColumnSpacing="1">
-                                <TextBlock Grid.Column="0"
-                                           Foreground="SlateBlue"
-                                           Text="{x:Static localization:Resources.PartitionLength_Text}" />
-                                <TextBlock Grid.Column="1"
-                                           Foreground="Violet"
-                                           Text="{Binding PartitionLength, Mode=OneWay}" />
-                            </Grid>
-                            <Grid ColumnDefinitions="Auto,*"
-                                  ColumnSpacing="1">
-                                <TextBlock Grid.Column="0"
-                                           Foreground="SlateBlue"
-                                           Text="{x:Static localization:Resources.PartitionSize_Text}" />
-                                <TextBlock Grid.Column="1"
-                                           Foreground="Lime"
-                                           Text="{Binding PartitionSize, Mode=OneWay}" />
-                            </Grid>
-                            <Grid ColumnDefinitions="Auto,*"
-                                  ColumnSpacing="1">
-                                <TextBlock Grid.Column="0"
-                                           Foreground="SlateBlue"
-                                           Text="{x:Static localization:Resources.PartitionScheme_Text}" />
-                                <TextBlock Grid.Column="1"
-                                           Foreground="Purple"
-                                           Text="{Binding PartitionScheme, Mode=OneWay}" />
-                            </Grid>
-                            <Grid ColumnDefinitions="Auto,*"
-                                  ColumnSpacing="1">
-                                <TextBlock Grid.Column="0"
-                                           Foreground="SlateBlue"
-                                           Text="{x:Static localization:Resources.PartitionDescription_Text}" />
-                                <TextBlock Grid.Column="1"
-                                           Foreground="Fuchsia"
-                                           Text="{Binding PartitionDescription, Mode=OneWay}" />
-                            </Grid>
-                        </StackPanel>
+                        <TreeView ItemsSource="{Binding Nodes, Mode=OneWay}"
+                                  Background="{DynamicResource CyberBackgroundPrimaryBrush}"
+                                  Foreground="{DynamicResource CyberNeonCyanBrush}"
+                                  SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
+                                  BorderThickness="0">
+                            <TreeView.ItemTemplate>
+                                <TreeDataTemplate ItemsSource="{Binding SubNodes, Mode=OneWay}">
+                                    <TextBlock Text="{Binding Title, Mode=OneWay}"
+                                               Foreground="{DynamicResource CyberNeonCyanBrush}" />
+                                </TreeDataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
                     </Border>
                     <Border BorderThickness="1"
                             Grid.Column="1"
-                            IsVisible="{Binding IsFilesystemInformationVisible, Mode=OneWay}">
+                            IsVisible="{Binding IsPartitionInformationVisible, Mode=OneWay}"
+                            Background="{DynamicResource CyberBackgroundPrimaryBrush}">
                         <Border.BorderBrush>
                             <brushes:LineBrush LineStyle="DoubleLine"
-                                               Brush="Blue" />
+                                               Brush="Magenta" />
+                        </Border.BorderBrush>
+                        <ScrollViewer>
+                            <StackPanel HorizontalAlignment="Stretch">
+                                <TextBlock Text="{x:Static localization:Resources.PartitionInformation_Text}"
+                                           Foreground="{DynamicResource CyberNeonMagentaBrush}"
+                                           HorizontalAlignment="Center"
+                                           FontWeight="Bold" />
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="1">
+                                    <TextBlock Grid.Column="0"
+                                               Foreground="{DynamicResource CyberNeonCyanBrush}"
+                                               Text="{x:Static localization:Resources.PartitionSequence_Text}" />
+                                    <TextBlock Grid.Column="1"
+                                               Foreground="{DynamicResource CyberNeonLimeBrush}"
+                                               Text="{Binding PartitionSequence, Mode=OneWay}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="1">
+                                    <TextBlock Grid.Column="0"
+                                               Foreground="{DynamicResource CyberNeonCyanBrush}"
+                                               Text="{x:Static localization:Resources.PartitionName_Text}" />
+                                    <TextBlock Grid.Column="1"
+                                               Foreground="{DynamicResource CyberNeonLimeBrush}"
+                                               Text="{Binding PartitionName, Mode=OneWay}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="1">
+                                    <TextBlock Grid.Column="0"
+                                               Foreground="{DynamicResource CyberNeonCyanBrush}"
+                                               Text="{x:Static localization:Resources.PartitionType_Text}" />
+                                    <TextBlock Grid.Column="1"
+                                               Foreground="{DynamicResource CyberNeonMagentaBrush}"
+                                               Text="{Binding PartitionType, Mode=OneWay}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="1">
+                                    <TextBlock Grid.Column="0"
+                                               Foreground="{DynamicResource CyberNeonCyanBrush}"
+                                               Text="{x:Static localization:Resources.PartitionStartingSector_Text}" />
+                                    <TextBlock Grid.Column="1"
+                                               Foreground="{DynamicResource CyberNeonYellowBrush}"
+                                               Text="{Binding PartitionStart, Mode=OneWay}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="1">
+                                    <TextBlock Grid.Column="0"
+                                               Foreground="{DynamicResource CyberNeonCyanBrush}"
+                                               Text="{x:Static localization:Resources.PartitionOffset_Text}" />
+                                    <TextBlock Grid.Column="1"
+                                               Foreground="{DynamicResource CyberNeonLimeBrush}"
+                                               Text="{Binding PartitionOffset, Mode=OneWay}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="1">
+                                    <TextBlock Grid.Column="0"
+                                               Foreground="{DynamicResource CyberNeonCyanBrush}"
+                                               Text="{x:Static localization:Resources.PartitionLength_Text}" />
+                                    <TextBlock Grid.Column="1"
+                                               Foreground="{DynamicResource CyberNeonYellowBrush}"
+                                               Text="{Binding PartitionLength, Mode=OneWay}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="1">
+                                    <TextBlock Grid.Column="0"
+                                               Foreground="{DynamicResource CyberNeonCyanBrush}"
+                                               Text="{x:Static localization:Resources.PartitionSize_Text}" />
+                                    <TextBlock Grid.Column="1"
+                                               Foreground="{DynamicResource CyberNeonLimeBrush}"
+                                               Text="{Binding PartitionSize, Mode=OneWay}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="1">
+                                    <TextBlock Grid.Column="0"
+                                               Foreground="{DynamicResource CyberNeonCyanBrush}"
+                                               Text="{x:Static localization:Resources.PartitionScheme_Text}" />
+                                    <TextBlock Grid.Column="1"
+                                               Foreground="{DynamicResource CyberNeonMagentaBrush}"
+                                               Text="{Binding PartitionScheme, Mode=OneWay}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="1">
+                                    <TextBlock Grid.Column="0"
+                                               Foreground="{DynamicResource CyberNeonCyanBrush}"
+                                               Text="{x:Static localization:Resources.PartitionDescription_Text}" />
+                                    <TextBlock Grid.Column="1"
+                                               Foreground="{DynamicResource CyberNeonPinkBrush}"
+                                               Text="{Binding PartitionDescription, Mode=OneWay}" />
+                                </Grid>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                    <Border BorderThickness="1"
+                            Grid.Column="1"
+                            IsVisible="{Binding IsFilesystemInformationVisible, Mode=OneWay}"
+                            Background="{DynamicResource CyberBackgroundPrimaryBrush}">
+                        <Border.BorderBrush>
+                            <brushes:LineBrush LineStyle="DoubleLine"
+                                               Brush="Magenta" />
                         </Border.BorderBrush>
                         <ScrollViewer>
                             <StackPanel>
-                                <TextBlock Foreground="SlateBlue"
+                                <TextBlock Foreground="{DynamicResource CyberNeonMagentaBrush}"
                                            Text="{x:Static localization:Resources.FilesystemInformation_Text}"
-                                           HorizontalAlignment="Center" />
-                                <TextBox Background="Transparent"
+                                           HorizontalAlignment="Center"
+                                           FontWeight="Bold" />
+                                <TextBox Background="{DynamicResource CyberBackgroundTertiaryBrush}"
+                                         Foreground="{DynamicResource CyberNeonCyanBrush}"
                                          TextWrapping="Wrap"
                                          Text="{Binding FilesystemInformation, Mode=OneWay}"
-                                         IsReadOnly="True" />
+                                         IsReadOnly="True"
+                                         BorderBrush="{DynamicResource CyberNeonCyanBrush}"
+                                         BorderThickness="1" />
                             </StackPanel>
                         </ScrollViewer>
                     </Border>
                 </Grid>
                 <TextBlock Grid.Row="2"
                            Text="{Binding Status, Mode=OneWay}"
-                           IsVisible="{Binding IsStatusVisible, Mode=OneWay}" />
+                           IsVisible="{Binding IsStatusVisible, Mode=OneWay}"
+                           Foreground="{DynamicResource CyberNeonMagentaBrush}" />
             </Grid>
         </Border>
     </DockPanel>

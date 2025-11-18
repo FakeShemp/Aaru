@@ -13,43 +13,43 @@
                              Width="40"
                              Height="8"
                              WindowStartupLocation="CenterScreen"
-                             BorderBrush="Blue"
                              CanResize="False"
                              Title="{x:Static localization:Resources.Help_Title}">
     <Design.DataContext>
         <dialogs:ImageHelpDialogViewModel />
     </Design.DataContext>
-    <Border BorderThickness="1">
+    <Border BorderThickness="1"
+            Background="{DynamicResource CyberBackgroundPrimaryBrush}">
         <Border.BorderBrush>
             <brushes:LineBrush LineStyle="DoubleLine"
-                               Brush="Blue" />
+                               Brush="Cyan" />
         </Border.BorderBrush>
         <StackPanel>
             <Grid ColumnDefinitions="Auto,*"
                   ColumnSpacing="2">
                 <TextBlock Grid.Column="0"
-                           Foreground="Aqua"
+                           Foreground="{DynamicResource CyberNeonCyanBrush}"
                            Text="ESC" />
                 <TextBlock Grid.Column="1"
-                           Foreground="SlateBlue"
+                           Foreground="{DynamicResource CyberNeonMagentaBrush}"
                            Text="{x:Static localization:Resources.GoBack_Text}" />
             </Grid>
             <Grid ColumnDefinitions="Auto,*"
                   ColumnSpacing="2">
                 <TextBlock Grid.Column="0"
-                           Foreground="Aqua"
+                           Foreground="{DynamicResource CyberNeonCyanBrush}"
                            Text="F1 " />
                 <TextBlock Grid.Column="1"
-                           Foreground="SlateBlue"
+                           Foreground="{DynamicResource CyberNeonMagentaBrush}"
                            Text="{x:Static localization:Resources.ShowHelp_Text}" />
             </Grid>
             <Grid ColumnDefinitions="Auto,*"
                   ColumnSpacing="2">
                 <TextBlock Grid.Column="0"
-                           Foreground="Aqua"
+                           Foreground="{DynamicResource CyberNeonCyanBrush}"
                            Text="F10" />
                 <TextBlock Grid.Column="1"
-                           Foreground="SlateBlue"
+                           Foreground="{DynamicResource CyberNeonMagentaBrush}"
                            Text="{x:Static localization:Resources.ExitApplication_Text}" />
             </Grid>
             <StackPanel Orientation="Horizontal"
