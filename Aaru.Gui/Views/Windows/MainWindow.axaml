@@ -19,6 +19,8 @@
             <MenuItem Header="{x:Static localization:UI.Menu_File}">
                 <MenuItem Header="{x:Static localization:UI.Menu_Open}"
                           Command="{Binding OpenCommand, Mode=OneWay}" />
+                <MenuItem Header="{x:Static localization:UI.Menu_Open_MHDD_log}"
+                          Command="{Binding OpenMhddLogCommand, Mode=OneWay}" />
                 <Separator />
                 <MenuItem Header="{x:Static localization:UI.Menu_Settings}"
                           IsVisible="{Binding !NativeMenuSupported, Mode=OneWay}"

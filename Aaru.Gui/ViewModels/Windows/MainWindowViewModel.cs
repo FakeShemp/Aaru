@@ -1,3 +1,35 @@
+// /***************************************************************************
+// Aaru Data Preservation Suite
+// ----------------------------------------------------------------------------
+//
+// Filename       : MainWindowViewModel.cs
+// Author(s)      : Natalia Portillo <claunia@claunia.com>
+//
+// Component      : GUI view models.
+//
+// --[ Description ] ----------------------------------------------------------
+//
+//     Main window view model.
+//
+// --[ License ] --------------------------------------------------------------
+//
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General public License as
+//     published by the Free Software Foundation, either version 3 of the
+//     License, or (at your option) any later version.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General public License for more details.
+//
+//     You should have received a copy of the GNU General public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// ----------------------------------------------------------------------------
+// Copyright © 2011-2025 Natalia Portillo
+// ****************************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -81,6 +113,7 @@ public partial class MainWindowViewModel : ViewModelBase
         CreateSidecarCommand        = new RelayCommand(CreateSidecar);
         ViewImageSectorsCommand     = new RelayCommand(ViewImageSectors);
         DecodeImageMediaTagsCommand = new RelayCommand(DecodeImageMediaTags);
+        OpenMhddLogCommand          = new AsyncRelayCommand(OpenMhddLogAsync);
 
         _genericHddIcon =
             new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/drive-harddisk.png")));
@@ -132,6 +165,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand CreateSidecarCommand        { get; }
     public ICommand ViewImageSectorsCommand     { get; }
     public ICommand DecodeImageMediaTagsCommand { get; }
+    public ICommand OpenMhddLogCommand          { get; }
 
     public bool NativeMenuSupported
     {
@@ -187,6 +221,25 @@ public partial class MainWindowViewModel : ViewModelBase
                     break;
             }
         }
+    }
+
+    async Task OpenMhddLogAsync()
+    {
+        IReadOnlyList<IStorageFile> result = await _view.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title          = UI.Dialog_Choose_image_to_open,
+            AllowMultiple  = false,
+            FileTypeFilter = [FilePickerFileTypes.MhddLogFiles]
+        });
+
+        // Exit if user did not select exactly one file
+        if(result.Count != 1) return;
+
+        var mhddLogViewWindow = new MhddLogView();
+
+        mhddLogViewWindow.DataContext = new MhddLogViewModel(mhddLogViewWindow, result[0].Path.LocalPath);
+
+        mhddLogViewWindow.Show();
     }
 
     async Task OpenAsync()

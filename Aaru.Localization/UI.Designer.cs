@@ -6279,5 +6279,77 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Nothing_opened", resourceCulture);
             }
         }
+        
+        public static string MHDD_Log_Files {
+            get {
+                return ResourceManager.GetString("MHDD_Log_Files", resourceCulture);
+            }
+        }
+        
+        public static string Title_File_path {
+            get {
+                return ResourceManager.GetString("Title_File_path", resourceCulture);
+            }
+        }
+        
+        public static string Title_MHDD_log_viewer {
+            get {
+                return ResourceManager.GetString("Title_MHDD_log_viewer", resourceCulture);
+            }
+        }
+        
+        public static string Title_MHDD_Version {
+            get {
+                return ResourceManager.GetString("Title_MHDD_Version", resourceCulture);
+            }
+        }
+        
+        public static string Title_Firmware {
+            get {
+                return ResourceManager.GetString("Title_Firmware", resourceCulture);
+            }
+        }
+        
+        public static string Title_Total_sectors {
+            get {
+                return ResourceManager.GetString("Title_Total_sectors", resourceCulture);
+            }
+        }
+        
+        public static string Title_Scan_block_size {
+            get {
+                return ResourceManager.GetString("Title_Scan_block_size", resourceCulture);
+            }
+        }
+        
+        public static string Menu_Open_MHDD_log {
+            get {
+                return ResourceManager.GetString("Menu_Open_MHDD_log", resourceCulture);
+            }
+        }
+        
+        public static string The_specified_file_is_not_a_correct_MHDD_log_file {
+            get {
+                return ResourceManager.GetString("The_specified_file_is_not_a_correct_MHDD_log_file", resourceCulture);
+            }
+        }
+        
+        public static string _0_bytes_markup {
+            get {
+                return ResourceManager.GetString("_0_bytes_markup", resourceCulture);
+            }
+        }
+        
+        public static string _0_sectors_markup {
+            get {
+                return ResourceManager.GetString("_0_sectors_markup", resourceCulture);
+            }
+        }
+        
+        public static string Error_parsing_MHDD_log_header_0 {
+            get {
+                return ResourceManager.GetString("Error_parsing_MHDD_log_header_0", resourceCulture);
+            }
+        }
     }
 }

@@ -770,7 +770,7 @@ In you are unsure, please press N to not continue.</value>
     <value>[slateblue1]Sectors[/]</value>
   </data>
     <data name="Title_Sector_size" xml:space="preserve">
-    <value>[slateblue1]Sector size[/]</value>
+    <value>[bold][slateblue1]Sector size[/][/]</value>
   </data>
     <data name="Title_Creation_time" xml:space="preserve">
     <value>[slateblue1]Creation time[/]</value>
@@ -3215,5 +3215,41 @@ Do you want to continue?</value>
     </data>
     <data name="Nothing_opened" xml:space="preserve">
         <value>Nothing opened.</value>
+    </data>
+    <data name="MHDD_Log_Files" xml:space="preserve">
+        <value>MHDD Log Files</value>
+    </data>
+    <data name="Title_File_path" xml:space="preserve">
+        <value>[bold][slateblue1]File path[/][/]</value>
+    </data>
+    <data name="Title_MHDD_log_viewer" xml:space="preserve">
+        <value>MHDD log viewer</value>
+    </data>
+    <data name="Title_MHDD_Version" xml:space="preserve">
+        <value>[bold][slateblue1]MHDD Version[/][/]</value>
+    </data>
+    <data name="Title_Firmware" xml:space="preserve">
+        <value>[bold][slateblue1]Firmware[/][/]</value>
+    </data>
+    <data name="Title_Total_sectors" xml:space="preserve">
+        <value>[bold][slateblue1]Total sectors[/][/]</value>
+    </data>
+    <data name="Title_Scan_block_size" xml:space="preserve">
+        <value>[bold][slateblue1]Scan block size[/][/]</value>
+    </data>
+    <data name="Menu_Open_MHDD_log" xml:space="preserve">
+        <value>Open _MHDD log</value>
+    </data>
+    <data name="The_specified_file_is_not_a_correct_MHDD_log_file" xml:space="preserve">
+        <value>The specified file is not a correct MHDD log file.</value>
+    </data>
+    <data name="_0_bytes_markup" xml:space="preserve">
+        <value>[aqua]{0}[/] [slateblue1]bytes[/]</value>
+    </data>
+    <data name="_0_sectors_markup" xml:space="preserve">
+        <value>[violet]{0}[/] [slateblue1]sectors[/]</value>
+    </data>
+    <data name="Error_parsing_MHDD_log_header_0" xml:space="preserve">
+        <value>Error parsing MHDD log header: {0}</value>
     </data>
 </root>

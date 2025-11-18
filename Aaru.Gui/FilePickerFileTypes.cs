@@ -79,4 +79,10 @@ public static class FilePickerFileTypes
         AppleUniformTypeIdentifiers = ["public.json"],
         MimeTypes                   = ["application/json"]
     };
+
+    public static FilePickerFileType MhddLogFiles { get; } = new(UI.MHDD_Log_Files)
+    {
+        Patterns  = ["*.bin"],
+        MimeTypes = ["application/octet-stream"]
+    };
 }
