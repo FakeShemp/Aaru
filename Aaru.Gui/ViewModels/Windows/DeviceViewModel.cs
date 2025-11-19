@@ -1021,18 +1021,17 @@ public partial class DeviceViewModel : ViewModelBase
 
     async Task ScanAsync()
     {
-        /*
-        switch(_scsiInfo.MediaType)
+        switch(_mediaInfo.MediaType)
         {
             // TODO: GD-ROM
             case CommonTypes.MediaType.GDR:
             case CommonTypes.MediaType.GDROM:
                 await MessageBoxManager
-                     .GetMessageBoxStandard(Localization.UI.Title_Error,
+                     .GetMessageBoxStandard(UI.Title_Error,
                                             Localization.Core.GD_ROM_scan_support_is_not_yet_implemented,
                                             ButtonEnum.Ok,
                                             Icon.Error)
-                     .ShowWindowDialogAsync(_view);
+                     .ShowWindowDialogAsync(_window);
 
                 return;
 
@@ -1040,21 +1039,20 @@ public partial class DeviceViewModel : ViewModelBase
             case CommonTypes.MediaType.XGD:
             case CommonTypes.MediaType.XGD2:
             case CommonTypes.MediaType.XGD3:
-                await MessageBoxManager.GetMessageBoxStandard(Localization.UI.Title_Error,
+                await MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
                                                               Localization.Core
                                                                           .Scanning_Xbox_discs_is_not_yet_supported,
                                                               ButtonEnum.Ok,
                                                               Icon.Error)
-                                       .ShowWindowDialogAsync(_view);
+                                       .ShowWindowDialogAsync(_window);
 
                 return;
         }
 
         var mediaScanWindow = new MediaScan();
 
-        mediaScanWindow.DataContext = new MediaScanViewModel(_devicePath, mediaScanWindow);
+        mediaScanWindow.DataContext = new MediaScanViewModel(_dev, DevicePath, mediaScanWindow);
 
-        mediaScanWindow.Show();
-        */
+        await mediaScanWindow.ShowDialog(_window);
     }
 }
