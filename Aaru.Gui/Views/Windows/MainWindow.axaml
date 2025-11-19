@@ -10,6 +10,7 @@
         d:DesignHeight="450"
         x:Class="Aaru.Gui.Views.Windows.MainWindow"
         Icon="/Assets/aaru-logo.png"
+        x:DataType="windows:MainWindowViewModel"
         Title="{Binding Title, Mode=OneWay}">
     <Design.DataContext>
         <windows:MainWindowViewModel />
@@ -86,19 +87,19 @@
                             <StackPanel.ContextMenu>
                                 <ContextMenu
                                     DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}">
-                                    <MenuItem Command="{Binding CalculateEntropyCommand, Mode=OneWay}"
+                                    <MenuItem Command="{Binding $parent[Window].DataContext.CalculateEntropyCommand, Mode=OneWay}"
                                               Header="{x:Static localization:UI.ButtonLabel_Calculate_entropy}" />
-                                    <MenuItem Command="{Binding VerifyImageCommand, Mode=OneWay}"
+                                    <MenuItem Command="{Binding $parent[Window].DataContext.VerifyImageCommand, Mode=OneWay}"
                                               Header="{x:Static localization:UI.ButtonLabel_Verify}" />
-                                    <MenuItem Command="{Binding ChecksumImageCommand, Mode=OneWay}"
+                                    <MenuItem Command="{Binding $parent[Window].DataContext.ChecksumImageCommand, Mode=OneWay}"
                                               Header="{x:Static localization:UI.ButtonLabel_Checksum}" />
-                                    <MenuItem Command="{Binding ConvertImageCommand, Mode=OneWay}"
+                                    <MenuItem Command="{Binding $parent[Window].DataContext.ConvertImageCommand, Mode=OneWay}"
                                               Header="{x:Static localization:UI.ButtonLabel_Convert_to}" />
-                                    <MenuItem Command="{Binding CreateSidecarCommand, Mode=OneWay}"
+                                    <MenuItem Command="{Binding $parent[Window].DataContext.CreateSidecarCommand, Mode=OneWay}"
                                               Header="{x:Static localization:UI.ButtonLabel_Create_Aaru_Metadata_sidecar}" />
-                                    <MenuItem Command="{Binding ViewImageSectorsCommand, Mode=OneWay}"
+                                    <MenuItem Command="{Binding $parent[Window].DataContext.ViewImageSectorsCommand, Mode=OneWay}"
                                               Header="{x:Static localization:UI.ButtonLabel_View_sectors}" />
-                                    <MenuItem Command="{Binding DecodeImageMediaTagsCommand, Mode=OneWay}"
+                                    <MenuItem Command="{Binding $parent[Window].DataContext.DecodeImageMediaTagsCommand, Mode=OneWay}"
                                               Header="{x:Static localization:UI.ButtonLabel_Decode_media_tags}" />
                                 </ContextMenu>
                             </StackPanel.ContextMenu>

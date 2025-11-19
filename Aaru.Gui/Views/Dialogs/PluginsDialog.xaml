@@ -45,6 +45,7 @@
         Height="600"
         x:Class="Aaru.Gui.Views.Dialogs.PluginsDialog"
         Icon="/Assets/aaru-logo.png"
+        x:DataType="dialogs:PluginsViewModel"
         Title="{x:Static localization:UI.Title_Plugins}">
     <Design.DataContext>
         <dialogs:PluginsViewModel />

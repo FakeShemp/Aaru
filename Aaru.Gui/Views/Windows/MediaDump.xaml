@@ -42,6 +42,7 @@
         d:DesignHeight="450"
         x:Class="Aaru.Gui.Views.Windows.MediaDump"
         Icon="/Assets/aaru-logo.png"
+        x:DataType="windows:MediaDumpViewModel"
         Title="{Binding Title}">
     <Design.DataContext>
         <windows:MediaDumpViewModel />

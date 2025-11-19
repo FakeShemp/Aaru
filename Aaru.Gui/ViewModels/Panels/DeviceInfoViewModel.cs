@@ -199,6 +199,8 @@ public sealed partial class DeviceInfoViewModel : ViewModelBase
     [ObservableProperty]
     bool _removable;
     [ObservableProperty]
+    bool _removableChecked;
+    [ObservableProperty]
     string _revision;
     [ObservableProperty]
     bool _saveUsbDescriptorsEnabled;
@@ -212,6 +214,8 @@ public sealed partial class DeviceInfoViewModel : ViewModelBase
     string _sdMm;
     [ObservableProperty]
     SdMmcInfo _sdMmcInfo;
+    [ObservableProperty]
+    string _sdMmcText;
     [ObservableProperty]
     string _secureDigital;
     [ObservableProperty]

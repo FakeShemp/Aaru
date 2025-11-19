@@ -5,6 +5,7 @@
     <Title>Aaru Data Preservation Suite</Title>
     <NoWarn>CS0649,CS0169</NoWarn>
     <Authors>Natalia Portillo &lt;claunia@claunia.com&gt;</Authors>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <NoWarn>CS1591;CS1574</NoWarn>

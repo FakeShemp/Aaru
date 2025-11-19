@@ -41,6 +41,7 @@
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
+             x:DataType="tabs:SdMmcInfoViewModel"
              x:Class="Aaru.Gui.Views.Tabs.SdMmcInfo">
     <Design.DataContext>
         <tabs:SdMmcInfoViewModel />

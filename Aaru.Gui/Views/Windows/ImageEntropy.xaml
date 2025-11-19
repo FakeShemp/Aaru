@@ -45,6 +45,7 @@
         Height="320"
         x:Class="Aaru.Gui.Views.Windows.ImageEntropy"
         Icon="/Assets/aaru-logo.png"
+        x:DataType="windows:ImageEntropyViewModel"
         Title="{x:Static localization:UI.Title_Calculating_entropy}">
     <Design.DataContext>
         <windows:ImageEntropyViewModel />

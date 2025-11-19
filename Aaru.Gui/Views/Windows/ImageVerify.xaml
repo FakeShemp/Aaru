@@ -45,6 +45,7 @@
         Height="400"
         x:Class="Aaru.Gui.Views.Windows.ImageVerify"
         Icon="/Assets/aaru-logo.png"
+        x:DataType="windows:ImageVerifyViewModel"
         Title="{x:Static localization:UI.Title_Verify_image}">
     <Design.DataContext>
         <windows:ImageVerifyViewModel />

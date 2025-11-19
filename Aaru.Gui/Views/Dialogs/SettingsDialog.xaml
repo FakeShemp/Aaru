@@ -45,6 +45,7 @@
         x:Class="Aaru.Gui.Views.Dialogs.SettingsDialog"
         Icon="/Assets/aaru-logo.png"
         CanResize="False"
+        x:DataType="dialogs:SettingsViewModel"
         Title="{x:Static localization:UI.Title_Settings}">
     <Design.DataContext>
         <dialogs:SettingsViewModel />

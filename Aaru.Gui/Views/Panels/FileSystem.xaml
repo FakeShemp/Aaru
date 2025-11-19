@@ -41,6 +41,7 @@
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
+             x:DataType="panels:FileSystemViewModel"
              x:Class="Aaru.Gui.Views.Panels.FileSystem">
     <Design.DataContext>
         <panels:FileSystemViewModel />

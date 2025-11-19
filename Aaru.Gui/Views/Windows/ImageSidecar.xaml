@@ -46,6 +46,7 @@
         x:Class="Aaru.Gui.Views.Windows.ImageSidecar"
         Icon="/Assets/aaru-logo.png"
         CanResize="False"
+        x:DataType="windows:ImageSidecarViewModel"
         Title="Image sidecar creation">
     <Design.DataContext>
         <windows:ImageSidecarViewModel />

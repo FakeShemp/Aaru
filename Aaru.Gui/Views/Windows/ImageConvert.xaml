@@ -45,6 +45,7 @@
         Height="832"
         x:Class="Aaru.Gui.Views.Windows.ImageConvert"
         Icon="/Assets/aaru-logo.png"
+        x:DataType="windows:ImageConvertViewModel"
         Title="{x:Static localization:UI.Title_Convert_image}">
     <Design.DataContext>
         <windows:ImageConvertViewModel />

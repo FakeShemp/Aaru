@@ -46,6 +46,7 @@
         x:Class="Aaru.Gui.Views.Dialogs.Encodings"
         Icon="/Assets/aaru-logo.png"
         CanResize="False"
+        x:DataType="dialogs:EncodingsViewModel"
         Title="{x:Static localization:UI.Encodings}">
     <Design.DataContext>
         <dialogs:EncodingsViewModel />

@@ -41,6 +41,7 @@
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
+             x:DataType="tabs:BlurayInfoViewModel"
              x:Class="Aaru.Gui.Views.Tabs.BlurayInfo">
     <Design.DataContext>
         <tabs:BlurayInfoViewModel />

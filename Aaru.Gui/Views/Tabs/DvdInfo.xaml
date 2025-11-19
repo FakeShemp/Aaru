@@ -41,6 +41,7 @@
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
+             x:DataType="tabs:DvdInfoViewModel"
              x:Class="Aaru.Gui.Views.Tabs.DvdInfo">
     <Design.DataContext>
         <tabs:DvdInfoViewModel />

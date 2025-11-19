@@ -46,6 +46,7 @@
         x:Class="Aaru.Gui.Views.Dialogs.About"
         Icon="/Assets/aaru-logo.png"
         CanResize="False"
+        x:DataType="dialogs:AboutViewModel"
         Title="{x:Static localization:UI.Title_About_Aaru}">
     <Design.DataContext>
         <dialogs:AboutViewModel />

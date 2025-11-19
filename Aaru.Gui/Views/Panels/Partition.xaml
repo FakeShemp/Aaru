@@ -40,6 +40,7 @@
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
+             x:DataType="panels:PartitionViewModel"
              x:Class="Aaru.Gui.Views.Panels.Partition">
     <Design.DataContext>
         <panels:PartitionViewModel />

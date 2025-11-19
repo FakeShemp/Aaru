@@ -45,6 +45,7 @@
         Height="480"
         x:Class="Aaru.Gui.Views.Windows.ViewSector"
         Icon="/Assets/aaru-logo.png"
+        x:DataType="windows:ViewSectorViewModel"
         Title="{x:Static localization:UI.Title_Sector_viewer}">
     <Design.DataContext>
         <windows:ViewSectorViewModel />

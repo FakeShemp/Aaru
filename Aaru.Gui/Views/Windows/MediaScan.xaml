@@ -42,6 +42,7 @@
         d:DesignHeight="450"
         x:Class="Aaru.Gui.Views.Windows.MediaScan"
         Icon="/Assets/aaru-logo.png"
+        x:DataType="windows:MediaScanViewModel"
         Title="{Binding Title}">
     <Design.DataContext>
         <windows:MediaScanViewModel />

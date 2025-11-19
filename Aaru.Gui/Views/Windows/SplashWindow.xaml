@@ -42,6 +42,7 @@
         x:Class="Aaru.Gui.Views.Windows.SplashWindow"
         Icon="/Assets/aaru-logo.png"
         Title="Aaru"
+        x:DataType="windows:SplashWindowViewModel"
         SystemDecorations="BorderOnly">
     <Design.DataContext>
         <windows:SplashWindowViewModel />

@@ -46,6 +46,7 @@
         x:Class="Aaru.Gui.Views.Dialogs.StatisticsDialog"
         Icon="/Assets/aaru-logo.png"
         CanResize="False"
+        x:DataType="dialogs:StatisticsViewModel"
         Title="{x:Static localization:UI.Title_Statistics}">
     <Design.DataContext>
         <dialogs:StatisticsViewModel />
