@@ -12,81 +12,484 @@
         Width="640"
         x:Class="Aaru.Gui.Views.Windows.DeviceView"
         x:DataType="windows:DeviceViewModel"
-        Title="DeviceView">
+        Title="{Binding DevicePath, Mode=OneWay}">
     <Grid RowDefinitions="Auto,*, Auto"
           RowSpacing="8"
           Margin="12">
-        <StackPanel Grid.Row="0"
-                    Orientation="Vertical"
-                    Spacing="8">
-            <Grid ColumnDefinitions="Auto, *"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding DevicePath, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Device_path}" />
-                <TextBlock Grid.Column="1"
-                           Foreground="Green"
-                           Text="{Binding DevicePath, Mode=OneWay}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto, *"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding DeviceType, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Device_type}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding DeviceType}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto, *"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding Manufacturer, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Manufacturer}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding Manufacturer}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto, *"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding Model, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Model}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding Model}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto, *"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding Revision, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Revision}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding Revision}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto, *"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding Serial, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Serial_number}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding Serial}" />
-            </Grid>
-            <Grid ColumnDefinitions="Auto, *"
-                  ColumnSpacing="8"
-                  IsVisible="{Binding ScsiType, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
-                <controls:SpectreTextBlock Grid.Column="0"
-                                           Text="{x:Static localization:UI.Title_Peripheral_device_type}" />
-                <controls:SpectreTextBlock Grid.Column="1"
-                                           Text="{Binding ScsiType}" />
-            </Grid>
-            <CheckBox IsChecked="{Binding RemovableChecked}"
-                      IsEnabled="False">
-                <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Removable_media}" />
-            </CheckBox>
-            <CheckBox IsChecked="{Binding UsbConnected}"
-                      IsEnabled="False">
-                <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Connected_by_USB}" />
-            </CheckBox>
-        </StackPanel>
-        <Panel Grid.Row="1" />
-        <TextBox Grid.Row="2"
-                 Text="{Binding StatusMessage, Mode=OneWay}" />
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto, *"
+              ColumnSpacing="8"
+              IsVisible="{Binding DevicePath, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+            <controls:SpectreTextBlock Grid.Column="0"
+                                       Text="{x:Static localization:UI.Title_Device_path}" />
+            <TextBlock Grid.Column="1"
+                       Foreground="Green"
+                       Text="{Binding DevicePath, Mode=OneWay}" />
+        </Grid>
+        <TabControl Grid.Row="1">
+            <TabItem>
+                <TabItem.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_General}" />
+                </TabItem.Header>
+                <StackPanel Margin="8"
+                            Orientation="Vertical"
+                            Spacing="8">
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8"
+                          IsVisible="{Binding DeviceType, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                        <controls:SpectreTextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:UI.Title_Device_type}" />
+                        <controls:SpectreTextBlock Grid.Column="1"
+                                                   Text="{Binding DeviceType, Mode=OneWay}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8"
+                          IsVisible="{Binding Manufacturer, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                        <controls:SpectreTextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:UI.Title_Manufacturer}" />
+                        <controls:SpectreTextBlock Grid.Column="1"
+                                                   Text="{Binding Manufacturer, Mode=OneWay}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8"
+                          IsVisible="{Binding Model, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                        <controls:SpectreTextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:UI.Title_Model}" />
+                        <controls:SpectreTextBlock Grid.Column="1"
+                                                   Text="{Binding Model, Mode=OneWay}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8"
+                          IsVisible="{Binding Revision, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                        <controls:SpectreTextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:UI.Title_Revision}" />
+                        <controls:SpectreTextBlock Grid.Column="1"
+                                                   Text="{Binding Revision, Mode=OneWay}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8"
+                          IsVisible="{Binding Serial, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                        <controls:SpectreTextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:UI.Title_Serial_number}" />
+                        <controls:SpectreTextBlock Grid.Column="1"
+                                                   Text="{Binding Serial, Mode=OneWay}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8"
+                          IsVisible="{Binding ScsiType, Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
+                        <controls:SpectreTextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:UI.Title_Peripheral_device_type}" />
+                        <controls:SpectreTextBlock Grid.Column="1"
+                                                   Text="{Binding ScsiType, Mode=OneWay}" />
+                    </Grid>
+                    <CheckBox IsChecked="{Binding RemovableChecked, Mode=OneWay}"
+                              IsEnabled="False">
+                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Removable_media}" />
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding UsbConnected, Mode=OneWay}"
+                              IsEnabled="False">
+                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Connected_by_USB}" />
+                    </CheckBox>
+                </StackPanel>
+            </TabItem>
+            <TabItem IsVisible="{Binding UsbVisible, Mode=OneWay}">
+                <TabItem.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_USB}" />
+                </TabItem.Header>
+                <StackPanel Orientation="Vertical"
+                            Margin="8"
+                            Spacing="8">
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8">
+                        <controls:SpectreTextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:UI.Title_Vendor_ID}" />
+                        <controls:SpectreTextBlock Grid.Column="1"
+                                                   Text="{Binding UsbVendorId, Mode=OneWay}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8">
+                        <controls:SpectreTextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:UI.Title_Product_ID}" />
+                        <controls:SpectreTextBlock Grid.Column="1"
+                                                   Text="{Binding UsbProductId, Mode=OneWay}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8">
+                        <controls:SpectreTextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:UI.Title_Manufacturer}" />
+                        <controls:SpectreTextBlock Grid.Column="1"
+                                                   Text="{Binding UsbManufacturer, Mode=OneWay}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8">
+                        <controls:SpectreTextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:UI.Title_Product}" />
+                        <controls:SpectreTextBlock Grid.Column="1"
+                                                   Text="{Binding UsbProduct, Mode=OneWay}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8">
+                        <controls:SpectreTextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:UI.Title_Serial_number}" />
+                        <controls:SpectreTextBlock Grid.Column="1"
+                                                   Text="{Binding UsbSerial, Mode=OneWay}" />
+                    </Grid>
+                    <Button Command="{Binding SaveUsbDescriptorsCommand, Mode=OneWay}"
+                            IsVisible="{Binding SaveUsbDescriptorsEnabled, Mode=OneWay}">
+                        <TextBlock Text="{x:Static localization:UI.Save_descriptors_to_file}" />
+                    </Button>
+                </StackPanel>
+            </TabItem>
+            <TabItem IsVisible="{Binding FirewireVisible, Mode=OneWay}">
+                <TabItem.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_FireWire}" />
+                </TabItem.Header>
+                <StackPanel Orientation="Vertical">
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8">
+                        <controls:SpectreTextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:UI.Title_Vendor_ID}" />
+                        <controls:SpectreTextBlock Grid.Column="1"
+                                                   Text="{Binding FirewireVendorId, Mode=OneWay}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8">
+                        <controls:SpectreTextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:UI.Title_Model_ID}" />
+                        <controls:SpectreTextBlock Grid.Column="1"
+                                                   Text="{Binding FirewireModelId, Mode=OneWay}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8">
+                        <controls:SpectreTextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:UI.Title_Manufacturer}" />
+                        <controls:SpectreTextBlock Grid.Column="1"
+                                                   Text="{Binding FirewireManufacturer, Mode=OneWay}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8">
+                        <controls:SpectreTextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:UI.Title_Model}" />
+                        <controls:SpectreTextBlock Grid.Column="1"
+                                                   Text="{Binding FirewireModel, Mode=OneWay}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8">
+                        <controls:SpectreTextBlock Grid.Column="0"
+                                                   Text="{x:Static localization:UI.Title_GUID}" />
+                        <controls:SpectreTextBlock Grid.Column="1"
+                                                   Text="{Binding FirewireGuid, Mode=OneWay}" />
+                    </Grid>
+                </StackPanel>
+            </TabItem>
+            <TabItem IsVisible="{Binding PlextorVisible, Mode=OneWay}">
+                <TabItem.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Plextor}" />
+                </TabItem.Header>
+                <ScrollViewer Margin="8">
+                    <StackPanel Orientation="Vertical"
+                                Spacing="8">
+                        <StackPanel Orientation="Vertical"
+                                    IsVisible="{Binding PlextorEepromVisible, Mode=OneWay}"
+                                    Spacing="8">
+                            <Grid ColumnDefinitions="Auto, *"
+                                  ColumnSpacing="8">
+                                <controls:SpectreTextBlock Grid.Column="0"
+                                                           Text="{x:Static localization:UI.Total_loaded_discs}" />
+                                <controls:SpectreTextBlock Grid.Column="1"
+                                                           Text="{Binding PlextorDiscs, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto, *"
+                                  ColumnSpacing="8">
+                                <controls:SpectreTextBlock Grid.Column="0"
+                                                           Text="{x:Static localization:UI.Time_spent_reading_CDs}" />
+                                <controls:SpectreTextBlock Grid.Column="1"
+                                                           Text="{Binding PlextorCdReadTime, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto, *"
+                                  ColumnSpacing="8">
+                                <controls:SpectreTextBlock Grid.Column="0"
+                                                           Text="{x:Static localization:UI.Time_spent_writing_CDs}" />
+                                <controls:SpectreTextBlock Grid.Column="1"
+                                                           Text="{Binding PlextorCdWriteTime, Mode=OneWay}" />
+                            </Grid>
+                            <StackPanel Orientation="Vertical"
+                                        IsVisible="{Binding PlextorDvdTimesVisible, Mode=OneWay}"
+                                        Spacing="8">
+                                <Grid ColumnDefinitions="Auto, *"
+                                      ColumnSpacing="8">
+                                    <controls:SpectreTextBlock Grid.Column="0"
+                                                               Text="{x:Static localization:UI.Time_spent_reading_DVDs}" />
+                                    <controls:SpectreTextBlock Grid.Column="1"
+                                                               Text="{Binding PlextorDvdReadTime, Mode=OneWay}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="Auto, *"
+                                      ColumnSpacing="8">
+                                    <controls:SpectreTextBlock Grid.Column="0"
+                                                               Text="{x:Static localization:UI.Time_spent_writing_DVDs}" />
+                                    <controls:SpectreTextBlock Grid.Column="1"
+                                                               Text="{Binding PlextorDvdWriteTime, Mode=OneWay}" />
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                        <CheckBox IsChecked="{Binding PlextorPoweRec, Mode=OneWay}"
+                                  IsEnabled="False">
+                            <controls:SpectreTextBlock Text="{x:Static localization:UI.Supports_PoweRec}" />
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding PlextorPoweRecEnabled, Mode=OneWay}"
+                                  IsEnabled="False"
+                                  IsVisible="{Binding PlextorPoweRec, Mode=OneWay}">
+                            <controls:SpectreTextBlock Text="{x:Static localization:UI.PoweRec_is_enabled}" />
+                        </CheckBox>
+                        <StackPanel Orientation="Vertical"
+                                    IsVisible="{Binding PlextorPoweRecEnabled, Mode=OneWay}"
+                                    Spacing="8">
+                            <StackPanel Orientation="Vertical"
+                                        IsVisible="{Binding PlextorPoweRecRecommendedVisible, Mode=OneWay}">
+                                <Grid ColumnDefinitions="Auto, *"
+                                      ColumnSpacing="8">
+                                    <controls:SpectreTextBlock Grid.Column="0"
+                                                               Text="{x:Static localization:UI.Recommended_speed}" />
+                                    <controls:SpectreTextBlock Grid.Column="1"
+                                                               Text="{Binding PlextorPoweRecRecommended, Mode=OneWay}" />
+                                </Grid>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical"
+                                        IsVisible="{Binding PlextorPoweRecSelectedVisible, Mode=OneWay}">
+                                <Grid ColumnDefinitions="Auto, *"
+                                      ColumnSpacing="8">
+                                    <controls:SpectreTextBlock Grid.Column="0"
+                                                               Text="{x:Static localization:UI.Selected_PoweRec_speed_for_currently_inserted_media}" />
+                                    <controls:SpectreTextBlock Grid.Column="1"
+                                                               Text="{Binding PlextorPoweRecSelected, Mode=OneWay}" />
+                                </Grid>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical"
+                                        IsVisible="{Binding PlextorPoweRecMaxVisible, Mode=OneWay}">
+                                <Grid ColumnDefinitions="Auto, *"
+                                      ColumnSpacing="8">
+                                    <controls:SpectreTextBlock Grid.Column="0"
+                                                               Text="{x:Static localization:UI.Maximum_PoweRec_speed_for_currently_inserted_media}" />
+                                    <controls:SpectreTextBlock Grid.Column="1"
+                                                               Text="{Binding PlextorPoweRecMax, Mode=OneWay}" />
+                                </Grid>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical"
+                                        IsVisible="{Binding PlextorPoweRecLastVisible, Mode=OneWay}">
+                                <Grid ColumnDefinitions="Auto, *"
+                                      ColumnSpacing="8">
+                                    <controls:SpectreTextBlock Grid.Column="0"
+                                                               Text="{x:Static localization:UI.Last_PoweRec_used_speed}" />
+                                    <controls:SpectreTextBlock Grid.Column="1"
+                                                               Text="{Binding PlextorPoweRecLast, Mode=OneWay}" />
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                        <CheckBox IsChecked="{Binding PlextorSilentMode, Mode=OneWay}"
+                                  IsEnabled="False">
+                            <controls:SpectreTextBlock Text="{x:Static localization:UI.Supports_SilentMode}" />
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding PlextorSilentModeEnabled, Mode=OneWay}"
+                                  IsEnabled="False"
+                                  IsVisible="{Binding PlextorSilentMode, Mode=OneWay}">
+                            <controls:SpectreTextBlock Text="{x:Static localization:UI.SilentMode_is_enabled}" />
+                        </CheckBox>
+                        <StackPanel Orientation="Vertical"
+                                    IsVisible="{Binding PlextorSilentModeEnabled, Mode=OneWay}"
+                                    Spacing="8">
+                            <TextBlock Text="{Binding PlextorSilentModeAccessTime, Mode=OneWay}" />
+                            <Grid ColumnDefinitions="Auto, *"
+                                  ColumnSpacing="8">
+                                <controls:SpectreTextBlock Grid.Column="0"
+                                                           Text="{x:Static localization:UI.CD_read_speed_limited_to}" />
+                                <controls:SpectreTextBlock Grid.Column="1"
+                                                           Text="{Binding PlextorSilentModeCdReadSpeedLimit, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto, *"
+                                  ColumnSpacing="8">
+                                <controls:SpectreTextBlock Grid.Column="0"
+                                                           Text="{x:Static localization:UI.CD_write_speed_limited_to}" />
+                                <controls:SpectreTextBlock Grid.Column="1"
+                                                           Text="{Binding PlextorSilentModeCdWriteSpeedLimit, Mode=OneWay}" />
+                            </Grid>
+                            <StackPanel Orientation="Vertical"
+                                        IsVisible="{Binding PlextorSilentModeDvdReadSpeedLimitVisible, Mode=OneWay}">
+                                <Grid ColumnDefinitions="Auto, *"
+                                      ColumnSpacing="8">
+                                    <controls:SpectreTextBlock Grid.Column="0"
+                                                               Text="{x:Static localization:UI.DVD_read_speed_limited_to}" />
+                                    <controls:SpectreTextBlock Grid.Column="1"
+                                                               Text="{Binding PlextorSilentModeDvdReadSpeedLimit, Mode=OneWay}" />
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                        <CheckBox IsChecked="{Binding PlextorGigaRec, Mode=OneWay}"
+                                  IsEnabled="False">
+                            <controls:SpectreTextBlock Text="{x:Static localization:UI.Supports_GigaRec}" />
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding PlextorSecuRec, Mode=OneWay}"
+                                  IsEnabled="False">
+                            <controls:SpectreTextBlock Text="{x:Static localization:UI.Supports_SecuRec}" />
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding PlextorSpeedRead, Mode=OneWay}"
+                                  IsEnabled="False">
+                            <controls:SpectreTextBlock Text="{x:Static localization:UI.Supports_SpeedRead}" />
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding PlextorSpeedEnabled, Mode=OneWay}"
+                                  IsEnabled="False">
+                            <controls:SpectreTextBlock Text="{x:Static localization:UI.SpeedRead_is_enabled}" />
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding PlextorHiding, Mode=OneWay}"
+                                  IsEnabled="False">
+                            <controls:SpectreTextBlock
+                                Text="{x:Static localization:UI.Supports_hiding_CD_Rs_and_sessions}" />
+                        </CheckBox>
+                        <StackPanel Orientation="Vertical"
+                                    IsVisible="{Binding PlextorHiding, Mode=OneWay}">
+                            <CheckBox IsChecked="{Binding PlextorHidesRecordables, Mode=OneWay}"
+                                      IsEnabled="False">
+                                <controls:SpectreTextBlock Text="{x:Static localization:UI.Is_hiding_CD_Rs}" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding PlextorHidesSessions, Mode=OneWay}"
+                                      IsEnabled="False">
+                                <controls:SpectreTextBlock
+                                    Text="{x:Static localization:UI.Is_forcing_only_first_session}" />
+                            </CheckBox>
+                        </StackPanel>
+                        <CheckBox IsChecked="{Binding PlextorVariRec, Mode=OneWay}"
+                                  IsEnabled="False">
+                            <controls:SpectreTextBlock Text="{x:Static localization:UI.Supports_VariRec}" />
+                        </CheckBox>
+                        <StackPanel Orientation="Vertical"
+                                    IsVisible="{Binding PlextorDvd, Mode=OneWay}">
+                            <CheckBox IsChecked="{Binding PlextorVariRecDvd, Mode=OneWay}"
+                                      IsEnabled="False">
+                                <controls:SpectreTextBlock Text="{x:Static localization:UI.Supports_VariRec_on_DVDs}" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding PlextorBitSetting, Mode=OneWay}"
+                                      IsEnabled="False">
+                                <controls:SpectreTextBlock
+                                    Text="{x:Static localization:UI.Supports_bitsetting_DVD_R_book_type}" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding PlextorBitSettingDl, Mode=OneWay}"
+                                      IsEnabled="False">
+                                <controls:SpectreTextBlock
+                                    Text="{x:Static localization:UI.Supports_bitsetting_DVD_R_DL_book_type}" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding PlextorDvdPlusWriteTest, Mode=OneWay}"
+                                      IsEnabled="False">
+                                <controls:SpectreTextBlock
+                                    Text="{x:Static localization:UI.Supports_test_writing_DVD_Plus}" />
+                            </CheckBox>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem IsVisible="{Binding Kreon, Mode=OneWay}">
+                <TabItem.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_Kreon}" />
+                </TabItem.Header>
+                <StackPanel Orientation="Vertical" Margin="8">
+                    <CheckBox IsChecked="{Binding KreonChallengeResponse, Mode=OneWay}"
+                              IsEnabled="False">
+                        <controls:SpectreTextBlock Text="{x:Static localization:Core.Can_do_challenge_response_with_Xbox_discs}" />
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding KreonDecryptSs, Mode=OneWay}"
+                              IsEnabled="False">
+                        <controls:SpectreTextBlock Text="{x:Static localization:Core.Can_read_and_decrypt_SS_from_Xbox_discs}" />
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding KreonXtremeUnlock, Mode=OneWay}"
+                              IsEnabled="False">
+                        <controls:SpectreTextBlock Text="{x:Static localization:Core.Can_set_xtreme_unlock_state_with_Xbox_discs}" />
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding KreonWxripperUnlock, Mode=OneWay}"
+                              IsEnabled="False">
+                        <controls:SpectreTextBlock Text="{x:Static localization:Core.Can_set_wxripper_unlock_state_with_Xbox_discs}" />
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding KreonChallengeResponse360, Mode=OneWay}"
+                              IsEnabled="False">
+                        <controls:SpectreTextBlock Text="{x:Static localization:Core.Can_do_challenge_response_with_Xbox_360_discs}" />
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding KreonDecryptSs360, Mode=OneWay}"
+                              IsEnabled="False">
+                        <controls:SpectreTextBlock Text="{x:Static localization:Core.Can_read_and_decrypt_SS_from_Xbox_360_discs}" />
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding KreonXtremeUnlock360, Mode=OneWay}"
+                              IsEnabled="False">
+                        <controls:SpectreTextBlock Text="{x:Static localization:Core.Can_set_xtreme_unlock_state_with_Xbox_360_discs}" />
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding KreonWxripperUnlock360, Mode=OneWay}"
+                              IsEnabled="False">
+                        <controls:SpectreTextBlock
+                            Text="{x:Static localization:Core.Can_set_wxripper_unlock_state_with_Xbox_360_discs}" />
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding KreonLock, Mode=OneWay}"
+                              IsEnabled="False">
+                        <controls:SpectreTextBlock Text="{x:Static localization:Core.Can_set_Kreon_locked_state}" />
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding KreonErrorSkipping, Mode=OneWay}"
+                              IsEnabled="False">
+                        <controls:SpectreTextBlock Text="{x:Static localization:Core.Kreon_Can_skip_read_errors}" />
+                    </CheckBox>
+                </StackPanel>
+            </TabItem>
+            <TabItem IsVisible="{Binding Ssc, Mode=OneWay}">
+                <TabItem.Header>
+                    <TextBlock Text="{x:Static localization:UI.SSC_Label}" />
+                </TabItem.Header>
+                <StackPanel Orientation="Vertical" Margin="8" Spacing="8">
+                    <StackPanel Orientation="Vertical" Spacing="8"
+                                IsVisible="{Binding BlockLimits, Mode=OneWay}">
+                        <controls:SpectreTextBlock Text="{Binding MinBlockSize, Mode=OneWay}"
+                                                   IsVisible="{Binding !!MinBlockSize, Mode=OneWay}" />
+                        <controls:SpectreTextBlock Text="{Binding MaxBlockSize, Mode=OneWay}"
+                                                   IsVisible="{Binding !!MaxBlockSize, Mode=OneWay}" />
+                        <controls:SpectreTextBlock Text="{Binding BlockSizeGranularity, Mode=OneWay}"
+                                                   IsVisible="{Binding !!BlockSizeGranularity, Mode=OneWay}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Spacing="8"
+                                IsVisible="{Binding !!Densities, Mode=OneWay}">
+                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Densities_supported_by_device}" VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding Densities, Mode=OneWay}"
+                                 IsReadOnly="True" />
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Spacing="8"
+                                IsVisible="{Binding !!MediumTypes, Mode=OneWay}">
+                        <controls:SpectreTextBlock Text="{x:Static localization:UI.Medium_types_supported_by_device}" VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding MediumTypes, Mode=OneWay}"
+                                 IsReadOnly="True" />
+                    </StackPanel>
+                    <TextBox Text="{Binding MediumDensity, Mode=OneWay}"
+                             IsReadOnly="True"
+                             IsVisible="{Binding !!MediumDensity, Mode=OneWay}" />
+                </StackPanel>
+            </TabItem>
+            <TabItem IsVisible="{Binding !!PcmciaInfo, Mode=OneWay}">
+                <TabItem.Header>
+                    <TextBlock Text="{x:Static localization:UI.Title_PCMCIA}" />
+                </TabItem.Header>
+                <ContentControl Content="{Binding PcmciaInfo, Mode=OneWay}" />
+            </TabItem>
+            <TabItem IsVisible="{Binding !!AtaInfo, Mode=OneWay}">
+                <TabItem.Header>
+                    <TextBlock Text="{x:Static localization:UI.Title_ATA_ATAPI}" />
+                </TabItem.Header>
+                <ContentControl Content="{Binding AtaInfo, Mode=OneWay}" />
+            </TabItem>
+            <TabItem IsVisible="{Binding !!ScsiInfo, Mode=OneWay}">
+                <TabItem.Header>
+                    <TextBlock Text="{x:Static localization:UI.Title_SCSI}" />
+                </TabItem.Header>
+                <ContentControl Content="{Binding ScsiInfo, Mode=OneWay}" />
+            </TabItem>
+            <TabItem IsVisible="{Binding !!SdMmcInfo, Mode=OneWay}">
+                <TabItem.Header>
+                    <TextBlock Text="{x:Static localization:UI.Title_SD_MMC}" />
+                </TabItem.Header>
+                <ContentControl Content="{Binding SdMmcInfo, Mode=OneWay}" />
+            </TabItem>
+        </TabControl>
+        <TextBlock Grid.Row="2"
+                   Text="{Binding StatusMessage, Mode=OneWay}" />
     </Grid>
 </Window>

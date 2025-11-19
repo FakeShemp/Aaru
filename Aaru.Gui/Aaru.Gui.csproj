@@ -347,9 +347,6 @@
     <Compile Update="Views\Dialogs\Encodings.xaml.cs">
       <DependentUpon>Encodings.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\Panels\DeviceInfo.xaml.cs">
-      <DependentUpon>DeviceInfo.xaml</DependentUpon>
-    </Compile>
     <Compile Update="Views\Panels\FileSystem.xaml.cs">
       <DependentUpon>FileSystem.xaml</DependentUpon>
     </Compile>
