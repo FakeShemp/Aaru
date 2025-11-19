@@ -14,6 +14,7 @@
                              Height="11"
                              WindowStartupLocation="CenterScreen"
                              CanResize="False"
+                             x:DataType="dialogs:HexViewHelpDialogViewModel"
                              Title="{x:Static localization:Resources.Help_Title}">
     <Design.DataContext>
         <dialogs:HexViewHelpDialogViewModel />

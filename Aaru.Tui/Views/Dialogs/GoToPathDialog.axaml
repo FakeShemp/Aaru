@@ -12,6 +12,7 @@
                              Width="40"
                              WindowStartupLocation="CenterScreen"
                              x:Class="Aaru.Tui.Views.Dialogs.GoToPathDialog"
+                             x:DataType="dialogs:GoToPathDialogViewModel"
                              Title="{x:Static localization:Resources.GoToPath_Title}">
     <Design.DataContext>
         <dialogs:GoToPathDialogViewModel />

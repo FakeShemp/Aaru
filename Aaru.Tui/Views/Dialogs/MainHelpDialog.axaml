@@ -14,6 +14,7 @@
                              Height="8"
                              WindowStartupLocation="CenterScreen"
                              CanResize="False"
+                             x:DataType="dialogs:MainHelpDialogViewModel"
                              Title="{x:Static localization:Resources.Help_Title}">
     <Design.DataContext>
         <dialogs:MainHelpDialogViewModel />
