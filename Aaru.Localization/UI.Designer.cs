@@ -6531,5 +6531,29 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Title_Device_path", resourceCulture);
             }
         }
+        
+        public static string Device_opened_successfully {
+            get {
+                return ResourceManager.GetString("Device_opened_successfully", resourceCulture);
+            }
+        }
+        
+        public static string Querying_device_information {
+            get {
+                return ResourceManager.GetString("Querying_device_information", resourceCulture);
+            }
+        }
+        
+        public static string Device_information_queryied_successfully {
+            get {
+                return ResourceManager.GetString("Device_information_queryied_successfully", resourceCulture);
+            }
+        }
+        
+        public static string Querying_media_information {
+            get {
+                return ResourceManager.GetString("Querying_media_information", resourceCulture);
+            }
+        }
     }
 }

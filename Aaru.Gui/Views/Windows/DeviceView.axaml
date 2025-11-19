@@ -621,8 +621,8 @@
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Scan_media_surface}" />
             </Button>
         </StackPanel>
-        <TextBlock Grid.Row="3"
-                   IsVisible="{Binding StatusMessageVisible, Mode=OneWay}"
-                   Text="{Binding StatusMessage, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="3"
+                                   IsVisible="{Binding StatusMessageVisible, Mode=OneWay}"
+                                   Text="{Binding StatusMessage, Mode=OneWay}" />
     </Grid>
 </Window>

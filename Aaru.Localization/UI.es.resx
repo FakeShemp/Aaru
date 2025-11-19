@@ -3266,4 +3266,16 @@ Probadores:
     <data name="Title_Device_path" xml:space="preserve">
         <value>[bold][slateblue1]Ruta al dispositivo[/][/]</value>
     </data>
+    <data name="Device_opened_successfully" xml:space="preserve">
+        <value>[slateblue1]Dispositivo abierto correctamente.[/]</value>
+    </data>
+    <data name="Querying_device_information" xml:space="preserve">
+        <value>[slateblue1]Obteniendo información del dispositivo[/]</value>
+    </data>
+    <data name="Device_information_queryied_successfully" xml:space="preserve">
+        <value>[slateblue1]Información del dispositivo obtenida correctamente.[/]</value>
+    </data>
+    <data name="Querying_media_information" xml:space="preserve">
+        <value>[slateblue1]Obteniendo información del medio...[/]</value>
+    </data>
 </root>

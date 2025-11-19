@@ -355,7 +355,7 @@ public partial class DeviceViewModel : ViewModelBase
         Dispatcher.UIThread.Invoke(() =>
         {
             StatusMessageVisible = true;
-            StatusMessage        = "Opening device...";
+            StatusMessage        = UI.Opening_device;
         });
 
         var dev = Device.Create(DevicePath, out ErrorNumber devErrno);
@@ -408,18 +408,18 @@ public partial class DeviceViewModel : ViewModelBase
             ScsiType         = $"[orange]{dev.ScsiType.Humanize()}[/]";
             RemovableChecked = dev.IsRemovable;
             UsbConnected     = dev.IsUsb;
-            StatusMessage    = "Device opened successfully.";
+            StatusMessage    = UI.Device_opened_successfully;
         });
 
         _dev = dev;
 
         Statistics.AddDevice(dev);
 
-        Dispatcher.UIThread.Invoke(() => StatusMessage = "Querying device information...");
+        Dispatcher.UIThread.Invoke(() => StatusMessage = UI.Querying_device_information);
 
         var devInfo = new DeviceInfo(dev);
 
-        Dispatcher.UIThread.Invoke(() => StatusMessage = "Device information queryied successfully...");
+        Dispatcher.UIThread.Invoke(() => StatusMessage = UI.Device_information_queryied_successfully);
 
         if(devInfo.IsUsb)
         {
@@ -553,12 +553,14 @@ public partial class DeviceViewModel : ViewModelBase
                             if(devInfo.PlextorFeatures.PoweRecMax > 0)
                             {
                                 PlextorPoweRecMaxVisible = true;
+
                                 PlextorPoweRecMax = string.Format(UI._0_Kb_sec, devInfo.PlextorFeatures.PoweRecMax);
                             }
 
                             if(devInfo.PlextorFeatures.PoweRecLast > 0)
                             {
                                 PlextorPoweRecLastVisible = true;
+
                                 PlextorPoweRecLast = string.Format(UI._0_Kb_sec, devInfo.PlextorFeatures.PoweRecLast);
                             }
                         }
@@ -713,7 +715,7 @@ public partial class DeviceViewModel : ViewModelBase
                 });
             }
 
-            Dispatcher.UIThread.Invoke(() => StatusMessage = "Querying media information...");
+            Dispatcher.UIThread.Invoke(() => StatusMessage = UI.Querying_media_information);
 
             var mediaInfo = new ScsiInfo(dev);
 
@@ -977,7 +979,7 @@ public partial class DeviceViewModel : ViewModelBase
         {
             case CommonTypes.MediaType.GDR or CommonTypes.MediaType.GDROM:
                 await MessageBoxManager
-                     .GetMessageBoxStandard(UI.Title_Error,
+                     .GetMessageBoxStandard(Localization.UI.Title_Error,
                                             Localization.Core.GD_ROM_dump_support_is_not_yet_implemented,
                                             ButtonEnum.Ok,
                                             Icon.Error)
@@ -987,7 +989,7 @@ public partial class DeviceViewModel : ViewModelBase
             case CommonTypes.MediaType.XGD or CommonTypes.MediaType.XGD2 or CommonTypes.MediaType.XGD3
                 when _scsiInfo.DeviceInfo.ScsiInquiry?.KreonPresent != true:
                 await MessageBoxManager
-                     .GetMessageBoxStandard(UI.Title_Error,
+                     .GetMessageBoxStandard(Localization.UI.Title_Error,
                                             Localization.Core
                                                         .Dumping_Xbox_Game_Discs_requires_a_drive_with_Kreon_firmware,
                                             ButtonEnum.Ok,
@@ -1015,7 +1017,7 @@ public partial class DeviceViewModel : ViewModelBase
             case CommonTypes.MediaType.GDR:
             case CommonTypes.MediaType.GDROM:
                 await MessageBoxManager
-                     .GetMessageBoxStandard(UI.Title_Error,
+                     .GetMessageBoxStandard(Localization.UI.Title_Error,
                                             Localization.Core.GD_ROM_scan_support_is_not_yet_implemented,
                                             ButtonEnum.Ok,
                                             Icon.Error)
@@ -1027,7 +1029,7 @@ public partial class DeviceViewModel : ViewModelBase
             case CommonTypes.MediaType.XGD:
             case CommonTypes.MediaType.XGD2:
             case CommonTypes.MediaType.XGD3:
-                await MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
+                await MessageBoxManager.GetMessageBoxStandard(Localization.UI.Title_Error,
                                                               Localization.Core
                                                                           .Scanning_Xbox_discs_is_not_yet_supported,
                                                               ButtonEnum.Ok,

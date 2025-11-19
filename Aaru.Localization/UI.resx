@@ -3341,4 +3341,16 @@ Do you want to continue?</value>
     <data name="Title_Device_path" xml:space="preserve">
         <value>[bold][slateblue1]Device path[/][/]</value>
     </data>
+    <data name="Device_opened_successfully" xml:space="preserve">
+        <value>[slateblue1]Device opened successfully.[/]</value>
+    </data>
+    <data name="Querying_device_information" xml:space="preserve">
+        <value>[slateblue1]Querying device information...[/]</value>
+    </data>
+    <data name="Device_information_queryied_successfully" xml:space="preserve">
+        <value>[slateblue1]Device information queryied successfully.[/]</value>
+    </data>
+    <data name="Querying_media_information" xml:space="preserve">
+        <value>[slateblue1]Querying media information...[/]</value>
+    </data>
 </root>
