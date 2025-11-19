@@ -273,7 +273,10 @@ public partial class MainWindowViewModel : ViewModelBase
 
         if(result != UI.ButtonLabel_Connect) return;
 
-        var deviceListWindow = new DeviceList();
+        var deviceListWindow = new DeviceList
+        {
+            Topmost = true
+        };
 
         deviceListWindow.DataContext = new DeviceListViewModel(deviceListWindow, msbox.InputValue);
 
