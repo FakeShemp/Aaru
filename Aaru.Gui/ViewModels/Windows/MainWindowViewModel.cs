@@ -275,7 +275,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
         var deviceListWindow = new DeviceList
         {
-            Topmost = true
+            WindowStartupLocation = WindowStartupLocation.CenterScreen
         };
 
         deviceListWindow.DataContext = new DeviceListViewModel(deviceListWindow, msbox.InputValue);

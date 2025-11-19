@@ -44,6 +44,7 @@ using Aaru.Gui.Models;
 using Aaru.Gui.Views.Windows;
 using Aaru.Localization;
 using Aaru.Logging;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -91,7 +92,7 @@ public partial class DeviceListViewModel : ViewModelBase
 
         var deviceView = new DeviceView
         {
-            Topmost = true
+            WindowStartupLocation = WindowStartupLocation.CenterScreen
         };
 
         var vm = new DeviceViewModel(deviceView, _selectedDevice.Path);
