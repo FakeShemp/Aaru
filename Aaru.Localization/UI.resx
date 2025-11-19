@@ -3353,4 +3353,10 @@ Do you want to continue?</value>
     <data name="Querying_media_information" xml:space="preserve">
         <value>[slateblue1]Querying media information...[/]</value>
     </data>
+    <data name="Title_Block_map" xml:space="preserve">
+        <value>Block map</value>
+    </data>
+    <data name="Title_Chart" xml:space="preserve">
+        <value>Chart</value>
+    </data>
 </root>

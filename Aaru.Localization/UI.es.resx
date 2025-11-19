@@ -3278,4 +3278,10 @@ Probadores:
     <data name="Querying_media_information" xml:space="preserve">
         <value>[slateblue1]Obteniendo información del medio...[/]</value>
     </data>
+    <data name="Title_Block_map" xml:space="preserve">
+        <value>Mapa</value>
+    </data>
+    <data name="Title_Chart" xml:space="preserve">
+        <value>Gráfica</value>
+    </data>
 </root>

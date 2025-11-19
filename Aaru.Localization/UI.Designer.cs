@@ -6555,5 +6555,17 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Querying_media_information", resourceCulture);
             }
         }
+        
+        public static string Title_Block_map {
+            get {
+                return ResourceManager.GetString("Title_Block_map", resourceCulture);
+            }
+        }
+        
+        public static string Title_Chart {
+            get {
+                return ResourceManager.GetString("Title_Chart", resourceCulture);
+            }
+        }
     }
 }
