@@ -146,18 +146,21 @@ public partial class DeviceListViewModel : ViewModelBase
 
             Devices = [];
 
-            foreach(DeviceInfo device in devices)
+            Dispatcher.UIThread.Invoke(() =>
             {
-                Devices.Add(new DeviceModel
+                foreach(DeviceInfo device in devices)
                 {
-                    Bus       = device.Bus,
-                    Model     = device.Model,
-                    Path      = device.Path,
-                    Serial    = device.Serial,
-                    Supported = device.Supported,
-                    Vendor    = device.Vendor
-                });
-            }
+                    Devices.Add(new DeviceModel
+                    {
+                        Bus       = device.Bus,
+                        Model     = device.Model,
+                        Path      = device.Path,
+                        Serial    = device.Serial,
+                        Supported = device.Supported,
+                        Vendor    = device.Vendor
+                    });
+                }
+            });
         }
         catch(SocketException ex)
         {
