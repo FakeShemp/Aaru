@@ -360,23 +360,32 @@ public partial class DeviceViewModel : ViewModelBase
 
         var dev = Device.Create(DevicePath, out ErrorNumber devErrno);
 
-        if(dev is null)
+        switch(dev)
         {
-            AaruLogging.Error(string.Format(UI.Could_not_open_device_error_0, devErrno));
+            case null:
+                AaruLogging.Error(string.Format(UI.Could_not_open_device_error_0, devErrno));
 
-            Dispatcher.UIThread.Invoke(() =>
-            {
-                IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
-                    string.Format(UI.Could_not_open_device_error_0, devErrno),
-                    ButtonEnum.Ok,
-                    Icon.Error);
+                Dispatcher.UIThread.Invoke(() =>
+                {
+                    IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
+                        string.Format(UI.Could_not_open_device_error_0, devErrno),
+                        ButtonEnum.Ok,
+                        Icon.Error);
 
-                _ = msbox.ShowAsync();
+                    _ = msbox.ShowAsync();
 
-                _window.Close();
-            });
+                    _window.Close();
+                });
 
-            return;
+                return;
+            case Devices.Remote.Device remoteDev:
+                Statistics.AddRemote(remoteDev.RemoteApplication,
+                                     remoteDev.RemoteVersion,
+                                     remoteDev.RemoteOperatingSystem,
+                                     remoteDev.RemoteOperatingSystemVersion,
+                                     remoteDev.RemoteArchitecture);
+
+                break;
         }
 
         if(dev.Error)
