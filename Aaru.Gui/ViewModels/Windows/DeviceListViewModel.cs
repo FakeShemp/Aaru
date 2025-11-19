@@ -34,6 +34,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using Aaru.Devices;
 using Aaru.Devices.Remote;
 using Aaru.Devices.Windows;
@@ -41,6 +42,7 @@ using Aaru.Gui.Models;
 using Aaru.Gui.Views.Windows;
 using Aaru.Localization;
 using Aaru.Logging;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using JetBrains.Annotations;
 using MsBox.Avalonia;
@@ -73,7 +75,7 @@ public partial class DeviceListViewModel : ViewModelBase
         if(_remotePath != null)
 #pragma warning restore MVVMTK0034
         {
-            LoadRemote();
+            _ = Task.Run(LoadRemote);
 
             return;
         }
@@ -125,12 +127,17 @@ public partial class DeviceListViewModel : ViewModelBase
             {
                 AaruLogging.Error(UI.Invalid_remote_protocol);
 
-                IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
-                    UI.Invalid_remote_protocol,
-                    ButtonEnum.Ok,
-                    Icon.Error);
+                Dispatcher.UIThread.Invoke(() =>
+                {
+                    IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
+                        UI.Invalid_remote_protocol,
+                        ButtonEnum.Ok,
+                        Icon.Error);
 
-                _ = msbox.ShowWindowDialogAsync(_window);
+                    _ = msbox.ShowAsync();
+
+                    _window.Close();
+                });
             }
 
             using var remote = new Remote(aaruUri);
@@ -156,12 +163,17 @@ public partial class DeviceListViewModel : ViewModelBase
         {
             if(ex.SocketErrorCode == SocketError.HostNotFound)
             {
-                IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
-                    UI.Host_not_found,
-                    ButtonEnum.Ok,
-                    Icon.Error);
+                Dispatcher.UIThread.Invoke(() =>
+                {
+                    IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
+                        UI.Host_not_found,
+                        ButtonEnum.Ok,
+                        Icon.Error);
 
-                _ = msbox.ShowWindowDialogAsync(_window);
+                    _ = msbox.ShowAsync();
+
+                    _window.Close();
+                });
             }
             else
             {
@@ -170,33 +182,48 @@ public partial class DeviceListViewModel : ViewModelBase
                 AaruLogging.Exception(ex, UI.Error_connecting_to_host);
                 AaruLogging.Error(UI.Error_connecting_to_host);
 
-                IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
-                    Markup.Remove(UI.Error_connecting_to_host),
-                    ButtonEnum.Ok,
-                    Icon.Error);
+                Dispatcher.UIThread.Invoke(() =>
+                {
+                    IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
+                        Markup.Remove(UI.Error_connecting_to_host),
+                        ButtonEnum.Ok,
+                        Icon.Error);
 
-                _ = msbox.ShowWindowDialogAsync(_window);
+                    _ = msbox.ShowAsync();
+
+                    _window.Close();
+                });
             }
         }
 
         // ReSharper disable once UncatchableException
         catch(ArgumentException)
         {
-            IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
-                UI.Server_sent_invalid_data,
-                ButtonEnum.Ok,
-                Icon.Error);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
+                    UI.Server_sent_invalid_data,
+                    ButtonEnum.Ok,
+                    Icon.Error);
 
-            _ = msbox.ShowWindowDialogAsync(_window);
+                _ = msbox.ShowAsync();
+
+                _window.Close();
+            });
         }
         catch(IOException)
         {
-            IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
-                UI.Unknown_network_error,
-                ButtonEnum.Ok,
-                Icon.Error);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
+                    UI.Unknown_network_error,
+                    ButtonEnum.Ok,
+                    Icon.Error);
 
-            _ = msbox.ShowWindowDialogAsync(_window);
+                _ = msbox.ShowAsync();
+
+                _window.Close();
+            });
         }
         catch(Exception ex)
         {
@@ -205,12 +232,17 @@ public partial class DeviceListViewModel : ViewModelBase
             AaruLogging.Exception(ex, UI.Error_connecting_to_host);
             AaruLogging.Error(UI.Error_connecting_to_host);
 
-            IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
-                Markup.Remove(UI.Error_connecting_to_host),
-                ButtonEnum.Ok,
-                Icon.Error);
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                IMsBox<ButtonResult> msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
+                    Markup.Remove(UI.Error_connecting_to_host),
+                    ButtonEnum.Ok,
+                    Icon.Error);
 
-            _ = msbox.ShowWindowDialogAsync(_window);
+                _ = msbox.ShowAsync();
+
+                _window.Close();
+            });
         }
     }
 }
