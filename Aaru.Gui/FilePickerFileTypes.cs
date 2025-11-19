@@ -85,4 +85,9 @@ public static class FilePickerFileTypes
         Patterns  = ["*.bin"],
         MimeTypes = ["application/octet-stream"]
     };
+
+    public static FilePickerFileType IbgLogFiles { get; } = new(UI.IMGBurn_Log_Files)
+    {
+        Patterns = ["*.ibg"]
+    };
 }

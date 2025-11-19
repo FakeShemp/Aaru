@@ -114,6 +114,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ViewImageSectorsCommand     = new RelayCommand(ViewImageSectors);
         DecodeImageMediaTagsCommand = new RelayCommand(DecodeImageMediaTags);
         OpenMhddLogCommand          = new AsyncRelayCommand(OpenMhddLogAsync);
+        OpenIbgLogCommand           = new AsyncRelayCommand(OpenIbgLogAsync);
 
         _genericHddIcon =
             new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/drive-harddisk.png")));
@@ -166,6 +167,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand ViewImageSectorsCommand     { get; }
     public ICommand DecodeImageMediaTagsCommand { get; }
     public ICommand OpenMhddLogCommand          { get; }
+    public ICommand OpenIbgLogCommand           { get; }
 
     public bool NativeMenuSupported
     {
@@ -227,7 +229,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         IReadOnlyList<IStorageFile> result = await _view.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title          = UI.Dialog_Choose_image_to_open,
+            Title          = UI.Choose_MHDD_log_to_open,
             AllowMultiple  = false,
             FileTypeFilter = [FilePickerFileTypes.MhddLogFiles]
         });
@@ -241,6 +243,26 @@ public partial class MainWindowViewModel : ViewModelBase
 
         mhddLogViewWindow.Show();
     }
+
+    async Task OpenIbgLogAsync()
+    {
+        IReadOnlyList<IStorageFile> result = await _view.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title          = UI.Choose_IMGBurn_log_to_open,
+            AllowMultiple  = false,
+            FileTypeFilter = [FilePickerFileTypes.IbgLogFiles]
+        });
+
+        // Exit if user did not select exactly one file
+        if(result.Count != 1) return;
+
+        var ibgLogViewWindow = new IbgLogView();
+
+        ibgLogViewWindow.DataContext = new IbgLogViewModel(ibgLogViewWindow, result[0].Path.LocalPath);
+
+        ibgLogViewWindow.Show();
+    }
+
 
     async Task OpenAsync()
     {

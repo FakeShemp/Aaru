@@ -2472,7 +2472,7 @@ Probadores:
         <value>[slateblue1]Número de serie del medio[/]</value>
     </data>
     <data name="Title_Media_type" xml:space="preserve">
-        <value>[slateblue1]Tipo de medio[/]</value>
+        <value>[bold][slateblue1]Tipo de medio[/][/]</value>
     </data>
     <data name="Title_Message" xml:space="preserve">
     <value>[bold][blue]Mensaje[/][/]</value>
@@ -3175,5 +3175,50 @@ Probadores:
     </data>
     <data name="Error_parsing_MHDD_log_header_0" xml:space="preserve">
         <value>Error interpretando cabecera del registro MHDD: {0}</value>
+    </data>
+    <data name="The_specified_file_is_not_a_correct_IMGBurn_log_file" xml:space="preserve">
+        <value>El archivo especificado no es un registro IMGBurn correcto.</value>
+    </data>
+    <data name="_0_N2_KB_s" xml:space="preserve">
+        <value>[lime]{0:N2}[/] [slateblue1]KB/s[/]</value>
+    </data>
+    <data name="Choose_MHDD_log_to_open" xml:space="preserve">
+        <value>Elige registro MHDD para abrir</value>
+    </data>
+    <data name="Choose_IMGBurn_log_to_open" xml:space="preserve">
+        <value>Elige registro IMGBurn para abrir</value>
+    </data>
+    <data name="IMGBurn_Log_Files" xml:space="preserve">
+        <value>Archivos de registro IMGBurn</value>
+    </data>
+    <data name="Title_IMGBurn_log_viewer" xml:space="preserve">
+        <value>Visor de registros IMGBurn</value>
+    </data>
+    <data name="Title_Media_speeds" xml:space="preserve">
+        <value>[bold][slateblue1]Velocidades del medio[/][/]</value>
+    </data>
+    <data name="Title_Media_capacity" xml:space="preserve">
+        <value>[bold][slateblue1]Capacidad del medio[/][/]</value>
+    </data>
+    <data name="Title_Image_file" xml:space="preserve">
+        <value>[bold][slateblue1]Archivo de imagen[/][/]</value>
+    </data>
+    <data name="Title_Volume_identifier" xml:space="preserve">
+        <value>[bold][slateblue1]Identificador del volumen[/][/]</value>
+    </data>
+    <data name="Title_Speed_start" xml:space="preserve">
+        <value>[bold][slateblue1]Velocidad de comienzo[/][/]</value>
+    </data>
+    <data name="Title_Speed_end" xml:space="preserve">
+        <value>[bold][slateblue1]Velocidad final[/][/]</value>
+    </data>
+    <data name="Title_Speed_average" xml:space="preserve">
+        <value>[bold][slateblue1]Velocidad media[/][/]</value>
+    </data>
+    <data name="Title_Time_taken" xml:space="preserve">
+        <value>[bold][slateblue1]Tiempo tomado[/][/]</value>
+    </data>
+    <data name="Menu_Open_IMGBurn_log" xml:space="preserve">
+        <value>Abrir registro _IMGBurn</value>
     </data>
 </root>

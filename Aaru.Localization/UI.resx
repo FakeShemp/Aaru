@@ -779,7 +779,7 @@ In you are unsure, please press N to not continue.</value>
     <value>[slateblue1]Last modification time[/]</value>
   </data>
     <data name="Title_Media_type" xml:space="preserve">
-    <value>[slateblue1]Media type[/]</value>
+    <value>[bold][slateblue1]Media type[/][/]</value>
   </data>
     <data name="Title_Image_version" xml:space="preserve">
     <value>[slateblue1]Image version[/]</value>
@@ -3251,5 +3251,50 @@ Do you want to continue?</value>
     </data>
     <data name="Error_parsing_MHDD_log_header_0" xml:space="preserve">
         <value>Error parsing MHDD log header: {0}</value>
+    </data>
+    <data name="The_specified_file_is_not_a_correct_IMGBurn_log_file" xml:space="preserve">
+        <value>The specified file is not a correct IMGBurn log file.</value>
+    </data>
+    <data name="_0_N2_KB_s" xml:space="preserve">
+        <value>[lime]{0:N2}[/] [slateblue1]KB/s[/]</value>
+    </data>
+    <data name="Choose_MHDD_log_to_open" xml:space="preserve">
+        <value>Choose MHDD log to open</value>
+    </data>
+    <data name="Choose_IMGBurn_log_to_open" xml:space="preserve">
+        <value>Choose IMGBurn log to open</value>
+    </data>
+    <data name="IMGBurn_Log_Files" xml:space="preserve">
+        <value>IMGBurn Log Files</value>
+    </data>
+    <data name="Title_IMGBurn_log_viewer" xml:space="preserve">
+        <value>IMGBurn log viewer</value>
+    </data>
+    <data name="Title_Media_speeds" xml:space="preserve">
+        <value>[bold][slateblue1]Media speeds[/][/]</value>
+    </data>
+    <data name="Title_Media_capacity" xml:space="preserve">
+        <value>[bold][slateblue1]Media capacity[/][/]</value>
+    </data>
+    <data name="Title_Image_file" xml:space="preserve">
+        <value>[bold][slateblue1]Image file[/][/]</value>
+    </data>
+    <data name="Title_Volume_identifier" xml:space="preserve">
+        <value>[bold][slateblue1]Volume identifier[/][/]</value>
+    </data>
+    <data name="Title_Speed_start" xml:space="preserve">
+        <value>[bold][slateblue1]Speed start[/][/]</value>
+    </data>
+    <data name="Title_Speed_end" xml:space="preserve">
+        <value>[bold][slateblue1]Speed end[/][/]</value>
+    </data>
+    <data name="Title_Speed_average" xml:space="preserve">
+        <value>[bold][slateblue1]Speed average[/][/]</value>
+    </data>
+    <data name="Title_Time_taken" xml:space="preserve">
+        <value>[bold][slateblue1]Time taken[/][/]</value>
+    </data>
+    <data name="Menu_Open_IMGBurn_log" xml:space="preserve">
+        <value>Open _IMGBurn log</value>
     </data>
 </root>

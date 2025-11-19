@@ -21,6 +21,8 @@
                           Command="{Binding OpenCommand, Mode=OneWay}" />
                 <MenuItem Header="{x:Static localization:UI.Menu_Open_MHDD_log}"
                           Command="{Binding OpenMhddLogCommand, Mode=OneWay}" />
+                <MenuItem Header="{x:Static localization:UI.Menu_Open_IMGBurn_log}"
+                          Command="{Binding OpenIbgLogCommand, Mode=OneWay}" />
                 <Separator />
                 <MenuItem Header="{x:Static localization:UI.Menu_Settings}"
                           IsVisible="{Binding !NativeMenuSupported, Mode=OneWay}"

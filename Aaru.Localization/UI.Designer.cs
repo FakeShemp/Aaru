@@ -6351,5 +6351,95 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Error_parsing_MHDD_log_header_0", resourceCulture);
             }
         }
+        
+        public static string The_specified_file_is_not_a_correct_IMGBurn_log_file {
+            get {
+                return ResourceManager.GetString("The_specified_file_is_not_a_correct_IMGBurn_log_file", resourceCulture);
+            }
+        }
+        
+        public static string _0_N2_KB_s {
+            get {
+                return ResourceManager.GetString("_0_N2_KB_s", resourceCulture);
+            }
+        }
+        
+        public static string Choose_MHDD_log_to_open {
+            get {
+                return ResourceManager.GetString("Choose_MHDD_log_to_open", resourceCulture);
+            }
+        }
+        
+        public static string Choose_IMGBurn_log_to_open {
+            get {
+                return ResourceManager.GetString("Choose_IMGBurn_log_to_open", resourceCulture);
+            }
+        }
+        
+        public static string IMGBurn_Log_Files {
+            get {
+                return ResourceManager.GetString("IMGBurn_Log_Files", resourceCulture);
+            }
+        }
+        
+        public static string Title_IMGBurn_log_viewer {
+            get {
+                return ResourceManager.GetString("Title_IMGBurn_log_viewer", resourceCulture);
+            }
+        }
+        
+        public static string Title_Media_speeds {
+            get {
+                return ResourceManager.GetString("Title_Media_speeds", resourceCulture);
+            }
+        }
+        
+        public static string Title_Media_capacity {
+            get {
+                return ResourceManager.GetString("Title_Media_capacity", resourceCulture);
+            }
+        }
+        
+        public static string Title_Image_file {
+            get {
+                return ResourceManager.GetString("Title_Image_file", resourceCulture);
+            }
+        }
+        
+        public static string Title_Volume_identifier {
+            get {
+                return ResourceManager.GetString("Title_Volume_identifier", resourceCulture);
+            }
+        }
+        
+        public static string Title_Speed_start {
+            get {
+                return ResourceManager.GetString("Title_Speed_start", resourceCulture);
+            }
+        }
+        
+        public static string Title_Speed_end {
+            get {
+                return ResourceManager.GetString("Title_Speed_end", resourceCulture);
+            }
+        }
+        
+        public static string Title_Speed_average {
+            get {
+                return ResourceManager.GetString("Title_Speed_average", resourceCulture);
+            }
+        }
+        
+        public static string Title_Time_taken {
+            get {
+                return ResourceManager.GetString("Title_Time_taken", resourceCulture);
+            }
+        }
+        
+        public static string Menu_Open_IMGBurn_log {
+            get {
+                return ResourceManager.GetString("Menu_Open_IMGBurn_log", resourceCulture);
+            }
+        }
     }
 }
