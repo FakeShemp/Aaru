@@ -751,7 +751,7 @@ public partial class DeviceViewModel : ViewModelBase
                                         ? genericOpticalIcon
                                         : genericFolderIcon;
 
-                MediaType = mediaInfo.MediaType.ToString();
+                MediaType = mediaInfo.MediaType.Humanize();
             });
 
             if(mediaInfo.Blocks != 0 && mediaInfo.BlockSize != 0)
