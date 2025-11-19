@@ -31,6 +31,7 @@
 // ****************************************************************************/
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Aaru.CommonTypes.Enums;
@@ -42,134 +43,137 @@ using Aaru.Gui.Views.Tabs;
 using Aaru.Gui.Views.Windows;
 using Aaru.Localization;
 using Aaru.Logging;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Humanizer;
 using Humanizer.Localisation;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Base;
 using MsBox.Avalonia.Enums;
+using DeviceInfo = Aaru.Core.Devices.Info.DeviceInfo;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
 public partial class DeviceViewModel : ViewModelBase
 {
     readonly DeviceView _window;
-    Device              _dev;
+    [ObservableProperty]
+    AtaInfo _ataInfo;
+    [ObservableProperty]
+    bool _blockLimits;
+    [ObservableProperty]
+    string _blockSizeGranularity;
+    [ObservableProperty]
+    string _densities;
+    Device _dev;
     [ObservableProperty]
     string _devicePath;
     [ObservableProperty]
     string _deviceType;
     [ObservableProperty]
+    string _firewireGuid;
+    [ObservableProperty]
+    string _firewireManufacturer;
+    [ObservableProperty]
+    string _firewireModel;
+    [ObservableProperty]
+    string _firewireModelId;
+    [ObservableProperty]
+    string _firewireVendorId;
+    [ObservableProperty]
+    bool _firewireVisible;
+    [ObservableProperty]
+    bool _kreon;
+    [ObservableProperty]
+    bool _kreonChallengeResponse;
+    [ObservableProperty]
+    bool _kreonChallengeResponse360;
+    [ObservableProperty]
+    bool _kreonDecryptSs;
+    [ObservableProperty]
+    bool _kreonDecryptSs360;
+    [ObservableProperty]
+    bool _kreonErrorSkipping;
+    [ObservableProperty]
+    bool _kreonLock;
+    [ObservableProperty]
+    bool _kreonWxripperUnlock;
+    [ObservableProperty]
+    bool _kreonWxripperUnlock360;
+    [ObservableProperty]
+    bool _kreonXtremeUnlock;
+    [ObservableProperty]
+    bool _kreonXtremeUnlock360;
+    [ObservableProperty]
     string _manufacturer;
+    [ObservableProperty]
+    string _maxBlockSize;
+    [ObservableProperty]
+    string _mediumDensity;
+    [ObservableProperty]
+    string _mediumTypes;
+    [ObservableProperty]
+    string _minBlockSize;
     [ObservableProperty]
     string _model;
     [ObservableProperty]
-    bool _removableChecked;
-    [ObservableProperty]
-    string _revision;
-    [ObservableProperty]
-    string _scsiType;
-    [ObservableProperty]
-    string _serial;
-    [ObservableProperty]
-    string _statusMessage;
-    [ObservableProperty]
-    bool _usbConnected;
-    [ObservableProperty]
-    bool       _usbVisible;
-    [ObservableProperty]
-    string     _usbVendorId;
-    [ObservableProperty]
-        string _usbProductId;
-    [ObservableProperty]
-    string     _usbManufacturer;
-    [ObservableProperty]
-        string _usbProduct;
-    [ObservableProperty]
-    string     _usbSerial;
-    [ObservableProperty]
-    bool _saveUsbDescriptorsEnabled;
-    [ObservableProperty]
-    bool       _firewireVisible;
-    [ObservableProperty]
-    string     _firewireVendorId;
-    [ObservableProperty]
-        string _firewireModelId;
-    [ObservableProperty]
-    string     _firewireManufacturer;
-    [ObservableProperty]
-        string _firewireModel;
-    [ObservableProperty]
-    string     _firewireGuid;
-    [ObservableProperty]
-    bool _plextorVisible;
-    [ObservableProperty]
-    bool _plextorEepromVisible;
-    [ObservableProperty]
-    bool _plextorDvdTimesVisible;
-    [ObservableProperty]
-    bool _plextorPoweRec;
-    [ObservableProperty]
-    bool _plextorPoweRecEnabled;
-    [ObservableProperty]
-    bool _plextorPoweRecRecommendedVisible;
-    [ObservableProperty]
-    bool _plextorPoweRecSelectedVisible;
-    [ObservableProperty]
-    bool _plextorPoweRecMaxVisible;
-    [ObservableProperty]
-    bool _plextorPoweRecLastVisible;
-    [ObservableProperty]
-    bool _plextorSilentMode;
-    [ObservableProperty]
-    bool _plextorSilentModeEnabled;
-    [ObservableProperty]
-    bool _plextorSilentModeDvdReadSpeedLimitVisible;
-    [ObservableProperty]
-    bool _plextorGigaRec;
-    [ObservableProperty]
-    bool _plextorSecuRec;
-    [ObservableProperty]
-    bool _plextorSpeedRead;
-    [ObservableProperty]
-    bool _plextorSpeedEnabled;
-    [ObservableProperty]
-    bool _plextorHiding;
-    [ObservableProperty]
-    bool _plextorHidesRecordables;
-    [ObservableProperty]
-    bool _plextorHidesSessions;
-    [ObservableProperty]
-    bool _plextorVariRec;
-    [ObservableProperty]
-    bool _plextorDvd;
-    [ObservableProperty]
-    bool _plextorVariRecDvd;
+    PcmciaInfo _pcmciaInfo;
     [ObservableProperty]
     bool _plextorBitSetting;
     [ObservableProperty]
     bool _plextorBitSettingDl;
     [ObservableProperty]
-    bool _plextorDvdPlusWriteTest;
-    [ObservableProperty]
-    string _plextorDiscs;
-    [ObservableProperty]
     string _plextorCdReadTime;
     [ObservableProperty]
     string _plextorCdWriteTime;
     [ObservableProperty]
+    string _plextorDiscs;
+    [ObservableProperty]
+    bool _plextorDvd;
+    [ObservableProperty]
+    bool _plextorDvdPlusWriteTest;
+    [ObservableProperty]
     string _plextorDvdReadTime;
+    [ObservableProperty]
+    bool _plextorDvdTimesVisible;
     [ObservableProperty]
     string _plextorDvdWriteTime;
     [ObservableProperty]
-    string _plextorPoweRecRecommended;
+    bool _plextorEepromVisible;
     [ObservableProperty]
-    string _plextorPoweRecSelected;
+    bool _plextorGigaRec;
+    [ObservableProperty]
+    bool _plextorHidesRecordables;
+    [ObservableProperty]
+    bool _plextorHidesSessions;
+    [ObservableProperty]
+    bool _plextorHiding;
+    [ObservableProperty]
+    bool _plextorPoweRec;
+    [ObservableProperty]
+    bool _plextorPoweRecEnabled;
+    [ObservableProperty]
+    string _plextorPoweRecLast;
+    [ObservableProperty]
+    bool _plextorPoweRecLastVisible;
     [ObservableProperty]
     string _plextorPoweRecMax;
     [ObservableProperty]
-    string _plextorPoweRecLast;
+    bool _plextorPoweRecMaxVisible;
+    [ObservableProperty]
+    string _plextorPoweRecRecommended;
+    [ObservableProperty]
+    bool _plextorPoweRecRecommendedVisible;
+    [ObservableProperty]
+    string _plextorPoweRecSelected;
+    [ObservableProperty]
+    bool _plextorPoweRecSelectedVisible;
+    [ObservableProperty]
+    bool _plextorSecuRec;
+    [ObservableProperty]
+    bool _plextorSilentMode;
     [ObservableProperty]
     string _plextorSilentModeAccessTime;
     [ObservableProperty]
@@ -179,64 +183,82 @@ public partial class DeviceViewModel : ViewModelBase
     [ObservableProperty]
     string _plextorSilentModeDvdReadSpeedLimit;
     [ObservableProperty]
-    bool _kreon;
+    bool _plextorSilentModeDvdReadSpeedLimitVisible;
     [ObservableProperty]
-    bool _kreonChallengeResponse;
+    bool _plextorSilentModeEnabled;
     [ObservableProperty]
-    bool _kreonDecryptSs;
+    bool _plextorSpeedEnabled;
     [ObservableProperty]
-    bool _kreonXtremeUnlock;
+    bool _plextorSpeedRead;
     [ObservableProperty]
-    bool _kreonWxripperUnlock;
+    bool _plextorVariRec;
     [ObservableProperty]
-    bool _kreonChallengeResponse360;
+    bool _plextorVariRecDvd;
     [ObservableProperty]
-    bool _kreonDecryptSs360;
+    bool _plextorVisible;
     [ObservableProperty]
-    bool _kreonXtremeUnlock360;
+    bool _removableChecked;
     [ObservableProperty]
-    bool _kreonWxripperUnlock360;
+    string _revision;
     [ObservableProperty]
-    bool _kreonLock;
-    [ObservableProperty]
-    bool _kreonErrorSkipping;
-    [ObservableProperty]
-    bool   _ssc;
-    [ObservableProperty]
-    bool   _blockLimits;
-    [ObservableProperty]
-    string _minBlockSize;
-    [ObservableProperty]
-    string _maxBlockSize;
-    [ObservableProperty]
-    string _blockSizeGranularity;
-    [ObservableProperty]
-    string _densities;
-    [ObservableProperty]
-    string _mediumTypes;
-    [ObservableProperty]
-    string _mediumDensity;
-    [ObservableProperty]
-    SdMmcInfo _sdMmcInfo;
+    bool _saveUsbDescriptorsEnabled;
     [ObservableProperty]
     ScsiInfo _scsiInfo;
     [ObservableProperty]
-    PcmciaInfo _pcmciaInfo;
+    string _scsiType;
     [ObservableProperty]
-    AtaInfo _ataInfo;
+    SdMmcInfo _sdMmcInfo;
+    [ObservableProperty]
+    string _serial;
+    [ObservableProperty]
+    bool _ssc;
+    [ObservableProperty]
+    string _statusMessage;
+    [ObservableProperty]
+    bool _usbConnected;
+    byte[] _usbDescriptors;
+    [ObservableProperty]
+    string _usbManufacturer;
+    [ObservableProperty]
+    string _usbProduct;
+    [ObservableProperty]
+    string _usbProductId;
+    [ObservableProperty]
+    string _usbSerial;
+    [ObservableProperty]
+    string _usbVendorId;
+    [ObservableProperty]
+    bool _usbVisible;
 
     public DeviceViewModel(DeviceView window, string devicePath)
     {
         _window    = window;
         DevicePath = devicePath;
+
+        SaveUsbDescriptorsCommand = new AsyncRelayCommand(SaveUsbDescriptorsAsync);
     }
+
+    public ICommand SaveUsbDescriptorsCommand { get; }
 
     public void LoadData()
     {
         _ = Task.Run(Worker);
     }
 
-    public ICommand SaveUsbDescriptorsCommand { get; }
+    async Task SaveUsbDescriptorsAsync()
+    {
+        IStorageFile result = await _window.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            FileTypeChoices = [FilePickerFileTypes.Binary]
+        });
+
+        if(result is null) return;
+
+        var saveFs = new FileStream(result.Path.AbsolutePath, FileMode.Create);
+        await saveFs.WriteAsync(_usbDescriptors, 0, _usbDescriptors.Length);
+
+        saveFs.Close();
+    }
 
     void Worker()
     {
@@ -299,20 +321,16 @@ public partial class DeviceViewModel : ViewModelBase
 
         Statistics.AddDevice(dev);
 
-        Dispatcher.UIThread.Invoke(() =>
-        {
-            StatusMessage    = "Querying device information...";
-        });
+        Dispatcher.UIThread.Invoke(() => { StatusMessage = "Querying device information..."; });
 
-        var devInfo = new Aaru.Core.Devices.Info.DeviceInfo(dev);
+        var devInfo = new DeviceInfo(dev);
 
-        Dispatcher.UIThread.Invoke(() =>
-        {
-            StatusMessage    = "Device information queryied successfully...";
-        });
+        Dispatcher.UIThread.Invoke(() => { StatusMessage = "Device information queryied successfully..."; });
 
         if(devInfo.IsUsb)
         {
+            _usbDescriptors = devInfo.UsbDescriptors;
+
             Dispatcher.UIThread.Invoke(() =>
             {
                 UsbVisible                = true;
@@ -572,23 +590,31 @@ public partial class DeviceViewModel : ViewModelBase
             if(devInfo.DensitySupport != null)
             {
                 if(devInfo.DensitySupportHeader.HasValue)
+                {
                     Dispatcher.UIThread.Invoke(() =>
                     {
-                        Densities = DensitySupport.PrettifyDensity(devInfo.DensitySupportHeader);
+                        Densities =
+                            DensitySupport.PrettifyDensity(devInfo.DensitySupportHeader);
                     });
+                }
             }
 
             if(devInfo.MediumDensitySupport != null)
             {
                 if(devInfo.MediaTypeSupportHeader.HasValue)
+                {
                     Dispatcher.UIThread.Invoke(() =>
                     {
-                        MediumTypes = DensitySupport.PrettifyMediumType(devInfo.MediaTypeSupportHeader);
+                        MediumTypes =
+                            DensitySupport
+                               .PrettifyMediumType(devInfo.MediaTypeSupportHeader);
                     });
+                }
 
                 Dispatcher.UIThread.Invoke(() =>
                 {
-                    MediumDensity = DensitySupport.PrettifyMediumType(devInfo.MediumDensitySupport);
+                    MediumDensity =
+                        DensitySupport.PrettifyMediumType(devInfo.MediumDensitySupport);
                 });
             }
         }
@@ -598,6 +624,7 @@ public partial class DeviceViewModel : ViewModelBase
            devInfo.OCR         != null ||
            devInfo.ExtendedCSD != null ||
            devInfo.SCR         != null)
+        {
             Dispatcher.UIThread.Invoke(() =>
             {
                 SdMmcInfo = new SdMmcInfo
@@ -610,6 +637,7 @@ public partial class DeviceViewModel : ViewModelBase
                                                          devInfo.SCR)
                 };
             });
+        }
     }
 
     public void Closed()
