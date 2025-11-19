@@ -37,7 +37,7 @@ using Avalonia.Controls;
 
 namespace Aaru.Gui.Views.Windows;
 
-public class DeviceView : Window
+public partial class DeviceView : Window
 {
     public DeviceView()
     {
