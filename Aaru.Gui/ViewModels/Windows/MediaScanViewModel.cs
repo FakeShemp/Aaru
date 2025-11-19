@@ -35,7 +35,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Aaru.CommonTypes.Enums;
 using Aaru.Core;
 using Aaru.Core.Devices.Scanning;
 using Aaru.Devices;
@@ -57,6 +56,7 @@ namespace Aaru.Gui.ViewModels.Windows;
 
 public sealed partial class MediaScanViewModel : ViewModelBase
 {
+    readonly Device _device;
     readonly Window _view;
     [ObservableProperty]
     string _a;
@@ -75,7 +75,7 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     bool _closeVisible;
     [ObservableProperty]
     string _d;
-    string _devicePath;
+    readonly string _devicePath;
     [ObservableProperty]
     string _e;
     [ObservableProperty]
@@ -135,8 +135,9 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     [ObservableProperty]
     string _unreadableSectors;
 
-    public MediaScanViewModel(string devicePath, Window view)
+    public MediaScanViewModel(Device device, string devicePath, Window view)
     {
+        _device      = device;
         _devicePath  = devicePath;
         _view        = view;
         StopVisible  = false;
@@ -188,58 +189,8 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void DoWork()
     {
-        if(_devicePath.Length == 2 && _devicePath[1] == ':' && _devicePath[0] != '/' && char.IsLetter(_devicePath[0]))
-            _devicePath = "\\\\.\\" + char.ToUpper(_devicePath[0]) + ':';
-
-        var dev = Device.Create(_devicePath, out ErrorNumber devErrno);
-
-        switch(dev)
-        {
-            case null:
-                await MessageBoxManager
-                     .GetMessageBoxStandard(UI.Title_Error,
-                                            string.Format(UI.Error_0_opening_device, devErrno),
-                                            ButtonEnum.Ok,
-                                            Icon.Error)
-                     .ShowWindowDialogAsync(_view);
-
-                StopVisible     = false;
-                StartVisible    = true;
-                CloseVisible    = true;
-                ProgressVisible = false;
-
-                return;
-            case Devices.Remote.Device remoteDev:
-                Statistics.AddRemote(remoteDev.RemoteApplication,
-                                     remoteDev.RemoteVersion,
-                                     remoteDev.RemoteOperatingSystem,
-                                     remoteDev.RemoteOperatingSystemVersion,
-                                     remoteDev.RemoteArchitecture);
-
-                break;
-        }
-
-        if(dev.Error)
-        {
-            await MessageBoxManager
-                 .GetMessageBoxStandard(UI.Title_Error,
-                                        string.Format(UI.Error_0_opening_device, dev.LastError),
-                                        ButtonEnum.Ok,
-                                        Icon.Error)
-                 .ShowWindowDialogAsync(_view);
-
-            StopVisible     = false;
-            StartVisible    = true;
-            CloseVisible    = true;
-            ProgressVisible = false;
-
-            return;
-        }
-
-        Statistics.AddDevice(dev);
-
         _localResults                 =  new ScanResults();
-        _scanner                      =  new MediaScan(null, null, _devicePath, dev, false);
+        _scanner                      =  new MediaScan(null, null, _devicePath, _device, false);
         _scanner.ScanTime             += OnScanTime;
         _scanner.ScanUnreadable       += OnScanUnreadable;
         _scanner.UpdateStatus         += UpdateStatus;
@@ -297,7 +248,6 @@ public sealed partial class MediaScanViewModel : ViewModelBase
 
         Statistics.AddCommand("media-scan");
 
-        dev.Close();
         await WorkFinished();
     }
 
