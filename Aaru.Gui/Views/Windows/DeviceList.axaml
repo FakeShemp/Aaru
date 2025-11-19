@@ -16,7 +16,7 @@
     <Design.DataContext>
         <windows:DeviceListViewModel />
     </Design.DataContext>
-    <Grid RowDefinitions="Auto,*"
+    <Grid RowDefinitions="Auto,*, Auto"
           RowSpacing="8"
           Margin="12">
         <Grid Grid.Row="0"
@@ -35,6 +35,7 @@
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch"
                   HorizontalScrollBarVisibility="Visible"
+                  SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
                   ColumnHeaderHeight="32">
             <DataGrid.Styles>
                 <Style Selector="DataGridCell">
@@ -123,5 +124,13 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
+            <Button Command="{Binding OpenDeviceCommand}">
+                <TextBlock Text="Open device" />
+            </Button>
+        </StackPanel>
     </Grid>
 </Window>

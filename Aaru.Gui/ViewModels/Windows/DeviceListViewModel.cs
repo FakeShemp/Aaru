@@ -32,9 +32,11 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Aaru.Devices;
 using Aaru.Devices.Remote;
 using Aaru.Devices.Windows;
@@ -44,6 +46,7 @@ using Aaru.Localization;
 using Aaru.Logging;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Base;
@@ -60,13 +63,41 @@ public partial class DeviceListViewModel : ViewModelBase
     ObservableCollection<DeviceModel> _devices;
     [ObservableProperty]
     string _remotePath;
+    [ObservableProperty]
+    [CanBeNull]
+    DeviceModel _selectedDevice;
 
-    public DeviceListViewModel(DeviceList window) => _window = window;
-
-    public DeviceListViewModel(DeviceList window, [NotNull] string remotePath)
+    public DeviceListViewModel(DeviceList window)
     {
-        _window    = window;
-        RemotePath = remotePath;
+        _window           = window;
+        OpenDeviceCommand = new RelayCommand(OpenDevice);
+    }
+
+    public DeviceListViewModel(DeviceList window, [JetBrains.Annotations.NotNull] string remotePath)
+    {
+        _window           = window;
+        RemotePath        = remotePath;
+        OpenDeviceCommand = new RelayCommand(OpenDevice);
+    }
+
+    public ICommand OpenDeviceCommand { get; }
+
+    [SuppressMessage("CommunityToolkit.Mvvm.SourceGenerators.ObservablePropertyGenerator",
+                     "MVVMTK0034:Direct field reference to [ObservableProperty] backing field",
+                     Justification = "False positive, says it's always null, but it's not.")]
+    void OpenDevice()
+    {
+        if(_selectedDevice == null) return;
+
+        var deviceView = new DeviceView
+        {
+            Topmost = true
+        };
+
+        var vm = new DeviceViewModel(deviceView, _selectedDevice.Path);
+
+        deviceView.DataContext = vm;
+        deviceView.Show();
     }
 
     public void LoadData()

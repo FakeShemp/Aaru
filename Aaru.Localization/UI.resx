@@ -186,13 +186,13 @@
     <value>[bold][blue]Device statistics[/][/]</value>
   </data>
     <data name="Title_Manufacturer" xml:space="preserve">
-    <value>[bold][blue]Manufacturer[/][/]</value>
+    <value>[bold][slateblue1]Manufacturer[/][/]</value>
   </data>
     <data name="Title_Model" xml:space="preserve">
-    <value>[bold][purple]Model[/][/]</value>
+    <value>[bold][slateblue1]Model[/][/]</value>
   </data>
     <data name="Title_Revision" xml:space="preserve">
-    <value>[bold][teal]Revision[/][/]</value>
+    <value>[bold][slateblue1]Revision[/][/]</value>
   </data>
     <data name="Title_Bus" xml:space="preserve">
     <value>[bold][rosybrown]Bus[/][/]</value>
@@ -1933,16 +1933,16 @@ Testers:
     <value>USB</value>
   </data>
     <data name="Title_Connected_by_USB" xml:space="preserve">
-    <value>Connected by USB</value>
+    <value>[bold][slateblue1]Connected by USB[/][/]</value>
   </data>
     <data name="Title_Removable_media" xml:space="preserve">
-    <value>Removable media</value>
+    <value>[bold][slateblue1]Removable media[/][/]</value>
   </data>
     <data name="Title_Peripheral_device_type" xml:space="preserve">
-    <value>Peripheral device type</value>
+    <value>[bold][slateblue1]Peripheral device type[/][/]</value>
   </data>
     <data name="Title_Device_type" xml:space="preserve">
-    <value>Device type</value>
+    <value>[bold][slateblue1]Device type[/][/]</value>
   </data>
     <data name="Title_General" xml:space="preserve">
     <value>General</value>
@@ -3337,5 +3337,8 @@ Do you want to continue?</value>
     </data>
     <data name="Unknown_network_error" xml:space="preserve">
         <value>Unknown network error.</value>
+    </data>
+    <data name="Title_Device_path" xml:space="preserve">
+        <value>[bold][slateblue1]Device path[/][/]</value>
     </data>
 </root>

@@ -2193,7 +2193,7 @@ Probadores:
     <value>Comentarios</value>
   </data>
     <data name="Title_Connected_by_USB" xml:space="preserve">
-    <value>Conectado por USB</value>
+    <value>[bold][slateblue1]Conectado por USB[/][/]</value>
   </data>
     <data name="Title_Console" xml:space="preserve">
     <value>Consola</value>
@@ -2235,7 +2235,7 @@ Probadores:
     <value>Información del dispositivo</value>
   </data>
     <data name="Title_Device_type" xml:space="preserve">
-    <value>Tipo del dispositivo</value>
+    <value>[bold][slateblue1]Tipo del dispositivo[/][/]</value>
   </data>
     <data name="Title_Disc_Manufacturing_Information" xml:space="preserve">
     <value>Información del fabricante del disco</value>
@@ -2427,7 +2427,7 @@ Probadores:
     <value>Registro</value>
   </data>
     <data name="Title_Manufacturer" xml:space="preserve">
-        <value>[bold][blue]Fabricante[/][/]</value>
+        <value>[bold][slateblue1]Fabricante[/][/]</value>
     </data>
     <data name="Title_Media" xml:space="preserve">
     <value>[bold][green]Medio[/][/]</value>
@@ -2487,7 +2487,7 @@ Probadores:
     <value>[bold][purple_2]Modo[/][/]</value>
   </data>
     <data name="Title_Model" xml:space="preserve">
-        <value>[bold][purple]Modelo[/][/]</value>
+        <value>[bold][slateblue1]Modelo[/][/]</value>
     </data>
     <data name="Title_Model_ID" xml:space="preserve">
         <value>[bold][slateblue1]ID de modelo[/][/]</value>
@@ -2535,7 +2535,7 @@ Probadores:
         <value>[bold][blue]Dispositivo PCMCIA[/][/]</value>
     </data>
     <data name="Title_Peripheral_device_type" xml:space="preserve">
-    <value>Tipo de periférico del dispositivo</value>
+    <value>[bold][slateblue1]Tipo de periférico del dispositivo[/][/]</value>
   </data>
     <data name="Title_Plextor" xml:space="preserve">
     <value>Plextor</value>
@@ -2559,13 +2559,13 @@ Probadores:
     <value>[bold][slateblue1]Etiquetas de sector legibles[/][/]</value>
   </data>
     <data name="Title_Removable_media" xml:space="preserve">
-    <value>Medio extraíble</value>
+    <value>[bold][slateblue1]Medio extraíble[/][/]</value>
   </data>
     <data name="Title_Reports" xml:space="preserve">
     <value>Reportes</value>
   </data>
     <data name="Title_Revision" xml:space="preserve">
-        <value>[bold][teal]Revisión[/][/]</value>
+        <value>[bold][slateblue1]Revisión[/][/]</value>
     </data>
     <data name="Title_Scheme" xml:space="preserve">
         <value>[bold][purple]Esquema[/][/]</value>
@@ -2604,7 +2604,7 @@ Probadores:
     <value>Sector de Seguridad</value>
   </data>
     <data name="Title_Serial_number" xml:space="preserve">
-        <value>[bold][fuchsia]Número de serie[/][/]</value>
+        <value>[bold][slateblue1]Número de serie[/][/]</value>
     </data>
     <data name="Title_Sessions" xml:space="preserve">
     <value>Sesiones</value>
@@ -3262,5 +3262,8 @@ Probadores:
     </data>
     <data name="Unknown_network_error" xml:space="preserve">
         <value>Error de red desconocido.</value>
+    </data>
+    <data name="Title_Device_path" xml:space="preserve">
+        <value>[bold][slateblue1]Ruta al dispositivo[/][/]</value>
     </data>
 </root>

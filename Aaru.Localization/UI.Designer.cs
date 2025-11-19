@@ -6525,5 +6525,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Unknown_network_error", resourceCulture);
             }
         }
+        
+        public static string Title_Device_path {
+            get {
+                return ResourceManager.GetString("Title_Device_path", resourceCulture);
+            }
+        }
     }
 }
