@@ -69,7 +69,7 @@ public sealed class App : Application
         desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
         // Close splash window
-        desktop.MainWindow.Close();
+        desktop.MainWindow?.Close();
 
         // Create and show main window
         desktop.MainWindow             = new MainWindow();
@@ -84,23 +84,23 @@ public sealed class App : Application
     {
         if(ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime
                                       {
-                                          MainWindow: OldMainWindow
+                                          MainWindow: MainWindow
                                                       {
-                                                          DataContext: OldMainWindowViewModel mainWindowViewModel
+                                                          DataContext: MainWindowViewModel mainWindowViewModel
                                                       }
                                       })
             return;
 
-        mainWindowViewModel.About();
+        mainWindowViewModel.AboutCommand.Execute(null);
     }
 
     void OnQuitClicked(object sender, EventArgs args)
     {
         if(ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime
                                       {
-                                          MainWindow: OldMainWindow
+                                          MainWindow: MainWindow
                                                       {
-                                                          DataContext: OldMainWindowViewModel mainWindowViewModel
+                                                          DataContext: MainWindowViewModel mainWindowViewModel
                                                       }
                                       })
             return;
@@ -112,13 +112,13 @@ public sealed class App : Application
     {
         if(ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime
                                       {
-                                          MainWindow: OldMainWindow
+                                          MainWindow: MainWindow
                                                       {
-                                                          DataContext: OldMainWindowViewModel mainWindowViewModel
+                                                          DataContext: MainWindowViewModel mainWindowViewModel
                                                       }
                                       })
             return;
 
-        mainWindowViewModel.SettingsAsync();
+        _ = mainWindowViewModel.SettingsAsync();
     }
 }
