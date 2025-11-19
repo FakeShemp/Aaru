@@ -861,7 +861,6 @@ public partial class DeviceViewModel : ViewModelBase
                 }
 
                 if(_mediaInfo.XgdInfo                   != null ||
-                   _mediaInfo.DvdDmi                    != null ||
                    _mediaInfo.XboxSecuritySector        != null ||
                    _mediaInfo.DecodedXboxSecuritySector != null)
                 {
