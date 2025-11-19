@@ -39,13 +39,13 @@ using Sentry;
 namespace Aaru.Devices.Linux;
 
 [SupportedOSPlatform("linux")]
-static class ListDevices
+public static class ListDevices
 {
     const string PATH_SYS_DEVBLOCK = "/sys/block/";
 
     /// <summary>Gets a list of all known storage devices on Linux</summary>
     /// <returns>List of devices</returns>
-    internal static DeviceInfo[] GetList()
+    public static DeviceInfo[] GetList()
     {
         string[] sysdevs = Directory.GetFileSystemEntries(PATH_SYS_DEVBLOCK, "*", SearchOption.TopDirectoryOnly);
 
@@ -66,7 +66,7 @@ static class ListDevices
             hasUdev = false;
         }
 
-        for(int i = 0; i < sysdevs.Length; i++)
+        for(var i = 0; i < sysdevs.Length; i++)
         {
             devices[i] = new DeviceInfo
             {

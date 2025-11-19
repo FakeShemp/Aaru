@@ -5530,12 +5530,6 @@ namespace Aaru.Localization {
             }
         }
         
-        public static string Menu_Devices {
-            get {
-                return ResourceManager.GetString("Menu_Devices", resourceCulture);
-            }
-        }
-        
         public static string Menu_Refresh {
             get {
                 return ResourceManager.GetString("Menu_Refresh", resourceCulture);
@@ -6439,6 +6433,96 @@ namespace Aaru.Localization {
         public static string Menu_Open_IMGBurn_log {
             get {
                 return ResourceManager.GetString("Menu_Open_IMGBurn_log", resourceCulture);
+            }
+        }
+        
+        public static string Connect_to_AaruRemote {
+            get {
+                return ResourceManager.GetString("Connect_to_AaruRemote", resourceCulture);
+            }
+        }
+        
+        public static string ButtonLabel_Connect {
+            get {
+                return ResourceManager.GetString("ButtonLabel_Connect", resourceCulture);
+            }
+        }
+        
+        public static string Address_IP_or_hostname {
+            get {
+                return ResourceManager.GetString("Address_IP_or_hostname", resourceCulture);
+            }
+        }
+        
+        public static string Introduce_AaruRemote_server_address {
+            get {
+                return ResourceManager.GetString("Introduce_AaruRemote_server_address", resourceCulture);
+            }
+        }
+        
+        public static string Menu_Connect_to_AaruRemote {
+            get {
+                return ResourceManager.GetString("Menu_Connect_to_AaruRemote", resourceCulture);
+            }
+        }
+        
+        public static string Menu_Open_device {
+            get {
+                return ResourceManager.GetString("Menu_Open_device", resourceCulture);
+            }
+        }
+        
+        public static string Title_Device_list {
+            get {
+                return ResourceManager.GetString("Title_Device_list", resourceCulture);
+            }
+        }
+        
+        public static string Title_AaruRemote_server {
+            get {
+                return ResourceManager.GetString("Title_AaruRemote_server", resourceCulture);
+            }
+        }
+        
+        public static string Title_Path {
+            get {
+                return ResourceManager.GetString("Title_Path", resourceCulture);
+            }
+        }
+        
+        public static string Title_Supported {
+            get {
+                return ResourceManager.GetString("Title_Supported", resourceCulture);
+            }
+        }
+        
+        public static string Devices_are_not_supported_on_this_platform {
+            get {
+                return ResourceManager.GetString("Devices_are_not_supported_on_this_platform", resourceCulture);
+            }
+        }
+        
+        public static string Invalid_remote_protocol {
+            get {
+                return ResourceManager.GetString("Invalid_remote_protocol", resourceCulture);
+            }
+        }
+        
+        public static string Host_not_found {
+            get {
+                return ResourceManager.GetString("Host_not_found", resourceCulture);
+            }
+        }
+        
+        public static string Server_sent_invalid_data {
+            get {
+                return ResourceManager.GetString("Server_sent_invalid_data", resourceCulture);
+            }
+        }
+        
+        public static string Unknown_network_error {
+            get {
+                return ResourceManager.GetString("Unknown_network_error", resourceCulture);
             }
         }
     }

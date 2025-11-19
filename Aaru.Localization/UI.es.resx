@@ -1583,9 +1583,6 @@
     <data name="Menu_Console" xml:space="preserve">
     <value>_Consola</value>
   </data>
-    <data name="Menu_Devices" xml:space="preserve">
-    <value>_Dispositivos</value>
-  </data>
     <data name="Menu_Encodings" xml:space="preserve">
     <value>_Codificaciones</value>
   </data>
@@ -3220,5 +3217,50 @@ Probadores:
     </data>
     <data name="Menu_Open_IMGBurn_log" xml:space="preserve">
         <value>Abrir registro _IMGBurn</value>
+    </data>
+    <data name="Connect_to_AaruRemote" xml:space="preserve">
+        <value>Conectar a AaruRemote</value>
+    </data>
+    <data name="ButtonLabel_Connect" xml:space="preserve">
+        <value>Conectar</value>
+    </data>
+    <data name="Address_IP_or_hostname" xml:space="preserve">
+        <value>Dirección (IP o servidor):</value>
+    </data>
+    <data name="Introduce_AaruRemote_server_address" xml:space="preserve">
+        <value>Introduzca la dirección del servidor AaruRemote.</value>
+    </data>
+    <data name="Menu_Connect_to_AaruRemote" xml:space="preserve">
+        <value>Conectar a Aaru_Remote</value>
+    </data>
+    <data name="Menu_Open_device" xml:space="preserve">
+        <value>Abrir _dispositivo...</value>
+    </data>
+    <data name="Title_Device_list" xml:space="preserve">
+        <value>Lista de dispositivos</value>
+    </data>
+    <data name="Title_AaruRemote_server" xml:space="preserve">
+        <value>[bold][slateblue1]Servidor AaruRemote[/][/]</value>
+    </data>
+    <data name="Title_Path" xml:space="preserve">
+        <value>[bold][slateblue1]Ruta[/][/]</value>
+    </data>
+    <data name="Title_Supported" xml:space="preserve">
+        <value>[bold][slateblue1]Soportado[/][/]</value>
+    </data>
+    <data name="Devices_are_not_supported_on_this_platform" xml:space="preserve">
+        <value>Los dispositivos no están soportados en esta plataforma.</value>
+    </data>
+    <data name="Invalid_remote_protocol" xml:space="preserve">
+        <value>Protocolo remoto inválido.</value>
+    </data>
+    <data name="Host_not_found" xml:space="preserve">
+        <value>Servidor no encontrado.</value>
+    </data>
+    <data name="Server_sent_invalid_data" xml:space="preserve">
+        <value>El servidor envió datos inválidos.</value>
+    </data>
+    <data name="Unknown_network_error" xml:space="preserve">
+        <value>Error de red desconocido.</value>
     </data>
 </root>

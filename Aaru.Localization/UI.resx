@@ -2829,10 +2829,6 @@ Do you want to continue?</value>
     <value>E_xit</value>
         <comment>'_' is the character that will be used for the keyboard accelerator</comment>
   </data>
-    <data name="Menu_Devices" xml:space="preserve">
-    <value>_Devices</value>
-        <comment>'_' is the character that will be used for the keyboard accelerator</comment>
-  </data>
     <data name="Menu_Refresh" xml:space="preserve">
     <value>_Refresh</value>
         <comment>'_' is the character that will be used for the keyboard accelerator</comment>
@@ -3296,5 +3292,50 @@ Do you want to continue?</value>
     </data>
     <data name="Menu_Open_IMGBurn_log" xml:space="preserve">
         <value>Open _IMGBurn log</value>
+    </data>
+    <data name="Connect_to_AaruRemote" xml:space="preserve">
+        <value>Connect to AaruRemote</value>
+    </data>
+    <data name="ButtonLabel_Connect" xml:space="preserve">
+        <value>Connect</value>
+    </data>
+    <data name="Address_IP_or_hostname" xml:space="preserve">
+        <value>Address (IP or hostname):</value>
+    </data>
+    <data name="Introduce_AaruRemote_server_address" xml:space="preserve">
+        <value>Introduce AaruRemote server address.</value>
+    </data>
+    <data name="Menu_Connect_to_AaruRemote" xml:space="preserve">
+        <value>Connect to AaruRemote</value>
+    </data>
+    <data name="Menu_Open_device" xml:space="preserve">
+        <value>Open _device...</value>
+    </data>
+    <data name="Title_Device_list" xml:space="preserve">
+        <value>Device list</value>
+    </data>
+    <data name="Title_AaruRemote_server" xml:space="preserve">
+        <value>[bold][slateblue1]AaruRemote server[/][/]</value>
+    </data>
+    <data name="Title_Path" xml:space="preserve">
+        <value>[bold][slateblue1]Path[/][/]</value>
+    </data>
+    <data name="Title_Supported" xml:space="preserve">
+        <value>[bold][slateblue1]Supported[/][/]</value>
+    </data>
+    <data name="Devices_are_not_supported_on_this_platform" xml:space="preserve">
+        <value>Devices are not supported on this platform.</value>
+    </data>
+    <data name="Invalid_remote_protocol" xml:space="preserve">
+        <value>Invalid remote protocol.</value>
+    </data>
+    <data name="Host_not_found" xml:space="preserve">
+        <value>Host not found.</value>
+    </data>
+    <data name="Server_sent_invalid_data" xml:space="preserve">
+        <value>Server sent invalid data.</value>
+    </data>
+    <data name="Unknown_network_error" xml:space="preserve">
+        <value>Unknown network error.</value>
     </data>
 </root>

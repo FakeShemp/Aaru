@@ -63,7 +63,9 @@ using CommunityToolkit.Mvvm.Input;
 using JetBrains.Annotations;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Base;
+using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Enums;
+using MsBox.Avalonia.Models;
 using Spectre.Console;
 using Console = Aaru.Gui.Views.Dialogs.Console;
 using FileSystem = Aaru.CommonTypes.AaruMetadata.FileSystem;
@@ -115,6 +117,8 @@ public partial class MainWindowViewModel : ViewModelBase
         DecodeImageMediaTagsCommand = new RelayCommand(DecodeImageMediaTags);
         OpenMhddLogCommand          = new AsyncRelayCommand(OpenMhddLogAsync);
         OpenIbgLogCommand           = new AsyncRelayCommand(OpenIbgLogAsync);
+        ConnectToRemoteCommand      = new AsyncRelayCommand(ConnectToRemoteAsync);
+        OpenDeviceCommand           = new RelayCommand(OpenDevice);
 
         _genericHddIcon =
             new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/drive-harddisk.png")));
@@ -133,7 +137,6 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             case PlatformID.Win32NT:
             case PlatformID.Linux:
-            case PlatformID.FreeBSD:
                 DevicesSupported = true;
 
                 break;
@@ -168,6 +171,8 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand DecodeImageMediaTagsCommand { get; }
     public ICommand OpenMhddLogCommand          { get; }
     public ICommand OpenIbgLogCommand           { get; }
+    public ICommand ConnectToRemoteCommand      { get; }
+    public ICommand OpenDeviceCommand           { get; }
 
     public bool NativeMenuSupported
     {
@@ -223,6 +228,56 @@ public partial class MainWindowViewModel : ViewModelBase
                     break;
             }
         }
+    }
+
+    void OpenDevice()
+    {
+        var deviceListWindow = new DeviceList();
+
+        deviceListWindow.DataContext = new DeviceListViewModel(deviceListWindow);
+
+        deviceListWindow.Show();
+    }
+
+    async Task ConnectToRemoteAsync()
+    {
+        IMsBox<string> msbox = MessageBoxManager.GetMessageBoxCustom(new MessageBoxCustomParams
+        {
+            ContentTitle = UI.Connect_to_AaruRemote,
+            ButtonDefinitions =
+            [
+                new ButtonDefinition
+                {
+                    Name      = UI.ButtonLabel_Connect,
+                    IsDefault = true
+                },
+                new ButtonDefinition
+                {
+                    Name     = UI.ButtonLabel_Cancel,
+                    IsCancel = true
+                }
+            ],
+            CanResize        = false,
+            CloseOnClickAway = false,
+            InputParams = new InputParams
+            {
+                Label        = UI.Address_IP_or_hostname,
+                DefaultValue = "",
+                Multiline    = false
+            },
+            ContentMessage = UI.Introduce_AaruRemote_server_address,
+            MinWidth       = 400
+        });
+
+        string result = await msbox.ShowWindowDialogAsync(_view);
+
+        if(result != UI.ButtonLabel_Connect) return;
+
+        var deviceListWindow = new DeviceList();
+
+        deviceListWindow.DataContext = new DeviceListViewModel(deviceListWindow, msbox.InputValue);
+
+        deviceListWindow.Show();
     }
 
     async Task OpenMhddLogAsync()
@@ -619,7 +674,7 @@ public partial class MainWindowViewModel : ViewModelBase
         await dialog.ShowDialog(_view);
     }
 
-    Task SettingsAsync()
+    internal Task SettingsAsync()
     {
         var dialog = new SettingsDialog();
         dialog.DataContext = new SettingsViewModel(dialog, false);
@@ -627,7 +682,8 @@ public partial class MainWindowViewModel : ViewModelBase
         return dialog.ShowDialog(_view);
     }
 
-    void Exit() => (Application.Current?.ApplicationLifetime as ClassicDesktopStyleApplicationLifetime)?.Shutdown();
+    internal void Exit() =>
+        (Application.Current?.ApplicationLifetime as ClassicDesktopStyleApplicationLifetime)?.Shutdown();
 
     void Console()
     {

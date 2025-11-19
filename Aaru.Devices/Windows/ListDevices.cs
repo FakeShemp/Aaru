@@ -44,7 +44,7 @@ using Marshal = System.Runtime.InteropServices.Marshal;
 namespace Aaru.Devices.Windows;
 
 [SupportedOSPlatform("windows")]
-static class ListDevices
+public static class ListDevices
 {
     /// <summary>Converts a hex dump string to the ASCII string it represents</summary>
     /// <param name="hex">Hex dump</param>
@@ -63,7 +63,7 @@ static class ListDevices
     /// <summary>Gets a list of all known storage devices on Windows</summary>
     /// <returns>List of devices</returns>
     [SuppressMessage("ReSharper", "RedundantCatchClause")]
-    internal static DeviceInfo[] GetList()
+    public static DeviceInfo[] GetList()
     {
         var deviceIDs = new List<string>();
 

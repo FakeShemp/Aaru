@@ -23,6 +23,11 @@
                           Command="{Binding OpenMhddLogCommand, Mode=OneWay}" />
                 <MenuItem Header="{x:Static localization:UI.Menu_Open_IMGBurn_log}"
                           Command="{Binding OpenIbgLogCommand, Mode=OneWay}" />
+                <MenuItem Header="{x:Static localization:UI.Menu_Connect_to_AaruRemote}"
+                          Command="{Binding ConnectToRemoteCommand, Mode=OneWay}" />
+                <MenuItem Header="Open device..."
+                          Command="{Binding OpenDeviceCommand, Mode=OneWay}"
+                          IsVisible="{Binding DevicesSupported, Mode=OneWay}" />
                 <Separator />
                 <MenuItem Header="{x:Static localization:UI.Menu_Settings}"
                           IsVisible="{Binding !NativeMenuSupported, Mode=OneWay}"
@@ -31,10 +36,6 @@
                 <MenuItem Header="{x:Static localization:UI.Menu_Exit}"
                           IsVisible="{Binding !NativeMenuSupported, Mode=OneWay}"
                           Command="{Binding ExitCommand, Mode=OneWay}" />
-            </MenuItem>
-            <MenuItem Header="{x:Static localization:UI.Menu_Devices}"
-                      IsVisible="{Binding DevicesSupported, Mode=OneWay}">
-                <MenuItem Header="TODO" />
             </MenuItem>
             <MenuItem Header="Image"
                       IsEnabled="{Binding ImageLoaded, Mode=OneWay}">
