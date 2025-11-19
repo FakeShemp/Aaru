@@ -427,6 +427,7 @@ public partial class DeviceViewModel : ViewModelBase
         Dispatcher.UIThread.Invoke(() => StatusMessage = UI.Querying_device_information);
 
         var devInfo = new DeviceInfo(dev);
+        Statistics.AddCommand("device-info");
 
         Dispatcher.UIThread.Invoke(() => StatusMessage = UI.Device_information_queryied_successfully);
 
@@ -727,6 +728,7 @@ public partial class DeviceViewModel : ViewModelBase
             Dispatcher.UIThread.Invoke(() => StatusMessage = UI.Querying_media_information);
 
             var mediaInfo = new ScsiInfo(dev);
+            Statistics.AddCommand("media-info");
 
             if(!mediaInfo.MediaInserted)
             {
