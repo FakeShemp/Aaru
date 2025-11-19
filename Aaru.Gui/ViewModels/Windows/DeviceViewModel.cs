@@ -32,9 +32,11 @@
 
 using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Structs.Devices.SCSI;
 using Aaru.Core;
 using Aaru.Decoders.SCSI.SSC;
 using Aaru.Devices;
@@ -43,16 +45,22 @@ using Aaru.Gui.Views.Tabs;
 using Aaru.Gui.Views.Windows;
 using Aaru.Localization;
 using Aaru.Logging;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Platform.Storage;
+using Avalonia.Svg;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Humanizer;
+using Humanizer.Bytes;
 using Humanizer.Localisation;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Base;
 using MsBox.Avalonia.Enums;
 using DeviceInfo = Aaru.Core.Devices.Info.DeviceInfo;
+using ScsiInfo = Aaru.Core.Media.Info.ScsiInfo;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
@@ -66,12 +74,20 @@ public partial class DeviceViewModel : ViewModelBase
     [ObservableProperty]
     string _blockSizeGranularity;
     [ObservableProperty]
+    BlurayInfo _blurayInfo;
+    [ObservableProperty]
+    CompactDiscInfo _compactDiscInfo;
+    [ObservableProperty]
     string _densities;
     Device _dev;
     [ObservableProperty]
     string _devicePath;
     [ObservableProperty]
     string _deviceType;
+    [ObservableProperty]
+    DvdInfo _dvdInfo;
+    [ObservableProperty]
+    DvdWritableInfo _dvdWritableInfo;
     [ObservableProperty]
     string _firewireGuid;
     [ObservableProperty]
@@ -111,11 +127,26 @@ public partial class DeviceViewModel : ViewModelBase
     [ObservableProperty]
     string _maxBlockSize;
     [ObservableProperty]
+    bool _mediaHasInformation;
+    ScsiInfo _mediaInfo;
+    [ObservableProperty]
+    bool _mediaIsInserted;
+    [ObservableProperty]
+    IImage _mediaLogo;
+    [ObservableProperty]
+    string _mediaSerial;
+    [ObservableProperty]
+    string _mediaSize;
+    [ObservableProperty]
+    string _mediaType;
+    [ObservableProperty]
     string _mediumDensity;
     [ObservableProperty]
     string _mediumTypes;
     [ObservableProperty]
     string _minBlockSize;
+    [ObservableProperty]
+    bool _mmcVisible;
     [ObservableProperty]
     string _model;
     [ObservableProperty]
@@ -201,9 +232,21 @@ public partial class DeviceViewModel : ViewModelBase
     [ObservableProperty]
     string _revision;
     [ObservableProperty]
+    bool _saveGetConfigurationVisible;
+    [ObservableProperty]
+    bool _saveReadCapacity16Visible;
+    [ObservableProperty]
+    bool _saveReadCapacityVisible;
+    [ObservableProperty]
+    bool _saveReadMediaSerialVisible;
+    [ObservableProperty]
+    bool _saveRecognizedFormatLayersVisible;
+    [ObservableProperty]
     bool _saveUsbDescriptorsEnabled;
     [ObservableProperty]
-    ScsiInfo _scsiInfo;
+    bool _saveWriteProtectionStatusVisible;
+    [ObservableProperty]
+    Views.Tabs.ScsiInfo _scsiInfo;
     [ObservableProperty]
     string _scsiType;
     [ObservableProperty]
@@ -214,6 +257,8 @@ public partial class DeviceViewModel : ViewModelBase
     bool _ssc;
     [ObservableProperty]
     string _statusMessage;
+    [ObservableProperty]
+    bool _statusMessageVisible;
     [ObservableProperty]
     bool _usbConnected;
     byte[] _usbDescriptors;
@@ -229,16 +274,61 @@ public partial class DeviceViewModel : ViewModelBase
     string _usbVendorId;
     [ObservableProperty]
     bool _usbVisible;
+    [ObservableProperty]
+    XboxInfo _xboxInfo;
 
     public DeviceViewModel(DeviceView window, string devicePath)
     {
         _window    = window;
         DevicePath = devicePath;
 
-        SaveUsbDescriptorsCommand = new AsyncRelayCommand(SaveUsbDescriptorsAsync);
+        SaveUsbDescriptorsCommand         = new AsyncRelayCommand(SaveUsbDescriptorsAsync);
+        SaveReadMediaSerialCommand        = new AsyncRelayCommand(SaveReadMediaSerialAsync);
+        SaveReadCapacityCommand           = new AsyncRelayCommand(SaveReadCapacityAsync);
+        SaveReadCapacity16Command         = new AsyncRelayCommand(SaveReadCapacity16Async);
+        SaveGetConfigurationCommand       = new AsyncRelayCommand(SaveGetConfigurationAsync);
+        SaveRecognizedFormatLayersCommand = new AsyncRelayCommand(SaveRecognizedFormatLayersAsync);
+        SaveWriteProtectionStatusCommand  = new AsyncRelayCommand(SaveWriteProtectionStatusAsync);
+        DumpCommand                       = new AsyncRelayCommand(DumpAsync);
+        ScanCommand                       = new AsyncRelayCommand(ScanAsync);
     }
 
-    public ICommand SaveUsbDescriptorsCommand { get; }
+    public ICommand SaveUsbDescriptorsCommand         { get; }
+    public ICommand SaveReadMediaSerialCommand        { get; }
+    public ICommand SaveReadCapacityCommand           { get; }
+    public ICommand SaveReadCapacity16Command         { get; }
+    public ICommand SaveGetConfigurationCommand       { get; }
+    public ICommand SaveRecognizedFormatLayersCommand { get; }
+    public ICommand SaveWriteProtectionStatusCommand  { get; }
+    public ICommand DumpCommand                       { get; }
+    public ICommand ScanCommand                       { get; }
+
+    Task SaveReadMediaSerialAsync() => SaveElementAsync(_mediaInfo.MediaSerialNumber);
+
+    Task SaveReadCapacityAsync() => SaveElementAsync(_mediaInfo.ReadCapacity);
+
+    Task SaveReadCapacity16Async() => SaveElementAsync(_mediaInfo.ReadCapacity16);
+
+    Task SaveGetConfigurationAsync() => SaveElementAsync(_mediaInfo.MmcConfiguration);
+
+    Task SaveRecognizedFormatLayersAsync() => SaveElementAsync(_mediaInfo.RecognizedFormatLayers);
+
+    Task SaveWriteProtectionStatusAsync() => SaveElementAsync(_mediaInfo.WriteProtectionStatus);
+
+    async Task SaveElementAsync(byte[] data)
+    {
+        IStorageFile result = await _window.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            FileTypeChoices = [FilePickerFileTypes.Binary]
+        });
+
+        if(result is null) return;
+
+        var saveFs = new FileStream(result.Path.AbsolutePath, FileMode.Create);
+        await saveFs.WriteAsync(data, 0, data.Length);
+
+        saveFs.Close();
+    }
 
     public void LoadData()
     {
@@ -262,7 +352,11 @@ public partial class DeviceViewModel : ViewModelBase
 
     void Worker()
     {
-        Dispatcher.UIThread.Invoke(() => StatusMessage = "Opening device...");
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            StatusMessageVisible = true;
+            StatusMessage        = "Opening device...";
+        });
 
         var dev = Device.Create(DevicePath, out ErrorNumber devErrno);
 
@@ -321,11 +415,11 @@ public partial class DeviceViewModel : ViewModelBase
 
         Statistics.AddDevice(dev);
 
-        Dispatcher.UIThread.Invoke(() => { StatusMessage = "Querying device information..."; });
+        Dispatcher.UIThread.Invoke(() => StatusMessage = "Querying device information...");
 
         var devInfo = new DeviceInfo(dev);
 
-        Dispatcher.UIThread.Invoke(() => { StatusMessage = "Device information queryied successfully..."; });
+        Dispatcher.UIThread.Invoke(() => StatusMessage = "Device information queryied successfully...");
 
         if(devInfo.IsUsb)
         {
@@ -378,6 +472,8 @@ public partial class DeviceViewModel : ViewModelBase
                                                        devInfo.AtaMcptError,
                                                        _window)
                 };
+
+                MediaIsInserted = true;
             });
         }
 
@@ -385,7 +481,7 @@ public partial class DeviceViewModel : ViewModelBase
         {
             Dispatcher.UIThread.Invoke(() =>
             {
-                ScsiInfo = new ScsiInfo
+                ScsiInfo = new Views.Tabs.ScsiInfo
                 {
                     DataContext = new ScsiInfoViewModel(devInfo.ScsiInquiryData,
                                                         devInfo.ScsiInquiry,
@@ -519,13 +615,12 @@ public partial class DeviceViewModel : ViewModelBase
 
                     PlextorVariRec = devInfo.PlextorFeatures.VariRec;
 
-                    if(devInfo.PlextorFeatures.IsDvd)
-                    {
-                        PlextorVariRecDvd       = devInfo.PlextorFeatures.VariRecDvd;
-                        PlextorBitSetting       = devInfo.PlextorFeatures.BitSetting;
-                        PlextorBitSettingDl     = devInfo.PlextorFeatures.BitSettingDl;
-                        PlextorDvdPlusWriteTest = devInfo.PlextorFeatures.DvdPlusWriteTest;
-                    }
+                    if(!devInfo.PlextorFeatures.IsDvd) return;
+
+                    PlextorVariRecDvd       = devInfo.PlextorFeatures.VariRecDvd;
+                    PlextorBitSetting       = devInfo.PlextorFeatures.BitSetting;
+                    PlextorBitSettingDl     = devInfo.PlextorFeatures.BitSettingDl;
+                    PlextorDvdPlusWriteTest = devInfo.PlextorFeatures.DvdPlusWriteTest;
                 });
             }
 
@@ -617,6 +712,233 @@ public partial class DeviceViewModel : ViewModelBase
                         DensitySupport.PrettifyMediumType(devInfo.MediumDensitySupport);
                 });
             }
+
+            Dispatcher.UIThread.Invoke(() => StatusMessage = "Querying media information...");
+
+            var mediaInfo = new ScsiInfo(dev);
+
+            if(!mediaInfo.MediaInserted)
+            {
+                Dispatcher.UIThread.Invoke(() => StatusMessageVisible = false);
+
+                return;
+            }
+
+            MediaIsInserted = true;
+
+            var genericHddIcon =
+                new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/drive-harddisk.png")));
+
+            var genericOpticalIcon =
+                new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/drive-optical.png")));
+
+            var genericFolderIcon =
+                new Bitmap(AssetLoader
+                              .Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/inode-directory.png")));
+
+            var mediaResource = new Uri($"avares://Aaru.Gui/Assets/Logos/Media/{mediaInfo.MediaType}.svg");
+
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                MediaLogo = AssetLoader.Exists(mediaResource)
+                                ? new SvgImage
+                                {
+                                    Source = SvgSource.Load(AssetLoader.Open(mediaResource))
+                                }
+                                : dev.ScsiType == PeripheralDeviceTypes.DirectAccess
+                                    ? genericHddIcon
+                                    : dev.ScsiType == PeripheralDeviceTypes.MultiMediaDevice
+                                        ? genericOpticalIcon
+                                        : genericFolderIcon;
+
+                MediaType = mediaInfo.MediaType.ToString();
+            });
+
+            if(mediaInfo.Blocks != 0 && mediaInfo.BlockSize != 0)
+            {
+                Dispatcher.UIThread.Invoke(() =>
+                {
+                    MediaSize =
+                        string.Format(Localization.Core
+                                                  .Media_has_0_blocks_of_1_bytes_each_for_a_total_of_2,
+                                      mediaInfo.Blocks,
+                                      mediaInfo.BlockSize,
+                                      ByteSize.FromBytes(mediaInfo.Blocks *
+                                                         mediaInfo.BlockSize)
+                                              .ToString("0.000"));
+                });
+            }
+
+            if(mediaInfo.MediaSerialNumber != null)
+            {
+                var sbSerial = new StringBuilder();
+
+                for(var i = 4; i < mediaInfo.MediaSerialNumber.Length; i++)
+                    sbSerial.Append($"{mediaInfo.MediaSerialNumber[i]:X2}");
+
+                Dispatcher.UIThread.Invoke(() => MediaSerial = sbSerial.ToString());
+            }
+
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                MediaHasInformation = true;
+
+                SaveReadMediaSerialVisible = mediaInfo.MediaSerialNumber != null;
+                SaveReadCapacityVisible    = mediaInfo.ReadCapacity      != null;
+                SaveReadCapacity16Visible  = mediaInfo.ReadCapacity16    != null;
+
+                SaveGetConfigurationVisible = mediaInfo.MmcConfiguration != null;
+
+                SaveRecognizedFormatLayersVisible = mediaInfo.RecognizedFormatLayers != null;
+
+                SaveWriteProtectionStatusVisible = mediaInfo.WriteProtectionStatus != null;
+
+                MmcVisible = SaveGetConfigurationVisible       ||
+                             SaveRecognizedFormatLayersVisible ||
+                             SaveWriteProtectionStatusVisible;
+            });
+
+            _mediaInfo = mediaInfo;
+
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                if(_mediaInfo.Toc                    != null ||
+                   _mediaInfo.Atip                   != null ||
+                   _mediaInfo.DiscInformation        != null ||
+                   _mediaInfo.Session                != null ||
+                   _mediaInfo.RawToc                 != null ||
+                   _mediaInfo.Pma                    != null ||
+                   _mediaInfo.CdTextLeadIn           != null ||
+                   _mediaInfo.DecodedToc             != null ||
+                   _mediaInfo.DecodedAtip            != null ||
+                   _mediaInfo.DecodedSession         != null ||
+                   _mediaInfo.FullToc                != null ||
+                   _mediaInfo.DecodedCdTextLeadIn    != null ||
+                   _mediaInfo.DecodedDiscInformation != null ||
+                   _mediaInfo.Mcn                    != null ||
+                   _mediaInfo.Isrcs                  != null)
+                {
+                    CompactDiscInfo = new CompactDiscInfo
+                    {
+                        DataContext = new CompactDiscInfoViewModel(_mediaInfo.Toc,
+                                                                   _mediaInfo.Atip,
+                                                                   _mediaInfo.DiscInformation,
+                                                                   _mediaInfo.Session,
+                                                                   _mediaInfo.RawToc,
+                                                                   _mediaInfo.Pma,
+                                                                   _mediaInfo.CdTextLeadIn,
+                                                                   _mediaInfo.DecodedToc,
+                                                                   _mediaInfo.DecodedAtip,
+                                                                   _mediaInfo.DecodedSession,
+                                                                   _mediaInfo.FullToc,
+                                                                   _mediaInfo.DecodedCdTextLeadIn,
+                                                                   _mediaInfo.DecodedDiscInformation,
+                                                                   _mediaInfo.Mcn,
+                                                                   _mediaInfo.Isrcs,
+                                                                   _window)
+                    };
+                }
+
+                if(_mediaInfo.DvdPfi                    != null ||
+                   _mediaInfo.DvdDmi                    != null ||
+                   _mediaInfo.DvdCmi                    != null ||
+                   _mediaInfo.HddvdCopyrightInformation != null ||
+                   _mediaInfo.DvdBca                    != null ||
+                   _mediaInfo.DvdAacs                   != null ||
+                   _mediaInfo.DecodedPfi                != null)
+                {
+                    DvdInfo = new DvdInfo
+                    {
+                        DataContext = new DvdInfoViewModel(_mediaInfo.DvdPfi,
+                                                           _mediaInfo.DvdDmi,
+                                                           _mediaInfo.DvdCmi,
+                                                           _mediaInfo.HddvdCopyrightInformation,
+                                                           _mediaInfo.DvdBca,
+                                                           _mediaInfo.DvdAacs,
+                                                           _mediaInfo.DecodedPfi,
+                                                           _window)
+                    };
+                }
+
+                if(_mediaInfo.XgdInfo                   != null ||
+                   _mediaInfo.DvdDmi                    != null ||
+                   _mediaInfo.XboxSecuritySector        != null ||
+                   _mediaInfo.DecodedXboxSecuritySector != null)
+                {
+                    XboxInfo = new XboxInfo
+                    {
+                        DataContext = new XboxInfoViewModel(_mediaInfo.XgdInfo,
+                                                            _mediaInfo.DvdDmi,
+                                                            _mediaInfo.XboxSecuritySector,
+                                                            _mediaInfo.DecodedXboxSecuritySector,
+                                                            _window)
+                    };
+                }
+
+                if(_mediaInfo.DvdRamDds                     != null ||
+                   _mediaInfo.DvdRamCartridgeStatus         != null ||
+                   _mediaInfo.DvdRamSpareArea               != null ||
+                   _mediaInfo.LastBorderOutRmd              != null ||
+                   _mediaInfo.DvdPreRecordedInfo            != null ||
+                   _mediaInfo.DvdrMediaIdentifier           != null ||
+                   _mediaInfo.DvdrPhysicalInformation       != null ||
+                   _mediaInfo.HddvdrMediumStatus            != null ||
+                   _mediaInfo.HddvdrLastRmd                 != null ||
+                   _mediaInfo.DvdrLayerCapacity             != null ||
+                   _mediaInfo.DvdrDlMiddleZoneStart         != null ||
+                   _mediaInfo.DvdrDlJumpIntervalSize        != null ||
+                   _mediaInfo.DvdrDlManualLayerJumpStartLba != null ||
+                   _mediaInfo.DvdrDlRemapAnchorPoint        != null ||
+                   _mediaInfo.DvdPlusAdip                   != null ||
+                   _mediaInfo.DvdPlusDcb                    != null)
+                {
+                    DvdWritableInfo = new DvdWritableInfo
+                    {
+                        DataContext = new DvdWritableInfoViewModel(_mediaInfo.DvdRamDds,
+                                                                   _mediaInfo.DvdRamCartridgeStatus,
+                                                                   _mediaInfo.DvdRamSpareArea,
+                                                                   _mediaInfo.LastBorderOutRmd,
+                                                                   _mediaInfo.DvdPreRecordedInfo,
+                                                                   _mediaInfo.DvdrMediaIdentifier,
+                                                                   _mediaInfo.DvdrPhysicalInformation,
+                                                                   _mediaInfo.HddvdrMediumStatus,
+                                                                   _mediaInfo.HddvdrLastRmd,
+                                                                   _mediaInfo.DvdrLayerCapacity,
+                                                                   _mediaInfo.DvdrDlMiddleZoneStart,
+                                                                   _mediaInfo.DvdrDlJumpIntervalSize,
+                                                                   _mediaInfo.DvdrDlManualLayerJumpStartLba,
+                                                                   _mediaInfo.DvdrDlRemapAnchorPoint,
+                                                                   _mediaInfo.DvdPlusAdip,
+                                                                   _mediaInfo.DvdPlusDcb,
+                                                                   _window)
+                    };
+                }
+
+                if(_mediaInfo.BlurayDiscInformation      != null ||
+                   _mediaInfo.BlurayBurstCuttingArea     != null ||
+                   _mediaInfo.BlurayDds                  != null ||
+                   _mediaInfo.BlurayCartridgeStatus      != null ||
+                   _mediaInfo.BluraySpareAreaInformation != null ||
+                   _mediaInfo.BlurayPowResources         != null ||
+                   _mediaInfo.BlurayTrackResources       != null ||
+                   _mediaInfo.BlurayRawDfl               != null ||
+                   _mediaInfo.BlurayPac                  != null)
+                {
+                    BlurayInfo = new BlurayInfo
+                    {
+                        DataContext = new BlurayInfoViewModel(_mediaInfo.BlurayDiscInformation,
+                                                              _mediaInfo.BlurayBurstCuttingArea,
+                                                              _mediaInfo.BlurayDds,
+                                                              _mediaInfo.BlurayCartridgeStatus,
+                                                              _mediaInfo.BluraySpareAreaInformation,
+                                                              _mediaInfo.BlurayPowResources,
+                                                              _mediaInfo.BlurayTrackResources,
+                                                              _mediaInfo.BlurayRawDfl,
+                                                              _mediaInfo.BlurayPac,
+                                                              _window)
+                    };
+                }
+            });
         }
 
         if(devInfo.CID         != null ||
@@ -636,12 +958,91 @@ public partial class DeviceViewModel : ViewModelBase
                                                          devInfo.ExtendedCSD,
                                                          devInfo.SCR)
                 };
+
+                MediaIsInserted = true;
             });
         }
+
+        Dispatcher.UIThread.Invoke(() => StatusMessageVisible = false);
     }
 
     public void Closed()
     {
         _dev?.Close();
+    }
+
+    async Task DumpAsync()
+    {
+        /*
+        switch(_scsiInfo.MediaType)
+        {
+            case CommonTypes.MediaType.GDR or CommonTypes.MediaType.GDROM:
+                await MessageBoxManager
+                     .GetMessageBoxStandard(UI.Title_Error,
+                                            Localization.Core.GD_ROM_dump_support_is_not_yet_implemented,
+                                            ButtonEnum.Ok,
+                                            Icon.Error)
+                     .ShowWindowDialogAsync(_view);
+
+                return;
+            case CommonTypes.MediaType.XGD or CommonTypes.MediaType.XGD2 or CommonTypes.MediaType.XGD3
+                when _scsiInfo.DeviceInfo.ScsiInquiry?.KreonPresent != true:
+                await MessageBoxManager
+                     .GetMessageBoxStandard(UI.Title_Error,
+                                            Localization.Core
+                                                        .Dumping_Xbox_Game_Discs_requires_a_drive_with_Kreon_firmware,
+                                            ButtonEnum.Ok,
+                                            Icon.Error)
+                     .ShowWindowDialogAsync(_view);
+
+                return;
+        }
+
+        var mediaDumpWindow = new MediaDump();
+
+        mediaDumpWindow.DataContext =
+            new MediaDumpViewModel(_devicePath, _scsiInfo.DeviceInfo, mediaDumpWindow, _scsiInfo);
+
+        mediaDumpWindow.Show();
+        */
+    }
+
+    async Task ScanAsync()
+    {
+        /*
+        switch(_scsiInfo.MediaType)
+        {
+            // TODO: GD-ROM
+            case CommonTypes.MediaType.GDR:
+            case CommonTypes.MediaType.GDROM:
+                await MessageBoxManager
+                     .GetMessageBoxStandard(UI.Title_Error,
+                                            Localization.Core.GD_ROM_scan_support_is_not_yet_implemented,
+                                            ButtonEnum.Ok,
+                                            Icon.Error)
+                     .ShowWindowDialogAsync(_view);
+
+                return;
+
+            // TODO: Xbox
+            case CommonTypes.MediaType.XGD:
+            case CommonTypes.MediaType.XGD2:
+            case CommonTypes.MediaType.XGD3:
+                await MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
+                                                              Localization.Core
+                                                                          .Scanning_Xbox_discs_is_not_yet_supported,
+                                                              ButtonEnum.Ok,
+                                                              Icon.Error)
+                                       .ShowWindowDialogAsync(_view);
+
+                return;
+        }
+
+        var mediaScanWindow = new MediaScan();
+
+        mediaScanWindow.DataContext = new MediaScanViewModel(_devicePath, mediaScanWindow);
+
+        mediaScanWindow.Show();
+        */
     }
 }

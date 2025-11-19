@@ -353,9 +353,6 @@
     <Compile Update="Views\Panels\ImageInfo.xaml.cs">
       <DependentUpon>ImageInfo.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\Panels\MediaInfo.xaml.cs">
-      <DependentUpon>MediaInfo.xaml</DependentUpon>
-    </Compile>
     <Compile Update="Views\Panels\Partition.xaml.cs">
       <DependentUpon>Partition.xaml</DependentUpon>
     </Compile>
