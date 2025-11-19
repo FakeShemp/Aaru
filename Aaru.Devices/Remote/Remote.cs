@@ -525,7 +525,6 @@ public class Remote : IDisposable
     public int SendScsiCommand(Span<byte>    cdb,       ref byte[] buffer,   Span<byte> senseBuffer, uint timeout,
                                ScsiDirection direction, out double duration, out bool   sense)
     {
-        senseBuffer = null;
         duration    = 0;
         sense       = true;
 
