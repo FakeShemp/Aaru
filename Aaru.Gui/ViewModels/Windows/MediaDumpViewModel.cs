@@ -420,7 +420,7 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
 
             if(!value) return;
 
-            if(_outputPrefix != null) CheckResumeFileAsync().GetAwaiter().GetResult();
+            if(_outputPrefix != null) _ = CheckResumeFileAsync();
         }
     }
 
@@ -476,8 +476,7 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
 
                     // ReSharper restore AssignmentIsFullyDiscarded
                     GetMessageBoxStandard(UI.Title_Error, UI.Incorrect_metadata_sidecar_file, ButtonEnum.Ok, Icon.Error)
-                   .ShowWindowDialogAsync(_view)
-                   .Result;
+                   .ShowWindowDialogAsync(_view);
 
                 ExistingMetadata = false;
             }
