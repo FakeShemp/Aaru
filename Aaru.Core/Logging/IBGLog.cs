@@ -252,7 +252,7 @@ sealed class IbgLog
             _ibgStartSet   = true;
         }
 
-        _ibgSb.Append($"{_ibgIntSpeed / _ibgSnaps / _ibgDivider:0.00},{_ibgIntSector},{_ibgSampleRate:0},0")
+        _ibgSb.Append(_ibgCulture, $"{_ibgIntSpeed / _ibgSnaps / _ibgDivider:0.00},{_ibgIntSector},{_ibgSampleRate:0},0")
               .AppendLine();
 
         if(_ibgIntSpeed / _ibgSnaps / _ibgDivider > _ibgMaxSpeed) _ibgMaxSpeed = _ibgIntSpeed / _ibgDivider;
@@ -295,7 +295,7 @@ sealed class IbgLog
         ibgHeader.AppendLine("[START_CONFIGURATION]");
         ibgHeader.AppendLine("IBGD_VERSION=2");
         ibgHeader.AppendLine();
-        ibgHeader.Append($"DATE={DateTime.Now}").AppendLine();
+        ibgHeader.Append(_ibgCulture, $"DATE={DateTime.Now}").AppendLine();
         ibgHeader.AppendLine();
         ibgHeader.Append($"SAMPLE_RATE={100}").AppendLine();
 
