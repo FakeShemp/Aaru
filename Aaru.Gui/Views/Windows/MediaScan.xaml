@@ -100,23 +100,10 @@
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_Chart}" />
                 </TabItem.Header>
-                <!-- TODO: Abandoned project need to find replacement
-                <avalonia:Plot Height="300" PlotMargins="50 0 0 0" PlotAreaBorderColor="#999999"
-                               PlotAreaBackground="#2974c1">
-                    <avalonia:Plot.Series>
-                        <avalonia:LineSeries DataFieldX="Index" DataFieldY="Value" ItemsSource="{Binding Path=ChartPoints}"
-                                             Color="{Binding LineColor}" />
-                    </avalonia:Plot.Series>
-                    <avalonia:Plot.Axes>
-                        <avalonia:LinearAxis Position="Left" Maximum="{Binding MaxY}" Minimum="{Binding MinY}"
-                                             MajorStep="{Binding StepsY}" Title="{Binding SpeedLabel}"
-                                             Unit="{Binding KbsLabel}" AxislineColor="{Binding AxesColor}" />
-                        <avalonia:LinearAxis Position="Bottom" Maximum="{Binding MaxX}" Minimum="{Binding MinX}"
-                                             MajorStep="{Binding StepsX}" Title="{Binding BlockLabel}"
-                                             AxislineColor="{Binding AxesColor}" />
-                    </avalonia:Plot.Axes>
-                </avalonia:Plot>
-                -->
+                <controls:DiscSpeedGraph SpeedData="{Binding SpeedData, Mode=OneWay}"
+                                         MaxSector="{Binding MaxSector, Mode=OneWay}"
+                                         MaxSpeed="{Binding MaxGraphSpeed, Mode=OneWay}"
+                                         Multiplier="{Binding SpeedMultiplier, Mode=OneWay}" />
             </TabItem>
         </TabControl>
         <StackPanel Grid.Row="1"

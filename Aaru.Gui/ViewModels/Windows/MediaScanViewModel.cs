@@ -85,6 +85,10 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     string _f;
     ScanResults _localResults;
     [ObservableProperty]
+    double _maxGraphSpeed;
+    [ObservableProperty]
+    ulong _maxSector;
+    [ObservableProperty]
     string _maxSpeed;
     [ObservableProperty]
     double _maxX;
@@ -113,6 +117,10 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     [ObservableProperty]
     uint _scanBlockSize;
     MediaScan _scanner;
+    [ObservableProperty]
+    ObservableCollection<(ulong sector, double speedKbps)> _speedData;
+    [ObservableProperty]
+    int _speedMultiplier;
     [ObservableProperty]
     bool _startVisible;
     [ObservableProperty]
@@ -213,7 +221,7 @@ public sealed partial class MediaScanViewModel : ViewModelBase
             F = string.Format(Localization.Core._0_sectors_took_more_than_500_ms,                      results.F);
 
             UnreadableSectors = string.Format(Localization.Core._0_sectors_could_not_be_read,
-                                              results.UnreadableSectors.Count);
+                                              results.UnreadableSectors?.Count ?? 0);
         });
 
         // TODO: Show list of unreadable sectors
@@ -240,12 +248,7 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void ScanSpeed(ulong sector, double currentSpeed) => await Dispatcher.UIThread.InvokeAsync(() =>
     {
-        /*  TODO: Abandoned project need to find replacement
-        if(ChartPoints.Count == 0)
-            ChartPoints.Add(new DataPoint(0, currentSpeed));
-
-        ChartPoints.Add(new DataPoint(sector, currentSpeed));
-        */
+        SpeedData.Add((sector, currentSpeed));
 
         if(currentSpeed > MaxY) MaxY = currentSpeed + currentSpeed / 10d;
     });
@@ -256,12 +259,9 @@ public sealed partial class MediaScanViewModel : ViewModelBase
         {
             ScanBlockSize      = (uint)blocksToRead;
             BlockMapSectorData = [];
-
-            Blocks        = blocks / blocksToRead;
-            _blocksToRead = blocksToRead;
-
-            MinX = 0;
-            MinY = 0;
+            MaxSector          = blocks;
+            SpeedData          = [];
+            _blocksToRead      = blocksToRead;
 
             switch(currentProfile)
             {
@@ -272,17 +272,8 @@ public sealed partial class MediaScanViewModel : ViewModelBase
                 case 0x0020:
                 case 0x0021:
                 case 0x0022:
-                    MaxX = blocks switch
-                           {
-                               <= 360000 => 360000,
-                               <= 405000 => 405000,
-                               <= 445500 => 445500,
-                               _         => blocks
-                           };
-
-                    StepsX = MaxX   / 10;
-                    StepsY = 150    * 4;
-                    MaxY   = StepsY * 12.5;
+                    SpeedMultiplier = 150;
+                    MaxGraphSpeed   = 11250;
 
                     break;
                 case 0x0010: // DVD SL
@@ -293,39 +284,21 @@ public sealed partial class MediaScanViewModel : ViewModelBase
                 case 0x0018:
                 case 0x001A:
                 case 0x001B:
-                    MaxX   = 2298496;
-                    StepsX = MaxX / 10;
-                    StepsY = 1352.5;
-                    MaxY   = StepsY * 18;
-
-                    break;
                 case 0x0015: // DVD DL
                 case 0x0016:
                 case 0x0017:
                 case 0x002A:
                 case 0x002B:
-                    MaxX   = 4173824;
-                    StepsX = MaxX / 10;
-                    StepsY = 1352.5;
-                    MaxY   = StepsY * 18;
+                    SpeedMultiplier = 1353;
+                    MaxGraphSpeed   = 32472; // 24x DVD-ROM cap for graph scaling
 
                     break;
                 case 0x0041:
                 case 0x0042:
                 case 0x0043:
                 case 0x0040: // BD
-                    MaxX = blocks switch
-                           {
-                               <= 12219392 => 12219392,
-                               <= 24438784 => 24438784,
-                               <= 48878592 => 48878592,
-                               <= 62500864 => 62500864,
-                               _           => blocks
-                           };
-
-                    StepsX = MaxX / 10;
-                    StepsY = 4394.5;
-                    MaxY   = StepsY * 18;
+                    SpeedMultiplier = 4500;
+                    MaxGraphSpeed   = 108000; // 24x BD-ROM cap for graph scaling
 
                     break;
                 case 0x0050: // HD DVD
@@ -334,23 +307,13 @@ public sealed partial class MediaScanViewModel : ViewModelBase
                 case 0x0053:
                 case 0x0058:
                 case 0x005A:
-                    MaxX = blocks switch
-                           {
-                               <= 7361599  => 7361599,
-                               <= 16305407 => 16305407,
-                               _           => blocks
-                           };
-
-                    StepsX = MaxX / 10;
-                    StepsY = 4394.5;
-                    MaxY   = StepsY * 8;
+                    SpeedMultiplier = 4500;
+                    MaxGraphSpeed   = 36550; // 8x HD-DVD cap for graph scaling
 
                     break;
                 default:
-                    MaxX   = blocks;
-                    StepsX = MaxX / 10;
-                    StepsY = 625;
-                    MaxY   = StepsY;
+                    SpeedMultiplier = 1353;
+                    MaxGraphSpeed   = 1500000; // 1500 MB/s cap for graph scaling
 
                     break;
             }
