@@ -132,6 +132,7 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
     [ObservableProperty]
     EncodingModel _selectedEncoding;
     [ObservableProperty]
+    [CanBeNull]
     Metadata _sidecar;
     [ObservableProperty]
     double _skipped;
@@ -437,7 +438,7 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
 
             if(!value)
             {
-                _sidecar = null;
+                Sidecar = null;
 
                 return;
             }
@@ -461,7 +462,7 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
             {
                 var fs = new FileStream(result[0].Path.AbsolutePath, FileMode.Open);
 
-                _sidecar =
+                Sidecar =
                     (JsonSerializer.Deserialize(fs, typeof(MetadataJson), MetadataJsonContext.Default) as MetadataJson)
                   ?.AaruMetadata;
 
@@ -471,11 +472,8 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
             {
                 SentrySdk.CaptureException(ex);
 
-                // ReSharper disable AssignmentIsFullyDiscarded
-                _ = MessageBoxManager.
-
-                    // ReSharper restore AssignmentIsFullyDiscarded
-                    GetMessageBoxStandard(UI.Title_Error, UI.Incorrect_metadata_sidecar_file, ButtonEnum.Ok, Icon.Error)
+                _ = MessageBoxManager
+                   .GetMessageBoxStandard(UI.Title_Error, UI.Incorrect_metadata_sidecar_file, ButtonEnum.Ok, Icon.Error)
                    .ShowWindowDialogAsync(_view);
 
                 ExistingMetadata = false;
@@ -679,7 +677,7 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
                            _outputPrefix,
                            Destination,
                            parsedOptions,
-                           _sidecar,
+                           Sidecar,
                            (uint)Skipped,
                            !ExistingMetadata,
                            !Trim,
