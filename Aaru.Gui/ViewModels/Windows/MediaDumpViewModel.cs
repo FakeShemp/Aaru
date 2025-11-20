@@ -81,8 +81,8 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
     string _destination;
     [ObservableProperty]
     bool _destinationEnabled;
-    Device _dev;
-    Dump   _dumper;
+    readonly Device _dev;
+    Dump            _dumper;
     [ObservableProperty]
     string _encodingEnabled;
     [ObservableProperty]
@@ -149,7 +149,7 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
     [ObservableProperty]
     bool _useSidecar;
 
-    public MediaDumpViewModel(string               devicePath, DeviceInfo deviceInfo, Window view,
+    public MediaDumpViewModel(Device               device, string devicePath, DeviceInfo deviceInfo, Window view,
                               [CanBeNull] ScsiInfo scsiInfo = null)
     {
         _view              = view;
@@ -283,6 +283,7 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
                                   _ => false
                               };
 
+        _dev        = device;
         _devicePath = devicePath;
     }
 
@@ -603,32 +604,6 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
 
         UpdateStatus(UI.Opening_device);
 
-        _dev = Device.Create(_devicePath, out ErrorNumber devErrno);
-
-        switch(_dev)
-        {
-            case null:
-                StoppingErrorMessage(string.Format(UI.Error_0_opening_device, devErrno));
-
-                return;
-            case Devices.Remote.Device remoteDev:
-                Statistics.AddRemote(remoteDev.RemoteApplication,
-                                     remoteDev.RemoteVersion,
-                                     remoteDev.RemoteOperatingSystem,
-                                     remoteDev.RemoteOperatingSystemVersion,
-                                     remoteDev.RemoteArchitecture);
-
-                break;
-        }
-
-        if(_dev.Error)
-        {
-            StoppingErrorMessage(string.Format(UI.Error_0_opening_device, _dev.LastError));
-
-            return;
-        }
-
-        Statistics.AddDevice(_dev);
         Statistics.AddCommand("dump-media");
 
         if(SelectedPlugin is null)
