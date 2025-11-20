@@ -3284,4 +3284,7 @@ Probadores:
     <data name="Title_Chart" xml:space="preserve">
         <value>Gráfica</value>
     </data>
+    <data name="Title_Open_device" xml:space="preserve">
+        <value>Abrir dispositivo</value>
+    </data>
 </root>

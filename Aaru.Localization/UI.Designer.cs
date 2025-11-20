@@ -6567,5 +6567,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Title_Chart", resourceCulture);
             }
         }
+        
+        public static string Title_Open_device {
+            get {
+                return ResourceManager.GetString("Title_Open_device", resourceCulture);
+            }
+        }
     }
 }

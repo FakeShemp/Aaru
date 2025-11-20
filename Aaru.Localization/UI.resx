@@ -3359,4 +3359,7 @@ Do you want to continue?</value>
     <data name="Title_Chart" xml:space="preserve">
         <value>Chart</value>
     </data>
+    <data name="Title_Open_device" xml:space="preserve">
+        <value>Open device</value>
+    </data>
 </root>

@@ -129,7 +129,7 @@
                     HorizontalAlignment="Right"
                     Spacing="8">
             <Button Command="{Binding OpenDeviceCommand}">
-                <TextBlock Text="Open device" />
+                <TextBlock Text="{x:Static localization:UI.Title_Open_device}" />
             </Button>
         </StackPanel>
     </Grid>
