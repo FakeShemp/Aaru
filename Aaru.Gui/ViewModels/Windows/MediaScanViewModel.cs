@@ -55,6 +55,12 @@ using MsBox.Avalonia.Enums;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
+[SuppressMessage("Usage",                   "VSTHRD100:Avoid async void methods", Justification = "Event handlers")]
+[SuppressMessage("Philips Maintainability", "PH2096:Avoid async void",            Justification = "Event handlers")]
+[SuppressMessage("AsyncUsage",
+                 "AsyncFixer03:Fire-and-forget async-void methods or delegates",
+                 Justification = "Event handlers")]
+[SuppressMessage("ReSharper", "AsyncVoidMethod", Justification = "Event handlers")]
 public sealed partial class MediaScanViewModel : ViewModelBase
 {
     readonly Device                                        _device;
@@ -171,7 +177,6 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     }
 
     // TODO: Allow to save MHDD and ImgBurn log files
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void DoWork()
     {
         _localResults                 =  new ScanResults();
@@ -245,7 +250,6 @@ public sealed partial class MediaScanViewModel : ViewModelBase
         await WorkFinished();
     }
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void ScanSpeed(ulong sector, double currentSpeed) => await Dispatcher.UIThread.InvokeAsync(() =>
     {
         SpeedData.Add((sector, currentSpeed));
@@ -253,7 +257,6 @@ public sealed partial class MediaScanViewModel : ViewModelBase
         if(currentSpeed > MaxY) MaxY = currentSpeed + currentSpeed / 10d;
     });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void InitBlockMap(ulong blocks, ulong blockSize, ulong blocksToRead, ushort currentProfile) =>
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
@@ -327,10 +330,8 @@ public sealed partial class MediaScanViewModel : ViewModelBase
         ProgressVisible = false;
     });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void EndProgress() => await Dispatcher.UIThread.InvokeAsync(() => { Progress1Visible = false; });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void UpdateProgress(string text, long current, long maximum) => await Dispatcher.UIThread.InvokeAsync(() =>
     {
         ProgressText          = text;
@@ -340,19 +341,15 @@ public sealed partial class MediaScanViewModel : ViewModelBase
         ProgressValue    = current;
     });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void InitProgress() => await Dispatcher.UIThread.InvokeAsync(() => { Progress1Visible = true; });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void PulseProgress(string text) => await Dispatcher.UIThread.InvokeAsync(() =>
     {
         ProgressText          = text;
         ProgressIndeterminate = true;
     });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
-
-    // ReSharper disable once AsyncVoidLambda
+#pragma warning disable AsyncFixer01
     async void StoppingErrorMessage(string text) => await Dispatcher.UIThread.InvokeAsync(async () =>
     {
         ProgressText = text;
@@ -362,18 +359,16 @@ public sealed partial class MediaScanViewModel : ViewModelBase
 
         await WorkFinished();
     });
+#pragma warning restore AsyncFixer01
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void UpdateStatus(string text) => await Dispatcher.UIThread.InvokeAsync(() => { ProgressText = text; });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void OnScanUnreadable(ulong sector) => await Dispatcher.UIThread.InvokeAsync(() =>
     {
         _localResults.Errored += _blocksToRead;
         UnreadableSectors     =  string.Format(Localization.Core._0_sectors_could_not_be_read, _localResults.Errored);
     });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void OnScanTime(ulong sector, double duration)
     {
         // Update local results counters (thread-safe, no UI dispatch needed)
