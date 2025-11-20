@@ -57,8 +57,8 @@ public sealed partial class MediaScan
         const ushort sdProfile     = 0x0001;
         ushort       blocksToRead  = 128;
         uint         blockSize     = 512;
-        bool         byteAddressed = true;
-        bool         supportsCmd23 = false;
+        var          byteAddressed = true;
+        var          supportsCmd23 = false;
 
         switch(_dev.Type)
         {
@@ -214,9 +214,7 @@ public sealed partial class MediaScan
         var rnd = new Random();
 
         if(supportsCmd23 || blocksToRead == 1)
-        {
             UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_0_sectors_at_a_time, blocksToRead));
-        }
         else if(_useBufferedReads)
         {
             UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_0_sectors_at_a_time_using_OS_buffered_reads,
@@ -233,9 +231,9 @@ public sealed partial class MediaScan
         var ibgLog  = new IbgLog(_ibgLogPath, sdProfile);
 
         _scanStopwatch.Restart();
-        _speedStopwatch.Restart();
-        ulong sectorSpeedStart = 0;
         InitProgress?.Invoke();
+        uint   accumulatedSpeedSectors = 0;
+        double accumulatedSpeedMs      = 0;
 
         for(ulong i = 0; i < results.Blocks; i += blocksToRead)
         {
@@ -255,6 +253,8 @@ public sealed partial class MediaScan
                                    (long)results.Blocks);
 
             bool error;
+
+            _speedStopwatch.Restart();
 
             if(blocksToRead == 1)
             {
@@ -290,6 +290,10 @@ public sealed partial class MediaScan
                                                      timeout,
                                                      out duration);
             }
+
+            _speedStopwatch.Stop();
+            accumulatedSpeedMs      += _speedStopwatch.ElapsedMilliseconds;
+            accumulatedSpeedSectors += blocksToRead;
 
             if(!error)
             {
@@ -337,22 +341,20 @@ public sealed partial class MediaScan
                 ibgLog.Write(i, 0);
             }
 
-            sectorSpeedStart += blocksToRead;
-
-            double elapsed = _speedStopwatch.Elapsed.TotalSeconds;
-
-            if(elapsed <= 0) continue;
-
-            currentSpeed = sectorSpeedStart * blockSize / (1048576 * elapsed);
-            ScanSpeed?.Invoke(i, currentSpeed                      * 1024);
-            sectorSpeedStart = 0;
-            _speedStopwatch.Restart();
+            if(accumulatedSpeedMs >= 100)
+            {
+                currentSpeed = accumulatedSpeedSectors * blockSize / (1048576 * (accumulatedSpeedMs / 1000.0));
+                ScanSpeed?.Invoke(i, currentSpeed                             * 1024);
+                accumulatedSpeedMs      = 0;
+                accumulatedSpeedSectors = 0;
+            }
         }
 
-        _speedStopwatch.Stop();
         _scanStopwatch.Stop();
         EndProgress?.Invoke();
         mhddLog.Close();
+
+        currentSpeed = accumulatedSpeedSectors * blockSize / (1048576 * (accumulatedSpeedMs / 1000.0));
 
         ibgLog.Close(_dev,
                      results.Blocks,
@@ -364,11 +366,11 @@ public sealed partial class MediaScan
 
         InitProgress?.Invoke();
 
-        for(int i = 0; i < seekTimes; i++)
+        for(var i = 0; i < seekTimes; i++)
         {
             if(_aborted || !_seekTest) break;
 
-            uint seekPos = (uint)rnd.Next((int)results.Blocks);
+            var seekPos = (uint)rnd.Next((int)results.Blocks);
 
             PulseProgress?.Invoke(string.Format(Localization.Core.Seeking_to_sector_0, seekPos));
 

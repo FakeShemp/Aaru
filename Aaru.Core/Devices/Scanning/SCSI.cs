@@ -56,8 +56,8 @@ public sealed partial class MediaScan
         bool               sense;
         uint               blockSize        = 0;
         ushort             currentProfile   = 0x0001;
-        bool               foundReadCommand = false;
-        bool               readcd           = false;
+        var                foundReadCommand = false;
+        var                readcd           = false;
 
         results.Blocks = 0;
 
@@ -76,7 +76,7 @@ public sealed partial class MediaScan
                     {
                         case 0x3A:
                         {
-                            int leftRetries = 5;
+                            var leftRetries = 5;
 
                             while(leftRetries > 0)
                             {
@@ -101,7 +101,7 @@ public sealed partial class MediaScan
                         }
                         case 0x04 when decSense.Value.ASCQ == 0x01:
                         {
-                            int leftRetries = 10;
+                            var leftRetries = 10;
 
                             while(leftRetries > 0)
                             {
@@ -130,7 +130,7 @@ public sealed partial class MediaScan
                         // These should be trapped by the OS but seems in some cases they're not
                         case 0x28:
                         {
-                            int leftRetries = 10;
+                            var leftRetries = 10;
 
                             while(leftRetries > 0)
                             {
@@ -222,7 +222,7 @@ public sealed partial class MediaScan
             return results;
         }
 
-        bool               compactDisc = true;
+        var                compactDisc = true;
         FullTOC.CDFullTOC? toc         = null;
 
         if(_dev.ScsiType == PeripheralDeviceTypes.MultiMediaDevice)
@@ -368,10 +368,10 @@ public sealed partial class MediaScan
             InitBlockMap?.Invoke(results.Blocks, blockSize, blocksToRead, currentProfile);
             mhddLog = new MhddLog(_mhddLogPath, _dev, results.Blocks, blockSize, blocksToRead, false);
             ibgLog  = new IbgLog(_ibgLogPath, currentProfile);
-            _speedStopwatch.Restart();
-            ulong sectorSpeedStart = 0;
 
             InitProgress?.Invoke();
+            uint   accumulatedSpeedSectors = 0;
+            double accumulatedSpeedMs      = 0;
 
             for(ulong i = 0; i < results.Blocks; i += blocksToRead)
             {
@@ -391,6 +391,8 @@ public sealed partial class MediaScan
                                                      ByteSize.FromMegabytes(currentSpeed).Per(_oneSecond).Humanize()),
                                        (long)i,
                                        (long)results.Blocks);
+
+                _speedStopwatch.Restart();
 
                 if(readcd)
                 {
@@ -413,6 +415,10 @@ public sealed partial class MediaScan
                 }
                 else
                     sense = scsiReader.ReadBlocks(out _, i, blocksToRead, out cmdDuration, out _, out _);
+
+                _speedStopwatch.Stop();
+                accumulatedSpeedMs      += _speedStopwatch.ElapsedMilliseconds;
+                accumulatedSpeedSectors += blocksToRead;
 
                 results.ProcessingTime += cmdDuration;
 
@@ -460,8 +466,6 @@ public sealed partial class MediaScan
                                           Localization.Core.READ_CD_error_0,
                                           Sense.PrettifySense(senseBuf.ToArray()));
 
-                        ;
-
                         senseDecoded = Sense.Decode(senseBuf);
 
                         if(senseDecoded.HasValue)
@@ -500,24 +504,20 @@ public sealed partial class MediaScan
                     }
                 }
 
-                sectorSpeedStart += blocksToRead;
-
-                double elapsed = _speedStopwatch.Elapsed.TotalSeconds;
-
-                if(elapsed <= 0) continue;
-
-                currentSpeed = sectorSpeedStart * blockSize / (1048576 * elapsed);
-                ScanSpeed?.Invoke(i, currentSpeed                      * 1024);
-                sectorSpeedStart = 0;
-                _speedStopwatch.Restart();
+                if(accumulatedSpeedMs >= 100)
+                {
+                    currentSpeed = accumulatedSpeedSectors * blockSize / (1048576 * (accumulatedSpeedMs / 1000.0));
+                    ScanSpeed?.Invoke(i, currentSpeed                             * 1024);
+                    accumulatedSpeedMs      = 0;
+                    accumulatedSpeedSectors = 0;
+                }
             }
 
-            _speedStopwatch.Stop();
             _scanStopwatch.Stop();
             EndProgress?.Invoke();
             mhddLog.Close();
 
-            currentSpeed = sectorSpeedStart * blockSize / (1048576 * _speedStopwatch.Elapsed.TotalSeconds);
+            currentSpeed = accumulatedSpeedSectors * blockSize / (1048576 * (accumulatedSpeedMs / 1000.0));
 
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             if(results.MaxSpeed == double.MinValue) results.MaxSpeed = currentSpeed;
@@ -542,10 +542,10 @@ public sealed partial class MediaScan
             InitBlockMap?.Invoke(results.Blocks, blockSize, scsiReader.BlocksToRead, currentProfile);
             mhddLog = new MhddLog(_mhddLogPath, _dev, results.Blocks, blockSize, scsiReader.BlocksToRead, false);
             ibgLog  = new IbgLog(_ibgLogPath, currentProfile);
-            _speedStopwatch.Restart();
-            ulong sectorSpeedStart = 0;
 
             InitProgress?.Invoke();
+            uint   accumulatedSpeedSectors = 0;
+            double accumulatedSpeedMs      = 0;
 
             for(ulong i = 0; i < results.Blocks; i += scsiReader.BlocksToRead)
             {
@@ -566,8 +566,12 @@ public sealed partial class MediaScan
                                        (long)i,
                                        (long)results.Blocks);
 
+                _speedStopwatch.Restart();
                 sense = scsiReader.ReadBlocks(out _, i, blocksToRead, out double cmdDuration, out _, out _);
-                results.ProcessingTime += cmdDuration;
+                _speedStopwatch.Stop();
+                accumulatedSpeedMs      += _speedStopwatch.ElapsedMilliseconds;
+                accumulatedSpeedSectors += blocksToRead;
+                results.ProcessingTime  += cmdDuration;
 
                 if(!sense && !_dev.Error)
                 {
@@ -616,22 +620,20 @@ public sealed partial class MediaScan
                     ibgLog.Write(i, 0);
                 }
 
-                sectorSpeedStart += blocksToRead;
-
-                double elapsed = _speedStopwatch.Elapsed.TotalSeconds;
-
-                if(elapsed <= 0) continue;
-
-                currentSpeed = sectorSpeedStart * blockSize / (1048576 * elapsed);
-                ScanSpeed?.Invoke(i, currentSpeed                      * 1024);
-                sectorSpeedStart = 0;
-                _speedStopwatch.Restart();
+                if(accumulatedSpeedMs >= 100)
+                {
+                    currentSpeed = accumulatedSpeedSectors * blockSize / (1048576 * (accumulatedSpeedMs / 1000.0));
+                    ScanSpeed?.Invoke(i, currentSpeed                             * 1024);
+                    accumulatedSpeedMs      = 0;
+                    accumulatedSpeedSectors = 0;
+                }
             }
 
-            _speedStopwatch.Stop();
             _scanStopwatch.Stop();
             EndProgress?.Invoke();
             mhddLog.Close();
+
+            currentSpeed = accumulatedSpeedSectors * blockSize / (1048576 * (accumulatedSpeedMs / 1000.0));
 
             ibgLog.Close(_dev,
                          results.Blocks,
@@ -651,11 +653,11 @@ public sealed partial class MediaScan
 
         InitProgress?.Invoke();
 
-        for(int i = 0; i < seekTimes; i++)
+        for(var i = 0; i < seekTimes; i++)
         {
             if(_aborted || !_seekTest) break;
 
-            uint seekPos = (uint)rnd.Next((int)results.Blocks);
+            var seekPos = (uint)rnd.Next((int)results.Blocks);
 
             PulseProgress?.Invoke(string.Format(Localization.Core.Seeking_to_sector_0, seekPos));
 

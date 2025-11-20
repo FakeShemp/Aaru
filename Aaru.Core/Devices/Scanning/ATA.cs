@@ -126,10 +126,9 @@ public sealed partial class MediaScan
                 mhddLog = new MhddLog(_mhddLogPath, _dev, results.Blocks, blockSize, blocksToRead, false);
                 ibgLog  = new IbgLog(_ibgLogPath, ataProfile);
 
-                _scanStopwatch.Restart();
-                _speedStopwatch.Restart();
-                ulong sectorSpeedStart = 0;
                 InitProgress?.Invoke();
+                uint   accumulatedSpeedSectors = 0;
+                double accumulatedSpeedMs      = 0;
 
                 for(ulong i = 0; i < results.Blocks; i += blocksToRead)
                 {
@@ -150,7 +149,11 @@ public sealed partial class MediaScan
                                            (long)i,
                                            (long)results.Blocks);
 
+                    _speedStopwatch.Restart();
                     bool error = ataReader.ReadBlocks(out cmdBuf, i, blocksToRead, out duration, out _, out _);
+                    _speedStopwatch.Stop();
+                    accumulatedSpeedMs      += _speedStopwatch.ElapsedMilliseconds;
+                    accumulatedSpeedSectors += blocksToRead;
 
                     if(!error)
                     {
@@ -198,22 +201,21 @@ public sealed partial class MediaScan
                         ibgLog.Write(i, 0);
                     }
 
-                    sectorSpeedStart += blocksToRead;
-
-                    double elapsed = _speedStopwatch.Elapsed.TotalSeconds;
-
-                    if(elapsed <= 0) continue;
-
-                    currentSpeed = sectorSpeedStart * blockSize / (1048576 * elapsed);
-                    ScanSpeed?.Invoke(i, currentSpeed                      * 1024);
-                    sectorSpeedStart = 0;
-                    _speedStopwatch.Restart();
+                    if(accumulatedSpeedMs >= 100)
+                    {
+                        currentSpeed = accumulatedSpeedSectors * blockSize / (1048576 * (accumulatedSpeedMs / 1000.0));
+                        ScanSpeed?.Invoke(i, currentSpeed                             * 1024);
+                        accumulatedSpeedMs      = 0;
+                        accumulatedSpeedSectors = 0;
+                    }
                 }
 
                 _speedStopwatch.Stop();
                 _scanStopwatch.Stop();
                 EndProgress?.Invoke();
                 mhddLog.Close();
+
+                currentSpeed = accumulatedSpeedSectors * blockSize / (1048576 * (accumulatedSpeedMs / 1000.0));
 
                 ibgLog.Close(_dev,
                              results.Blocks,
@@ -227,11 +229,11 @@ public sealed partial class MediaScan
 
                 if(ataReader.CanSeekLba && _seekTest)
                 {
-                    for(int i = 0; i < seekTimes; i++)
+                    for(var i = 0; i < seekTimes; i++)
                     {
                         if(_aborted) break;
 
-                        uint seekPos = (uint)rnd.Next((int)results.Blocks);
+                        var seekPos = (uint)rnd.Next((int)results.Blocks);
 
                         PulseProgress?.Invoke(string.Format(Localization.Core.Seeking_to_sector_0, seekPos));
 
@@ -256,10 +258,9 @@ public sealed partial class MediaScan
 
                 ulong currentBlock = 0;
                 results.Blocks = (ulong)(cylinders * heads * sectors);
-                _scanStopwatch.Restart();
-                _speedStopwatch.Restart();
-                ulong sectorSpeedStart = 0;
                 InitProgress?.Invoke();
+                uint   accumulatedSpeedSectors = 0;
+                double accumulatedSpeedMs      = 0;
 
                 for(ushort cy = 0; cy < cylinders; cy++)
                 {
@@ -281,7 +282,10 @@ public sealed partial class MediaScan
                                                                         .Per(_oneSecond)
                                                                         .Humanize()));
 
+                            _speedStopwatch.Restart();
                             bool error = ataReader.ReadChs(out cmdBuf, cy, hd, sc, out duration, out _);
+                            accumulatedSpeedMs += _speedStopwatch.ElapsedMilliseconds;
+                            accumulatedSpeedSectors++;
 
                             if(!error)
                             {
@@ -320,24 +324,23 @@ public sealed partial class MediaScan
                             else
                             {
                                 ScanUnreadable?.Invoke(currentBlock);
-                                results.Errored += blocksToRead;
+                                results.Errored++;
                                 results.UnreadableSectors.Add(currentBlock);
                                 mhddLog.Write(currentBlock, duration < 500 ? 65535 : duration);
 
                                 ibgLog.Write(currentBlock, 0);
                             }
 
-                            sectorSpeedStart++;
-                            currentBlock++;
+                            if(accumulatedSpeedMs >= 100)
+                            {
+                                currentSpeed = accumulatedSpeedSectors *
+                                               blockSize /
+                                               (1048576 * (accumulatedSpeedMs / 1000.0));
 
-                            double elapsed = _speedStopwatch.Elapsed.TotalSeconds;
-
-                            if(elapsed <= 0) continue;
-
-                            currentSpeed = sectorSpeedStart * blockSize / (1048576 * elapsed);
-                            ScanSpeed?.Invoke(currentBlock, currentSpeed           * 1024);
-                            sectorSpeedStart = 0;
-                            _speedStopwatch.Restart();
+                                ScanSpeed?.Invoke(currentBlock, currentSpeed * 1024);
+                                accumulatedSpeedMs      = 0;
+                                accumulatedSpeedSectors = 0;
+                            }
                         }
                     }
                 }
@@ -346,6 +349,8 @@ public sealed partial class MediaScan
                 _scanStopwatch.Stop();
                 EndProgress?.Invoke();
                 mhddLog.Close();
+
+                currentSpeed = accumulatedSpeedSectors * blockSize / (1048576 * (accumulatedSpeedMs / 1000.0));
 
                 ibgLog.Close(_dev,
                              results.Blocks,
@@ -359,13 +364,13 @@ public sealed partial class MediaScan
 
                 if(ataReader.CanSeek)
                 {
-                    for(int i = 0; i < seekTimes; i++)
+                    for(var i = 0; i < seekTimes; i++)
                     {
                         if(_aborted) break;
 
-                        ushort seekCy = (ushort)rnd.Next(cylinders);
-                        byte   seekHd = (byte)rnd.Next(heads);
-                        byte   seekSc = (byte)rnd.Next(sectors);
+                        var seekCy = (ushort)rnd.Next(cylinders);
+                        var seekHd = (byte)rnd.Next(heads);
+                        var seekSc = (byte)rnd.Next(sectors);
 
                         PulseProgress?.Invoke(string.Format(Localization.Core.Seeking_to_cylinder_0_head_1_sector_2,
                                                             seekCy,
