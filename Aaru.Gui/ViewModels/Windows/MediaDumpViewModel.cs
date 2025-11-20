@@ -733,7 +733,7 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         Progress2Visible = false;
     });
 
-    async void EndProgress2() => await Dispatcher.UIThread.InvokeAsync(() => { Progress2Visible = false; });
+    async void EndProgress2() => await Dispatcher.UIThread.InvokeAsync(() => Progress2Visible = false);
 
     async void UpdateProgress2(string text, long current, long maximum) => await Dispatcher.UIThread.InvokeAsync(() =>
     {
@@ -744,9 +744,9 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         Progress2Value    = current;
     });
 
-    async void InitProgress2() => await Dispatcher.UIThread.InvokeAsync(() => { Progress2Visible = true; });
+    async void InitProgress2() => await Dispatcher.UIThread.InvokeAsync(() => Progress2Visible = true);
 
-    async void EndProgress() => await Dispatcher.UIThread.InvokeAsync(() => { Progress1Visible = false; });
+    async void EndProgress() => await Dispatcher.UIThread.InvokeAsync(() => Progress1Visible = false);
 
     async void UpdateProgress(string text, long current, long maximum) => await Dispatcher.UIThread.InvokeAsync(() =>
     {
@@ -757,7 +757,7 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         ProgressValue    = current;
     });
 
-    async void InitProgress() => await Dispatcher.UIThread.InvokeAsync(() => { Progress1Visible = true; });
+    async void InitProgress() => await Dispatcher.UIThread.InvokeAsync(() => Progress1Visible = true);
 
     async void PulseProgress(string text) => await Dispatcher.UIThread.InvokeAsync(() =>
     {
@@ -775,13 +775,7 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         await WorkFinishedAsync();
     });
 
-    async void ErrorMessage(string text) => await Dispatcher.UIThread.InvokeAsync(() =>
-    {
-        Log += text + Environment.NewLine;
-    });
+    async void ErrorMessage(string text) => await Dispatcher.UIThread.InvokeAsync(() => Log += text + Environment.NewLine);
 
-    async void UpdateStatus(string text) => await Dispatcher.UIThread.InvokeAsync(() =>
-    {
-        Log += text + Environment.NewLine;
-    });
+    async void UpdateStatus(string text) => await Dispatcher.UIThread.InvokeAsync(() => Log += text + Environment.NewLine);
 }
