@@ -486,7 +486,7 @@ public partial class DeviceViewModel : ViewModelBase
                                                        _window)
                 };
 
-                MediaIsInserted = true;
+                if(devInfo.ScsiInquiryData is null) MediaIsInserted = true;
             });
         }
 
