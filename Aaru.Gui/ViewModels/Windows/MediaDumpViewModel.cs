@@ -71,9 +71,12 @@ using MediaType = Aaru.CommonTypes.MediaType;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
-[SuppressMessage("ReSharper",               "AsyncVoidMethod", Justification = "Event handlers")]
-[SuppressMessage("AsyncUsage",              "AsyncFixer03:Fire-and-forget async-void methods or delegates", Justification = "Event handlers")]
-[SuppressMessage("Philips Maintainability", "PH2096:Avoid async void", Justification = "Event handlers")]
+[SuppressMessage("ReSharper", "AsyncVoidMethod", Justification = "Event handlers")]
+[SuppressMessage("AsyncUsage",
+                 "AsyncFixer03:Fire-and-forget async-void methods or delegates",
+                 Justification = "Event handlers")]
+[SuppressMessage("Philips Maintainability", "PH2096:Avoid async void",            Justification = "Event handlers")]
+[SuppressMessage("Usage",                   "VSTHRD100:Avoid async void methods", Justification = "Event handlers")]
 public sealed partial class MediaDumpViewModel : ViewModelBase
 {
     readonly string _devicePath;
