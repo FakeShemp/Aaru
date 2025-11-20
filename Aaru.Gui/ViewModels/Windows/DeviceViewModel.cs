@@ -84,6 +84,7 @@ public partial class DeviceViewModel : ViewModelBase
     string _devicePath;
     [ObservableProperty]
     string _deviceType;
+    DeviceInfo _devInfo;
     [ObservableProperty]
     DvdInfo _dvdInfo;
     [ObservableProperty]
@@ -428,6 +429,8 @@ public partial class DeviceViewModel : ViewModelBase
 
         var devInfo = new DeviceInfo(dev);
         Statistics.AddCommand("device-info");
+
+        _devInfo = devInfo;
 
         Dispatcher.UIThread.Invoke(() => StatusMessage = UI.Device_information_queryied_successfully);
 
@@ -985,38 +988,35 @@ public partial class DeviceViewModel : ViewModelBase
 
     async Task DumpAsync()
     {
-        /*
-        switch(_scsiInfo.MediaType)
+        switch(_mediaInfo?.MediaType)
         {
             case CommonTypes.MediaType.GDR or CommonTypes.MediaType.GDROM:
                 await MessageBoxManager
-                     .GetMessageBoxStandard(Localization.UI.Title_Error,
+                     .GetMessageBoxStandard(UI.Title_Error,
                                             Localization.Core.GD_ROM_dump_support_is_not_yet_implemented,
                                             ButtonEnum.Ok,
                                             Icon.Error)
-                     .ShowWindowDialogAsync(_view);
+                     .ShowWindowDialogAsync(_window);
 
                 return;
             case CommonTypes.MediaType.XGD or CommonTypes.MediaType.XGD2 or CommonTypes.MediaType.XGD3
-                when _scsiInfo.DeviceInfo.ScsiInquiry?.KreonPresent != true:
+                when _mediaInfo.DeviceInfo.ScsiInquiry?.KreonPresent != true:
                 await MessageBoxManager
-                     .GetMessageBoxStandard(Localization.UI.Title_Error,
+                     .GetMessageBoxStandard(UI.Title_Error,
                                             Localization.Core
                                                         .Dumping_Xbox_Game_Discs_requires_a_drive_with_Kreon_firmware,
                                             ButtonEnum.Ok,
                                             Icon.Error)
-                     .ShowWindowDialogAsync(_view);
+                     .ShowWindowDialogAsync(_window);
 
                 return;
         }
 
         var mediaDumpWindow = new MediaDump();
 
-        mediaDumpWindow.DataContext =
-            new MediaDumpViewModel(_devicePath, _scsiInfo.DeviceInfo, mediaDumpWindow, _scsiInfo);
+        mediaDumpWindow.DataContext = new MediaDumpViewModel(_dev, DevicePath, _devInfo, mediaDumpWindow, _mediaInfo);
 
-        mediaDumpWindow.Show();
-        */
+        await mediaDumpWindow.ShowDialog(_window);
     }
 
     async Task ScanAsync()
