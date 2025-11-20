@@ -321,67 +321,137 @@ public partial class BlockMap : UserControl
         // Clamp duration between min and max
         double clampedDuration = Math.Max(MinDuration, Math.Min(MaxDuration, duration));
 
-        // Calculate normalized position (0 = green/fast, 1 = red/slow)
-        double normalized = (clampedDuration - MinDuration) / (MaxDuration - MinDuration);
+        // Color gradient thresholds with more intermediate steps:
+        // 1ms -> Green (0, 255, 0)
+        // 3ms -> Bright Green (32, 255, 0)
+        // 5ms -> Green-Lime (64, 255, 0)
+        // 10ms -> Lime (128, 255, 0)
+        // 20ms -> Lime-Yellow (192, 255, 0)
+        // 35ms -> Light Yellow (224, 255, 0)
+        // 50ms -> Yellow (255, 255, 0)
+        // 75ms -> Yellow-Orange (255, 220, 0)
+        // 100ms -> Light Orange (255, 192, 0)
+        // 150ms -> Orange (255, 128, 0)
+        // 225ms -> Red-Orange (255, 64, 0)
+        // 350ms -> Dark Red-Orange (255, 32, 0)
+        // 500ms -> Red (255, 0, 0)
 
-        // Interpolate through color spectrum with more gradients:
-        // Green -> Lime -> Yellow -> Orange -> Red-Orange -> Dark Red
-        if(normalized <= 0.17) // Green to Lime
+        if(clampedDuration <= 3.0) // 1ms to 3ms: Green to Bright Green
         {
-            double t = normalized / 0.17;
+            double t = (clampedDuration - MinDuration) / (3.0 - MinDuration);
 
-            return Color.FromRgb((byte)(0 + t * 128), // R: 0 -> 128
+            return Color.FromRgb((byte)(0 + t * 32), // R: 0 -> 32
+                                 255,                // G: stays 255
+                                 0                   // B: stays 0
+                                );
+        }
+
+        if(clampedDuration <= 5.0) // 3ms to 5ms: Bright Green to Green-Lime
+        {
+            double t = (clampedDuration - 3.0) / (5.0 - 3.0);
+
+            return Color.FromRgb((byte)(32 + t * 32), // R: 32 -> 64
                                  255,                 // G: stays 255
                                  0                    // B: stays 0
                                 );
         }
 
-        if(normalized <= 0.34) // Lime to Yellow
+        if(clampedDuration <= 10.0) // 5ms to 10ms: Green-Lime to Lime
         {
-            double t = (normalized - 0.17) / 0.17;
+            double t = (clampedDuration - 5.0) / (10.0 - 5.0);
 
-            return Color.FromRgb((byte)(128 + t * 127), // R: 128 -> 255
-                                 255,                   // G: stays 255
-                                 0                      // B: stays 0
+            return Color.FromRgb((byte)(64 + t * 64), // R: 64 -> 128
+                                 255,                 // G: stays 255
+                                 0                    // B: stays 0
                                 );
         }
 
-        if(normalized <= 0.50) // Yellow to Orange
+        if(clampedDuration <= 20.0) // 10ms to 20ms: Lime to Lime-Yellow
         {
-            double t = (normalized - 0.34) / 0.16;
+            double t = (clampedDuration - 10.0) / (20.0 - 10.0);
 
-            return Color.FromRgb(255,                  // R: stays 255
-                                 (byte)(255 - t * 85), // G: 255 -> 170
+            return Color.FromRgb((byte)(128 + t * 64), // R: 128 -> 192
+                                 255,                  // G: stays 255
                                  0                     // B: stays 0
                                 );
         }
 
-        if(normalized <= 0.67) // Orange to Orange-Red
+        if(clampedDuration <= 35.0) // 20ms to 35ms: Lime-Yellow to Light Yellow
         {
-            double t = (normalized - 0.50) / 0.17;
+            double t = (clampedDuration - 20.0) / (35.0 - 20.0);
+
+            return Color.FromRgb((byte)(192 + t * 32), // R: 192 -> 224
+                                 255,                  // G: stays 255
+                                 0                     // B: stays 0
+                                );
+        }
+
+        if(clampedDuration <= 50.0) // 35ms to 50ms: Light Yellow to Yellow
+        {
+            double t = (clampedDuration - 35.0) / (50.0 - 35.0);
+
+            return Color.FromRgb((byte)(224 + t * 31), // R: 224 -> 255
+                                 255,                  // G: stays 255
+                                 0                     // B: stays 0
+                                );
+        }
+
+        if(clampedDuration <= 75.0) // 50ms to 75ms: Yellow to Yellow-Orange
+        {
+            double t = (clampedDuration - 50.0) / (75.0 - 50.0);
 
             return Color.FromRgb(255,                  // R: stays 255
-                                 (byte)(170 - t * 85), // G: 170 -> 85
-                                 (byte)(0   + t * 64)  // B: 0 -> 64
+                                 (byte)(255 - t * 35), // G: 255 -> 220
+                                 0                     // B: stays 0
                                 );
         }
 
-        if(normalized <= 0.84) // Orange-Red to Red
+        if(clampedDuration <= 100.0) // 75ms to 100ms: Yellow-Orange to Light Orange
         {
-            double t = (normalized - 0.67) / 0.17;
+            double t = (clampedDuration - 75.0) / (100.0 - 75.0);
+
+            return Color.FromRgb(255,                  // R: stays 255
+                                 (byte)(220 - t * 28), // G: 220 -> 192
+                                 0                     // B: stays 0
+                                );
+        }
+
+        if(clampedDuration <= 150.0) // 100ms to 150ms: Light Orange to Orange
+        {
+            double t = (clampedDuration - 100.0) / (150.0 - 100.0);
+
+            return Color.FromRgb(255,                  // R: stays 255
+                                 (byte)(192 - t * 64), // G: 192 -> 128
+                                 0                     // B: stays 0
+                                );
+        }
+
+        if(clampedDuration <= 225.0) // 150ms to 225ms: Orange to Red-Orange
+        {
+            double t = (clampedDuration - 150.0) / (225.0 - 150.0);
+
+            return Color.FromRgb(255,                  // R: stays 255
+                                 (byte)(128 - t * 64), // G: 128 -> 64
+                                 0                     // B: stays 0
+                                );
+        }
+
+        if(clampedDuration <= 350.0) // 225ms to 350ms: Red-Orange to Dark Red-Orange
+        {
+            double t = (clampedDuration - 225.0) / (350.0 - 225.0);
 
             return Color.FromRgb(255,                 // R: stays 255
-                                 (byte)(85 - t * 85), // G: 85 -> 0
-                                 (byte)(64 + t * 64)  // B: 64 -> 128
+                                 (byte)(64 - t * 32), // G: 64 -> 32
+                                 0                    // B: stays 0
                                 );
         }
-        else // Red to Dark Red
+        else // 350ms to 500ms: Dark Red-Orange to Red
         {
-            double t = (normalized - 0.84) / 0.16;
+            double t = (clampedDuration - 350.0) / (MaxDuration - 350.0);
 
-            return Color.FromRgb((byte)(255 - t * 55), // R: 255 -> 200
-                                 0,                    // G: stays 0
-                                 (byte)(128 + t * 127) // B: 128 -> 255
+            return Color.FromRgb(255,                 // R: stays 255
+                                 (byte)(32 - t * 32), // G: 32 -> 0
+                                 0                    // B: stays 0
                                 );
         }
     }
