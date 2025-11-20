@@ -41,8 +41,11 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 
 namespace Aaru.Gui.Controls;
 
@@ -60,17 +63,20 @@ public partial class BlockMap : UserControl
 
     public static readonly StyledProperty<uint> ScanBlockSizeProperty =
         AvaloniaProperty.Register<BlockMap, uint>(nameof(ScanBlockSize), 1u);
-    int _blocksPerRow;
+    readonly Image _image;
 
-    readonly Canvas                                               _canvas;
+    WriteableBitmap _bitmap;
+    int             _blocksPerRow;
+    int             _rows;
+
     uint                                                          _scanBlockSize = 1;
     ObservableCollection<(ulong startingSector, double duration)> _sectorData;
-    int                                                           _totalBlocksDrawn;
 
     public BlockMap()
     {
         InitializeComponent();
-        _canvas = this.FindControl<Canvas>("BlockCanvas");
+        _image              =  this.FindControl<Image>("BlockImage");
+        _image.PointerMoved += OnPointerMoved;
     }
 
     public ObservableCollection<(ulong startingSector, double duration)> SectorData
@@ -118,76 +124,196 @@ public partial class BlockMap : UserControl
         }
     }
 
-    private void OnSectorDataChanged(object sender, NotifyCollectionChangedEventArgs e)
-    {
-        if(e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
-        {
-            // Incremental draw for added items
-            DrawNewBlocks(e.NewStartingIndex, e.NewItems.Count);
-        }
-        else
-        {
-            // Full redraw for other operations
-            RedrawAll();
-        }
-    }
-
     private void CalculateBlocksPerRow()
     {
         if(Bounds.Width <= 0) return;
-
-        var availableWidth   = (int)Bounds.Width;
         int blockWithSpacing = BlockSize + BlockSpacing;
-        _blocksPerRow = Math.Max(1, availableWidth / blockWithSpacing);
+        _blocksPerRow = Math.Max(1, (int)Bounds.Width / blockWithSpacing);
+        _rows         = _sectorData == null ? 0 : (_sectorData.Count + _blocksPerRow - 1) / _blocksPerRow;
+        EnsureBitmap();
+    }
+
+    void EnsureBitmap()
+    {
+        if(_blocksPerRow <= 0 || _rows <= 0) return;
+        int blockWithSpacing = BlockSize + BlockSpacing;
+        int width            = _blocksPerRow * blockWithSpacing;
+        int height           = _rows         * blockWithSpacing;
+
+        if(_bitmap == null || _bitmap.PixelSize.Width != width || _bitmap.PixelSize.Height != height)
+        {
+            _bitmap?.Dispose();
+
+            _bitmap = new WriteableBitmap(new PixelSize(width, height),
+                                          new Vector(96, 96),
+                                          PixelFormat.Bgra8888,
+                                          AlphaFormat.Premul);
+
+            if(_image != null)
+            {
+                _image.Source = _bitmap;
+                _image.Width  = width;
+                _image.Height = height;
+            }
+        }
     }
 
     private void RedrawAll()
     {
-        if(_canvas == null || _sectorData == null || _sectorData.Count == 0) return;
-
-        _canvas.Children.Clear();
+        if(_sectorData == null || _sectorData.Count == 0 || _blocksPerRow == 0) return;
         CalculateBlocksPerRow();
-        _totalBlocksDrawn = 0;
 
-        DrawNewBlocks(0, _sectorData.Count);
-    }
+        if(_bitmap == null) return;
 
-    private void DrawNewBlocks(int startIndex, int count)
-    {
-        if(_canvas == null || _sectorData == null || _blocksPerRow == 0) return;
-
-        int blockWithSpacing = BlockSize + BlockSpacing;
-
-        for(int i = startIndex; i < startIndex + count && i < _sectorData.Count; i++)
+        using(ILockedFramebuffer fb = _bitmap.Lock())
         {
-            (ulong startingSector, double duration) = _sectorData[i];
-            Color color = GetColorForDuration(duration);
-
-            // Calculate position in grid
-            int blockIndex = _totalBlocksDrawn;
-            int row        = blockIndex / _blocksPerRow;
-            int col        = blockIndex % _blocksPerRow;
-
-            // Create and position rectangle
-            var rect = new Border
+            unsafe
             {
-                Width           = BlockSize,
-                Height          = BlockSize,
-                Background      = new SolidColorBrush(color),
-                BorderBrush     = Brushes.Transparent,
-                BorderThickness = new Thickness(0)
-            };
+                var data = new Span<byte>((void*)fb.Address, fb.Size.Height * fb.RowBytes);
+                data.Clear();
 
-            Canvas.SetLeft(rect, col * blockWithSpacing);
-            Canvas.SetTop(rect, row  * blockWithSpacing);
+                int blockWithSpacing = BlockSize + BlockSpacing;
 
-            _canvas.Children.Add(rect);
-            _totalBlocksDrawn++;
+                for(var i = 0; i < _sectorData.Count; i++)
+                {
+                    (ulong startSector, double duration) = _sectorData[i];
+                    Color color = GetColorForDuration(duration);
+
+                    int row = i       / _blocksPerRow;
+                    int col = i       % _blocksPerRow;
+                    DrawBlock(fb, col * blockWithSpacing, row * blockWithSpacing, color);
+                }
+            }
         }
 
-        // Update canvas height based on rows needed
-        int totalRows = (_totalBlocksDrawn + _blocksPerRow - 1) / _blocksPerRow;
-        _canvas.Height = totalRows * blockWithSpacing;
+        _image.InvalidateVisual();
+    }
+
+    void DrawBlock(ILockedFramebuffer fb, int x, int y, Color color)
+    {
+        int stride = fb.RowBytes;
+
+        unsafe
+        {
+            var basePtr = (byte*)fb.Address;
+
+            for(var dy = 0; dy < BlockSize; dy++)
+            {
+                byte* rowPtr = basePtr + (y + dy) * stride + x * 4;
+
+                for(var dx = 0; dx < BlockSize; dx++)
+                {
+                    rowPtr[0] =  color.B;
+                    rowPtr[1] =  color.G;
+                    rowPtr[2] =  color.R;
+                    rowPtr[3] =  255;
+                    rowPtr    += 4;
+                }
+            }
+        }
+    }
+
+    private void OnSectorDataChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+        if(_sectorData == null) return;
+
+        if(e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null && e.NewItems.Count > 0)
+        {
+            // If not laid out yet, defer to full redraw
+            if(_blocksPerRow == 0)
+            {
+                RedrawAll();
+
+                return;
+            }
+
+            // Check if rows changed (only depends on count now)
+            int newRows = (_sectorData.Count + _blocksPerRow - 1) / _blocksPerRow;
+
+            if(newRows != _rows)
+            {
+                _rows = newRows;
+                EnsureBitmap();
+                RedrawAll();
+
+                return;
+            }
+
+            if(_bitmap == null) EnsureBitmap();
+
+            if(_bitmap == null) return;
+
+            using(ILockedFramebuffer fb = _bitmap.Lock())
+            {
+                int blockWithSpacing = BlockSize + BlockSpacing;
+                int startIndex       = e.NewStartingIndex;
+                int count            = e.NewItems.Count;
+
+                for(var i = 0; i < count; i++)
+                {
+                    int dataIndex = startIndex + i;
+
+                    if(dataIndex >= _sectorData.Count) break;
+                    (ulong startSector, double duration) = _sectorData[dataIndex];
+                    Color color = GetColorForDuration(duration);
+                    int   row   = dataIndex / _blocksPerRow;
+                    int   col   = dataIndex % _blocksPerRow;
+                    DrawBlock(fb, col       * blockWithSpacing, row * blockWithSpacing, color);
+                }
+            }
+
+            _image.InvalidateVisual();
+        }
+        else
+            RedrawAll();
+    }
+
+    void OnPointerMoved(object sender, PointerEventArgs e)
+    {
+        if(_sectorData == null || _sectorData.Count == 0 || _blocksPerRow == 0)
+        {
+            ToolTip.SetTip(_image, null);
+
+            return;
+        }
+
+        Point p                = e.GetPosition(_image);
+        int   blockWithSpacing = BlockSize + BlockSpacing;
+
+        if(p.X < 0 || p.Y < 0)
+        {
+            ToolTip.SetTip(_image, null);
+
+            return;
+        }
+
+        var col = (int)(p.X / blockWithSpacing);
+        var row = (int)(p.Y / blockWithSpacing);
+
+        if(col < 0 || row < 0)
+        {
+            ToolTip.SetTip(_image, null);
+
+            return;
+        }
+
+        int index = row * _blocksPerRow + col;
+
+        if(index < 0 || index >= _sectorData.Count)
+        {
+            ToolTip.SetTip(_image, null);
+
+            return;
+        }
+
+        (ulong startSector, double duration) = _sectorData[index];
+        ulong endSector = startSector + (_scanBlockSize > 0 ? _scanBlockSize - 1u : 0u);
+
+        string tooltipText = _scanBlockSize > 1
+                                 ? $"Sectors {startSector} - {endSector}\nBlock size: {_scanBlockSize} sectors\nDuration: {duration:F2} ms"
+                                 : $"Sector {startSector}\nDuration: {duration:F2} ms";
+
+        ToolTip.SetTip(_image, tooltipText);
     }
 
     private Color GetColorForDuration(double duration)
