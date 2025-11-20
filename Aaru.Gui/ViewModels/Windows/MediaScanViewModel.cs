@@ -30,8 +30,10 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -40,7 +42,6 @@ using Aaru.Core.Devices.Scanning;
 using Aaru.Devices;
 using Aaru.Localization;
 using Avalonia.Controls;
-using Avalonia.Media;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -56,16 +57,19 @@ namespace Aaru.Gui.ViewModels.Windows;
 
 public sealed partial class MediaScanViewModel : ViewModelBase
 {
-    readonly Device _device;
-    readonly Window _view;
+    readonly Device                                        _device;
+    readonly string                                        _devicePath;
+    readonly List<(ulong startingSector, double duration)> _pendingSectorData     = new();
+    readonly object                                        _pendingSectorDataLock = new();
+    readonly Window                                        _view;
     [ObservableProperty]
     string _a;
     [ObservableProperty]
     string _avgSpeed;
     [ObservableProperty]
-    Color _axesColor;
-    [ObservableProperty]
     string _b;
+    [ObservableProperty]
+    ObservableCollection<(ulong startingSector, double duration)> _blockMapSectorData;
     [ObservableProperty]
     ulong _blocks;
     ulong _blocksToRead;
@@ -75,13 +79,10 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     bool _closeVisible;
     [ObservableProperty]
     string _d;
-    readonly string _devicePath;
     [ObservableProperty]
     string _e;
     [ObservableProperty]
     string _f;
-    [ObservableProperty]
-    Color _lineColor;
     ScanResults _localResults;
     [ObservableProperty]
     string _maxSpeed;
@@ -98,16 +99,6 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     [ObservableProperty]
     bool _progress1Visible;
     [ObservableProperty]
-    string _progress2Indeterminate;
-    [ObservableProperty]
-    string _progress2MaxValue;
-    [ObservableProperty]
-    string _progress2Text;
-    [ObservableProperty]
-    string _progress2Value;
-    [ObservableProperty]
-    string _progress2Visible;
-    [ObservableProperty]
     bool _progressIndeterminate;
     [ObservableProperty]
     double _progressMaxValue;
@@ -119,6 +110,8 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     bool _progressVisible;
     [ObservableProperty]
     bool _resultsVisible;
+    [ObservableProperty]
+    uint _scanBlockSize;
     MediaScan _scanner;
     [ObservableProperty]
     bool _startVisible;
@@ -146,22 +139,7 @@ public sealed partial class MediaScanViewModel : ViewModelBase
         StopCommand  = new RelayCommand(Stop);
         StartVisible = true;
         CloseVisible = true;
-        BlockMapList = [];
-
-//        ChartPoints  = new ObservableCollection<DataPoint>();
-        StepsX    = double.NaN;
-        StepsY    = double.NaN;
-        AxesColor = Colors.Black;
-        LineColor = Colors.Yellow;
     }
-
-    public string SpeedLabel => UI.ButtonLabel_Stop;
-    public string KbsLabel   => UI.Kb_s;
-    public string BlockLabel => UI.Title_Block;
-
-    public ObservableCollection<(ulong block, double duration)> BlockMapList { get; }
-
-//    public ObservableCollection<DataPoint>                      ChartPoints  { get; }
 
     public string Title { get; }
 
@@ -181,7 +159,6 @@ public sealed partial class MediaScanViewModel : ViewModelBase
         ProgressVisible = true;
         ResultsVisible  = true;
 
-//        ChartPoints.Clear();
         new Thread(DoWork).Start();
     }
 
@@ -204,8 +181,17 @@ public sealed partial class MediaScanViewModel : ViewModelBase
 
         ScanResults results = _scanner.Scan();
 
+        // Flush any remaining pending sector data
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
+            lock(_pendingSectorDataLock)
+            {
+                foreach((ulong startingSector, double duration) item in _pendingSectorData)
+                    BlockMapSectorData.Add(item);
+
+                _pendingSectorData.Clear();
+            }
+
             TotalTime = string.Format(Localization.Core.Took_a_total_of_0_1_processing_commands,
                                       results.TotalTime.Seconds().Humanize(minUnit: TimeUnit.Second),
                                       results.ProcessingTime.Seconds().Humanize(minUnit: TimeUnit.Second));
@@ -268,6 +254,9 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     async void InitBlockMap(ulong blocks, ulong blockSize, ulong blocksToRead, ushort currentProfile) =>
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
+            ScanBlockSize      = (uint)blocksToRead;
+            BlockMapSectorData = [];
+
             Blocks        = blocks / blocksToRead;
             _blocksToRead = blocksToRead;
 
@@ -419,14 +408,12 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     {
         _localResults.Errored += _blocksToRead;
         UnreadableSectors     =  string.Format(Localization.Core._0_sectors_could_not_be_read, _localResults.Errored);
-        BlockMapList.Add((sector / _blocksToRead, double.NaN));
     });
 
     [SuppressMessage("ReSharper", "AsyncVoidMethod")]
-    async void OnScanTime(ulong sector, double duration) => await Dispatcher.UIThread.InvokeAsync(() =>
+    async void OnScanTime(ulong sector, double duration)
     {
-        BlockMapList.Add((sector / _blocksToRead, duration));
-
+        // Update local results counters (thread-safe, no UI dispatch needed)
         switch(duration)
         {
             case < 3:
@@ -455,11 +442,55 @@ public sealed partial class MediaScanViewModel : ViewModelBase
                 break;
         }
 
-        A = string.Format(Localization.Core._0_sectors_took_less_than_3_ms,                        _localResults.A);
-        B = string.Format(Localization.Core._0_sectors_took_less_than_10_ms_but_more_than_3_ms,    _localResults.B);
-        C = string.Format(Localization.Core._0_sectors_took_less_than_50_ms_but_more_than_10_ms,   _localResults.C);
-        D = string.Format(Localization.Core._0_sectors_took_less_than_150_ms_but_more_than_50_ms,  _localResults.D);
-        E = string.Format(Localization.Core._0_sectors_took_less_than_500_ms_but_more_than_150_ms, _localResults.E);
-        F = string.Format(Localization.Core._0_sectors_took_more_than_500_ms,                      _localResults.F);
-    });
+        // Batch sector data updates
+        List<(ulong sector, double duration)> itemsToAdd = null;
+
+        lock(_pendingSectorDataLock)
+        {
+            _pendingSectorData.Add((sector, duration));
+
+            // Only dispatch to UI thread every 50 items to reduce overhead
+            if(_pendingSectorData.Count >= 50)
+            {
+                itemsToAdd = _pendingSectorData.ToList();
+                _pendingSectorData.Clear();
+            }
+        }
+
+        // Dispatch outside the lock
+        if(itemsToAdd != null)
+        {
+            await Dispatcher.UIThread.InvokeAsync(() =>
+                                                  {
+                                                      foreach((ulong sector, double duration) item in itemsToAdd)
+                                                          BlockMapSectorData.Add(item);
+
+                                                      // Update text labels
+                                                      A = string.Format(Localization.Core
+                                                                           ._0_sectors_took_less_than_3_ms,
+                                                                        _localResults.A);
+
+                                                      B = string.Format(Localization.Core
+                                                                           ._0_sectors_took_less_than_10_ms_but_more_than_3_ms,
+                                                                        _localResults.B);
+
+                                                      C = string.Format(Localization.Core
+                                                                           ._0_sectors_took_less_than_50_ms_but_more_than_10_ms,
+                                                                        _localResults.C);
+
+                                                      D = string.Format(Localization.Core
+                                                                           ._0_sectors_took_less_than_150_ms_but_more_than_50_ms,
+                                                                        _localResults.D);
+
+                                                      E = string.Format(Localization.Core
+                                                                           ._0_sectors_took_less_than_500_ms_but_more_than_150_ms,
+                                                                        _localResults.E);
+
+                                                      F = string.Format(Localization.Core
+                                                                           ._0_sectors_took_more_than_500_ms,
+                                                                        _localResults.F);
+                                                  },
+                                                  DispatcherPriority.Background);
+        }
+    }
 }

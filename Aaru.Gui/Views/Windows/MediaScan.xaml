@@ -83,7 +83,18 @@
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_Block_map}" />
                 </TabItem.Header>
-                <!--                <controls:BlockMap Width="750" Height="400" Blocks="{Binding Blocks}" ItemsSource="{Binding BlockMapList}" /> -->
+                <Border Margin="8"
+                        BorderThickness="1"
+                        BorderBrush="LightGray"
+                        CornerRadius="8">
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Auto">
+                        <controls:BlockMap SectorData="{Binding BlockMapSectorData, Mode=OneWay}"
+                                           VerticalAlignment="Top"
+                                           ScanBlockSize="{Binding ScanBlockSize, Mode=OneWay}"
+                                           Margin="4" />
+                    </ScrollViewer>
+                </Border>
             </TabItem>
             <TabItem>
                 <TabItem.Header>
