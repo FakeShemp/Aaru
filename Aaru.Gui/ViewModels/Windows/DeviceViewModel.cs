@@ -1021,7 +1021,7 @@ public partial class DeviceViewModel : ViewModelBase
 
     async Task ScanAsync()
     {
-        switch(_mediaInfo.MediaType)
+        switch(_mediaInfo?.MediaType)
         {
             // TODO: GD-ROM
             case CommonTypes.MediaType.GDR:
