@@ -614,10 +614,12 @@
                     Orientation="Horizontal"
                     Spacing="8"
                     HorizontalAlignment="Right">
-            <Button Command="{Binding DumpCommand, Mode=OneWay}">
+            <Button Command="{Binding DumpCommand, Mode=OneWay}"
+                    IsEnabled="{Binding MediaIsInserted, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Dump_media_to_image}" />
             </Button>
-            <Button Command="{Binding ScanCommand, Mode=OneWay}">
+            <Button Command="{Binding ScanCommand, Mode=OneWay}"
+                    IsEnabled="{Binding MediaIsInserted, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Scan_media_surface}" />
             </Button>
         </StackPanel>
