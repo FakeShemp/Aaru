@@ -71,6 +71,9 @@ using MediaType = Aaru.CommonTypes.MediaType;
 
 namespace Aaru.Gui.ViewModels.Windows;
 
+[SuppressMessage("ReSharper",               "AsyncVoidMethod", Justification = "Event handlers")]
+[SuppressMessage("AsyncUsage",              "AsyncFixer03:Fire-and-forget async-void methods or delegates", Justification = "Event handlers")]
+[SuppressMessage("Philips Maintainability", "PH2096:Avoid async void", Justification = "Event handlers")]
 public sealed partial class MediaDumpViewModel : ViewModelBase
 {
     readonly string _devicePath;
@@ -708,7 +711,6 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         new Thread(DoWork).Start();
     }
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void DoWork()
     {
         _dumper.UpdateStatus         += UpdateStatus;
@@ -737,10 +739,8 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         Progress2Visible = false;
     });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void EndProgress2() => await Dispatcher.UIThread.InvokeAsync(() => { Progress2Visible = false; });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void UpdateProgress2(string text, long current, long maximum) => await Dispatcher.UIThread.InvokeAsync(() =>
     {
         Progress2Text          = text;
@@ -750,13 +750,10 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         Progress2Value    = current;
     });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void InitProgress2() => await Dispatcher.UIThread.InvokeAsync(() => { Progress2Visible = true; });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void EndProgress() => await Dispatcher.UIThread.InvokeAsync(() => { Progress1Visible = false; });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void UpdateProgress(string text, long current, long maximum) => await Dispatcher.UIThread.InvokeAsync(() =>
     {
         ProgressText          = text;
@@ -766,17 +763,14 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         ProgressValue    = current;
     });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void InitProgress() => await Dispatcher.UIThread.InvokeAsync(() => { Progress1Visible = true; });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void PulseProgress(string text) => await Dispatcher.UIThread.InvokeAsync(() =>
     {
         ProgressText          = text;
         ProgressIndeterminate = true;
     });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void StoppingErrorMessage(string text) => await Dispatcher.UIThread.InvokeAsync(async () =>
     {
         ErrorMessage(text);
@@ -787,13 +781,11 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         await WorkFinishedAsync();
     });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void ErrorMessage(string text) => await Dispatcher.UIThread.InvokeAsync(() =>
     {
         Log += text + Environment.NewLine;
     });
 
-    [SuppressMessage("ReSharper", "AsyncVoidMethod")]
     async void UpdateStatus(string text) => await Dispatcher.UIThread.InvokeAsync(() =>
     {
         Log += text + Environment.NewLine;
