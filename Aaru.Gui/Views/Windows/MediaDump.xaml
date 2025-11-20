@@ -41,8 +41,8 @@
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
-        Width="650"
-        Height="900"
+        Width="900"
+        Height="650"
         x:Class="Aaru.Gui.Views.Windows.MediaDump"
         Icon="/Assets/aaru-logo.png"
         x:DataType="windows:MediaDumpViewModel"
@@ -52,7 +52,7 @@
     </Design.DataContext>
     <Grid Margin="12"
           RowSpacing="8"
-          RowDefinitions="*, Auto, Auto">
+          RowDefinitions="Auto, *, Auto">
         <StackPanel Grid.Row="0"
                     Orientation="Vertical"
                     IsVisible="{Binding OptionsVisible, Mode=OneWay}"
@@ -150,19 +150,24 @@
             </Grid>
             <!-- TODO: Image options -->
         </StackPanel>
-        <StackPanel Grid.Row="1"
-                    Orientation="Vertical"
-                    IsVisible="{Binding ProgressVisible, Mode=OneWay}"
-                    Spacing="8">
-            <Grid ColumnDefinitions="Auto, *"
+        <Grid Grid.Row="1"
+              RowDefinitions="Auto,Auto,*,Auto,Auto"
+              VerticalAlignment="Stretch"
+              IsVisible="{Binding ProgressVisible, Mode=OneWay}"
+              RowSpacing="8">
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="Auto, *"
                   ColumnSpacing="8">
                 <TextBlock Grid.Column="0"
                            Text="{x:Static localization:UI.Writing_image_to}" />
                 <TextBlock Grid.Column="1"
                            Text="{Binding Destination, Mode=OneWay}" />
             </Grid>
-            <TextBlock Text="{x:Static localization:UI.Title_Log}" />
-            <Border MinHeight="475"
+            <TextBlock Grid.Row="1"
+                       Text="{x:Static localization:UI.Title_Log}" />
+            <Border Grid.Row="2"
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
                     BorderThickness="1"
                     BorderBrush="LightGray"
                     CornerRadius="8">
@@ -171,7 +176,8 @@
                                                Text="{Binding Log, Mode=OneWay}" />
                 </ScrollViewer>
             </Border>
-            <StackPanel Orientation="Vertical"
+            <StackPanel Grid.Row="3"
+                        Orientation="Vertical"
                         IsVisible="{Binding Progress1Visible, Mode=OneWay}"
                         Spacing="8">
                 <controls:SpectreTextBlock Text="{Binding ProgressText, Mode=OneWay}" />
@@ -179,7 +185,8 @@
                              Maximum="{Binding ProgressMaxValue, Mode=OneWay}"
                              IsIndeterminate="{Binding ProgressIndeterminate, Mode=OneWay}" />
             </StackPanel>
-            <StackPanel Orientation="Vertical"
+            <StackPanel Grid.Row="4"
+                        Orientation="Vertical"
                         IsVisible="{Binding Progress2Visible, Mode=OneWay}"
                         Spacing="8">
                 <controls:SpectreTextBlock Text="{Binding Progress2Text, Mode=OneWay}" />
@@ -187,7 +194,7 @@
                              Maximum="{Binding Progress2MaxValue, Mode=OneWay}"
                              IsIndeterminate="{Binding Progress2Indeterminate, Mode=OneWay}" />
             </StackPanel>
-        </StackPanel>
+        </Grid>
         <StackPanel Grid.Row="2"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
