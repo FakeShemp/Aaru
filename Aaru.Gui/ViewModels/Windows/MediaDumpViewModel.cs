@@ -90,7 +90,6 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
     string _encodingEnabled;
     [ObservableProperty]
     bool _encodingVisible;
-    bool _existingMetadata;
     [ObservableProperty]
     bool _force;
     [ObservableProperty]
@@ -129,7 +128,6 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
     double _retries;
     [ObservableProperty]
     EncodingModel _selectedEncoding;
-    ImagePluginModel _selectedPlugin;
     [ObservableProperty]
     Metadata _sidecar;
     [ObservableProperty]
@@ -148,7 +146,6 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
     bool _track1PregapVisible;
     [ObservableProperty]
     bool _trim;
-    bool _useResume;
     [ObservableProperty]
     bool _useSidecar;
 
@@ -302,10 +299,10 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
 
     public ImagePluginModel SelectedPlugin
     {
-        get => _selectedPlugin;
+        get;
         set
         {
-            SetProperty(ref _selectedPlugin, value);
+            SetProperty(ref field, value);
 
             Destination = "";
 
@@ -416,10 +413,10 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
 
     public bool Resume
     {
-        get => _useResume;
+        get;
         set
         {
-            SetProperty(ref _useResume, value);
+            SetProperty(ref field, value);
 
             if(!value) return;
 
@@ -430,10 +427,10 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
 
     public bool ExistingMetadata
     {
-        get => _existingMetadata;
+        get;
         set
         {
-            SetProperty(ref _existingMetadata, value);
+            SetProperty(ref field, value);
 
             if(!value)
             {
