@@ -220,19 +220,19 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         }
 
         foreach(EncodingModel model in Encoding.GetEncodings()
-                                               .Select(info => new EncodingModel
+                                               .Select(static info => new EncodingModel
                                                 {
                                                     Name        = info.Name,
                                                     DisplayName = info.GetEncoding().EncodingName
                                                 })
                                                .Concat(Claunia.Encoding.Encoding.GetEncodings()
-                                                              .Select(info => new EncodingModel
+                                                              .Select(static info => new EncodingModel
                                                                {
                                                                    Name        = info.Name,
                                                                    DisplayName = info.DisplayName
                                                                }))
                                                .AsParallel()
-                                               .OrderBy(m => m.DisplayName))
+                                               .OrderBy(static m => m.DisplayName))
             Encodings.Add(model);
 
         Track1PregapVisible = mediaType switch
