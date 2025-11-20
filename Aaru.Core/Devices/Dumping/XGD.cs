@@ -521,7 +521,6 @@ partial class Dump
         _dumpStopwatch.Restart();
         double imageWriteDuration = 0;
 
-        double       cmdDuration      = 0;
         uint         saveBlocksToRead = blocksToRead;
         DumpHardware currentTry       = null;
         ExtentsULong extents          = null;
@@ -585,6 +584,7 @@ partial class Dump
         _speedStopwatch.Reset();
         ulong sectorSpeedStart = 0;
         InitProgress?.Invoke();
+        double elapsed = 0;
 
         for(var e = 0; e <= 16; e++)
         {
@@ -657,7 +657,7 @@ partial class Dump
                                        (long)i,
                                        (long)totalSize);
 
-                _speedStopwatch.Start();
+                _speedStopwatch.Restart();
 
                 sense = _dev.Read12(out readBuffer,
                                     out senseBuf,
@@ -672,16 +672,15 @@ partial class Dump
                                     blocksToRead,
                                     false,
                                     _dev.Timeout,
-                                    out cmdDuration);
+                                    out _);
 
                 _speedStopwatch.Stop();
-
-                totalDuration += cmdDuration;
+                elapsed       += _speedStopwatch.Elapsed.TotalMilliseconds;
+                totalDuration += _speedStopwatch.Elapsed.TotalMilliseconds;
 
                 if(!sense && !_dev.Error)
                 {
-                    mhddLog.Write(i, cmdDuration, blocksToRead);
-                    ibgLog.Write(i, currentSpeed * 1024);
+                    mhddLog.Write(i, _speedStopwatch.Elapsed.TotalMilliseconds, blocksToRead);
                     _writeStopwatch.Restart();
 
                     outputFormat.WriteSectors(readBuffer,
@@ -718,9 +717,11 @@ partial class Dump
 
                     AaruLogging.Debug(MODULE_NAME, Localization.Core.READ_error_0, Sense.PrettifySense(senseBuf));
 
-                    mhddLog.Write(i, cmdDuration < 500 ? 65535 : cmdDuration, _skip);
-
-                    ibgLog.Write(i, 0);
+                    mhddLog.Write(i,
+                                  _speedStopwatch.Elapsed.TotalMilliseconds < 500
+                                      ? 65535
+                                      : _speedStopwatch.Elapsed.TotalMilliseconds,
+                                  _skip);
 
                     AaruLogging.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, i);
                     i += _skip - blocksToRead;
@@ -739,12 +740,12 @@ partial class Dump
                 _resume.NextBlock =  currentSector;
                 sectorSpeedStart  += blocksToRead;
 
-                double elapsed = _speedStopwatch.Elapsed.TotalSeconds;
+                if(elapsed < 100) continue;
 
-                if(elapsed <= 0 || sectorSpeedStart * blockSize < 524288) continue;
-
-                currentSpeed     = sectorSpeedStart * blockSize / (1048576 * elapsed);
+                currentSpeed = sectorSpeedStart * blockSize / (1048576 * elapsed / 1000);
+                ibgLog.Write(i, currentSpeed                                     * 1024);
                 sectorSpeedStart = 0;
+                elapsed          = 0;
                 _speedStopwatch.Reset();
             }
 
@@ -764,7 +765,7 @@ partial class Dump
 
                 if(extentEnd - i < blocksToRead) blocksToRead = (uint)(extentEnd - i) + 1;
 
-                mhddLog.Write(i, cmdDuration, blocksToRead);
+                mhddLog.Write(i, _speedStopwatch.Elapsed.TotalMilliseconds, blocksToRead);
                 ibgLog.Write(i, currentSpeed * 1024);
 
                 // Write empty data
@@ -815,7 +816,7 @@ partial class Dump
                                    (long)(middle + currentSector),
                                    (long)totalSize);
 
-            mhddLog.Write(middle + currentSector, cmdDuration, blocksToRead);
+            mhddLog.Write(middle + currentSector, _speedStopwatch.Elapsed.TotalMilliseconds, blocksToRead);
             ibgLog.Write(middle  + currentSector, currentSpeed * 1024);
 
             // Write empty data
@@ -861,6 +862,7 @@ partial class Dump
         // Video Layer 1
         UpdateStatus?.Invoke(Localization.Core.Reading_Video_Layer_1);
         InitProgress?.Invoke();
+        elapsed = 0;
 
         for(ulong l1 = currentSector - blocks - middleZone + l0Video; l1 < l0Video + l1Video; l1 += blocksToRead)
         {
@@ -885,7 +887,7 @@ partial class Dump
                                    (long)currentSector,
                                    (long)totalSize);
 
-            _speedStopwatch.Start();
+            _speedStopwatch.Restart();
 
             sense = _dev.Read12(out readBuffer,
                                 out senseBuf,
@@ -900,16 +902,15 @@ partial class Dump
                                 blocksToRead,
                                 false,
                                 _dev.Timeout,
-                                out cmdDuration);
+                                out _);
 
             _speedStopwatch.Stop();
-
-            totalDuration += cmdDuration;
+            elapsed       += _speedStopwatch.Elapsed.TotalMilliseconds;
+            totalDuration += _speedStopwatch.Elapsed.TotalMilliseconds;
 
             if(!sense && !_dev.Error)
             {
-                mhddLog.Write(currentSector, cmdDuration, blocksToRead);
-                ibgLog.Write(currentSector, currentSpeed * 1024);
+                mhddLog.Write(currentSector, _speedStopwatch.Elapsed.TotalMilliseconds, blocksToRead);
                 _writeStopwatch.Restart();
 
                 outputFormat.WriteSectors(readBuffer,
@@ -944,9 +945,13 @@ partial class Dump
                 //errored += blocksToRead;
                 //resume.BadBlocks.Add(l1);
                 AaruLogging.Debug(MODULE_NAME, Localization.Core.READ_error_0, Sense.PrettifySense(senseBuf));
-                mhddLog.Write(l1, cmdDuration < 500 ? 65535 : cmdDuration, _skip);
 
-                ibgLog.Write(l1, 0);
+                mhddLog.Write(l1,
+                              _speedStopwatch.Elapsed.TotalMilliseconds < 500
+                                  ? 65535
+                                  : _speedStopwatch.Elapsed.TotalMilliseconds,
+                              _skip);
+
                 AaruLogging.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, l1);
                 l1 += _skip - blocksToRead;
 
@@ -962,12 +967,12 @@ partial class Dump
             _resume.NextBlock =  currentSector;
             sectorSpeedStart  += blocksToRead;
 
-            double elapsed = _speedStopwatch.Elapsed.TotalSeconds;
+            if(elapsed < 100) continue;
 
-            if(elapsed <= 0 || sectorSpeedStart * blockSize < 524288) continue;
-
-            currentSpeed     = sectorSpeedStart * blockSize / (1048576 * elapsed);
+            currentSpeed = sectorSpeedStart * blockSize / (1048576 * elapsed / 1000);
+            ibgLog.Write(currentSector, currentSpeed                         * 1024);
             sectorSpeedStart = 0;
+            elapsed          = 0;
             _speedStopwatch.Reset();
         }
 
@@ -1053,7 +1058,7 @@ partial class Dump
                                     1,
                                     false,
                                     _dev.Timeout,
-                                    out cmdDuration);
+                                    out double cmdDuration);
 
                 totalDuration += cmdDuration;
 
@@ -1086,9 +1091,8 @@ partial class Dump
             List<ulong> tmpList = [];
 
             foreach(ulong ur in _resume.BadBlocks)
-            {
-                for(ulong i = ur; i < ur + blocksToRead; i++) tmpList.Add(i);
-            }
+                for(ulong i = ur; i < ur + blocksToRead; i++)
+                    tmpList.Add(i);
 
             tmpList.Sort();
 
@@ -1256,7 +1260,7 @@ partial class Dump
                                     1,
                                     false,
                                     _dev.Timeout,
-                                    out cmdDuration);
+                                    out double cmdDuration);
 
                 totalDuration += cmdDuration;
 

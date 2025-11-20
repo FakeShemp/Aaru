@@ -195,7 +195,6 @@ public partial class Dump
 
                 MhddLog mhddLog;
                 IbgLog  ibgLog;
-                double  duration;
 
                 var ret = true;
 
@@ -301,6 +300,7 @@ public partial class Dump
                     _speedStopwatch.Reset();
                     ulong sectorSpeedStart = 0;
                     InitProgress?.Invoke();
+                    double elapsed = 0;
 
                     for(ulong i = _resume.NextBlock; i < blocks; i += blocksToRead)
                     {
@@ -327,15 +327,16 @@ public partial class Dump
                                                (long)i,
                                                (long)blocks);
 
-                        _speedStopwatch.Start();
-                        bool error = ataReader.ReadBlocks(out cmdBuf, i, blocksToRead, out duration, out _, out _);
+                        _speedStopwatch.Restart();
+                        bool error = ataReader.ReadBlocks(out cmdBuf, i, blocksToRead, out _, out _, out _);
                         _speedStopwatch.Stop();
+                        elapsed += _speedStopwatch.Elapsed.TotalMilliseconds;
 
                         _writeStopwatch.Restart();
 
                         if(!error)
                         {
-                            mhddLog.Write(i, duration, blocksToRead);
+                            mhddLog.Write(i, _speedStopwatch.Elapsed.TotalMilliseconds, blocksToRead);
                             ibgLog.Write(i, currentSpeed * 1024);
 
                             outputFormat.WriteSectors(cmdBuf,
@@ -355,7 +356,11 @@ public partial class Dump
 
                             for(ulong b = i; b < i + _skip; b++) _resume.BadBlocks.Add(b);
 
-                            mhddLog.Write(i, duration < 500 ? 65535 : duration, _skip);
+                            mhddLog.Write(i,
+                                          _speedStopwatch.Elapsed.TotalMilliseconds < 500
+                                              ? 65535
+                                              : _speedStopwatch.Elapsed.TotalMilliseconds,
+                                          _skip);
 
                             ibgLog.Write(i, 0);
 
@@ -381,12 +386,12 @@ public partial class Dump
                         sectorSpeedStart  += blocksToRead;
                         _resume.NextBlock =  i + blocksToRead;
 
-                        double elapsed = _speedStopwatch.Elapsed.TotalSeconds;
+                        if(elapsed < 100) continue;
 
-                        if(elapsed <= 0 || sectorSpeedStart * blockSize < 524288) continue;
-
-                        currentSpeed     = sectorSpeedStart * blockSize / (1048576 * elapsed);
+                        currentSpeed = sectorSpeedStart * blockSize / (1048576 * elapsed / 1000);
+                        ibgLog.Write(i, currentSpeed                                     * 1024);
                         sectorSpeedStart = 0;
+                        elapsed          = 0;
                         _speedStopwatch.Reset();
                     }
 
@@ -397,6 +402,7 @@ public partial class Dump
                     _dumpStopwatch.Stop();
                     EndProgress?.Invoke();
                     mhddLog.Close();
+                    currentSpeed = sectorSpeedStart * blockSize / (1048576 * elapsed / 1000);
 
                     ibgLog.Close(_dev,
                                  blocks,
@@ -442,8 +448,11 @@ public partial class Dump
 
                             PulseProgress?.Invoke(string.Format(Localization.Core.Trimming_sector_0, badSector));
 
-                            bool error =
-                                ataReader.ReadBlock(out cmdBuf, badSector, out duration, out recoveredError, out _);
+                            bool error = ataReader.ReadBlock(out cmdBuf,
+                                                             badSector,
+                                                             out double duration,
+                                                             out recoveredError,
+                                                             out _);
 
                             totalDuration += duration;
 
@@ -510,8 +519,11 @@ public partial class Dump
                                                                           pass));
                             }
 
-                            bool error =
-                                ataReader.ReadBlock(out cmdBuf, badSector, out duration, out recoveredError, out _);
+                            bool error = ataReader.ReadBlock(out cmdBuf,
+                                                             badSector,
+                                                             out double duration,
+                                                             out recoveredError,
+                                                             out _);
 
                             totalDuration += duration;
 
@@ -585,6 +597,7 @@ public partial class Dump
                     _speedStopwatch.Reset();
                     ulong sectorSpeedStart = 0;
                     InitProgress?.Invoke();
+                    double elapsed = 0;
 
                     for(ushort cy = 0; cy < cylinders; cy++)
                     {
@@ -613,21 +626,19 @@ public partial class Dump
                                                                             .Per(_oneSecond)
                                                                             .Humanize()));
 
-                                _speedStopwatch.Start();
+                                _speedStopwatch.Restart();
 
-                                bool error =
-                                    ataReader.ReadChs(out cmdBuf, cy, hd, sc, out duration, out recoveredError);
+                                bool error = ataReader.ReadChs(out cmdBuf, cy, hd, sc, out _, out recoveredError);
 
                                 _speedStopwatch.Stop();
 
-                                totalDuration += duration;
+                                totalDuration += _speedStopwatch.Elapsed.TotalMilliseconds;
 
                                 _writeStopwatch.Restart();
 
                                 if(!error || recoveredError)
                                 {
-                                    mhddLog.Write(currentBlock, duration);
-                                    ibgLog.Write(currentBlock, currentSpeed * 1024);
+                                    mhddLog.Write(currentBlock, _speedStopwatch.Elapsed.TotalMilliseconds);
 
                                     outputFormat.WriteSector(cmdBuf,
                                                              (ulong)((cy * heads + hd) * sectors + (sc - 1)),
@@ -641,9 +652,11 @@ public partial class Dump
                                 else
                                 {
                                     _resume.BadBlocks.Add(currentBlock);
-                                    mhddLog.Write(currentBlock, duration < 500 ? 65535 : duration);
 
-                                    ibgLog.Write(currentBlock, 0);
+                                    mhddLog.Write(currentBlock,
+                                                  _speedStopwatch.Elapsed.TotalMilliseconds < 500
+                                                      ? 65535
+                                                      : _speedStopwatch.Elapsed.TotalMilliseconds);
 
                                     outputFormat.WriteSector(new byte[blockSize],
                                                              (ulong)((cy * heads + hd) * sectors + (sc - 1)),
@@ -658,12 +671,12 @@ public partial class Dump
                                 sectorSpeedStart++;
                                 currentBlock++;
 
-                                double elapsed = _speedStopwatch.Elapsed.TotalSeconds;
+                                if(elapsed < 100) continue;
 
-                                if(elapsed <= 0 || sectorSpeedStart * blockSize < 524288) continue;
-
-                                currentSpeed     = sectorSpeedStart * blockSize / (1048576 * elapsed);
+                                currentSpeed = sectorSpeedStart * blockSize / (1048576 * elapsed / 1000);
+                                ibgLog.Write(currentBlock, currentSpeed                          * 1024);
                                 sectorSpeedStart = 0;
+                                elapsed          = 0;
                                 _speedStopwatch.Reset();
                             }
                         }

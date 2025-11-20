@@ -196,6 +196,7 @@ public partial class Dump
         _speedStopwatch.Restart();
         ulong sectorSpeedStart = 0;
         InitProgress?.Invoke();
+        double elapsed = 0;
 
         for(ulong i = _resume.NextBlock; i < blocks; i += blocksToRead)
         {
@@ -220,7 +221,7 @@ public partial class Dump
                                    (long)i,
                                    blocks);
 
-            _speedStopwatch.Start();
+            _speedStopwatch.Restart();
 
             sense = _dev.Read12(out readBuffer,
                                 out senseBuf,
@@ -235,16 +236,15 @@ public partial class Dump
                                 blocksToRead,
                                 false,
                                 _dev.Timeout,
-                                out double cmdDuration);
+                                out _);
 
             _speedStopwatch.Stop();
-
-            totalDuration += cmdDuration;
+            elapsed       += _speedStopwatch.Elapsed.TotalMilliseconds;
+            totalDuration += _speedStopwatch.Elapsed.TotalMilliseconds;
 
             if(!sense && !_dev.Error)
             {
-                mhddLog.Write(i, cmdDuration, blocksToRead);
-                ibgLog.Write(i, currentSpeed * 1024);
+                mhddLog.Write(i, _speedStopwatch.Elapsed.TotalMilliseconds, blocksToRead);
                 _writeStopwatch.Restart();
 
                 outputFormat.WriteSectors(readBuffer,
@@ -279,9 +279,12 @@ public partial class Dump
 
                 for(ulong b = i; b < i + _skip; b++) _resume.BadBlocks.Add(b);
 
-                mhddLog.Write(i, cmdDuration < 500 ? 65535 : cmdDuration, _skip);
+                mhddLog.Write(i,
+                              _speedStopwatch.Elapsed.TotalMilliseconds < 500
+                                  ? 65535
+                                  : _speedStopwatch.Elapsed.TotalMilliseconds,
+                              _skip);
 
-                ibgLog.Write(i, 0);
                 AaruLogging.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, i);
                 i       += _skip - blocksToRead;
                 newTrim =  true;
@@ -291,12 +294,12 @@ public partial class Dump
             sectorSpeedStart  += blocksToRead;
             _resume.NextBlock =  i + blocksToRead;
 
-            double elapsed = _speedStopwatch.Elapsed.TotalSeconds;
+            if(elapsed < 100) continue;
 
-            if(elapsed <= 0 || sectorSpeedStart * blockSize < 524288) continue;
-
-            currentSpeed     = sectorSpeedStart * blockSize / (1048576 * elapsed);
+            currentSpeed = sectorSpeedStart * blockSize / (1048576 * elapsed / 1000);
+            ibgLog.Write(i, currentSpeed                                     * 1024);
             sectorSpeedStart = 0;
+            elapsed          = 0;
             _speedStopwatch.Reset();
         }
 
@@ -306,6 +309,7 @@ public partial class Dump
         _dumpStopwatch.Stop();
         EndProgress?.Invoke();
         mhddLog.Close();
+        currentSpeed = sectorSpeedStart * blockSize / (1048576 * elapsed / 1000);
 
         ibgLog.Close(_dev,
                      blocks,

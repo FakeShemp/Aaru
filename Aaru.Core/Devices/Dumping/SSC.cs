@@ -285,8 +285,9 @@ partial class Dump
         Modes.DecodedMode? decMode = null;
 
         if(!sense && !_dev.Error)
-            if(Modes.DecodeMode10(cmdBuf, _dev.ScsiType).HasValue)
-                decMode = Modes.DecodeMode10(cmdBuf, _dev.ScsiType);
+        {
+            if(Modes.DecodeMode10(cmdBuf, _dev.ScsiType).HasValue) decMode = Modes.DecodeMode10(cmdBuf, _dev.ScsiType);
+        }
 
         UpdateStatus?.Invoke(Localization.Core.Requesting_MODE_SENSE_6);
 
@@ -314,8 +315,9 @@ partial class Dump
         if(sense || _dev.Error) sense = _dev.ModeSense(out cmdBuf, out senseBuf, 5, out duration);
 
         if(!sense && !_dev.Error)
-            if(Modes.DecodeMode6(cmdBuf, _dev.ScsiType).HasValue)
-                decMode = Modes.DecodeMode6(cmdBuf, _dev.ScsiType);
+        {
+            if(Modes.DecodeMode6(cmdBuf, _dev.ScsiType).HasValue) decMode = Modes.DecodeMode6(cmdBuf, _dev.ScsiType);
+        }
 
         // TODO: Check partitions page
         if(decMode.HasValue)
@@ -871,7 +873,7 @@ partial class Dump
 
         ulong  currentSpeedSize   = 0;
         double imageWriteDuration = 0;
-
+        double elapsed            = 0;
         InitProgress?.Invoke();
 
         _speedStopwatch.Reset();
@@ -932,19 +934,13 @@ partial class Dump
                                                 currentBlock,
                                                 ByteSize.FromBytes(currentSpeed).Per(_oneSecond).Humanize()));
 
-            _speedStopwatch.Start();
+            _speedStopwatch.Restart();
 
-            sense = _dev.Read6(out cmdBuf,
-                               out senseBuf,
-                               false,
-                               fixedLen,
-                               transferLen,
-                               blockSize,
-                               _dev.Timeout,
-                               out duration);
+            sense = _dev.Read6(out cmdBuf, out senseBuf, false, fixedLen, transferLen, blockSize, _dev.Timeout, out _);
 
             _speedStopwatch.Stop();
-            totalDuration += duration;
+            totalDuration += _speedStopwatch.Elapsed.TotalMilliseconds;
+            elapsed       += _speedStopwatch.Elapsed.TotalMilliseconds;
 
             if(sense && !senseBuf.IsEmpty)
             {
@@ -1093,14 +1089,16 @@ partial class Dump
                 outputTape.WriteSector(new byte[blockSize], currentBlock, false, SectorStatus.NotDumped);
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
 
-                mhddLog.Write(currentBlock, duration < 500 ? 65535 : duration);
-                ibgLog.Write(currentBlock, 0);
+                mhddLog.Write(currentBlock,
+                              _speedStopwatch.Elapsed.TotalMilliseconds < 500
+                                  ? 65535
+                                  : _speedStopwatch.Elapsed.TotalMilliseconds);
+
                 _resume.BadBlocks.Add(currentBlock);
             }
             else
             {
-                mhddLog.Write(currentBlock, duration);
-                ibgLog.Write(currentBlock, currentSpeed * 1024);
+                mhddLog.Write(currentBlock, _speedStopwatch.Elapsed.TotalMilliseconds);
                 _writeStopwatch.Restart();
                 outputTape.WriteSector(cmdBuf, currentBlock, false, SectorStatus.Dumped);
                 imageWriteDuration += _writeStopwatch.Elapsed.TotalSeconds;
@@ -1112,12 +1110,12 @@ partial class Dump
             _resume.NextBlock++;
             currentSpeedSize += blockSize;
 
-            double elapsed = _speedStopwatch.Elapsed.TotalSeconds;
+            if(elapsed < 100) continue;
 
-            if(elapsed <= 0 || currentSpeedSize < 524288) continue;
-
-            currentSpeed     = currentSpeedSize / (1048576 * elapsed);
+            currentSpeed = currentSpeedSize / (1048576 * elapsed / 1000);
+            ibgLog.Write(currentBlock, currentSpeed              * 1024);
             currentSpeedSize = 0;
+            elapsed          = 0;
             _speedStopwatch.Reset();
         }
 

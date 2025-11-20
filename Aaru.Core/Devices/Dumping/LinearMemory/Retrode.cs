@@ -78,7 +78,7 @@ public partial class Dump
             return;
         }
 
-        byte[] tmp = new byte[8];
+        var tmp = new byte[8];
 
         Array.Copy(buffer, 0x36, tmp, 0, 8);
 
@@ -90,11 +90,11 @@ public partial class Dump
             return;
         }
 
-        ushort fatStart          = (ushort)((buffer[0x0F] << 8)                      + buffer[0x0E]);
-        ushort sectorsPerFat     = (ushort)((buffer[0x17] << 8)                      + buffer[0x16]);
-        ushort rootStart         = (ushort)(sectorsPerFat                        * 2 + fatStart);
-        ushort rootSize          = (ushort)(((buffer[0x12] << 8) + buffer[0x11]) * 32 / 512);
-        byte   sectorsPerCluster = buffer[0x0D];
+        var  fatStart          = (ushort)((buffer[0x0F] << 8)                      + buffer[0x0E]);
+        var  sectorsPerFat     = (ushort)((buffer[0x17] << 8)                      + buffer[0x16]);
+        var  rootStart         = (ushort)(sectorsPerFat                        * 2 + fatStart);
+        var  rootSize          = (ushort)(((buffer[0x12] << 8) + buffer[0x11]) * 32 / 512);
+        byte sectorsPerCluster = buffer[0x0D];
 
         UpdateStatus?.Invoke(string.Format(Localization.Core.Reading_root_directory_in_sector_0, rootStart));
 
@@ -107,14 +107,14 @@ public partial class Dump
             return;
         }
 
-        int  romPos;
-        bool sfcFound     = false;
-        bool genesisFound = false;
-        bool smsFound     = false;
-        bool n64Found     = false;
-        bool gbFound      = false;
-        bool gbcFound     = false;
-        bool gbaFound     = false;
+        int romPos;
+        var sfcFound     = false;
+        var genesisFound = false;
+        var smsFound     = false;
+        var n64Found     = false;
+        var gbFound      = false;
+        var gbcFound     = false;
+        var gbaFound     = false;
         tmp = new byte[3];
 
         for(romPos = 0; romPos < buffer.Length; romPos += 0x20)
@@ -177,8 +177,8 @@ public partial class Dump
             return;
         }
 
-        ushort cluster = BitConverter.ToUInt16(buffer, romPos + 0x1A);
-        uint   romSize = BitConverter.ToUInt32(buffer, romPos + 0x1C);
+        var cluster = BitConverter.ToUInt16(buffer, romPos + 0x1A);
+        var romSize = BitConverter.ToUInt32(buffer, romPos + 0x1C);
 
         MediaType mediaType = gbaFound
                                   ? MediaType.GameBoyAdvanceGamePak
@@ -228,7 +228,7 @@ public partial class Dump
             return;
         }
 
-        uint startSector  = (uint)(rootStart + rootSize + (cluster - 2) * sectorsPerCluster);
+        var  startSector  = (uint)(rootStart + rootSize + (cluster - 2) * sectorsPerCluster);
         uint romSectors   = romSize / 512;
         uint romRemaining = romSize % 512;
 
@@ -281,7 +281,7 @@ public partial class Dump
                                    (long)i * 512,
                                    romSize);
 
-            _speedStopwatch.Start();
+            _speedStopwatch.Restart();
 
             sense = _dev.Read10(out readBuffer,
                                 out senseBuf,
@@ -295,10 +295,10 @@ public partial class Dump
                                 0,
                                 (ushort)blocksToRead,
                                 _dev.Timeout,
-                                out double cmdDuration);
+                                out _);
 
             _speedStopwatch.Stop();
-            totalDuration += cmdDuration;
+            totalDuration += _speedStopwatch.Elapsed.TotalMilliseconds;
 
             _writeStopwatch.Restart();
 

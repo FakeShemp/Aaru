@@ -103,11 +103,10 @@ partial class Dump
     {
         ulong              sectorSpeedStart = 0; // Used to calculate correct speed
         uint               blocksToRead;         // How many sectors to read at once
-        var                sense       = true;   // Sense indicator
-        byte[]             cmdBuf      = null;   // Data buffer
-        ReadOnlySpan<byte> senseBuf    = null;   // Sense buffer
-        double             cmdDuration = 0;      // Command execution time
-        const uint         sectorSize  = 2352;   // Full sector size
+        var                sense      = true;    // Sense indicator
+        byte[]             cmdBuf     = null;    // Data buffer
+        ReadOnlySpan<byte> senseBuf   = null;    // Sense buffer
+        const uint         sectorSize = 2352;    // Full sector size
         newTrim = false;
         PlextorSubchannel supportedPlextorSubchannel;
         var               outputFormat = _outputPlugin as IWritableImage;
@@ -122,13 +121,16 @@ partial class Dump
 
         InitProgress?.Invoke();
 
-        int currentReadSpeed      = _speed;
-        var crossingLeadOut       = false;
-        var failedCrossingLeadOut = false;
-        var skippingLead          = false;
+        int    currentReadSpeed      = _speed;
+        var    crossingLeadOut       = false;
+        var    failedCrossingLeadOut = false;
+        var    skippingLead          = false;
+        double elapsed               = 0;
 
         for(ulong i = _resume.NextBlock; (long)i <= lastSector; i += blocksToRead)
         {
+            _speedStopwatch.Reset();
+
             if(_aborted)
             {
                 currentTry.Extents = ExtentsConverter.ToMetadata(extents);
@@ -273,10 +275,11 @@ partial class Dump
                                                   blockSize,
                                                   blocksToRead,
                                                   supportedPlextorSubchannel,
-                                                  out cmdDuration);
+                                                  out _);
 
-                totalDuration += cmdDuration;
                 _speedStopwatch.Stop();
+
+                totalDuration += _speedStopwatch.Elapsed.TotalMilliseconds;
             }
             else if(readcd)
             {
@@ -299,7 +302,7 @@ partial class Dump
                                         MmcErrorField.None,
                                         supportedSubchannel,
                                         _dev.Timeout,
-                                        out cmdDuration);
+                                        out _);
 
                     _speedStopwatch.Stop();
 
@@ -332,11 +335,9 @@ partial class Dump
                                                     MmcErrorField.None,
                                                     supportedSubchannel,
                                                     _dev.Timeout,
-                                                    out double cmdDuration2);
+                                                    out _);
 
                                 _speedStopwatch.Stop();
-
-                                cmdDuration += cmdDuration2;
 
                                 if(!sense             &&
                                    cmdBuf[0]  == 0x00 &&
@@ -391,7 +392,7 @@ partial class Dump
                                                 MmcErrorField.None,
                                                 supportedSubchannel,
                                                 _dev.Timeout,
-                                                out cmdDuration);
+                                                out _);
 
                             _speedStopwatch.Stop();
 
@@ -418,7 +419,7 @@ partial class Dump
                                                         MmcErrorField.None,
                                                         supportedSubchannel,
                                                         _dev.Timeout,
-                                                        out cmdDuration);
+                                                        out _);
 
                                     _speedStopwatch.Stop();
 
@@ -451,7 +452,7 @@ partial class Dump
                                         MmcErrorField.None,
                                         supportedSubchannel,
                                         _dev.Timeout,
-                                        out cmdDuration);
+                                        out _);
 
                     _speedStopwatch.Stop();
 
@@ -479,16 +480,14 @@ partial class Dump
                                                 MmcErrorField.None,
                                                 supportedSubchannel,
                                                 _dev.Timeout,
-                                                out double cmdDuration2);
+                                                out _);
 
                             _speedStopwatch.Stop();
-
-                            cmdDuration += cmdDuration2;
                         }
                     }
                 }
 
-                totalDuration += cmdDuration;
+                totalDuration += _speedStopwatch.Elapsed.TotalMilliseconds;
             }
             else if(read16)
             {
@@ -506,7 +505,7 @@ partial class Dump
                                     blocksToRead,
                                     false,
                                     _dev.Timeout,
-                                    out cmdDuration);
+                                    out _);
 
                 _speedStopwatch.Stop();
             }
@@ -527,7 +526,7 @@ partial class Dump
                                     blocksToRead,
                                     false,
                                     _dev.Timeout,
-                                    out cmdDuration);
+                                    out _);
 
                 _speedStopwatch.Stop();
             }
@@ -547,7 +546,7 @@ partial class Dump
                                     0,
                                     (ushort)blocksToRead,
                                     _dev.Timeout,
-                                    out cmdDuration);
+                                    out _);
 
                 _speedStopwatch.Stop();
             }
@@ -561,12 +560,10 @@ partial class Dump
                                    blockSize,
                                    (byte)blocksToRead,
                                    _dev.Timeout,
-                                   out cmdDuration);
+                                   out _);
 
                 _speedStopwatch.Stop();
             }
-
-            double elapsed;
 
             // Overcome the track mode change drive error
             if(inData && !nextData && sense)
@@ -596,11 +593,11 @@ partial class Dump
                                                           blockSize,
                                                           (uint)sectorsForOffset + 1,
                                                           supportedPlextorSubchannel,
-                                                          out cmdDuration);
+                                                          out _);
 
                         _speedStopwatch.Stop();
 
-                        totalDuration += cmdDuration;
+                        totalDuration += _speedStopwatch.Elapsed.TotalMilliseconds;
 
                         if(!sense)
                         {
@@ -677,11 +674,11 @@ partial class Dump
                                             MmcErrorField.None,
                                             supportedSubchannel,
                                             _dev.Timeout,
-                                            out cmdDuration);
+                                            out _);
 
                         _speedStopwatch.Stop();
 
-                        totalDuration += cmdDuration;
+                        totalDuration += _speedStopwatch.Elapsed.TotalMilliseconds;
                     }
                     else if(read16)
                     {
@@ -699,9 +696,11 @@ partial class Dump
                                             1,
                                             false,
                                             _dev.Timeout,
-                                            out cmdDuration);
+                                            out _);
 
                         _speedStopwatch.Stop();
+
+                        totalDuration += _speedStopwatch.Elapsed.TotalMilliseconds;
                     }
                     else if(read12)
                     {
@@ -720,9 +719,11 @@ partial class Dump
                                             1,
                                             false,
                                             _dev.Timeout,
-                                            out cmdDuration);
+                                            out _);
 
                         _speedStopwatch.Stop();
+
+                        totalDuration += _speedStopwatch.Elapsed.TotalMilliseconds;
                     }
                     else if(read10)
                     {
@@ -740,29 +741,26 @@ partial class Dump
                                             0,
                                             1,
                                             _dev.Timeout,
-                                            out cmdDuration);
+                                            out _);
 
                         _speedStopwatch.Stop();
+
+                        totalDuration += _speedStopwatch.Elapsed.TotalMilliseconds;
                     }
                     else if(read6)
                     {
                         _speedStopwatch.Start();
 
-                        sense = _dev.Read6(out cmdBuf,
-                                           out senseBuf,
-                                           (uint)(i + r),
-                                           blockSize,
-                                           1,
-                                           _dev.Timeout,
-                                           out cmdDuration);
+                        sense = _dev.Read6(out cmdBuf, out senseBuf, (uint)(i + r), blockSize, 1, _dev.Timeout, out _);
 
                         _speedStopwatch.Stop();
+
+                        totalDuration += _speedStopwatch.Elapsed.TotalMilliseconds;
                     }
 
                     if(!sense && !_dev.Error)
                     {
-                        mhddLog.Write(i + r, cmdDuration);
-                        ibgLog.Write(i  + r, currentSpeed * 1024);
+                        mhddLog.Write(i + r, _speedStopwatch.Elapsed.TotalMilliseconds);
                         extents.Add(i   + r, 1, true);
                         _writeStopwatch.Restart();
 
@@ -901,11 +899,13 @@ partial class Dump
                         else
                         {
                             if(supportsLongSectors)
+                            {
                                 outputFormat.WriteSectorsLong(new byte[blockSize],
                                                               i + r,
                                                               false,
                                                               1,
                                                               [SectorStatus.Errored]);
+                            }
                             else
                             {
                                 if(cmdBuf.Length % sectorSize == 0)
@@ -929,9 +929,11 @@ partial class Dump
 
                         AaruLogging.Debug(MODULE_NAME, Localization.Core.READ_error_0, Sense.PrettifySense(senseBuf));
 
-                        mhddLog.Write(i + r, cmdDuration < 500 ? 65535 : cmdDuration);
+                        mhddLog.Write(i + r,
+                                      _speedStopwatch.Elapsed.TotalMilliseconds < 500
+                                          ? 65535
+                                          : _speedStopwatch.Elapsed.TotalMilliseconds);
 
-                        ibgLog.Write(i                                                                       + r, 0);
                         AaruLogging.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, 1, i + r);
                         newTrim = true;
                     }
@@ -942,13 +944,16 @@ partial class Dump
 
                     _resume.NextBlock = i + r;
 
-                    elapsed = _speedStopwatch.Elapsed.TotalSeconds;
-
-                    if(elapsed <= 0 || sectorSpeedStart * blockSize < 524288) continue;
-
-                    currentSpeed     = sectorSpeedStart * blockSize / (1048576 * elapsed);
-                    sectorSpeedStart = 0;
                     _speedStopwatch.Reset();
+
+                    elapsed += _speedStopwatch.Elapsed.TotalMilliseconds;
+
+                    if(elapsed < 100) continue;
+
+                    currentSpeed = sectorSpeedStart * blockSize / (1048576 * elapsed / 1000);
+                    ibgLog.Write(i + r, currentSpeed                                 * 1024);
+                    sectorSpeedStart = 0;
+                    elapsed          = 0;
                 }
 
                 continue;
@@ -976,7 +981,7 @@ partial class Dump
                                   failedCrossingLeadOut);
                 }
 
-                mhddLog.Write(i, cmdDuration, blocksToRead);
+                mhddLog.Write(i, _speedStopwatch.Elapsed.TotalMilliseconds, blocksToRead);
                 ibgLog.Write(i, currentSpeed * 1024);
                 extents.Add(i, blocksToRead, true);
                 _writeStopwatch.Restart();
@@ -1172,9 +1177,13 @@ partial class Dump
                 for(ulong b = i; b < i + _skip; b++) _resume.BadBlocks.Add(b);
 
                 AaruLogging.Debug(MODULE_NAME, Localization.Core.READ_error_0, Sense.PrettifySense(senseBuf));
-                mhddLog.Write(i, cmdDuration < 500 ? 65535 : cmdDuration, _skip);
 
-                ibgLog.Write(i, 0);
+                mhddLog.Write(i,
+                              _speedStopwatch.Elapsed.TotalMilliseconds < 500
+                                  ? 65535
+                                  : _speedStopwatch.Elapsed.TotalMilliseconds,
+                              _skip);
+
                 AaruLogging.WriteLine(Localization.Core.Skipping_0_blocks_from_errored_block_1, _skip, i);
                 i       += _skip - blocksToRead;
                 newTrim =  true;
@@ -1186,13 +1195,14 @@ partial class Dump
 
             _resume.NextBlock = i + blocksToRead;
 
-            elapsed = _speedStopwatch.Elapsed.TotalSeconds;
+            elapsed += _speedStopwatch.Elapsed.TotalMilliseconds;
 
-            if(elapsed <= 0 || sectorSpeedStart * blockSize < 524288) continue;
+            if(elapsed < 100) continue;
 
-            currentSpeed     = sectorSpeedStart * blockSize / (1048576 * elapsed);
+            currentSpeed = sectorSpeedStart * blockSize / (1048576 * elapsed / 1000);
+            ibgLog.Write(i, currentSpeed                                     * 1024);
             sectorSpeedStart = 0;
-            _speedStopwatch.Reset();
+            elapsed          = 0;
         }
 
         _speedStopwatch.Stop();
