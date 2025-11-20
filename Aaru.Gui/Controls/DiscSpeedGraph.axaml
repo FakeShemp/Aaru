@@ -5,7 +5,9 @@
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
-             x:Class="Aaru.Gui.Controls.DiscSpeedGraph">
+             x:Class="Aaru.Gui.Controls.DiscSpeedGraph"
+             Focusable="True"
+             IsTabStop="True">
     <Canvas Name="GraphCanvas"
             Background="Black" />
 </UserControl>

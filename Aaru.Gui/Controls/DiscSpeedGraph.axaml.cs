@@ -44,6 +44,7 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 
@@ -55,10 +56,13 @@ namespace Aaru.Gui.Controls;
 /// </summary>
 public partial class DiscSpeedGraph : UserControl
 {
-    const int MARGIN_LEFT   = 60; // Space for Y-axis labels (KB/s)
-    const int MARGIN_RIGHT  = 60; // Space for Y-axis labels (speed rating)
-    const int MARGIN_TOP    = 20; // Top margin
-    const int MARGIN_BOTTOM = 30; // Space for X-axis labels
+    const int    MARGIN_LEFT   = 60;   // Space for Y-axis labels (KB/s)
+    const int    MARGIN_RIGHT  = 60;   // Space for Y-axis labels (speed rating)
+    const int    MARGIN_TOP    = 20;   // Top margin
+    const int    MARGIN_BOTTOM = 30;   // Space for X-axis labels
+    const double MIN_ZOOM      = 0.1;  // 10% minimum zoom (zoomed out)
+    const double MAX_ZOOM      = 50.0; // 5000% maximum zoom (zoomed in) increased from 10.0
+    const double ZOOM_STEP     = 0.2;  // 20% zoom step per click/scroll
 
     public static readonly StyledProperty<ObservableCollection<(ulong sector, double speedKbps)>> SpeedDataProperty =
         AvaloniaProperty
@@ -82,6 +86,8 @@ public partial class DiscSpeedGraph : UserControl
     int _consecutiveSpikeCount; // Counter for consecutive spike attenuation
     ObservableCollection<(ulong sector, double speedKbps)> _speedData;
 
+    double _yZoomLevel = 1.0; // 1.0 = 100% (no zoom), higher = zoomed in
+
     public DiscSpeedGraph()
     {
         InitializeComponent();
@@ -95,6 +101,12 @@ public partial class DiscSpeedGraph : UserControl
         };
 
         _canvas?.Children.Add(_speedLine);
+
+        // Wire up scroll wheel for zoom
+        if(_canvas != null) _canvas.PointerWheelChanged += OnPointerWheelChanged;
+
+        // Keyboard shortcuts: + to zoom in, - to zoom out
+        KeyDown += OnKeyDown;
     }
 
     public ObservableCollection<(ulong sector, double speedKbps)> SpeedData
@@ -164,6 +176,57 @@ public partial class DiscSpeedGraph : UserControl
             _speedWindow.Clear();
             _consecutiveSpikeCount = 0;
             RedrawAll();
+        }
+    }
+
+    void ZoomIn()
+    {
+        double newZoom = Math.Min(_yZoomLevel + ZOOM_STEP, MAX_ZOOM);
+
+        if(Math.Abs(newZoom - _yZoomLevel) > 0.001)
+        {
+            _yZoomLevel = newZoom;
+            RedrawAll();
+        }
+    }
+
+    void ZoomOut()
+    {
+        double newZoom = Math.Max(_yZoomLevel - ZOOM_STEP, MIN_ZOOM);
+
+        if(Math.Abs(newZoom - _yZoomLevel) > 0.001)
+        {
+            _yZoomLevel = newZoom;
+            RedrawAll();
+        }
+    }
+
+    void OnPointerWheelChanged(object sender, PointerWheelEventArgs e)
+    {
+        // Scroll up = zoom in, scroll down = zoom out
+        if(e.Delta.Y > 0)
+            ZoomIn();
+        else if(e.Delta.Y < 0) ZoomOut();
+
+        e.Handled = true;
+    }
+
+    void OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        switch(e.Key)
+        {
+            case Key.OemPlus: // Usually needs Shift
+            case Key.Add:     // Numpad +
+                ZoomIn();
+                e.Handled = true;
+
+                break;
+            case Key.OemMinus:
+            case Key.Subtract: // Numpad -
+                ZoomOut();
+                e.Handled = true;
+
+                break;
         }
     }
 
@@ -333,7 +396,7 @@ public partial class DiscSpeedGraph : UserControl
         for(var i = 0; i <= numHorizontalLines; i++)
         {
             double y     = MARGIN_TOP + graphHeight * (1 - (double)i / numHorizontalLines);
-            double speed = MaxSpeed                 * i / numHorizontalLines;
+            double speed = MaxSpeed / _yZoomLevel   * i / numHorizontalLines;
 
             // Left side: KB/s
             var kbpsText = new TextBlock
@@ -380,10 +443,12 @@ public partial class DiscSpeedGraph : UserControl
 
         _speedLine.Points.Clear();
 
+        double effectiveMaxSpeed = MaxSpeed / _yZoomLevel;
+
         foreach((ulong sector, double speedKbps) in _processedData)
         {
             double x = MARGIN_LEFT + graphWidth * sector / MaxSector;
-            double y = MARGIN_TOP  + graphHeight         * (1 - speedKbps / MaxSpeed);
+            double y = MARGIN_TOP  + graphHeight         * (1 - speedKbps / effectiveMaxSpeed);
 
             // Clamp Y to graph bounds
             y = Math.Max(MARGIN_TOP, Math.Min(MARGIN_TOP + graphHeight, y));
@@ -401,6 +466,8 @@ public partial class DiscSpeedGraph : UserControl
 
         if(graphWidth <= 0 || graphHeight <= 0) return;
 
+        double effectiveMaxSpeed = MaxSpeed / _yZoomLevel;
+
         // Only add the new point(s) to the polyline
         int startIndex = _speedLine.Points.Count;
 
@@ -408,7 +475,7 @@ public partial class DiscSpeedGraph : UserControl
         {
             (ulong sector, double speedKbps) = _processedData[i];
             double x = MARGIN_LEFT + graphWidth * sector / MaxSector;
-            double y = MARGIN_TOP  + graphHeight         * (1 - speedKbps / MaxSpeed);
+            double y = MARGIN_TOP  + graphHeight         * (1 - speedKbps / effectiveMaxSpeed);
 
             // Clamp Y to graph bounds
             y = Math.Max(MARGIN_TOP, Math.Min(MARGIN_TOP + graphHeight, y));
