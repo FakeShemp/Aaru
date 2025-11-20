@@ -377,8 +377,6 @@ public sealed partial class MediaScan
             {
                 if(_aborted) break;
 
-                double cmdDuration;
-
                 if(results.Blocks - i < blocksToRead) blocksToRead = (uint)(results.Blocks - i);
 
                 if(currentSpeed > results.MaxSpeed && currentSpeed > 0) results.MaxSpeed = currentSpeed;
@@ -411,20 +409,20 @@ public sealed partial class MediaScan
                                         MmcErrorField.None,
                                         MmcSubchannel.None,
                                         _dev.Timeout,
-                                        out cmdDuration);
+                                        out double _);
                 }
                 else
-                    sense = scsiReader.ReadBlocks(out _, i, blocksToRead, out cmdDuration, out _, out _);
+                    sense = scsiReader.ReadBlocks(out _, i, blocksToRead, out double _, out _, out _);
 
                 _speedStopwatch.Stop();
-                accumulatedSpeedMs      += _speedStopwatch.ElapsedMilliseconds;
+                accumulatedSpeedMs      += _speedStopwatch.Elapsed.TotalMilliseconds;
                 accumulatedSpeedSectors += blocksToRead;
 
-                results.ProcessingTime += cmdDuration;
+                results.ProcessingTime += _speedStopwatch.Elapsed.TotalMilliseconds;
 
                 if(!sense)
                 {
-                    switch(cmdDuration)
+                    switch(_speedStopwatch.Elapsed.TotalMilliseconds)
                     {
                         case >= 500:
                             results.F += blocksToRead;
@@ -452,8 +450,8 @@ public sealed partial class MediaScan
                             break;
                     }
 
-                    ScanTime?.Invoke(i, cmdDuration);
-                    mhddLog.Write(i, cmdDuration);
+                    ScanTime?.Invoke(i, _speedStopwatch.Elapsed.TotalMilliseconds);
+                    mhddLog.Write(i, _speedStopwatch.Elapsed.TotalMilliseconds);
                     ibgLog.Write(i, currentSpeed * 1024);
                 }
                 else
@@ -484,7 +482,11 @@ public sealed partial class MediaScan
                                 for(ulong b = i; b < i + blocksToRead; b++) results.UnreadableSectors.Add(b);
 
                                 ScanUnreadable?.Invoke(i);
-                                mhddLog.Write(i, cmdDuration < 500 ? 65535 : cmdDuration);
+
+                                mhddLog.Write(i,
+                                              _speedStopwatch.Elapsed.TotalMilliseconds < 500
+                                                  ? 65535
+                                                  : _speedStopwatch.Elapsed.TotalMilliseconds);
 
                                 ibgLog.Write(i, 0);
                             }
@@ -498,7 +500,10 @@ public sealed partial class MediaScan
 
                         for(ulong b = i; b < i + blocksToRead; b++) results.UnreadableSectors.Add(b);
 
-                        mhddLog.Write(i, cmdDuration < 500 ? 65535 : cmdDuration);
+                        mhddLog.Write(i,
+                                      _speedStopwatch.Elapsed.TotalMilliseconds < 500
+                                          ? 65535
+                                          : _speedStopwatch.Elapsed.TotalMilliseconds);
 
                         ibgLog.Write(i, 0);
                     }
@@ -569,13 +574,13 @@ public sealed partial class MediaScan
                 _speedStopwatch.Restart();
                 sense = scsiReader.ReadBlocks(out _, i, blocksToRead, out double cmdDuration, out _, out _);
                 _speedStopwatch.Stop();
-                accumulatedSpeedMs      += _speedStopwatch.ElapsedMilliseconds;
+                accumulatedSpeedMs      += _speedStopwatch.Elapsed.TotalMilliseconds;
                 accumulatedSpeedSectors += blocksToRead;
-                results.ProcessingTime  += cmdDuration;
+                results.ProcessingTime  += _speedStopwatch.Elapsed.TotalMilliseconds;
 
                 if(!sense && !_dev.Error)
                 {
-                    switch(cmdDuration)
+                    switch(_speedStopwatch.Elapsed.TotalMilliseconds)
                     {
                         case >= 500:
                             results.F += blocksToRead;
@@ -603,8 +608,8 @@ public sealed partial class MediaScan
                             break;
                     }
 
-                    ScanTime?.Invoke(i, cmdDuration);
-                    mhddLog.Write(i, cmdDuration);
+                    ScanTime?.Invoke(i, _speedStopwatch.Elapsed.TotalMilliseconds);
+                    mhddLog.Write(i, _speedStopwatch.Elapsed.TotalMilliseconds);
                     ibgLog.Write(i, currentSpeed * 1024);
                 }
 
@@ -616,7 +621,7 @@ public sealed partial class MediaScan
 
                     for(ulong b = i; b < i + blocksToRead; b++) results.UnreadableSectors.Add(b);
 
-                    mhddLog.Write(i, cmdDuration < 500 ? 65535 : cmdDuration);
+                    mhddLog.Write(i, cmdDuration < 500 ? 65535 : _speedStopwatch.Elapsed.TotalMilliseconds);
                     ibgLog.Write(i, 0);
                 }
 

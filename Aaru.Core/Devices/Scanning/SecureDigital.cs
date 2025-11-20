@@ -52,8 +52,7 @@ public sealed partial class MediaScan
         byte[] cmdBuf;
         bool   sense;
         results.Blocks = 0;
-        const uint   timeout = 5;
-        double       duration;
+        const uint   timeout       = 5;
         const ushort sdProfile     = 0x0001;
         ushort       blocksToRead  = 128;
         uint         blockSize     = 512;
@@ -145,7 +144,7 @@ public sealed partial class MediaScan
 
         if(supportsCmd23)
         {
-            sense = _dev.ReadWithBlockCount(out cmdBuf, out _, 0, blockSize, 1, byteAddressed, timeout, out duration);
+            sense = _dev.ReadWithBlockCount(out cmdBuf, out _, 0, blockSize, 1, byteAddressed, timeout, out double _);
 
             if(sense || _dev.Error)
             {
@@ -177,7 +176,7 @@ public sealed partial class MediaScan
                                                 blocksToRead,
                                                 byteAddressed,
                                                 timeout,
-                                                out duration);
+                                                out double _);
 
                 if(sense) blocksToRead /= 2;
 
@@ -264,7 +263,7 @@ public sealed partial class MediaScan
                                              blockSize,
                                              byteAddressed,
                                              timeout,
-                                             out duration);
+                                             out double _);
             }
             else if(supportsCmd23)
             {
@@ -275,10 +274,10 @@ public sealed partial class MediaScan
                                                 blocksToRead,
                                                 byteAddressed,
                                                 timeout,
-                                                out duration);
+                                                out double _);
             }
             else if(_useBufferedReads)
-                error = _dev.BufferedOsRead(out cmdBuf, (long)(i * blockSize), blockSize * blocksToRead, out duration);
+                error = _dev.BufferedOsRead(out cmdBuf, (long)(i * blockSize), blockSize * blocksToRead, out double _);
             else
             {
                 error = _dev.ReadMultipleUsingSingle(out cmdBuf,
@@ -288,16 +287,17 @@ public sealed partial class MediaScan
                                                      blocksToRead,
                                                      byteAddressed,
                                                      timeout,
-                                                     out duration);
+                                                     out double _);
             }
 
             _speedStopwatch.Stop();
-            accumulatedSpeedMs      += _speedStopwatch.ElapsedMilliseconds;
+            accumulatedSpeedMs      += _speedStopwatch.Elapsed.TotalMilliseconds;
             accumulatedSpeedSectors += blocksToRead;
+            results.ProcessingTime  += _speedStopwatch.Elapsed.TotalMilliseconds;
 
             if(!error)
             {
-                switch(duration)
+                switch(_speedStopwatch.Elapsed.TotalMilliseconds)
                 {
                     case >= 500:
                         results.F += blocksToRead;
@@ -325,8 +325,8 @@ public sealed partial class MediaScan
                         break;
                 }
 
-                ScanTime?.Invoke(i, duration);
-                mhddLog.Write(i, duration);
+                ScanTime?.Invoke(i, _speedStopwatch.Elapsed.TotalMilliseconds);
+                mhddLog.Write(i, _speedStopwatch.Elapsed.TotalMilliseconds);
                 ibgLog.Write(i, currentSpeed * 1024);
             }
             else
@@ -336,7 +336,10 @@ public sealed partial class MediaScan
 
                 for(ulong b = i; b < i + blocksToRead; b++) results.UnreadableSectors.Add(b);
 
-                mhddLog.Write(i, duration < 500 ? 65535 : duration);
+                mhddLog.Write(i,
+                              _speedStopwatch.Elapsed.TotalMilliseconds < 500
+                                  ? 65535
+                                  : _speedStopwatch.Elapsed.TotalMilliseconds);
 
                 ibgLog.Write(i, 0);
             }

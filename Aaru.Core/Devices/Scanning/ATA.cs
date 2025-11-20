@@ -121,7 +121,6 @@ public sealed partial class MediaScan
 
         MhddLog mhddLog;
         IbgLog  ibgLog;
-        double  duration;
 
         if(ataReader.IsLba)
         {
@@ -148,21 +147,20 @@ public sealed partial class MediaScan
                 UpdateProgress?.Invoke(string.Format(Localization.Core.Reading_sector_0_of_1_2,
                                                      i,
                                                      results.Blocks,
-                                                     ByteSize.FromMegabytes(currentSpeed)
-                                                             .Per(_oneSecond)
-                                                             .Humanize()),
+                                                     ByteSize.FromMegabytes(currentSpeed).Per(_oneSecond).Humanize()),
                                        (long)i,
                                        (long)results.Blocks);
 
                 _speedStopwatch.Restart();
-                bool error = ataReader.ReadBlocks(out cmdBuf, i, blocksToRead, out duration, out _, out _);
+                bool error = ataReader.ReadBlocks(out cmdBuf, i, blocksToRead, out double _, out _, out _);
                 _speedStopwatch.Stop();
-                accumulatedSpeedMs      += _speedStopwatch.ElapsedMilliseconds;
+                accumulatedSpeedMs      += _speedStopwatch.Elapsed.TotalMilliseconds;
                 accumulatedSpeedSectors += blocksToRead;
+                results.ProcessingTime  += _speedStopwatch.Elapsed.TotalMilliseconds;
 
                 if(!error)
                 {
-                    switch(duration)
+                    switch(_speedStopwatch.Elapsed.TotalMilliseconds)
                     {
                         case >= 500:
                             results.F += blocksToRead;
@@ -190,8 +188,8 @@ public sealed partial class MediaScan
                             break;
                     }
 
-                    ScanTime?.Invoke(i, duration);
-                    mhddLog.Write(i, duration);
+                    ScanTime?.Invoke(i, _speedStopwatch.Elapsed.TotalMilliseconds);
+                    mhddLog.Write(i, _speedStopwatch.Elapsed.TotalMilliseconds);
                     ibgLog.Write(i, currentSpeed * 1024);
                 }
                 else
@@ -201,7 +199,10 @@ public sealed partial class MediaScan
 
                     for(ulong b = i; b < i + blocksToRead; b++) results.UnreadableSectors.Add(b);
 
-                    mhddLog.Write(i, duration < 500 ? 65535 : duration);
+                    mhddLog.Write(i,
+                                  _speedStopwatch.Elapsed.TotalMilliseconds < 500
+                                      ? 65535
+                                      : _speedStopwatch.Elapsed.TotalMilliseconds);
 
                     ibgLog.Write(i, 0);
                 }
@@ -288,13 +289,14 @@ public sealed partial class MediaScan
                                                                     .Humanize()));
 
                         _speedStopwatch.Restart();
-                        bool error = ataReader.ReadChs(out cmdBuf, cy, hd, sc, out duration, out _);
-                        accumulatedSpeedMs += _speedStopwatch.ElapsedMilliseconds;
+                        bool error = ataReader.ReadChs(out cmdBuf, cy, hd, sc, out double _, out _);
+                        accumulatedSpeedMs += _speedStopwatch.Elapsed.TotalMilliseconds;
                         accumulatedSpeedSectors++;
+                        results.ProcessingTime += _speedStopwatch.Elapsed.TotalMilliseconds;
 
                         if(!error)
                         {
-                            switch(duration)
+                            switch(_speedStopwatch.Elapsed.TotalMilliseconds)
                             {
                                 case >= 500:
                                     results.F += blocksToRead;
@@ -322,8 +324,8 @@ public sealed partial class MediaScan
                                     break;
                             }
 
-                            ScanTime?.Invoke(currentBlock, duration);
-                            mhddLog.Write(currentBlock, duration);
+                            ScanTime?.Invoke(currentBlock, _speedStopwatch.Elapsed.TotalMilliseconds);
+                            mhddLog.Write(currentBlock, _speedStopwatch.Elapsed.TotalMilliseconds);
                             ibgLog.Write(currentBlock, currentSpeed * 1024);
                         }
                         else
@@ -331,7 +333,11 @@ public sealed partial class MediaScan
                             ScanUnreadable?.Invoke(currentBlock);
                             results.Errored++;
                             results.UnreadableSectors.Add(currentBlock);
-                            mhddLog.Write(currentBlock, duration < 500 ? 65535 : duration);
+
+                            mhddLog.Write(currentBlock,
+                                          _speedStopwatch.Elapsed.TotalMilliseconds < 500
+                                              ? 65535
+                                              : _speedStopwatch.Elapsed.TotalMilliseconds);
 
                             ibgLog.Write(currentBlock, 0);
                         }
