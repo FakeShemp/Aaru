@@ -444,12 +444,9 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
 
             IReadOnlyList<IStorageFile> result = _view.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
                                                        {
-                                                           Title         = UI.Dialog_Choose_existing_metadata_sidecar,
-                                                           AllowMultiple = false,
-                                                           FileTypeFilter = new List<FilePickerFileType>
-                                                           {
-                                                               FilePickerFileTypes.AaruMetadata
-                                                           }
+                                                           Title          = UI.Dialog_Choose_existing_metadata_sidecar,
+                                                           AllowMultiple  = false,
+                                                           FileTypeFilter = [FilePickerFileTypes.AaruMetadata]
                                                        })
                                                       .Result;
 
@@ -493,13 +490,13 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         IStorageFile result = await _view.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             Title = UI.Dialog_Choose_destination_file,
-            FileTypeChoices = new List<FilePickerFileType>
-            {
-                new(SelectedPlugin.Plugin.Name)
+            FileTypeChoices =
+            [
+                new FilePickerFileType(SelectedPlugin.Plugin.Name)
                 {
                     Patterns = SelectedPlugin.Plugin.KnownExtensions.ToList()
                 }
-            }
+            ]
         });
 
         if(result is null)
@@ -631,7 +628,7 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
             }
         }
 
-        Dictionary<string, string> parsedOptions = new();
+        Dictionary<string, string> parsedOptions = [];
 
         /* TODO: Options
         if(grpOptions.Content is StackLayout stkFormatOptions)
