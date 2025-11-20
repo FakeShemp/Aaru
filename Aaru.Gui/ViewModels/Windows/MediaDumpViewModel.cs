@@ -206,9 +206,9 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
 
         PluginRegister plugins = PluginRegister.Singleton;
 
-        foreach(IWritableImage plugin in plugins.WritableImages.Values)
+        foreach(IBaseWritableImage baseWritableImage in plugins.WritableImages.Values)
         {
-            if(plugin is null) continue;
+            if(baseWritableImage is not IWritableImage plugin) continue;
 
             if(plugin.SupportedMediaTypes.Contains(mediaType))
             {
