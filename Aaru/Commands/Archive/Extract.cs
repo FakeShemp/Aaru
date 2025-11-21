@@ -36,6 +36,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -50,12 +52,13 @@ using Spectre.Console.Cli;
 
 namespace Aaru.Commands.Archive;
 
-sealed class ArchiveExtractCommand : Command<ArchiveExtractCommand.Settings>
+sealed class ArchiveExtractCommand : AsyncCommand<ArchiveExtractCommand.Settings>
 {
     const int    BUFFER_SIZE = 16777216;
     const string MODULE_NAME = "Extract-Files command";
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override async Task<int> ExecuteAsync(CommandContext    context, Settings settings,
+                                                 CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 
@@ -223,47 +226,49 @@ sealed class ArchiveExtractCommand : Command<ArchiveExtractCommand.Settings>
 
                 if(!File.Exists(outputPath) && !Directory.Exists(outputPath))
                 {
-                    AnsiConsole.Progress()
-                               .AutoClear(true)
-                               .HideCompleted(true)
-                               .Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn())
-                               .Start(ctx =>
-                                {
-                                    var position = 0;
+                    await AnsiConsole.Progress()
+                                     .AutoClear(true)
+                                     .HideCompleted(true)
+                                     .Columns(new TaskDescriptionColumn(),
+                                              new ProgressBarColumn(),
+                                              new PercentageColumn())
+                                     .Start(async ctx =>
+                                      {
+                                          var position = 0;
 
-                                    var outputFile =
-                                        new FileStream(outputPath,
-                                                       FileMode.CreateNew,
-                                                       FileAccess.ReadWrite,
-                                                       FileShare.None);
+                                          var outputFile =
+                                              new FileStream(outputPath,
+                                                             FileMode.CreateNew,
+                                                             FileAccess.ReadWrite,
+                                                             FileShare.None);
 
-                                    ProgressTask task =
-                                        ctx.AddTask(string.Format(UI.Reading_file_0, Markup.Escape(fileName)));
+                                          ProgressTask task =
+                                              ctx.AddTask(string.Format(UI.Reading_file_0, Markup.Escape(fileName)));
 
-                                    task.MaxValue = uncompressedSize;
-                                    var    outBuf    = new byte[BUFFER_SIZE];
-                                    Stream inputFile = filter.GetDataForkStream();
+                                          task.MaxValue = uncompressedSize;
+                                          var    outBuf    = new byte[BUFFER_SIZE];
+                                          Stream inputFile = filter.GetDataForkStream();
 
-                                    while(position < stat.Length)
-                                    {
-                                        int bytesToRead;
+                                          while(position < stat.Length)
+                                          {
+                                              int bytesToRead;
 
-                                        if(stat.Length - position > BUFFER_SIZE)
-                                            bytesToRead = BUFFER_SIZE;
-                                        else
-                                            bytesToRead = (int)(stat.Length - position);
+                                              if(stat.Length - position > BUFFER_SIZE)
+                                                  bytesToRead = BUFFER_SIZE;
+                                              else
+                                                  bytesToRead = (int)(stat.Length - position);
 
-                                        int bytesRead = inputFile.EnsureRead(outBuf, 0, bytesToRead);
+                                              int bytesRead = inputFile.EnsureRead(outBuf, 0, bytesToRead);
 
-                                        outputFile.Write(outBuf, 0, bytesRead);
+                                              await outputFile.WriteAsync(outBuf, 0, bytesRead);
 
-                                        position += bytesToRead;
-                                        task.Increment(bytesToRead);
-                                    }
+                                              position += bytesToRead;
+                                              task.Increment(bytesToRead);
+                                          }
 
-                                    inputFile.Close();
-                                    outputFile.Close();
-                                });
+                                          inputFile.Close();
+                                          outputFile.Close();
+                                      });
 
                     var fi = new FileInfo(outputPath);
 

@@ -36,6 +36,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;
@@ -56,7 +57,7 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
     static ProgressTask _progressTask1;
     static ProgressTask _progressTask2;
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

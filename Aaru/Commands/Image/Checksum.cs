@@ -33,6 +33,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -54,7 +55,7 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
     const int    BYTES_TO_READ = 65536;
     const string MODULE_NAME   = "Checksum command";
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

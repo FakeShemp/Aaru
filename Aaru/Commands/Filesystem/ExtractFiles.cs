@@ -36,6 +36,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -56,7 +57,7 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
     const long   BUFFER_SIZE = 16777216;
     const string MODULE_NAME = "Extract-Files command";
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

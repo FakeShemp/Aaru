@@ -32,6 +32,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Threading;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.Core;
@@ -50,7 +51,7 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
     const  string       MODULE_NAME = "Media-Scan command";
     static ProgressTask _progressTask1;
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

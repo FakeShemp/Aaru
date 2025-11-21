@@ -32,6 +32,7 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -48,7 +49,7 @@ sealed class ListOptionsCommand : Command<ListOptionsCommand.Settings>
 {
     const string MODULE_NAME = "List-Options command";
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
 
     {
         MainClass.PrintCopyright();

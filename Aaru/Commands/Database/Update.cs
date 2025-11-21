@@ -34,6 +34,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
@@ -51,7 +52,8 @@ sealed class UpdateCommand : AsyncCommand<UpdateCommand.Settings>
     const    string MODULE_NAME = "Update command";
     readonly bool   _mainDbUpdate;
 
-    public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
+    public override async Task<int> ExecuteAsync(CommandContext    context, Settings settings,
+                                                 CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 
@@ -65,8 +67,8 @@ sealed class UpdateCommand : AsyncCommand<UpdateCommand.Settings>
                 File.Delete(Aaru.Settings.Settings.LocalDbPath);
 
                 var ctx = AaruContext.Create(Aaru.Settings.Settings.LocalDbPath);
-                await ctx.Database.MigrateAsync();
-                await ctx.SaveChangesAsync();
+                await ctx.Database.MigrateAsync(cancellationToken);
+                await ctx.SaveChangesAsync(cancellationToken);
             }
             catch(Exception) when(!Debugger.IsAttached)
             {

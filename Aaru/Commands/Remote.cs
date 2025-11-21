@@ -33,6 +33,7 @@
 // TODO: Fix errors returned
 
 using System;
+using System.Threading;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.Core;
@@ -49,7 +50,7 @@ sealed class RemoteCommand : Command<RemoteCommand.Settings>
 {
     const string MODULE_NAME = "Remote command";
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

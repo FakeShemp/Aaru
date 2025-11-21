@@ -32,6 +32,7 @@
 
 using System.ComponentModel;
 using System.Globalization;
+using System.Threading;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -50,7 +51,7 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
 {
     const string MODULE_NAME = "Decode command";
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

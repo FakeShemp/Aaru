@@ -31,6 +31,7 @@
 // ****************************************************************************/
 
 using System.Linq;
+using System.Threading;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -46,7 +47,7 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
 {
     const string MODULE_NAME = "Formats command";
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
 
     {
         MainClass.PrintCopyright();

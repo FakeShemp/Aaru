@@ -37,6 +37,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Xml.Serialization;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.AaruMetadata;
@@ -67,7 +68,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 {
     const string MODULE_NAME = "Convert-image command";
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

@@ -32,6 +32,7 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -39,7 +40,6 @@ using Aaru.Core;
 using Aaru.Localization;
 using Aaru.Logging;
 using JetBrains.Annotations;
-using Serilog;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -49,7 +49,7 @@ sealed class ListOptionsCommand : Command<ListOptionsCommand.Settings>
 {
     const string MODULE_NAME = "List-Options command";
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
 
     {
         MainClass.PrintCopyright();
@@ -73,8 +73,7 @@ sealed class ListOptionsCommand : Command<ListOptionsCommand.Settings>
 
             var table = new Table
             {
-                Title = new TableTitle(string.Format(UI.Options_for_0,
-                                                     fs.Name))
+                Title = new TableTitle(string.Format(UI.Options_for_0, fs.Name))
             };
 
             table.AddColumn(new TableColumn(new Markup(UI.Title_Name).Centered()));
@@ -90,9 +89,9 @@ sealed class ListOptionsCommand : Command<ListOptionsCommand.Settings>
                              $"[slateblue1]{Markup.Escape(option.description)}[/]");
 
                 AaruLogging.Information("({Name}) - {Type} - {Description}",
-                                option.name,
-                                TypeToString(option.type),
-                                option.description);
+                                        option.name,
+                                        TypeToString(option.type),
+                                        option.description);
             }
 
             AnsiConsole.Write(table);

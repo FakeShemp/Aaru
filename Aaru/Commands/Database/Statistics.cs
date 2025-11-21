@@ -31,6 +31,8 @@
 // ****************************************************************************/
 
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Aaru.CommonTypes.Enums;
 using Aaru.Database;
 using Aaru.Database.Models;
@@ -42,9 +44,10 @@ using Command = Aaru.Database.Models.Command;
 
 namespace Aaru.Commands.Database;
 
-sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
+sealed class StatisticsCommand : AsyncCommand<StatisticsCommand.Settings>
 {
-    public override int Execute(CommandContext context, Settings settings)
+    public override async Task<int> ExecuteAsync(CommandContext    context, Settings settings,
+                                                 CancellationToken cancellationToken)
 
     {
         MainClass.PrintCopyright();
@@ -67,7 +70,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
             return (int)ErrorNumber.NothingFound;
         }
 
-        bool  thereAreStats = false;
+        var   thereAreStats = false;
         Table table;
 
         if(ctx.Commands.Any())
@@ -111,7 +114,7 @@ sealed class StatisticsCommand : Command<StatisticsCommand.Settings>
                     });
                 }
 
-                ctx.SaveChanges();
+                await ctx.SaveChangesAsync(cancellationToken);
             }
 
             foreach(string command in ctx.Commands.Select(c => c.Name).Distinct().OrderBy(c => c))

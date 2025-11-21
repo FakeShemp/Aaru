@@ -34,6 +34,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
+using System.Threading;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -52,7 +53,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
 {
     const string MODULE_NAME = "Archive list command";
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

@@ -31,6 +31,7 @@
 // ****************************************************************************/
 
 using System;
+using System.Threading;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -46,7 +47,7 @@ sealed class ImageInfoCommand : Command<ImageInfoCommand.Settings>
 {
     const string MODULE_NAME = "Image-info command";
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

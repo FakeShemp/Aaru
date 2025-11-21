@@ -32,13 +32,13 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Core;
 using Aaru.Localization;
 using Aaru.Logging;
-using Serilog;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -48,7 +48,7 @@ sealed class ListNamespacesCommand : Command<ListNamespacesCommand.Settings>
 {
     const string MODULE_NAME = "List-Namespaces command";
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 
@@ -68,8 +68,7 @@ sealed class ListNamespacesCommand : Command<ListNamespacesCommand.Settings>
 
             Table table = new()
             {
-                Title = new TableTitle(string.Format(UI.Namespaces_for_0,
-                                                     Markup.Escape(fs.Name)))
+                Title = new TableTitle(string.Format(UI.Namespaces_for_0, Markup.Escape(fs.Name)))
             };
 
             table.Border(TableBorder.Rounded);

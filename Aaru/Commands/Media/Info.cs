@@ -34,6 +34,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
@@ -68,7 +69,7 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 {
     const string MODULE_NAME = "Media-Info command";
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
 
     {
         MainClass.PrintCopyright();

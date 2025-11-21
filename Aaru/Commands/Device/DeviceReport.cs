@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
@@ -61,7 +62,8 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 {
     const string MODULE_NAME = "Device-Report command";
 
-    public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
+    public override async Task<int> ExecuteAsync(CommandContext    context, Settings settings,
+                                                 CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

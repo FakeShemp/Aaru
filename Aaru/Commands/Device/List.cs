@@ -32,6 +32,7 @@
 
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.Core;
@@ -48,7 +49,7 @@ sealed class ListDevicesCommand : Command<ListDevicesCommand.Settings>
 {
     const string MODULE_NAME = "List-Devices command";
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
 
     {
         MainClass.PrintCopyright();

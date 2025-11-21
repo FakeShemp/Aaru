@@ -32,6 +32,7 @@
 
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Aaru.CommonTypes.Enums;
 using Aaru.Core;
 using Aaru.Localization;
@@ -45,7 +46,7 @@ sealed class ListEncodingsCommand : Command<ListEncodingsCommand.Settings>
 {
     const string MODULE_NAME = "List-Encodings command";
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
 
     {
         MainClass.PrintCopyright();

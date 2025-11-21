@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -52,7 +53,7 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
 {
     const string MODULE_NAME = "Verify command";
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 
@@ -394,18 +395,16 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
             if(failingLbas.Count == (int)inputFormat.Info.Sectors)
                 AaruLogging.Verbose($"\t[red]{UI.all_sectors}[/]");
             else
-            {
-                foreach(ulong t in failingLbas) AaruLogging.Verbose("\t{0}", t);
-            }
+                foreach(ulong t in failingLbas)
+                    AaruLogging.Verbose("\t{0}", t);
 
             AaruLogging.WriteLine($"[yellow3_1]{UI.LBAs_without_checksum}[/]");
 
             if(unknownLbas.Count == (int)inputFormat.Info.Sectors)
                 AaruLogging.Verbose($"\t[yellow3_1]{UI.all_sectors}[/]");
             else
-            {
-                foreach(ulong t in unknownLbas) AaruLogging.Verbose("\t{0}", t);
-            }
+                foreach(ulong t in unknownLbas)
+                    AaruLogging.Verbose("\t{0}", t);
         }
 
         var table = new Table();

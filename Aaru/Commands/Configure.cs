@@ -30,6 +30,7 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System.Threading;
 using Aaru.CommonTypes.Enums;
 using Aaru.Localization;
 using Aaru.Logging;
@@ -41,7 +42,7 @@ namespace Aaru.Commands;
 
 sealed class ConfigureCommand : Command<ConfigureCommand.Settings>
 {
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 

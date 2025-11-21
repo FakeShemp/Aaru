@@ -35,6 +35,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs.Devices.ATA;
@@ -66,7 +67,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
 {
     const string MODULE_NAME = "Device-Info command";
 
-    public override int Execute(CommandContext context, Settings settings)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         MainClass.PrintCopyright();
 
