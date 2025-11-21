@@ -32,6 +32,7 @@
 
 using System;
 using System.ComponentModel;
+using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.Core;
 using Aaru.Core.Devices.Scanning;
@@ -206,19 +207,19 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
 
     public class Settings : MediaFamily
     {
-        [Description("Write a log of the scan in the format used by MHDD.")]
+        [LocalizedDescription(nameof(UI.Write_a_log_of_the_scan_in_the_format_used_by_MHDD))]
         [DefaultValue(null)]
         [CommandOption("-m|--mhdd-log")]
         public string MhddLog { get; init; }
-        [Description("Write a log of the scan in the format used by ImgBurn.")]
+        [LocalizedDescription(nameof(UI.Write_a_log_of_the_scan_in_the_format_used_by_ImgBurn))]
         [DefaultValue(null)]
         [CommandOption("-b|--ibg-log")]
         public string IbgLog { get; init; }
-        [Description("For MMC/SD, use OS buffered reads if CMD23 is not supported.")]
+        [LocalizedDescription(nameof(UI.OS_buffered_reads_help))]
         [DefaultValue(true)]
         [CommandOption("--use-buffered-reads")]
         public bool UseBufferedReads { get; init; }
-        [Description("Media device path")]
+        [LocalizedDescription(nameof(UI.Device_path))]
         [CommandArgument(0, "<device-path>")]
         public string DevicePath { get; init; }
     }

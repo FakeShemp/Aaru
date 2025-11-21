@@ -196,9 +196,7 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
                                         opticalMediaImage.Info.Sectors);
             }
             else if(settings.CreateGraph)
-            {
                 mediaGraph = new BlockMap(settings.Dimensions, settings.Dimensions, opticalMediaImage.Info.Sectors);
-            }
 
             List<Track> inputTracks      = opticalMediaImage.Tracks;
             ulong       currentSectorAll = 0;
@@ -396,16 +394,18 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
             if(failingLbas.Count == (int)inputFormat.Info.Sectors)
                 AaruLogging.Verbose($"\t[red]{UI.all_sectors}[/]");
             else
-                foreach(ulong t in failingLbas)
-                    AaruLogging.Verbose("\t{0}", t);
+            {
+                foreach(ulong t in failingLbas) AaruLogging.Verbose("\t{0}", t);
+            }
 
             AaruLogging.WriteLine($"[yellow3_1]{UI.LBAs_without_checksum}[/]");
 
             if(unknownLbas.Count == (int)inputFormat.Info.Sectors)
                 AaruLogging.Verbose($"\t[yellow3_1]{UI.all_sectors}[/]");
             else
-                foreach(ulong t in unknownLbas)
-                    AaruLogging.Verbose("\t{0}", t);
+            {
+                foreach(ulong t in unknownLbas) AaruLogging.Verbose("\t{0}", t);
+            }
         }
 
         var table = new Table();
@@ -452,23 +452,23 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
 
     public class Settings : ImageFamily
     {
-        [Description("Verify media image if supported.")]
+        [LocalizedDescription(nameof(UI.Verify_media_image_if_supported))]
         [DefaultValue(true)]
         [CommandOption("-w|--verify-disc")]
         public bool VerifyDisc { get; init; }
-        [Description("Verify all sectors if supported.")]
+        [LocalizedDescription(nameof(UI.Verify_all_sectors_if_supported))]
         [DefaultValue(true)]
         [CommandOption("-s|--verify-sectors")]
         public bool VerifySectors { get; init; }
-        [Description("Create graph of verified disc (currently only implemented for optical discs).")]
+        [LocalizedDescription(nameof(UI.Create_graph_of_verified_disc))]
         [DefaultValue(true)]
         [CommandOption("-g|--create-graph")]
         public bool CreateGraph { get; init; }
-        [Description("Dimensions, as a square, in pixels, for the graph of verified media.")]
+        [LocalizedDescription(nameof(UI.Verify_dimensions_paramater_help))]
         [DefaultValue(1080)]
         [CommandOption("-d|--dimensions")]
         public int Dimensions { get; init; }
-        [Description("Disc image path")]
+        [LocalizedDescription(nameof(UI.Media_image_path))]
         [CommandArgument(0, "<image-path>")]
         public string ImagePath { get; init; }
     }

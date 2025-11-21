@@ -33,7 +33,7 @@
 // TODO: Fix errors returned
 
 using System;
-using System.ComponentModel;
+using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.Core;
 using Aaru.Localization;
@@ -114,7 +114,7 @@ sealed class RemoteCommand : Command<RemoteCommand.Settings>
     public class Settings : BaseSettings
     {
         [CommandArgument(0, "<host>")]
-        [Description("Aaru host")]
+        [LocalizedDescription(nameof(UI.aaruremote_host))]
         public string Host { get; init; }
     }
 

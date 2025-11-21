@@ -699,63 +699,63 @@ sealed class ChecksumCommand : Command<ChecksumCommand.Settings>
 
     public class Settings : ImageFamily
     {
-        [Description("Calculates Adler-32.")]
+        [LocalizedDescription(nameof(UI.Calculates_Adler_32))]
         [CommandOption("-a|--adler32")]
         [DefaultValue(false)]
         public bool Adler32 { get; init; }
-        [Description("Calculates CRC16.")]
+        [LocalizedDescription(nameof(UI.Calculates_CRC16))]
         [CommandOption("--crc16")]
         [DefaultValue(true)]
         public bool Crc16 { get; init; }
-        [Description("Calculates CRC32.")]
+        [LocalizedDescription(nameof(UI.Calculates_CRC32))]
         [CommandOption("-c|--crc32")]
         [DefaultValue(true)]
         public bool Crc32 { get; init; }
-        [Description("Calculates CRC64 (ECMA).")]
+        [LocalizedDescription(nameof(UI.Calculates_CRC64_ECMA))]
         [CommandOption("--crc64")]
         [DefaultValue(true)]
         public bool Crc64 { get; init; }
-        [Description("Calculates Fletcher-16.")]
+        [LocalizedDescription(nameof(UI.Calculates_Fletcher_16))]
         [CommandOption("--fletcher16")]
         [DefaultValue(false)]
         public bool Fletcher16 { get; init; }
-        [Description("Calculates Fletcher-32.")]
+        [LocalizedDescription(nameof(UI.Calculates_Fletcher_32))]
         [CommandOption("--fletcher32")]
         [DefaultValue(false)]
         public bool Fletcher32 { get; init; }
-        [Description("Calculates MD5.")]
+        [LocalizedDescription(nameof(UI.Calculates_MD5))]
         [CommandOption("-m|--md5")]
         [DefaultValue(true)]
         public bool Md5 { get; init; }
-        [Description("Calculates SHA1.")]
+        [LocalizedDescription(nameof(UI.Calculates_SHA1))]
         [CommandOption("-s|--sha1")]
         [DefaultValue(true)]
         public bool Sha1 { get; init; }
-        [Description("Calculates SHA256.")]
+        [LocalizedDescription(nameof(UI.Calculates_SHA256))]
         [CommandOption("--sha256")]
         [DefaultValue(false)]
         public bool Sha256 { get; init; }
-        [Description("Calculates SHA384.")]
+        [LocalizedDescription(nameof(UI.Calculates_SHA384))]
         [CommandOption("--sha384")]
         [DefaultValue(false)]
         public bool Sha384 { get; init; }
-        [Description("Calculates SHA512.")]
+        [LocalizedDescription(nameof(UI.Calculates_SHA512))]
         [CommandOption("--sha512")]
         [DefaultValue(true)]
         public bool Sha512 { get; init; }
-        [Description("Calculates SpamSum fuzzy hash.")]
+        [LocalizedDescription(nameof(UI.Calculates_SpamSum_fuzzy_hash))]
         [CommandOption("-f|--spamsum")]
         [DefaultValue(true)]
         public bool SpamSum { get; init; }
-        [Description("Checksums the whole disc.")]
+        [LocalizedDescription(nameof(UI.Checksums_the_whole_disc))]
         [CommandOption("-w|--whole-disc")]
         [DefaultValue(true)]
         public bool WholeDisc { get; init; }
-        [Description("Checksums each track separately.")]
+        [LocalizedDescription(nameof(UI.Checksums_each_track_separately))]
         [CommandOption("-t|--separated-tracks")]
         [DefaultValue(true)]
         public bool SeparatedTracks { get; init; }
-        [Description("Media image path")]
+        [LocalizedDescription(nameof(UI.Media_image_path))]
         [CommandArgument(0, "<image-path>")]
         public string ImagePath { get; init; }
     }

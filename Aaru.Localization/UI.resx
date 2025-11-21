@@ -371,9 +371,9 @@ In you are unsure, please press N to not continue.</value>
     <data name="Namespace_to_use_for_filenames" xml:space="preserve">
     <value>Namespace to use for filenames.</value>
   </data>
-    <data name="Disc_image_path" xml:space="preserve">
-    <value>Disc image path</value>
-  </data>
+    <data name="Media_image_path" xml:space="preserve">
+        <value>Media image path</value>
+    </data>
     <data name="Directory_where_extracted_files_will_be_created" xml:space="preserve">
     <value>Directory where extracted files will be created. Will abort if it exists</value>
   </data>
@@ -3361,5 +3361,29 @@ Do you want to continue?</value>
     </data>
     <data name="Title_Open_device" xml:space="preserve">
         <value>Open device</value>
+    </data>
+    <data name="Model_of_drive_used_by_media" xml:space="preserve">
+        <value>Model of the drive used to read the media represented by the image.</value>
+    </data>
+    <data name="Barcode_of_the_media" xml:space="preserve">
+        <value>Barcode of the media represented by the image.</value>
+    </data>
+    <data name="Take_metadata_from_existing_Aaru_sidecar" xml:space="preserve">
+        <value>Take metadata from existing Aaru Metadata sidecar.</value>
+    </data>
+    <data name="Ignore_negative_sectors" xml:space="preserve">
+        <value>Ignore negative sectors.</value>
+    </data>
+    <data name="Ignore_overflow_sectors" xml:space="preserve">
+        <value>Ignore overflow sectors.</value>
+    </data>
+    <data name="Create_sidecar_block_size_help" xml:space="preserve">
+        <value>Only used for tapes, indicates block size. Files in the folder whose size is not a multiple of this value will simply be ignored.</value>
+    </data>
+    <data name="Decode_media_tags" xml:space="preserve">
+        <value>Decode media tags.</value>
+    </data>
+    <data name="Path_to_log_file" xml:space="preserve">
+        <value>Path to log file.</value>
     </data>
 </root>

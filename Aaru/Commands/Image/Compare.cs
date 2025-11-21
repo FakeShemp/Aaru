@@ -32,7 +32,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -535,10 +534,10 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
     public class Settings : ImageFamily
     {
-        [Description("First media image path")]
+        [LocalizedDescription(nameof(UI.First_media_image_path))]
         [CommandArgument(0, "<image-path1>")]
         public string ImagePath1 { get; init; }
-        [Description("Second media image path")]
+        [LocalizedDescription(nameof(UI.Second_media_image_path))]
         [CommandArgument(1, "<image-path1>")]
         public string ImagePath2 { get; init; }
     }

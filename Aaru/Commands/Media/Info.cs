@@ -34,6 +34,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Structs;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
@@ -790,7 +791,7 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 
             AaruLogging.Write(Localization.Core.Media_Serial_Number);
 
-            for(int i = 4; i < scsiInfo.MediaSerialNumber.Length; i++)
+            for(var i = 4; i < scsiInfo.MediaSerialNumber.Length; i++)
                 AaruLogging.Write("[teal]{0:X2}[/]", scsiInfo.MediaSerialNumber[i]);
 
             AaruLogging.WriteLine("");
@@ -805,7 +806,7 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 
             if(tracks != null)
             {
-                uint firstLba = (uint)tracks.Min(t => t.StartSector);
+                var firstLba = (uint)tracks.Min(t => t.StartSector);
 
                 bool supportsPqSubchannel = Dump.SupportsPqSubchannel(dev, null, firstLba);
                 bool supportsRwSubchannel = Dump.SupportsRwSubchannel(dev, null, firstLba);
@@ -828,7 +829,7 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
                                        out bool inexactPositioning,
                                        false);
 
-                for(int t = 1; t < tracks.Length; t++) tracks[t - 1].EndSector = tracks[t].StartSector - 1;
+                for(var t = 1; t < tracks.Length; t++) tracks[t - 1].EndSector = tracks[t].StartSector - 1;
 
                 tracks[^1].EndSector = (ulong)lastSector;
 
@@ -931,11 +932,11 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 
     public class Settings : MediaFamily
     {
-        [Description("Prefix for saving binary information from device.")]
+        [LocalizedDescription(nameof(UI.Prefix_for_saving_binary_information))]
         [DefaultValue(null)]
         [CommandOption("-w|--output-prefix")]
         public string OutputPrefix { get; init; }
-        [Description("Device path")]
+        [LocalizedDescription(nameof(UI.Device_path))]
         [CommandArgument(0, "<device-path>")]
         public string DevicePath { get; init; }
     }

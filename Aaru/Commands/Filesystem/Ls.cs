@@ -206,7 +206,7 @@ sealed class LsCommand : Command<LsCommand.Settings>
 
             AaruLogging.WriteLine(UI._0_partitions_found, partitions.Count);
 
-            for(int i = 0; i < partitions.Count; i++)
+            for(var i = 0; i < partitions.Count; i++)
             {
                 AaruLogging.WriteLine();
                 AaruLogging.WriteLine($"[bold]{string.Format(UI.Partition_0, partitions[i].Sequence)}[/]");
@@ -440,19 +440,19 @@ sealed class LsCommand : Command<LsCommand.Settings>
 
     public class Settings : FilesystemFamily
     {
-        [Description("Name of character encoding to use.")]
+        [LocalizedDescription(nameof(UI.Name_of_character_encoding_to_use))]
         [CommandOption("-e|--encoding")]
         [DefaultValue(null)]
         public string Encoding { get; init; }
-        [Description("Comma separated name=value pairs of options to pass to filesystem plugin.")]
+        [LocalizedDescription(nameof(UI.Comma_separated_name_value_pairs_of_filesystem_options))]
         [CommandOption("-O|--options")]
         [DefaultValue(null)]
         public string Options { get; init; }
-        [Description("Namespace to use for filenames.")]
+        [LocalizedDescription(nameof(UI.Namespace_to_use_for_filenames))]
         [CommandOption("-n|--namespace")]
         [DefaultValue(null)]
         public string Namespace { get; init; }
-        [Description("Media image path")]
+        [LocalizedDescription(nameof(UI.Media_image_path))]
         [CommandArgument(0, "<image-path>")]
         public string ImagePath { get; init; }
     }

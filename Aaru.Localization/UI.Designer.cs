@@ -735,9 +735,9 @@ namespace Aaru.Localization {
             }
         }
         
-        public static string Disc_image_path {
+        public static string Media_image_path {
             get {
-                return ResourceManager.GetString("Disc_image_path", resourceCulture);
+                return ResourceManager.GetString("Media_image_path", resourceCulture);
             }
         }
         
@@ -6571,6 +6571,54 @@ namespace Aaru.Localization {
         public static string Title_Open_device {
             get {
                 return ResourceManager.GetString("Title_Open_device", resourceCulture);
+            }
+        }
+        
+        public static string Model_of_drive_used_by_media {
+            get {
+                return ResourceManager.GetString("Model_of_drive_used_by_media", resourceCulture);
+            }
+        }
+        
+        public static string Barcode_of_the_media {
+            get {
+                return ResourceManager.GetString("Barcode_of_the_media", resourceCulture);
+            }
+        }
+        
+        public static string Take_metadata_from_existing_Aaru_sidecar {
+            get {
+                return ResourceManager.GetString("Take_metadata_from_existing_Aaru_sidecar", resourceCulture);
+            }
+        }
+        
+        public static string Ignore_negative_sectors {
+            get {
+                return ResourceManager.GetString("Ignore_negative_sectors", resourceCulture);
+            }
+        }
+        
+        public static string Ignore_overflow_sectors {
+            get {
+                return ResourceManager.GetString("Ignore_overflow_sectors", resourceCulture);
+            }
+        }
+        
+        public static string Create_sidecar_block_size_help {
+            get {
+                return ResourceManager.GetString("Create_sidecar_block_size_help", resourceCulture);
+            }
+        }
+        
+        public static string Decode_media_tags {
+            get {
+                return ResourceManager.GetString("Decode_media_tags", resourceCulture);
+            }
+        }
+        
+        public static string Path_to_log_file {
+            get {
+                return ResourceManager.GetString("Path_to_log_file", resourceCulture);
             }
         }
     }

@@ -2032,9 +2032,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     result = true;
 
                                     if(settings.Force)
-                                    {
                                         AaruLogging.Error(UI.Error_0_reading_negative_sector_1_continuing, errno, i);
-                                    }
                                     else
                                     {
                                         AaruLogging.Error(UI.Error_0_reading_negative_sector_1_not_continuing,
@@ -2056,9 +2054,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     result = true;
 
                                     if(settings.Force)
-                                    {
                                         AaruLogging.Error(UI.Error_0_reading_negative_sector_1_continuing, errno, i);
-                                    }
                                     else
                                     {
                                         AaruLogging.Error(UI.Error_0_reading_negative_sector_1_not_continuing,
@@ -2133,9 +2129,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     result = true;
 
                                     if(settings.Force)
-                                    {
                                         AaruLogging.Error(UI.Error_0_reading_negative_sector_1_continuing, errno, i);
-                                    }
                                     else
                                     {
                                         AaruLogging.Error(UI.Error_0_reading_negative_sector_1_not_continuing,
@@ -2224,9 +2218,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     result = true;
 
                                     if(settings.Force)
-                                    {
                                         AaruLogging.Error(UI.Error_0_reading_overflow_sector_1_continuing, errno, i);
-                                    }
                                     else
                                     {
                                         AaruLogging.Error(UI.Error_0_reading_overflow_sector_1_not_continuing,
@@ -2256,9 +2248,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                     result = true;
 
                                     if(settings.Force)
-                                    {
                                         AaruLogging.Error(UI.Error_0_reading_overflow_sector_1_continuing, errno, i);
-                                    }
                                     else
                                     {
                                         AaruLogging.Error(UI.Error_0_reading_overflow_sector_1_not_continuing,
@@ -2388,125 +2378,125 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
     public class Settings : ImageFamily
     {
-        [Description("Take metadata from existing CICM XML sidecar.")]
+        [LocalizedDescription(nameof(UI.Take_metadata_from_existing_CICM_XML_sidecar))]
         [DefaultValue(null)]
         [CommandOption("-x|--cicm-xml")]
         public string CicmXml { get; init; }
-        [Description("Image comments.")]
+        [LocalizedDescription(nameof(UI.Image_comments))]
         [DefaultValue(null)]
         [CommandOption("--comments")]
         public string Comments { get; init; }
-        [Description("How many sectors to convert at once.")]
+        [LocalizedDescription(nameof(UI.How_many_sectors_to_convert_at_once))]
         [DefaultValue(64)]
         [CommandOption("-c|--count")]
         public int Count { get; init; }
-        [Description("Who (person) created the image?")]
+        [LocalizedDescription(nameof(UI.Who_person_created_the_image))]
         [DefaultValue(null)]
         [CommandOption("--creator")]
         public string Creator { get; init; }
-        [Description("Manufacturer of the drive used to read the media represented by the image.")]
+        [LocalizedDescription(nameof(UI.Manufacturer_of_drive_read_the_media_by_image))]
         [DefaultValue(null)]
         [CommandOption("--drive-manufacturer")]
         public string DriveManufacturer { get; init; }
-        [Description("Model of the drive used to read the media represented by the image.")]
+        [LocalizedDescription(nameof(UI.Model_of_drive_used_by_media))]
         [DefaultValue(null)]
         [CommandOption("--drive-model")]
         public string DriveModel { get; init; }
-        [Description("Firmware revision of the drive used to read the media represented by the image.")]
+        [LocalizedDescription(nameof(UI.Firmware_revision_of_drive_read_the_media_by_image))]
         [DefaultValue(null)]
         [CommandOption("--drive-revision")]
         public string DriveFirmwareRevision { get; init; }
-        [Description("Serial number of the drive used to read the media represented by the image.")]
+        [LocalizedDescription(nameof(UI.Serial_number_of_drive_read_the_media_by_image))]
         [DefaultValue(null)]
         [CommandOption("--drive-serial")]
         public string DriveSerialNumber { get; init; }
-        [Description("Continue conversion even if sector or media tags will be lost in the process.")]
+        [LocalizedDescription(nameof(UI.Continue_conversion_even_if_data_lost))]
         [DefaultValue(false)]
         [CommandOption("-f|--force")]
         public bool Force { get; init; }
-        [Description("Format of the output image, as plugin name or plugin id. If not present, will try to detect it from output image extension.")]
+        [LocalizedDescription(nameof(UI.Format_of_the_output_image_as_plugin_name_or_plugin_id))]
         [DefaultValue(null)]
         [CommandOption("-p|--format")]
         public string Format { get; init; }
-        [Description("Barcode of the media represented by the image.")]
+        [LocalizedDescription(nameof(UI.Barcode_of_the_media))]
         [DefaultValue(null)]
         [CommandOption("--media-barcode")]
         public string MediaBarcode { get; init; }
-        [Description("Last media of the sequence the media represented by the image corresponds to.")]
+        [LocalizedDescription(nameof(UI.Last_media_of_sequence_by_image))]
         [DefaultValue(0)]
         [CommandOption("--media-lastsequence")]
         public int LastMediaSequence { get; init; }
-        [Description("Manufacturer of the media represented by the image.")]
+        [LocalizedDescription(nameof(UI.Manufacturer_of_media_by_image))]
         [DefaultValue(null)]
         [CommandOption("--media-manufacturer")]
         public string MediaManufacturer { get; init; }
-        [Description("Model of the media represented by the image.")]
+        [LocalizedDescription(nameof(UI.Model_of_media_by_image))]
         [DefaultValue(null)]
         [CommandOption("--media-model")]
         public string MediaModel { get; init; }
-        [Description("Part number of the media represented by the image.")]
+        [LocalizedDescription(nameof(UI.Part_number_of_media_by_image))]
         [DefaultValue(null)]
         [CommandOption("--media-partnumber")]
         public string MediaPartNumber { get; init; }
-        [Description("Number in sequence for the media represented by the image.")]
+        [LocalizedDescription(nameof(UI.Number_in_sequence_for_media_by_image))]
         [DefaultValue(0)]
         [CommandOption("--media-sequence")]
         public int MediaSequence { get; init; }
-        [Description("Serial number of the media represented by the image.")]
+        [LocalizedDescription(nameof(UI.Serial_number_of_media_by_image))]
         [DefaultValue(null)]
         [CommandOption("--media-serial")]
         public string MediaSerialNumber { get; init; }
-        [Description("Title of the media represented by the image.")]
+        [LocalizedDescription(nameof(UI.Title_of_media_represented_by_image))]
         [DefaultValue(null)]
         [CommandOption("--media-title")]
         public string MediaTitle { get; init; }
-        [Description("Comma separated name=value pairs of options to pass to output image plugin.")]
+        [LocalizedDescription(nameof(UI.Comma_separated_name_value_pairs_of_image_options))]
         [DefaultValue(null)]
         [CommandOption("-O|--options")]
         public string Options { get; init; }
-        [Description("Take list of dump hardware from existing resume file.")]
+        [LocalizedDescription(nameof(UI.Take_dump_hardware_from_existing_resume))]
         [DefaultValue(null)]
         [CommandOption("-r|--resume-file")]
         public string ResumeFile { get; init; }
-        [Description("Force geometry, only supported in not tape block media. Specify as C/H/S.")]
+        [LocalizedDescription(nameof(UI.Force_geometry_help))]
         [DefaultValue(null)]
         [CommandOption("-g|--geometry")]
         public string Geometry { get; init; }
-        [Description("Store subchannel according to the sector they describe.")]
+        [LocalizedDescription(nameof(UI.Fix_subchannel_position_help))]
         [DefaultValue(true)]
         [CommandOption("--fix-subchannel-position")]
         public bool FixSubchannelPosition { get; init; }
-        [Description("Try to fix subchannel. Implies fixing subchannel position.")]
+        [LocalizedDescription(nameof(UI.Fix_subchannel_help))]
         [DefaultValue(false)]
         [CommandOption("--fix-subchannel")]
         public bool FixSubchannel { get; init; }
-        [Description("If subchannel looks OK but CRC fails, rewrite it. Implies fixing subchannel.")]
+        [LocalizedDescription(nameof(UI.Fix_subchannel_crc_help))]
         [DefaultValue(false)]
         [CommandOption("--fix-subchannel-crc")]
         public bool FixSubchannelCrc { get; init; }
-        [Description("Generates missing subchannels.")]
+        [LocalizedDescription(nameof(UI.Generates_subchannels_help))]
         [DefaultValue(false)]
         [CommandOption("--generate-subchannels")]
         public bool GenerateSubchannels { get; init; }
-        [Description("Try to decrypt encrypted sectors.")]
+        [LocalizedDescription(nameof(UI.Decrypt_sectors_help))]
         [DefaultValue(false)]
         [CommandOption("--decrypt")]
         public bool Decrypt { get; init; }
-        [Description("Take metadata from existing Aaru Metadata sidecar.")]
+        [LocalizedDescription(nameof(UI.Take_metadata_from_existing_Aaru_sidecar))]
         [DefaultValue(null)]
         [CommandOption("-m|--aaru-metadata")]
         public string AaruMetadata { get; init; }
-        [Description("Input image path")]
+        [LocalizedDescription(nameof(UI.Input_image_path))]
         [CommandArgument(0, "<input-image>")]
         public string InputPath { get; init; }
-        [Description("Output image path")]
+        [LocalizedDescription(nameof(UI.Output_image_path))]
         [CommandArgument(1, "<output-image>")]
         public string OutputPath { get; init; }
-        [Description("Ignore negative sectors.")]
+        [LocalizedDescription(nameof(UI.Ignore_negative_sectors))]
         [DefaultValue(false)]
         [CommandOption("--ignore-negative-sectors")]
         public bool IgnoreNegativeSectors { get; init; }
-        [Description("Ignore overflow sectors.")]
+        [LocalizedDescription(nameof(UI.Ignore_overflow_sectors))]
         [DefaultValue(false)]
         [CommandOption("--ignore-overflow-sectors")]
         public bool IgnoreOverflowSectors { get; init; }

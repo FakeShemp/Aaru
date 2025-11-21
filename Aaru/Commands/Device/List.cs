@@ -32,6 +32,7 @@
 
 using System.ComponentModel;
 using System.Linq;
+using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.Core;
 using Aaru.Devices;
@@ -123,7 +124,7 @@ sealed class ListDevicesCommand : Command<ListDevicesCommand.Settings>
     public class Settings : DeviceFamily
     {
         [CanBeNull]
-        [Description("aaruremote host")]
+        [LocalizedDescription(nameof(UI.aaruremote_host))]
         [CommandArgument(0, "[aaru-remote-host]")]
         [DefaultValue(null)]
         public string AaruRemoteHost { get; init; }

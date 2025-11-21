@@ -35,6 +35,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.Core;
 using Aaru.Database;
@@ -105,11 +106,11 @@ sealed class UpdateCommand : AsyncCommand<UpdateCommand.Settings>
     public class Settings : DatabaseFamily
     {
         [CommandOption("--clear")]
-        [Description("Clear existing main database.")]
+        [LocalizedDescription(nameof(UI.Clear_existing_main_database))]
         [DefaultValue(false)]
         public bool Clear { get; init; }
         [CommandOption("--clear-all")]
-        [Description("Clear existing main and local database.")]
+        [LocalizedDescription(nameof(UI.Clear_existing_main_and_local_database))]
         [DefaultValue(false)]
         public bool ClearAll { get; init; }
     }

@@ -149,11 +149,11 @@ sealed class ArchiveInfoCommand : Command<ArchiveInfoCommand.Settings>
     public class Settings : ArchiveFamily
     {
         [CommandOption("-e|--encoding")]
-        [Description("Name of character encoding to use.")]
+        [LocalizedDescription(nameof(UI.Name_of_character_encoding_to_use))]
         [DefaultValue(null)]
         public string Encoding { get; init; }
 
-        [Description("Archive file path")]
+        [LocalizedDescription(nameof(UI.Archive_file_path))]
         [CommandArgument(0, "<path>")]
         public string Path { get; init; }
     }

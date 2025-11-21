@@ -129,9 +129,11 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
                 }
 
                 if(settings.Verbose)
+                {
                     AaruLogging.Verbose(UI.Image_format_identified_by_0_1,
                                         Markup.Escape(imageFormat.Name),
                                         imageFormat.Id);
+                }
                 else
                     AaruLogging.WriteLine(UI.Image_format_identified_by_0, Markup.Escape(imageFormat.Name));
 
@@ -349,18 +351,18 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
     public class Settings : ImageFamily
     {
         [CommandOption("-b|--block-size")]
-        [Description("Only used for tapes, indicates block size. Files in the folder whose size is not a multiple of this value will simply be ignored.")]
+        [LocalizedDescription(nameof(UI.Create_sidecar_block_size_help))]
         [DefaultValue(512)]
         public int BlockSize { get; init; }
         [CommandOption("-e|--encoding")]
-        [Description("Name of character encoding to use.")]
+        [LocalizedDescription(nameof(UI.Name_of_character_encoding_to_use))]
         [DefaultValue(null)]
         public string Encoding { get; init; }
         [CommandOption("-t|--tape")]
-        [Description("When used indicates that input is a folder containing alphabetically sorted files extracted from a linear block-based tape with fixed block size (e.g. a SCSI tape device).")]
+        [LocalizedDescription(nameof(UI.Tape_argument_input_help))]
         [DefaultValue(false)]
         public bool Tape { get; init; }
-        [Description("Media image path")]
+        [LocalizedDescription(nameof(UI.Media_image_path))]
         [CommandArgument(0, "<image-path>")]
         public string ImagePath { get; init; }
     }

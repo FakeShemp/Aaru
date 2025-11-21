@@ -718,9 +718,9 @@
     <data name="Disc_image_does_not_support_verification" xml:space="preserve">
     <value>La imagen de disco no soporta la verificación</value>
   </data>
-    <data name="Disc_image_path" xml:space="preserve">
-    <value>Ruta a la imagen de disco</value>
-  </data>
+    <data name="Media_image_path" xml:space="preserve">
+        <value>Ruta a la imagen del medio</value>
+    </data>
     <data name="Disc_information" xml:space="preserve">
     <value>Información del disco</value>
   </data>
@@ -3286,5 +3286,29 @@ Probadores:
     </data>
     <data name="Title_Open_device" xml:space="preserve">
         <value>Abrir dispositivo</value>
+    </data>
+    <data name="Model_of_drive_used_by_media" xml:space="preserve">
+        <value>Modelo de la unidad usada para leer el medio representado por la imagen.</value>
+    </data>
+    <data name="Barcode_of_the_media" xml:space="preserve">
+        <value>Código de barras del medio representado por la imagen.</value>
+    </data>
+    <data name="Take_metadata_from_existing_Aaru_sidecar" xml:space="preserve">
+        <value>Obtener metadatos de un sidecar de metadatos de Aaru existente.</value>
+    </data>
+    <data name="Ignore_negative_sectors" xml:space="preserve">
+        <value>Ignorar sectores negativos.</value>
+    </data>
+    <data name="Ignore_overflow_sectors" xml:space="preserve">
+        <value>Ignorar sectores de sobrecarga.</value>
+    </data>
+    <data name="Create_sidecar_block_size_help" xml:space="preserve">
+        <value>Sólo usado en cintas, indica el tamaño del bloque. Los archivos en la carpeta cuyo tamaño no sea un múltiplo de este valor simplemente serán ignorados.</value>
+    </data>
+    <data name="Decode_media_tags" xml:space="preserve">
+        <value>Descodificar etiquetas del medio.</value>
+    </data>
+    <data name="Path_to_log_file" xml:space="preserve">
+        <value>Ruta al archivo de registro.</value>
     </data>
 </root>

@@ -226,7 +226,7 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
 
             AaruLogging.WriteLine(UI._0_partitions_found, partitions.Count);
 
-            for(int i = 0; i < partitions.Count; i++)
+            for(var i = 0; i < partitions.Count; i++)
             {
                 AaruLogging.WriteLine();
                 AaruLogging.WriteLine($"[bold]{string.Format(UI.Partition_0, partitions[i].Sequence)}[/]");
@@ -575,7 +575,7 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
                                         ctx.AddTask(string.Format(UI.Reading_file_0, Markup.Escape(entry)));
 
                                     task.MaxValue = stat.Length;
-                                    byte[] outBuf = new byte[BUFFER_SIZE];
+                                    var outBuf = new byte[BUFFER_SIZE];
                                     error = fs.OpenFile(path + "/" + entry, out IFileNode fileNode);
 
                                     if(error == ErrorNumber.NoError)
@@ -661,26 +661,26 @@ sealed class ExtractFilesCommand : Command<ExtractFilesCommand.Settings>
     public class Settings : FilesystemFamily
     {
         [CommandOption("-e|--encoding")]
-        [Description("Name of character encoding to use.")]
+        [LocalizedDescription(nameof(UI.Name_of_character_encoding_to_use))]
         [DefaultValue(null)]
         public string Encoding { get; init; }
         [CommandOption("-O|--options")]
-        [Description("Comma separated name=value pairs of options to pass to filesystem plugin.")]
+        [LocalizedDescription(nameof(UI.Comma_separated_name_value_pairs_of_filesystem_options))]
         [DefaultValue(null)]
         public string Options { get; init; }
         [CommandOption("-x|--xattrs")]
-        [Description("Extract extended attributes if present.")]
+        [LocalizedDescription(nameof(UI.Extract_extended_attributes_if_present))]
         [DefaultValue(false)]
         public bool Xattrs { get; init; }
         [CommandOption("-n|--namespace")]
-        [Description("Namespace to use for filenames.")]
+        [LocalizedDescription(nameof(UI.Namespace_to_use_for_filenames))]
         [DefaultValue(null)]
         public string Namespace { get; init; }
         [CommandArgument(1, "<output-dir>")]
-        [Description("Directory where extracted files will be created. Will abort if it exists")]
+        [LocalizedDescription(nameof(UI.Directory_where_extracted_files_will_be_created))]
         public string OutputDir { get; init; }
         [CommandArgument(0, "<image-path>")]
-        [Description("Disc image path")]
+        [LocalizedDescription(nameof(UI.Media_image_path))]
         public string ImagePath { get; init; }
     }
 

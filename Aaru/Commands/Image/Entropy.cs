@@ -212,19 +212,19 @@ sealed class EntropyCommand : Command<EntropyCommand.Settings>
 
     public class Settings : ImageFamily
     {
-        [Description("Calculates how many sectors are duplicated (have same exact data in user area).")]
+        [LocalizedDescription(nameof(UI.Calculates_how_many_sectors_are_duplicated))]
         [DefaultValue(true)]
         [CommandOption("-p|--duplicated-sectors")]
         public bool DuplicatedSectors { get; init; }
-        [Description("Calculates entropy for each track separately.")]
+        [LocalizedDescription(nameof(UI.Calculates_entropy_for_each_track_separately))]
         [DefaultValue(true)]
         [CommandOption("-t|--separated-tracks")]
         public bool SeparatedTracks { get; init; }
-        [Description("Calculates entropy for the whole disc.")]
+        [LocalizedDescription(nameof(UI.Calculates_entropy_for_the_whole_disc))]
         [DefaultValue(true)]
         [CommandOption("-w|--whole-disc")]
         public bool WholeDisc { get; init; }
-        [Description("Media image path")]
+        [LocalizedDescription(nameof(UI.Media_image_path))]
         [CommandArgument(0, "<image-path>")]
         public string ImagePath { get; init; }
     }

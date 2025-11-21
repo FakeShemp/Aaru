@@ -76,7 +76,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         bool fixSubchannel         = settings.FixSubchannel;
         bool fixSubchannelCrc      = settings.FixSubchannelCrc;
         bool fixSubchannelPosition = settings.FixSubchannelPosition;
-        uint maxBlocks             = (uint)settings.MaxBlocks;
+        var  maxBlocks             = (uint)settings.MaxBlocks;
         bool eject                 = settings.Eject;
 
         fixSubchannel         |= fixSubchannelCrc;
@@ -644,138 +644,138 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
 
     public class Settings : MediaFamily
     {
-        [Description("Take metadata from existing CICM XML sidecar.")]
+        [LocalizedDescription(nameof(UI.Take_metadata_from_existing_CICM_XML_sidecar))]
         [CommandOption("-x|--cicm-xml")]
         [DefaultValue(null)]
         public string CicmXml { get; init; }
-        [Description("Name of character encoding to use.")]
+        [LocalizedDescription(nameof(UI.Name_of_character_encoding_to_use))]
         [CommandOption("-e|--encoding")]
         [DefaultValue(null)]
         public string Encoding { get; init; }
-        [Description("Try to read first track pregap. Only applicable to CD/DDCD/GD.")]
+        [LocalizedDescription(nameof(UI.Try_to_read_first_track_pregap))]
         [CommandOption("--first-pregap")]
         [DefaultValue(false)]
         public bool FirstPregap { get; init; }
-        [Description("Fix audio tracks offset. Only applicable to CD/GD.")]
+        [LocalizedDescription(nameof(UI.Fix_audio_tracks_offset))]
         [CommandOption("--fix-offset")]
         [DefaultValue(true)]
         public bool FixOffset { get; init; }
-        [Description("Continue dumping whatever happens.")]
+        [LocalizedDescription(nameof(UI.Continue_dumping_whatever_happens))]
         [CommandOption("-f|--force")]
         [DefaultValue(false)]
         public bool Force { get; init; }
-        [Description("Format of the output image, as plugin name or plugin id. If not present, will try to detect it from output image extension.")]
+        [LocalizedDescription(nameof(UI.Format_of_the_output_image_as_plugin_name_or_plugin_id))]
         [CommandOption("-t|--format")]
         [DefaultValue(null)]
         public string Format { get; init; }
-        [Description("Enables creating Aaru Metadata sidecar.")]
+        [LocalizedDescription(nameof(UI.Enables_creating_Aaru_Metadata_sidecar))]
         [CommandOption("--metadata")]
         [DefaultValue(true)]
         public bool Metadata { get; init; }
-        [Description("Enables trimming errored from skipped sectors.")]
+        [LocalizedDescription(nameof(UI.Enables_trimming_errored_from_skipped_sectors))]
         [CommandOption("--trim")]
         [DefaultValue(true)]
         public bool Trim { get; init; }
-        [Description("Comma separated name=value pairs of options to pass to output image plugin.")]
+        [LocalizedDescription(nameof(UI.Comma_separated_name_value_pairs_of_image_options))]
         [CommandOption("-O|--options")]
         [DefaultValue(null)]
         public string Options { get; init; }
-        [Description("Try to recover partial or incorrect data.")]
+        [LocalizedDescription(nameof(UI.Try_to_recover_partial_or_incorrect_data))]
         [CommandOption("--persistent")]
         [DefaultValue(false)]
         public bool Persistent { get; init; }
-        [Description("Create/use resume mapfile.")]
+        [LocalizedDescription(nameof(UI.Create_or_use_resume_mapfile))]
         [CommandOption("-r|--resume")]
         [DefaultValue(true)]
         public bool Resume { get; init; }
-        [Description("How many retry passes to do.")]
+        [LocalizedDescription(nameof(UI.How_many_retry_passes_to_do))]
         [CommandOption("-p|--retry-passes")]
         [DefaultValue(5)]
         public int RetryPasses { get; init; }
-        [Description("When an unreadable sector is found skip this many sectors.")]
+        [LocalizedDescription(nameof(UI.When_an_unreadable_sector_is_found_skip_this_many_sectors))]
         [CommandOption("-k|--skip")]
         [DefaultValue(512)]
         public int Skip { get; init; }
-        [Description("Stop media dump on first error.")]
+        [LocalizedDescription(nameof(UI.Stop_media_dump_on_first_error))]
         [CommandOption("-s|--stop-on-error")]
         [DefaultValue(false)]
         public bool StopOnError { get; init; }
-        [Description("Subchannel to dump. Only applicable to CD/GD. Values: any, rw, rw-or-pq, pq, none.")]
+        [LocalizedDescription(nameof(UI.Subchannel_to_dump_help))]
         [CommandOption("--subchannel")]
         [DefaultValue("any")]
         public string Subchannel { get; init; }
-        [Description("Speed to dump. Only applicable to optical drives, 0 for maximum.")]
+        [LocalizedDescription(nameof(UI.Speed_to_dump))]
         [CommandOption("--speed")]
         [DefaultValue(0)]
         public int Speed { get; init; }
-        [Description("Do not store paths and serial numbers in log or metadata.")]
+        [LocalizedDescription(nameof(UI.Do_not_store_paths_and_serial_numbers_in_log_or_metadata))]
         [CommandOption("--private")]
         [DefaultValue(false)]
         public bool Private { get; init; }
-        [Description("Store subchannel according to the sector they describe.")]
+        [LocalizedDescription(nameof(UI.Fix_subchannel_position_help))]
         [CommandOption("--fix-subchannel-position")]
         [DefaultValue(true)]
         public bool FixSubchannelPosition { get; init; }
-        [Description("Retry subchannel. Implies fixing subchannel position.")]
+        [LocalizedDescription(nameof(UI.Retry_subchannel_help))]
         [CommandOption("--retry-subchannel")]
         [DefaultValue(true)]
         public bool RetrySubchannel { get; init; }
-        [Description("Try to fix subchannel. Implies fixing subchannel position.")]
+        [LocalizedDescription(nameof(UI.Fix_subchannel_help))]
         [CommandOption("--fix-subchannel")]
         [DefaultValue(false)]
         public bool FixSubchannel { get; init; }
-        [Description("If subchannel looks OK but CRC fails, rewrite it. Implies fixing subchannel.")]
+        [LocalizedDescription(nameof(UI.Fix_subchannel_crc_help))]
         [CommandOption("--fix-subchannel-crc")]
         [DefaultValue(false)]
         public bool FixSubchannelCrc { get; init; }
-        [Description("Generates missing subchannels (they don\'t count as dumped in resume file).")]
+        [LocalizedDescription(nameof(UI.Generate_subchannels_dump_help))]
         [CommandOption("--generate-subchannels")]
         [DefaultValue(false)]
         public bool GenerateSubchannels { get; init; }
-        [Description("Skip the hole between data and audio in a CD-i Ready disc.")]
+        [LocalizedDescription(nameof(UI.Skip_CDi_Ready_hole_help))]
         [CommandOption("--skip-cdiready-hole")]
         [DefaultValue(true)]
         public bool SkipCdiReadyHole { get; init; }
-        [Description("Eject media after dump finishes.")]
+        [LocalizedDescription(nameof(UI.Eject_media_after_dump_finishes))]
         [CommandOption("--eject")]
         [DefaultValue(false)]
         public bool Eject { get; init; }
-        [Description("Maximum number of blocks to read at once.")]
+        [LocalizedDescription(nameof(UI.Maximum_number_of_blocks_to_read_at_once))]
         [CommandOption("--max-blocks")]
         [DefaultValue(64)]
         public int MaxBlocks { get; init; }
-        [Description("Use OS buffered reads if CMD23 is not supported. Only applicable to MMC/SD.")]
+        [LocalizedDescription(nameof(UI.OS_buffered_reads_help))]
         [CommandOption("--use-buffered-reads")]
         [DefaultValue(true)]
         public bool UseBufferedReads { get; init; }
-        [Description("Store encrypted data as is.")]
+        [LocalizedDescription(nameof(UI.Store_encrypted_data_as_is))]
         [CommandOption("--store-encrypted")]
         [DefaultValue(true)]
         public bool StoreEncrypted { get; init; }
-        [Description("Try to read the title keys from CSS encrypted DVDs (very slow).")]
+        [LocalizedDescription(nameof(UI.Try_to_read_the_title_keys_from_CSS_DVDs))]
         [CommandOption("--title-keys")]
         [DefaultValue(true)]
         public bool TitleKeys { get; init; }
-        [Description("How many CD-R(W) run-out sectors to ignore and regenerate (0 for none).")]
+        [LocalizedDescription(nameof(UI.How_many_CDRW_run_out_sectors_to_ignore_and_regenerate))]
         [CommandOption("--ignore-cdr-runouts")]
         [DefaultValue(10)]
         public int IgnoreCdrRunOuts { get; init; }
-        [Description("Create graph of dumped media. Currently only supported for CD/DVD/BD/GD/UMD.")]
+        [LocalizedDescription(nameof(UI.Create_graph_of_dumped_media))]
         [CommandOption("-g|--create-graph")]
         [DefaultValue(true)]
         public bool CreateGraph { get; init; }
-        [Description("Dimensions in pixels of the square that will contain the graph of dumped media.")]
+        [LocalizedDescription(nameof(UI.Dump_graph_dimensions_argument_help))]
         [CommandOption("--dimensions")]
         [DefaultValue(1080)]
         public int Dimensions { get; init; }
-        [Description("Take metadata from existing Aaru Metadata sidecar.")]
+        [LocalizedDescription(nameof(UI.Take_metadata_from_existing_Aaru_sidecar))]
         [CommandOption("--aaru-metadata")]
         [DefaultValue(null)]
         public string AaruMetadata { get; init; }
-        [Description("Device path")]
+        [LocalizedDescription(nameof(UI.Device_path))]
         [CommandArgument(0, "<device-path>")]
         public string DevicePath { get; init; }
-        [Description("Output image path. If filename starts with # and exists, it will be read as a list of output images, its extension will be used to detect the image output format, each media will be ejected and confirmation for the next one will be asked.")]
+        [LocalizedDescription(nameof(UI.Output_image_path_Dump_help))]
         [CommandArgument(1, "<output-path>")]
         public string OutputPath { get; init; }
     }

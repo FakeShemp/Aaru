@@ -156,7 +156,7 @@ sealed class ArchiveExtractCommand : Command<ArchiveExtractCommand.Settings>
             }
 
 
-            for(int i = 0; i < archive.NumberOfEntries; i++)
+            for(var i = 0; i < archive.NumberOfEntries; i++)
             {
                 ErrorNumber errno = archive.GetFilename(i, out string fileName);
 
@@ -229,7 +229,7 @@ sealed class ArchiveExtractCommand : Command<ArchiveExtractCommand.Settings>
                                .Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn())
                                .Start(ctx =>
                                 {
-                                    int position = 0;
+                                    var position = 0;
 
                                     var outputFile =
                                         new FileStream(outputPath,
@@ -241,7 +241,7 @@ sealed class ArchiveExtractCommand : Command<ArchiveExtractCommand.Settings>
                                         ctx.AddTask(string.Format(UI.Reading_file_0, Markup.Escape(fileName)));
 
                                     task.MaxValue = uncompressedSize;
-                                    byte[] outBuf    = new byte[BUFFER_SIZE];
+                                    var    outBuf    = new byte[BUFFER_SIZE];
                                     Stream inputFile = filter.GetDataForkStream();
 
                                     while(position < stat.Length)
@@ -419,21 +419,21 @@ sealed class ArchiveExtractCommand : Command<ArchiveExtractCommand.Settings>
 
     public class Settings : ArchiveFamily
     {
-        [Description("Name of character encoding to use.")]
+        [LocalizedDescription(nameof(UI.Name_of_character_encoding_to_use))]
         [DefaultValue(null)]
         [CommandOption("-e|--encoding")]
         public string Encoding { get; init; }
 
-        [Description("Extract extended attributes if present.")]
+        [LocalizedDescription(nameof(UI.Extract_extended_attributes_if_present))]
         [DefaultValue(false)]
         [CommandOption("-x|--xattrs")]
         public bool XAttrs { get; init; }
 
-        [Description("Archive file path")]
+        [LocalizedDescription(nameof(UI.Archive_file_path))]
         [CommandArgument(0, "<path>")]
         public string Path { get; init; }
 
-        [Description("Directory where extracted files will be created. Will abort if it exists")]
+        [LocalizedDescription(nameof(UI.Directory_where_extracted_files_will_be_created))]
         [CommandArgument(1, "<output>")]
         public string OutputDir { get; init; }
     }

@@ -99,7 +99,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
 
         PluginRegister plugins = PluginRegister.Singleton;
 
-        bool checkRaw = false;
+        var checkRaw = false;
 
         try
         {
@@ -204,7 +204,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
                 {
                     AaruLogging.WriteLine(UI._0_partitions_found, partitionsList.Count);
 
-                    for(int i = 0; i < partitionsList.Count; i++)
+                    for(var i = 0; i < partitionsList.Count; i++)
                     {
                         Table table = new()
                         {
@@ -400,19 +400,19 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
 
     public class Settings : FilesystemFamily
     {
-        [Description("Name of character encoding to use.")]
+        [LocalizedDescription(nameof(UI.Name_of_character_encoding_to_use))]
         [DefaultValue(null)]
         [CommandOption("-e|--encoding")]
         public string Encoding { get; init; }
-        [Description("Searches and prints information about filesystems.")]
+        [LocalizedDescription(nameof(UI.Searches_and_interprets_partitions))]
         [DefaultValue(true)]
         [CommandOption("-p|--partitions")]
         public bool Partitions { get; init; }
-        [Description("Searches and interprets partitions.")]
+        [LocalizedDescription(nameof(UI.Searches_and_prints_information_about_filesystems))]
         [CommandOption("-f|--filesystems")]
         [DefaultValue(true)]
         public bool Filesystems { get; init; }
-        [Description("Media image path")]
+        [LocalizedDescription(nameof(UI.Media_image_path))]
         [CommandArgument(0, "<image-path>")]
         public string ImagePath { get; init; }
     }

@@ -31,7 +31,6 @@
 // ****************************************************************************/
 
 using System;
-using System.ComponentModel;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
@@ -141,7 +140,7 @@ sealed class ImageInfoCommand : Command<ImageInfoCommand.Settings>
 
     public class Settings : ImageFamily
     {
-        [Description("Media image path")]
+        [LocalizedDescription(nameof(UI.Media_image_path))]
         [CommandArgument(0, "<image-path>")]
         public string ImagePath { get; init; }
     }

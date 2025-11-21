@@ -154,7 +154,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
 
             if(!settings.LongFormat)
             {
-                for(int i = 0; i < archive.NumberOfEntries; i++)
+                for(var i = 0; i < archive.NumberOfEntries; i++)
                 {
                     ErrorNumber errno = archive.GetFilename(i, out string fileName);
 
@@ -173,8 +173,8 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
             }
 
             var  table             = new Table();
-            int  files             = 0;
-            int  folders           = 0;
+            var  files             = 0;
+            var  folders           = 0;
             long totalSize         = 0;
             long totalUncompressed = 0;
 
@@ -235,7 +235,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
 
                             ctx.Refresh();
 
-                            for(int i = 0; i < archive.NumberOfEntries; i++)
+                            for(var i = 0; i < archive.NumberOfEntries; i++)
                             {
                                 ErrorNumber errno = archive.GetFilename(i, out string fileName);
 
@@ -255,7 +255,7 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
                                     continue;
                                 }
 
-                                char[] attr = new char[5];
+                                var attr = new char[5];
 
                                 if(stat.Attributes.HasFlag(FileAttributes.Directory))
                                 {
@@ -332,12 +332,13 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
                                                  $"[teal]{compressedSize}[/]",
                                                  $"[{color}]{Markup.Escape(fileName)}[/]");
 
-                                    AaruLogging.Information($"Date: {stat.LastWriteTime?.ToShortDateString() ?? ""} "   +
-                                                            $"Time: ({stat.LastWriteTime?.ToLongTimeString() ?? ""}), " +
-                                                            $"Attributes: {new string(attr)}, "                        +
-                                                            $"Uncompressed Size: {uncompressedSize}, "                 +
-                                                            $"Compressed Size: {compressedSize}, "                     +
-                                                            $"File Name: {fileName}");
+                                    AaruLogging
+                                       .Information($"Date: {stat.LastWriteTime?.ToShortDateString() ?? ""} "   +
+                                                    $"Time: ({stat.LastWriteTime?.ToLongTimeString() ?? ""}), " +
+                                                    $"Attributes: {new string(attr)}, "                         +
+                                                    $"Uncompressed Size: {uncompressedSize}, "                  +
+                                                    $"Compressed Size: {compressedSize}, "                      +
+                                                    $"File Name: {fileName}");
                                 }
                                 else
                                 {
@@ -347,11 +348,12 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
                                                  $"[lime]{uncompressedSize}[/]",
                                                  $"[{color}]{Markup.Escape(fileName)}[/]");
 
-                                    AaruLogging.Information($"Date: {stat.LastWriteTime?.ToShortDateString() ?? ""} "   +
-                                                            $"Time: ({stat.LastWriteTime?.ToLongTimeString() ?? ""}), " +
-                                                            $"Attributes: {new string(attr)}, "                        +
-                                                            $"Uncompressed Size: {uncompressedSize}, "                 +
-                                                            $"File Name: {fileName}");
+                                    AaruLogging
+                                       .Information($"Date: {stat.LastWriteTime?.ToShortDateString() ?? ""} "   +
+                                                    $"Time: ({stat.LastWriteTime?.ToLongTimeString() ?? ""}), " +
+                                                    $"Attributes: {new string(attr)}, "                         +
+                                                    $"Uncompressed Size: {uncompressedSize}, "                  +
+                                                    $"File Name: {fileName}");
                                 }
 
                                 totalSize         += compressedSize;
@@ -403,16 +405,16 @@ sealed class ArchiveListCommand : Command<ArchiveListCommand.Settings>
     public class Settings : ArchiveFamily
     {
         [CommandOption("-e|--encoding")]
-        [Description("Name of character encoding to use.")]
+        [LocalizedDescription(nameof(UI.Name_of_character_encoding_to_use))]
         [DefaultValue(null)]
         public string Encoding { get; init; }
 
         [CommandOption("-l|--long-format")]
-        [Description("Use long format.")]
+        [LocalizedDescription(nameof(UI.Use_long_format))]
         [DefaultValue(false)]
         public bool LongFormat { get; init; }
 
-        [Description("Archive file path")]
+        [LocalizedDescription(nameof(UI.Archive_file_path))]
         [CommandArgument(0, "<path>")]
         public string Path { get; init; }
     }

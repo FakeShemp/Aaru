@@ -32,11 +32,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interop;
 using Aaru.CommonTypes.Metadata;
@@ -125,7 +125,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
             Type         = dev.Type
         };
 
-        bool   removable = false;
+        var    removable = false;
         string jsonFile;
 
         switch(string.IsNullOrWhiteSpace(dev.Manufacturer))
@@ -361,7 +361,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                 reporter.ReportScsiModes(ref report, out byte[] cdromMode, out MediumTypes mediumType);
 
                 string mediumManufacturer;
-                bool   sense = true;
+                var    sense = true;
 
                 switch(dev.ScsiType)
                 {
@@ -717,7 +717,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                                 Console.ReadKey(true);
 
-                                bool mediaIsRecognized = true;
+                                var mediaIsRecognized = true;
 
                                 await AnsiConsole.Status()
                                                  .StartAsync(Localization.Core.Waiting_for_drive_to_become_ready,
@@ -742,7 +742,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                          case 0x04 when decSense.Value.ASCQ == 0x01:
                                                                          case 0x28:
                                                                          {
-                                                                             int leftRetries = 50;
+                                                                             var leftRetries = 50;
 
                                                                              while(leftRetries > 0)
                                                                              {
@@ -821,7 +821,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                                                         task.MaxValue = ushort.MaxValue;
 
-                                                        for(ushort i = (ushort)(mediaTest.BlockSize ?? 0);; i++)
+                                                        for(var i = (ushort)(mediaTest.BlockSize ?? 0);; i++)
                                                         {
                                                             task.Description =
                                                                 string.Format($"[slateblue1]{Localization.Core
@@ -933,7 +933,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                             mediumModel = AnsiConsole.Ask<string>(Localization.Core.Please_write_media_model);
 
-                            bool mediaIsRecognized = true;
+                            var mediaIsRecognized = true;
 
                             await AnsiConsole.Status()
                                              .StartAsync(Localization.Core.Waiting_for_drive_to_become_ready,
@@ -960,7 +960,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                      case 0x04 when decSense.Value.ASCQ == 0x01:
                                                                      case 0x28:
                                                                      {
-                                                                         int leftRetries = 50;
+                                                                         var leftRetries = 50;
 
                                                                          while(leftRetries > 0)
                                                                          {
@@ -1052,7 +1052,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                             Console.ReadKey(true);
 
-                            bool mediaIsRecognized = true;
+                            var mediaIsRecognized = true;
 
                             await AnsiConsole.Status()
                                              .StartAsync(Localization.Core.Waiting_for_drive_to_become_ready,
@@ -1077,7 +1077,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                      case 0x04 when decSense.Value.ASCQ == 0x01:
                                                                      case 0x28:
                                                                      {
-                                                                         int leftRetries = 50;
+                                                                         var leftRetries = 50;
 
                                                                          while(leftRetries > 0)
                                                                          {
@@ -1144,7 +1144,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                                                     task.MaxValue = ushort.MaxValue;
 
-                                                    for(ushort i = (ushort)(mediaTest.BlockSize ?? 0);; i++)
+                                                    for(var i = (ushort)(mediaTest.BlockSize ?? 0);; i++)
                                                     {
                                                         task.Value = i;
 
@@ -1268,7 +1268,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                                 mediumModel = AnsiConsole.Ask<string>(Localization.Core.Please_write_media_model);
 
-                                bool mediaIsRecognized = true;
+                                var mediaIsRecognized = true;
 
                                 await AnsiConsole.Status()
                                                  .StartAsync(Localization.Core.Waiting_for_drive_to_become_ready,
@@ -1291,7 +1291,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                                          case 0x3A:
                                                                          case 0x04 when decSense.Value.ASCQ == 0x01:
                                                                          {
-                                                                             int leftRetries = 20;
+                                                                             var leftRetries = 20;
 
                                                                              while(leftRetries > 0)
                                                                              {
@@ -1347,7 +1347,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                                                         task.MaxValue = ushort.MaxValue;
 
-                                                        for(ushort i = (ushort)(mediaTest.BlockSize ?? 0);; i++)
+                                                        for(var i = (ushort)(mediaTest.BlockSize ?? 0);; i++)
                                                         {
                                                             task.Value = i;
 
@@ -1464,8 +1464,7 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
                                                 task.MaxValue = ushort.MaxValue;
 
-                                                for(ushort i = (ushort)(report.SCSI.ReadCapabilities.BlockSize ?? 0);;
-                                                    i++)
+                                                for(var i = (ushort)(report.SCSI.ReadCapabilities.BlockSize ?? 0);; i++)
                                                 {
                                                     task.Value = i;
 
@@ -1577,11 +1576,11 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
 
     public class Settings : DeviceFamily
     {
-        [Description("Does a device report using a trap disc.")]
+        [LocalizedDescription(nameof(UI.Device_report_using_trap_disc))]
         [CommandOption("-t|--trap-disc")]
         public bool TrapDisc { get; init; }
 
-        [Description("Device path")]
+        [LocalizedDescription(nameof(UI.Device_path))]
         [CommandArgument(0, "<device-path>")]
         public string Path { get; init; }
     }

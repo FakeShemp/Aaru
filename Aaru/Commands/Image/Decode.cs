@@ -381,23 +381,23 @@ sealed class DecodeCommand : Command<DecodeCommand.Settings>
 
     public class Settings : ImageFamily
     {
-        [Description("Decode media tags.")]
+        [LocalizedDescription(nameof(UI.Decode_media_tags))]
         [DefaultValue(true)]
         [CommandOption("-f|--disk-tags")]
         public bool DiskTags { get; init; }
-        [Description("How many sectors to decode, or \"all\".")]
+        [LocalizedDescription(nameof(UI.How_many_sectors_to_decode_or_all))]
         [DefaultValue("all")]
         [CommandOption("-l|--length")]
         public string Length { get; init; }
-        [Description("Decode sector tags.")]
+        [LocalizedDescription(nameof(UI.Decode_sector_tags))]
         [DefaultValue(true)]
         [CommandOption("-p|--sector-tags")]
         public bool SectorTags { get; init; }
-        [Description("Sector to start decoding from.")]
+        [LocalizedDescription(nameof(UI.Sector_to_start_decoding_from))]
         [DefaultValue(0)]
         [CommandOption("-s|--start")]
         public ulong StartSector { get; init; }
-        [Description("Media image path")]
+        [LocalizedDescription(nameof(UI.Media_image_path))]
         [CommandArgument(0, "<image-path>")]
         public string ImagePath { get; init; }
     }

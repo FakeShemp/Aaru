@@ -208,23 +208,23 @@ sealed class PrintHexCommand : Command<PrintHexCommand.Settings>
 
     public class Settings : ImageFamily
     {
-        [Description("How many sectors to print.")]
+        [LocalizedDescription(nameof(UI.How_many_sectors_to_print))]
         [DefaultValue(1ul)]
         [CommandOption("-l|--length")]
         public ulong Length { get; init; }
-        [Description("Print sectors with tags included.")]
+        [LocalizedDescription(nameof(UI.Print_sectors_with_tags_included))]
         [DefaultValue(false)]
         [CommandOption("-r|--long-sectors")]
         public bool LongSectors { get; init; }
-        [Description("Starting sector.")]
+        [LocalizedDescription(nameof(UI.Starting_sector))]
         [DefaultValue(0ul)]
         [CommandOption("-s|--start")]
         public ulong Start { get; init; }
-        [Description("How many bytes to print per line.")]
+        [LocalizedDescription(nameof(UI.How_many_bytes_to_print_per_line))]
         [DefaultValue((ushort)32)]
         [CommandOption("-w|--width")]
         public ushort Width { get; init; }
-        [Description("Media image path")]
+        [LocalizedDescription(nameof(UI.Media_image_path))]
         [CommandArgument(0, "<image-path>")]
         public string ImagePath { get; init; }
     }

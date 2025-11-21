@@ -319,8 +319,8 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                 if((devInfo.AtaMcptError.Value.DeviceHead & 0x08) == 0x08)
                     AaruLogging.WriteLine(Localization.Core.Media_card_is_write_protected);
 
-                ushort specificData = (ushort)(devInfo.AtaMcptError.Value.CylinderHigh * 0x100 +
-                                               devInfo.AtaMcptError.Value.CylinderLow);
+                var specificData = (ushort)(devInfo.AtaMcptError.Value.CylinderHigh * 0x100 +
+                                            devInfo.AtaMcptError.Value.CylinderLow);
 
                 if(specificData != 0) AaruLogging.WriteLine(Localization.Core.Card_specific_data_0, specificData);
             }
@@ -1191,7 +1191,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
         {
             case DeviceType.MMC:
             {
-                bool noInfo = true;
+                var noInfo = true;
 
                 if(devInfo.CID != null)
                 {
@@ -1233,7 +1233,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                 break;
             case DeviceType.SecureDigital:
             {
-                bool noInfo = true;
+                var noInfo = true;
 
                 if(devInfo.CID != null)
                 {
@@ -1341,11 +1341,11 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
 
     public class Settings : DeviceFamily
     {
-        [Description("Prefix for saving binary information from device.")]
+        [LocalizedDescription(nameof(UI.Prefix_for_saving_binary_information))]
         [CommandOption("-w|--output-prefix")]
         public string OutputPrefix { get; init; }
 
-        [Description("Device path")]
+        [LocalizedDescription(nameof(UI.Device_path))]
         [CommandArgument(0, "<device-path>")]
         public string Path { get; init; }
     }
