@@ -154,6 +154,18 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
     bool _useSidecar;
     [ObservableProperty]
     bool _createSidecar;
+    [ObservableProperty]
+    bool _hasSubchannel;
+    [ObservableProperty]
+    bool _fixSubchannelPosition;
+    [ObservableProperty]
+    bool _retrySubchannel;
+    [ObservableProperty]
+    bool _fixSubchannel;
+    [ObservableProperty]
+    bool _fixSubchannelCrc;
+    [ObservableProperty]
+    bool _generateSubchannels;
 
     public MediaDumpViewModel(Device               device, string devicePath, DeviceInfo deviceInfo, Window view,
                               [CanBeNull] ScsiInfo scsiInfo = null)
@@ -171,17 +183,22 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         Encodings          = [];
 
         // Defaults
-        StopOnError      = false;
-        Force            = false;
-        Persistent       = true;
-        Resume           = true;
-        Track1Pregap     = false;
-        UseSidecar       = true;
-        Trim             = true;
-        ExistingMetadata = false;
-        Retries          = 5;
-        Skipped          = 512;
-        CreateSidecar    = true;
+        StopOnError           = false;
+        Force                 = false;
+        Persistent            = true;
+        Resume                = true;
+        Track1Pregap          = false;
+        UseSidecar            = true;
+        Trim                  = true;
+        ExistingMetadata      = false;
+        Retries               = 5;
+        Skipped               = 512;
+        CreateSidecar         = true;
+        FixSubchannelPosition = true;
+        RetrySubchannel       = true;
+        FixSubchannel         = false;
+        FixSubchannelCrc      = false;
+        GenerateSubchannels   = false;
 
         MediaType mediaType;
 
@@ -289,6 +306,8 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
                                    or MediaType.CVD => true,
                                   _ => false
                               };
+
+        HasSubchannel = Track1PregapVisible;
 
         _dev        = device;
         _devicePath = devicePath;
@@ -690,13 +709,13 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
                            DumpSubchannel.Any,
                            0,
                            false,
-                           false,
-                           false,
-                           false,
-                           false,
+                           FixSubchannelPosition,
+                           RetrySubchannel,
+                           FixSubchannel,
+                           FixSubchannelCrc,
                            true,
                            errorLog,
-                           false,
+                           GenerateSubchannels,
                            64,
                            true,
                            true,
@@ -778,7 +797,9 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         await WorkFinishedAsync();
     });
 
-    async void ErrorMessage(string text) => await Dispatcher.UIThread.InvokeAsync(() => Log += text + Environment.NewLine);
+    async void ErrorMessage(string text) =>
+        await Dispatcher.UIThread.InvokeAsync(() => Log += text + Environment.NewLine);
 
-    async void UpdateStatus(string text) => await Dispatcher.UIThread.InvokeAsync(() => Log += text + Environment.NewLine);
+    async void UpdateStatus(string text) =>
+        await Dispatcher.UIThread.InvokeAsync(() => Log += text + Environment.NewLine);
 }
