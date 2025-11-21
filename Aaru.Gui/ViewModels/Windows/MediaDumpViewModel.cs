@@ -152,6 +152,8 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
     bool _trim;
     [ObservableProperty]
     bool _useSidecar;
+    [ObservableProperty]
+    bool _createSidecar;
 
     public MediaDumpViewModel(Device               device, string devicePath, DeviceInfo deviceInfo, Window view,
                               [CanBeNull] ScsiInfo scsiInfo = null)
@@ -179,6 +181,7 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         ExistingMetadata = false;
         Retries          = 5;
         Skipped          = 512;
+        CreateSidecar    = true;
 
         MediaType mediaType;
 
@@ -679,7 +682,7 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
                            parsedOptions,
                            Sidecar,
                            (uint)Skipped,
-                           !ExistingMetadata,
+                           CreateSidecar && !ExistingMetadata,
                            !Trim,
                            Track1Pregap,
                            true,

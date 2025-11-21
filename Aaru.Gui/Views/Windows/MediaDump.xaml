@@ -123,7 +123,7 @@
                                HorizontalAlignment="Stretch"
                                Value="{Binding Skipped, Mode=TwoWay}" />
             </Grid>
-            <CheckBox IsChecked="{Binding Sidecar, Mode=TwoWay}">
+            <CheckBox IsChecked="{Binding CreateSidecar, Mode=TwoWay}">
                 <TextBlock Text="{x:Static localization:UI.Create_Aaru_Metadata_sidecar}" />
             </CheckBox>
             <CheckBox IsChecked="{Binding Trim, Mode=TwoWay}">
