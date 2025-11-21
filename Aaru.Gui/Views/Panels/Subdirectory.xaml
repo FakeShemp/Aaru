@@ -53,7 +53,7 @@
         <DataGrid.Styles>
             <Style Selector="DataGridRow">
                 <Setter Property="Foreground"
-                        Value="{Binding Color, Mode=OneWay}" />
+                        Value="{ReflectionBinding Color, Mode=OneWay}" />
             </Style>
         </DataGrid.Styles>
         <DataGrid.ContextMenu>

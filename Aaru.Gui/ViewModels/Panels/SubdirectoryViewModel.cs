@@ -116,11 +116,11 @@ public sealed class SubdirectoryViewModel
                 Name = dirent,
                 Stat = stat,
                 Color =
-                    new SolidColorBrush(Avalonia.Media.Color.Parse(DirColorsParser.Instance.ExtensionColors
-                                                                      .TryGetValue(Path.GetExtension(dirent),
-                                                                           out string hex)
-                                                                       ? hex
-                                                                       : DirColorsParser.Instance.NormalColor))
+                    new SolidColorBrush(Color.Parse(DirColorsParser.Instance.ExtensionColors
+                                                                   .TryGetValue(Path.GetExtension(dirent),
+                                                                                    out string hex)
+                                                        ? hex
+                                                        : DirColorsParser.Instance.NormalColor))
             });
         }
 
@@ -130,7 +130,6 @@ public sealed class SubdirectoryViewModel
     public ObservableCollection<FileModel> Entries             { get; }
     public List<FileModel>                 SelectedEntries     { get; }
     public ICommand                        ExtractFilesCommand { get; }
-    public IBrush                          Color               { get; }
 
     async Task ExtractFiles()
     {
