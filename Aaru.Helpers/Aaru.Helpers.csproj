@@ -34,6 +34,9 @@
     <ProjectReference Include="..\Aaru.Logging\Aaru.Logging.csproj"/>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="System.Drawing.Common"/>
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="..\LICENSE.LGPL">
       <Link>LICENSE.LGPL</Link>
     </EmbeddedResource>
