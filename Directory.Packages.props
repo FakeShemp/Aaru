@@ -54,9 +54,9 @@
     <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="3.119.1" Condition="$([MSBuild]::IsOSPlatform('Linux'))"/>
     <PackageVersion Include="SmartAnalyzers.MultithreadingAnalyzer" Version="1.1.31"/>
     <PackageVersion Include="Spectre.Console.Analyzer" Version="1.0.0"/>
-    <PackageVersion Include="Spectre.Console" Version="0.52.0"/>
-    <PackageVersion Include="Spectre.Console.Cli" Version="0.52.0"/>
-    <PackageVersion Include="Spectre.Console.Json" Version="0.52.0"/>
+    <PackageVersion Include="Spectre.Console" Version="0.54.0"/>
+    <PackageVersion Include="Spectre.Console.Cli" Version="0.53.0"/>
+    <PackageVersion Include="Spectre.Console.Json" Version="0.54.0"/>
     <PackageVersion Include="Svg.Controls.Avalonia" Version="11.3.6.2"/>
     <PackageVersion Include="System.Collections" Version="4.3.0"/>
     <PackageVersion Include="System.ComponentModel.Annotations" Version="6.0.0-preview.4.21253.7"/>
