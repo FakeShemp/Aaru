@@ -96,7 +96,7 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <PackageVersion>6.0.0-alpha.14</PackageVersion>
+    <PackageVersion>6.0.0-alpha.15</PackageVersion>
     <PackagePrefix>aaru</PackagePrefix>
     <Authors>Natalia Portillo &lt;claunia@claunia.com&gt;</Authors>
     <Section>net</Section>
