@@ -1,3 +1,8 @@
+# [6.0.0-alpha.15.1] - 2025-11-21
+
+## Fixed
+- Showstopper bug in GUI.
+
 # [6.0.0-alpha.15] - 2025-11-21
 
 ## Added
@@ -2641,6 +2646,8 @@
 - Apple Partition Map (aka APM).
 - Master Boot Record (aka MBR).
 - NeXT disklabels.
+
+[6.0.0-alpha.15.1]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.15.1
 
 [6.0.0-alpha.15]: https://github.com/aaru-dps/Aaru/releases/tag/v6.0.0-alpha.15
 
