@@ -48,8 +48,6 @@ using Aaru.Decoders.SCSI;
 using Aaru.Devices;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Bytes;
-using Humanizer.Localisation;
 using Version = Aaru.CommonTypes.Interop.Version;
 
 namespace Aaru.Core.Devices.Dumping;

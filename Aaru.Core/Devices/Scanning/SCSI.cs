@@ -40,7 +40,6 @@ using Aaru.Decoders.SCSI.MMC;
 using Aaru.Devices;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Bytes;
 
 namespace Aaru.Core.Devices.Scanning;
 

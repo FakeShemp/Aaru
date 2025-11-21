@@ -34,7 +34,6 @@ using System;
 using Aaru.CommonTypes.Structs.Devices.ATA;
 using Aaru.Core.Logging;
 using Humanizer;
-using Humanizer.Bytes;
 
 namespace Aaru.Core.Devices.Scanning;
 

@@ -50,8 +50,6 @@ using Aaru.Devices;
 using Aaru.Helpers;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Bytes;
-using Humanizer.Localisation;
 using TapeFile = Aaru.CommonTypes.Structs.TapeFile;
 using TapePartition = Aaru.CommonTypes.Structs.TapePartition;
 using Version = Aaru.CommonTypes.Interop.Version;

@@ -50,8 +50,6 @@ using Aaru.Decoders.Xbox;
 using Aaru.Devices;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Bytes;
-using Humanizer.Localisation;
 using Device = Aaru.Devices.Remote.Device;
 using Layers = Aaru.CommonTypes.AaruMetadata.Layers;
 using PlatformID = Aaru.CommonTypes.Interop.PlatformID;

@@ -48,8 +48,6 @@ using Aaru.Decoders.MMC;
 using Aaru.Decoders.SecureDigital;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Bytes;
-using Humanizer.Localisation;
 using CSD = Aaru.Decoders.MMC.CSD;
 using DeviceType = Aaru.CommonTypes.Enums.DeviceType;
 using Version = Aaru.CommonTypes.Interop.Version;

@@ -34,7 +34,6 @@ using Aaru.Core.Logging;
 using Aaru.Decryption.DVD;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Bytes;
 
 // ReSharper disable JoinDeclarationAndInitializer
 // ReSharper disable InlineOutVariableDeclaration

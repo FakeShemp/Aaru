@@ -43,7 +43,6 @@ using Aaru.Core.Graphics;
 using Aaru.Localization;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Localisation;
 using Spectre.Console;
 using Spectre.Console.Cli;
 

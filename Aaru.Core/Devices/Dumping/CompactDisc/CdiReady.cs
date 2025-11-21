@@ -45,7 +45,6 @@ using Aaru.Core.Logging;
 using Aaru.Decoders.CD;
 using Aaru.Devices;
 using Humanizer;
-using Humanizer.Bytes;
 using Track = Aaru.CommonTypes.Structs.Track;
 
 namespace Aaru.Core.Devices.Dumping;

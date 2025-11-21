@@ -39,8 +39,6 @@ using Aaru.Core.Logging;
 using Aaru.Localization;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Bytes;
-using Humanizer.Localisation;
 using Spectre.Console;
 using Spectre.Console.Cli;
 

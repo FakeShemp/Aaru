@@ -47,7 +47,6 @@ using Aaru.Decoders.CD;
 using Aaru.Decoders.SCSI;
 using Aaru.Devices;
 using Humanizer;
-using Humanizer.Localisation;
 using Track = Aaru.CommonTypes.Structs.Track;
 
 namespace Aaru.Core.Devices.Dumping;

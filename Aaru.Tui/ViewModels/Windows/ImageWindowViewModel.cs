@@ -40,7 +40,6 @@ using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Humanizer;
-using Humanizer.Bytes;
 using Prism.DryIoc;
 using Partition = Aaru.CommonTypes.Partition;
 

@@ -53,7 +53,6 @@ using Aaru.Helpers;
 using Aaru.Localization;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Localisation;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using DeviceInfo = Aaru.Core.Devices.Info.DeviceInfo;

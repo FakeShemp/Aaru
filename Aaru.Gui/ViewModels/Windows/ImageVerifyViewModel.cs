@@ -49,7 +49,6 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Humanizer;
-using Humanizer.Localisation;
 using Sentry;
 
 namespace Aaru.Gui.ViewModels.Windows;

@@ -12,7 +12,6 @@ using Aaru.Core.Logging;
 using Aaru.Decoders.SCSI;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Bytes;
 
 namespace Aaru.Core.Devices.Dumping;
 

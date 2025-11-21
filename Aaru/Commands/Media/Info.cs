@@ -52,7 +52,6 @@ using Aaru.Decoders.Xbox;
 using Aaru.Localization;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Bytes;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using BCA = Aaru.Decoders.Bluray.BCA;

@@ -37,7 +37,6 @@ using Aaru.Decryption;
 using Aaru.Decryption.DVD;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Bytes;
 using DVDDecryption = Aaru.Decryption.DVD.Dump;
 
 // ReSharper disable JoinDeclarationAndInitializer

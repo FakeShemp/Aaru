@@ -49,7 +49,6 @@ using Aaru.Decoders.SCSI;
 using Aaru.Devices;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Bytes;
 using Track = Aaru.CommonTypes.Structs.Track;
 using TrackType = Aaru.CommonTypes.Enums.TrackType;
 

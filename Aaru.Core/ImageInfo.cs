@@ -51,7 +51,6 @@ using Aaru.Decoders.Xbox;
 using Aaru.Helpers;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Bytes;
 using Sentry;
 using Spectre.Console;
 using Spectre.Console.Json;

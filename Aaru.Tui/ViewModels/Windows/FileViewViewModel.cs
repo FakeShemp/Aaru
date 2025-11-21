@@ -18,7 +18,6 @@ using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Humanizer;
-using Humanizer.Bytes;
 using Prism.DryIoc;
 using Spectre.Console;
 using Color = Avalonia.Media.Color;

@@ -53,8 +53,6 @@ using Aaru.Decoders.SCSI.MMC;
 using Aaru.Devices;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Bytes;
-using Humanizer.Localisation;
 using DVDDecryption = Aaru.Decryption.DVD.Dump;
 using Track = Aaru.CommonTypes.Structs.Track;
 using TrackType = Aaru.CommonTypes.Enums.TrackType;

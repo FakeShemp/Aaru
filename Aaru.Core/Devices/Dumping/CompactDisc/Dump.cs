@@ -51,8 +51,6 @@ using Aaru.Decoders.CD;
 using Aaru.Devices;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Bytes;
-using Humanizer.Localisation;
 using Spectre.Console;
 using Track = Aaru.CommonTypes.Structs.Track;
 using TrackType = Aaru.CommonTypes.Enums.TrackType;

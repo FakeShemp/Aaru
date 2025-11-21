@@ -47,7 +47,6 @@ using Aaru.Core.Graphics;
 using Aaru.Devices;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Bytes;
 using SkiaSharp;
 
 namespace Aaru.Core.Devices.Dumping;

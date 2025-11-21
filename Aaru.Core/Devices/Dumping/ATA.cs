@@ -47,8 +47,6 @@ using Aaru.Decoders.ATA;
 using Aaru.Decoders.PCMCIA;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Bytes;
-using Humanizer.Localisation;
 using Identify = Aaru.CommonTypes.Structs.Devices.ATA.Identify;
 using Tuple = Aaru.Decoders.PCMCIA.Tuple;
 using Version = Aaru.CommonTypes.Interop.Version;

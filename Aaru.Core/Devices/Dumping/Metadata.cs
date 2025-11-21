@@ -40,8 +40,6 @@ using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Logging;
 using Humanizer;
-using Humanizer.Bytes;
-using Humanizer.Localisation;
 
 namespace Aaru.Core.Devices.Dumping;
 

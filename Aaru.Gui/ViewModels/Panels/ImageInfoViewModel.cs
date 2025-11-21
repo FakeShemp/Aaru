@@ -57,7 +57,6 @@ using Avalonia.Platform;
 using Avalonia.Svg;
 using CommunityToolkit.Mvvm.Input;
 using Humanizer;
-using Humanizer.Bytes;
 using Sentry;
 using Inquiry = Aaru.CommonTypes.Structs.Devices.SCSI.Inquiry;
 using Session = Aaru.CommonTypes.Structs.Session;

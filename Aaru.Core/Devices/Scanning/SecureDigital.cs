@@ -37,7 +37,6 @@ using Aaru.Core.Logging;
 using Aaru.Decoders.MMC;
 using Aaru.Decoders.SecureDigital;
 using Humanizer;
-using Humanizer.Bytes;
 using CSD = Aaru.Decoders.MMC.CSD;
 using DeviceType = Aaru.CommonTypes.Enums.DeviceType;
 
