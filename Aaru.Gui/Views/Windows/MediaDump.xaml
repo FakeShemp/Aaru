@@ -196,6 +196,23 @@
                     </CheckBox>
                 </StackPanel>
             </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Encryption}" />
+                </TabItem.Header>
+                <StackPanel Orientation="Vertical"
+                            Spacing="8">
+                    <CheckBox IsChecked="{Binding StoreEncryptedAsIs, Mode=TwoWay}">
+                        <TextBlock Text="{x:Static localization:UI.Store_encrypted_data_as_is}"
+                                   TextWrapping="Wrap" />
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding ReadTitleKeys, Mode=TwoWay}"
+                              IsVisible="{Binding IsDvd, Mode=OneWay}">
+                        <TextBlock Text="{x:Static localization:UI.Try_to_read_the_title_keys_from_CSS_DVDs}"
+                                   TextWrapping="Wrap" />
+                    </CheckBox>
+                </StackPanel>
+            </TabItem>
             <!-- TODO: Image options -->
         </TabControl>
         <Grid Grid.Row="1"

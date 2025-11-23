@@ -170,6 +170,12 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
     bool _paranoia;
     [ObservableProperty]
     bool _cureParanoia;
+    [ObservableProperty]
+    bool _storeEncryptedAsIs;
+    [ObservableProperty]
+    bool _readTitleKeys;
+    [ObservableProperty]
+    bool _isDvd;
 
     public MediaDumpViewModel(Device               device, string devicePath, DeviceInfo deviceInfo, Window view,
                               [CanBeNull] ScsiInfo scsiInfo = null)
@@ -205,6 +211,8 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         GenerateSubchannels   = false;
         Paranoia              = false;
         CureParanoia          = false;
+        StoreEncryptedAsIs    = true;
+        ReadTitleKeys         = false;
 
         MediaType mediaType;
 
@@ -314,6 +322,21 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
                               };
 
         HasSubchannel = Track1PregapVisible;
+
+        IsDvd = mediaType switch
+                {
+                    MediaType.DVDDownload
+                     or MediaType.DVDPR
+                     or MediaType.DVDPRDL
+                     or MediaType.DVDPRW
+                     or MediaType.DVDPRWDL
+                     or MediaType.DVDR
+                     or MediaType.DVDRAM
+                     or MediaType.DVDROM
+                     or MediaType.DVDRW
+                     or MediaType.DVDRWDL => true,
+                    _ => false
+                };
 
         _dev        = device;
         _devicePath = devicePath;
@@ -724,8 +747,8 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
                            GenerateSubchannels,
                            64,
                            true,
-                           true,
-                           false,
+                           StoreEncryptedAsIs,
+                           ReadTitleKeys,
                            10,
                            true,
                            1080,

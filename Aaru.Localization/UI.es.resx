@@ -3335,4 +3335,7 @@ Probadores:
     <data name="Errors" xml:space="preserve">
         <value>Errores</value>
     </data>
+    <data name="Encryption" xml:space="preserve">
+        <value>Encriptación</value>
+    </data>
 </root>

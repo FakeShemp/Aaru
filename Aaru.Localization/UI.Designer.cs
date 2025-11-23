@@ -6669,5 +6669,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Errors", resourceCulture);
             }
         }
+        
+        public static string Encryption {
+            get {
+                return ResourceManager.GetString("Encryption", resourceCulture);
+            }
+        }
     }
 }

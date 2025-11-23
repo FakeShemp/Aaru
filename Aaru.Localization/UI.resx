@@ -3410,4 +3410,7 @@ Do you want to continue?</value>
     <data name="Errors" xml:space="preserve">
         <value>Errors</value>
     </data>
+    <data name="Encryption" xml:space="preserve">
+        <value>Encryption</value>
+    </data>
 </root>
