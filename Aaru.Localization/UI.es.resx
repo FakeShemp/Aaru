@@ -3329,4 +3329,7 @@ Probadores:
     <data name="Fixed_ECC_Q_for_sector_0" xml:space="preserve">
         <value>[yellow]Corregido ECC Q para el sector [violet]{0}[/][/]</value>
     </data>
+    <data name="Subchannels" xml:space="preserve">
+        <value>Subcanales</value>
+    </data>
 </root>

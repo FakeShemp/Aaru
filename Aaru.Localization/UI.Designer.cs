@@ -6657,5 +6657,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Fixed_ECC_Q_for_sector_0", resourceCulture);
             }
         }
+        
+        public static string Subchannels {
+            get {
+                return ResourceManager.GetString("Subchannels", resourceCulture);
+            }
+        }
     }
 }

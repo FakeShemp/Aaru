@@ -3404,4 +3404,7 @@ Do you want to continue?</value>
     <data name="Fixed_ECC_Q_for_sector_0" xml:space="preserve">
         <value>[yellow]Fixed ECC Q for sector [violet]{0}[/][/]</value>
     </data>
+    <data name="Subchannels" xml:space="preserve">
+        <value>Subchannels</value>
+    </data>
 </root>
