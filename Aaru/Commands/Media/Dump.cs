@@ -121,6 +121,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--create-graph={0}",            settings.CreateGraph);
         AaruLogging.Debug(MODULE_NAME, "--dimensions={0}",              settings.Dimensions);
         AaruLogging.Debug(MODULE_NAME, "--aaru-metadata={0}",           Markup.Escape(settings.AaruMetadata ?? ""));
+        AaruLogging.Debug(MODULE_NAME, "--paranoia={0}",                settings.Paranoia);
 
         // TODO: Disabled temporarily
         //AaruLogging.DebugWriteLine(MODULE_NAME, "--raw={0}", Markup.Escape(raw ?? ""));
@@ -524,7 +525,8 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                                   settings.TitleKeys,
                                   (uint)settings.IgnoreCdrRunOuts,
                                   settings.CreateGraph,
-                                  (uint)settings.Dimensions);
+                                  (uint)settings.Dimensions,
+                                  settings.Paranoia);
 
             AnsiConsole.Progress()
                        .AutoClear(true)
@@ -772,6 +774,10 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
         [CommandOption("--aaru-metadata")]
         [DefaultValue(null)]
         public string AaruMetadata { get; init; }
+        [LocalizedDescription(nameof(UI.Paranoia_help))]
+        [CommandOption("--paranoia")]
+        [DefaultValue(false)]
+        public bool Paranoia { get; init; }
         [LocalizedDescription(nameof(UI.Device_path))]
         [CommandArgument(0, "<device-path>")]
         public string DevicePath { get; init; }

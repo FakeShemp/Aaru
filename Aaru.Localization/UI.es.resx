@@ -3311,4 +3311,16 @@ Probadores:
     <data name="Path_to_log_file" xml:space="preserve">
         <value>Ruta al archivo de registro.</value>
     </data>
+    <data name="Incorrect_EDC_in_sector_0" xml:space="preserve">
+        <value>[red]EDC incorrecto en el sector [violet]{0}[/][/]</value>
+    </data>
+    <data name="Incorrect_ECC_P_in_sector_0" xml:space="preserve">
+        <value>[red]ECC P incorrecto en el sector [violet]{0}[/][/]</value>
+    </data>
+    <data name="Incorrect_ECC_Q_in_sector_0" xml:space="preserve">
+        <value>[red]ECC Q incorrecto en el sector [violet]{0}[/][/]</value>
+    </data>
+    <data name="Paranoia_help" xml:space="preserve">
+        <value>No confiar en la unidad, comprobar la integridad de los sectores antes de escribirlos en la imagen. Válido sólo para CD/GD.</value>
+    </data>
 </root>

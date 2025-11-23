@@ -722,7 +722,8 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
                            false,
                            10,
                            true,
-                           1080);
+                           1080,
+                           false);
 
         new Thread(DoWork).Start();
     }

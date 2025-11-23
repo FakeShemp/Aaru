@@ -3386,4 +3386,16 @@ Do you want to continue?</value>
     <data name="Path_to_log_file" xml:space="preserve">
         <value>Path to log file.</value>
     </data>
+    <data name="Incorrect_EDC_in_sector_0" xml:space="preserve">
+        <value>[red]Incorrect EDC in sector [violet]{0}[/][/]</value>
+    </data>
+    <data name="Incorrect_ECC_P_in_sector_0" xml:space="preserve">
+        <value>[red]Incorrect ECC P in sector [violet]{0}[/][/]</value>
+    </data>
+    <data name="Incorrect_ECC_Q_in_sector_0" xml:space="preserve">
+        <value>[red]Incorrect ECC Q in sector [violet]{0}[/][/]</value>
+    </data>
+    <data name="Paranoia_help" xml:space="preserve">
+        <value>Do not trust the drive, check the sectors integrity before writing them to the image. Valid only for CD/GD.</value>
+    </data>
 </root>

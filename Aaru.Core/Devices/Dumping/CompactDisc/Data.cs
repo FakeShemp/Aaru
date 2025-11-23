@@ -47,6 +47,7 @@ using Aaru.Core.Logging;
 using Aaru.Decoders.CD;
 using Aaru.Decoders.SCSI;
 using Aaru.Devices;
+using Aaru.Localization;
 using Aaru.Logging;
 using Humanizer;
 using Track = Aaru.CommonTypes.Structs.Track;
@@ -762,6 +763,7 @@ partial class Dump
                         mhddLog.Write(i + r, _speedStopwatch.Elapsed.TotalMilliseconds);
                         extents.Add(i   + r, 1, true);
                         _writeStopwatch.Restart();
+                        SectorStatus sectorStatus = SectorStatus.Dumped;
 
                         if(supportedSubchannel != MmcSubchannel.None)
                         {
@@ -772,14 +774,33 @@ partial class Dump
 
                             Array.Copy(cmdBuf, sectorSize, sub, 0, subSize);
 
+                            if(_paranoia)
+                            {
+                                // Check valid sector
+                                CdChecksums.CheckCdSector(data,
+                                                          out bool? correctEccP,
+                                                          out bool? correctEccQ,
+                                                          out bool? correctEdc);
+
+                                if(correctEdc != true || correctEccP != true || correctEccQ != true)
+                                {
+                                    sectorStatus = SectorStatus.Errored;
+                                    _resume.BadBlocks.Add(i + r);
+
+                                    if(correctEdc != true)
+                                        UpdateStatus?.Invoke(string.Format(UI.Incorrect_EDC_in_sector_0, i + r));
+
+                                    if(correctEccP != true)
+                                        UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_P_in_sector_0, i + r));
+
+                                    if(correctEccQ != true)
+                                        UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_Q_in_sector_0, i + r));
+                                }
+                            }
+
                             if(supportsLongSectors)
                             {
-                                outputFormat.WriteSectorsLong(data,
-                                                              i + r,
-                                                              false,
-                                                              1,
-                                                              Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)
-                                                                        .ToArray());
+                                outputFormat.WriteSectorsLong(data, i + r, false, 1, [sectorStatus]);
                             }
                             else
                             {
@@ -797,8 +818,7 @@ partial class Dump
                                                           i,
                                                           false,
                                                           blocksToRead,
-                                                          Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)
-                                                                    .ToArray());
+                                                          Enumerable.Repeat(sectorStatus, (int)blocksToRead).ToArray());
                             }
 
                             bool indexesChanged = Media.CompactDisc.WriteSubchannelToImage(supportedSubchannel,
@@ -844,8 +864,32 @@ partial class Dump
                         }
                         else
                         {
+                            if(_paranoia)
+                            {
+                                // Check valid sector
+                                CdChecksums.CheckCdSector(cmdBuf,
+                                                          out bool? correctEccP,
+                                                          out bool? correctEccQ,
+                                                          out bool? correctEdc);
+
+                                if(correctEdc != true || correctEccP != true || correctEccQ != true)
+                                {
+                                    sectorStatus = SectorStatus.Errored;
+                                    _resume.BadBlocks.Add(i + r);
+
+                                    if(correctEdc != true)
+                                        UpdateStatus?.Invoke(string.Format(UI.Incorrect_EDC_in_sector_0, i + r));
+
+                                    if(correctEccP != true)
+                                        UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_P_in_sector_0, i + r));
+
+                                    if(correctEccQ != true)
+                                        UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_Q_in_sector_0, i + r));
+                                }
+                            }
+
                             if(supportsLongSectors)
-                                outputFormat.WriteSectorsLong(cmdBuf, i + r, false, 1, [SectorStatus.Dumped]);
+                                outputFormat.WriteSectorsLong(cmdBuf, i + r, false, 1, [sectorStatus]);
                             else
                             {
                                 var cooked = new MemoryStream();
@@ -862,8 +906,7 @@ partial class Dump
                                                           i,
                                                           false,
                                                           blocksToRead,
-                                                          Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)
-                                                                    .ToArray());
+                                                          Enumerable.Repeat(sectorStatus, (int)blocksToRead).ToArray());
                             }
                         }
 
@@ -987,29 +1030,53 @@ partial class Dump
 
                 if(supportedSubchannel != MmcSubchannel.None)
                 {
-                    var data = new byte[sectorSize * blocksToRead];
-                    var sub  = new byte[subSize    * blocksToRead];
+                    var data         = new byte[sectorSize * blocksToRead];
+                    var sub          = new byte[subSize    * blocksToRead];
+                    var sectorStatus = new SectorStatus[blocksToRead];
+                    var sector       = new byte[sectorSize];
 
                     for(var b = 0; b < blocksToRead; b++)
                     {
                         Array.Copy(cmdBuf, (int)(0 + b * blockSize), data, sectorSize * b, sectorSize);
 
                         Array.Copy(cmdBuf, (int)(sectorSize + b * blockSize), sub, subSize * b, subSize);
+
+                        Array.Copy(cmdBuf, (int)(0 + b * blockSize), sector, 0, sectorSize);
+
+                        sectorStatus[b] = SectorStatus.Dumped;
+
+                        if(inData && _paranoia)
+                        {
+                            // Check valid sector
+                            CdChecksums.CheckCdSector(sector,
+                                                      out bool? correctEccP,
+                                                      out bool? correctEccQ,
+                                                      out bool? correctEdc);
+
+                            if(correctEdc != true || correctEccP != true || correctEccQ != true)
+                            {
+                                sectorStatus[b] = SectorStatus.Errored;
+                                _resume.BadBlocks.Add(i + (ulong)b);
+
+                                if(correctEdc != true)
+                                    UpdateStatus?.Invoke(string.Format(UI.Incorrect_EDC_in_sector_0, i + (ulong)b));
+
+                                if(correctEccP != true)
+                                    UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_P_in_sector_0, i + (ulong)b));
+
+                                if(correctEccQ != true)
+                                    UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_Q_in_sector_0, i + (ulong)b));
+                            }
+                        }
                     }
 
                     if(supportsLongSectors)
                     {
-                        outputFormat.WriteSectorsLong(data,
-                                                      i,
-                                                      false,
-                                                      blocksToRead,
-                                                      Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead)
-                                                                .ToArray());
+                        outputFormat.WriteSectorsLong(data, i, false, blocksToRead, sectorStatus);
                     }
                     else
                     {
                         var cooked = new MemoryStream();
-                        var sector = new byte[sectorSize];
 
                         for(var b = 0; b < blocksToRead; b++)
                         {
@@ -1018,11 +1085,7 @@ partial class Dump
                             cooked.Write(cookedSector, 0, cookedSector.Length);
                         }
 
-                        outputFormat.WriteSectors(cooked.ToArray(),
-                                                  i,
-                                                  false,
-                                                  blocksToRead,
-                                                  Enumerable.Repeat(SectorStatus.Dumped, (int)blocksToRead).ToArray());
+                        outputFormat.WriteSectors(cooked.ToArray(), i, false, blocksToRead, sectorStatus);
                     }
 
                     bool indexesChanged = Media.CompactDisc.WriteSubchannelToImage(supportedSubchannel,

@@ -93,6 +93,7 @@ public partial class Dump
     readonly        string                     _outputPath;
     readonly        IBaseWritableImage         _outputPlugin;
     readonly        string                     _outputPrefix;
+    readonly        bool                       _paranoia;
     readonly        bool                       _persistent;
     readonly        Metadata                   _preSidecar;
     readonly        bool                       _private;
@@ -165,6 +166,7 @@ public partial class Dump
     /// <param name="ignoreCdrRunOuts">How many CD-R(W) run end sectors to ignore and regenerate</param>
     /// <param name="createGraph">If set to <c>true</c> creates a graph of the dump.</param>
     /// <param name="dimensions">Dimensions of graph in pixels for a square</param>
+    /// <param name="paranoia">Check sectors integrity before writing to image</param>
     public Dump(bool doResume, Device dev, string devicePath, IBaseWritableImage outputPlugin, ushort retryPasses,
                 bool force, bool dumpRaw, bool persistent, bool stopOnError, Resume resume, Encoding encoding,
                 string outputPrefix, string outputPath, Dictionary<string, string> formatOptions, Metadata preSidecar,
@@ -172,7 +174,7 @@ public partial class Dump
                 DumpSubchannel subchannel, int speed, bool @private, bool fixSubchannelPosition, bool retrySubchannel,
                 bool fixSubchannel, bool fixSubchannelCrc, bool skipCdireadyHole, ErrorLog errorLog,
                 bool generateSubchannels, uint maximumReadable, bool useBufferedReads, bool storeEncrypted,
-                bool titleKeys, uint ignoreCdrRunOuts, bool createGraph, uint dimensions)
+                bool titleKeys, uint ignoreCdrRunOuts, bool createGraph, uint dimensions, bool paranoia)
     {
         _doResume              = doResume;
         _dev                   = dev;
@@ -214,6 +216,7 @@ public partial class Dump
         _ignoreCdrRunOuts      = ignoreCdrRunOuts;
         _createGraph           = createGraph;
         _dimensions            = dimensions;
+        _paranoia              = paranoia;
         _dumpStopwatch         = new Stopwatch();
         _sidecarStopwatch      = new Stopwatch();
         _speedStopwatch        = new Stopwatch();

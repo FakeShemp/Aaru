@@ -6621,5 +6621,29 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Path_to_log_file", resourceCulture);
             }
         }
+        
+        public static string Incorrect_EDC_in_sector_0 {
+            get {
+                return ResourceManager.GetString("Incorrect_EDC_in_sector_0", resourceCulture);
+            }
+        }
+        
+        public static string Incorrect_ECC_P_in_sector_0 {
+            get {
+                return ResourceManager.GetString("Incorrect_ECC_P_in_sector_0", resourceCulture);
+            }
+        }
+        
+        public static string Incorrect_ECC_Q_in_sector_0 {
+            get {
+                return ResourceManager.GetString("Incorrect_ECC_Q_in_sector_0", resourceCulture);
+            }
+        }
+        
+        public static string Paranoia_help {
+            get {
+                return ResourceManager.GetString("Paranoia_help", resourceCulture);
+            }
+        }
     }
 }

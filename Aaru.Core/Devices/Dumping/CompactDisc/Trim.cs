@@ -46,6 +46,7 @@ using Aaru.Core.Logging;
 using Aaru.Decoders.CD;
 using Aaru.Decoders.SCSI;
 using Aaru.Devices;
+using Aaru.Localization;
 using Humanizer;
 using Track = Aaru.CommonTypes.Structs.Track;
 
@@ -392,11 +393,48 @@ partial class Dump
                 continue;
             }
 
+            SectorStatus sectorStatus = SectorStatus.Dumped;
+
             if(!sense && !_dev.Error)
             {
-                _resume.BadBlocks.Remove(badSector);
-                extents.Add(badSector);
-                _mediaGraph?.PaintSectorGood(badSector);
+                if(!audioExtents.Contains(badSector) && _paranoia)
+                {
+                    var sector = new byte[sectorSize];
+                    Array.Copy(cmdBuf, 0, sector, 0, sectorSize);
+
+                    // Check valid sector
+                    CdChecksums.CheckCdSector(sector,
+                                              out bool? correctEccP,
+                                              out bool? correctEccQ,
+                                              out bool? correctEdc);
+
+                    if(correctEdc != true || correctEccP != true || correctEccQ != true)
+                    {
+                        sectorStatus = SectorStatus.Errored;
+                        _mediaGraph?.PaintSectorBad(badSector);
+
+                        if(correctEdc != true)
+                            UpdateStatus?.Invoke(string.Format(UI.Incorrect_EDC_in_sector_0, badSector));
+
+                        if(correctEccP != true)
+                            UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_P_in_sector_0, badSector));
+
+                        if(correctEccQ != true)
+                            UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_Q_in_sector_0, badSector));
+                    }
+                    else
+                    {
+                        _resume.BadBlocks.Remove(badSector);
+                        extents.Add(badSector);
+                        _mediaGraph?.PaintSectorGood(badSector);
+                    }
+                }
+                else
+                {
+                    _resume.BadBlocks.Remove(badSector);
+                    extents.Add(badSector);
+                    _mediaGraph?.PaintSectorGood(badSector);
+                }
             }
 
             // Because one block has been partially used to fix the offset
@@ -415,6 +453,7 @@ partial class Dump
                               false);
             }
 
+
             if(supportedSubchannel != MmcSubchannel.None)
             {
                 var data = new byte[sectorSize];
@@ -423,9 +462,9 @@ partial class Dump
                 Array.Copy(cmdBuf, sectorSize, sub,  0, subSize);
 
                 if(supportsLongSectors)
-                    outputOptical.WriteSectorLong(data, badSector, false, SectorStatus.Dumped);
+                    outputOptical.WriteSectorLong(data, badSector, false, sectorStatus);
                 else
-                    outputOptical.WriteSector(Sector.GetUserData(data), badSector, false, SectorStatus.Dumped);
+                    outputOptical.WriteSector(Sector.GetUserData(data), badSector, false, sectorStatus);
 
                 ulong trkStartBefore = track.StartSector;
 
@@ -467,9 +506,9 @@ partial class Dump
             }
 
             if(supportsLongSectors)
-                outputOptical.WriteSectorLong(cmdBuf, badSector, false, SectorStatus.Dumped);
+                outputOptical.WriteSectorLong(cmdBuf, badSector, false, sectorStatus);
             else
-                outputOptical.WriteSector(Sector.GetUserData(cmdBuf), badSector, false, SectorStatus.Dumped);
+                outputOptical.WriteSector(Sector.GetUserData(cmdBuf), badSector, false, sectorStatus);
         }
 
         _trimStopwatch.Stop();
