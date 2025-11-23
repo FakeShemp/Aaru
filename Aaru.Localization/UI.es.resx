@@ -3332,4 +3332,7 @@ Probadores:
     <data name="Subchannels" xml:space="preserve">
         <value>Subcanales</value>
     </data>
+    <data name="Errors" xml:space="preserve">
+        <value>Errores</value>
+    </data>
 </root>

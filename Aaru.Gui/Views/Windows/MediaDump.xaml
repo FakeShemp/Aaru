@@ -89,26 +89,6 @@
                                  Text="{Binding Destination, Mode=OneWay}"
                                  IsReadOnly="True" />
                     </Grid>
-                    <CheckBox IsChecked="{Binding StopOnError, Mode=TwoWay}">
-                        <TextBlock Text="{x:Static localization:UI.Stop_media_dump_on_first_error}" />
-                    </CheckBox>
-                    <CheckBox IsChecked="{Binding Force, Mode=TwoWay}">
-                        <TextBlock Text="{x:Static localization:UI.Continue_dumping_whatever_happens}" />
-                    </CheckBox>
-                    <Grid ColumnDefinitions="Auto, *"
-                          ColumnSpacing="8">
-                        <TextBlock Grid.Column="0"
-                                   Text="{x:Static localization:UI.Retry_passes}"
-                                   VerticalAlignment="Center" />
-                        <NumericUpDown Grid.Column="1"
-                                       HorizontalAlignment="Stretch"
-                                       Value="{Binding Retries, Mode=TwoWay}"
-                                       Increment="1"
-                                       Minimum="0" />
-                    </Grid>
-                    <CheckBox IsChecked="{Binding Persistent, Mode=TwoWay}">
-                        <TextBlock Text="{x:Static localization:UI.Try_to_recover_partial_or_incorrect_data}" />
-                    </CheckBox>
                     <CheckBox IsChecked="{Binding Resume, Mode=TwoWay}">
                         <TextBlock Text="{x:Static localization:UI.Create_or_use_resume_mapfile}" />
                     </CheckBox>
@@ -116,22 +96,8 @@
                               IsVisible="{Binding Track1PregapVisible, Mode=OneWay}">
                         <TextBlock Text="{x:Static localization:UI.Try_to_read_track_1_pregap}" />
                     </CheckBox>
-                    <Grid ColumnDefinitions="Auto, *"
-                          ColumnSpacing="8">
-                        <TextBlock Grid.Column="0"
-                                   Text="{x:Static localization:UI.Skipped_sectors_on_error}"
-                                   VerticalAlignment="Center" />
-                        <NumericUpDown Grid.Column="1"
-                                       Increment="1"
-                                       Minimum="1"
-                                       HorizontalAlignment="Stretch"
-                                       Value="{Binding Skipped, Mode=TwoWay}" />
-                    </Grid>
                     <CheckBox IsChecked="{Binding CreateSidecar, Mode=TwoWay}">
                         <TextBlock Text="{x:Static localization:UI.Create_Aaru_Metadata_sidecar}" />
-                    </CheckBox>
-                    <CheckBox IsChecked="{Binding Trim, Mode=TwoWay}">
-                        <TextBlock Text="{x:Static localization:UI.Trim_errors_from_skipped_sectors}" />
                     </CheckBox>
                     <CheckBox IsChecked="{Binding ExistingMetadata, Mode=TwoWay}">
                         <TextBlock Text="{x:Static localization:UI.Take_metadata_from_existing_CICM_XML_sidecar}" />
@@ -152,6 +118,54 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
                     </Grid>
+                </StackPanel>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <controls:SpectreTextBlock Text="{x:Static localization:UI.Errors}" />
+                </TabItem.Header>
+                <StackPanel Orientation="Vertical"
+                            Spacing="8">
+                    <CheckBox IsChecked="{Binding StopOnError, Mode=TwoWay}">
+                        <TextBlock Text="{x:Static localization:UI.Stop_media_dump_on_first_error}" />
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding Force, Mode=TwoWay}">
+                        <TextBlock Text="{x:Static localization:UI.Continue_dumping_whatever_happens}" />
+                    </CheckBox>
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8">
+                        <TextBlock Grid.Column="0"
+                                   Text="{x:Static localization:UI.Retry_passes}"
+                                   VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Column="1"
+                                       HorizontalAlignment="Stretch"
+                                       Value="{Binding Retries, Mode=TwoWay}"
+                                       Increment="1"
+                                       Minimum="0" />
+                    </Grid>
+                    <CheckBox IsChecked="{Binding Persistent, Mode=TwoWay}">
+                        <TextBlock Text="{x:Static localization:UI.Try_to_recover_partial_or_incorrect_data}" />
+                    </CheckBox>
+                    <Grid ColumnDefinitions="Auto, *"
+                          ColumnSpacing="8">
+                        <TextBlock Grid.Column="0"
+                                   Text="{x:Static localization:UI.Skipped_sectors_on_error}"
+                                   VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Column="1"
+                                       Increment="1"
+                                       Minimum="1"
+                                       HorizontalAlignment="Stretch"
+                                       Value="{Binding Skipped, Mode=TwoWay}" />
+                    </Grid>
+                    <CheckBox IsChecked="{Binding Trim, Mode=TwoWay}">
+                        <TextBlock Text="{x:Static localization:UI.Trim_errors_from_skipped_sectors}" />
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding Paranoia, Mode=TwoWay}">
+                        <TextBlock Text="{x:Static localization:UI.Paranoia_help}" />
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding CureParanoia, Mode=TwoWay}">
+                        <TextBlock Text="{x:Static localization:UI.Cure_paranoia_help}" />
+                    </CheckBox>
                 </StackPanel>
             </TabItem>
             <TabItem IsVisible="{Binding HasSubchannel, Mode=OneWay}">

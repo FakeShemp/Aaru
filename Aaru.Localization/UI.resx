@@ -3407,4 +3407,7 @@ Do you want to continue?</value>
     <data name="Subchannels" xml:space="preserve">
         <value>Subchannels</value>
     </data>
+    <data name="Errors" xml:space="preserve">
+        <value>Errors</value>
+    </data>
 </root>

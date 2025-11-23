@@ -6663,5 +6663,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Subchannels", resourceCulture);
             }
         }
+        
+        public static string Errors {
+            get {
+                return ResourceManager.GetString("Errors", resourceCulture);
+            }
+        }
     }
 }

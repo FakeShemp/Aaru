@@ -166,6 +166,10 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
     bool _fixSubchannelCrc;
     [ObservableProperty]
     bool _generateSubchannels;
+    [ObservableProperty]
+    bool _paranoia;
+    [ObservableProperty]
+    bool _cureParanoia;
 
     public MediaDumpViewModel(Device               device, string devicePath, DeviceInfo deviceInfo, Window view,
                               [CanBeNull] ScsiInfo scsiInfo = null)
@@ -199,6 +203,8 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
         FixSubchannel         = false;
         FixSubchannelCrc      = false;
         GenerateSubchannels   = false;
+        Paranoia              = false;
+        CureParanoia          = false;
 
         MediaType mediaType;
 
@@ -723,8 +729,8 @@ public sealed partial class MediaDumpViewModel : ViewModelBase
                            10,
                            true,
                            1080,
-                           false,
-                           false);
+                           Paranoia,
+                           CureParanoia);
 
         new Thread(DoWork).Start();
     }
