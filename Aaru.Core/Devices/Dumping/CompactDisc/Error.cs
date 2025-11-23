@@ -254,7 +254,7 @@ partial class Dump
                                                           pass));
             }
 
-            Track track = tracks.OrderBy(t => t.StartSector).LastOrDefault(t => badSector >= t.StartSector);
+            Track track = tracks.OrderBy(static t => t.StartSector).LastOrDefault(t => badSector >= t.StartSector);
 
             byte sectorsToReRead   = 1;
             var  badSectorToReRead = (uint)badSector;
@@ -506,17 +506,38 @@ partial class Dump
 
                     if(correctEdc != true || correctEccP != true || correctEccQ != true)
                     {
-                        sectorStatus = SectorStatus.Errored;
-                        _mediaGraph?.PaintSectorBad(badSector);
+                        if(_cureParanoia && correctEdc == true && correctEccP == true)
+                        {
+                            Track trk = tracks.FirstOrDefault(t => t.StartSector <= badSector &&
+                                                                   t.EndSector   >= badSector);
 
-                        if(correctEdc != true)
-                            UpdateStatus?.Invoke(string.Format(UI.Incorrect_EDC_in_sector_0, badSector));
+                            SectorBuilder sb = new();
+                            sb.ReconstructEcc(ref sector, track.Type);
+                            Array.Copy(sector, 0, cmdBuf, 0, sectorSize);
 
-                        if(correctEccP != true)
-                            UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_P_in_sector_0, badSector));
+                            _resume.BadBlocks.Remove(badSector);
+                            extents.Add(badSector);
+                            _mediaGraph?.PaintSectorGood(badSector);
 
-                        if(correctEccQ != true)
-                            UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_Q_in_sector_0, badSector));
+                            UpdateStatus?.Invoke(string.Format(UI.Fixed_ECC_Q_for_sector_0,
+                                                               badSector));
+
+                            sectorsNotEvenPartial.Remove(badSector);
+                        }
+                        else
+                        {
+                            sectorStatus = SectorStatus.Errored;
+                            _mediaGraph?.PaintSectorBad(badSector);
+
+                            if(correctEdc != true)
+                                UpdateStatus?.Invoke(string.Format(UI.Incorrect_EDC_in_sector_0, badSector));
+
+                            if(correctEccP != true)
+                                UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_P_in_sector_0, badSector));
+
+                            if(correctEccQ != true)
+                                UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_Q_in_sector_0, badSector));
+                        }
                     }
                     else
                     {

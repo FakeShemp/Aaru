@@ -3323,4 +3323,10 @@ Probadores:
     <data name="Paranoia_help" xml:space="preserve">
         <value>No confiar en la unidad, comprobar la integridad de los sectores antes de escribirlos en la imagen. Válido sólo para CD/GD.</value>
     </data>
+    <data name="Cure_paranoia_help" xml:space="preserve">
+        <value>Intentar arreglar sectores que no pasaron las pruebas de integridad.</value>
+    </data>
+    <data name="Fixed_ECC_Q_for_sector_0" xml:space="preserve">
+        <value>[yellow]Corregido ECC Q para el sector [violet]{0}[/][/]</value>
+    </data>
 </root>

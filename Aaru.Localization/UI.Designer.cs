@@ -6645,5 +6645,17 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Paranoia_help", resourceCulture);
             }
         }
+        
+        public static string Cure_paranoia_help {
+            get {
+                return ResourceManager.GetString("Cure_paranoia_help", resourceCulture);
+            }
+        }
+        
+        public static string Fixed_ECC_Q_for_sector_0 {
+            get {
+                return ResourceManager.GetString("Fixed_ECC_Q_for_sector_0", resourceCulture);
+            }
+        }
     }
 }
