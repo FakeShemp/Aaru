@@ -191,8 +191,8 @@ partial class Dump
             if(oldToc.HasValue)
             {
                 foreach(TOC.CDTOCTrackDataDescriptor trk in oldToc.Value.TrackDescriptors
-                                                                  .OrderBy(static t => t.TrackNumber)
-                                                                  .Where(static trk => trk.ADR is 1 or 4))
+                                                                  .Where(static trk => trk.ADR is 1 or 4)
+                                                                  .OrderBy(static t => t.TrackNumber))
                 {
                     switch(trk.TrackNumber)
                     {

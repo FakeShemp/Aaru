@@ -156,8 +156,7 @@ public sealed class Entropy
                 EndProgress2Event?.Invoke();
 
                 trackEntropy.Entropy += entTable.Select(l => l / (double)trackSize)
-                                                .Select(static frequency => -(frequency * Math.Log(frequency, 2)))
-                                                .Sum();
+                                                .Sum(static frequency => -(frequency * Math.Log(frequency, 2)));
 
                 if(duplicatedSectors) trackEntropy.UniqueSectors = uniqueSectorsPerTrack.Count;
 
@@ -230,8 +229,7 @@ public sealed class Entropy
         EndProgressEvent?.Invoke();
 
         entropy.Entropy += entTable.Select(l => l / (double)diskSize)
-                                   .Select(static frequency => -(frequency * Math.Log(frequency, 2)))
-                                   .Sum();
+                                   .Sum(static frequency => -(frequency * Math.Log(frequency, 2)));
 
         if(duplicatedSectors) entropy.UniqueSectors = uniqueSectors.Count;
 
@@ -277,8 +275,7 @@ public sealed class Entropy
         EndProgressEvent?.Invoke();
 
         entropy.Entropy += entTable.Select(l => l / (double)data.Length)
-                                   .Select(static frequency => -(frequency * Math.Log(frequency, 2)))
-                                   .Sum();
+                                   .Sum(static frequency => -(frequency * Math.Log(frequency, 2)));
 
         return entropy;
     }

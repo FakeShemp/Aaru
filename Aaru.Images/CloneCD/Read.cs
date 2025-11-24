@@ -612,8 +612,8 @@ public sealed partial class CloneCd
 
                 if(trackIndexes.TryGetValue((byte)tmpTrack.Sequence, out Dictionary<byte, int> indexes))
                 {
-                    foreach((byte index, int value) in indexes.OrderBy(static i => i.Key)
-                                                              .Where(static trackIndex => trackIndex.Key > 1))
+                    foreach((byte index, int value) in indexes.Where(static trackIndex => trackIndex.Key > 1)
+                                                              .OrderBy(static i => i.Key))
 
                         // Untested as of 20210711
                         tmpTrack.Indexes[index] = value;

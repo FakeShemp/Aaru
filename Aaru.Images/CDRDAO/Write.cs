@@ -501,9 +501,8 @@ public sealed partial class Cdrdao
         }
 
         if(_writingTracks != null && _writingStreams != null)
-        {
-            foreach(FileStream oldTrack in _writingStreams.Select(static t => t.Value).Distinct()) oldTrack.Close();
-        }
+            foreach(FileStream oldTrack in _writingStreams.Select(static t => t.Value).Distinct())
+                oldTrack.Close();
 
         ulong currentOffset = 0;
         _writingTracks = [];
@@ -650,8 +649,8 @@ public sealed partial class Cdrdao
                                         (ulong)(track.RawBytesPerSector +
                                                 (track.SubchannelType != TrackSubchannelType.None ? 96 : 0)));
 
-            foreach(KeyValuePair<ushort, int> index in track.Indexes.OrderBy(static i => i.Key)
-                                                            .Where(static i => i.Key > 1))
+            foreach(KeyValuePair<ushort, int> index in track.Indexes.Where(static i => i.Key > 1)
+                                                            .OrderBy(static i => i.Key))
             {
                 msf = LbaToMsf((ulong)index.Value - (track.Pregap + track.StartSector));
 

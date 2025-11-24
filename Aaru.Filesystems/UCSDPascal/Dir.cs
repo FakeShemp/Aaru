@@ -31,7 +31,7 @@
 // ****************************************************************************/
 
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.Helpers;
@@ -53,7 +53,7 @@ public sealed partial class PascalPlugin
         if(!string.IsNullOrEmpty(path) && string.Compare(path, "/", StringComparison.OrdinalIgnoreCase) != 0)
             return ErrorNumber.NotSupported;
 
-        var contents = _fileEntries.Select(ent => StringHandlers.PascalToString(ent.Filename, _encoding)).ToList();
+        List<string> contents = _fileEntries.ConvertAll(ent => StringHandlers.PascalToString(ent.Filename, _encoding));
 
         if(_debug)
         {

@@ -157,5 +157,5 @@ public sealed partial class A2R
     static bool IsCaptureTypeTiming(ulong resolution, byte[] buffer) =>
 
         // TODO: This is only accurate for 300rpm
-        buffer.Select(static x => (int)x).Sum() * (long)resolution is > 230000000000 and < 270000000000;
+        buffer.Sum(static x => x) * (long)resolution is > 230000000000 and < 270000000000;
 }

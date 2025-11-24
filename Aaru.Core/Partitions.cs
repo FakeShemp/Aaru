@@ -167,7 +167,8 @@ public static class Partitions
         // Be sure that device partitions are not excluded if not mapped by any scheme...
         if(tapeImage is not null)
         {
-            var startLocations = childPartitions.Select(static detectedPartition => detectedPartition.Start).ToList();
+            List<ulong> startLocations =
+                childPartitions.ConvertAll(static detectedPartition => detectedPartition.Start);
 
             if(tapeImage.Files != null)
             {
@@ -183,7 +184,8 @@ public static class Partitions
 
         if(partitionableImage is not null)
         {
-            var startLocations = childPartitions.Select(static detectedPartition => detectedPartition.Start).ToList();
+            List<ulong> startLocations =
+                childPartitions.ConvertAll(static detectedPartition => detectedPartition.Start);
 
             if(partitionableImage.Partitions != null)
             {

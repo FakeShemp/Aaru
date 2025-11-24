@@ -580,7 +580,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
             foreach(SectorTagType tag in inputOptical.Info.ReadableSectorTags
                                                      .Where(static t => t == SectorTagType.CdTrackIsrc)
-                                                     .OrderBy(static t => t))
+                                                     .Order())
             {
                 foreach(Track track in tracks)
                 {
@@ -594,7 +594,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
 
             foreach(SectorTagType tag in inputOptical.Info.ReadableSectorTags
                                                      .Where(static t => t == SectorTagType.CdTrackFlags)
-                                                     .OrderBy(static t => t))
+                                                     .Order())
             {
                 foreach(Track track in tracks)
                 {
@@ -613,8 +613,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                 subchannelExtents.Add((int)s);
             }
 
-            foreach(SectorTagType tag in inputOptical.Info.ReadableSectorTags.OrderBy(static t => t)
-                                                     .TakeWhile(_ => useLong))
+            foreach(SectorTagType tag in inputOptical.Info.ReadableSectorTags.Order().TakeWhile(_ => useLong))
             {
                 switch(tag)
                 {
