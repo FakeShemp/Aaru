@@ -38,53 +38,93 @@ using Aaru.Database.Models;
 using Aaru.Gui.Models;
 using Aaru.Gui.Views.Dialogs;
 using Aaru.Localization;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NameCountModel = Aaru.Gui.Models.NameCountModel;
 
 namespace Aaru.Gui.ViewModels.Dialogs;
 
-public sealed class StatisticsViewModel : ViewModelBase
+public sealed partial class StatisticsViewModel : ViewModelBase
 {
     readonly StatisticsDialog _view;
-    string                    _checksumText;
-    bool                      _checksumVisible;
-    bool                      _commandsVisible;
-    string                    _compareText;
-    bool                      _compareVisible;
-    string                    _convertImageText;
-    bool                      _convertImageVisible;
-    string                    _createSidecarText;
-    bool                      _createSidecarVisible;
-    string                    _decodeText;
-    bool                      _decodeVisible;
-    string                    _deviceInfoText;
-    bool                      _deviceInfoVisible;
-    string                    _deviceReportText;
-    bool                      _deviceReportVisible;
-    bool                      _devicesVisible;
-    string                    _dumpMediaText;
-    bool                      _dumpMediaVisible;
-    string                    _entropyText;
-    bool                      _entropyVisible;
-    bool                      _filesystemsVisible;
-    bool                      _filtersVisible;
-    bool                      _formatsCommandVisible;
-    string                    _formatsText;
-    bool                      _formatsVisible;
-    string                    _fsinfoText;
-    bool                      _fsinfoVisible;
-    string                    _imageInfoText;
-    bool                      _imageInfoVisible;
-    string                    _mediaInfoText;
-    bool                      _mediaInfoVisible;
-    string                    _mediaScanText;
-    bool                      _mediaScanVisible;
-    bool                      _mediasVisible;
-    bool                      _partitionsVisible;
-    string                    _printHexText;
-    bool                      _printHexVisible;
-    string                    _verifyText;
-    bool                      _verifyVisible;
+    [ObservableProperty]
+    string _checksumText;
+    [ObservableProperty]
+    bool _checksumVisible;
+    [ObservableProperty]
+    bool _commandsVisible;
+    [ObservableProperty]
+    string _compareText;
+    [ObservableProperty]
+    bool _compareVisible;
+    [ObservableProperty]
+    string _convertImageText;
+    [ObservableProperty]
+    bool _convertImageVisible;
+    [ObservableProperty]
+    string _createSidecarText;
+    [ObservableProperty]
+    bool _createSidecarVisible;
+    [ObservableProperty]
+    string _decodeText;
+    [ObservableProperty]
+    bool _decodeVisible;
+    [ObservableProperty]
+    string _DeviceInfoText;
+    [ObservableProperty]
+    bool _deviceInfoVisible;
+    [ObservableProperty]
+    string _deviceReportText;
+    [ObservableProperty]
+    bool _deviceReportVisible;
+    [ObservableProperty]
+    bool _devicesVisible;
+    [ObservableProperty]
+    string _dumpMediaText;
+    [ObservableProperty]
+    bool _dumpMediaVisible;
+    [ObservableProperty]
+    string _entropyText;
+    [ObservableProperty]
+    bool _entropyVisible;
+    [ObservableProperty]
+    bool _filesystemsVisible;
+    [ObservableProperty]
+    bool _filtersVisible;
+    [ObservableProperty]
+    string _formatsCommandText;
+    [ObservableProperty]
+    bool _formatsCommandVisible;
+    [ObservableProperty]
+    bool _formatsVisible;
+    [ObservableProperty]
+    string _fsInfoText;
+    [ObservableProperty]
+    bool _fsInfoVisible;
+    [ObservableProperty]
+    string _imageInfoText;
+    [ObservableProperty]
+    bool _imageInfoVisible;
+    [ObservableProperty]
+    string _mediaInfoText;
+    [ObservableProperty]
+    bool _mediaInfoVisible;
+    [ObservableProperty]
+    string _mediaScanText;
+    [ObservableProperty]
+    bool _mediaScanVisible;
+    [ObservableProperty]
+    bool _mediasVisible;
+    [ObservableProperty]
+    bool _partitionsVisible;
+    [ObservableProperty]
+    string _printHexText;
+    [ObservableProperty]
+    bool _printHexVisible;
+    [ObservableProperty]
+    string _verifyText;
+    [ObservableProperty]
+    bool _verifyVisible;
 
     public StatisticsViewModel(StatisticsDialog view)
     {
@@ -475,240 +515,6 @@ public sealed class StatisticsViewModel : ViewModelBase
                 Type  = UI.Media_found_type_image
             });
         }
-    }
-
-    public string FsInfoText
-    {
-        get => _fsinfoText;
-        set => SetProperty(ref _fsinfoText, value);
-    }
-
-    public bool FsInfoVisible
-    {
-        get => _fsinfoVisible;
-        set => SetProperty(ref _fsinfoVisible, value);
-    }
-
-    public string ChecksumText
-    {
-        get => _checksumText;
-        set => SetProperty(ref _checksumText, value);
-    }
-
-    public bool ChecksumVisible
-    {
-        get => _checksumVisible;
-        set => SetProperty(ref _checksumVisible, value);
-    }
-
-    public string CompareText
-    {
-        get => _compareText;
-        set => SetProperty(ref _compareText, value);
-    }
-
-    public bool CompareVisible
-    {
-        get => _compareVisible;
-        set => SetProperty(ref _compareVisible, value);
-    }
-
-    public string ConvertImageText
-    {
-        get => _convertImageText;
-        set => SetProperty(ref _convertImageText, value);
-    }
-
-    public bool ConvertImageVisible
-    {
-        get => _convertImageVisible;
-        set => SetProperty(ref _convertImageVisible, value);
-    }
-
-    public string CreateSidecarText
-    {
-        get => _createSidecarText;
-        set => SetProperty(ref _createSidecarText, value);
-    }
-
-    public bool CreateSidecarVisible
-    {
-        get => _createSidecarVisible;
-        set => SetProperty(ref _createSidecarVisible, value);
-    }
-
-    public string DecodeText
-    {
-        get => _decodeText;
-        set => SetProperty(ref _decodeText, value);
-    }
-
-    public bool DecodeVisible
-    {
-        get => _decodeVisible;
-        set => SetProperty(ref _decodeVisible, value);
-    }
-
-    public string DeviceInfoText
-    {
-        get => _deviceInfoText;
-        set => SetProperty(ref _deviceInfoText, value);
-    }
-
-    public bool DeviceInfoVisible
-    {
-        get => _deviceInfoVisible;
-        set => SetProperty(ref _deviceInfoVisible, value);
-    }
-
-    public string DeviceReportText
-    {
-        get => _deviceReportText;
-        set => SetProperty(ref _deviceReportText, value);
-    }
-
-    public bool DeviceReportVisible
-    {
-        get => _deviceReportVisible;
-        set => SetProperty(ref _deviceReportVisible, value);
-    }
-
-    public string DumpMediaText
-    {
-        get => _dumpMediaText;
-        set => SetProperty(ref _dumpMediaText, value);
-    }
-
-    public bool DumpMediaVisible
-    {
-        get => _dumpMediaVisible;
-        set => SetProperty(ref _dumpMediaVisible, value);
-    }
-
-    public string EntropyText
-    {
-        get => _entropyText;
-        set => SetProperty(ref _entropyText, value);
-    }
-
-    public bool EntropyVisible
-    {
-        get => _entropyVisible;
-        set => SetProperty(ref _entropyVisible, value);
-    }
-
-    public string FormatsCommandText
-    {
-        get => _formatsText;
-        set => SetProperty(ref _formatsText, value);
-    }
-
-    public bool FormatsCommandVisible
-    {
-        get => _formatsCommandVisible;
-        set => SetProperty(ref _formatsCommandVisible, value);
-    }
-
-    public string ImageInfoText
-    {
-        get => _imageInfoText;
-        set => SetProperty(ref _imageInfoText, value);
-    }
-
-    public bool ImageInfoVisible
-    {
-        get => _imageInfoVisible;
-        set => SetProperty(ref _imageInfoVisible, value);
-    }
-
-    public string MediaInfoText
-    {
-        get => _mediaInfoText;
-        set => SetProperty(ref _mediaInfoText, value);
-    }
-
-    public bool MediaInfoVisible
-    {
-        get => _mediaInfoVisible;
-        set => SetProperty(ref _mediaInfoVisible, value);
-    }
-
-    public string MediaScanText
-    {
-        get => _mediaScanText;
-        set => SetProperty(ref _mediaScanText, value);
-    }
-
-    public bool MediaScanVisible
-    {
-        get => _mediaScanVisible;
-        set => SetProperty(ref _mediaScanVisible, value);
-    }
-
-    public string PrintHexText
-    {
-        get => _printHexText;
-        set => SetProperty(ref _printHexText, value);
-    }
-
-    public bool PrintHexVisible
-    {
-        get => _printHexVisible;
-        set => SetProperty(ref _printHexVisible, value);
-    }
-
-    public string VerifyText
-    {
-        get => _verifyText;
-        set => SetProperty(ref _verifyText, value);
-    }
-
-    public bool VerifyVisible
-    {
-        get => _verifyVisible;
-        set => SetProperty(ref _verifyVisible, value);
-    }
-
-    public bool CommandsVisible
-    {
-        get => _commandsVisible;
-        set => SetProperty(ref _commandsVisible, value);
-    }
-
-    public bool FiltersVisible
-    {
-        get => _filtersVisible;
-        set => SetProperty(ref _filtersVisible, value);
-    }
-
-    public bool PartitionsVisible
-    {
-        get => _partitionsVisible;
-        set => SetProperty(ref _partitionsVisible, value);
-    }
-
-    public bool FormatsVisible
-    {
-        get => _formatsVisible;
-        set => SetProperty(ref _formatsVisible, value);
-    }
-
-    public bool FilesystemsVisible
-    {
-        get => _filesystemsVisible;
-        set => SetProperty(ref _filesystemsVisible, value);
-    }
-
-    public bool DevicesVisible
-    {
-        get => _devicesVisible;
-        set => SetProperty(ref _devicesVisible, value);
-    }
-
-    public bool MediasVisible
-    {
-        get => _mediasVisible;
-        set => SetProperty(ref _mediasVisible, value);
     }
 
     public ICommand                               CloseCommand { get; }
