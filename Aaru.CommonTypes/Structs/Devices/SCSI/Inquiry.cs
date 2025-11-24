@@ -38,7 +38,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using Aaru.Logging;
 
 namespace Aaru.CommonTypes.Structs.Devices.SCSI;
@@ -276,8 +275,8 @@ public struct Inquiry
         if(SCSIInquiryResponse.Length < 36 && SCSIInquiryResponse.Length != 5)
         {
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization.INQUIRY_response_is_0_bytes_less_than_minimum_of_36_bytes,
-                                       SCSIInquiryResponse.Length);
+                              Localization.INQUIRY_response_is_0_bytes_less_than_minimum_of_36_bytes,
+                              SCSIInquiryResponse.Length);
 
             return null;
         }
@@ -286,10 +285,9 @@ public struct Inquiry
            SCSIInquiryResponse.Length != SCSIInquiryResponse[4])
         {
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization
-                                          .INQUIRY_response_length_0_bytes_is_different_than_specified_in_length_field,
-                                       SCSIInquiryResponse.Length,
-                                       SCSIInquiryResponse[4] + 4);
+                              Localization.INQUIRY_response_length_0_bytes_is_different_than_specified_in_length_field,
+                              SCSIInquiryResponse.Length,
+                              SCSIInquiryResponse[4] + 4);
 
             return null;
         }
@@ -477,7 +475,7 @@ public struct Inquiry
 
             decoded.VersionDescriptors = new ushort[descriptorsNo];
 
-            for(int i = 0; i < descriptorsNo; i++)
+            for(var i = 0; i < descriptorsNo; i++)
                 decoded.VersionDescriptors[i] = BitConverter.ToUInt16(SCSIInquiryResponse, 58 + i * 2);
         }
 
@@ -528,8 +526,8 @@ public struct Inquiry
 
         Inquiry decoded = inq.Value;
 
-        byte[] buffer = new byte[512];
-        byte   length = 0;
+        var  buffer = new byte[512];
+        byte length = 0;
 
         buffer[0] =  (byte)(decoded.PeripheralQualifier << 5);
         buffer[0] += decoded.PeripheralDeviceType;
@@ -729,7 +727,7 @@ public struct Inquiry
         {
             length = (byte)(58 + decoded.VersionDescriptors.Length * 2);
 
-            for(int i = 0; i < decoded.VersionDescriptors.Length; i++)
+            for(var i = 0; i < decoded.VersionDescriptors.Length; i++)
                 Array.Copy(BitConverter.GetBytes(decoded.VersionDescriptors[i]), 0, buffer, 56 + i * 2, 2);
         }
 
@@ -758,7 +756,7 @@ public struct Inquiry
         }
 
         buffer[4] = length;
-        byte[] dest = new byte[length];
+        var dest = new byte[length];
         Array.Copy(buffer, 0, dest, 0, length);
 
         return dest;

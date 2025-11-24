@@ -51,15 +51,11 @@ public sealed partial class Symbian
 
         if(currentFile > maxFiles) return;
 
-        char[] tabulationChars                                     = new char[conditionLevel];
-        for(int i = 0; i < conditionLevel; i++) tabulationChars[i] = '\t';
+        var tabulationChars                                        = new char[conditionLevel];
+        for(var i = 0; i < conditionLevel; i++) tabulationChars[i] = '\t';
         string tabulation                                          = new(tabulationChars);
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "Seeking to {0} for parsing of file {1} of {2}",
-                                   offset,
-                                   currentFile,
-                                   maxFiles);
+        AaruLogging.Debug(MODULE_NAME, "Seeking to {0} for parsing of file {1} of {2}", offset, currentFile, maxFiles);
 
         br.BaseStream.Seek(offset, SeekOrigin.Begin);
         var recordType = (FileRecordType)br.ReadUInt32();
@@ -119,10 +115,10 @@ public sealed partial class Symbian
                 }
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           "Found file for \"{0}\" with length {1} at {2}",
-                                           decodedFileRecord.destinationName,
-                                           decodedFileRecord.length,
-                                           decodedFileRecord.pointer);
+                                  "Found file for \"{0}\" with length {1} at {2}",
+                                  decodedFileRecord.destinationName,
+                                  decodedFileRecord.length,
+                                  decodedFileRecord.pointer);
 
                 _files.Add(decodedFileRecord);
 
@@ -323,7 +319,7 @@ public sealed partial class Symbian
 
                 var decodedFileRecords = new DecodedFileRecord[languages.Count];
 
-                for(int i = 0; i < languages.Count; i++)
+                for(var i = 0; i < languages.Count; i++)
                 {
                     decodedFileRecords[i].type            = multipleFileRecord.record.type;
                     decodedFileRecords[i].details         = multipleFileRecord.record.details;
@@ -488,7 +484,7 @@ public sealed partial class Symbian
 
                 optionsLineRecord.options = new OptionRecord[(int)optionsLineRecord.numberOfOptions];
 
-                for(int i = 0; i < optionsLineRecord.numberOfOptions; i++)
+                for(var i = 0; i < optionsLineRecord.numberOfOptions; i++)
                 {
                     optionsLineRecord.options[i] = new OptionRecord();
 
@@ -508,7 +504,7 @@ public sealed partial class Symbian
 
                     offset = (uint)br.BaseStream.Position;
 
-                    for(int j = 0; j < languages.Count; j++)
+                    for(var j = 0; j < languages.Count; j++)
                     {
                         br.BaseStream.Seek(optionsLineRecord.options[i].pointers[j], SeekOrigin.Begin);
                         buffer = br.ReadBytes((int)optionsLineRecord.options[i].lengths[j]);
@@ -527,7 +523,7 @@ public sealed partial class Symbian
                 conditionLevel--;
 
                 tabulationChars = new char[conditionLevel];
-                for(int i = 0; i < conditionLevel; i++) tabulationChars[i] = '\t';
+                for(var i = 0; i < conditionLevel; i++) tabulationChars[i] = '\t';
                 tabulation = new string(tabulationChars);
 
                 conditionalRecord = new ConditionalRecord
@@ -552,7 +548,7 @@ public sealed partial class Symbian
                 break;
             case FileRecordType.ElseIf:
                 tabulationChars = new char[conditionLevel - 1];
-                for(int i = 0; i < conditionLevel - 1; i++) tabulationChars[i] = '\t';
+                for(var i = 0; i < conditionLevel - 1; i++) tabulationChars[i] = '\t';
                 tabulation = new string(tabulationChars);
 
                 conditionalRecord = new ConditionalRecord
@@ -577,7 +573,7 @@ public sealed partial class Symbian
                 break;
             case FileRecordType.Else:
                 tabulationChars = new char[conditionLevel - 1];
-                for(int i = 0; i < conditionLevel - 1; i++) tabulationChars[i] = '\t';
+                for(var i = 0; i < conditionLevel - 1; i++) tabulationChars[i] = '\t';
                 tabulation = new string(tabulationChars);
 
                 offset = (uint)(br.BaseStream.Position + Marshal.SizeOf<ConditionalEndRecord>());

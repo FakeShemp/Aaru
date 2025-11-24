@@ -59,53 +59,47 @@ public static class Saturn
 
         IPBin ipbin = Marshal.ByteArrayToStructureLittleEndian<IPBin>(ipbin_sector);
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "saturn_ipbin.maker_id = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.maker_id));
+        AaruLogging.Debug(MODULE_NAME, "saturn_ipbin.maker_id = \"{0}\"", Encoding.ASCII.GetString(ipbin.maker_id));
+
+        AaruLogging.Debug(MODULE_NAME, "saturn_ipbin.product_no = \"{0}\"", Encoding.ASCII.GetString(ipbin.product_no));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "saturn_ipbin.product_no = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.product_no));
+                          "saturn_ipbin.product_version = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.product_version));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "saturn_ipbin.product_version = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.product_version));
+                          "saturn_ipbin.release_date = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.release_date));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "saturn_ipbin.release_date = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.release_date));
-
-        AaruLogging.Debug(MODULE_NAME,
-                                   "saturn_ipbin.saturn_media = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.saturn_media));
+                          "saturn_ipbin.saturn_media = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.saturn_media));
 
         AaruLogging.Debug(MODULE_NAME, "saturn_ipbin.disc_no = {0}", (char)ipbin.disc_no);
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "saturn_ipbin.disc_no_separator = \"{0}\"",
-                                   (char)ipbin.disc_no_separator);
+        AaruLogging.Debug(MODULE_NAME, "saturn_ipbin.disc_no_separator = \"{0}\"", (char)ipbin.disc_no_separator);
 
         AaruLogging.Debug(MODULE_NAME, "saturn_ipbin.disc_total_nos = {0}", (char)ipbin.disc_total_nos);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "saturn_ipbin.release_date = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.release_date));
+                          "saturn_ipbin.release_date = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.release_date));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "saturn_ipbin.spare_space1 = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.spare_space1));
+                          "saturn_ipbin.spare_space1 = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.spare_space1));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "saturn_ipbin.region_codes = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.region_codes));
+                          "saturn_ipbin.region_codes = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.region_codes));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "saturn_ipbin.peripherals = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.peripherals));
+                          "saturn_ipbin.peripherals = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.peripherals));
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "saturn_ipbin.product_name = \"{0}\"",
-                                   Encoding.ASCII.GetString(ipbin.product_name));
+                          "saturn_ipbin.product_name = \"{0}\"",
+                          Encoding.ASCII.GetString(ipbin.product_name));
 
         return Encoding.ASCII.GetString(ipbin.SegaHardwareID) == "SEGA SEGASATURN " ? ipbin : null;
     }

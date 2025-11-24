@@ -119,7 +119,8 @@ public static partial class Modes
             {
                 if(header.Value.MediumType != MediumTypes.Default)
                 {
-                    sb.AppendFormat($"\t[slateblue1]{Localization.Medium_is_0}[/]", $"[italic][fuchsia]{GetMediumTypeDescription(header.Value.MediumType)}[/][/]")
+                    sb.AppendFormat($"\t[slateblue1]{Localization.Medium_is_0}[/]",
+                                    $"[italic][fuchsia]{GetMediumTypeDescription(header.Value.MediumType)}[/][/]")
                       .AppendLine();
                 }
 
@@ -160,18 +161,20 @@ public static partial class Modes
                         {
                             if(descriptor.Blocks == 0)
                             {
-                                sb.AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_have_0_and_are_1_bytes_each}[/]",
-                                                $"[lime]{density}[/]",
-                                                $"[lime]{descriptor.BlockLength}[/]")
-                                  .AppendLine();
+                                sb
+                                   .AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_have_0_and_are_1_bytes_each}[/]",
+                                                 $"[lime]{density}[/]",
+                                                 $"[lime]{descriptor.BlockLength}[/]")
+                                   .AppendLine();
                             }
                             else
                             {
-                                sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_have_1_and_are_2_bytes_each}[/]",
-                                                $"[lime]{descriptor.Blocks}[/]",
-                                                $"[lime]{density}[/]",
-                                                $"[lime{descriptor.BlockLength}[/]")
-                                  .AppendLine();
+                                sb
+                                   .AppendFormat($"\t[slateblue1]{Localization._0_blocks_have_1_and_are_2_bytes_each}[/]",
+                                                 $"[lime]{descriptor.Blocks}[/]",
+                                                 $"[lime]{density}[/]",
+                                                 $"[lime{descriptor.BlockLength}[/]")
+                                   .AppendLine();
                             }
                         }
                         else if(descriptor.Blocks == 0)
@@ -211,11 +214,12 @@ public static partial class Modes
                         break;
                     case 2:
                         sb.AppendLine($"\t[green]{
-                                      Localization.Device_uses_a_write_cache_but_doesn_t_return_until_cache_is_flushed}[/]");
+                            Localization.Device_uses_a_write_cache_but_doesn_t_return_until_cache_is_flushed}[/]");
 
                         break;
                     default:
-                        sb.AppendFormat($"\t[green]{Localization.Unknown_buffered_mode_code_0}[/]", $"[teal]{header.Value.BufferedMode}[/]")
+                        sb.AppendFormat($"\t[green]{Localization.Unknown_buffered_mode_code_0}[/]",
+                                        $"[teal]{header.Value.BufferedMode}[/]")
                           .AppendLine();
 
                         break;
@@ -224,7 +228,8 @@ public static partial class Modes
                 if(header.Value.Speed == 0)
                     sb.AppendLine($"\t[green]{Localization.Device_uses_default_speed}[/]");
                 else
-                    sb.AppendFormat($"\t[green]{Localization.Device_uses_speed_0}[/]", $"[teal]{header.Value.Speed}[/]").AppendLine();
+                    sb.AppendFormat($"\t[green]{Localization.Device_uses_speed_0}[/]", $"[teal]{header.Value.Speed}[/]")
+                      .AppendLine();
 
                 if(header.Value.WriteProtected) sb.AppendLine($"\t[red]{Localization.Medium_is_write_protected}[/]");
 
@@ -1086,15 +1091,15 @@ public static partial class Modes
                                 if(descriptor.BlockLength == 0)
                                 {
                                     sb.AppendFormat($"\t[slateblue1]{
-                                                    Localization
-                                                       .All_remaining_blocks_conform_to_0_and_have_a_variable_length}[/]",
+                                        Localization
+                                           .All_remaining_blocks_conform_to_0_and_have_a_variable_length}[/]",
                                                     $"[fuchsia]{density}[/]")
                                       .AppendLine();
                                 }
                                 else
                                 {
                                     sb.AppendFormat($"\t[slateblue1]{
-                                    Localization.All_remaining_blocks_conform_to_0_and_are_1_bytes_each}[/]",
+                                        Localization.All_remaining_blocks_conform_to_0_and_are_1_bytes_each}[/]",
                                                     $"[fuchsia]{density}[/]",
                                                     $"[teal]{descriptor.BlockLength}[/]")
                                       .AppendLine();
@@ -1102,37 +1107,42 @@ public static partial class Modes
                             }
                             else if(descriptor.BlockLength == 0)
                             {
-                                sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_conform_to_1_and_have_a_variable_length}[/]",
-                                                $"[teal]{descriptor.Blocks}[/]",
-                                                $"[fuchsia]{density}[/]")
-                                  .AppendLine();
+                                sb
+                                   .AppendFormat($"\t[slateblue1]{Localization._0_blocks_conform_to_1_and_have_a_variable_length}[/]",
+                                                 $"[teal]{descriptor.Blocks}[/]",
+                                                 $"[fuchsia]{density}[/]")
+                                   .AppendLine();
                             }
                             else
                             {
-                                sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_conform_to_1_and_are_2_bytes_each}[/]",
-                                                $"[teal]{descriptor.Blocks}[/]",
-                                                $"[fuchsia]{density}[/]",
-                                                $"[teal]{descriptor.BlockLength}[/]")
-                                  .AppendLine();
+                                sb
+                                   .AppendFormat($"\t[slateblue1]{Localization._0_blocks_conform_to_1_and_are_2_bytes_each}[/]",
+                                                 $"[teal]{descriptor.Blocks}[/]",
+                                                 $"[fuchsia]{density}[/]",
+                                                 $"[teal]{descriptor.BlockLength}[/]")
+                                   .AppendLine();
                             }
                         }
                         else if(descriptor.Blocks == 0)
                         {
                             if(descriptor.BlockLength == 0)
                             {
-                                sb.AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_have_a_variable_length}[/]")
-                                  .AppendLine();
+                                sb
+                                   .AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_have_a_variable_length}[/]")
+                                   .AppendLine();
                             }
                             else
                             {
-                                sb.AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_are_0_bytes_each}[/]",
-                                                $"[teal]{descriptor.BlockLength}[/]")
-                                  .AppendLine();
+                                sb
+                                   .AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_are_0_bytes_each}[/]",
+                                                 $"[teal]{descriptor.BlockLength}[/]")
+                                   .AppendLine();
                             }
                         }
                         else if(descriptor.BlockLength == 0)
                         {
-                            sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_have_a_variable_length}[/]", $"[teal]{descriptor.Blocks}[/]")
+                            sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_have_a_variable_length}[/]",
+                                            $"[teal]{descriptor.Blocks}[/]")
                               .AppendLine();
                         }
                         else
@@ -1165,7 +1175,8 @@ public static partial class Modes
 
                         break;
                     default:
-                        sb.AppendFormat($"\t[red]{Localization.Unknown_buffered_mode_code_0}[/]", $"[teal]{header.Value.BufferedMode}[/]")
+                        sb.AppendFormat($"\t[red]{Localization.Unknown_buffered_mode_code_0}[/]",
+                                        $"[teal]{header.Value.BufferedMode}[/]")
                           .AppendLine();
 
                         break;
@@ -1215,7 +1226,8 @@ public static partial class Modes
 
                             break;
                         default:
-                            sb.AppendFormat(Localization.an_unknown_medium_type_0, $"[teal]{(byte)header.Value.MediumType}[/]");
+                            sb.AppendFormat(Localization.an_unknown_medium_type_0,
+                                            $"[teal]{(byte)header.Value.MediumType}[/]");
 
                             break;
                     }
@@ -1225,7 +1237,8 @@ public static partial class Modes
 
                 if(header.Value.WriteProtected) sb.AppendLine($"\t[red]{Localization.Medium_is_write_protected}[/]");
 
-                if(header.Value.EBC) sb.AppendLine($"\t[green]{Localization.Blank_checking_during_write_is_enabled}[/]");
+                if(header.Value.EBC)
+                    sb.AppendLine($"\t[green]{Localization.Blank_checking_during_write_is_enabled}[/]");
 
                 if(header.Value.DPOFUA) sb.AppendLine($"\t[green]{Localization.Drive_supports_DPO_and_FUA_bits}[/]");
 
@@ -1288,24 +1301,26 @@ public static partial class Modes
                                 if(descriptor.BlockLength == 0)
                                 {
                                     sb.AppendFormat($"\t[slateblue1]{
-                                                    Localization.All_remaining_blocks_are_0_and_have_a_variable_length}[/]",
+                                        Localization.All_remaining_blocks_are_0_and_have_a_variable_length}[/]",
                                                     $"[fuchsia]{density}[/]")
                                       .AppendLine();
                                 }
                                 else
                                 {
-                                    sb.AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_are_0_and_are_1_bytes_each}[/]",
-                                                    $"[fuchsia]{density}[/]",
-                                                    $"[teal]{descriptor.BlockLength}[/]")
-                                      .AppendLine();
+                                    sb
+                                       .AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_are_0_and_are_1_bytes_each}[/]",
+                                                     $"[fuchsia]{density}[/]",
+                                                     $"[teal]{descriptor.BlockLength}[/]")
+                                       .AppendLine();
                                 }
                             }
                             else if(descriptor.BlockLength == 0)
                             {
-                                sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_are_1_and_have_a_variable_length}[/]",
-                                                $"[teal]{descriptor.Blocks}[/]",
-                                                $"[fuchsia]{density}[/]")
-                                  .AppendLine();
+                                sb
+                                   .AppendFormat($"\t[slateblue1]{Localization._0_blocks_are_1_and_have_a_variable_length}[/]",
+                                                 $"[teal]{descriptor.Blocks}[/]",
+                                                 $"[fuchsia]{density}[/]")
+                                   .AppendLine();
                             }
                             else
                             {
@@ -1320,19 +1335,22 @@ public static partial class Modes
                         {
                             if(descriptor.BlockLength == 0)
                             {
-                                sb.AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_have_a_variable_length}[/]")
-                                  .AppendLine();
+                                sb
+                                   .AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_have_a_variable_length}[/]")
+                                   .AppendLine();
                             }
                             else
                             {
-                                sb.AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_are_0_bytes_each}[/]",
-                                                $"[teal]{descriptor.BlockLength}[/]")
-                                  .AppendLine();
+                                sb
+                                   .AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_are_0_bytes_each}[/]",
+                                                 $"[teal]{descriptor.BlockLength}[/]")
+                                   .AppendLine();
                             }
                         }
                         else if(descriptor.BlockLength == 0)
                         {
-                            sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_have_a_variable_length}[/]", $"[teal]{descriptor.Blocks}[/]")
+                            sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_have_a_variable_length}[/]",
+                                            $"[teal]{descriptor.Blocks}[/]")
                               .AppendLine();
                         }
                         else
@@ -1503,7 +1521,8 @@ public static partial class Modes
 
                         break;
                     default:
-                        sb.AppendFormat(Localization.Unknown_medium_type_0, $"[teal]{(byte)header.Value.MediumType}[/]");
+                        sb.AppendFormat(Localization.Unknown_medium_type_0,
+                                        $"[teal]{(byte)header.Value.MediumType}[/]");
 
                         break;
                 }
@@ -1567,18 +1586,20 @@ public static partial class Modes
                         {
                             if(descriptor.Blocks == 0)
                             {
-                                sb.AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_have_0_and_are_1_bytes_each}[/]",
-                                                $"[fuchsia]{density}[/]",
-                                                $"[teal]{descriptor.BlockLength}[/]")
-                                  .AppendLine();
+                                sb
+                                   .AppendFormat($"\t[slateblue1]{Localization.All_remaining_blocks_have_0_and_are_1_bytes_each}[/]",
+                                                 $"[fuchsia]{density}[/]",
+                                                 $"[teal]{descriptor.BlockLength}[/]")
+                                   .AppendLine();
                             }
                             else
                             {
-                                sb.AppendFormat($"\t[slateblue1]{Localization._0_blocks_have_1_and_are_2_bytes_each}[/]",
-                                                $"[teal]{descriptor.Blocks}[/]",
-                                                $"[fuchsia]{density}[/]",
-                                                $"[teal]{descriptor.BlockLength}[/]")
-                                  .AppendLine();
+                                sb
+                                   .AppendFormat($"\t[slateblue1]{Localization._0_blocks_have_1_and_are_2_bytes_each}[/]",
+                                                 $"[teal]{descriptor.Blocks}[/]",
+                                                 $"[fuchsia]{density}[/]",
+                                                 $"[teal]{descriptor.BlockLength}[/]")
+                                   .AppendLine();
                             }
                         }
                         else if(descriptor.Blocks == 0)

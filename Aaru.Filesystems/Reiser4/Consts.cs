@@ -36,6 +36,5 @@ public sealed partial class Reiser4
 
     const string FS_TYPE = "reiser4";
 
-    readonly byte[] _magic =
-    "ReIsEr4\0\0\0\0\0\0\0\0\0"u8.ToArray();
+    readonly byte[] _magic = "ReIsEr4\0\0\0\0\0\0\0\0\0"u8.ToArray();
 }

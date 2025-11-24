@@ -75,15 +75,14 @@ public static class TOC
         if(decoded.DataLength + 2 != CDTOCResponse.Length)
         {
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization
-                                          .Expected_CD_TOC_size_0_bytes_is_not_received_size_1_bytes_not_decoding,
-                                       decoded.DataLength + 2,
-                                       CDTOCResponse.Length);
+                              Localization.Expected_CD_TOC_size_0_bytes_is_not_received_size_1_bytes_not_decoding,
+                              decoded.DataLength + 2,
+                              CDTOCResponse.Length);
 
             return null;
         }
 
-        for(int i = 0; i < (decoded.DataLength - 2) / 8; i++)
+        for(var i = 0; i < (decoded.DataLength - 2) / 8; i++)
         {
             decoded.TrackDescriptors[i].Reserved1   = CDTOCResponse[0 + i * 8 + 4];
             decoded.TrackDescriptors[i].ADR         = (byte)((CDTOCResponse[1 + i * 8 + 4] & 0xF0) >> 4);

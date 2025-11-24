@@ -119,15 +119,14 @@ public static class CDTextOnLeadIn
         if(decoded.DataLength + 2 != CDTextResponse.Length)
         {
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization
-                                          .Expected_CD_TEXT_size_0_bytes_is_not_received_size_1_bytes_not_decoding,
-                                       decoded.DataLength + 2,
-                                       CDTextResponse.Length);
+                              Localization.Expected_CD_TEXT_size_0_bytes_is_not_received_size_1_bytes_not_decoding,
+                              decoded.DataLength + 2,
+                              CDTextResponse.Length);
 
             return null;
         }
 
-        for(int i = 0; i < (decoded.DataLength - 2) / 18; i++)
+        for(var i = 0; i < (decoded.DataLength - 2) / 18; i++)
         {
             decoded.DataPacks[i].HeaderID1         = CDTextResponse[0 + i * 18 + 4];
             decoded.DataPacks[i].HeaderID2         = CDTextResponse[1 + i * 18 + 4];

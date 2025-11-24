@@ -54,16 +54,14 @@ public sealed partial class D88
 
         if(stream.Length < Marshal.SizeOf<Header>()) return false;
 
-        byte[] hdrB = new byte[Marshal.SizeOf<Header>()];
+        var hdrB = new byte[Marshal.SizeOf<Header>()];
         stream.EnsureRead(hdrB, 0, hdrB.Length);
 
         Header hdr = Marshal.ByteArrayToStructureLittleEndian<Header>(hdrB);
 
         AaruLogging.Debug(MODULE_NAME, "d88hdr.name = \"{0}\"", StringHandlers.CToString(hdr.name, shiftjis));
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "d88hdr.reserved is empty? = {0}",
-                                   hdr.reserved.SequenceEqual(_reservedEmpty));
+        AaruLogging.Debug(MODULE_NAME, "d88hdr.reserved is empty? = {0}", hdr.reserved.SequenceEqual(_reservedEmpty));
 
         AaruLogging.Debug(MODULE_NAME, "d88hdr.write_protect = 0x{0:X2}", hdr.write_protect);
 
@@ -77,7 +75,7 @@ public sealed partial class D88
 
         if(!hdr.reserved.SequenceEqual(_reservedEmpty)) return false;
 
-        int counter = 0;
+        var counter = 0;
 
         foreach(int t in hdr.track_table)
         {

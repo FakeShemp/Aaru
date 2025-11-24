@@ -148,7 +148,7 @@ public sealed partial class Sidecar
                 else
                 {
                     AaruLogging.Error(Localization.Core
-                                                           .The_specified_image_says_it_contains_an_optical_media_but_at_the_same_time_says_it_does_not_support_them);
+                                                  .The_specified_image_says_it_contains_an_optical_media_but_at_the_same_time_says_it_does_not_support_them);
 
                     AaruLogging.Error(Localization.Core.Please_open_an_issue_at_Github);
                 }
@@ -160,7 +160,7 @@ public sealed partial class Sidecar
                 else
                 {
                     AaruLogging.Error(Localization.Core
-                                                           .The_specified_image_says_it_contains_a_block_addressable_media_but_at_the_same_time_says_it_does_not_support_them);
+                                                  .The_specified_image_says_it_contains_a_block_addressable_media_but_at_the_same_time_says_it_does_not_support_them);
 
                     AaruLogging.Error(Localization.Core.Please_open_an_issue_at_Github);
                 }
@@ -181,7 +181,7 @@ public sealed partial class Sidecar
                 else
                 {
                     AaruLogging.Error(Localization.Core
-                                                           .The_specified_image_says_it_contains_a_byte_addressable_media_but_at_the_same_time_says_it_does_not_support_them);
+                                                  .The_specified_image_says_it_contains_a_byte_addressable_media_but_at_the_same_time_says_it_does_not_support_them);
 
                     AaruLogging.Error(Localization.Core.Please_open_an_issue_at_Github);
                 }

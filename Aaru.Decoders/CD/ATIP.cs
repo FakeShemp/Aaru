@@ -68,9 +68,8 @@ public static class ATIP
         if(CDATIPResponse.Length != 32 && CDATIPResponse.Length != 28)
         {
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization
-                                          .Expected_CD_ATIP_size_32_bytes_is_not_received_size_0_bytes_not_decoding,
-                                       CDATIPResponse.Length);
+                              Localization.Expected_CD_ATIP_size_32_bytes_is_not_received_size_0_bytes_not_decoding,
+                              CDATIPResponse.Length);
 
             return null;
         }

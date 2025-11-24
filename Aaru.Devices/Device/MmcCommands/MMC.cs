@@ -206,7 +206,7 @@ public partial class Device
     public bool Read(out byte[] buffer,        out uint[] response, uint lba, uint blockSize, ushort transferLength,
                      bool       byteAddressed, uint       timeout,  out double duration)
     {
-        bool sense = true;
+        var sense = true;
         buffer   = null;
         response = null;
         duration = -1;
@@ -320,10 +320,10 @@ public partial class Device
         Error = LastError != 0;
 
         AaruLogging.Debug(MMC_MODULE_NAME,
-                                   transferLength > 1
-                                       ? Localization.READ_MULTIPLE_BLOCK_took_0_ms
-                                       : Localization.READ_SINGLE_BLOCK_took_0_ms,
-                                   duration);
+                          transferLength > 1
+                              ? Localization.READ_MULTIPLE_BLOCK_took_0_ms
+                              : Localization.READ_SINGLE_BLOCK_took_0_ms,
+                          duration);
 
         return sense;
     }
@@ -342,9 +342,9 @@ public partial class Device
                                         ushort transferLength, bool byteAddressed, uint timeout, out double duration)
     {
         buffer = new byte[transferLength * blockSize];
-        byte[] blockBuffer = new byte[blockSize];
+        var blockBuffer = new byte[blockSize];
         duration = 0;
-        bool sense = true;
+        var sense = true;
         response = null;
 
         for(uint i = 0; i < transferLength; i++)

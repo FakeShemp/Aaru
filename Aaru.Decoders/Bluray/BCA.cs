@@ -88,9 +88,7 @@ public static class BCA
 
         if(BCAResponse.Length != 68)
         {
-            AaruLogging.Debug(MODULE_NAME,
-                                       Localization.Found_incorrect_Blu_ray_BCA_size_0_bytes,
-                                       BCAResponse.Length);
+            AaruLogging.Debug(MODULE_NAME, Localization.Found_incorrect_Blu_ray_BCA_size_0_bytes, BCAResponse.Length);
 
             return null;
         }
@@ -125,7 +123,7 @@ public static class BCA
 #endif
 
         sb.AppendLine(Localization.Blu_ray_Burst_Cutting_Area_in_hex_follows);
-        sb.AppendLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(response.BCA, color:true)));
+        sb.AppendLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(response.BCA, color: true)));
 
         return sb.ToString();
     }

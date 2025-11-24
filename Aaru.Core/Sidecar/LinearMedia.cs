@@ -57,17 +57,17 @@ public sealed partial class Sidecar
     static void LinearMedia(IByteAddressableImage image,   Guid filterId, string imagePath, FileInfo fi,
                             PluginRegister        plugins, List<CommonTypes.AaruMetadata.Checksum> imgChecksums,
                             ref Metadata          sidecar, Encoding encoding) => sidecar.LinearMedias =
-                                                                                 [
-                                                                                     new LinearMedia
-                                                                                     {
-                                                                                         Checksums = imgChecksums,
-                                                                                         Image = new Image
-                                                                                         {
-                                                                                             Format = image.Format,
-                                                                                             Offset = 0,
-                                                                                             Value  = Path.GetFileName(imagePath)
-                                                                                         },
-                                                                                         Size = image.Info.Sectors
-                                                                                     }
-                                                                                 ];
+    [
+        new LinearMedia
+        {
+            Checksums = imgChecksums,
+            Image = new Image
+            {
+                Format = image.Format,
+                Offset = 0,
+                Value  = Path.GetFileName(imagePath)
+            },
+            Size = image.Info.Sectors
+        }
+    ];
 }

@@ -34,6 +34,5 @@ namespace Aaru.Images;
 
 public sealed partial class Nhdr0
 {
-    readonly byte[] _signature =
-    "T98HDDIMAGE.R0\0"u8.ToArray();
+    readonly byte[] _signature = "T98HDDIMAGE.R0\0"u8.ToArray();
 }

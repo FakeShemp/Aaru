@@ -63,8 +63,8 @@ public static partial class MediaTypeFromDevice
             return MediaType.Unknown;
 
         AaruLogging.Debug(MODULE_NAME,
-                                   Localization
-                                      .Drive_manufacturer_is_SyQuest_media_has_1961069_blocks_of_512_bytes_setting_media_type_to_SparQ);
+                          Localization
+                             .Drive_manufacturer_is_SyQuest_media_has_1961069_blocks_of_512_bytes_setting_media_type_to_SparQ);
 
         return MediaType.SparQ;
     }

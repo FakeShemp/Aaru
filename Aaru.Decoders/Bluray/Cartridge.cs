@@ -103,8 +103,8 @@ public static class Cartridge
         if(CSResponse.Length != 8)
         {
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization.Found_incorrect_Blu_ray_Cartridge_Status_size_0_bytes,
-                                       CSResponse.Length);
+                              Localization.Found_incorrect_Blu_ray_Cartridge_Status_size_0_bytes,
+                              CSResponse.Length);
 
             return null;
         }

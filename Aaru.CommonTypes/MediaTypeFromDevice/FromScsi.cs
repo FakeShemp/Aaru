@@ -85,10 +85,10 @@ public static partial class MediaTypeFromDevice
                 if(blockSize == 2048)
                 {
                     AaruLogging.Debug(MODULE_NAME,
-                                               Localization.SCSI_Media_Type_Description_MDDATA,
-                                               scsiPeripheralType,
-                                               blocks,
-                                               blockSize);
+                                      Localization.SCSI_Media_Type_Description_MDDATA,
+                                      scsiPeripheralType,
+                                      blocks,
+                                      blockSize);
 
                     return MediaType.MDData;
                 }
@@ -97,45 +97,45 @@ public static partial class MediaTypeFromDevice
                 {
                     case 57312:
                         AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.SCSI_Media_Type_Description_MD60_MDDATA,
-                                                   scsiPeripheralType,
-                                                   blocks,
-                                                   blockSize);
+                                          Localization.SCSI_Media_Type_Description_MD60_MDDATA,
+                                          scsiPeripheralType,
+                                          blocks,
+                                          blockSize);
 
                         return MediaType.MD60;
                     case 70464:
                         AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.SCSI_Media_Type_Description_MD74_MDDATA,
-                                                   scsiPeripheralType,
-                                                   blocks,
-                                                   blockSize);
+                                          Localization.SCSI_Media_Type_Description_MD74_MDDATA,
+                                          scsiPeripheralType,
+                                          blocks,
+                                          blockSize);
 
                         return MediaType.MD74;
                     case 76096:
                         AaruLogging.Debug(MODULE_NAME,
-                                                   Localization.SCSI_Media_Type_Description_MD80_MDDATA,
-                                                   scsiPeripheralType,
-                                                   blocks,
-                                                   blockSize);
+                                          Localization.SCSI_Media_Type_Description_MD80_MDDATA,
+                                          scsiPeripheralType,
+                                          blocks,
+                                          blockSize);
 
                         return MediaType.MD80;
                 }
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization.SCSI_Media_Type_Description_MD60_MDDATA,
-                                           scsiPeripheralType,
-                                           blocks,
-                                           blockSize);
+                                  Localization.SCSI_Media_Type_Description_MD60_MDDATA,
+                                  scsiPeripheralType,
+                                  blocks,
+                                  blockSize);
 
                 return MediaType.MD;
 
             // Host managed zoned block device
             case 0x14:
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization.SCSI_Media_Type_Description_ZBC_Host_Managed,
-                                           scsiPeripheralType,
-                                           blocks,
-                                           blockSize);
+                                  Localization.SCSI_Media_Type_Description_ZBC_Host_Managed,
+                                  scsiPeripheralType,
+                                  blocks,
+                                  blockSize);
 
                 return MediaType.Zone_HDD;
         }

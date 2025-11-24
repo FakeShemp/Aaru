@@ -54,7 +54,7 @@ public sealed partial class Nhdr0
 
         if(stream.Length < Marshal.SizeOf<Header>()) return false;
 
-        byte[] hdrB = new byte[Marshal.SizeOf<Header>()];
+        var hdrB = new byte[Marshal.SizeOf<Header>()];
         stream.EnsureRead(hdrB, 0, hdrB.Length);
 
         _nhdhdr = Marshal.ByteArrayToStructureLittleEndian<Header>(hdrB);
@@ -62,14 +62,14 @@ public sealed partial class Nhdr0
         if(!_nhdhdr.szFileID.SequenceEqual(_signature)) return false;
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "nhdhdr.szFileID = \"{0}\"",
-                                   StringHandlers.CToString(_nhdhdr.szFileID, shiftjis));
+                          "nhdhdr.szFileID = \"{0}\"",
+                          StringHandlers.CToString(_nhdhdr.szFileID, shiftjis));
 
         AaruLogging.Debug(MODULE_NAME, "nhdhdr.reserved1 = {0}", _nhdhdr.reserved1);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "nhdhdr.szComment = \"{0}\"",
-                                   StringHandlers.CToString(_nhdhdr.szComment, shiftjis));
+                          "nhdhdr.szComment = \"{0}\"",
+                          StringHandlers.CToString(_nhdhdr.szComment, shiftjis));
 
         AaruLogging.Debug(MODULE_NAME, "nhdhdr.dwHeadSize = {0}", _nhdhdr.dwHeadSize);
         AaruLogging.Debug(MODULE_NAME, "nhdhdr.dwCylinder = {0}", _nhdhdr.dwCylinder);

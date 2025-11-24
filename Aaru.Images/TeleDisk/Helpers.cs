@@ -42,22 +42,22 @@ public sealed partial class TeleDisk
 {
     (ushort cylinder, byte head, byte sector) LbaToChs(ulong lba)
     {
-        ushort cylinder = (ushort)(lba                            / (_imageInfo.Heads * _imageInfo.SectorsPerTrack));
-        byte   head     = (byte)(lba / _imageInfo.SectorsPerTrack % _imageInfo.Heads);
-        byte   sector   = (byte)(lba % _imageInfo.SectorsPerTrack + 1);
+        var cylinder = (ushort)(lba                            / (_imageInfo.Heads * _imageInfo.SectorsPerTrack));
+        var head     = (byte)(lba / _imageInfo.SectorsPerTrack % _imageInfo.Heads);
+        var sector   = (byte)(lba % _imageInfo.SectorsPerTrack + 1);
 
         return (cylinder, head, sector);
     }
 
     static ushort TeleDiskCrc(ushort crc, byte[] buffer)
     {
-        int counter = 0;
+        var counter = 0;
 
         while(counter < buffer.Length)
         {
             crc ^= (ushort)((buffer[counter] & 0xFF) << 8);
 
-            for(int i = 0; i < 8; i++)
+            for(var i = 0; i < 8; i++)
             {
                 if((crc & 0x8000) > 0)
                     crc = (ushort)(crc << 1 ^ TELE_DISK_CRC_POLY);
@@ -120,16 +120,16 @@ public sealed partial class TeleDisk
                 break;
             case DATA_BLOCK_PATTERN:
             {
-                int ins  = 0;
-                int outs = 0;
+                var ins  = 0;
+                var outs = 0;
 
                 while(ins < encodedData.Length)
                 {
-                    byte[] repeatValue = new byte[2];
+                    var repeatValue = new byte[2];
 
-                    ushort repeatNumber = BitConverter.ToUInt16(encodedData, ins);
+                    var repeatNumber = BitConverter.ToUInt16(encodedData, ins);
                     Array.Copy(encodedData, ins + 2, repeatValue, 0, 2);
-                    byte[] decodedPiece = new byte[repeatNumber * 2];
+                    var decodedPiece = new byte[repeatNumber * 2];
                     ArrayHelpers.ArrayFill(decodedPiece, repeatValue);
                     Array.Copy(decodedPiece, 0, decodedData, outs, decodedPiece.Length);
                     ins  += 4;
@@ -137,27 +137,23 @@ public sealed partial class TeleDisk
                 }
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Block_pattern_decoder_Input_data_size_0_bytes,
-                                           encodedData.Length);
+                                  Localization.Block_pattern_decoder_Input_data_size_0_bytes,
+                                  encodedData.Length);
+
+                AaruLogging.Debug(MODULE_NAME, Localization.Block_pattern_decoder_Processed_input_0_bytes, ins);
 
                 AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Block_pattern_decoder_Processed_input_0_bytes,
-                                           ins);
+                                  Localization.Block_pattern_decoder_Output_data_size_0_bytes,
+                                  decodedData.Length);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Block_pattern_decoder_Output_data_size_0_bytes,
-                                           decodedData.Length);
-
-                AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Block_pattern_decoder_Processed_Output_0_bytes,
-                                           outs);
+                AaruLogging.Debug(MODULE_NAME, Localization.Block_pattern_decoder_Processed_Output_0_bytes, outs);
 
                 break;
             }
             case DATA_BLOCK_RLE:
             {
-                int ins  = 0;
-                int outs = 0;
+                var ins  = 0;
+                var outs = 0;
 
                 while(ins < encodedData.Length)
                 {
@@ -175,10 +171,10 @@ public sealed partial class TeleDisk
                     else
                     {
                         length = (byte)(encoding * 2);
-                        byte   run  = encodedData[ins + 1];
-                        byte[] part = new byte[length];
+                        byte run  = encodedData[ins + 1];
+                        var  part = new byte[length];
                         Array.Copy(encodedData, ins + 2, part, 0, length);
-                        byte[] piece = new byte[length * run];
+                        var piece = new byte[length * run];
                         ArrayHelpers.ArrayFill(piece, part);
                         Array.Copy(piece, 0, decodedData, outs, piece.Length);
                         ins  += 2 + length;
@@ -186,15 +182,11 @@ public sealed partial class TeleDisk
                     }
                 }
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           Localization.RLE_decoder_Input_data_size_0_bytes,
-                                           encodedData.Length);
+                AaruLogging.Debug(MODULE_NAME, Localization.RLE_decoder_Input_data_size_0_bytes, encodedData.Length);
 
                 AaruLogging.Debug(MODULE_NAME, Localization.RLE_decoder_Processed_input_0_bytes, ins);
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           Localization.RLE_decoder_Output_data_size_0_bytes,
-                                           decodedData.Length);
+                AaruLogging.Debug(MODULE_NAME, Localization.RLE_decoder_Output_data_size_0_bytes, decodedData.Length);
 
                 AaruLogging.Debug(MODULE_NAME, Localization.RLE_decoder_Processed_Output_0_bytes, outs);
 
@@ -384,9 +376,9 @@ public sealed partial class TeleDisk
             default:
             {
                 AaruLogging.Debug(MODULE_NAME,
-                                           "Unknown drive type {1} with {0} bytes",
-                                           _totalDiskSize,
-                                           _header.DriveType);
+                                  "Unknown drive type {1} with {0} bytes",
+                                  _totalDiskSize,
+                                  _header.DriveType);
 
                 return MediaType.Unknown;
             }

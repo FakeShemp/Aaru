@@ -91,7 +91,7 @@ public static class DateHandlers
     /// <returns>.NET DateTime</returns>
     public static DateTime HighSierraToDateTime(byte[] vdDateTime)
     {
-        byte[] isoTime = new byte[17];
+        var isoTime = new byte[17];
         Array.Copy(vdDateTime, 0, isoTime, 0, 16);
 
         return Iso9660ToDateTime(isoTime);
@@ -103,8 +103,8 @@ public static class DateHandlers
     /// <returns>.NET DateTime</returns>
     public static DateTime Iso9660ToDateTime(byte[] vdDateTime)
     {
-        byte[] twoCharValue  = new byte[2];
-        byte[] fourCharValue = new byte[4];
+        var twoCharValue  = new byte[2];
+        var fourCharValue = new byte[4];
 
         fourCharValue[0] = vdDateTime[0];
         fourCharValue[1] = vdDateTime[1];
@@ -112,8 +112,8 @@ public static class DateHandlers
         fourCharValue[3] = vdDateTime[3];
 
         AaruLogging.Debug(ISO9660_MODULE_NAME,
-                                   "year = \"{0}\"",
-                                   StringHandlers.CToString(fourCharValue, Encoding.ASCII));
+                          "year = \"{0}\"",
+                          StringHandlers.CToString(fourCharValue, Encoding.ASCII));
 
         if(!int.TryParse(StringHandlers.CToString(fourCharValue, Encoding.ASCII), out int year)) year = 0;
 
@@ -121,17 +121,15 @@ public static class DateHandlers
         twoCharValue[1] = vdDateTime[5];
 
         AaruLogging.Debug(ISO9660_MODULE_NAME,
-                                   "month = \"{0}\"",
-                                   StringHandlers.CToString(twoCharValue, Encoding.ASCII));
+                          "month = \"{0}\"",
+                          StringHandlers.CToString(twoCharValue, Encoding.ASCII));
 
         if(!int.TryParse(StringHandlers.CToString(twoCharValue, Encoding.ASCII), out int month)) month = 0;
 
         twoCharValue[0] = vdDateTime[6];
         twoCharValue[1] = vdDateTime[7];
 
-        AaruLogging.Debug(ISO9660_MODULE_NAME,
-                                   "day = \"{0}\"",
-                                   StringHandlers.CToString(twoCharValue, Encoding.ASCII));
+        AaruLogging.Debug(ISO9660_MODULE_NAME, "day = \"{0}\"", StringHandlers.CToString(twoCharValue, Encoding.ASCII));
 
         if(!int.TryParse(StringHandlers.CToString(twoCharValue, Encoding.ASCII), out int day)) day = 0;
 
@@ -139,8 +137,8 @@ public static class DateHandlers
         twoCharValue[1] = vdDateTime[9];
 
         AaruLogging.Debug(ISO9660_MODULE_NAME,
-                                   "hour = \"{0}\"",
-                                   StringHandlers.CToString(twoCharValue, Encoding.ASCII));
+                          "hour = \"{0}\"",
+                          StringHandlers.CToString(twoCharValue, Encoding.ASCII));
 
         if(!int.TryParse(StringHandlers.CToString(twoCharValue, Encoding.ASCII), out int hour)) hour = 0;
 
@@ -148,8 +146,8 @@ public static class DateHandlers
         twoCharValue[1] = vdDateTime[11];
 
         AaruLogging.Debug(ISO9660_MODULE_NAME,
-                                   "minute = \"{0}\"",
-                                   StringHandlers.CToString(twoCharValue, Encoding.ASCII));
+                          "minute = \"{0}\"",
+                          StringHandlers.CToString(twoCharValue, Encoding.ASCII));
 
         if(!int.TryParse(StringHandlers.CToString(twoCharValue, Encoding.ASCII), out int minute)) minute = 0;
 
@@ -157,8 +155,8 @@ public static class DateHandlers
         twoCharValue[1] = vdDateTime[13];
 
         AaruLogging.Debug(ISO9660_MODULE_NAME,
-                                   "second = \"{0}\"",
-                                   StringHandlers.CToString(twoCharValue, Encoding.ASCII));
+                          "second = \"{0}\"",
+                          StringHandlers.CToString(twoCharValue, Encoding.ASCII));
 
         if(!int.TryParse(StringHandlers.CToString(twoCharValue, Encoding.ASCII), out int second)) second = 0;
 
@@ -166,22 +164,22 @@ public static class DateHandlers
         twoCharValue[1] = vdDateTime[15];
 
         AaruLogging.Debug(ISO9660_MODULE_NAME,
-                                   "hundredths = \"{0}\"",
-                                   StringHandlers.CToString(twoCharValue, Encoding.ASCII));
+                          "hundredths = \"{0}\"",
+                          StringHandlers.CToString(twoCharValue, Encoding.ASCII));
 
         if(!int.TryParse(StringHandlers.CToString(twoCharValue, Encoding.ASCII), out int hundredths)) hundredths = 0;
 
         AaruLogging.Debug(ISO9660_MODULE_NAME,
-                                   "decodedDT = new DateTime({0}, {1}, {2}, {3}, {4}, {5}, {6}, DateTimeKind.Unspecified);",
-                                   year,
-                                   month,
-                                   day,
-                                   hour,
-                                   minute,
-                                   second,
-                                   hundredths * 10);
+                          "decodedDT = new DateTime({0}, {1}, {2}, {3}, {4}, {5}, {6}, DateTimeKind.Unspecified);",
+                          year,
+                          month,
+                          day,
+                          hour,
+                          minute,
+                          second,
+                          hundredths * 10);
 
-        sbyte difference = (sbyte)vdDateTime[16];
+        var difference = (sbyte)vdDateTime[16];
 
         var decodedDt = new DateTime(year, month, day, hour, minute, second, hundredths * 10, DateTimeKind.Utc);
 
@@ -222,11 +220,11 @@ public static class DateHandlers
         int month = dateRecord & 0x000F;
 
         AaruLogging.Debug(PASCAL_MODULE_NAME,
-                                   "dateRecord = 0x{0:X4}, year = {1}, month = {2}, day = {3}",
-                                   dateRecord,
-                                   year,
-                                   month,
-                                   day);
+                          "dateRecord = 0x{0:X4}, year = {1}, month = {2}, day = {3}",
+                          dateRecord,
+                          year,
+                          month,
+                          day);
 
         return new DateTime(year, month, day);
     }
@@ -245,18 +243,18 @@ public static class DateHandlers
         int second = (time & 0x1F) * 2;
 
         AaruLogging.Debug(DOS_MODULE_NAME,
-                                   "date = 0x{0:X4}, year = {1}, month = {2}, day = {3}",
-                                   date,
-                                   year,
-                                   month,
-                                   day);
+                          "date = 0x{0:X4}, year = {1}, month = {2}, day = {3}",
+                          date,
+                          year,
+                          month,
+                          day);
 
         AaruLogging.Debug(DOS_MODULE_NAME,
-                                   "time = 0x{0:X4}, hour = {1}, minute = {2}, second = {3}",
-                                   time,
-                                   hour,
-                                   minute,
-                                   second);
+                          "time = 0x{0:X4}, hour = {1}, minute = {2}, second = {3}",
+                          time,
+                          hour,
+                          minute,
+                          second);
 
         DateTime dosDate;
 
@@ -277,9 +275,9 @@ public static class DateHandlers
     /// <returns>.NET DateTime</returns>
     public static DateTime CpmToDateTime(byte[] timestamp)
     {
-        ushort days    = BitConverter.ToUInt16(timestamp, 0);
-        int    hours   = timestamp[2];
-        int    minutes = timestamp[3];
+        var days    = BitConverter.ToUInt16(timestamp, 0);
+        int hours   = timestamp[2];
+        int minutes = timestamp[3];
 
         DateTime temp = _amigaEpoch.AddDays(days);
         temp = temp.AddHours(hours);
@@ -304,15 +302,15 @@ public static class DateHandlers
                                           byte   minute, byte second, byte centiseconds, byte hundredsOfMicroseconds,
                                           byte   microseconds)
     {
-        byte specification = (byte)((typeAndTimeZone & 0xF000) >> 12);
+        var specification = (byte)((typeAndTimeZone & 0xF000) >> 12);
 
         long ticks = (long)centiseconds * 100000 + (long)hundredsOfMicroseconds * 1000 + (long)microseconds * 10;
 
         if(specification == 0)
             return new DateTime(year, month, day, hour, minute, second, DateTimeKind.Utc).AddTicks(ticks);
 
-        ushort preOffset = (ushort)(typeAndTimeZone & 0xFFF);
-        short  offset;
+        var   preOffset = (ushort)(typeAndTimeZone & 0xFFF);
+        short offset;
 
         if((preOffset & 0x800) == 0x800)
             offset = (short)(preOffset | 0xF000);

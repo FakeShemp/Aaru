@@ -158,24 +158,24 @@ public static class Apple2
     {
         if(data is not { Length: 410 }) return null;
 
-        byte[] buffer = new byte[data.Length];
-        byte   carry  = 0;
+        var  buffer = new byte[data.Length];
+        byte carry  = 0;
 
-        for(int i = 0; i < data.Length; i++)
+        for(var i = 0; i < data.Length; i++)
         {
             carry     ^= ReadTable5and3[data[i]];
             buffer[i] =  carry;
         }
 
-        byte[] output = new byte[256];
+        var output = new byte[256];
 
-        for(int i = 0; i < 51; i++)
+        for(var i = 0; i < 51; i++)
         {
             byte b1 = buffer[51 * 3 - i];
             byte b2 = buffer[51 * 2 - i];
             byte b3 = buffer[51     - i];
-            byte b4 = (byte)(((b1 & 2) << 1 | b2 & 2 | (b3 & 2) >> 1)          & 0xFF);
-            byte b5 = (byte)(((b1 & 1) << 2 | (b2          & 1) << 1 | b3 & 1) & 0xFF);
+            var  b4 = (byte)(((b1 & 2) << 1 | b2 & 2 | (b3 & 2) >> 1)          & 0xFF);
+            var  b5 = (byte)(((b1 & 1) << 2 | (b2          & 1) << 1 | b3 & 1) & 0xFF);
             output[250 - 5 * i] = (byte)((buffer[i + 51 * 3 + 1] << 3 | b1 >> 2 & 0x7) & 0xFF);
             output[251 - 5 * i] = (byte)((buffer[i + 51 * 4 + 1] << 3 | b2 >> 2 & 0x7) & 0xFF);
             output[252 - 5 * i] = (byte)((buffer[i + 51 * 5 + 1] << 3 | b3 >> 2 & 0x7) & 0xFF);
@@ -194,16 +194,16 @@ public static class Apple2
     {
         if(data is not { Length: 342 }) return null;
 
-        byte[] buffer = new byte[data.Length];
-        byte   carry  = 0;
+        var  buffer = new byte[data.Length];
+        byte carry  = 0;
 
-        for(int i = 0; i < data.Length; i++)
+        for(var i = 0; i < data.Length; i++)
         {
             carry     ^= ReadTable6and2[data[i]];
             buffer[i] =  carry;
         }
 
-        byte[] output = new byte[256];
+        var output = new byte[256];
 
         for(uint i = 0; i < 256; i++)
         {
@@ -284,39 +284,39 @@ public static class Apple2
                     };
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               Localization.Volume_0,
-                                               ((sector.addressField.volume[0] & 0x55) << 1 |
-                                                sector.addressField.volume[1] & 0x55) &
-                                               0xFF);
+                                      Localization.Volume_0,
+                                      ((sector.addressField.volume[0] & 0x55) << 1 |
+                                       sector.addressField.volume[1] & 0x55) &
+                                      0xFF);
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               Core.Track_0,
-                                               ((sector.addressField.track[0] & 0x55) << 1 |
-                                                sector.addressField.track[1] & 0x55) &
-                                               0xFF);
+                                      Core.Track_0,
+                                      ((sector.addressField.track[0] & 0x55) << 1 |
+                                       sector.addressField.track[1] & 0x55) &
+                                      0xFF);
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               Localization.Sector_0,
-                                               ((sector.addressField.sector[0] & 0x55) << 1 |
-                                                sector.addressField.sector[1] & 0x55) &
-                                               0xFF);
+                                      Localization.Sector_0,
+                                      ((sector.addressField.sector[0] & 0x55) << 1 |
+                                       sector.addressField.sector[1] & 0x55) &
+                                      0xFF);
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               Localization.Checksum_0,
-                                               ((sector.addressField.checksum[0] & 0x55) << 1 |
-                                                sector.addressField.checksum[1] & 0x55) &
-                                               0xFF);
+                                      Localization.Checksum_0,
+                                      ((sector.addressField.checksum[0] & 0x55) << 1 |
+                                       sector.addressField.checksum[1] & 0x55) &
+                                      0xFF);
 
                     AaruLogging.Debug(MODULE_NAME,
-                                               Localization.Epilogue_0_1_2,
-                                               sector.addressField.epilogue[0],
-                                               sector.addressField.epilogue[1],
-                                               sector.addressField.epilogue[2]);
+                                      Localization.Epilogue_0_1_2,
+                                      sector.addressField.epilogue[0],
+                                      sector.addressField.epilogue[1],
+                                      sector.addressField.epilogue[2]);
 
                     position += 14;
-                    int  syncCount = 0;
-                    bool onSync    = false;
-                    var  gaps      = new MemoryStream();
+                    var syncCount = 0;
+                    var onSync    = false;
+                    var gaps      = new MemoryStream();
 
                     while(data[position] == 0xFF)
                     {
@@ -358,9 +358,7 @@ public static class Apple2
 
                     sector.dataField.data = gaps.ToArray();
 
-                    AaruLogging.Debug(MODULE_NAME,
-                                               Localization.Data_has_0_bytes,
-                                               sector.dataField.data.Length);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Data_has_0_bytes, sector.dataField.data.Length);
 
                     sector.dataField.checksum    = data[position];
                     sector.dataField.epilogue    = new byte[3];
@@ -454,12 +452,12 @@ public static class Apple2
     public static RawTrack MarshalTrack(byte[] data, out int endOffset, int offset = 0)
     {
         int             position    = offset;
-        bool            firstSector = true;
-        bool            onSync      = false;
+        var             firstSector = true;
+        var             onSync      = false;
         var             gaps        = new MemoryStream();
-        int             count       = 0;
+        var             count       = 0;
         List<RawSector> sectors     = [];
-        byte[]          trackNumber = new byte[2];
+        var             trackNumber = new byte[2];
         endOffset = offset;
 
         while(position < data.Length && data[position] == 0xFF)
@@ -496,13 +494,11 @@ public static class Apple2
             }
 
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization.Adding_sector_0_of_track_1,
-                                       ((sector.addressField.sector[0] & 0x55) << 1 |
-                                        sector.addressField.sector[1] & 0x55) &
-                                       0xFF,
-                                       ((sector.addressField.track[0] & 0x55) << 1 |
-                                        sector.addressField.track[1] & 0x55) &
-                                       0xFF);
+                              Localization.Adding_sector_0_of_track_1,
+                              ((sector.addressField.sector[0] & 0x55) << 1 | sector.addressField.sector[1] & 0x55) &
+                              0xFF,
+                              ((sector.addressField.track[0] & 0x55) << 1 | sector.addressField.track[1] & 0x55) &
+                              0xFF);
 
             sectors.Add(sector);
         }

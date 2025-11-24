@@ -36,7 +36,6 @@ namespace Aaru.Filesystems;
 [SuppressMessage("ReSharper", "UnusedMember.Local")]
 public sealed partial class UDF
 {
-    const string FS_TYPE = "udf";
-    readonly byte[] _magic =
-    "*OSTA UDF Compliant\0\0\0\0"u8.ToArray();
+    const    string FS_TYPE = "udf";
+    readonly byte[] _magic  = "*OSTA UDF Compliant\0\0\0\0"u8.ToArray();
 }

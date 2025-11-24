@@ -72,15 +72,15 @@ public static class Session
         if(decoded.DataLength + 2 != CDSessionInfoResponse.Length)
         {
             AaruLogging.Debug(MODULE_NAME,
-                                       Localization
-                                          .Expected_CDSessionInfo_size_0_bytes_is_not_received_size_1_bytes_not_decoding,
-                                       decoded.DataLength + 2,
-                                       CDSessionInfoResponse.Length);
+                              Localization
+                                 .Expected_CDSessionInfo_size_0_bytes_is_not_received_size_1_bytes_not_decoding,
+                              decoded.DataLength + 2,
+                              CDSessionInfoResponse.Length);
 
             return null;
         }
 
-        for(int i = 0; i < (decoded.DataLength - 2) / 8; i++)
+        for(var i = 0; i < (decoded.DataLength - 2) / 8; i++)
         {
             decoded.TrackDescriptors[i].Reserved1   = CDSessionInfoResponse[0 + i * 8 + 4];
             decoded.TrackDescriptors[i].ADR         = (byte)((CDSessionInfoResponse[1 + i * 8 + 4] & 0xF0) >> 4);

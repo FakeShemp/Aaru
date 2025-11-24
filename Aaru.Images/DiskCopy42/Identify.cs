@@ -48,8 +48,8 @@ public sealed partial class DiskCopy42
     {
         Stream stream = imageFilter.GetDataForkStream();
         stream.Seek(0, SeekOrigin.Begin);
-        byte[] buffer  = new byte[0x58];
-        byte[] pString = new byte[64];
+        var buffer  = new byte[0x58];
+        var pString = new byte[64];
         stream.EnsureRead(buffer, 0, 0x58);
 
         // Incorrect pascal string length, not DC42
@@ -103,9 +103,7 @@ public sealed partial class DiskCopy42
            tmpHeader.Format != kSigmaFormatTwiggy &&
            tmpHeader.Format != kNotStandardFormat)
         {
-            AaruLogging.Debug(MODULE_NAME,
-                                       Localization.Unknown_tmp_header_format_equals_0_value,
-                                       tmpHeader.Format);
+            AaruLogging.Debug(MODULE_NAME, Localization.Unknown_tmp_header_format_equals_0_value, tmpHeader.Format);
 
             return false;
         }
@@ -119,9 +117,7 @@ public sealed partial class DiskCopy42
            tmpHeader.FmtByte != kFmtNotStandard           &&
            tmpHeader.FmtByte != kMacOSXFmtByte)
         {
-            AaruLogging.Debug(MODULE_NAME,
-                                       Localization.Unknown_tmp_header_fmtByte_equals_0_value,
-                                       tmpHeader.FmtByte);
+            AaruLogging.Debug(MODULE_NAME, Localization.Unknown_tmp_header_fmtByte_equals_0_value, tmpHeader.FmtByte);
 
             return false;
         }

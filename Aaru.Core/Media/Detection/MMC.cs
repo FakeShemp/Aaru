@@ -66,14 +66,11 @@ public static class MMC
     const string PS2_JAPANESE_HASH = "b82bffb809070d61fe050b7e1545df53d8f3cc648257cdff7502bc0ba6b38870";
     const string MODULE_NAME = "Media detection";
 
-    static readonly byte[] _ps3Id =
-    "PlayStation3\0\0\0\0"u8.ToArray();
+    static readonly byte[] _ps3Id = "PlayStation3\0\0\0\0"u8.ToArray();
 
-    static readonly byte[] _ps4Id =
-    "PlayStation4\0\0\0\0"u8.ToArray();
+    static readonly byte[] _ps4Id = "PlayStation4\0\0\0\0"u8.ToArray();
 
-    static readonly byte[] _ps5Id =
-    "PlayStation5\0\0\0\0"u8.ToArray();
+    static readonly byte[] _ps5Id = "PlayStation5\0\0\0\0"u8.ToArray();
 
     static readonly byte[] _operaId = [0x01, 0x5A, 0x5A, 0x5A, 0x5A, 0x5A, 0x01];
 
