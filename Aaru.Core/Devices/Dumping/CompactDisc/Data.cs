@@ -1042,29 +1042,27 @@ partial class Dump
 
                         sectorStatus[b] = SectorStatus.Dumped;
 
-                        if(inData && _paranoia)
-                        {
-                            // Check valid sector
-                            CdChecksums.CheckCdSector(sector,
-                                                      out bool? correctEccP,
-                                                      out bool? correctEccQ,
-                                                      out bool? correctEdc);
+                        if(!inData || !_paranoia) continue;
 
-                            if(correctEdc != true || correctEccP != true || correctEccQ != true)
-                            {
-                                sectorStatus[b] = SectorStatus.Errored;
-                                _resume.BadBlocks.Add(i + (ulong)b);
+                        // Check valid sector
+                        CdChecksums.CheckCdSector(sector,
+                                                  out bool? correctEccP,
+                                                  out bool? correctEccQ,
+                                                  out bool? correctEdc);
 
-                                if(correctEdc != true)
-                                    UpdateStatus?.Invoke(string.Format(UI.Incorrect_EDC_in_sector_0, i + (ulong)b));
+                        if(correctEdc == true && correctEccP == true && correctEccQ == true) continue;
 
-                                if(correctEccP != true)
-                                    UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_P_in_sector_0, i + (ulong)b));
+                        sectorStatus[b] = SectorStatus.Errored;
+                        _resume.BadBlocks.Add(i + (ulong)b);
 
-                                if(correctEccQ != true)
-                                    UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_Q_in_sector_0, i + (ulong)b));
-                            }
-                        }
+                        if(correctEdc != true)
+                            UpdateStatus?.Invoke(string.Format(UI.Incorrect_EDC_in_sector_0, i + (ulong)b));
+
+                        if(correctEccP != true)
+                            UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_P_in_sector_0, i + (ulong)b));
+
+                        if(correctEccQ != true)
+                            UpdateStatus?.Invoke(string.Format(UI.Incorrect_ECC_Q_in_sector_0, i + (ulong)b));
                     }
 
                     if(supportsLongSectors)

@@ -206,13 +206,12 @@ public sealed partial class MediaScan
                     ibgLog.Write(i, 0);
                 }
 
-                if(accumulatedSpeedMs >= 100)
-                {
-                    currentSpeed = accumulatedSpeedSectors * blockSize / (1048576 * (accumulatedSpeedMs / 1000.0));
-                    ScanSpeed?.Invoke(i, currentSpeed                             * 1024);
-                    accumulatedSpeedMs      = 0;
-                    accumulatedSpeedSectors = 0;
-                }
+                if(accumulatedSpeedMs < 100) continue;
+
+                currentSpeed = accumulatedSpeedSectors * blockSize / (1048576 * (accumulatedSpeedMs / 1000.0));
+                ScanSpeed?.Invoke(i, currentSpeed                             * 1024);
+                accumulatedSpeedMs      = 0;
+                accumulatedSpeedSectors = 0;
             }
 
             _speedStopwatch.Stop();
@@ -341,16 +340,13 @@ public sealed partial class MediaScan
                             ibgLog.Write(currentBlock, 0);
                         }
 
-                        if(accumulatedSpeedMs >= 100)
-                        {
-                            currentSpeed = accumulatedSpeedSectors *
-                                           blockSize /
-                                           (1048576 * (accumulatedSpeedMs / 1000.0));
+                        if(accumulatedSpeedMs < 100) continue;
 
-                            ScanSpeed?.Invoke(currentBlock, currentSpeed * 1024);
-                            accumulatedSpeedMs      = 0;
-                            accumulatedSpeedSectors = 0;
-                        }
+                        currentSpeed = accumulatedSpeedSectors * blockSize / (1048576 * (accumulatedSpeedMs / 1000.0));
+
+                        ScanSpeed?.Invoke(currentBlock, currentSpeed * 1024);
+                        accumulatedSpeedMs      = 0;
+                        accumulatedSpeedSectors = 0;
                     }
                 }
             }

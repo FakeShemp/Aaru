@@ -52,10 +52,9 @@ public partial class DeviceView : Window
     {
         base.OnDataContextChanged(e);
 
-        if(DataContext is DeviceViewModel vm)
-        {
-            Closed += (_, _) => vm?.Closed();
-            vm?.LoadData();
-        }
+        if(DataContext is not DeviceViewModel vm) return;
+
+        Closed += (_, _) => vm?.Closed();
+        vm?.LoadData();
     }
 }

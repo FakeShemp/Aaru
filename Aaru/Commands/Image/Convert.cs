@@ -1397,14 +1397,11 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
             return (false, 0, 0, 0);
         }
 
-        if(!uint.TryParse(geometryPieces[2], out uint sectors) || sectors == 0)
-        {
-            AaruLogging.Error(UI.Invalid_sectors_per_track_specified);
+        if(uint.TryParse(geometryPieces[2], out uint sectors) && sectors != 0) return (true, cylinders, heads, sectors);
 
-            return (false, 0, 0, 0);
-        }
+        AaruLogging.Error(UI.Invalid_sectors_per_track_specified);
 
-        return (true, cylinders, heads, sectors);
+        return (false, 0, 0, 0);
     }
 
     private (bool success, Metadata sidecar, Resume resume) LoadMetadata(

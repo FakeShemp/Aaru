@@ -40,14 +40,11 @@ public partial class FileView : UserControl
 
     private void ListBox_OnKeyDown(object sender, KeyEventArgs e)
     {
-        if(e.Key == Key.Enter)
-        {
-            if(DataContext is FileViewViewModel vm && vm.OpenSelectedFileCommand.CanExecute(null))
-            {
-                vm.OpenSelectedFileCommand.Execute(null);
-                e.Handled = true;
-            }
-        }
+        if(e.Key != Key.Enter) return;
+        if(DataContext is not FileViewViewModel vm || !vm.OpenSelectedFileCommand.CanExecute(null)) return;
+
+        vm.OpenSelectedFileCommand.Execute(null);
+        e.Handled = true;
     }
 
     /// <inheritdoc />

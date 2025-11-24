@@ -134,7 +134,7 @@ public static class DI
             Reserved2  = DIResponse[3]
         };
 
-        int                        offset = 4;
+        var                        offset = 4;
         List<DiscInformationUnits> units  = [];
 
         while(true)
@@ -232,7 +232,7 @@ public static class DI
 
         decoded.Units = new DiscInformationUnits[units.Count];
 
-        for(int i = 0; i < units.Count; i++) decoded.Units[i] = units[i];
+        for(var i = 0; i < units.Count; i++) decoded.Units[i] = units[i];
 
         return decoded;
     }
@@ -425,13 +425,11 @@ public static class DI
                 sb.AppendFormat(Localization.Disc_product_revision_number_0, unit.ProductRevisionNumber).AppendLine();
             }
 
-            if(unit.FormatDependentContents is not null)
-            {
-                sb.AppendLine(Localization.Blu_ray_DI_Unit_format_dependent_contents_as_hex_follows);
+            if(unit.FormatDependentContents is null) continue;
 
-                sb.AppendLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(unit.FormatDependentContents,
-                                                                               color: true)));
-            }
+            sb.AppendLine(Localization.Blu_ray_DI_Unit_format_dependent_contents_as_hex_follows);
+
+            sb.AppendLine(Markup.Escape(PrintHex.ByteArrayToHexArrayString(unit.FormatDependentContents, color: true)));
         }
 
         return sb.ToString();

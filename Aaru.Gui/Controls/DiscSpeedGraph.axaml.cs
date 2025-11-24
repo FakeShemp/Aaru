@@ -183,22 +183,20 @@ public partial class DiscSpeedGraph : UserControl
     {
         double newZoom = Math.Min(_yZoomLevel + ZOOM_STEP, MAX_ZOOM);
 
-        if(Math.Abs(newZoom - _yZoomLevel) > 0.001)
-        {
-            _yZoomLevel = newZoom;
-            RedrawAll();
-        }
+        if(!(Math.Abs(newZoom - _yZoomLevel) > 0.001)) return;
+
+        _yZoomLevel = newZoom;
+        RedrawAll();
     }
 
     void ZoomOut()
     {
         double newZoom = Math.Max(_yZoomLevel - ZOOM_STEP, MIN_ZOOM);
 
-        if(Math.Abs(newZoom - _yZoomLevel) > 0.001)
-        {
-            _yZoomLevel = newZoom;
-            RedrawAll();
-        }
+        if(!(Math.Abs(newZoom - _yZoomLevel) > 0.001)) return;
+
+        _yZoomLevel = newZoom;
+        RedrawAll();
     }
 
     void OnPointerWheelChanged(object sender, PointerWheelEventArgs e)

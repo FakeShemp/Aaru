@@ -390,11 +390,10 @@ sealed class StatisticsCommand : AsyncCommand<StatisticsCommand.Settings>
             AaruLogging.WriteLine();
         }
 
-        if(!thereAreStats)
-        {
-            AaruLogging.WriteLine(UI.There_are_no_statistics);
-            AaruLogging.Information(UI.There_are_no_statistics);
-        }
+        if(thereAreStats) return (int)ErrorNumber.NoError;
+
+        AaruLogging.WriteLine(UI.There_are_no_statistics);
+        AaruLogging.Information(UI.There_are_no_statistics);
 
         return (int)ErrorNumber.NoError;
     }

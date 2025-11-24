@@ -414,12 +414,11 @@ sealed class LsCommand : Command<LsCommand.Settings>
                     byte[] xattrBuf = [];
                     error = fs.GetXattr(path + "/" + entry.Key, xattr, ref xattrBuf);
 
-                    if(error == ErrorNumber.NoError)
-                    {
-                        table.AddRow("", $"[lime]{xattrBuf.Length}[/]", "", $"[fuchsia]{Markup.Escape(xattr)}[/]");
+                    if(error != ErrorNumber.NoError) continue;
 
-                        AaruLogging.Information($"{xattrBuf.Length} {xattr}");
-                    }
+                    table.AddRow("", $"[lime]{xattrBuf.Length}[/]", "", $"[fuchsia]{Markup.Escape(xattr)}[/]");
+
+                    AaruLogging.Information($"{xattrBuf.Length} {xattr}");
                 }
             }
             else

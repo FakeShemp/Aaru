@@ -488,17 +488,14 @@ public partial class SpectreTextBlock : TextBlock
                 {
                     i++;
 
-                    if(i < text.Length && text[i] == ']')
-                    {
-                        // Found [/], close the most recent tag
-                        if(tagStack.Count > 0)
-                        {
-                            (int openStart, int openTagEnd, string tag) = tagStack.Pop();
-                            int closeTagEnd = i + 1; // After the ']' of [/]
-                            result.Add(new MarkupTag(openStart, closeTagEnd, tag, openTagEnd, tagStart));
-                        }
+                    if(i >= text.Length || text[i] != ']') continue;
 
-                        i++;
+                    // Found [/], close the most recent tag
+                    if(tagStack.Count > 0)
+                    {
+                        (int openStart, int openTagEnd, string tag) = tagStack.Pop();
+                        int closeTagEnd = i + 1; // After the ']' of [/]
+                        result.Add(new MarkupTag(openStart, closeTagEnd, tag, openTagEnd, tagStart));
                     }
                 }
                 else
@@ -516,12 +513,10 @@ public partial class SpectreTextBlock : TextBlock
                         int openTagEnd = i + 1; // After the ']'
                         tagStack.Push((tagStart, openTagEnd, tagName));
                     }
-
-                    i++;
                 }
             }
-            else
-                i++;
+
+            i++;
         }
 
         return result;

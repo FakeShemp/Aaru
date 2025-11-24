@@ -106,11 +106,10 @@ public partial class BlockMap : UserControl
 
             _sectorData = change.GetNewValue<ObservableCollection<(ulong startingSector, double duration)>>();
 
-            if(_sectorData != null)
-            {
-                _sectorData.CollectionChanged += OnSectorDataChanged;
-                RedrawAll();
-            }
+            if(_sectorData == null) return;
+
+            _sectorData.CollectionChanged += OnSectorDataChanged;
+            RedrawAll();
         }
         else if(change.Property == ScanBlockSizeProperty)
         {
@@ -136,26 +135,25 @@ public partial class BlockMap : UserControl
     void EnsureBitmap()
     {
         if(_blocksPerRow <= 0 || _rows <= 0) return;
+
         int blockWithSpacing = BlockSize + BlockSpacing;
         int width            = _blocksPerRow * blockWithSpacing;
         int height           = _rows         * blockWithSpacing;
 
-        if(_bitmap == null || _bitmap.PixelSize.Width != width || _bitmap.PixelSize.Height != height)
-        {
-            _bitmap?.Dispose();
+        if(_bitmap != null && _bitmap.PixelSize.Width == width && _bitmap.PixelSize.Height == height) return;
 
-            _bitmap = new WriteableBitmap(new PixelSize(width, height),
-                                          new Vector(96, 96),
-                                          PixelFormat.Bgra8888,
-                                          AlphaFormat.Premul);
+        _bitmap?.Dispose();
 
-            if(_image != null)
-            {
-                _image.Source = _bitmap;
-                _image.Width  = width;
-                _image.Height = height;
-            }
-        }
+        _bitmap = new WriteableBitmap(new PixelSize(width, height),
+                                      new Vector(96, 96),
+                                      PixelFormat.Bgra8888,
+                                      AlphaFormat.Premul);
+
+        if(_image == null) return;
+
+        _image.Source = _bitmap;
+        _image.Width  = width;
+        _image.Height = height;
     }
 
     private void RedrawAll()

@@ -270,15 +270,14 @@ public class PluginRegister
 
                     var foundFilter = (IFilter)filter.GetType().GetConstructor(Type.EmptyTypes)?.Invoke([]);
 
-                    if(foundFilter?.Open(path) == ErrorNumber.NoError)
-                    {
-                        transaction.Finish();
+                    if(foundFilter?.Open(path) != ErrorNumber.NoError) continue;
 
-                        return foundFilter;
-                    }
+                    transaction.Finish();
+
+                    return foundFilter;
                 }
-                else
-                    noFilter = filter;
+
+                noFilter = filter;
             }
             catch(IOException ex)
             {

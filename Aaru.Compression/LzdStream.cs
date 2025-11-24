@@ -130,13 +130,12 @@ public partial class LzdStream : Stream
                 break;
             }
 
-            if(status == LZDStatus.DONE)
-            {
-                _eof = true;
-                Debug.WriteLine(">>> SET _eof=true (no more data and already flushed)");
+            if(status != LZDStatus.DONE) continue;
 
-                break;
-            }
+            _eof = true;
+            Debug.WriteLine(">>> SET _eof=true (no more data and already flushed)");
+
+            break;
 
             // if OK but no bytes, loop again
         }
