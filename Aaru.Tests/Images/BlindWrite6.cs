@@ -41,7 +41,7 @@ public class BlindWrite6 : OpticalMediaImageTest
 
     public override OpticalImageTestExpected[] Tests =>
     [
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "dvdrom.B6T",
             MediaType = MediaType.DVDROM,
@@ -70,7 +70,7 @@ public class BlindWrite6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "jaguarcd.B6T",
             MediaType = MediaType.CDDA,
@@ -169,7 +169,7 @@ public class BlindWrite6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "pcengine.B6T",
             MediaType = MediaType.CD,
@@ -318,7 +318,7 @@ public class BlindWrite6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "pcfx.B6T",
             MediaType = MediaType.CD,
@@ -405,7 +405,7 @@ public class BlindWrite6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdr.B6T",
             MediaType     = MediaType.CDR,
@@ -443,7 +443,7 @@ public class BlindWrite6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdrom.B6T",
             MediaType     = MediaType.CDROM,
@@ -481,7 +481,7 @@ public class BlindWrite6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdrw_2x.B6T",
             MediaType     = MediaType.CDRW,
@@ -513,7 +513,7 @@ public class BlindWrite6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "test_karaoke_multi_sampler.B6T",
             MediaType     = MediaType.CDROMXA,

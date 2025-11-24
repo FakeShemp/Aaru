@@ -43,7 +43,7 @@ public class Atheos() : FilesystemTest("atheos")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "syllable_0.6.7.aif",
             MediaType   = MediaType.GENERIC_HDD,

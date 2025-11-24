@@ -42,7 +42,7 @@ public class Excalibur64() : FilesystemTest("cpmfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "filename.img",
             MediaType   = MediaType.Unknown,
@@ -52,7 +52,7 @@ public class Excalibur64() : FilesystemTest("cpmfs")
             Clusters    = 189,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "files.img",
             MediaType   = MediaType.Unknown,

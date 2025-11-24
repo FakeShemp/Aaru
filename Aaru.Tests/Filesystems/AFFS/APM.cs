@@ -45,7 +45,7 @@ public class APM() : FilesystemTest("affs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "morphos_3.13.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -56,7 +56,7 @@ public class APM() : FilesystemTest("affs")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "1D930192"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "morphos_3.13_cache.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -67,7 +67,7 @@ public class APM() : FilesystemTest("affs")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "1D9105B0"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "morphos_3.13_intl.aif",
             MediaType    = MediaType.GENERIC_HDD,

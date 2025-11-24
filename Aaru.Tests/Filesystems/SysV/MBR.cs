@@ -43,7 +43,7 @@ public class MBR() : FilesystemTest("sysv_r4")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "att_unix_svr4v2.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -53,7 +53,7 @@ public class MBR() : FilesystemTest("sysv_r4")
             ClusterSize = 1024,
             VolumeName  = "/usr3"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "att_unix_svr4v2.1_2k.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -63,7 +63,7 @@ public class MBR() : FilesystemTest("sysv_r4")
             ClusterSize = 2048,
             VolumeName  = "/usr3"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "scoopenserver_5.0.7hw.aif",
             MediaType   = MediaType.GENERIC_HDD,

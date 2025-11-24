@@ -42,7 +42,7 @@ public class Raw : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf1dd_gcr_s0.img.lz",
             MediaType  = MediaType.AppleSonySS,
@@ -50,7 +50,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "c1b868482a064686d2a592f3246c2958"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_acorn.img.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -58,7 +58,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2626f65b49ec085253c41fa2e2a9e788"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_amiga.adf.lz",
             MediaType  = MediaType.CBM_AMIGA_35_DD,
@@ -66,7 +66,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "7db6730656efb22695cdf0a49e2674c9"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fdformat_820.img.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -74,7 +74,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "9d978dff1196b456b8372d78e6b17970"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_gcr.img.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -82,7 +82,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "ee038347920d088c14f79e6c5fc241c9"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_172.img.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,

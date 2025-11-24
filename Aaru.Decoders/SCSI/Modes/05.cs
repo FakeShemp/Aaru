@@ -185,19 +185,25 @@ public static partial class Modes
         }
 
         if(page.DriveStepRate > 0)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization.Drive_steps_in_0_μs}[/]",
                             $"[lime]{(uint)page.DriveStepRate * 100}[/]")
               .AppendLine();
+        }
 
         if(page.DriveStepPulse > 0)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization.Each_step_pulse_is_0_ms}[/]",
                             $"[lime]{page.DriveStepPulse}[/]")
               .AppendLine();
+        }
 
         if(page.HeadSettleDelay > 0)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization.Heads_settles_in_0_μs}[/]",
                             $"[lime]{(uint)page.HeadSettleDelay * 100}[/]")
               .AppendLine();
+        }
 
         if(!page.TRDY)
         {
@@ -238,24 +244,32 @@ public static partial class Modes
           .AppendLine();
 
         if(page.WriteCompensation > 0)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization.Write_pre_compensation_is_0}[/]",
                             $"[lime]{page.WriteCompensation}[/]")
               .AppendLine();
+        }
 
         if(page.HeadLoadDelay > 0)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization.Head_takes_0_ms_to_load}[/]",
                             $"[lime]{page.HeadLoadDelay}[/]")
               .AppendLine();
+        }
 
         if(page.HeadUnloadDelay > 0)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization.Head_takes_0_ms_to_unload}[/]",
                             $"[lime]{page.HeadUnloadDelay}[/]")
               .AppendLine();
+        }
 
         if(page.MediumRotationRate > 0)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization.Medium_rotates_at_0_rpm}[/]",
                             $"[lime]{page.MediumRotationRate}[/]")
               .AppendLine();
+        }
 
         switch(page.Pin34 & 0x07)
         {

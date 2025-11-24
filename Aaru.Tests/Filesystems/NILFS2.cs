@@ -46,7 +46,7 @@ public class Nilfs2() : FilesystemTest("nilfs2")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux.aif",
             MediaType    = MediaType.GENERIC_HDD,

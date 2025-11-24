@@ -19,7 +19,7 @@ public sealed partial class Stfs
         _stream          = filter.GetDataForkStream();
         _stream.Position = 0;
 
-        byte[] hdr = new byte[Marshal.SizeOf<RemotePackage>()];
+        var hdr = new byte[Marshal.SizeOf<RemotePackage>()];
 
         _stream.ReadExactly(hdr, 0, hdr.Length);
 
@@ -46,13 +46,13 @@ public sealed partial class Stfs
 
         int fileTablePosition = BlockToPosition(fileTableBlockNumber, (int)header.Metadata.HeaderSize);
 
-        byte[] buffer = new byte[4096 * vd.FileTableBlockCount];
+        var buffer = new byte[4096 * vd.FileTableBlockCount];
         _stream.Position = fileTablePosition;
         _stream.ReadExactly(buffer, 0, buffer.Length);
 
         List<FileTableEntry> entries   = [];
         int                  entrySize = Marshal.SizeOf<FileTableEntry>();
-        int                  in_pos    = 0;
+        var                  in_pos    = 0;
 
         do
         {
@@ -67,11 +67,11 @@ public sealed partial class Stfs
 
         _entries = new FileEntry[entries.Count];
 
-        for(int i = 0; i < entries.Count; i++)
+        for(var i = 0; i < entries.Count; i++)
         {
             // While entries[i].PathIndicator > 0 recursively inversely prepend entries[PathIndicator].Filename to entries[i].Filename
-            int    pathIndicator = entries[i].PathIndicator;
-            string path          = "";
+            int pathIndicator = entries[i].PathIndicator;
+            var path          = "";
 
             while(pathIndicator > 0)
             {

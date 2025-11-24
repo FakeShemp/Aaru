@@ -64,8 +64,9 @@ public sealed partial class AaruFormat
 
         // Convert array of booleans to List of enums
         for(nuint i = 0; i < sizet_length; i++)
-            if(sectorTagsBuffer[i] != 0)
-                _imageInfo.ReadableSectorTags.Add((SectorTagType)i);
+        {
+            if(sectorTagsBuffer[i] != 0) _imageInfo.ReadableSectorTags.Add((SectorTagType)i);
+        }
 
         sizet_length = 0;
         ret          = aaruf_get_readable_media_tags(_context, null, ref sizet_length);
@@ -79,8 +80,9 @@ public sealed partial class AaruFormat
 
         // Convert array of booleans to List of enums
         for(nuint i = 0; i < sizet_length; i++)
-            if(mediaTagsBuffer[i] != 0)
-                _imageInfo.ReadableMediaTags.Add((MediaTagType)i);
+        {
+            if(mediaTagsBuffer[i] != 0) _imageInfo.ReadableMediaTags.Add((MediaTagType)i);
+        }
 
         ret = aaruf_get_media_sequence(_context, out int sequence, out int lastSequence);
 

@@ -46,7 +46,7 @@ public partial class Dump
     /// <summary>Dumps a SCSI Block Commands device or a Reduced Block Commands devices</summary>
     void Scsi()
     {
-        int resets = 0;
+        var resets = 0;
 
         if(_dev.IsRemovable)
         {
@@ -78,7 +78,7 @@ public partial class Dump
                     {
                         case 0x3A:
                         {
-                            int leftRetries = 5;
+                            var leftRetries = 5;
 
                             while(leftRetries > 0)
                             {
@@ -112,7 +112,7 @@ public partial class Dump
                         }
                         case 0x04 when decSense.Value.ASCQ == 0x01:
                         {
-                            int leftRetries = 50;
+                            var leftRetries = 50;
 
                             while(leftRetries > 0)
                             {
@@ -162,7 +162,7 @@ public partial class Dump
                         // These should be trapped by the OS but seems in some cases they're not
                         case 0x28:
                         {
-                            int leftRetries = 10;
+                            var leftRetries = 10;
 
                             while(leftRetries > 0)
                             {

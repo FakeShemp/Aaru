@@ -33,7 +33,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Aaru.CommonTypes;
 using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;

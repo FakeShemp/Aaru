@@ -44,7 +44,7 @@ public class DOS32 : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "alice.d13.lz",
             MediaType  = MediaType.Apple32SS,

@@ -43,7 +43,7 @@ public class APM : FilesystemTest
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/macosx_10.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -53,7 +53,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/macosx_10.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -63,7 +63,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/macosx_10.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -73,7 +73,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/macosx_10.3.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -83,7 +83,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/macosx_10.4.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -93,7 +93,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/darwin_1.0.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -103,7 +103,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/darwin_1.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -113,7 +113,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/darwin_1.3.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -123,7 +123,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/darwin_1.4.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -133,7 +133,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/darwin_6.0.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -143,7 +143,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/darwin_7.0.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -153,7 +153,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/darwin_8.0.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -163,7 +163,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/darwin_1.0.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -173,7 +173,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/darwin_1.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -183,7 +183,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/darwin_1.3.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -193,7 +193,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/darwin_1.4.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -203,7 +203,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/darwin_6.0.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -213,7 +213,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/darwin_7.0.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -223,7 +223,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/darwin_8.0.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -233,7 +233,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/macosx_10.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -243,7 +243,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/macosx_10.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -253,7 +253,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/macosx_10.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -263,7 +263,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/macosx_10.3.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -273,7 +273,7 @@ public class APM : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/macosx_10.4.aif",
             MediaType   = MediaType.GENERIC_HDD,

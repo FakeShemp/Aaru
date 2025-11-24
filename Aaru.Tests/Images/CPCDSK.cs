@@ -44,7 +44,7 @@ public class CPCDSK : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "3D Construction Kit (1991)(Domark)(Disk 1 of 2)[a].dsk.lz",
             MediaType  = MediaType.CompactFloppy,
@@ -60,7 +60,7 @@ public class CPCDSK : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "3D Construction Kit (1991)(Domark)(Disk 1 of 2).dsk.lz",
             MediaType  = MediaType.CompactFloppy,
@@ -76,7 +76,7 @@ public class CPCDSK : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "3D Construction Kit (1991)(Domark)(Disk 2 of 2)[a].dsk.lz",
             MediaType  = MediaType.CompactFloppy,
@@ -92,7 +92,7 @@ public class CPCDSK : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "3D Construction Kit (1991)(Domark)(Disk 2 of 2).dsk.lz",
             MediaType  = MediaType.CompactFloppy,
@@ -117,7 +117,7 @@ public class CPCDSK : BlockMediaImageTest
             SectorSize = 512,
             MD5        = "e1b14e9b744b08a1b2b56fa25f034682"
         },
-        */ new BlockImageTestExpected
+        */ new()
         {
             TestFile   = "3D Construction Kit (1991)(Domark)[Objects Disk].dsk.lz",
             MediaType  = MediaType.CompactFloppy,
@@ -133,7 +133,7 @@ public class CPCDSK : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "BCPL Compiler v1.0 (1986)(Arnor)[CPM Version].dsk.lz",
             MediaType  = MediaType.CompactFloppy,
@@ -149,7 +149,7 @@ public class CPCDSK : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "BCPL Compiler v1.0 (1986)(Arnor).dsk.lz",
             MediaType  = MediaType.CompactFloppy,
@@ -165,7 +165,7 @@ public class CPCDSK : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "CPM Plus v1.0 (1985)(Amstrad)(Disk 1 of 4)[a][CPM Version].dsk.lz",
             MediaType  = MediaType.CompactFloppy,
@@ -173,7 +173,7 @@ public class CPCDSK : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "a568e44f556661f9e4b7db01c126c676"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "CPM Plus v1.0 (1985)(Amstrad)(Disk 1 of 4)[CPM Version].dsk.lz",
             MediaType  = MediaType.CompactFloppy,
@@ -189,7 +189,7 @@ public class CPCDSK : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "CPM Plus v1.0 (1985)(Amstrad)(Disk 2 of 4)[CPM Version].dsk.lz",
             MediaType  = MediaType.CompactFloppy,
@@ -205,7 +205,7 @@ public class CPCDSK : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "CPM Plus v1.0 (1985)(Amstrad)(Disk 3 of 4)[CPM Version].dsk.lz",
             MediaType  = MediaType.CompactFloppy,
@@ -221,7 +221,7 @@ public class CPCDSK : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "CPM Plus v1.0 (1985)(Amstrad)(Disk 4 of 4)[CPM Version].dsk.lz",
             MediaType  = MediaType.CompactFloppy,
@@ -237,7 +237,7 @@ public class CPCDSK : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "z88dk_cpc.dsk.lz",
             MediaType  = MediaType.CompactFloppy,
@@ -253,7 +253,7 @@ public class CPCDSK : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "z88dk_pcw40.dsk.lz",
             MediaType  = MediaType.CompactFloppy,
@@ -261,7 +261,7 @@ public class CPCDSK : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "37cfac07eb636ca8181878a06101a955"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "z88dk_pcw80.dsk.lz",
             MediaType  = MediaType.CompactFloppy,

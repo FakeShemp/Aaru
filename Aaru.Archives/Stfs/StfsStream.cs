@@ -54,7 +54,7 @@ public sealed partial class Stfs
         /// <inheritdoc />
         public override int Read(byte[] buffer, int offset, int count)
         {
-            int totalRead = 0;
+            var totalRead = 0;
 
             // Validate parameters
             ArgumentNullException.ThrowIfNull(buffer);
@@ -73,7 +73,7 @@ public sealed partial class Stfs
                                                   _isConsole);
 
             // Calculate position within block
-            int blockOffset = (int)(_position % 0x1000);
+            var blockOffset = (int)(_position % 0x1000);
 
             // Calculate absolute position in the stream
             long absolutePosition = BlockToPosition(currentBlock, _headerSize) + blockOffset;
@@ -138,7 +138,7 @@ public sealed partial class Stfs
             _baseStream.Position = absolutePosition + leftInBlock;
 
             // Read remaining bytes
-            int toRead = (int)Math.Min(count, _length - _position);
+            var toRead = (int)Math.Min(count, _length - _position);
             _baseStream.ReadExactly(buffer, offset, toRead);
             _position += toRead;
             totalRead += toRead;

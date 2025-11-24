@@ -501,8 +501,9 @@ public sealed partial class Cdrdao
         }
 
         if(_writingTracks != null && _writingStreams != null)
-            foreach(FileStream oldTrack in _writingStreams.Select(static t => t.Value).Distinct())
-                oldTrack.Close();
+        {
+            foreach(FileStream oldTrack in _writingStreams.Select(static t => t.Value).Distinct()) oldTrack.Close();
+        }
 
         ulong currentOffset = 0;
         _writingTracks = [];

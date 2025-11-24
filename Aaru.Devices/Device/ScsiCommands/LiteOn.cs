@@ -281,11 +281,11 @@ public partial class Device
     {
         // TODO: Save ECC instead of just throwing it away
 
-        byte[] deinterleaved = new byte[2064 * transferLength];
+        var deinterleaved = new byte[2064 * transferLength];
 
-        for(int j = 0; j < transferLength; j++)
+        for(var j = 0; j < transferLength; j++)
         {
-            for(int i = 0; i < 12; i++) Array.Copy(buffer, j * 2384 + i * 182, deinterleaved, j * 2064 + i * 172, 172);
+            for(var i = 0; i < 12; i++) Array.Copy(buffer, j * 2384 + i * 182, deinterleaved, j * 2064 + i * 172, 172);
         }
 
         return deinterleaved;

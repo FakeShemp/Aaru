@@ -214,7 +214,7 @@ public partial class Device
     public bool PlextorGetSpeeds(out ReadOnlySpan<byte> senseBuffer, out ushort selected, out ushort max,
                                  out ushort             last,        uint       timeout,  out double duration)
     {
-        byte[] buf = new byte[10];
+        var buf = new byte[10];
         senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();
@@ -251,7 +251,7 @@ public partial class Device
     public bool PlextorGetPoweRec(out ReadOnlySpan<byte> senseBuffer, out bool enabled, out ushort speed, uint timeout,
                                   out double             duration)
     {
-        byte[] buf = new byte[8];
+        var buf = new byte[8];
         senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..12];
         cdb.Clear();

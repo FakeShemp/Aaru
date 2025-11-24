@@ -42,7 +42,7 @@ public class AmstradCPMPlus() : FilesystemTest("cpmfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "data_filename.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -51,7 +51,7 @@ public class AmstradCPMPlus() : FilesystemTest("cpmfs")
             Clusters    = 180,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "data_files.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -60,7 +60,7 @@ public class AmstradCPMPlus() : FilesystemTest("cpmfs")
             Clusters    = 180,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "system_filename.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -70,7 +70,7 @@ public class AmstradCPMPlus() : FilesystemTest("cpmfs")
             Clusters    = 171,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "system_files.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -80,7 +80,7 @@ public class AmstradCPMPlus() : FilesystemTest("cpmfs")
             Clusters    = 171,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "pcw_1.4_filename.aif",
             MediaType   = MediaType.CompactFloppy,
@@ -90,7 +90,7 @@ public class AmstradCPMPlus() : FilesystemTest("cpmfs")
             Clusters    = 359,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "pcw_1.4_files.aif",
             MediaType   = MediaType.CompactFloppy,
@@ -100,7 +100,7 @@ public class AmstradCPMPlus() : FilesystemTest("cpmfs")
             Clusters    = 359,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "pcw_2.5_filename.aif",
             MediaType   = MediaType.DOS_35_DS_DD_9,
@@ -110,7 +110,7 @@ public class AmstradCPMPlus() : FilesystemTest("cpmfs")
             Clusters    = 356,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "pcw_2.5_files.aif",
             MediaType   = MediaType.DOS_35_DS_DD_9,
@@ -120,7 +120,7 @@ public class AmstradCPMPlus() : FilesystemTest("cpmfs")
             Clusters    = 356,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "spectrum_filename.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -130,7 +130,7 @@ public class AmstradCPMPlus() : FilesystemTest("cpmfs")
             Clusters    = 359,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "spectrum_files.dsk.lz",
             MediaType   = MediaType.CompactFloppy,

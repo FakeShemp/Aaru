@@ -43,9 +43,9 @@ public sealed partial class DiskCopy42
     /// <inheritdoc />
     public bool? VerifyMediaImage()
     {
-        byte[] data    = new byte[header.DataSize];
-        byte[] tags    = new byte[header.TagSize];
-        uint   tagsChk = 0;
+        var  data    = new byte[header.DataSize];
+        var  tags    = new byte[header.TagSize];
+        uint tagsChk = 0;
 
         AaruLogging.Debug(MODULE_NAME, Localization.Reading_data);
         Stream dataStream = dc42ImageFilter.GetDataForkStream();

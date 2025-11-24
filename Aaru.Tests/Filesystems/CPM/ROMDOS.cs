@@ -44,7 +44,7 @@ public class ROMDOS() : FilesystemTest("cpmfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "d1_filename.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -53,7 +53,7 @@ public class ROMDOS() : FilesystemTest("cpmfs")
             Clusters    = 360,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "d1_files.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -62,7 +62,7 @@ public class ROMDOS() : FilesystemTest("cpmfs")
             Clusters    = 360,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "d2_filename.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -72,7 +72,7 @@ public class ROMDOS() : FilesystemTest("cpmfs")
             Clusters    = 360,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "d2_files.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -82,7 +82,7 @@ public class ROMDOS() : FilesystemTest("cpmfs")
             Clusters    = 360,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "d10_filename.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -92,7 +92,7 @@ public class ROMDOS() : FilesystemTest("cpmfs")
             Clusters    = 400,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "d10_files.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -102,7 +102,7 @@ public class ROMDOS() : FilesystemTest("cpmfs")
             Clusters    = 400,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "d20_filename.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -112,7 +112,7 @@ public class ROMDOS() : FilesystemTest("cpmfs")
             Clusters    = 400,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "d20_files.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -122,7 +122,7 @@ public class ROMDOS() : FilesystemTest("cpmfs")
             Clusters    = 400,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "d40_filename.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -132,7 +132,7 @@ public class ROMDOS() : FilesystemTest("cpmfs")
             Clusters    = 400,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "d40_files.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -142,7 +142,7 @@ public class ROMDOS() : FilesystemTest("cpmfs")
             Clusters    = 400,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "d80_filename.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -152,7 +152,7 @@ public class ROMDOS() : FilesystemTest("cpmfs")
             Clusters    = 400,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "d80_files.dsk.lz",
             MediaType   = MediaType.CompactFloppy,

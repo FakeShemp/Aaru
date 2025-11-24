@@ -1,4 +1,7 @@
-﻿<wpf:ResourceDictionary xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xml:space="preserve">
+﻿<wpf:ResourceDictionary xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:s="clr-namespace:System;assembly=mscorlib"
+                        xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xml:space="preserve">
 	<s:String x:Key="/Default/CodeInspection/CppInitialization/DefaultPointerInitializer/@EntryValue">Null</s:String>
   <s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=858398D1_002D7321_002D4763_002D8BAB_002D56BBFEC74E29_002Fd_003Acuetools_002Enet/@EntryIndexedValue">ExplicitlyExcluded</s:String>
   <s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=AnnotateCanBeNullTypeMember/@EntryIndexedValue"></s:String>
@@ -1363,7 +1366,7 @@
   <s:Boolean x:Key="/Default/UserDictionary/Words/=mfgsz/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/UserDictionary/Words/=mgui/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/UserDictionary/Words/=mhdd/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=Mhdd/@EntryIndexedValue">True</s:Boolean>
+  <s:Boolean x:Key="/Default/UserDictionary/Words/=Mhdd/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/UserDictionary/Words/=mhddlog/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/UserDictionary/Words/=Microdrive/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/UserDictionary/Words/=Micropolis/@EntryIndexedValue">True</s:Boolean>
@@ -1384,7 +1387,7 @@
   <s:Boolean x:Key="/Default/UserDictionary/Words/=MODEPAGE/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/UserDictionary/Words/=modesense/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/UserDictionary/Words/=mountpt/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=msbox/@EntryIndexedValue">True</s:Boolean>
+  <s:Boolean x:Key="/Default/UserDictionary/Words/=msbox/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/UserDictionary/Words/=msdos/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/UserDictionary/Words/=msos/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/UserDictionary/Words/=mspw/@EntryIndexedValue">True</s:Boolean>

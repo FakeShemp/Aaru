@@ -42,7 +42,7 @@ public class Reiser4() : FilesystemTest("reiser4")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux.aif",
             MediaType    = MediaType.GENERIC_HDD,

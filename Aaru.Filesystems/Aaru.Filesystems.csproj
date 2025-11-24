@@ -34,7 +34,7 @@
   <ItemGroup>
     <PackageReference Include="Claunia.Encoding"/>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
-    <PackageReference Include="Sentry" />
+    <PackageReference Include="Sentry"/>
     <PackageReference Include="System.ValueTuple"/>
   </ItemGroup>
   <ItemGroup>

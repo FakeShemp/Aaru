@@ -44,7 +44,7 @@ public class VirtualBox : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "virtualbox.vdi.lz",
             MediaType  = MediaType.GENERIC_HDD,

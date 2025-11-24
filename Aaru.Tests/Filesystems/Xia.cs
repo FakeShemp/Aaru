@@ -42,7 +42,7 @@ public class Xia() : FilesystemTest("xia")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.0.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -51,7 +51,7 @@ public class Xia() : FilesystemTest("xia")
             Clusters    = 131008,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.0.37.aif",
             MediaType   = MediaType.GENERIC_HDD,

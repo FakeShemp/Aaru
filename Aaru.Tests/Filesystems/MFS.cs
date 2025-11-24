@@ -43,7 +43,7 @@ public class Mfs() : ReadOnlyFilesystemTest("mfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_0.1_mf1dd.img.lz",
             MediaType   = MediaType.AppleSonySS,
@@ -53,7 +53,7 @@ public class Mfs() : ReadOnlyFilesystemTest("mfs")
             ClusterSize = 1024,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_0.5_mf1dd.img.lz",
             MediaType   = MediaType.AppleSonySS,
@@ -63,7 +63,7 @@ public class Mfs() : ReadOnlyFilesystemTest("mfs")
             ClusterSize = 1024,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_1.1_mf1dd.img.lz",
             MediaType   = MediaType.AppleSonySS,
@@ -73,7 +73,7 @@ public class Mfs() : ReadOnlyFilesystemTest("mfs")
             ClusterSize = 1024,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_2.0_mf1dd.img.lz",
             MediaType   = MediaType.AppleSonySS,
@@ -83,7 +83,7 @@ public class Mfs() : ReadOnlyFilesystemTest("mfs")
             ClusterSize = 1024,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_6.0.7_mf1dd.img.lz",
             MediaType   = MediaType.AppleSonySS,

@@ -44,7 +44,7 @@ public class ImageDisk : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_acorn.imd.lz",
             MediaType  = MediaType.ACORN_35_DS_DD,
@@ -52,7 +52,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "2626f65b49ec085253c41fa2e2a9e788"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fdformat_820.imd.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -60,7 +60,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "9d978dff1196b456b8372d78e6b17970"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_2m.imd.lz",
             MediaType  = MediaType.Unknown,
@@ -68,7 +68,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "7ee82cecd23b30cc9aa6f0ec59877851"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_172.imd.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,

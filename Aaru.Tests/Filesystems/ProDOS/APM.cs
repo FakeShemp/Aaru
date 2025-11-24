@@ -44,7 +44,7 @@ public class APM() : FilesystemTest("prodos")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_7.6.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -54,7 +54,7 @@ public class APM() : FilesystemTest("prodos")
             ClusterSize = 512,
             VolumeName  = "VOLUME.LABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_9.0.4.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -64,7 +64,7 @@ public class APM() : FilesystemTest("prodos")
             ClusterSize = 512,
             VolumeName  = "VOLUME.LABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_9.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -74,7 +74,7 @@ public class APM() : FilesystemTest("prodos")
             ClusterSize = 512,
             VolumeName  = "VOLUME.LABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_9.2.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -84,7 +84,7 @@ public class APM() : FilesystemTest("prodos")
             ClusterSize = 512,
             VolumeName  = "VOLUME.LABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_9.2.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -94,7 +94,7 @@ public class APM() : FilesystemTest("prodos")
             ClusterSize = 512,
             VolumeName  = "VOLUME.LABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "pcexchange_2.0.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -104,7 +104,7 @@ public class APM() : FilesystemTest("prodos")
             ClusterSize = 512,
             VolumeName  = "VOLUME.LABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "pcexchange_2.0.5.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -114,7 +114,7 @@ public class APM() : FilesystemTest("prodos")
             ClusterSize = 512,
             VolumeName  = "VOLUME.LABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "pcexchange_2.1.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -124,7 +124,7 @@ public class APM() : FilesystemTest("prodos")
             ClusterSize = 512,
             VolumeName  = "VOLUME.LABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "pcexchange_2.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -134,7 +134,7 @@ public class APM() : FilesystemTest("prodos")
             ClusterSize = 512,
             VolumeName  = "VOLUME.LABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "pcexchange_3.0.3.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -144,7 +144,7 @@ public class APM() : FilesystemTest("prodos")
             ClusterSize = 512,
             VolumeName  = "VOLUME.LABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "pcexchange_3.0.4.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -154,7 +154,7 @@ public class APM() : FilesystemTest("prodos")
             ClusterSize = 512,
             VolumeName  = "VOLUME.LABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "pcexchange_3.0.5.aif",
             MediaType   = MediaType.GENERIC_HDD,

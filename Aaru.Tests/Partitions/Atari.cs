@@ -39,7 +39,7 @@ public class Atari : PartitionSchemeTest
 
     public override PartitionTest[] Tests =>
     [
-        new PartitionTest
+        new()
         {
             TestFile = "linux_ahdi.aif",
             Partitions =
@@ -84,7 +84,7 @@ public class Atari : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "linux_icd.aif",
             Partitions =
@@ -172,7 +172,7 @@ public class Atari : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "tos_1.04.aif",
             Partitions =

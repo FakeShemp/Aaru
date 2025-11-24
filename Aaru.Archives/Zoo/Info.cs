@@ -48,7 +48,7 @@ public sealed partial class Zoo
         Stream stream = filter.GetDataForkStream();
         stream.Position = 0;
 
-        byte[] hdr = new byte[Marshal.SizeOf<ZooHeader>()];
+        var hdr = new byte[Marshal.SizeOf<ZooHeader>()];
 
         stream.ReadExactly(hdr, 0, hdr.Length);
 
@@ -67,7 +67,7 @@ public sealed partial class Zoo
         Stream stream = filter.GetDataForkStream();
         stream.Position = 0;
 
-        byte[] hdr = new byte[Marshal.SizeOf<ZooHeader>()];
+        var hdr = new byte[Marshal.SizeOf<ZooHeader>()];
 
         stream.ReadExactly(hdr, 0, hdr.Length);
 
@@ -105,7 +105,7 @@ public sealed partial class Zoo
 
         if(header.acmt_len > 0)
         {
-            byte[] buffer = new byte[header.acmt_len];
+            var buffer = new byte[header.acmt_len];
             stream.Position =   header.acmt_pos;
             encoding        ??= Encoding.UTF8;
             stream.ReadExactly(buffer, 0, buffer.Length);

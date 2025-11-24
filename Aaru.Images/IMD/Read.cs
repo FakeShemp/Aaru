@@ -109,9 +109,8 @@ public sealed partial class Imd
                 for(var i = 0; i < spt; i++) bps[i] = BitConverter.ToUInt16(bpsbytes, i * 2);
             }
             else
-            {
-                for(var i = 0; i < spt; i++) bps[i] = (ushort)(128 << n);
-            }
+                for(var i = 0; i < spt; i++)
+                    bps[i] = (ushort)(128 << n);
 
             if(spt > _imageInfo.SectorsPerTrack) _imageInfo.SectorsPerTrack = spt;
 

@@ -42,7 +42,7 @@ public class APM() : FilesystemTest("befs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "beos_r3.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -52,7 +52,7 @@ public class APM() : FilesystemTest("befs")
             ClusterSize = 1024,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "beos_r4.5.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -62,7 +62,7 @@ public class APM() : FilesystemTest("befs")
             ClusterSize = 1024,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "beos_r5.aif",
             MediaType   = MediaType.GENERIC_HDD,

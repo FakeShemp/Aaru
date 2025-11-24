@@ -42,7 +42,7 @@ public class SharpPersonalCPM() : ReadOnlyFilesystemTest("cpmfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "filename.imd",
             MediaType   = MediaType.ACORN_525_DS_DD,
@@ -52,7 +52,7 @@ public class SharpPersonalCPM() : ReadOnlyFilesystemTest("cpmfs")
             Clusters    = 316,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "files.imd",
             MediaType   = MediaType.ACORN_525_DS_DD,

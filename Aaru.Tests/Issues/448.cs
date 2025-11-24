@@ -15,7 +15,7 @@ public class _448 : OpticalMediaImageTest
 
     public override OpticalImageTestExpected[] Tests =>
     [
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "B6T_ISO-BlindWrite7.B6T",
             MediaType     = MediaType.CDROM,

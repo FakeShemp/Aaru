@@ -1,16 +1,19 @@
 # [6.0.0-alpha.15.1] - 2025-11-21
 
 ## Fixed
+
 - Showstopper bug in GUI.
 
 # [6.0.0-alpha.15] - 2025-11-21
 
 ## Added
+
 - More vendor IDs for MultiMediaCard and SecureDigital devices.
 - Humanized media type in several places.
 - More colorization.
 
 ### - GUI
+
 - Connecting to AaruRemote servers.
 - Device information.
 - Dumping media.
@@ -22,18 +25,23 @@
 ## Changed
 
 ### - Dumping
+
 - Better more stable speed calculation algorithm.
 
 ### - Media scanning
+
 - Better more stable speed calculation algorithm.
 
 ### - TUI
+
 - New cyberpunk neon style theme.
 
 ## Fixed
+
 - PMA naming in several places.
 
 ### - Alcohol 120% disc image
+
 - Fixed reading media tags
 
 # [6.0.0-alpha.14] - 2025-10-27

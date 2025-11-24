@@ -63,11 +63,11 @@
   <ItemGroup>
     <PackageReference Include="Humanizer.Core"/>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
-    <PackageReference Include="Sentry" />
+    <PackageReference Include="Sentry"/>
     <PackageReference Include="SkiaSharp"/>
-    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Condition="$([MSBuild]::IsOSPlatform('Linux'))" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Condition="$([MSBuild]::IsOSPlatform('Linux'))"/>
     <PackageReference Include="Spectre.Console"/>
-    <PackageReference Include="Spectre.Console.Json" />
+    <PackageReference Include="Spectre.Console.Json"/>
     <PackageReference Include="System.ValueTuple"/>
   </ItemGroup>
 </Project>

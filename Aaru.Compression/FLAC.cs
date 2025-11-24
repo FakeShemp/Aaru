@@ -27,9 +27,7 @@
 // ****************************************************************************/
 
 using System;
-using System.IO;
 using System.Runtime.InteropServices;
-using Aaru.Helpers.IO;
 
 namespace Aaru.Compression;
 

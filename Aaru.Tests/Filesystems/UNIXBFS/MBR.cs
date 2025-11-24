@@ -43,7 +43,7 @@ public class MBR() : FilesystemTest("bfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux.aif",
             MediaType   = MediaType.GENERIC_HDD,

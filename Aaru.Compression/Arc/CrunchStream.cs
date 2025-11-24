@@ -18,12 +18,12 @@ public partial class CrunchStream : Stream
 
         // Read full compressed data into memory
         compressedStream.Position = 0;
-        byte[] inBuf = new byte[compressedStream.Length];
+        var inBuf = new byte[compressedStream.Length];
         compressedStream.ReadExactly(inBuf, 0, inBuf.Length);
 
         // Allocate output buffer
         _decoded = new byte[decompressedLength];
-        nint outLen = (nint)decompressedLength;
+        var outLen = (nint)decompressedLength;
 
         int err = rle switch
                   {
@@ -83,7 +83,7 @@ public partial class CrunchStream : Stream
 
         if(remaining <= 0) return 0;
 
-        int toRead = (int)Math.Min(count, remaining);
+        var toRead = (int)Math.Min(count, remaining);
         Array.Copy(_decoded, _position, buffer, offset, toRead);
         _position += toRead;
 

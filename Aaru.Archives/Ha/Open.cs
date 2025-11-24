@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Aaru.CommonTypes.Enums;
@@ -21,7 +20,7 @@ public sealed partial class Ha
         _stream          = filter.GetDataForkStream();
         _stream.Position = 0;
 
-        byte[] hdr = new byte[Marshal.SizeOf<HaHeader>()];
+        var hdr = new byte[Marshal.SizeOf<HaHeader>()];
 
         _stream.ReadExactly(hdr, 0, hdr.Length);
 
@@ -32,11 +31,11 @@ public sealed partial class Ha
 
         _entries = [];
 
-        int    fhLen   = Marshal.SizeOf<FHeader>();
-        byte[] fhBuf   = new byte[fhLen];
-        byte[] pathBuf = new byte[16384];
-        byte[] nameBuf = new byte[256];
-        int    i; // Guard
+        int fhLen   = Marshal.SizeOf<FHeader>();
+        var fhBuf   = new byte[fhLen];
+        var pathBuf = new byte[16384];
+        var nameBuf = new byte[256];
+        int i; // Guard
 
         while(_stream.Position + fhLen < _stream.Length)
         {
@@ -88,7 +87,7 @@ public sealed partial class Ha
 
             int mdiLen = _stream.ReadByte();
 
-            byte[] mdi = new byte[mdiLen];
+            var mdi = new byte[mdiLen];
             _stream.ReadExactly(mdi, 0, mdiLen);
 
             string path = StringHandlers.CToString(pathBuf, encoding);

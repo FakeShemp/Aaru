@@ -330,8 +330,8 @@ public partial class DeviceInfo
 
                         if(dev.Manufacturer == "PLEXTOR")
                         {
-                            bool   plxtSense = true;
-                            bool   plxtDvd   = false;
+                            var    plxtSense = true;
+                            var    plxtDvd   = false;
                             byte[] plxtBuf   = null;
 
                             switch(dev.Model)

@@ -46,7 +46,7 @@ public class QCOW : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "qcow.qc.lz",
             MediaType  = MediaType.GENERIC_HDD,

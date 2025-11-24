@@ -18,7 +18,7 @@ public sealed partial class Arc
         Stream stream = filter.GetDataForkStream();
         stream.Position = 0;
 
-        byte[] hdr = new byte[Marshal.SizeOf<Header>()];
+        var hdr = new byte[Marshal.SizeOf<Header>()];
 
         stream.ReadExactly(hdr, 0, hdr.Length);
 
@@ -53,7 +53,7 @@ public sealed partial class Arc
         Stream stream = filter.GetDataForkStream();
         stream.Position = 0;
 
-        byte[] hdr = new byte[Marshal.SizeOf<Header>()];
+        var hdr = new byte[Marshal.SizeOf<Header>()];
 
         stream.ReadExactly(hdr, 0, hdr.Length);
 

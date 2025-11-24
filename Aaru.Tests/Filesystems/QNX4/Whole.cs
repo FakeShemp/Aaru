@@ -43,7 +43,7 @@ public class Whole() : FilesystemTest("qnx4")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "qnx_4.24_dsdd.img.lz",
             MediaType   = MediaType.DOS_525_DS_DD_9,
@@ -52,7 +52,7 @@ public class Whole() : FilesystemTest("qnx4")
             Clusters    = 720,
             ClusterSize = 512
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "qnx_4.24_dshd.img.lz",
             MediaType   = MediaType.DOS_525_HD,
@@ -61,7 +61,7 @@ public class Whole() : FilesystemTest("qnx4")
             Clusters    = 2400,
             ClusterSize = 512
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "qnx_4.24_mf2dd.img.lz",
             MediaType   = MediaType.DOS_35_DS_DD_9,
@@ -70,7 +70,7 @@ public class Whole() : FilesystemTest("qnx4")
             Clusters    = 1440,
             ClusterSize = 512
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "qnx_4.24_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,

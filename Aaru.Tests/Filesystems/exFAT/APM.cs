@@ -42,7 +42,7 @@ public class APM() : FilesystemTest("exfat")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.11.aif",
             MediaType    = MediaType.GENERIC_HDD,

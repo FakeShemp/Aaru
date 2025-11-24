@@ -8,6 +8,30 @@ namespace Aaru.Images;
 
 public sealed partial class AaruFormat
 {
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_tape_file(void *context, const uint8_t partition, const uint32_t file,
+    // const uint64_t starting_block, const uint64_t ending_block)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_tape_file", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_tape_file(IntPtr context, byte partition, uint file, ulong startingBlock,
+                                                      ulong  endingBlock);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_tape_partition(void *context, const uint8_t partition,
+    // const uint64_t starting_block, const uint64_t ending_block)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_tape_partition", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_tape_partition(IntPtr context, byte partition, ulong startingBlock,
+                                                           ulong  endingBlock);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_get_all_tape_files(const void *context, uint8_t *buffer, size_t *length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_all_tape_files", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_get_all_tape_files(IntPtr context, IntPtr buffer, ref nuint length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_get_all_tape_partitions(const void *context, uint8_t *buffer, size_t *length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_all_tape_partitions", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_get_all_tape_partitions(IntPtr context, IntPtr buffer, ref nuint length);
+
 #region IWritableTapeImage Members
 
     /// <inheritdoc />
@@ -181,28 +205,4 @@ public sealed partial class AaruFormat
     }
 
 #endregion
-
-    // AARU_EXPORT int32_t AARU_CALL aaruf_set_tape_file(void *context, const uint8_t partition, const uint32_t file,
-    // const uint64_t starting_block, const uint64_t ending_block)
-    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_tape_file", SetLastError = true)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
-    private static partial Status aaruf_set_tape_file(IntPtr context, byte partition, uint file, ulong startingBlock,
-                                                      ulong  endingBlock);
-
-    // AARU_EXPORT int32_t AARU_CALL aaruf_set_tape_partition(void *context, const uint8_t partition,
-    // const uint64_t starting_block, const uint64_t ending_block)
-    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_tape_partition", SetLastError = true)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
-    private static partial Status aaruf_set_tape_partition(IntPtr context, byte partition, ulong startingBlock,
-                                                           ulong  endingBlock);
-
-    // AARU_EXPORT int32_t AARU_CALL aaruf_get_all_tape_files(const void *context, uint8_t *buffer, size_t *length)
-    [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_all_tape_files", SetLastError = true)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
-    private static partial Status aaruf_get_all_tape_files(IntPtr context, IntPtr buffer, ref nuint length);
-
-    // AARU_EXPORT int32_t AARU_CALL aaruf_get_all_tape_partitions(const void *context, uint8_t *buffer, size_t *length)
-    [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_all_tape_partitions", SetLastError = true)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
-    private static partial Status aaruf_get_all_tape_partitions(IntPtr context, IntPtr buffer, ref nuint length);
 }

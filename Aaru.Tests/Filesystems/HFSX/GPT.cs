@@ -43,7 +43,7 @@ public class GPT() : FilesystemTest("hfsx")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.11.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -54,7 +54,7 @@ public class GPT() : FilesystemTest("hfsx")
             SystemId     = "10.0",
             VolumeSerial = "328343989312AE9F"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.11_journal.aif",
             MediaType    = MediaType.GENERIC_HDD,

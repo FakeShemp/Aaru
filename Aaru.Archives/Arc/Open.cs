@@ -22,7 +22,7 @@ public sealed partial class Arc
         _stream          = filter.GetDataForkStream();
         _stream.Position = 0;
 
-        byte[] hdr = new byte[Marshal.SizeOf<Header>()];
+        var hdr = new byte[Marshal.SizeOf<Header>()];
 
         _stream.ReadExactly(hdr, 0, hdr.Length);
 
@@ -55,7 +55,7 @@ public sealed partial class Arc
                     ArchiveSupportedFeature.SupportsFilenames   |
                     ArchiveSupportedFeature.HasEntryTimestamp;
 
-        string path       = "";
+        var    path       = "";
         string longname   = null;
         string comment    = null;
         string attributes = null;
@@ -104,7 +104,7 @@ public sealed partial class Arc
             if(header.method == Method.FileInformation)
             {
                 int recordsSize = header.compressed;
-                int recordsRead = 0;
+                var recordsRead = 0;
 
                 while(recordsRead < recordsSize)
                 {

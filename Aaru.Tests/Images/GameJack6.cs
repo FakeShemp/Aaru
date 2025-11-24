@@ -41,7 +41,7 @@ public class GameJack6 : OpticalMediaImageTest
 
     public override OpticalImageTestExpected[] Tests =>
     [
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdrom_cooked_nodpm.xmd",
             MediaType     = MediaType.CDROM,
@@ -79,7 +79,7 @@ public class GameJack6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdrom_cooked.xmd",
             MediaType     = MediaType.CDROM,
@@ -117,7 +117,7 @@ public class GameJack6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdrom_nodpm.xmd",
             MediaType     = MediaType.CDROM,
@@ -155,7 +155,7 @@ public class GameJack6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdrom.xmd",
             MediaType     = MediaType.CDROM,
@@ -193,7 +193,7 @@ public class GameJack6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdrw.xmd",
             MediaType     = MediaType.CDRW,
@@ -225,7 +225,7 @@ public class GameJack6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdr.xmd",
             MediaType     = MediaType.CDROM,
@@ -263,7 +263,7 @@ public class GameJack6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_dvdram_v1.xmd",
             MediaType = MediaType.DVDRAM,
@@ -293,7 +293,7 @@ public class GameJack6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_dvdram_v2.xmd",
             MediaType = MediaType.DVDRAM,
@@ -323,7 +323,7 @@ public class GameJack6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_dvdrom.xmd",
             MediaType = MediaType.DVDROM,
@@ -353,7 +353,7 @@ public class GameJack6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_dvd+rw.xmd",
             MediaType = MediaType.DVDPRW,
@@ -383,7 +383,7 @@ public class GameJack6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_dvd-rw.xmd",
             MediaType = MediaType.DVDRW,
@@ -413,7 +413,7 @@ public class GameJack6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_dvd+r.xmd",
             MediaType = MediaType.DVDPR,
@@ -443,7 +443,7 @@ public class GameJack6 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_dvd-r.xmd",
             MediaType = MediaType.DVDR,

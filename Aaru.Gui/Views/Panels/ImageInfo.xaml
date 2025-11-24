@@ -46,9 +46,12 @@
     <Design.DataContext>
         <panels:ImageInfoViewModel />
     </Design.DataContext>
-    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto" Margin="12"
-                RowSpacing="8">
-        <Border Grid.Row="0" Width="160" Height="160"
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto"
+          Margin="12"
+          RowSpacing="8">
+        <Border Grid.Row="0"
+                Width="160"
+                Height="160"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Background="LightGray"
@@ -58,17 +61,22 @@
                    Height="128"
                    Source="{Binding MediaLogo, Mode=OneWay}" />
         </Border>
-        <controls:SpectreTextBlock Grid.Row="1" Text="{x:Static localization:UI.Title_Image_information}"
+        <controls:SpectreTextBlock Grid.Row="1"
+                                   Text="{x:Static localization:UI.Title_Image_information}"
                                    FontWeight="Bold" />
-        <controls:SpectreTextBlock Grid.Row="2" Text="{Binding ImagePathText, Mode=OneWay}" />
-        <controls:SpectreTextBlock Grid.Row="3" Text="{Binding FilterText, Mode=OneWay}" />
-        <controls:SpectreTextBlock Grid.Row="4" Text="{Binding ImageIdentifiedText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="2"
+                                   Text="{Binding ImagePathText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="3"
+                                   Text="{Binding FilterText, Mode=OneWay}" />
+        <controls:SpectreTextBlock Grid.Row="4"
+                                   Text="{Binding ImageIdentifiedText, Mode=OneWay}" />
         <TabControl Grid.Row="5">
             <TabItem Margin="8">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_General}" />
                 </TabItem.Header>
-                <StackPanel Spacing="8" Margin="8">
+                <StackPanel Spacing="8"
+                            Margin="8">
                     <controls:SpectreTextBlock Text="{Binding ImageFormatText, Mode=OneWay}"
                                                IsVisible="{Binding !!ImageFormatText, Mode=OneWay}" />
                     <controls:SpectreTextBlock Text="{Binding ApplicationText, Mode=OneWay}"
@@ -166,7 +174,8 @@
                           IsVisible="{Binding !!Sessions.Count, Mode=OneWay}"
                           IsReadOnly="True"
                           VerticalAlignment="Stretch"
-                          HorizontalAlignment="Stretch" Margin="8">
+                          HorizontalAlignment="Stretch"
+                          Margin="8">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Width="*">
                             <DataGridTemplateColumn.HeaderTemplate>
@@ -259,7 +268,8 @@
                           IsVisible="{Binding !!Tracks.Count, Mode=OneWay}"
                           IsReadOnly="True"
                           VerticalAlignment="Stretch"
-                          HorizontalAlignment="Stretch" Margin="8">
+                          HorizontalAlignment="Stretch"
+                          Margin="8">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Width="*">
                             <DataGridTemplateColumn.HeaderTemplate>
@@ -398,7 +408,8 @@
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding DumpHardwareList, Mode=OneWay}"
                           IsVisible="{Binding !!DumpHardwareList.Count, Mode=OneWay}"
-                          IsReadOnly="True" Margin="8">
+                          IsReadOnly="True"
+                          Margin="8">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Width="*">
                             <DataGridTemplateColumn.HeaderTemplate>
@@ -551,59 +562,71 @@
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_SCSI}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding ScsiInfo, Mode=OneWay}" Margin="8" />
+                <ContentControl Content="{Binding ScsiInfo, Mode=OneWay}"
+                                Margin="8" />
             </TabItem>
             <TabItem IsVisible="{Binding !!AtaInfo, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_ATA_ATAPI}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding AtaInfo, Mode=OneWay}" Margin="8" />
+                <ContentControl Content="{Binding AtaInfo, Mode=OneWay}"
+                                Margin="8" />
             </TabItem>
             <TabItem IsVisible="{Binding !!CompactDiscInfo, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:Core.Title_CompactDisc}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding CompactDiscInfo, Mode=OneWay}" Margin="8" />
+                <ContentControl Content="{Binding CompactDiscInfo, Mode=OneWay}"
+                                Margin="8" />
             </TabItem>
             <TabItem IsVisible="{Binding !!DvdInfo, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:Core.Title_DVD_HD_DVD}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding DvdInfo, Mode=OneWay}" Margin="8" />
+                <ContentControl Content="{Binding DvdInfo, Mode=OneWay}"
+                                Margin="8" />
             </TabItem>
             <TabItem IsVisible="{Binding !!DvdWritableInfo, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:Core.Title_DVD_Plus_Dash_R_W}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding DvdWritableInfo, Mode=OneWay}" Margin="8" />
+                <ContentControl Content="{Binding DvdWritableInfo, Mode=OneWay}"
+                                Margin="8" />
             </TabItem>
             <TabItem IsVisible="{Binding !!BlurayInfo, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:Core.Title_Blu_ray}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding BlurayInfo, Mode=OneWay}" Margin="8" />
+                <ContentControl Content="{Binding BlurayInfo, Mode=OneWay}"
+                                Margin="8" />
             </TabItem>
             <TabItem IsVisible="{Binding !!PcmciaInfo, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_PCMCIA}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding PcmciaInfo, Mode=OneWay}" Margin="8" />
+                <ContentControl Content="{Binding PcmciaInfo, Mode=OneWay}"
+                                Margin="8" />
             </TabItem>
             <TabItem IsVisible="{Binding !!SdMmcInfo, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:UI.Title_SD_MMC}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding SdMmcInfo, Mode=OneWay}" Margin="8" />
+                <ContentControl Content="{Binding SdMmcInfo, Mode=OneWay}"
+                                Margin="8" />
             </TabItem>
             <TabItem IsVisible="{Binding !!XboxInfo, Mode=OneWay}">
                 <TabItem.Header>
                     <TextBlock Text="{x:Static localization:Core.Title_Xbox}" />
                 </TabItem.Header>
-                <ContentControl Content="{Binding XboxInfo, Mode=OneWay}" Margin="8" />
+                <ContentControl Content="{Binding XboxInfo, Mode=OneWay}"
+                                Margin="8" />
             </TabItem>
         </TabControl>
-        <StackPanel Grid.Row="6" Orientation="Horizontal"
-                    Spacing="8" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="6"
+                    Orientation="Horizontal"
+                    Spacing="8"
+                    VerticalAlignment="Bottom"
+                    HorizontalAlignment="Right">
             <Button Command="{Binding EntropyCommand, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Calculate_entropy}" />
             </Button>

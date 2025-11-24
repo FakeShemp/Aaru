@@ -41,7 +41,7 @@ public class Virtual98 : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "v98_128.hdd.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -49,7 +49,7 @@ public class Virtual98 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "be3693b92a5242101e80087611b33092"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "v98_20.hdd.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -57,7 +57,7 @@ public class Virtual98 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "811b2a9d08abbecf4cb75531d5e51808"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "v98_256.hdd.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -65,7 +65,7 @@ public class Virtual98 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "cf4375422f50d62e163d697a18542eca"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "v98_41.hdd.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -73,7 +73,7 @@ public class Virtual98 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "fe4fc08015f1e3a4562e8e867107b561"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "v98_512.hdd.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -81,7 +81,7 @@ public class Virtual98 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "afb49485f0ef2b39e8377c1fe880e77b"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "v98_65.hdd.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -89,7 +89,7 @@ public class Virtual98 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "9e4c0bc8bc955b1a21a94df0f7bec3ab"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "v98_80.hdd.lz",
             MediaType  = MediaType.GENERIC_HDD,

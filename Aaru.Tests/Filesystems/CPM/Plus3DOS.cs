@@ -44,7 +44,7 @@ public class Plus3DOS() : FilesystemTest("cpmfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "filename.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -54,7 +54,7 @@ public class Plus3DOS() : FilesystemTest("cpmfs")
             Clusters    = 359,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "files.dsk.lz",
             MediaType   = MediaType.CompactFloppy,

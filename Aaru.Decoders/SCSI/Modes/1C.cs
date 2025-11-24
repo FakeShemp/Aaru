@@ -188,9 +188,11 @@ public static partial class Modes
                 if(page.IntervalTimer == 0xFFFFFFFF)
                     sb.AppendLine($"\t[slateblue1]{Localization.Timer_interval_is_vendor_specific}[/]");
                 else
+                {
                     sb.AppendFormat($"\t[slateblue1]{Localization.Timer_interval_is_0_ms}[/]",
                                     $"[teal]{page.IntervalTimer * 100}[/]")
                       .AppendLine();
+                }
             }
 
             if(page.ReportCount > 0)

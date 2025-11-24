@@ -49,7 +49,7 @@ public sealed partial class Anex86
 
         if(stream.Length < Marshal.SizeOf<Header>()) return false;
 
-        byte[] hdrB = new byte[Marshal.SizeOf<Header>()];
+        var hdrB = new byte[Marshal.SizeOf<Header>()];
         stream.EnsureRead(hdrB, 0, hdrB.Length);
 
         _header = Marshal.SpanToStructureLittleEndian<Header>(hdrB);

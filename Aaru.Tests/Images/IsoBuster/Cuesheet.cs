@@ -44,7 +44,7 @@ public class Cuesheet : OpticalMediaImageTest
 
     public override OpticalImageTestExpected[] Tests =>
     [
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "gigarec.cue",
             MediaType = MediaType.CDROM,
@@ -74,7 +74,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "jaguarcd.cue",
             MediaType = MediaType.CDDA,
@@ -173,7 +173,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "pcengine.cue",
             MediaType = MediaType.CD,
@@ -322,7 +322,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "pcfx.cue",
             MediaType = MediaType.CD,
@@ -409,7 +409,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_cdr.cue",
             MediaType = MediaType.CDROM,
@@ -446,7 +446,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_cdrom.cue",
             MediaType = MediaType.CDROM,
@@ -483,7 +483,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_cdrw.cue",
             MediaType = MediaType.CDRW,
@@ -514,7 +514,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "test_audiocd_cdtext.cue",
             MediaType = MediaType.CDDA,
@@ -613,7 +613,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "test_enhancedcd.cue",
             MediaType = MediaType.CDPLUS,
@@ -659,7 +659,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "test_incd_udf200_finalized.cue",
             MediaType = MediaType.CDROMXA,
@@ -697,7 +697,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "test_multi_karaoke_sampler.cue",
             MediaType = MediaType.CDROMXA,
@@ -847,7 +847,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "test_multiple_indexes.cue",
             MediaType = MediaType.CDDA,
@@ -898,7 +898,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "test_multisession.cue",
             MediaType = MediaType.CDROMXA,
@@ -1017,7 +1017,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "test_multisession_dvd+r.cue",
             MediaType = MediaType.DVDPRDL,
@@ -1063,7 +1063,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "test_multisession_dvd-r.cue",
             MediaType = MediaType.DVDR,
@@ -1109,7 +1109,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "test_videocd.cue",
             MediaType = MediaType.CDROMXA,

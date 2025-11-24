@@ -42,7 +42,7 @@ public class XtalDOS() : ReadOnlyFilesystemTest("cpmfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "filename.imd",
             MediaType   = MediaType.Unknown,
@@ -52,7 +52,7 @@ public class XtalDOS() : ReadOnlyFilesystemTest("cpmfs")
             Clusters    = 189,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "files.imd",
             MediaType   = MediaType.Unknown,

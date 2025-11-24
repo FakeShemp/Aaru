@@ -42,7 +42,7 @@ public class Raw : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "raw.img.lz",
             MediaType  = MediaType.GENERIC_HDD,

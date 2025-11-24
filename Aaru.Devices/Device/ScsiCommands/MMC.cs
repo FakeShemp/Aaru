@@ -98,7 +98,7 @@ public partial class Device
 
         if(sense) return true;
 
-        ushort confLength = (ushort)((buffer[2] << 8) + buffer[3] + 4);
+        var confLength = (ushort)((buffer[2] << 8) + buffer[3] + 4);
         buffer      = new byte[confLength];
         cdb[7]      = (byte)((buffer.Length & 0xFF00) >> 8);
         cdb[8]      = (byte)(buffer.Length & 0xFF);
@@ -158,7 +158,7 @@ public partial class Device
 
         if(sense) return true;
 
-        ushort strctLength = (ushort)((buffer[0] << 8) + buffer[1] + 2);
+        var strctLength = (ushort)((buffer[0] << 8) + buffer[1] + 2);
 
         // WORKAROUND: Some drives return incorrect length information. As these structures are fixed length just apply known length.
         if(mediaType == MmcDiscStructureMediaType.Bd)
@@ -312,7 +312,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        uint strctLength = (uint)((tmpBuffer[0] << 8) + tmpBuffer[1] + 2);
+        var strctLength = (uint)((tmpBuffer[0] << 8) + tmpBuffer[1] + 2);
         buffer = new byte[strctLength];
 
         if(buffer.Length <= tmpBuffer.Length)
@@ -380,7 +380,7 @@ public partial class Device
         senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
-        byte[] tmpBuffer = new byte[804];
+        var tmpBuffer = new byte[804];
 
         cdb[0] = (byte)ScsiCommands.ReadDiscInformation;
         cdb[1] = (byte)dataType;
@@ -391,7 +391,7 @@ public partial class Device
 
         Error = LastError != 0;
 
-        uint strctLength = (uint)((tmpBuffer[0] << 8) + tmpBuffer[1] + 2);
+        var strctLength = (uint)((tmpBuffer[0] << 8) + tmpBuffer[1] + 2);
 
         if(strctLength > tmpBuffer.Length) strctLength = (uint)tmpBuffer.Length;
 
@@ -536,7 +536,7 @@ public partial class Device
 
         cdb[10] = (byte)subchannel;
 
-        uint transferLength = (uint)((cdb[6] - cdb[3]) * 60 * 75 + (cdb[7] - cdb[4]) * 75 + (cdb[8] - cdb[5]));
+        var transferLength = (uint)((cdb[6] - cdb[3]) * 60 * 75 + (cdb[7] - cdb[4]) * 75 + (cdb[8] - cdb[5]));
 
         buffer = new byte[blockSize * transferLength];
 

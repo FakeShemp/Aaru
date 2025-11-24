@@ -194,7 +194,7 @@ public partial class Device
         if(_remote.ServerProtocolVersion >= 2)
             return _remote.SendMultipleMmcCommands(commands, out duration, out sense, timeout);
 
-        int error = 0;
+        var error = 0;
         duration = 0;
         sense    = false;
 

@@ -43,7 +43,7 @@ public class Jfs2() : FilesystemTest("jfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -55,7 +55,7 @@ public class Jfs2() : FilesystemTest("jfs")
             VolumeName   = "Volume labe",
             VolumeSerial = "8033b783-0cd1-1645-8ecc-f8f113ad6a47"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_caseinsensitive.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -67,7 +67,7 @@ public class Jfs2() : FilesystemTest("jfs")
             VolumeName   = "Volume labe",
             VolumeSerial = "d6cd91e9-3899-7e40-8468-baab688ee2e2"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "ecs20_fstester.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -79,7 +79,7 @@ public class Jfs2() : FilesystemTest("jfs")
             VolumeName   = "Volume labe",
             VolumeSerial = "f4077ce9-0000-0000-0000-000000007c10"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_4.19_jfs_flashdrive.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -91,7 +91,7 @@ public class Jfs2() : FilesystemTest("jfs")
             VolumeName   = "DicSetter",
             VolumeSerial = "91746c77-eb51-7441-85e2-902c925969f8"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_4.19_jfs_os2_flashdrive.aif",
             MediaType    = MediaType.GENERIC_HDD,

@@ -47,7 +47,7 @@ public class Sun_i86 : FilesystemTest
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "solaris_7.aif",
             MediaType   = MediaType.GENERIC_HDD,

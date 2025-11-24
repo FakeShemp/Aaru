@@ -44,7 +44,7 @@ public class Zfs() : FilesystemTest("zfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "netbsd_7.1.aif",
             MediaType    = MediaType.GENERIC_HDD,

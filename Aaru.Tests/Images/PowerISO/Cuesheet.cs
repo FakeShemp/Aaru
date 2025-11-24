@@ -44,7 +44,7 @@ public class Cuesheet : OpticalMediaImageTest
 
     public override OpticalImageTestExpected[] Tests =>
     [
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "cdiready_the_apprentice.cue",
             MediaType = MediaType.CDDA,
@@ -231,7 +231,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_audiocd.cue",
             MediaType = MediaType.CDDA,
@@ -354,7 +354,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_cdrom.cue",
             MediaType = MediaType.CDROM,
@@ -391,7 +391,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_cdrw.cue",
             MediaType = MediaType.CDROM,
@@ -588,7 +588,7 @@ public class Cuesheet : OpticalMediaImageTest
         },
         */
         /* This image is marked all as MODE2 tracks when they are MODE1 and Audio. PowerISO does not end to amaze me */
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "test_multi_karaoke_sampler.cue",
             MediaType = MediaType.CDROMXA,

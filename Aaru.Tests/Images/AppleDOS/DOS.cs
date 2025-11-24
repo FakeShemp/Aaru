@@ -42,7 +42,7 @@ public class DOS : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "dos33.do.lz",
             MediaType  = MediaType.Apple33SS,
@@ -58,7 +58,7 @@ public class DOS : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "hfs.do.lz",
             MediaType  = MediaType.Apple33SS,
@@ -66,7 +66,7 @@ public class DOS : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "ddd04ef378552c789f85382b4f49da06"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "pascal800.do.lz",
             MediaType  = MediaType.Apple33SS,
@@ -74,7 +74,7 @@ public class DOS : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "5158e2fe9d8e7ae1f7db73156478e4f4"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "pascal.do.lz",
             MediaType  = MediaType.Apple33SS,
@@ -82,7 +82,7 @@ public class DOS : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "4c4926103a32ac15f7e430ec3ced4be5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos800.do.lz",
             MediaType  = MediaType.Apple33SS,
@@ -90,7 +90,7 @@ public class DOS : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "193c5cc22f07e5aeb96eb187cb59c2d9"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos.do.lz",
             MediaType  = MediaType.Apple33SS,
@@ -98,7 +98,7 @@ public class DOS : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "23f42e529c9fde2a8033f1bc6a7bca93"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodosmod.do.lz",
             MediaType  = MediaType.Apple33SS,

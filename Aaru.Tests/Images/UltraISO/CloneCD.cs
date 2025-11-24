@@ -46,7 +46,7 @@ public class CloneCD : OpticalMediaImageTest
 
     public override OpticalImageTestExpected[] Tests =>
     [
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "cdiready_the_apprentice.ccd",
             MediaType     = MediaType.CDDA,
@@ -234,7 +234,7 @@ public class CloneCD : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_audiocd.ccd",
             MediaType     = MediaType.CDDA,
@@ -358,7 +358,7 @@ public class CloneCD : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdrom.ccd",
             MediaType     = MediaType.CDROM,
@@ -396,7 +396,7 @@ public class CloneCD : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdrw.ccd",
             MediaType     = MediaType.CDROM,
@@ -428,7 +428,7 @@ public class CloneCD : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_enhancedcd.ccd",
             MediaType     = MediaType.CDPLUS,
@@ -563,7 +563,7 @@ public class CloneCD : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "test_multi_karaoke_sampler.ccd",
             MediaType     = MediaType.CDROMXA,

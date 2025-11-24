@@ -44,7 +44,7 @@ public class Cuesheet : OpticalMediaImageTest
 
     public override OpticalImageTestExpected[] Tests =>
     [
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "cdiready_the_apprentice.cue",
             MediaType = MediaType.CDDA,
@@ -231,7 +231,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_audiocd.cue",
             MediaType = MediaType.CDDA,
@@ -354,7 +354,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_cdrom.cue",
             MediaType = MediaType.CDROM,
@@ -391,7 +391,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_cdrw.cue",
             MediaType = MediaType.CDROM,
@@ -422,7 +422,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_dvdram_v2.cue",
             MediaType = MediaType.CDROM,
@@ -453,7 +453,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_dvd-r+dl.cue",
             MediaType = MediaType.CDROM,
@@ -484,7 +484,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_dvdrom.cue",
             MediaType = MediaType.CDROM,
@@ -639,7 +639,7 @@ public class Cuesheet : OpticalMediaImageTest
                 }
             }
         },
-        */ new OpticalImageTestExpected
+        */ new()
         {
             TestFile  = "test_multi_karaoke_sampler.cue",
             MediaType = MediaType.CDROMXA,

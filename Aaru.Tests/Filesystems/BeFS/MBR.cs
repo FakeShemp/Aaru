@@ -42,7 +42,7 @@ public class MBR() : FilesystemTest("befs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "beos_r3.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -52,7 +52,7 @@ public class MBR() : FilesystemTest("befs")
             ClusterSize = 1024,
             VolumeName  = "Big Volume Label Goes Big Brrrr"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "beos_r4.5.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -62,7 +62,7 @@ public class MBR() : FilesystemTest("befs")
             ClusterSize = 1024,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "haiku_hrev51259.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -72,7 +72,7 @@ public class MBR() : FilesystemTest("befs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "haiku_hrev51259_8k.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -82,7 +82,7 @@ public class MBR() : FilesystemTest("befs")
             ClusterSize = 8192,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "syllable_0.6.7.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -92,7 +92,7 @@ public class MBR() : FilesystemTest("befs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "beos_r5.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -102,7 +102,7 @@ public class MBR() : FilesystemTest("befs")
             ClusterSize = 1024,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "beos_r5_2k.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -112,7 +112,7 @@ public class MBR() : FilesystemTest("befs")
             ClusterSize = 2048,
             VolumeName  = "Volume label 2K"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "beos_r5_4k.aif",
             MediaType   = MediaType.GENERIC_HDD,

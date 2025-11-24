@@ -45,7 +45,7 @@ public class Xbox() : ReadOnlyFilesystemTest("fatx")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "fatx.img.lz",
             MediaType    = MediaType.GENERIC_HDD,

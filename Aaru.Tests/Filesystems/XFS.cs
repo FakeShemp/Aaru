@@ -42,7 +42,7 @@ public class XFS() : FilesystemTest("xfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -53,7 +53,7 @@ public class XFS() : FilesystemTest("xfs")
             VolumeName   = "Volume label",
             VolumeSerial = "230075b7-9834-b44e-a257-982a058311d8"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_4.19_xfs_flashdrive.aif",
             MediaType    = MediaType.GENERIC_HDD,

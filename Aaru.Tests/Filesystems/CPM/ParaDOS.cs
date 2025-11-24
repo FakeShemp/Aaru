@@ -42,7 +42,7 @@ public class ParaDOS() : FilesystemTest("cpmfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "40d_filename.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -51,7 +51,7 @@ public class ParaDOS() : FilesystemTest("cpmfs")
             Clusters    = 180,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "40d_files.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -60,7 +60,7 @@ public class ParaDOS() : FilesystemTest("cpmfs")
             Clusters    = 180,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "41_filename.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -70,7 +70,7 @@ public class ParaDOS() : FilesystemTest("cpmfs")
             Clusters    = 170,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "41_files.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -80,7 +80,7 @@ public class ParaDOS() : FilesystemTest("cpmfs")
             Clusters    = 170,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "80_filename.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -90,7 +90,7 @@ public class ParaDOS() : FilesystemTest("cpmfs")
             Clusters    = 170,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "80_files.dsk.lz",
             MediaType   = MediaType.CompactFloppy,

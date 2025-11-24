@@ -101,7 +101,7 @@ public partial class Device
     public bool AdaptecSetErrorThreshold(byte threshold, out ReadOnlySpan<byte> senseBuffer, bool drive1, uint timeout,
                                          out double duration)
     {
-        byte[] buffer = new byte[1];
+        var buffer = new byte[1];
         buffer[0] = threshold;
         Span<byte> cdb = CdbBuffer[..6];
         cdb.Clear();
@@ -167,7 +167,7 @@ public partial class Device
     /// <param name="duration">Duration.</param>
     public bool AdaptecWriteBuffer(byte[] buffer, out ReadOnlySpan<byte> senseBuffer, uint timeout, out double duration)
     {
-        byte[] oneKBuffer = new byte[1024];
+        var oneKBuffer = new byte[1024];
         Array.Copy(buffer, 0, oneKBuffer, 0, buffer.Length < 1024 ? buffer.Length : 1024);
 
         Span<byte> cdb = CdbBuffer[..6];

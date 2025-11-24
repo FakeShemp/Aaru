@@ -39,7 +39,7 @@ public class Acorn : PartitionSchemeTest
 
     public override PartitionTest[] Tests =>
     [
-        new PartitionTest
+        new()
         {
             TestFile = "linux_ics.aif",
             Partitions =

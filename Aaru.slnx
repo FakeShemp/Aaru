@@ -1,78 +1,78 @@
 <Solution>
   <Configurations>
-    <Platform Name="Any CPU" />
-    <Platform Name="x86" />
+    <Platform Name="Any CPU"/>
+    <Platform Name="x86"/>
   </Configurations>
   <Folder Name="/Solution Items/">
-    <File Path=".editorconfig" />
-    <File Path=".gitignore" />
-    <File Path=".globalconfig" />
-    <File Path="Aaru.sln.DotSettings" />
-    <File Path="build.sh" />
-    <File Path="Changelog.md" />
-    <File Path="codealike.json" />
-    <File Path="CONTRIBUTING.md" />
-    <File Path="Directory.Build.props" />
-    <File Path="Directory.Build.targets" />
-    <File Path="Directory.Packages.props" />
-    <File Path="global.json" />
-    <File Path="GOVERNANCE.md" />
-    <File Path="LICENSE" />
-    <File Path="LICENSE.LGPL" />
-    <File Path="LICENSE.MIT" />
-    <File Path="MAINTAINERS.md" />
-    <File Path="NEEDED.md" />
-    <File Path="README.md" />
-    <File Path="release-checklist.md" />
+    <File Path=".editorconfig"/>
+    <File Path=".gitignore"/>
+    <File Path=".globalconfig"/>
+    <File Path="Aaru.sln.DotSettings"/>
+    <File Path="build.sh"/>
+    <File Path="Changelog.md"/>
+    <File Path="codealike.json"/>
+    <File Path="CONTRIBUTING.md"/>
+    <File Path="Directory.Build.props"/>
+    <File Path="Directory.Build.targets"/>
+    <File Path="Directory.Packages.props"/>
+    <File Path="global.json"/>
+    <File Path="GOVERNANCE.md"/>
+    <File Path="LICENSE"/>
+    <File Path="LICENSE.LGPL"/>
+    <File Path="LICENSE.MIT"/>
+    <File Path="MAINTAINERS.md"/>
+    <File Path="NEEDED.md"/>
+    <File Path="README.md"/>
+    <File Path="release-checklist.md"/>
   </Folder>
   <Folder Name="/Solution Items/.github/">
-    <File Path=".github/CODE_OF_CONDUCT.md" />
-    <File Path=".github/FUNDING.yml" />
-    <File Path=".github/PULL_REQUEST_TEMPLATE.md" />
+    <File Path=".github/CODE_OF_CONDUCT.md"/>
+    <File Path=".github/FUNDING.yml"/>
+    <File Path=".github/PULL_REQUEST_TEMPLATE.md"/>
   </Folder>
   <Folder Name="/Solution Items/.github/ISSUE_TEMPLATE/">
-    <File Path=".github/ISSUE_TEMPLATE/bug_report_general.yaml" />
-    <File Path=".github/ISSUE_TEMPLATE/bug_report_image.yaml" />
-    <File Path=".github/ISSUE_TEMPLATE/bug_report_media.yaml" />
-    <File Path=".github/ISSUE_TEMPLATE/feature_request.yaml" />
+    <File Path=".github/ISSUE_TEMPLATE/bug_report_general.yaml"/>
+    <File Path=".github/ISSUE_TEMPLATE/bug_report_image.yaml"/>
+    <File Path=".github/ISSUE_TEMPLATE/bug_report_media.yaml"/>
+    <File Path=".github/ISSUE_TEMPLATE/feature_request.yaml"/>
   </Folder>
   <Folder Name="/Solution Items/.github/workflow/">
-    <File Path=".github/workflows/codeql-analysis.yml" />
-    <File Path=".github/workflows/dotnet.yml" />
+    <File Path=".github/workflows/codeql-analysis.yml"/>
+    <File Path=".github/workflows/dotnet.yml"/>
   </Folder>
-  <Folder Name="/Solution Items/pkg/" />
-  <Folder Name="/Solution Items/pkg/pacman/" />
+  <Folder Name="/Solution Items/pkg/"/>
+  <Folder Name="/Solution Items/pkg/pacman/"/>
   <Folder Name="/Solution Items/pkg/pacman/rolling/">
-    <File Path="pkg/pacman/rolling/PKGBUILD" />
+    <File Path="pkg/pacman/rolling/PKGBUILD"/>
   </Folder>
   <Folder Name="/Solution Items/pkg/pacman/stable/">
-    <File Path="pkg/pacman/stable/PKGBUILD" />
+    <File Path="pkg/pacman/stable/PKGBUILD"/>
   </Folder>
-  <Project Path="Aaru.Archives/Aaru.Archives.csproj" />
-  <Project Path="Aaru.Checksums/Aaru.Checksums.csproj" />
-  <Project Path="Aaru.CommonTypes/Aaru.CommonTypes.csproj" />
-  <Project Path="Aaru.Compression/Aaru.Compression.csproj" />
-  <Project Path="Aaru.Core/Aaru.Core.csproj" />
-  <Project Path="Aaru.Database/Aaru.Database.csproj" />
-  <Project Path="Aaru.Decoders/Aaru.Decoders.csproj" />
-  <Project Path="Aaru.Decryption/Aaru.Decryption.csproj" />
-  <Project Path="Aaru.Devices/Aaru.Devices.csproj" />
-  <Project Path="Aaru.Dto/Aaru.Dto.csproj" />
-  <Project Path="Aaru.Filesystems/Aaru.Filesystems.csproj" />
-  <Project Path="Aaru.Filters/Aaru.Filters.csproj" />
-  <Project Path="Aaru.Generators/Aaru.Generators.csproj" />
-  <Project Path="Aaru.Gui/Aaru.Gui.csproj" />
-  <Project Path="Aaru.Helpers/Aaru.Helpers.csproj" />
-  <Project Path="Aaru.Images/Aaru.Images.csproj" />
-  <Project Path="Aaru.Localization/Aaru.Localization.csproj" />
-  <Project Path="Aaru.Logging/Aaru.Logging.csproj" />
-  <Project Path="Aaru.Partitions/Aaru.Partitions.csproj" />
-  <Project Path="Aaru.Settings/Aaru.Settings.csproj" />
-  <Project Path="Aaru.Tests.Devices/Aaru.Tests.Devices.csproj" />
-  <Project Path="Aaru.Tests/Aaru.Tests.csproj" />
+  <Project Path="Aaru.Archives/Aaru.Archives.csproj"/>
+  <Project Path="Aaru.Checksums/Aaru.Checksums.csproj"/>
+  <Project Path="Aaru.CommonTypes/Aaru.CommonTypes.csproj"/>
+  <Project Path="Aaru.Compression/Aaru.Compression.csproj"/>
+  <Project Path="Aaru.Core/Aaru.Core.csproj"/>
+  <Project Path="Aaru.Database/Aaru.Database.csproj"/>
+  <Project Path="Aaru.Decoders/Aaru.Decoders.csproj"/>
+  <Project Path="Aaru.Decryption/Aaru.Decryption.csproj"/>
+  <Project Path="Aaru.Devices/Aaru.Devices.csproj"/>
+  <Project Path="Aaru.Dto/Aaru.Dto.csproj"/>
+  <Project Path="Aaru.Filesystems/Aaru.Filesystems.csproj"/>
+  <Project Path="Aaru.Filters/Aaru.Filters.csproj"/>
+  <Project Path="Aaru.Generators/Aaru.Generators.csproj"/>
+  <Project Path="Aaru.Gui/Aaru.Gui.csproj"/>
+  <Project Path="Aaru.Helpers/Aaru.Helpers.csproj"/>
+  <Project Path="Aaru.Images/Aaru.Images.csproj"/>
+  <Project Path="Aaru.Localization/Aaru.Localization.csproj"/>
+  <Project Path="Aaru.Logging/Aaru.Logging.csproj"/>
+  <Project Path="Aaru.Partitions/Aaru.Partitions.csproj"/>
+  <Project Path="Aaru.Settings/Aaru.Settings.csproj"/>
+  <Project Path="Aaru.Tests.Devices/Aaru.Tests.Devices.csproj"/>
+  <Project Path="Aaru.Tests/Aaru.Tests.csproj"/>
   <Project Path="Aaru.Tui\Aaru.Tui.csproj" Type="Classic C#">
-    <Configuration Solution="Debug|x86" Project="Debug|Any CPU" />
-    <Configuration Solution="Release|x86" Project="Release|Any CPU" />
+    <Configuration Solution="Debug|x86" Project="Debug|Any CPU"/>
+    <Configuration Solution="Release|x86" Project="Release|Any CPU"/>
   </Project>
-  <Project Path="Aaru/Aaru.csproj" />
+  <Project Path="Aaru/Aaru.csproj"/>
 </Solution>

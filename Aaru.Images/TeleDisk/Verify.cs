@@ -56,8 +56,9 @@ public sealed partial class TeleDisk
         unknownLbas = [];
 
         for(ulong i = sectorAddress; i < sectorAddress + length; i++)
-            if(_sectorsWhereCrcHasFailed.Contains(sectorAddress))
-                failingLbas.Add(sectorAddress);
+        {
+            if(_sectorsWhereCrcHasFailed.Contains(sectorAddress)) failingLbas.Add(sectorAddress);
+        }
 
         return failingLbas.Count <= 0;
     }

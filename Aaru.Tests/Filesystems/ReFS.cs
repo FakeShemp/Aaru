@@ -45,7 +45,7 @@ public class ReFsMbr() : FilesystemTest("refs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "win10.vdi.lz",
             MediaType   = MediaType.GENERIC_HDD,

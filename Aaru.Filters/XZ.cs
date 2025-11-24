@@ -47,6 +47,60 @@ public sealed class XZ : IFilter
     Stream _dataStream;
     Stream _innerStream;
 
+    void GuessSize()
+    {
+        DataForkLength = 0;
+
+        // Seek to footer backwards size field
+        _dataStream.Seek(-8, SeekOrigin.End);
+        var tmp = new byte[4];
+        _dataStream.EnsureRead(tmp, 0, 4);
+        uint backwardSize = (BitConverter.ToUInt32(tmp, 0) + 1) * 4;
+
+        // Seek to first indexed record
+        _dataStream.Seek(-12 - (backwardSize - 2), SeekOrigin.End);
+
+        // Skip compressed size
+        tmp = new byte[backwardSize - 2];
+        _dataStream.EnsureRead(tmp, 0, tmp.Length);
+        ulong number = 0;
+        int   ignore = Decode(tmp, tmp.Length, ref number);
+
+        // Get compressed size
+        _dataStream.Seek(-12 - (backwardSize - 2 - ignore), SeekOrigin.End);
+        tmp = new byte[backwardSize - 2 - ignore];
+        _dataStream.EnsureRead(tmp, 0, tmp.Length);
+        Decode(tmp, tmp.Length, ref number);
+        DataForkLength = (long)number;
+
+        _dataStream.Seek(0, SeekOrigin.Begin);
+    }
+
+    static int Decode(byte[] buf, int sizeMax, ref ulong num)
+    {
+        switch(sizeMax)
+        {
+            case 0:
+                return 0;
+            case > 9:
+                sizeMax = 9;
+
+                break;
+        }
+
+        num = (ulong)(buf[0] & 0x7F);
+        var i = 0;
+
+        while((buf[i++] & 0x80) == 0x80)
+        {
+            if(i >= sizeMax || buf[i] == 0x00) return 0;
+
+            num |= (ulong)(buf[i] & 0x7F) << i * 7;
+        }
+
+        return i;
+    }
+
 #region IFilter Members
 
     /// <inheritdoc />
@@ -215,58 +269,4 @@ public sealed class XZ : IFilter
     public string ParentFolder => System.IO.Path.GetDirectoryName(BasePath);
 
 #endregion
-
-    void GuessSize()
-    {
-        DataForkLength = 0;
-
-        // Seek to footer backwards size field
-        _dataStream.Seek(-8, SeekOrigin.End);
-        var tmp = new byte[4];
-        _dataStream.EnsureRead(tmp, 0, 4);
-        uint backwardSize = (BitConverter.ToUInt32(tmp, 0) + 1) * 4;
-
-        // Seek to first indexed record
-        _dataStream.Seek(-12 - (backwardSize - 2), SeekOrigin.End);
-
-        // Skip compressed size
-        tmp = new byte[backwardSize - 2];
-        _dataStream.EnsureRead(tmp, 0, tmp.Length);
-        ulong number = 0;
-        int   ignore = Decode(tmp, tmp.Length, ref number);
-
-        // Get compressed size
-        _dataStream.Seek(-12 - (backwardSize - 2 - ignore), SeekOrigin.End);
-        tmp = new byte[backwardSize - 2 - ignore];
-        _dataStream.EnsureRead(tmp, 0, tmp.Length);
-        Decode(tmp, tmp.Length, ref number);
-        DataForkLength = (long)number;
-
-        _dataStream.Seek(0, SeekOrigin.Begin);
-    }
-
-    static int Decode(byte[] buf, int sizeMax, ref ulong num)
-    {
-        switch(sizeMax)
-        {
-            case 0:
-                return 0;
-            case > 9:
-                sizeMax = 9;
-
-                break;
-        }
-
-        num = (ulong)(buf[0] & 0x7F);
-        var i = 0;
-
-        while((buf[i++] & 0x80) == 0x80)
-        {
-            if(i >= sizeMax || buf[i] == 0x00) return 0;
-
-            num |= (ulong)(buf[i] & 0x7F) << i * 7;
-        }
-
-        return i;
-    }
 }

@@ -41,7 +41,7 @@ public class DiskCopy42 : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "hfs.dsk.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -49,7 +49,7 @@ public class DiskCopy42 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2762f41d0379b476042fc62891baac84"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf1dd_hfs.img.lz",
             MediaType  = MediaType.AppleSonySS,
@@ -57,7 +57,7 @@ public class DiskCopy42 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "eae3a95671d077deb702b3549a769f56"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf1dd_mfs.img.lz",
             MediaType  = MediaType.AppleSonySS,
@@ -65,7 +65,7 @@ public class DiskCopy42 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "c5d92544c3e78b7f0a9b4baaa9a64eec"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_hfs.img.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -73,7 +73,7 @@ public class DiskCopy42 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "a99744348a70b62b57bce2dec9132ced"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_mfs.img.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -81,7 +81,7 @@ public class DiskCopy42 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "93e71b9ecdb39d3ec9245b4f451856d4"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "modified.dsk.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -89,7 +89,7 @@ public class DiskCopy42 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b748f6df3e60e7169d42ec6fcc857ea4"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "pascal800.dsk.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -97,7 +97,7 @@ public class DiskCopy42 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "dbd0ec8a3126236910709faf923adcf2"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos1440.dsk.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -105,7 +105,7 @@ public class DiskCopy42 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "fcf747bd356b48d442ff74adb8f3516b"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos800.dsk.lz",
             MediaType  = MediaType.AppleSonyDS,

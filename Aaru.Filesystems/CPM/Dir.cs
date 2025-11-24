@@ -41,6 +41,85 @@ namespace Aaru.Filesystems;
 
 public sealed partial class CPM
 {
+    /// <summary>
+    ///     Checks that the given directory blocks follow the CP/M filesystem directory specification Corrupted
+    ///     directories will fail. FAT directories will false positive if all files start with 0x05, and do not use full
+    ///     extensions, for example: "σAFILE.GZ" (using code page 437)
+    /// </summary>
+    /// <returns>False if the directory does not follow the directory specification</returns>
+    /// <param name="directory">Directory blocks.</param>
+    bool CheckDir(byte[] directory)
+    {
+        try
+        {
+            if(directory == null) return false;
+
+            var fileCount = 0;
+
+            for(var off = 0; off < directory.Length; off += 32)
+            {
+                DirectoryEntry entry = Marshal.ByteArrayToStructureLittleEndian<DirectoryEntry>(directory, off, 32);
+
+                if((entry.statusUser & 0x7F) < 0x20)
+                {
+                    for(var f = 0; f < 8; f++)
+                    {
+                        if(entry.filename[f] < 0x20 && entry.filename[f] != 0x00) return false;
+                    }
+
+                    for(var e = 0; e < 3; e++)
+                    {
+                        if(entry.extension[e] < 0x20 && entry.extension[e] != 0x00) return false;
+                    }
+
+                    if(!ArrayHelpers.ArrayIsNullOrWhiteSpace(entry.filename)) fileCount++;
+                }
+                else
+                {
+                    switch(entry.statusUser)
+                    {
+                        case 0x20:
+                        {
+                            for(var f = 0; f < 8; f++)
+                            {
+                                if(entry.filename[f] < 0x20 && entry.filename[f] != 0x00) return false;
+                            }
+
+                            for(var e = 0; e < 3; e++)
+                            {
+                                if(entry.extension[e] < 0x20 && entry.extension[e] != 0x00) return false;
+                            }
+
+                            _label             = Encoding.ASCII.GetString(directory, off + 1, 11).Trim();
+                            _labelCreationDate = new byte[4];
+                            _labelUpdateDate   = new byte[4];
+                            Array.Copy(directory, off + 24, _labelCreationDate, 0, 4);
+                            Array.Copy(directory, off + 28, _labelUpdateDate,   0, 4);
+
+                            break;
+                        }
+                        case 0x21 when directory[off + 1] == 0x00:
+                            _thirdPartyTimestamps = true;
+
+                            break;
+                        case 0x21:
+                            _standardTimestamps |= directory[off + 21] == 0x00 && directory[off + 31] == 0x00;
+
+                            break;
+                    }
+                }
+            }
+
+            return fileCount > 0;
+        }
+        catch(Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+
+            return false;
+        }
+    }
+
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
@@ -93,79 +172,4 @@ public sealed partial class CPM
     }
 
 #endregion
-
-    /// <summary>
-    ///     Checks that the given directory blocks follow the CP/M filesystem directory specification Corrupted
-    ///     directories will fail. FAT directories will false positive if all files start with 0x05, and do not use full
-    ///     extensions, for example: "σAFILE.GZ" (using code page 437)
-    /// </summary>
-    /// <returns>False if the directory does not follow the directory specification</returns>
-    /// <param name="directory">Directory blocks.</param>
-    bool CheckDir(byte[] directory)
-    {
-        try
-        {
-            if(directory == null) return false;
-
-            int fileCount = 0;
-
-            for(int off = 0; off < directory.Length; off += 32)
-            {
-                DirectoryEntry entry = Marshal.ByteArrayToStructureLittleEndian<DirectoryEntry>(directory, off, 32);
-
-                if((entry.statusUser & 0x7F) < 0x20)
-                {
-                    for(int f = 0; f < 8; f++)
-                        if(entry.filename[f] < 0x20 && entry.filename[f] != 0x00)
-                            return false;
-
-                    for(int e = 0; e < 3; e++)
-                        if(entry.extension[e] < 0x20 && entry.extension[e] != 0x00)
-                            return false;
-
-                    if(!ArrayHelpers.ArrayIsNullOrWhiteSpace(entry.filename)) fileCount++;
-                }
-                else
-                {
-                    switch(entry.statusUser)
-                    {
-                        case 0x20:
-                        {
-                            for(int f = 0; f < 8; f++)
-                                if(entry.filename[f] < 0x20 && entry.filename[f] != 0x00)
-                                    return false;
-
-                            for(int e = 0; e < 3; e++)
-                                if(entry.extension[e] < 0x20 && entry.extension[e] != 0x00)
-                                    return false;
-
-                            _label             = Encoding.ASCII.GetString(directory, off + 1, 11).Trim();
-                            _labelCreationDate = new byte[4];
-                            _labelUpdateDate   = new byte[4];
-                            Array.Copy(directory, off + 24, _labelCreationDate, 0, 4);
-                            Array.Copy(directory, off + 28, _labelUpdateDate,   0, 4);
-
-                            break;
-                        }
-                        case 0x21 when directory[off + 1] == 0x00:
-                            _thirdPartyTimestamps = true;
-
-                            break;
-                        case 0x21:
-                            _standardTimestamps |= directory[off + 21] == 0x00 && directory[off + 31] == 0x00;
-
-                            break;
-                    }
-                }
-            }
-
-            return fileCount > 0;
-        }
-        catch(Exception ex)
-        {
-            SentrySdk.CaptureException(ex);
-
-            return false;
-        }
-    }
 }

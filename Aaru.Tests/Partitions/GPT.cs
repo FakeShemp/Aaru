@@ -40,7 +40,7 @@ public class Gpt : PartitionSchemeTest
 
     public override PartitionTest[] Tests =>
     [
-        new PartitionTest
+        new()
         {
             TestFile = "linux.aif",
             Partitions =
@@ -107,7 +107,7 @@ public class Gpt : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "parted.aif",
             Partitions =

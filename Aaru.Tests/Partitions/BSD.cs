@@ -39,7 +39,7 @@ public class Bsd : PartitionSchemeTest
 
     public override PartitionTest[] Tests =>
     [
-        new PartitionTest
+        new()
         {
             TestFile = "parted.aif",
             Partitions =
@@ -73,7 +73,7 @@ public class Bsd : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "netbsd_1.6.aif",
             Partitions =
@@ -134,7 +134,7 @@ public class Bsd : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "netbsd_6.1.5.aif",
             Partitions =
@@ -231,7 +231,7 @@ public class Bsd : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "netbsd_7.1.aif",
             Partitions =

@@ -41,7 +41,7 @@ public class MaxiDisk : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "3DF800.HDK.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -57,7 +57,7 @@ public class MaxiDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "3DS.HDK.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -73,7 +73,7 @@ public class MaxiDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "3ES.HDK.lz",
             MediaType  = MediaType.ECMA_147,
@@ -89,7 +89,7 @@ public class MaxiDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "3HD6.HDK.lz",
             MediaType  = MediaType.DMF,
@@ -105,7 +105,7 @@ public class MaxiDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "3HF168.HDK.lz",
             MediaType  = MediaType.DMF,
@@ -121,7 +121,7 @@ public class MaxiDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "3HF16.HDK.lz",
             MediaType  = MediaType.Unknown,
@@ -137,7 +137,7 @@ public class MaxiDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "3HF172.HDK.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -153,7 +153,7 @@ public class MaxiDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "3HS.HDK.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -169,7 +169,7 @@ public class MaxiDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5DS18.HDK.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -185,7 +185,7 @@ public class MaxiDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5DS1.HDK.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -201,7 +201,7 @@ public class MaxiDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5DS28.HDK.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -217,7 +217,7 @@ public class MaxiDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5DS2.HDK.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -225,7 +225,7 @@ public class MaxiDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "6213897b7dbf263f12abf76901d43862"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5HF144.HDK.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -241,7 +241,7 @@ public class MaxiDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5HS.HDK.lz",
             MediaType  = MediaType.DOS_525_HD,

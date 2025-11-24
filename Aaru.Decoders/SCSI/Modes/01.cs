@@ -42,7 +42,7 @@ public static partial class Modes
 {
     public static byte[] EncodeModePage_01(ModePage_01 page)
     {
-        byte[] pg = new byte[8];
+        var pg = new byte[8];
 
         pg[0] = 0x01;
         pg[1] = 6;

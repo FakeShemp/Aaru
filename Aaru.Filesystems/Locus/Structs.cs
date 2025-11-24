@@ -150,7 +150,7 @@ public sealed partial class Locus
 
         public ino_t   s_isize;   /* size in blocks of i-list */
         public short   s_nfree;   /* number of addresses in s_free */
-        public          Flags   s_flags;   /* filsys flags, defined below */
+        public Flags   s_flags;   /* filsys flags, defined below */
         public ino_t   s_tinode;  /* total free inodes */
         public ino_t   s_lasti;   /* start place for circular search */
         public ino_t   s_nbehind; /* est # free inodes before s_lasti */

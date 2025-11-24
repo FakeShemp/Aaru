@@ -43,7 +43,7 @@ public class Alcohol : OpticalMediaImageTest
 
     public override OpticalImageTestExpected[] Tests =>
     [
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "cdiready_the_apprentice.mds",
             MediaType = MediaType.CDDA,
@@ -230,7 +230,7 @@ public class Alcohol : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_audiocd.mds",
             MediaType = MediaType.CDDA,
@@ -353,7 +353,7 @@ public class Alcohol : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_cdrom.mds",
             MediaType = MediaType.CDROM,
@@ -390,7 +390,7 @@ public class Alcohol : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_cdrw.mds",
             MediaType = MediaType.CDROM,
@@ -421,7 +421,7 @@ public class Alcohol : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_dvdram_v2.mds",
             MediaType = MediaType.DVDROM,
@@ -451,7 +451,7 @@ public class Alcohol : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_dvd-r+dl.mds",
             MediaType = MediaType.DVDROM,
@@ -481,7 +481,7 @@ public class Alcohol : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_dvdrom.mds",
             MediaType = MediaType.DVDROM,
@@ -511,7 +511,7 @@ public class Alcohol : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_enhancedcd.mds",
             MediaType = MediaType.CDPLUS,
@@ -645,7 +645,7 @@ public class Alcohol : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "test_multi_karaoke_sampler.mds",
             MediaType = MediaType.CDROMXA,

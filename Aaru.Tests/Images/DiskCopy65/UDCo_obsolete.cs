@@ -46,7 +46,7 @@ public class UDCo_obsolete : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_UDCo_DOS_1440.dmg",
             MediaType  = MediaType.GENERIC_HDD,
@@ -62,7 +62,7 @@ public class UDCo_obsolete : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_UDCo_DOS_720.dmg",
             MediaType  = MediaType.GENERIC_HDD,
@@ -80,7 +80,7 @@ public class UDCo_obsolete : BlockMediaImageTest
             }
             */
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_UDCo_DOS_DMF.dmg",
             MediaType  = MediaType.GENERIC_HDD,
@@ -98,7 +98,7 @@ public class UDCo_obsolete : BlockMediaImageTest
             }
             */
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_UDCo_HFS_1440.dmg",
             MediaType  = MediaType.GENERIC_HDD,
@@ -106,7 +106,7 @@ public class UDCo_obsolete : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "e307949819edeecd5e855b661a3bfba3"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_UDCo_HFS_800.dmg",
             MediaType  = MediaType.GENERIC_HDD,
@@ -114,7 +114,7 @@ public class UDCo_obsolete : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "c5a5ad78997ddc30f1dc768112f52609"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_UDCo_HFS_DMF.dmg",
             MediaType  = MediaType.GENERIC_HDD,
@@ -122,7 +122,7 @@ public class UDCo_obsolete : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "5fd35f80791be6eaa44195875aa0465a"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_UDCo_PD_1440.dmg",
             MediaType  = MediaType.GENERIC_HDD,
@@ -130,7 +130,7 @@ public class UDCo_obsolete : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1c336199896d1f9bff9b2d5c49b48b63"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_UDCo_PD_800.dmg",
             MediaType  = MediaType.GENERIC_HDD,
@@ -138,7 +138,7 @@ public class UDCo_obsolete : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "d654f84668c671e801f4aa107e0aee92"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_UDCo_PD_DMF.dmg",
             MediaType  = MediaType.GENERIC_HDD,

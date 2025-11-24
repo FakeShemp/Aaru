@@ -43,7 +43,7 @@ public class RDB() : ReadOnlyFilesystemTest("fat16")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "amigaos_3.9.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -56,7 +56,7 @@ public class RDB() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "374D40D1"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "morphos_3.13.aif",
             MediaType    = MediaType.GENERIC_HDD,

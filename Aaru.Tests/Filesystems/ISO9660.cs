@@ -43,7 +43,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_3.5.7_iso9660_apple.aif",
             MediaType     = MediaType.CD,
@@ -55,7 +55,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "DISK_UTILS"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_3.5.7_iso9660_dos_apple.aif",
             MediaType     = MediaType.CD,
@@ -67,7 +67,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "DISK_UTILS"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_3.5.7_iso9660_dos.aif",
             MediaType     = MediaType.CD,
@@ -79,7 +79,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "DISK_UTILS"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_3.5.7_iso9660_hfs.aif",
             MediaType     = MediaType.CD,
@@ -91,7 +91,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "DISK_UTILS"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_3.5.7_iso9660.aif",
             MediaType     = MediaType.CD,
@@ -103,7 +103,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "DISK_UTILS"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_3.5.7_iso9660_joliet_apple.aif",
             MediaType     = MediaType.CD,
@@ -115,7 +115,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "Disk utils"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_3.5.7_iso9660_joliet.aif",
             MediaType     = MediaType.CD,
@@ -127,7 +127,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "Disk utils"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_3.5.7_iso9660_mac_apple.aif",
             MediaType     = MediaType.CD,
@@ -139,7 +139,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "Disk utils"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_3.5.7_iso9660_mac.aif",
             MediaType     = MediaType.CD,
@@ -151,7 +151,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "Disk utils"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_3.5.7_iso9660_ver_apple.aif",
             MediaType     = MediaType.CD,
@@ -163,7 +163,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "DISK_UTILS"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_3.5.7_iso9660_ver_dos_apple.aif",
             MediaType     = MediaType.CD,
@@ -175,7 +175,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "DISK_UTILS"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_3.5.7_iso9660_ver_dos.aif",
             MediaType     = MediaType.CD,
@@ -187,7 +187,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "DISK_UTILS"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_3.5.7_iso9660_ver.aif",
             MediaType     = MediaType.CD,
@@ -199,7 +199,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "DISK_UTILS"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_3.5.7_iso9660_ver_joliet_apple.aif",
             MediaType     = MediaType.CD,
@@ -211,7 +211,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "Disk utils"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_3.5.7_iso9660_ver_joliet.aif",
             MediaType     = MediaType.CD,
@@ -223,7 +223,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "Disk utils"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_3.5.7_iso9660.aif",
             MediaType     = MediaType.CD,
@@ -235,7 +235,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "DISK_UTILS"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_4.1.3_iso9660_hfs.aif",
             MediaType     = MediaType.CD,
@@ -247,7 +247,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "DISK_UTILS"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_4.0.3_iso9660_apple.aif",
             MediaType     = MediaType.CD,
@@ -259,7 +259,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "UNTITLED_CD"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_4.0.3_iso9660_dos_apple.aif",
             MediaType     = MediaType.CD,
@@ -271,7 +271,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "UNTITLED_CD"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_4.0.3_iso9660_dos.aif",
             MediaType     = MediaType.CD,
@@ -283,7 +283,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "UNTITLED_CD"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_4.0.3_iso9660_hfs.aif",
             MediaType     = MediaType.CD,
@@ -295,7 +295,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "Untitled CD"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_4.0.3_iso9660.aif",
             MediaType     = MediaType.CD,
@@ -307,7 +307,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "UNTITLED_CD"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_4.0.3_iso9660_joliet_apple.aif",
             MediaType     = MediaType.CD,
@@ -319,7 +319,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "Untitled CD"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_4.0.3_iso9660_joliet.aif",
             MediaType     = MediaType.CD,
@@ -331,7 +331,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "Untitled CD"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_4.0.3_iso9660_mac_apple.aif",
             MediaType     = MediaType.CD,
@@ -343,7 +343,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "Untitled CD"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "toast_4.0.3_iso9660_mac.aif",
             MediaType     = MediaType.CD,
@@ -355,7 +355,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "APPLE COMPUTER, INC., TYPE: 0002",
             VolumeName    = "Untitled CD"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_apple_rockrige.aif",
             MediaType  = MediaType.CD,
@@ -368,7 +368,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_apple_xa.aif",
             MediaType  = MediaType.CD,
@@ -381,7 +381,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_hybrid.aif",
             MediaType  = MediaType.CD,
@@ -394,7 +394,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_hybrid_nopart.aif",
             MediaType  = MediaType.CD,
@@ -407,7 +407,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_iso9660_level1_dirnest.aif",
             MediaType  = MediaType.CD,
@@ -420,7 +420,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "CDROM"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_iso9660_level1.aif",
             MediaType  = MediaType.CD,
@@ -433,7 +433,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "CDROM"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_iso9660_level2_dirnest.aif",
             MediaType  = MediaType.CD,
@@ -446,7 +446,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "CDROM"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_iso9660_level2.aif",
             MediaType  = MediaType.CD,
@@ -459,7 +459,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "CDROM"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_iso9660_level3_dirnest.aif",
             MediaType  = MediaType.CD,
@@ -472,7 +472,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "CDROM"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_iso9660_level3.aif",
             MediaType  = MediaType.CD,
@@ -485,7 +485,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "CDROM"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_iso9660_level4_dirnest.aif",
             MediaType  = MediaType.CD,
@@ -498,7 +498,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "CDROM"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_iso9660_level4.aif",
             MediaType  = MediaType.CD,
@@ -511,7 +511,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "CDROM"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_iso9660_udf_hybrid_dirnest.aif",
             MediaType  = MediaType.CD,
@@ -524,7 +524,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "CDROM"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_iso9660_udf_hybrid.aif",
             MediaType  = MediaType.CD,
@@ -537,7 +537,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "CDROM"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_joliet.aif",
             MediaType  = MediaType.CD,
@@ -550,7 +550,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "CDROM"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_joliet_level1.aif",
             MediaType  = MediaType.CD,
@@ -563,7 +563,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_joliet_level2.aif",
             MediaType  = MediaType.CD,
@@ -576,7 +576,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_joliet_level3.aif",
             MediaType  = MediaType.CD,
@@ -589,7 +589,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_joliet_violating.aif",
             MediaType  = MediaType.CD,
@@ -602,7 +602,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_level1.aif",
             MediaType  = MediaType.CD,
@@ -615,7 +615,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_level2.aif",
             MediaType  = MediaType.CD,
@@ -628,7 +628,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_level3.aif",
             MediaType  = MediaType.CD,
@@ -641,7 +641,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_level4.aif",
             MediaType  = MediaType.CD,
@@ -654,7 +654,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_rockridge_dirnest.aif",
             MediaType  = MediaType.CD,
@@ -667,7 +667,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "CDROM"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_rockridge.aif",
             MediaType  = MediaType.CD,
@@ -680,7 +680,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "CDROM"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_rockridge_old.aif",
             MediaType  = MediaType.CD,
@@ -693,7 +693,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_rockridge_rational.aif",
             MediaType  = MediaType.CD,
@@ -706,7 +706,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "CDROM"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_udf.aif",
             MediaType  = MediaType.CD,
@@ -719,7 +719,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_violating.aif",
             MediaType  = MediaType.CD,
@@ -732,7 +732,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_xa.aif",
             MediaType  = MediaType.CD,
@@ -745,7 +745,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_zisofs.aif",
             MediaType  = MediaType.CD,
@@ -758,7 +758,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile   = "mkisofs_zisofs_rockridge.aif",
             MediaType  = MediaType.CD,
@@ -771,7 +771,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId    = "LINUX",
             VolumeName  = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "neromax_iso_mode1_apple.aif",
             MediaType     = MediaType.CD,
@@ -783,7 +783,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "",
             VolumeName    = "Root"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "neromax_iso_mode1_joliet.aif",
             MediaType     = MediaType.CD,
@@ -795,7 +795,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "",
             VolumeName    = "Root"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "neromax_iso_mode1_level1.aif",
             MediaType     = MediaType.CD,
@@ -807,7 +807,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "",
             VolumeName    = "Root"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "neromax_iso_mode1_level2.aif",
             MediaType     = MediaType.CD,
@@ -819,7 +819,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "",
             VolumeName    = "Root"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "xorriso_hybrid.aif",
             MediaType     = MediaType.CD,
@@ -831,7 +831,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "",
             VolumeName    = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "xorriso_joliet.aif",
             MediaType     = MediaType.CD,
@@ -843,7 +843,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "",
             VolumeName    = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "xorriso_joliet_utf.aif",
             MediaType     = MediaType.CD,
@@ -855,7 +855,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "",
             VolumeName    = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "xorriso_joliet_violating.aif",
             MediaType     = MediaType.CD,
@@ -867,7 +867,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "",
             VolumeName    = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "xorriso_level1.aif",
             MediaType     = MediaType.CD,
@@ -879,7 +879,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "",
             VolumeName    = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "xorriso_level2.aif",
             MediaType     = MediaType.CD,
@@ -891,7 +891,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "",
             VolumeName    = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "xorriso_level3.aif",
             MediaType     = MediaType.CD,
@@ -903,7 +903,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "",
             VolumeName    = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "xorriso_level4.aif",
             MediaType     = MediaType.CD,
@@ -915,7 +915,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "",
             VolumeName    = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "xorriso_rockridge.aif",
             MediaType     = MediaType.CD,
@@ -927,7 +927,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "",
             VolumeName    = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "xorriso_violating.aif",
             MediaType     = MediaType.CD,
@@ -939,7 +939,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "",
             VolumeName    = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "xorriso_zisofs.aif",
             MediaType     = MediaType.CD,
@@ -951,7 +951,7 @@ public class Iso9660() : ReadOnlyFilesystemTest("iso9660")
             SystemId      = "",
             VolumeName    = "test"
         },
-        new FileSystemTest
+        new()
         {
             TestFile      = "xorriso_zisofs_rockridge.aif",
             MediaType     = MediaType.CD,

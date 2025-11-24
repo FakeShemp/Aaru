@@ -228,8 +228,10 @@ public static partial class Modes
                 if(header.Value.Speed == 0)
                     sb.AppendLine($"\t[green]{Localization.Device_uses_default_speed}[/]");
                 else
+                {
                     sb.AppendFormat($"\t[green]{Localization.Device_uses_speed_0}[/]", $"[teal]{header.Value.Speed}[/]")
                       .AppendLine();
+                }
 
                 if(header.Value.WriteProtected) sb.AppendLine($"\t[red]{Localization.Medium_is_write_protected}[/]");
 

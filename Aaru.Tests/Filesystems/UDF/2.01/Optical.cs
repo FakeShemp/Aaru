@@ -45,7 +45,7 @@ public class Optical : FilesystemTest
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "ecs20.aif",
             MediaType    = MediaType.DVDPR,
@@ -58,7 +58,7 @@ public class Optical : FilesystemTest
             VolumeName   = "VolLabel",
             VolumeSerial = "VolumeSetId"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "ecs20_cdrw.aif",
             MediaType    = MediaType.CDRW,

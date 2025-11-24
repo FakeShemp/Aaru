@@ -136,8 +136,9 @@ public class Mpeg
     public static bool ContainsMpegPackets(byte[] sectorData, uint blocks = 1, uint blockSize = 2048)
     {
         for(uint i = 0; i < blocks; i++)
-            if(IsMpegPacket(sectorData.Skip((int)(i * blockSize))))
-                return true;
+        {
+            if(IsMpegPacket(sectorData.Skip((int)(i * blockSize)))) return true;
+        }
 
         return false;
     }

@@ -42,7 +42,7 @@ public static partial class Modes
 {
     public static byte[] EncodeModePage_01_MMC(ModePage_01_MMC page)
     {
-        byte[] pg = new byte[12];
+        var pg = new byte[12];
 
         pg[0] = 0x01;
         pg[1] = 10;
@@ -126,24 +126,24 @@ public static partial class Modes
               .AppendLine();
         }
 
-        string AllUsed              = $"\t[green]{Localization.All_available_recovery_procedures_will_be_used}[/]\n";
-        string CIRCRetriesUsed      = $"\t[olive]{Localization.Only_retries_and_CIRC_are_used}[/]\n";
-        string RetriesUsed          = $"\t[olive]{Localization.Only_retries_are_used}[/]\n";
-        string RecoveredNotReported = $"\t[red]{Localization.Recovered_errors_will_not_be_reported}[/]\n";
-        string RecoveredReported    = $"\t[green]{Localization.Recovered_errors_will_be_reported}[/]\n";
+        var AllUsed              = $"\t[green]{Localization.All_available_recovery_procedures_will_be_used}[/]\n";
+        var CIRCRetriesUsed      = $"\t[olive]{Localization.Only_retries_and_CIRC_are_used}[/]\n";
+        var RetriesUsed          = $"\t[olive]{Localization.Only_retries_are_used}[/]\n";
+        var RecoveredNotReported = $"\t[red]{Localization.Recovered_errors_will_not_be_reported}[/]\n";
+        var RecoveredReported    = $"\t[green]{Localization.Recovered_errors_will_be_reported}[/]\n";
 
-        string RecoveredAbort =
+        var RecoveredAbort =
             $"\t[red]{Localization.Recovered_errors_will_be_reported_and_aborted_with_CHECK_CONDITION}[/]\n";
 
-        string UnrecECCAbort     = $"\t[red]{Localization.Unrecovered_ECC_errors_will_return_CHECK_CONDITION}[/]";
-        string UnrecCIRCAbort    = $"\t[red]{Localization.Unrecovered_CIRC_errors_will_return_CHECK_CONDITION}[/]";
-        string UnrecECCNotAbort  = $"\t[red]{Localization.Unrecovered_ECC_errors_will_not_abort_the_transfer}[/]";
-        string UnrecCIRCNotAbort = $"\t[red]{Localization.Unrecovered_CIRC_errors_will_not_abort_the_transfer}[/]";
+        var UnrecECCAbort     = $"\t[red]{Localization.Unrecovered_ECC_errors_will_return_CHECK_CONDITION}[/]";
+        var UnrecCIRCAbort    = $"\t[red]{Localization.Unrecovered_CIRC_errors_will_return_CHECK_CONDITION}[/]";
+        var UnrecECCNotAbort  = $"\t[red]{Localization.Unrecovered_ECC_errors_will_not_abort_the_transfer}[/]";
+        var UnrecCIRCNotAbort = $"\t[red]{Localization.Unrecovered_CIRC_errors_will_not_abort_the_transfer}[/]";
 
-        string UnrecECCAbortData =
+        var UnrecECCAbortData =
             $"\t[red]{Localization.Unrecovered_ECC_errors_will_return_CHECK_CONDITION_and_the_uncorrected_data}[/]";
 
-        string UnrecCIRCAbortData =
+        var UnrecCIRCAbortData =
             $"\t[red]{Localization.Unrecovered_CIRC_errors_will_return_CHECK_CONDITION_and_the_uncorrected_data}[/]";
 
         switch(page.Parameter)

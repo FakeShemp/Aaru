@@ -43,7 +43,7 @@ public sealed partial class HdCopy
 {
     static bool TryReadHeader(Stream stream, ref FileHeader fhdr, ref long dataStartOffset)
     {
-        int numTracks = 82;
+        var numTracks = 82;
 
         stream.Seek(0, SeekOrigin.Begin);
 
@@ -81,7 +81,7 @@ public sealed partial class HdCopy
         if(fheader.trackMap[0] != 1 || fheader.trackMap[1] != 1) return false;
 
         // all other tracks must be either present (=1) or absent (=0)
-        for(int i = 0; i < 2 * numTracks; i++)
+        for(var i = 0; i < 2 * numTracks; i++)
         {
             if(fheader.trackMap[i] > 1) return false;
         }
@@ -94,8 +94,8 @@ public sealed partial class HdCopy
 
     ErrorNumber ReadTrackIntoCache(Stream stream, int trackNum)
     {
-        byte[] trackData = new byte[_imageInfo.SectorSize * _imageInfo.SectorsPerTrack];
-        byte[] blkHeader = new byte[3];
+        var trackData = new byte[_imageInfo.SectorSize * _imageInfo.SectorsPerTrack];
+        var blkHeader = new byte[3];
 
         // check that track is present
         if(_trackOffset[trackNum] == -1)
@@ -109,15 +109,15 @@ public sealed partial class HdCopy
 
         // read the compressed track data
         stream.EnsureRead(blkHeader, 0, 3);
-        short compressedLength = (short)(BitConverter.ToInt16(blkHeader, 0) - 1);
-        byte  escapeByte       = blkHeader[2];
+        var  compressedLength = (short)(BitConverter.ToInt16(blkHeader, 0) - 1);
+        byte escapeByte       = blkHeader[2];
 
-        byte[] cBuffer = new byte[compressedLength];
+        var cBuffer = new byte[compressedLength];
         stream.EnsureRead(cBuffer, 0, compressedLength);
 
         // decompress the data
-        int sIndex = 0; // source buffer position
-        int dIndex = 0; // destination buffer position
+        var sIndex = 0; // source buffer position
+        var dIndex = 0; // destination buffer position
 
         while(sIndex < compressedLength)
         {
@@ -128,7 +128,7 @@ public sealed partial class HdCopy
                 byte fillCount = cBuffer[sIndex++];
 
                 // fill destination buffer
-                for(int i = 0; i < fillCount; i++) trackData[dIndex++] = fillByte;
+                for(var i = 0; i < fillCount; i++) trackData[dIndex++] = fillByte;
             }
             else
                 trackData[dIndex++] = cBuffer[sIndex++];

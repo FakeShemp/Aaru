@@ -67,9 +67,9 @@ sealed partial class Reader
         if(Blocks == 0) return true;
 
         ReadOnlySpan<byte> senseBuf;
-        int                tries      = 0;
+        var                tries      = 0;
         uint               lba        = 0;
-        bool               mediumScan = false;
+        var                mediumScan = false;
 
         if(_dev.ScsiType == PeripheralDeviceTypes.OpticalDevice)
         {
@@ -662,7 +662,7 @@ sealed partial class Reader
                     return true;
                 case false:
                 {
-                    byte[] temp = new byte[8];
+                    var temp = new byte[8];
 
                     Array.Copy(cmdBuf, 0, temp, 0, 8);
                     Array.Reverse(temp);
@@ -928,7 +928,7 @@ sealed partial class Reader
 
     bool ScsiSeek(ulong block, out double duration)
     {
-        bool sense = true;
+        var sense = true;
         duration = 0;
 
         if(_seek6)

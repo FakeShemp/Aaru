@@ -44,7 +44,7 @@ public class Raw : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "CDROM.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -52,7 +52,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "69e3234920e472b24365060241934ca6"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RW_HFS_1440.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -60,7 +60,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "3160038ca028ccf52ad7863790072145"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RW_HFS_800.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -68,7 +68,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "5e255c4bc0f6a26ecd27845b37e65aaa"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RW_HFS_DMF.lz",
             MediaType  = MediaType.DMF,
@@ -76,7 +76,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "652dc979c177f2d8e846587158b38478"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DOS1440.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -92,7 +92,7 @@ public class Raw : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DOS720.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -108,7 +108,7 @@ public class Raw : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DOSDMF.lz",
             MediaType  = MediaType.DMF,
@@ -124,7 +124,7 @@ public class Raw : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "PD1440.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -132,7 +132,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "7975e8cf7579a6848d6fb4e546d1f682"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "PD800.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -140,7 +140,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "a72da7aedadbe194c22a3d71c62e4766"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "PDDMF.lz",
             MediaType  = MediaType.DMF,

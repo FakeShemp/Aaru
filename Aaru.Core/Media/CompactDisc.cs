@@ -131,9 +131,8 @@ public static class CompactDisc
                 if(deSub[p] != 0 && deSub[p] != 255) pOk = false;
 
                 for(var w = 0; w < 8; w++)
-                {
-                    if((deSub[p] >> w & 1) > 0) pWeight++;
-                }
+                    if((deSub[p] >> w & 1) > 0)
+                        pWeight++;
             }
 
             // This seems to be a somewhat common pattern
@@ -177,13 +176,11 @@ public static class CompactDisc
             if(!pOk && fixSubchannel)
             {
                 if(pWeight >= 48)
-                {
-                    for(int p = subPos; p < subPos + 12; p++) deSub[p] = 255;
-                }
+                    for(int p = subPos; p < subPos + 12; p++)
+                        deSub[p] = 255;
                 else
-                {
-                    for(int p = subPos; p < subPos + 12; p++) deSub[p] = 0;
-                }
+                    for(int p = subPos; p < subPos + 12; p++)
+                        deSub[p] = 0;
 
                 pOk    = true;
                 @fixed = true;

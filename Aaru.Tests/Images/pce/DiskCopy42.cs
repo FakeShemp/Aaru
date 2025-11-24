@@ -43,7 +43,7 @@ public class DiskCopy42 : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf1dd_gcr.dc42.lz",
             MediaType  = MediaType.AppleSonySS,
@@ -59,7 +59,7 @@ public class DiskCopy42 : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd.dc42.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -75,7 +75,7 @@ public class DiskCopy42 : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_gcr.dc42.lz",
             MediaType  = MediaType.AppleSonyDS,

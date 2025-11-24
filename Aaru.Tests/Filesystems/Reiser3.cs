@@ -43,7 +43,7 @@ public class Reiser3() : FilesystemTest("reiserfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.2.20_r3.5.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -52,7 +52,7 @@ public class Reiser3() : FilesystemTest("reiserfs")
             Clusters    = 32752,
             ClusterSize = 4096
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.4.18_r3.5.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -61,7 +61,7 @@ public class Reiser3() : FilesystemTest("reiserfs")
             Clusters    = 32752,
             ClusterSize = 4096
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.4.18_r3.6.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -72,7 +72,7 @@ public class Reiser3() : FilesystemTest("reiserfs")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "43c72111-6512-e747-b626-63704e65352a"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_4.19_reiser_3.5_flashdrive.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -81,7 +81,7 @@ public class Reiser3() : FilesystemTest("reiserfs")
             Clusters    = 127744,
             ClusterSize = 4096
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_4.19_reiser_3.6_flashdrive.aif",
             MediaType    = MediaType.GENERIC_HDD,

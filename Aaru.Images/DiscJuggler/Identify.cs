@@ -48,15 +48,15 @@ public sealed partial class DiscJuggler
         _imageStream = imageFilter.GetDataForkStream();
 
         _imageStream.Seek(-4, SeekOrigin.End);
-        byte[] dscLenB = new byte[4];
+        var dscLenB = new byte[4];
         _imageStream.EnsureRead(dscLenB, 0, 4);
-        int dscLen = BitConverter.ToInt32(dscLenB, 0);
+        var dscLen = BitConverter.ToInt32(dscLenB, 0);
 
         AaruLogging.Debug(MODULE_NAME, "dscLen = {0}", dscLen);
 
         if(dscLen >= _imageStream.Length) return false;
 
-        byte[] descriptor = new byte[dscLen];
+        var descriptor = new byte[dscLen];
         _imageStream.Seek(-dscLen, SeekOrigin.End);
         _imageStream.EnsureRead(descriptor, 0, dscLen);
 

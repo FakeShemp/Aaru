@@ -41,7 +41,7 @@ public class V1 : OpticalMediaImageTest
 
     public override OpticalImageTestExpected[] Tests =>
     [
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "cdiready_the_apprentice.aif",
             MediaType     = MediaType.CDIREADY,
@@ -249,7 +249,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_audiocd.aif",
             MediaType     = MediaType.CDDA,
@@ -374,7 +374,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdr.aif",
             MediaType     = MediaType.CDR,
@@ -413,7 +413,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdrom.aif",
             MediaType     = MediaType.CDROM,
@@ -452,7 +452,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdrw_2x.aif",
             MediaType     = MediaType.CDRW,
@@ -485,7 +485,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile   = "report_dvd+r.aif",
             MediaType  = MediaType.DVDPR,
@@ -516,7 +516,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile   = "report_dvd-r.aif",
             MediaType  = MediaType.DVDR,
@@ -547,7 +547,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile   = "report_dvd-ram_v1.aif",
             MediaType  = MediaType.DVDRAM,
@@ -578,7 +578,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile   = "report_dvd-ram_v2.aif",
             MediaType  = MediaType.DVDRAM,
@@ -609,7 +609,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile   = "report_dvd+r_dl.aif",
             MediaType  = MediaType.DVDROM,
@@ -640,7 +640,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile   = "report_dvd-rom.aif",
             MediaType  = MediaType.DVDROM,
@@ -671,7 +671,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile   = "report_dvd+rw.aif",
             MediaType  = MediaType.DVDPRW,
@@ -702,7 +702,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile   = "report_dvd-rw.aif",
             MediaType  = MediaType.DVDRWDL,
@@ -733,7 +733,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_enhancedcd.aif",
             MediaType     = MediaType.CD,
@@ -869,7 +869,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "test_audiocd_cdtext.aif",
             MediaType     = MediaType.CDR,
@@ -970,7 +970,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "test_audiocd_multiple_indexes.aif",
             MediaType     = MediaType.CDR,
@@ -1023,7 +1023,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "test_cdr_incd_finalized.aif",
             MediaType     = MediaType.CDR,
@@ -1063,7 +1063,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "test_enhancedcd.aif",
             MediaType     = MediaType.CDR,
@@ -1111,7 +1111,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "test_multi_karaoke_sampler.aif",
             MediaType     = MediaType.CD,
@@ -1263,7 +1263,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "test_multisession.aif",
             MediaType     = MediaType.CDR,
@@ -1384,7 +1384,7 @@ public class V1 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "test_videocd.aif",
             MediaType     = MediaType.CDR,

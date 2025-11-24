@@ -39,7 +39,7 @@ public class Xbox : PartitionSchemeTest
 
     public override PartitionTest[] Tests =>
     [
-        new PartitionTest
+        new()
         {
             TestFile = "microsoft256mb.aif",
             Partitions =

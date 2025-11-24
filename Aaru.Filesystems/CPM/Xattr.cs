@@ -52,9 +52,8 @@ public sealed partial class CPM
         if(!_fileCache.ContainsKey(pathElements[0].ToUpperInvariant())) return ErrorNumber.NoSuchFile;
 
         if(string.Compare(xattr, "com.caldera.cpm.password", StringComparison.InvariantCulture) == 0)
-        {
-            if(!_passwordCache.TryGetValue(pathElements[0].ToUpperInvariant(), out buf)) return ErrorNumber.NoError;
-        }
+            if(!_passwordCache.TryGetValue(pathElements[0].ToUpperInvariant(), out buf))
+                return ErrorNumber.NoError;
 
         if(string.Compare(xattr, "com.caldera.cpm.password.text", StringComparison.InvariantCulture) != 0)
             return ErrorNumber.NoSuchExtendedAttribute;

@@ -42,7 +42,7 @@ public class CopyTape : TapeMediaImageTest
 
     public override TapeImageTestExpected[] Tests =>
     [
-        new TapeImageTestExpected
+        new()
         {
             TestFile   = "Nonstop-UX System V Release 4 B32 (Boot Tape).cptp.lz",
             MediaType  = MediaType.UnknownTape,
@@ -69,7 +69,7 @@ public class CopyTape : TapeMediaImageTest
                 }
             ]
         },
-        new TapeImageTestExpected
+        new()
         {
             TestFile   = "Nonstop-UX System V Release 4 B32 (Integrity SX25 VME V5.0+).cptp.lz",
             MediaType  = MediaType.UnknownTape,
@@ -96,7 +96,7 @@ public class CopyTape : TapeMediaImageTest
                 }
             ]
         },
-        new TapeImageTestExpected
+        new()
         {
             TestFile   = "Nonstop-UX System V Release 4 B32 (Online Software Upgrade).cptp.lz",
             MediaType  = MediaType.UnknownTape,
@@ -123,7 +123,7 @@ public class CopyTape : TapeMediaImageTest
                 }
             ]
         },
-        new TapeImageTestExpected
+        new()
         {
             TestFile   = "Nonstop-UX System V Release 4 B32 (Operating System).cptp.lz",
             MediaType  = MediaType.UnknownTape,
@@ -150,7 +150,7 @@ public class CopyTape : TapeMediaImageTest
                 }
             ]
         },
-        new TapeImageTestExpected
+        new()
         {
             TestFile   = "Nonstop-UX System V Release 4 B32 (Optional Packages).cptp.lz",
             MediaType  = MediaType.UnknownTape,
@@ -177,7 +177,7 @@ public class CopyTape : TapeMediaImageTest
                 }
             ]
         },
-        new TapeImageTestExpected
+        new()
         {
             TestFile   = "Nonstop-UX System V Release 4 B32 (OSF-Motif 1.2.4).cptp.lz",
             MediaType  = MediaType.UnknownTape,
@@ -204,7 +204,7 @@ public class CopyTape : TapeMediaImageTest
                 }
             ]
         },
-        new TapeImageTestExpected
+        new()
         {
             TestFile   = "Nonstop-UX System V Release 4 B32 (Reliable Ethernet).cptp.lz",
             MediaType  = MediaType.UnknownTape,
@@ -231,7 +231,7 @@ public class CopyTape : TapeMediaImageTest
                 }
             ]
         },
-        new TapeImageTestExpected
+        new()
         {
             TestFile   = "Nonstop-UX System V Release 4 B32 (Required Packages).cptp.lz",
             MediaType  = MediaType.UnknownTape,
@@ -258,7 +258,7 @@ public class CopyTape : TapeMediaImageTest
                 }
             ]
         },
-        new TapeImageTestExpected
+        new()
         {
             TestFile   = "OpenWindows.3.0.exabyte.cptp.lz",
             MediaType  = MediaType.UnknownTape,
@@ -313,7 +313,7 @@ public class CopyTape : TapeMediaImageTest
                 }
             ]
         },
-        new TapeImageTestExpected
+        new()
         {
             TestFile   = "OpenWindows.3.0.Q150.cptp.lz",
             MediaType  = MediaType.UnknownTape,
@@ -368,7 +368,7 @@ public class CopyTape : TapeMediaImageTest
                 }
             ]
         },
-        new TapeImageTestExpected
+        new()
         {
             TestFile   = "OS.MP.4.1C.exabyte.cptp.lz",
             MediaType  = MediaType.UnknownTape,
@@ -619,7 +619,7 @@ public class CopyTape : TapeMediaImageTest
                 }
             ]
         },
-        new TapeImageTestExpected
+        new()
         {
             TestFile   = "X.3.0.exabyte.cptp.lz",
             MediaType  = MediaType.UnknownTape,
@@ -681,7 +681,7 @@ public class CopyTape : TapeMediaImageTest
                 }
             ]
         },
-        new TapeImageTestExpected
+        new()
         {
             TestFile   = "X.3.Q150.cptp.lz",
             MediaType  = MediaType.UnknownTape,

@@ -46,7 +46,7 @@ public class QED : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "qed.qed.lz",
             MediaType  = MediaType.GENERIC_HDD,

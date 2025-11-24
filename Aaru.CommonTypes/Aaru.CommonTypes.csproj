@@ -34,7 +34,7 @@
     <PackageReference Include="Macross.Json.Extensions"/>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
-    <PackageReference Include="Sentry" />
+    <PackageReference Include="Sentry"/>
     <PackageReference Include="System.ComponentModel.Annotations"/>
     <PackageReference Include="System.Security.Principal.Windows"/>
     <PackageReference Include="System.ValueTuple"/>

@@ -44,7 +44,7 @@ public class CDRWin : OpticalMediaImageTest
 
     public override OpticalImageTestExpected[] Tests =>
     [
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "pcengine.cue",
             MediaType = MediaType.CD,
@@ -203,7 +203,7 @@ public class CDRWin : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "pcfx.cue",
             MediaType = MediaType.CD,
@@ -290,7 +290,7 @@ public class CDRWin : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_audiocd.cue",
             MediaType = MediaType.CDDA,
@@ -413,7 +413,7 @@ public class CDRWin : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_cdr.cue",
             MediaType = MediaType.CDROM,
@@ -450,7 +450,7 @@ public class CDRWin : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_cdrw.cue",
             MediaType = MediaType.CDROM,
@@ -481,7 +481,7 @@ public class CDRWin : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "test_audiocd_cdtext.cue",
             MediaType = MediaType.CDDA,
@@ -580,7 +580,7 @@ public class CDRWin : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "test_incd_udf200_finalized.cue",
             MediaType = MediaType.CDROMXA,
@@ -618,7 +618,7 @@ public class CDRWin : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "test_multi_karaoke_sampler.cue",
             MediaType = MediaType.CDROMXA,
@@ -768,7 +768,7 @@ public class CDRWin : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "test_multiple_indexes.cue",
             MediaType = MediaType.CDDA,
@@ -819,7 +819,7 @@ public class CDRWin : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "test_videocd.cue",
             MediaType = MediaType.CDROMXA,
@@ -857,7 +857,7 @@ public class CDRWin : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "cdg_report_audiocd.cue",
             MediaType     = MediaType.CDG,
@@ -981,7 +981,7 @@ public class CDRWin : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "cdg_test_multi_karaoke_sampler.cue",
             MediaType     = MediaType.CDG,
@@ -1132,7 +1132,7 @@ public class CDRWin : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "cooked_cdg_test_multi_karaoke_sampler.cue",
             MediaType     = MediaType.CDG,
@@ -1283,7 +1283,7 @@ public class CDRWin : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "cooked_report_cdrom.cue",
             MediaType = MediaType.CDROM,
@@ -1320,7 +1320,7 @@ public class CDRWin : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "cooked_report_cdrw.cue",
             MediaType = MediaType.CDROM,
@@ -1351,7 +1351,7 @@ public class CDRWin : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "cooked_test_multi_karaoke_sampler.cue",
             MediaType = MediaType.CDROMXA,

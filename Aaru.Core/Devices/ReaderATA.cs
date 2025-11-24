@@ -106,7 +106,7 @@ sealed partial class Reader
         if(Blocks == 0) GetDeviceBlocks();
 
         bool                   sense;
-        int                    tries  = 0;
+        var                    tries  = 0;
         uint                   lba    = 0;
         ushort                 cyl    = 0;
         byte                   head   = 0;
@@ -264,7 +264,7 @@ sealed partial class Reader
             return false;
         }
 
-        bool error = true;
+        var error = true;
 
         while(IsLba)
         {
@@ -325,7 +325,7 @@ sealed partial class Reader
 
     bool AtaReadBlocks(out byte[] buffer, ulong block, uint count, out double duration, out bool recoveredError)
     {
-        bool                   error = true;
+        var                    error = true;
         bool                   sense;
         AtaErrorRegistersLba28 errorLba;
         AtaErrorRegistersLba48 errorLba48;
@@ -403,7 +403,7 @@ sealed partial class Reader
     bool AtaReadChs(out byte[] buffer, ushort cylinder, byte head, byte sector, out double duration,
                     out bool   recoveredError)
     {
-        bool                 error = true;
+        var                  error = true;
         bool                 sense;
         AtaErrorRegistersChs errorChs;
         byte                 status = 0, errorByte = 0;

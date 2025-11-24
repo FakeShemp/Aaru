@@ -45,7 +45,7 @@ public class Whole : FilesystemTest
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -58,7 +58,7 @@ public class Whole : FilesystemTest
             VolumeName   = "Volume label",
             VolumeSerial = "595c5d0e4f338552LinuxUDF"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.11.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -71,7 +71,7 @@ public class Whole : FilesystemTest
             VolumeName   = "Volume label",
             VolumeSerial = "709E84A1 (Mac OS X newfs_udf) UDF Volume Set"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "netbsd_6.1.5.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -84,7 +84,7 @@ public class Whole : FilesystemTest
             VolumeName   = "anonymous",
             VolumeSerial = "672fe9a0114cdddb"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "netbsd_7.1.aif",
             MediaType    = MediaType.GENERIC_HDD,

@@ -45,7 +45,7 @@ public class NeXT_Floppy : FilesystemTest
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "nextstep_3.3_mf2dd.img.lz",
             MediaType   = MediaType.DOS_35_DS_DD_9,
@@ -55,7 +55,7 @@ public class NeXT_Floppy : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "nextstep_3.3_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -65,7 +65,7 @@ public class NeXT_Floppy : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "openstep_4.0_mf2dd.img.lz",
             MediaType   = MediaType.DOS_35_DS_DD_9,
@@ -75,7 +75,7 @@ public class NeXT_Floppy : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "openstep_4.0_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -85,7 +85,7 @@ public class NeXT_Floppy : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "openstep_4.2_mf2dd.img.lz",
             MediaType   = MediaType.DOS_35_DS_DD_9,
@@ -95,7 +95,7 @@ public class NeXT_Floppy : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "openstep_4.2_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -105,7 +105,7 @@ public class NeXT_Floppy : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "rhapsody_dr1_mf2dd.img.lz",
             MediaType   = MediaType.DOS_35_DS_DD_9,
@@ -115,7 +115,7 @@ public class NeXT_Floppy : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "rhapsody_dr1_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -125,7 +125,7 @@ public class NeXT_Floppy : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "rhapsody_dr2_mf2dd.img.lz",
             MediaType   = MediaType.DOS_35_DS_DD_9,
@@ -135,7 +135,7 @@ public class NeXT_Floppy : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "rhapsody_dr2_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,

@@ -44,7 +44,7 @@ public class Whole() : FilesystemTest("bfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "amix_mf2dd.adf.lz",
             MediaType   = MediaType.CBM_AMIGA_35_DD,
@@ -54,7 +54,7 @@ public class Whole() : FilesystemTest("bfs")
             ClusterSize = 512,
             VolumeName  = "Label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "att_unix_svr4v2.1_dsdd.img.lz",
             MediaType   = MediaType.DOS_525_DS_DD_9,
@@ -63,7 +63,7 @@ public class Whole() : FilesystemTest("bfs")
             Clusters    = 720,
             ClusterSize = 512
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "att_unix_svr4v2.1_dshd.img.lz",
             MediaType   = MediaType.DOS_525_HD,
@@ -72,7 +72,7 @@ public class Whole() : FilesystemTest("bfs")
             Clusters    = 2400,
             ClusterSize = 512
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "att_unix_svr4v2.1_mf2dd.img.lz",
             MediaType   = MediaType.DOS_35_DS_DD_9,
@@ -81,7 +81,7 @@ public class Whole() : FilesystemTest("bfs")
             Clusters    = 1440,
             ClusterSize = 512
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "att_unix_svr4v2.1_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,

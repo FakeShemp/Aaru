@@ -93,7 +93,7 @@ public partial class Device
 
         if(sense) return true;
 
-        byte pagesLength = (byte)(buffer[4] + 5);
+        var pagesLength = (byte)(buffer[4] + 5);
 
         cdb[0] = (byte)ScsiCommands.Inquiry;
         cdb[1] = 0;
@@ -177,7 +177,7 @@ public partial class Device
         // This is because INQ was returned instead of EVPD
         if(buffer[1] != page) return true;
 
-        byte pagesLength = (byte)(buffer[3] + 4);
+        var pagesLength = (byte)(buffer[3] + 4);
 
         cdb[0] = (byte)ScsiCommands.Inquiry;
         cdb[1] = 1;
@@ -281,7 +281,7 @@ public partial class Device
 
         if(sense) return true;
 
-        byte modeLength = (byte)(buffer[0] + 1);
+        var modeLength = (byte)(buffer[0] + 1);
         if(modeLength % 2 != 0) modeLength++;
 
         buffer      = new byte[modeLength];
@@ -363,7 +363,7 @@ public partial class Device
 
         if(sense) return true;
 
-        ushort modeLength = (ushort)((buffer[0] << 8) + buffer[1] + 2);
+        var modeLength = (ushort)((buffer[0] << 8) + buffer[1] + 2);
         if(modeLength % 2 != 0) modeLength++;
 
         buffer      = new byte[modeLength];
@@ -568,7 +568,7 @@ public partial class Device
 
         if(sense) return true;
 
-        uint strctLength = (uint)((buffer[0] << 24) + (buffer[1] << 16) + (buffer[2] << 8) + buffer[3] + 4);
+        var strctLength = (uint)((buffer[0] << 24) + (buffer[1] << 16) + (buffer[2] << 8) + buffer[3] + 4);
         buffer      = new byte[strctLength];
         cdb[6]      = (byte)((buffer.Length & 0xFF000000) >> 24);
         cdb[7]      = (byte)((buffer.Length & 0xFF0000)   >> 16);

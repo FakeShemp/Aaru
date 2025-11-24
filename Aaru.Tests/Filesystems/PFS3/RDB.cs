@@ -45,7 +45,7 @@ public class RDB() : FilesystemTest("pfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "uae.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -55,7 +55,7 @@ public class RDB() : FilesystemTest("pfs")
             ClusterSize = 512,
             VolumeName  = "PFS"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "morphos_3.13.aif",
             MediaType   = MediaType.GENERIC_HDD,

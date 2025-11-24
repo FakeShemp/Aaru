@@ -42,7 +42,7 @@ public class Bondwell() : FilesystemTest("cpmfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "filename.imd",
             MediaType   = MediaType.Unknown,
@@ -52,7 +52,7 @@ public class Bondwell() : FilesystemTest("cpmfs")
             Clusters    = 174,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "files.imd",
             MediaType   = MediaType.Unknown,

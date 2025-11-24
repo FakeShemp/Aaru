@@ -42,7 +42,7 @@ public class V3 : OpticalMediaImageTest
 
     public override OpticalImageTestExpected[] Tests =>
     [
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "gigarec.chd",
             MediaType     = MediaType.CDROM,
@@ -63,7 +63,7 @@ public class V3 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile   = "hdd.chd",
             MediaType  = MediaType.GENERIC_HDD,
@@ -71,7 +71,7 @@ public class V3 : OpticalMediaImageTest
             SectorSize = 512,
             Md5        = "43476343f53a177dd57b68dd769917aa"
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "pcengine.chd",
             MediaType     = MediaType.CDROM,
@@ -212,7 +212,7 @@ public class V3 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "pcfx.chd",
             MediaType     = MediaType.CDROM,
@@ -289,7 +289,7 @@ public class V3 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_audiocd.chd",
             MediaType     = MediaType.CDROM,
@@ -414,7 +414,7 @@ public class V3 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdr.chd",
             MediaType     = MediaType.CDROM,
@@ -435,7 +435,7 @@ public class V3 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdrom.chd",
             MediaType     = MediaType.CDROM,
@@ -456,7 +456,7 @@ public class V3 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdrw.chd",
             MediaType     = MediaType.CDROM,
@@ -477,7 +477,7 @@ public class V3 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "test_enhancedcd.chd",
             MediaType     = MediaType.CDROM,
@@ -506,7 +506,7 @@ public class V3 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "test_multi_karaoke_sample.chd",
             MediaType     = MediaType.CDROM,
@@ -647,7 +647,7 @@ public class V3 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "test_multisession.chd",
             MediaType     = MediaType.CDROM,
@@ -668,7 +668,7 @@ public class V3 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "test_videocd.chd",
             MediaType     = MediaType.CDROM,

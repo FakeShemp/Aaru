@@ -42,7 +42,7 @@ public class Raw : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc106b_fixed_150mb_fat16.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -50,7 +50,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "56eb1b7a4ea849e93de35f48b8912cd1"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc213_fixed_50mb_fat16.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -58,7 +58,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "f05abd9ff39f6b7e39834724b52a49e1"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc303_fixed_30mb_fat16.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -66,7 +66,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "46d5f39b1169a2721863b71e2944e3c2"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc30_fixed_30mb_fat16.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -74,7 +74,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "86b522d83ab057fa76eab0941357e1f6"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc4_fixed_130mb_fat16.lz",
             MediaType  = MediaType.GENERIC_HDD,

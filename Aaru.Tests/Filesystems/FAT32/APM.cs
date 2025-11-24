@@ -43,7 +43,7 @@ public class APM() : ReadOnlyFilesystemTest("fat32")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_6.0.2.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -56,7 +56,7 @@ public class APM() : ReadOnlyFilesystemTest("fat32")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "7C930CFA"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_7.0.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -69,7 +69,7 @@ public class APM() : ReadOnlyFilesystemTest("fat32")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "44681B0D"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_8.0.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -82,7 +82,7 @@ public class APM() : ReadOnlyFilesystemTest("fat32")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "72D719E8"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.3.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -95,7 +95,7 @@ public class APM() : ReadOnlyFilesystemTest("fat32")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "7CD11609"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.4.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -108,7 +108,7 @@ public class APM() : ReadOnlyFilesystemTest("fat32")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "4495131D"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.11.aif",
             MediaType    = MediaType.GENERIC_HDD,

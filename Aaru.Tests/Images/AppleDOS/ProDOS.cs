@@ -44,7 +44,7 @@ public class ProDOS : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "dos33.po.lz",
             MediaType  = MediaType.Apple33SS,
@@ -60,7 +60,7 @@ public class ProDOS : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "hfs1440.po.lz",
             MediaType  = MediaType.Apple33SS,
@@ -68,7 +68,7 @@ public class ProDOS : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "2c0b397aa3fe23a52cf7908340739f78"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "hfs.po.lz",
             MediaType  = MediaType.Apple33SS,
@@ -76,7 +76,7 @@ public class ProDOS : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "ddd04ef378552c789f85382b4f49da06"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "pascal800.po.lz",
             MediaType  = MediaType.Apple33SS,
@@ -84,7 +84,7 @@ public class ProDOS : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "5158e2fe9d8e7ae1f7db73156478e4f4"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "pascal.po.lz",
             MediaType  = MediaType.Apple33SS,
@@ -92,7 +92,7 @@ public class ProDOS : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "4c4926103a32ac15f7e430ec3ced4be5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos1440.po.lz",
             MediaType  = MediaType.Apple33SS,
@@ -100,7 +100,7 @@ public class ProDOS : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "55ff5838139c0e8fa3f904397dc22fa5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos5mb.po.lz",
             MediaType  = MediaType.Apple33SS,
@@ -108,7 +108,7 @@ public class ProDOS : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "137463bc1f758fb8f2c354b02603817b"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos800.po.lz",
             MediaType  = MediaType.Apple33SS,
@@ -116,7 +116,7 @@ public class ProDOS : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "193c5cc22f07e5aeb96eb187cb59c2d9"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodosmod.po.lz",
             MediaType  = MediaType.Apple33SS,
@@ -124,7 +124,7 @@ public class ProDOS : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "26d9c57e262f61c4eb6c150eefafe4c0"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos.po.lz",
             MediaType  = MediaType.Apple33SS,

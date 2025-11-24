@@ -87,7 +87,7 @@ partial class Device
         if(direction != ScsiDirection.In) buffer.AsSpan().CopyTo(new Span<byte>((void*)_nativeBuffer, buffer.Length));
 
         uint k     = 0;
-        int  error = 0;
+        var  error = 0;
 
         var cmdStopwatch = new Stopwatch();
         cmdStopwatch.Start();
@@ -172,7 +172,7 @@ partial class Device
         aptd.AtaFlags |= AtaFlags.DrdyRequired;
 
         uint k     = 0;
-        int  error = 0;
+        var  error = 0;
 
         Marshal.Copy(buffer, 0, aptd.DataBuffer, buffer.Length);
 
@@ -267,7 +267,7 @@ partial class Device
         aptd.AtaFlags |= AtaFlags.DrdyRequired;
 
         uint k     = 0;
-        int  error = 0;
+        var  error = 0;
 
         Marshal.Copy(buffer, 0, aptd.DataBuffer, buffer.Length);
 
@@ -371,7 +371,7 @@ partial class Device
         aptd.AtaFlags |= AtaFlags.DrdyRequired;
 
         uint k     = 0;
-        int  error = 0;
+        var  error = 0;
 
         Marshal.Copy(buffer, 0, aptd.DataBuffer, buffer.Length);
 
@@ -534,18 +534,17 @@ partial class Device
 
         if(flags.HasFlag(MmcFlags.ResponseR6)) commandDescriptor.responseType = SdResponseType.R6;
 
-        byte[] commandB =
-            new byte[commandData.size + commandData.protocolArgumentSize + commandData.deviceDataBufferSize];
+        var commandB = new byte[commandData.size + commandData.protocolArgumentSize + commandData.deviceDataBufferSize];
 
         Array.Copy(buffer, 0, commandB, commandData.size + commandData.protocolArgumentSize, buffer.Length);
         IntPtr hBuf = Marshal.AllocHGlobal(commandB.Length);
         Marshal.StructureToPtr(commandData, hBuf, true);
-        IntPtr descriptorOffset = IntPtr.Add(hBuf, commandData.size);
+        var descriptorOffset = IntPtr.Add(hBuf, commandData.size);
         Marshal.StructureToPtr(commandDescriptor, descriptorOffset, true);
         Marshal.Copy(hBuf, commandB, 0, commandB.Length);
         Marshal.FreeHGlobal(hBuf);
 
-        int error = 0;
+        var error = 0;
         cmdStopwatch.Restart();
 
         sense = !Extern.DeviceIoControl(_fileHandle,
@@ -577,7 +576,7 @@ partial class Device
         // We need a timeout
         if(timeout == 0) timeout = Timeout > 0 ? Timeout : 15;
 
-        int error = 0;
+        var error = 0;
         duration = 0;
         sense    = false;
 

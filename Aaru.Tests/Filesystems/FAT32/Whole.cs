@@ -69,7 +69,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat32")
                SystemId     = "BeOS    ",
                VolumeName   = "VOLUMELABEL",
                VolumeSerial = "00000000"
-           },*/ new FileSystemTest
+           },*/ new()
         {
             TestFile     = "linux_2.0.37_mf2hd.img.lz",
             MediaType    = MediaType.DOS_35_HD,
@@ -81,7 +81,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat32")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "609D1892"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.2.17_mf2hd.img.lz",
             MediaType    = MediaType.DOS_35_HD,
@@ -94,7 +94,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat32")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609C5215"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.2.20_mf2hd.img.lz",
             MediaType    = MediaType.DOS_35_HD,
@@ -107,7 +107,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat32")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609C81A9"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.4.18_mf2hd.img.lz",
             MediaType    = MediaType.DOS_35_HD,
@@ -120,7 +120,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat32")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609CA5D8"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.0.37_mf2hd_umsdos.img.lz",
             MediaType    = MediaType.DOS_35_HD,
@@ -132,7 +132,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat32")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "609D1912"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.2.17_mf2hd_umsdos.img.lz",
             MediaType    = MediaType.DOS_35_HD,

@@ -42,7 +42,7 @@ public class ImageDisk : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "CPM1_ALL.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_8,
@@ -58,7 +58,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0000.IMD.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -66,7 +66,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "e8bbbd22db87181974e12ba0227ea011"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0001.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -74,7 +74,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "9f5635f3df4d880a500910b0ad1ab535"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0002.IMD.lz",
             MediaType  = MediaType.ACORN_35_DS_HD,
@@ -82,7 +82,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "3bad4b4db8f5e2f991637fccf7a25740"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0003.IMD.lz",
             MediaType  = MediaType.ACORN_35_DS_DD,
@@ -90,7 +90,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "85574aebeef03eb355bf8541955d06ea"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0004.IMD.lz",
             MediaType  = MediaType.ACORN_35_DS_HD,
@@ -98,7 +98,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "a481bd5a8281dad089edbef390c136ed"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0006.IMD.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -106,7 +106,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "46fce47baf08c6f093f2c355a603543d"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0009.IMD.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -122,7 +122,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0010.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -130,7 +130,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "9e2b01f4397db2a6c76e2bc267df37b3"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0011.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -138,7 +138,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "dbbf55398d930e14c2b0a035dd1277b9"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0012.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -146,7 +146,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "656002e6e620cb3b73c27f4c21d32edb"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0013.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -154,7 +154,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1244cc2c101c66e6bb4ad5183b356b19"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0017.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -162,7 +162,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "a817a56036f591a5cff11857b7d466be"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0018.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -170,7 +170,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "439b2b76e154f3ce7e86bf1377282d5f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0019.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -178,7 +178,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "3c21d11e2b4ca108de3ec8ffface814d"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0020.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -186,7 +186,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "c2e64e8a388b4401719f06d6a868dd1b"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0021.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -194,7 +194,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "6fc7f2233f094af7ae0d454668976858"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0022.IMD.lz",
             MediaType  = MediaType.ACORN_525_DS_DD,
@@ -202,7 +202,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "ad6c3e6910457a53572695401efda4ab"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0023.IMD.lz",
             MediaType  = MediaType.ACORN_35_DS_HD,
@@ -210,7 +210,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "5e41fe3201ab32f25873faf8d3f79a02"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0024.IMD.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -226,7 +226,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0025.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -234,7 +234,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "4e4cafed1cc22ea72201169427e5e1b6"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0026.IMD.lz",
             MediaType  = MediaType.ACORN_35_DS_DD,
@@ -242,7 +242,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "a579b349a5a24218d59a44e36bdb1333"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0027.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -250,7 +250,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "669b2155d5e4d7849d662729717a68d8"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0028.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -258,7 +258,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1a4c7487382c98b7bc74623ddfb488e6"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0029.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -266,7 +266,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "23f5700ea3bfe076c88dd399a8026a1e"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0030.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -282,7 +282,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0031.IMD.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_40,
@@ -290,7 +290,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "e640835966327f3f662e1db8e0575510"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0032.IMD.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_40,
@@ -298,7 +298,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "ff3534234d1d2dd88bf6e83be23d9227"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0033.IMD.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_80,
@@ -306,7 +306,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "dfaff34a6556b515642f1e54f839b02e"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0034.IMD.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_80,
@@ -314,7 +314,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "ca8f5c7f9ed161b03ccb166eb9d62146"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0035.IMD.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -330,7 +330,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0036.IMD.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -346,7 +346,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0037.IMD.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -362,7 +362,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0038.IMD.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -378,7 +378,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0039.IMD.lz",
             MediaType  = MediaType.DOS_35_SS_DD_8,
@@ -394,7 +394,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0040.IMD.lz",
             MediaType  = MediaType.DOS_35_SS_DD_8,
@@ -410,7 +410,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0041.IMD.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -426,7 +426,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0042.IMD.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -442,7 +442,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0043.IMD.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -458,7 +458,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0044.IMD.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -474,7 +474,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0045.IMD.lz",
             MediaType  = MediaType.NEC_35_HD_15,
@@ -490,7 +490,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0046.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -506,7 +506,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0047.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_8,
@@ -522,7 +522,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0048.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -538,7 +538,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0049.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -554,7 +554,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0050.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -570,7 +570,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0051.IMD.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -586,7 +586,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0052.IMD.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -602,7 +602,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0053.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -618,7 +618,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0054.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -634,7 +634,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0055.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -650,7 +650,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0057.IMD.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -666,7 +666,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0058.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -682,7 +682,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0059.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -698,7 +698,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0060.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -714,7 +714,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0061.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -730,7 +730,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0063.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -746,7 +746,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0064.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -762,7 +762,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0065.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -778,7 +778,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0066.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -794,7 +794,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0067.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -810,7 +810,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0068.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -826,7 +826,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0069.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -842,7 +842,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0070.IMD.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -850,7 +850,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "d1e978b679c63a218c3f77a7ca2c7206"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0073.IMD.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -866,7 +866,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0074.IMD.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -882,7 +882,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0075.IMD.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -898,7 +898,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0076.IMD.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -914,7 +914,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0077.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -930,7 +930,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0078.IMD.lz",
             MediaType  = MediaType.NEC_35_HD_15,
@@ -938,7 +938,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "c9a193837db7d8a5eb025eb41e8a76d7"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0080.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -954,7 +954,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0081.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -970,7 +970,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0082.IMD.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -986,7 +986,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0083.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1002,7 +1002,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0084.IMD.lz",
             MediaType  = MediaType.DMF,
@@ -1018,7 +1018,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0085.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1034,7 +1034,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0086.IMD.lz",
             MediaType  = MediaType.DMF,
@@ -1050,7 +1050,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0089.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1058,7 +1058,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "8b31e5865611dbe01cc25b5ba2fbdf25"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0090.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1066,7 +1066,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 2048,
             Md5        = "be278c00c3ec906756e7c8d544d8833d"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0091.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1074,7 +1074,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "8e7fb60151e0002e8bae2fb2abe13a69"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0092.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1082,7 +1082,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 2048,
             Md5        = "45e0b2a2925a95bbdcb43a914d70f91b"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0093.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1090,7 +1090,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "082d7eda62eead1e20fd5a060997ff0f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0094.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1098,7 +1098,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 2048,
             Md5        = "9b75a2fb671d1e7fa27434038b375e5e"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0097.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1106,7 +1106,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "97c4f895d64ba196f19a3179e68ef693"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0098.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1114,7 +1114,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 2048,
             Md5        = "c838233a380973de386e66ee0e0cbcc2"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0099.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1122,7 +1122,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 16384,
             Md5        = "dea88f91ca0f6d90626b4029286cb01f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0101.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1130,7 +1130,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 16384,
             Md5        = "db82b15389e2ffa9a20f7251cc5cce5b"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0103.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1138,7 +1138,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 16384,
             Md5        = "638b56d7061a8156ee87166c78f06111"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0105.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1154,7 +1154,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0106.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1170,7 +1170,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0107.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1186,7 +1186,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0108.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1202,7 +1202,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0109.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1218,7 +1218,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0110.IMD.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -1234,7 +1234,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0111.IMD.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1250,7 +1250,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0112.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1266,7 +1266,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0113.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1282,7 +1282,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0114.IMD.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -1298,7 +1298,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0115.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1314,7 +1314,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0116.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1330,7 +1330,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0117.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1338,7 +1338,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "4b5e2c9599bb7861b3b52bec00d81278"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0120.IMD.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -1354,7 +1354,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0121.IMD.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -1362,7 +1362,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "0ccb62039363ab544c69eca229a17fae"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0122.IMD.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -1378,7 +1378,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0123.IMD.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -1394,7 +1394,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0124.IMD.lz",
             MediaType  = MediaType.NEC_35_HD_15,
@@ -1410,7 +1410,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0125.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1426,7 +1426,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0126.IMD.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1442,7 +1442,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0147.IMD.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -1450,7 +1450,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "6efa72a33021d5051546c3e0dd4c3c09"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0148.IMD.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -1458,7 +1458,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "8b5acfd14818ff9556d3d81361ce4862"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0149.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1466,7 +1466,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "cf42d08469548a31caf2649a1d08a85f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0150.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1474,7 +1474,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "62745e10683cf2ec1dac177535459891"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0151.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1482,7 +1482,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "cf42d08469548a31caf2649a1d08a85f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0153.IMD.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -1490,7 +1490,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "298c377de52947c472a85d281b6d3d4d"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0154.IMD.lz",
             MediaType  = MediaType.RX50,
@@ -1498,7 +1498,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "387373301cf6c15d61eec9bab18d9b6a"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0155.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1506,7 +1506,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "83b66a88d92cbf2715343016e4108211"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0157.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1514,7 +1514,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "20e047061b6ca4059288deed8c9dd247"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0158.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1522,7 +1522,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "8b5acfd14818ff9556d3d81361ce4862"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0159.IMD.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_40,
@@ -1530,7 +1530,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "6efa72a33021d5051546c3e0dd4c3c09"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0160.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1538,7 +1538,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "8b5acfd14818ff9556d3d81361ce4862"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0162.IMD.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -1546,7 +1546,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "e63014a4299f52f22e6e2c9609f51979"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0163.IMD.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -1562,7 +1562,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0164.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1578,7 +1578,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0166.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1594,7 +1594,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0167.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1602,7 +1602,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "efbc62e2ecddc15241aa0779e078d478"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0168.IMD.lz",
             MediaType  = MediaType.NEC_35_HD_15,
@@ -1618,7 +1618,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0169.IMD.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1634,7 +1634,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0170.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1650,7 +1650,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0171.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1666,7 +1666,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0173.IMD.lz",
             MediaType  = MediaType.DOS_35_SS_DD_9,
@@ -1682,7 +1682,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0174.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1698,7 +1698,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0175.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1714,7 +1714,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0176.IMD.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -1730,7 +1730,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0177.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1746,7 +1746,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0180.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1762,7 +1762,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0181.IMD.lz",
             MediaType  = MediaType.DMF,
@@ -1778,7 +1778,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0182.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1786,7 +1786,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "865ad9072cb6c7458f7d86d7e9368622"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0183.IMD.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -1794,7 +1794,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2461e458438f0033bc5811fd6958ad02"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0184.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1802,7 +1802,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "be75996696aa70ee9338297137556d83"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0185.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1810,7 +1810,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 2048,
             Md5        = "5a0f2bad567464288ec7ce935672870a"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0186.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1818,7 +1818,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 4096,
             Md5        = "69f9f0b5c1fc00a8f398151df9d93ab5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0191.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1826,7 +1826,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "fb144f79239f6f5f113b417700c2d278"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0192.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1834,7 +1834,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 2048,
             Md5        = "6a936d2ecb771e37b856bdad16822c32"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0194.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1842,7 +1842,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 4096,
             Md5        = "e283af9d280efaf059c816b6a2c9206b"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0196.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1850,7 +1850,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "e4625838148a4b7c6580c697cd47362c"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0197.IMD.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_40,
@@ -1858,7 +1858,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "74f71ef3978fefce64689e8be18359ba"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0198.IMD.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_80,
@@ -1866,7 +1866,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "5c4e555b29a264f2a81f8a2b58bfc442"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0199.IMD.lz",
             MediaType  = MediaType.ACORN_525_DS_DD,
@@ -1874,7 +1874,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "64ae73ac812bbf473a5d443de4d5dfbf"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0200.IMD.lz",
             MediaType  = MediaType.ACORN_35_DS_HD,
@@ -1882,7 +1882,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "a481bd5a8281dad089edbef390c136ed"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0201.IMD.lz",
             MediaType  = MediaType.ACORN_35_DS_DD,
@@ -1890,7 +1890,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "85574aebeef03eb355bf8541955d06ea"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0202.IMD.lz",
             MediaType  = MediaType.ACORN_35_DS_HD,
@@ -1898,7 +1898,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "a481bd5a8281dad089edbef390c136ed"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0203.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1906,7 +1906,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "8a16a3008739516fc3ba4c878868d056"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0204.IMD.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -1914,7 +1914,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "46fce47baf08c6f093f2c355a603543d"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0205.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1922,7 +1922,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "ee73a5d5c8dfac236baf7b99811696f9"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0206.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1930,7 +1930,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b3bdbc62fb96e3893dac3bccbde59ab0"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0207.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1938,7 +1938,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "02942b9dc9d3b1bc9335b73c99e6da2e"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0208.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -1946,7 +1946,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "dfc9e8c7bd3d50f404d6f0b6ada20b0c"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0209.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1954,7 +1954,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "85574aebeef03eb355bf8541955d06ea"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0210.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1962,7 +1962,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "85574aebeef03eb355bf8541955d06ea"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0211.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1970,7 +1970,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "647f14749f59be471aac04a71a079a64"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0212.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1978,7 +1978,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "517cdd5e42a4673f733d1aedfb46770f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0213.IMD.lz",
             MediaType  = MediaType.ACORN_35_DS_DD,
@@ -1986,7 +1986,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "6ad92e9522e4ba902c01beecb5943bb1"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0214.IMD.lz",
             MediaType  = MediaType.ACORN_35_DS_HD,
@@ -1994,7 +1994,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "9a1a7d8f53fcfad7603fe585c6c7214c"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0215.IMD.lz",
             MediaType  = MediaType.ACORN_35_DS_HD,
@@ -2002,7 +2002,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "2a7a9b48551fd4d8b166bcfcbe1ca132"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0216.IMD.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -2010,7 +2010,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "40199611e6e75bbc37ad6c52a5b77eae"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0218.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2018,7 +2018,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "8fa0ffd7481a94b9e7c4006599329250"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0219.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2026,7 +2026,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "3fa51592c5a65b7e4915a8e22d523ced"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0220.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2034,7 +2034,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2153339750c119627bab75bd0bf7a193"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0221.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2042,7 +2042,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "f92b2e52259531d50bfb403dc1274ab1"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0222.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2050,7 +2050,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "85574aebeef03eb355bf8541955d06ea"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0223.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2058,7 +2058,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "a5dc382d75ec46434b313e289c281d8c"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0224.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2066,7 +2066,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "8335b175c352352e19f9008ad67d1375"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0225.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2074,7 +2074,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "447efa963c19474508c503d037a3b429"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0226.IMD.lz",
             MediaType  = MediaType.ACORN_525_DS_DD,
@@ -2082,7 +2082,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "b7669fa76ecf5634313675b001bb7fa2"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0227.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2090,7 +2090,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "676f1bc7764899912ab6ad8257c63a16"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0228.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2098,7 +2098,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "d72e86324d4d518996f6671751614800"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0232.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2106,7 +2106,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b76bd117ce24d933cdefe09b1de2164a"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0233.IMD.lz",
             MediaType  = MediaType.ATARI_525_SD,
@@ -2114,7 +2114,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 128,
             Md5        = "a769b7642a222d97a56c46f53833fafa"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0234.IMD.lz",
             MediaType  = MediaType.ACORN_525_DS_DD,
@@ -2122,7 +2122,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "dfa733d034bb1f83d694dfa217910081"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0235.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2130,7 +2130,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "8260ee01a245aec2de162ee0d85f4b7f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0236.IMD.lz",
             MediaType  = MediaType.ACORN_525_SS_SD_80,
@@ -2138,7 +2138,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "261c7a5a4298e9f050928dd770097c77"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0238.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2146,7 +2146,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "a47068ff73dfbea58c25daa5b9132a9e"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0240.IMD.lz",
             MediaType  = MediaType.ATARI_525_DD,
@@ -2154,7 +2154,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "d1ab955f0961ab94e6cf69f78134a84b"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0241.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2162,7 +2162,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "8b62738f15bcc916a668eaa67eec86e7"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0242.IMD.lz",
             MediaType  = MediaType.NEC_35_HD_8,
@@ -2178,7 +2178,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0243.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2186,7 +2186,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "9866ab8e58fa4be25010184aec4ad3aa"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0244.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2194,7 +2194,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "9dab329ae098b29889ab08278de38f95"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0245.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2202,7 +2202,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "0d71b4952dadbfb1061acc1f4640c787"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0246.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2210,7 +2210,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "af7ac6b5b9d2d57dad22dbb64ef7de38"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0247.IMD.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_80,
@@ -2218,7 +2218,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "f8f81f945aaad6fbfe7e2db1905302c1"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0248.IMD.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_80,
@@ -2226,7 +2226,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "f6f81c75b5ba45d91c1886c6dda9caee"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0250.IMD.lz",
             MediaType  = MediaType.ACORN_35_DS_DD,
@@ -2234,7 +2234,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "d4809467b321991a9c772ad87fc8aa19"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0251.IMD.lz",
             MediaType  = MediaType.ACORN_525_DS_DD,
@@ -2242,7 +2242,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "d075e50705f4ddca7ba4dbc981ec1176"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0252.IMD.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_80,
@@ -2250,7 +2250,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "9f86480c86bae33a5b444e4a7ed55048"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0253.IMD.lz",
             MediaType  = MediaType.ACORN_35_DS_DD,
@@ -2258,7 +2258,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "629971775d902d1cc2658fc76f57e072"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0254.IMD.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -2274,7 +2274,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0255.IMD.lz",
             MediaType  = MediaType.ACORN_525_DS_DD,
@@ -2282,7 +2282,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "1718d8acd18fce3c5c1a7a074ed8ac29"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0258.IMD.lz",
             MediaType  = MediaType.NEC_35_HD_8,
@@ -2298,7 +2298,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0262.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -2314,7 +2314,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0263.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2330,7 +2330,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0264.IMD.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -2338,7 +2338,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "77a1167b1b9043496e32b8578cde0ff0"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0265.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2354,7 +2354,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0266.IMD.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -2370,7 +2370,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0267.IMD.lz",
             MediaType  = MediaType.XDF_525,
@@ -2386,7 +2386,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0268.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2402,7 +2402,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0269.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2418,7 +2418,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0270.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2426,7 +2426,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1aef0a0ba233476db6567878c3c2b266"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0271.IMD.lz",
             MediaType  = MediaType.DMF,
@@ -2442,7 +2442,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0272.IMD.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -2450,7 +2450,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "a4f461af7fda5e93a7ab63fcbb7e7683"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0273.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2466,7 +2466,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0280.IMD.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -2482,7 +2482,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0281.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2498,7 +2498,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0282.IMD.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -2514,7 +2514,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0283.IMD.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -2532,7 +2532,7 @@ public class ImageDisk : BlockMediaImageTest
             }
             */
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0284.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2548,7 +2548,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0285.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2564,7 +2564,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0287.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -2580,7 +2580,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0288.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2596,7 +2596,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0289.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2612,7 +2612,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0290.IMD.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -2628,7 +2628,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0291.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2644,7 +2644,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0299.IMD.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -2660,7 +2660,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0300.IMD.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -2676,7 +2676,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0301.IMD.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -2684,7 +2684,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "56af9256cf71d5aac5fd5d363674bc49"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0302.IMD.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -2700,7 +2700,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0303.IMD.lz",
             MediaType  = MediaType.NEC_35_HD_15,
@@ -2716,7 +2716,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0304.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -2732,7 +2732,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0305.IMD.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -2748,7 +2748,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0307.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2764,7 +2764,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0308.IMD.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2772,7 +2772,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "bbe58e26b8f8f822cd3edfd37a4e4924"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0311.IMD.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -2780,7 +2780,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b9b6ebdf711364c979de7cf70c3a438a"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0314.IMD.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -2788,7 +2788,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "d37424f367f545acbb397f2bed766843"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0316.IMD.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -2804,7 +2804,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0317.IMD.lz",
             MediaType  = MediaType.DMF,
@@ -2820,7 +2820,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0318.IMD.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -2836,7 +2836,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0319.IMD.lz",
             MediaType  = MediaType.DMF,
@@ -2852,7 +2852,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0320.IMD.lz",
             MediaType  = MediaType.DMF,
@@ -2868,7 +2868,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0322.IMD.lz",
             MediaType  = MediaType.Unknown,
@@ -2884,7 +2884,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1dd_rx01.imd.lz",
             MediaType  = MediaType.RX01,
@@ -2892,7 +2892,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 128,
             Md5        = "5b4e36d92b180c3845387391cb5a1c64"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1qd_rx50.imd.lz",
             MediaType  = MediaType.RX50,
@@ -2908,7 +2908,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_nec.imd.lz",
             MediaType  = MediaType.NEC_35_HD_8,
@@ -2924,7 +2924,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_2mgui.imd.lz",
             MediaType  = MediaType.Unknown,
@@ -2932,7 +2932,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 16384,
             Md5        = "623b224f63d65ae3b6c3ddadadf3b836"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_2m.imd.lz",
             MediaType  = MediaType.Unknown,
@@ -2940,7 +2940,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "08b530d8c25d785b20c93a1a7a6468a0"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fdformat_800.imd.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2956,7 +2956,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fdformat_820.imd.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -2972,7 +2972,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_freedos.imd.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2988,7 +2988,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd.imd.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -3004,7 +3004,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_2mgui.imd.lz",
             MediaType  = MediaType.Unknown,
@@ -3012,7 +3012,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 16384,
             Md5        = "adafed1fac3d1a181380bdb590249385"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_2m.imd.lz",
             MediaType  = MediaType.Unknown,
@@ -3020,7 +3020,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "c741c78eecd673f8fc49e77459871940"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_168.imd.lz",
             MediaType  = MediaType.DMF,
@@ -3036,7 +3036,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_172.imd.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -3044,7 +3044,7 @@ public class ImageDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "9dea1e119a73a21a38d134f36b2e5564"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_freedos.imd.lz",
             MediaType  = MediaType.Unknown,
@@ -3060,7 +3060,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd.imd.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -3076,7 +3076,7 @@ public class ImageDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_xdf.imd.lz",
             MediaType  = MediaType.Unknown,

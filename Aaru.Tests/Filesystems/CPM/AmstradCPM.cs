@@ -42,7 +42,7 @@ public class AmstradCPM() : ReadOnlyFilesystemTest("cpmfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "data_filename.imd",
             MediaType   = MediaType.DOS_525_SS_DD_9,
@@ -52,7 +52,7 @@ public class AmstradCPM() : ReadOnlyFilesystemTest("cpmfs")
             Clusters    = 171,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "data_files.imd",
             MediaType   = MediaType.DOS_525_SS_DD_9,
@@ -62,7 +62,7 @@ public class AmstradCPM() : ReadOnlyFilesystemTest("cpmfs")
             Clusters    = 171,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "system_filename.imd",
             MediaType   = MediaType.DOS_525_SS_DD_9,
@@ -72,7 +72,7 @@ public class AmstradCPM() : ReadOnlyFilesystemTest("cpmfs")
             Clusters    = 171,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "system_files.imd",
             MediaType   = MediaType.DOS_525_SS_DD_9,

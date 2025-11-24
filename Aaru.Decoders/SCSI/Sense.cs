@@ -57,11 +57,11 @@ public struct DecodedSense
     public DescriptorSense? Descriptor;
 
     // ReSharper disable once InconsistentNaming
-    public readonly byte ASC => Descriptor?.ASC ?? (Fixed?.ASC ?? 0);
+    public readonly byte ASC => Descriptor?.ASC ?? Fixed?.ASC ?? 0;
 
     // ReSharper disable once InconsistentNaming
-    public readonly byte      ASCQ        => Descriptor?.ASCQ     ?? (Fixed?.ASCQ     ?? 0);
-    public readonly SenseKeys SenseKey    => Descriptor?.SenseKey ?? (Fixed?.SenseKey ?? SenseKeys.NoSense);
+    public readonly byte      ASCQ        => Descriptor?.ASCQ     ?? Fixed?.ASCQ     ?? 0;
+    public readonly SenseKeys SenseKey    => Descriptor?.SenseKey ?? Fixed?.SenseKey ?? SenseKeys.NoSense;
     public readonly string    Description => Sense.GetSenseDescription(ASC, ASCQ);
 }
 
@@ -310,7 +310,7 @@ public static class Sense
 
         senseDescription = GetSenseDescription(decoded.ASC, decoded.ASCQ);
 
-        int offset = 8;
+        var offset = 8;
 
         while(offset < sense.Length)
         {
@@ -319,7 +319,7 @@ public static class Sense
                 byte descType = sense[offset];
                 int  descLen  = sense[offset + 1] + 2;
 
-                byte[] desc = new byte[descLen];
+                var desc = new byte[descLen];
 
                 if(offset + descLen >= sense.Length) descLen = sense.Length - offset;
 
@@ -466,7 +466,7 @@ public static class Sense
     {
         if(descriptor.Length != 12 || descriptor[0] != 0x00) return 0;
 
-        byte[] temp = new byte[8];
+        var temp = new byte[8];
 
         temp[0] = descriptor[11];
         temp[1] = descriptor[10];
@@ -487,7 +487,7 @@ public static class Sense
     {
         if(descriptor.Length != 12 || descriptor[0] != 0x01) return 0;
 
-        byte[] temp = new byte[8];
+        var temp = new byte[8];
 
         temp[0] = descriptor[11];
         temp[1] = descriptor[10];
@@ -508,7 +508,7 @@ public static class Sense
     {
         if(descriptor.Length != 8 || descriptor[0] != 0x02) return null;
 
-        byte[] temp = new byte[3];
+        var temp = new byte[3];
         Array.Copy(descriptor, 4, temp, 0, 3);
 
         return temp;

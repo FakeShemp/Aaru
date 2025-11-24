@@ -44,7 +44,7 @@ public class AMSDOS() : FilesystemTest("cpmfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "data_filename.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -53,7 +53,7 @@ public class AMSDOS() : FilesystemTest("cpmfs")
             Clusters    = 180,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "data_files.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -62,7 +62,7 @@ public class AMSDOS() : FilesystemTest("cpmfs")
             Clusters    = 180,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ibm_filename.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -72,7 +72,7 @@ public class AMSDOS() : FilesystemTest("cpmfs")
             Clusters    = 155,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ibm_files.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -82,7 +82,7 @@ public class AMSDOS() : FilesystemTest("cpmfs")
             Clusters    = 155,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "system_filename.dsk.lz",
             MediaType   = MediaType.CompactFloppy,
@@ -92,7 +92,7 @@ public class AMSDOS() : FilesystemTest("cpmfs")
             Clusters    = 170,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "system_files.dsk.lz",
             MediaType   = MediaType.CompactFloppy,

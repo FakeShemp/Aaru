@@ -43,7 +43,7 @@ public class MBR : FilesystemTest
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "minix_3.1.2a.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -53,7 +53,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix3"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_4.19_minix1_flashdrive.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -63,7 +63,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.0.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -73,7 +73,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.0.29.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -83,7 +83,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.0.34.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -93,7 +93,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.0.37.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -103,7 +103,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.0.38.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -113,7 +113,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.2.17.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -123,7 +123,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.2.20.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -133,7 +133,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.4.18.aif",
             MediaType   = MediaType.GENERIC_HDD,

@@ -193,7 +193,7 @@ partial class Device
 
         if(buffer == null) return -1;
 
-        byte[] cdb = new byte[16];
+        var cdb = new byte[16];
         cdb[0] = (byte)ScsiCommands.AtaPassThrough16;
         cdb[1] = (byte)((byte)protocol << 1 & 0x1E);
 
@@ -257,7 +257,7 @@ partial class Device
 
         if(buffer == null) return -1;
 
-        byte[] cdb = new byte[16];
+        var cdb = new byte[16];
         cdb[0] = (byte)ScsiCommands.AtaPassThrough16;
         cdb[1] = (byte)((byte)protocol << 1 & 0x1E);
 
@@ -321,7 +321,7 @@ partial class Device
 
         if(buffer == null) return -1;
 
-        byte[] cdb = new byte[16];
+        var cdb = new byte[16];
         cdb[0] =  (byte)ScsiCommands.AtaPassThrough16;
         cdb[1] =  (byte)((byte)protocol << 1 & 0x1E);
         cdb[1] |= 0x01;
@@ -503,17 +503,17 @@ partial class Device
         sense    = false;
 
         // Create array for buffers
-        IntPtr[] bufferPointers = new nint[commands.Length];
+        var bufferPointers = new nint[commands.Length];
 
         // Allocate memory for the array for commands
-        byte[] ioMultiCmd = new byte[sizeof(ulong) + Marshal.SizeOf<MmcIocCmd>() * commands.Length];
+        var ioMultiCmd = new byte[sizeof(ulong) + Marshal.SizeOf<MmcIocCmd>() * commands.Length];
 
         // First value of array is uint64 with count of commands
         Array.Copy(BitConverter.GetBytes((ulong)commands.Length), 0, ioMultiCmd, 0, sizeof(ulong));
 
         int off = sizeof(ulong);
 
-        for(int i = 0; i < commands.Length; i++)
+        for(var i = 0; i < commands.Length; i++)
         {
             // Create command
             var ioCmd = new MmcIocCmd();
@@ -573,9 +573,9 @@ partial class Device
         Marshal.Copy(ioMultiCmdPtr, ioMultiCmd, 0, ioMultiCmd.Length);
 
         // TODO: Use real pointers this is too slow
-        for(int i = 0; i < commands.Length; i++)
+        for(var i = 0; i < commands.Length; i++)
         {
-            byte[] tmp = new byte[Marshal.SizeOf<MmcIocCmd>()];
+            var tmp = new byte[Marshal.SizeOf<MmcIocCmd>()];
 
             // Copy command to managed space
             Array.Copy(ioMultiCmd, off, tmp, 0, tmp.Length);
@@ -675,7 +675,7 @@ partial class Device
             resultSize = result;
         }
 
-        byte[] resultString = new byte[resultSize];
+        var resultString = new byte[resultSize];
         Marshal.Copy(buf, resultString, 0, resultSize);
         Marshal.FreeHGlobal(buf);
 

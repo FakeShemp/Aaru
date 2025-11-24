@@ -398,18 +398,16 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
             if(failingLbas.Count == (int)inputFormat.Info.Sectors)
                 AaruLogging.Verbose($"\t[red]{UI.all_sectors}[/]");
             else
-            {
-                foreach(ulong t in failingLbas) AaruLogging.Verbose("\t{0}", t);
-            }
+                foreach(ulong t in failingLbas)
+                    AaruLogging.Verbose("\t{0}", t);
 
             AaruLogging.WriteLine($"[yellow3_1]{UI.LBAs_without_checksum}[/]");
 
             if(unknownLbas.Count == (int)inputFormat.Info.Sectors)
                 AaruLogging.Verbose($"\t[yellow3_1]{UI.all_sectors}[/]");
             else
-            {
-                foreach(ulong t in unknownLbas) AaruLogging.Verbose("\t{0}", t);
-            }
+                foreach(ulong t in unknownLbas)
+                    AaruLogging.Verbose("\t{0}", t);
         }
 
         var table = new Table();

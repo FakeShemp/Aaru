@@ -46,7 +46,7 @@ public class RayDIM : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5f1dd8.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -54,7 +54,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "aeef05636add7b371b5128073b36f945"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5f1dd8_pass.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -70,7 +70,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5f1dd.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -78,7 +78,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "c064dc6c091ebfd811223e0f25ba76c9"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5f1dd_pass.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -94,7 +94,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5f2dd8.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -102,7 +102,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b9d1e5d5dd5bb7d1d865ed138d87ec00"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5f2dd8_pass.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -118,7 +118,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5f2dd.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -126,7 +126,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "f63b977a86a9f8ef46151a1ace30b755"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5f2dd_pass.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -142,7 +142,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5f2hd.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -150,7 +150,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "76d507db9dde141d79296c93d009bcc3"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5f2hd_pass.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -166,7 +166,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0000.DIM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -174,7 +174,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "e8bbbd22db87181974e12ba0227ea011"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0001.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -182,7 +182,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "9f5635f3df4d880a500910b0ad1ab535"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0009.DIM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -198,7 +198,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0010.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -206,7 +206,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "9e2b01f4397db2a6c76e2bc267df37b3"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0012.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -214,7 +214,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "656002e6e620cb3b73c27f4c21d32edb"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0013.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -222,7 +222,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1244cc2c101c66e6bb4ad5183b356b19"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0017.DIM.lz",
             MediaType  = MediaType.XDF_525,
@@ -230,7 +230,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "8cad624afc06ab756f9800eba22ee886"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0018.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -238,7 +238,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "84cce7b4d8c8e21040163cd2d03a730c"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0020.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -246,7 +246,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "d236783dfd1dc29f350c51949b1e9e68"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0021.DIM.lz",
             MediaType  = MediaType.XDF_525,
@@ -254,7 +254,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "6915f208cdda762eea2fe64ad754e72f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0024.DIM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -270,7 +270,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0025.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -278,7 +278,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "4e4cafed1cc22ea72201169427e5e1b6"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0028.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -286,7 +286,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1a4c7487382c98b7bc74623ddfb488e6"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0030.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -302,7 +302,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0035.DIM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -318,7 +318,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0036.DIM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -334,7 +334,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0037.DIM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -350,7 +350,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0038.DIM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -366,7 +366,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0039.DIM.lz",
             MediaType  = MediaType.DOS_35_SS_DD_8,
@@ -382,7 +382,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0040.DIM.lz",
             MediaType  = MediaType.DOS_35_SS_DD_8,
@@ -398,7 +398,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0041.DIM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -414,7 +414,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0042.DIM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -430,7 +430,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0043.DIM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -446,7 +446,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0044.DIM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -462,7 +462,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0045.DIM.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -478,7 +478,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0046.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -494,7 +494,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0047.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_8,
@@ -510,7 +510,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0048.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -526,7 +526,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0049.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -542,7 +542,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0050.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -558,7 +558,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0051.DIM.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -574,7 +574,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0052.DIM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -590,7 +590,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0053.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -606,7 +606,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0054.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -622,7 +622,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0055.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -638,7 +638,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0056.DIM.lz",
             MediaType  = MediaType.DMF,
@@ -654,7 +654,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0057.DIM.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -670,7 +670,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0058.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -686,7 +686,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0059.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -702,7 +702,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0060.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -718,7 +718,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0061.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -734,7 +734,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0068.DIM.lz",
             MediaType  = MediaType.DOS_35_SS_DD_9,
@@ -750,7 +750,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0069.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -766,7 +766,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0073.DIM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -782,7 +782,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0074.DIM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -798,7 +798,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0075.DIM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -814,7 +814,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0076.DIM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -830,7 +830,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0077.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -846,7 +846,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0078.DIM.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -854,7 +854,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "c9a193837db7d8a5eb025eb41e8a76d7"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0080.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -870,7 +870,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0081.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -886,7 +886,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0082.DIM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -902,7 +902,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0083.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -918,7 +918,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0084.DIM.lz",
             MediaType  = MediaType.DMF,
@@ -934,7 +934,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0085.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -950,7 +950,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0105.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -966,7 +966,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0106.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -982,7 +982,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0107.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -998,7 +998,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0108.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1014,7 +1014,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0109.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1030,7 +1030,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0110.DIM.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -1046,7 +1046,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0111.DIM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1062,7 +1062,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0112.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1078,7 +1078,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0113.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1094,7 +1094,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0114.DIM.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -1110,7 +1110,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0115.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1126,7 +1126,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0116.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1142,7 +1142,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0117.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1158,7 +1158,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0120.DIM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -1174,7 +1174,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0121.DIM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -1190,7 +1190,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0122.DIM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -1206,7 +1206,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0123.DIM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -1222,7 +1222,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0124.DIM.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -1238,7 +1238,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0125.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1254,7 +1254,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0126.DIM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1270,7 +1270,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0147.DIM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -1278,7 +1278,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "6efa72a33021d5051546c3e0dd4c3c09"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0148.DIM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -1286,7 +1286,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "8b5acfd14818ff9556d3d81361ce4862"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0151.DIM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -1294,7 +1294,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "298c377de52947c472a85d281b6d3d4d"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0153.DIM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -1302,7 +1302,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "32975e1a2d10a360331de84682371277"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0154.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1310,7 +1310,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "a5dc382d75ec46434b313e289c281d8c"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0157.DIM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -1318,7 +1318,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b4955c463dcbe0744c4ac0bee23d62fe"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0162.DIM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -1326,7 +1326,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "e63014a4299f52f22e6e2c9609f51979"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0163.DIM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -1342,7 +1342,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0164.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1358,7 +1358,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0166.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1374,7 +1374,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0168.DIM.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -1390,7 +1390,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0169.DIM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1406,7 +1406,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0170.DIM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1414,7 +1414,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "60fef9861bd893150aafd7751f886155"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0173.DIM.lz",
             MediaType  = MediaType.DOS_35_SS_DD_9,
@@ -1430,7 +1430,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0174.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1446,7 +1446,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0175.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1462,7 +1462,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0176.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1470,7 +1470,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "a4337668ae19b79276fba4f7499ea936"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0177.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1478,7 +1478,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b592e975a673226ba0880aece6ebc9e2"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0180.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1494,7 +1494,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0181.DIM.lz",
             MediaType  = MediaType.DMF,
@@ -1510,7 +1510,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0205.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1518,7 +1518,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "d3106f2c989a0afcf97b63b051be8312"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0206.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1526,7 +1526,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "8245ddd644583bd78ac0638133c89824"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0207.DIM.lz",
             MediaType  = MediaType.XDF_525,
@@ -1534,7 +1534,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "33c51a3d6f13cfedb5f08bf4c3cba7b9"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0209.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1542,7 +1542,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "85574aebeef03eb355bf8541955d06ea"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0210.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1550,7 +1550,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "85574aebeef03eb355bf8541955d06ea"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0211.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1558,7 +1558,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "647f14749f59be471aac04a71a079a64"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0212.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1566,7 +1566,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "517cdd5e42a4673f733d1aedfb46770f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0216.DIM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1574,7 +1574,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "40199611e6e75bbc37ad6c52a5b77eae"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0218.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1582,7 +1582,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "fabacd63bd25f4c3db71523c21242bfb"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0219.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1590,7 +1590,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "0d1a1dfa4482422ff11fea76f8cef3a9"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0220.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1598,7 +1598,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "a6a67106457a20b46d05f2d9b27244f1"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0222.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1606,7 +1606,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "85574aebeef03eb355bf8541955d06ea"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0232.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1622,7 +1622,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0245.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1630,7 +1630,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "0d71b4952dadbfb1061acc1f4640c787"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0246.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1638,7 +1638,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "af7ac6b5b9d2d57dad22dbb64ef7de38"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0262.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1654,7 +1654,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0263.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1670,7 +1670,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0264.DIM.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -1686,7 +1686,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0265.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1702,7 +1702,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0266.DIM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1718,7 +1718,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0267.DIM.lz",
             MediaType  = MediaType.XDF_525,
@@ -1734,7 +1734,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0268.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1750,7 +1750,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0269.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1766,7 +1766,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0270.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1782,7 +1782,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0271.DIM.lz",
             MediaType  = MediaType.DMF,
@@ -1798,7 +1798,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0272.DIM.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -1814,7 +1814,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0273.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1830,7 +1830,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0280.DIM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -1846,7 +1846,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0281.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1862,7 +1862,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0282.DIM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -1878,7 +1878,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0283.DIM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -1896,7 +1896,7 @@ public class RayDIM : BlockMediaImageTest
             }
             */
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0284.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1912,7 +1912,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0285.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1928,7 +1928,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0287.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1944,7 +1944,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0288.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -1960,7 +1960,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0289.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1976,7 +1976,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0290.DIM.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -1992,7 +1992,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0299.DIM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -2008,7 +2008,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0300.DIM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -2024,7 +2024,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0301.DIM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -2040,7 +2040,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0302.DIM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -2056,7 +2056,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0303.DIM.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -2072,7 +2072,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0304.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -2088,7 +2088,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0305.DIM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -2104,7 +2104,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0307.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -2120,7 +2120,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0308.DIM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2136,7 +2136,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0311.DIM.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -2152,7 +2152,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0314.DIM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -2168,7 +2168,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0316.DIM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -2184,7 +2184,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0317.DIM.lz",
             MediaType  = MediaType.DMF,
@@ -2200,7 +2200,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0318.DIM.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -2216,7 +2216,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0319.DIM.lz",
             MediaType  = MediaType.DMF,
@@ -2232,7 +2232,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0320.DIM.lz",
             MediaType  = MediaType.DMF,
@@ -2248,7 +2248,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0322.DIM.lz",
             MediaType  = MediaType.Unknown,
@@ -2264,7 +2264,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1dd8.dim.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -2280,7 +2280,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1dd.dim.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -2296,7 +2296,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1dd_fdformat_f200.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2312,7 +2312,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1dd_fdformat_f205.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2328,7 +2328,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd8.dim.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -2344,7 +2344,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd.dim.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -2352,7 +2352,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "6213897b7dbf263f12abf76901d43862"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_fdformat_f400.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2368,7 +2368,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_fdformat_f410.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2384,7 +2384,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_fdformat_f720.dim.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -2400,7 +2400,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_fdformat_f800.dim.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2416,7 +2416,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_fdformat_f820.dim.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -2432,7 +2432,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_freedos_800s.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2448,7 +2448,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_maxiform_1640s.dim.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -2464,7 +2464,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_maxiform_840s.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2480,7 +2480,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_qcopy_1476s.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2496,7 +2496,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_qcopy_1600s.dim.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2512,7 +2512,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_qcopy_1640s.dim.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -2528,7 +2528,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd.dim.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -2544,7 +2544,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_fdformat_f144.dim.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -2560,7 +2560,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_fdformat_f148.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2576,7 +2576,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_maxiform_2788s.dim.lz",
             MediaType  = MediaType.FDFORMAT_525_HD,
@@ -2592,7 +2592,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_alt.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2600,7 +2600,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "14c5ba6812de510b5839bcdf7fa1eb2e"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_alt_pass.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2616,7 +2616,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd.dim.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -2632,7 +2632,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fdformat_f800.dim.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2648,7 +2648,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fdformat_f820.dim.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -2664,7 +2664,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_freedos_1600s.dim.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2680,7 +2680,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_maxiform_1600s.dim.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2696,7 +2696,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_qcopy_1494s.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2712,7 +2712,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_qcopy_1600s.dim.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2728,7 +2728,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_qcopy_1660s.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2744,7 +2744,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2ed.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2752,7 +2752,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1145056a4b890bc8929fd4f93c5d8a90"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2ed_pass.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2768,7 +2768,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_alt.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2776,7 +2776,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "42d0fd9960c4016c1463e92cf555cadb"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_alt_pass.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2792,7 +2792,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd.dim.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -2800,7 +2800,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1d32a686b7675c7a4f88c15522738432"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_dmf.dim.lz",
             MediaType  = MediaType.DMF,
@@ -2816,7 +2816,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_f168.dim.lz",
             MediaType  = MediaType.DMF,
@@ -2832,7 +2832,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_f16.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2848,7 +2848,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_f172.dim.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -2864,7 +2864,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_freedos_3360s.dim.lz",
             MediaType  = MediaType.DMF,
@@ -2880,7 +2880,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_maxiform_3200s.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2896,7 +2896,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_pass.dim.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -2904,7 +2904,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1d32a686b7675c7a4f88c15522738432"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2460s.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2920,7 +2920,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2720s.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2936,7 +2936,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2788s.dim.lz",
             MediaType  = MediaType.FDFORMAT_525_HD,
@@ -2952,7 +2952,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2880s.dim.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -2968,7 +2968,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2952s.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -2984,7 +2984,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2988s.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -3000,7 +3000,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_3200s.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -3016,7 +3016,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_3320s.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -3032,7 +3032,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_3360s.dim.lz",
             MediaType  = MediaType.DMF,
@@ -3048,7 +3048,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_3486s.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -3064,7 +3064,7 @@ public class RayDIM : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_xdf_alt.dim.lz",
             MediaType  = MediaType.Unknown,
@@ -3072,7 +3072,7 @@ public class RayDIM : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "a1678e57a7e474dfaeb6f710f9cfe523"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_xdf_alt_pass.dim.lz",
             MediaType  = MediaType.Unknown,

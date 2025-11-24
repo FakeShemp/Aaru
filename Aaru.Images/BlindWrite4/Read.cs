@@ -728,8 +728,9 @@ public sealed partial class BlindWrite4
 
         // As long as subchannel is written for any track, it is present for all tracks
         if(Tracks.Any(static t => t.SubchannelType == TrackSubchannelType.Packed))
-            foreach(Track track in Tracks)
-                track.SubchannelType = TrackSubchannelType.Packed;
+        {
+            foreach(Track track in Tracks) track.SubchannelType = TrackSubchannelType.Packed;
+        }
 
         _imageInfo.MediaType = MediaType.CD;
 

@@ -41,7 +41,7 @@ public class Apridisk : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "apr00001.dsk.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -57,7 +57,7 @@ public class Apridisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "apr00002.dsk.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -73,7 +73,7 @@ public class Apridisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "apr00006.dsk.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -89,7 +89,7 @@ public class Apridisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "apr00203.dsk.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,

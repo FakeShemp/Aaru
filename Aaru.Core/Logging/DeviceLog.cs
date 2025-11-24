@@ -51,7 +51,7 @@ public static class DeviceLog
         {
             string[] args = Environment.GetCommandLineArgs();
 
-            for(int i = 0; i < args.Length; i++)
+            for(var i = 0; i < args.Length; i++)
             {
                 if(args[i].StartsWith("/dev",    StringComparison.OrdinalIgnoreCase) ||
                    args[i].StartsWith("aaru://", StringComparison.OrdinalIgnoreCase))

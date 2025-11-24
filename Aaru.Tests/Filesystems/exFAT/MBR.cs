@@ -43,7 +43,7 @@ public class MBR() : FilesystemTest("exfat")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -53,7 +53,7 @@ public class MBR() : FilesystemTest("exfat")
             ClusterSize  = 4096,
             VolumeSerial = "603565AC"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.11.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -63,7 +63,7 @@ public class MBR() : FilesystemTest("exfat")
             ClusterSize  = 4096,
             VolumeSerial = "595AC21E"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "win10.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -73,7 +73,7 @@ public class MBR() : FilesystemTest("exfat")
             ClusterSize  = 4096,
             VolumeSerial = "20126663"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "winvista.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -83,7 +83,7 @@ public class MBR() : FilesystemTest("exfat")
             ClusterSize  = 4096,
             VolumeSerial = "0AC5CA52"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_4.19_exfat_flashdrive.aif",
             MediaType    = MediaType.GENERIC_HDD,

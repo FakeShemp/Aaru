@@ -41,7 +41,7 @@ public class BlindWrite7 : OpticalMediaImageTest
 
     public override OpticalImageTestExpected[] Tests =>
     [
-        new OpticalImageTestExpected
+        new()
         {
             TestFile   = "report_cdr.B6T",
             MediaType  = MediaType.CDR,
@@ -79,7 +79,7 @@ public class BlindWrite7 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile   = "report_cdrom.B6T",
             MediaType  = MediaType.CDROM,
@@ -117,7 +117,7 @@ public class BlindWrite7 : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile   = "report_cdrw.B6T",
             MediaType  = MediaType.CDRW,

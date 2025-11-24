@@ -43,7 +43,7 @@ public class F2Fs() : FilesystemTest("f2fs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -54,7 +54,7 @@ public class F2Fs() : FilesystemTest("f2fs")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "81bd3a4e-de0c-484c-becc-aaa479b2070a"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_4.19_f2fs_flashdrive.aif",
             MediaType    = MediaType.GENERIC_HDD,

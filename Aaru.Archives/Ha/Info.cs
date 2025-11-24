@@ -17,7 +17,7 @@ public sealed partial class Ha
         Stream stream = filter.GetDataForkStream();
         stream.Position = 0;
 
-        byte[] hdr = new byte[Marshal.SizeOf<HaHeader>()];
+        var hdr = new byte[Marshal.SizeOf<HaHeader>()];
 
         stream.ReadExactly(hdr, 0, hdr.Length);
 
@@ -37,7 +37,7 @@ public sealed partial class Ha
         Stream stream = filter.GetDataForkStream();
         stream.Position = 0;
 
-        byte[] hdr = new byte[Marshal.SizeOf<HaHeader>()];
+        var hdr = new byte[Marshal.SizeOf<HaHeader>()];
 
         stream.ReadExactly(hdr, 0, hdr.Length);
 

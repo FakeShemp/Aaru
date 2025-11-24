@@ -44,7 +44,7 @@ public class GPT() : FilesystemTest("ntfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "haiku_hrev51259.aif",
             MediaType    = MediaType.GENERIC_HDD,

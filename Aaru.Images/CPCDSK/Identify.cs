@@ -51,15 +51,14 @@ public sealed partial class Cpcdsk
 
         if(stream.Length < 512) return false;
 
-        byte[] headerB = new byte[256];
+        var headerB = new byte[256];
         stream.EnsureRead(headerB, 0, 256);
 
         int pos;
 
         for(pos = 0; pos < 254; pos++)
-        {
-            if(headerB[pos] == 0x0D && headerB[pos + 1] == 0x0A) break;
-        }
+            if(headerB[pos] == 0x0D && headerB[pos + 1] == 0x0A)
+                break;
 
         if(pos >= 254) return false;
 

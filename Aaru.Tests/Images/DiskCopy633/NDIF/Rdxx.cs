@@ -44,7 +44,7 @@ public class Rdxx : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RO_DOS_1440.img",
             MediaType  = MediaType.DOS_35_HD,
@@ -60,7 +60,7 @@ public class Rdxx : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RO_DOS_720.img",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -76,7 +76,7 @@ public class Rdxx : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RO_DOS_DMF.img",
             MediaType  = MediaType.DMF,
@@ -92,7 +92,7 @@ public class Rdxx : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RO_HFS_1440.img",
             MediaType  = MediaType.DOS_35_HD,
@@ -100,7 +100,7 @@ public class Rdxx : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "3160038ca028ccf52ad7863790072145"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RO_HFS_800.img",
             MediaType  = MediaType.AppleSonyDS,
@@ -108,7 +108,7 @@ public class Rdxx : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "5e255c4bc0f6a26ecd27845b37e65aaa"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RO_HFS_DMF.img",
             MediaType  = MediaType.DMF,
@@ -116,7 +116,7 @@ public class Rdxx : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "652dc979c177f2d8e846587158b38478"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RO_PD_1440.img",
             MediaType  = MediaType.DOS_35_HD,
@@ -124,7 +124,7 @@ public class Rdxx : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "7975e8cf7579a6848d6fb4e546d1f682"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RO_PD_800.img",
             MediaType  = MediaType.AppleSonyDS,
@@ -132,7 +132,7 @@ public class Rdxx : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "a72da7aedadbe194c22a3d71c62e4766"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RO_PD_DMF.img",
             MediaType  = MediaType.DMF,

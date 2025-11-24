@@ -43,7 +43,7 @@ public class APM() : ReadOnlyFilesystemTest("fat16")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_6.0.2.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -56,7 +56,7 @@ public class APM() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "96AE0CF4"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_7.0.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -69,7 +69,7 @@ public class APM() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "385C1B08"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_8.0.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -82,7 +82,7 @@ public class APM() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "024F191D"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.3.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -95,7 +95,7 @@ public class APM() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "C45B0908"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.4.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -108,7 +108,7 @@ public class APM() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "24660C0F"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.11.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -121,7 +121,7 @@ public class APM() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "063D1F09"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "morphos_3.13.aif",
             MediaType    = MediaType.GENERIC_HDD,

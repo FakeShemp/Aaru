@@ -42,7 +42,7 @@ public class D81 : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "Strategiegames #01 (19xx)(-).d81.lz",
             MediaType  = MediaType.CBM_35_DD,

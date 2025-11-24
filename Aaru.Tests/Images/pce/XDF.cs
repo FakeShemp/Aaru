@@ -44,7 +44,7 @@ public class XDF : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_xdf_teledisk.xdf.lz",
             MediaType  = MediaType.XDF_35,
@@ -52,7 +52,7 @@ public class XDF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "90e8f5022bff8fa90c5148ec35f5d64c"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_xdf.xdf.lz",
             MediaType  = MediaType.XDF_35,

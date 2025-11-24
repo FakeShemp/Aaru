@@ -623,9 +623,7 @@ public partial class Dump
             _speedStopwatch.Restart();
 
             if(blocksToRead == 1)
-            {
                 error = _dev.ReadSingleBlock(out cmdBuf, out _, (uint)i, blockSize, byteAddressed, timeout, out _);
-            }
             else if(supportsCmd23)
             {
                 error = _dev.ReadWithBlockCount(out cmdBuf,

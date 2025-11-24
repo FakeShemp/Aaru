@@ -43,7 +43,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_6.0.2.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -56,7 +56,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "44B70CF7"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_7.0.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -69,7 +69,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "1F2E1B0B"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_8.0.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -82,7 +82,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "936619E5"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "drdos_3.40.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -94,7 +94,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             SystemId    = "IBM  3.2",
             VolumeName  = "VOLUMELABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "drdos_3.41.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -106,7 +106,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             SystemId    = "IBM  3.2",
             VolumeName  = "VOLUMELABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "drdos_5.00.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -118,7 +118,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             SystemId    = "IBM  3.3",
             VolumeName  = "VOLUMELABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "drdos_6.00.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -130,7 +130,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             SystemId    = "IBM  3.3",
             VolumeName  = "VOLUMELABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "drdos_7.02.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -142,7 +142,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             SystemId    = "IBM  3.3",
             VolumeName  = "VOLUMELABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "drdos_7.03.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -154,7 +154,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             SystemId    = "DRDOS  7",
             VolumeName  = "VOLUMELABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "drdos_8.00.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -167,7 +167,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "0A070554"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "drdos_8.10.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -180,7 +180,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "0A1A113F"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "msdos_3.30.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -191,7 +191,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             ClusterSize = 2048,
             SystemId    = "MSDOS3.3"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "msdos_3.30A.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -202,7 +202,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             ClusterSize = 2048,
             SystemId    = "MSDOS3.3"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "msdos_3.31.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -214,7 +214,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             SystemId    = "IBM  3.3",
             VolumeName  = "VOLUMELABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "msdos_4.00.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -227,7 +227,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "0F2E0A16"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "msdos_4.01.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -240,7 +240,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "217B1909"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "msdos_5.00.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -253,7 +253,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "19320A14"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "msdos_5.00a.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -266,7 +266,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "30400A09"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "msdos_6.00.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -279,7 +279,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "39660A0C"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "msdos_6.20rc1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -292,7 +292,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "3E2018E9"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "msdos_6.20.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -305,7 +305,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "10550A18"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "msdos_6.21.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -318,7 +318,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "05580A12"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "msdos_6.22.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -331,7 +331,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "054C0A08"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "msdos_7.10.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -344,7 +344,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "356B1809"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "novelldos_7.00.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -356,7 +356,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             SystemId    = "IBM  3.3",
             VolumeName  = "VOLUMELABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "opendos_7.01.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -368,7 +368,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             SystemId    = "IBM  3.3",
             VolumeName  = "VOLUMELABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "pcdos_2000.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -381,7 +381,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "30490A0F"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "pcdos_4.00.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -394,7 +394,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "2D670A17"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "pcdos_4.01.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -407,7 +407,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "23350A15"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "pcdos_5.00.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -420,7 +420,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "1B290A0D"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "pcdos_5.02.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -433,7 +433,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "340B0A13"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "pcdos_6.10.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -446,7 +446,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "052A0A0B"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "pcdos_6.30.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -459,7 +459,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "1E3D0A0F"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "pcdos_7.00.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -472,7 +472,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "2A420A06"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "msos2_1.21.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -485,7 +485,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "9C162C15"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "msos2_1.30.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -498,7 +498,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "9C1E2C15"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "multiuserdos_7.22r4.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -510,7 +510,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             SystemId    = "IBM  3.2",
             VolumeName  = "VOLUMELABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "os2_1.20.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -523,7 +523,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "5D4CA815"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "os2_1.30.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -536,7 +536,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "5D49D815"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "os2_6.307.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -549,7 +549,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "5D544815"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "os2_6.514.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -562,7 +562,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "NO NAME",
             VolumeSerial = "5CEEF415"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "os2_6.617.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -575,7 +575,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "5D430415"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "os2_8.162.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -588,7 +588,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "5CF5A415"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "os2_9.023.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -601,7 +601,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "9BBC8415"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "ecs.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -614,7 +614,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "1BE5B814"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.3.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -627,7 +627,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "84FC0912"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.4.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -640,7 +640,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "82451318"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.11.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -653,7 +653,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "3EF71EF4"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "win10.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -666,7 +666,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "DAF97911"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "win2000.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -679,7 +679,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "305637BD"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "win95osr2.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -692,7 +692,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "275B0DE4"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "win95osr2.5.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -705,7 +705,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "09650DFC"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "win95osr2.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -718,7 +718,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "38270D18"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "win95.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -731,7 +731,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "2E620D0C"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "win98se.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -744,7 +744,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "0B4F0EED"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "win98.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -757,7 +757,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "0E122464"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "winme.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -770,7 +770,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "3B5F0F02"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "winnt_3.10.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -783,7 +783,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "C84CB6F2"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "winnt_3.50.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -796,7 +796,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "D0E9AD4E"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "winnt_3.51.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -809,7 +809,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "C039A2EC"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "winnt_4.00.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -822,7 +822,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "D840DD84"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "winvista.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -835,7 +835,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "9AAA4216"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "beos_r4.5.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -848,7 +848,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUME LABE",
             VolumeSerial = "00000000"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.0.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -857,7 +857,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             Clusters    = 65367,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.0.29.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -869,7 +869,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609ACB34"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.0.34.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -881,7 +881,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609BAB2B"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.0.37.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -893,7 +893,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "609D1C9C"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.0.38.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -905,7 +905,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609C3E60"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.2.17.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -917,7 +917,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609C663E"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.2.20.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -929,7 +929,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609C9BCB"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.4.18.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -941,7 +941,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609CA8D4"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.0.0_umsdos.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -950,7 +950,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             Clusters    = 65367,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.0.29_umsdos.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -962,7 +962,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609ACD0D"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.0.34_umsdos.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -974,7 +974,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609BAD75"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.0.37_umsdos.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -986,7 +986,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "609D1E3A"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.0.38_umsdos.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -998,7 +998,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609C4C2C"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.2.17_umsdos.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1010,7 +1010,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609C6CF3"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.2.20_umsdos.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1022,7 +1022,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609C9F38"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.4.18_umsdos.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1034,7 +1034,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609CAC4B"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "amigaos_3.9.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1047,7 +1047,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "374D3BD1"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "aros.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1059,7 +1059,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "52BEA34A"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "freebsd_6.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1072,7 +1072,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "437B1EF6"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "freebsd_7.0.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1085,7 +1085,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "BE841EF5"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "freebsd_8.2.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1098,7 +1098,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "E40B1EF6"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macos_7.6.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1111,7 +1111,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "27761816"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "ecs20_fstester.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1124,7 +1124,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUME LABE",
             VolumeSerial = "66AAF014"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_4.19_fat16_msdos_flashdrive.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1137,7 +1137,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "DICSETTER",
             VolumeSerial = "A552A493"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_4.19_vfat16_flashdrive.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1150,7 +1150,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "DICSETTER",
             VolumeSerial = "FCC308A7"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "beos_r5.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1163,7 +1163,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "00000000"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "dflybsd_1.0.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1176,7 +1176,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "NO NAME",
             VolumeSerial = "1B3F1B00"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "netbsd_1.6.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1189,7 +1189,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "80A91CF3"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "netbsd_6.1.5.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1202,7 +1202,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "40C91B1F"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "netbsd_7.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1215,7 +1215,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "8413181B"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "openbsd_4.7.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1228,7 +1228,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "84E407F6"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "pcexchange_2.0.2.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1241,7 +1241,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "2A6508F2"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "pcexchange_2.0.5.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1254,7 +1254,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "2A6508F2"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "pcexchange_2.1.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1267,7 +1267,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "CB430C38"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "pcexchange_2.2.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -1280,7 +1280,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "2A6508F2"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "accesspc_2.0f6.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -1292,7 +1292,7 @@ public class MBR() : ReadOnlyFilesystemTest("fat16")
             SystemId    = "INSIGNIA",
             VolumeName  = "VOLUMELABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "morphos_3.13.aif",
             MediaType    = MediaType.GENERIC_HDD,

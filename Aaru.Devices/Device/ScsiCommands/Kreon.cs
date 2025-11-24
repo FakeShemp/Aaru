@@ -128,7 +128,7 @@ public partial class Device
         senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
-        byte[] buffer = new byte[26];
+        var buffer = new byte[26];
         features = 0;
 
         cdb[0] = (byte)ScsiCommands.KreonCommand;
@@ -146,9 +146,9 @@ public partial class Device
 
         if(buffer[0] != 0xA5 || buffer[1] != 0x5A || buffer[2] != 0x5A || buffer[3] != 0xA5) return true;
 
-        for(int i = 4; i < 26; i += 2)
+        for(var i = 4; i < 26; i += 2)
         {
-            ushort feature = BitConverter.ToUInt16(buffer, i);
+            var feature = BitConverter.ToUInt16(buffer, i);
 
             if(feature == 0x0000) break;
 

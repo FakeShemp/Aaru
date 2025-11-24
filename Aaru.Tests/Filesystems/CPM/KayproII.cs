@@ -44,7 +44,7 @@ public class KayproII() : ReadOnlyFilesystemTest("cpmfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "filename.imd",
             MediaType   = MediaType.Unknown,
@@ -54,7 +54,7 @@ public class KayproII() : ReadOnlyFilesystemTest("cpmfs")
             Clusters    = 194,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "files.imd",
             MediaType   = MediaType.Unknown,

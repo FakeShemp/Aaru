@@ -39,7 +39,7 @@ public class Rdb : PartitionSchemeTest
 
     public override PartitionTest[] Tests =>
     [
-        new PartitionTest
+        new()
         {
             TestFile = "amigaos_3.9.aif",
             Partitions =
@@ -106,7 +106,7 @@ public class Rdb : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "amigaos_4.0.aif",
             Partitions =
@@ -173,7 +173,7 @@ public class Rdb : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "parted.aif",
             Partitions =

@@ -41,7 +41,7 @@ public class TeleDisk : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd8.td0.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -57,7 +57,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_fdformat_f400.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -65,7 +65,7 @@ public class TeleDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "0aef12c906b744101b932d799ca88a78"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_fdformat_f410.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -81,7 +81,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_fdformat_f720.td0.lz",
             MediaType  = MediaType.ECMA_78_2,
@@ -97,7 +97,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_fdformat_f800.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -113,7 +113,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_fdformat_f820.td0.lz",
             MediaType  = MediaType.FDFORMAT_525_DD,
@@ -129,7 +129,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_freedos_800s.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -137,7 +137,7 @@ public class TeleDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "29054ef703394ee3b35e849468a412ba"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_maxiform_1640s.td0.lz",
             MediaType  = MediaType.FDFORMAT_525_DD,
@@ -153,7 +153,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_maxiform_840s.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -169,7 +169,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_qcopy_1476s.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -185,7 +185,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_qcopy_1600s.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -201,7 +201,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_qcopy_1640s.td0.lz",
             MediaType  = MediaType.FDFORMAT_525_DD,
@@ -217,7 +217,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd.td0.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -225,7 +225,7 @@ public class TeleDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "6213897b7dbf263f12abf76901d43862"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_fdformat_f144.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -241,7 +241,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_fdformat_f148.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -257,7 +257,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_maxiform_2788s.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -273,7 +273,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd.td0.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -289,7 +289,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_xdf.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -297,7 +297,7 @@ public class TeleDisk : BlockMediaImageTest
             SectorSize = 128,
             Md5        = "c14ca79c13d605e44374bd6072f33ed7"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fdformat_800.td0.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -313,7 +313,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fdformat_820.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -329,7 +329,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fdformat_f800.td0.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -345,7 +345,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fdformat_f820.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -361,7 +361,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_freedos_1600s.td0.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -377,7 +377,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_freedos.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -393,7 +393,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_maxiform_1600s.td0.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -409,7 +409,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_qcopy_1494s.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -425,7 +425,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_qcopy_1600s.td0.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -441,7 +441,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_qcopy_1660s.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -457,7 +457,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd.td0.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -473,7 +473,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_2m_max.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -481,7 +481,7 @@ public class TeleDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "4b88a3e43b57778422e8b1e851a9c902"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_2m.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -489,7 +489,7 @@ public class TeleDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "d032d928c43b66419b7404b016ec07ff"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_alt_adv.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -497,7 +497,7 @@ public class TeleDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1d32a686b7675c7a4f88c15522738432"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_alt_dos_adv.td0.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -505,7 +505,7 @@ public class TeleDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "8aea37782c507baf6b294467249b4608"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_alt_dos.td0.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -513,7 +513,7 @@ public class TeleDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "8aea37782c507baf6b294467249b4608"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_alt.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -521,7 +521,7 @@ public class TeleDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1d32a686b7675c7a4f88c15522738432"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_dmf.td0.lz",
             MediaType  = MediaType.DMF,
@@ -529,7 +529,7 @@ public class TeleDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "28764d4f69c3865e2af71a41ca3f432f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_168.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -537,7 +537,7 @@ public class TeleDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "323ea79c83432663669b9bc29f13785c"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_172.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -545,7 +545,7 @@ public class TeleDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "9dea1e119a73a21a38d134f36b2e5564"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_f168.td0.lz",
             MediaType  = MediaType.DMF,
@@ -561,7 +561,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_f16.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -577,7 +577,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_f172.td0.lz",
             MediaType  = MediaType.DMF_82,
@@ -593,7 +593,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_freedos_3360s.td0.lz",
             MediaType  = MediaType.DMF,
@@ -609,7 +609,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_freedos_3486s.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -625,7 +625,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_freedos.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -641,7 +641,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_maxiform_3200s.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -657,7 +657,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2460s.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -673,7 +673,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2720s.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -689,7 +689,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2788s.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -705,7 +705,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2880s.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -721,7 +721,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2952s.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -737,7 +737,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_3200s.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -753,7 +753,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_3320s.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -769,7 +769,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_3360s.td0.lz",
             MediaType  = MediaType.DMF,
@@ -785,7 +785,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_3486s.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -801,7 +801,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd.td0.lz",
             MediaType  = MediaType.Unknown,
@@ -817,7 +817,7 @@ public class TeleDisk : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_xdf_adv.td0.lz",
             MediaType  = MediaType.XDF_35,
@@ -825,7 +825,7 @@ public class TeleDisk : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "a8142f403d972f96787eb76655f5d42c"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_xdf.td0.lz",
             MediaType  = MediaType.XDF_35,

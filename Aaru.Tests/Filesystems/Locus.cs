@@ -42,7 +42,7 @@ public class Locus() : FilesystemTest("locus")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "mf2dd.img.lz",
             MediaType   = MediaType.DOS_35_DS_DD_9,
@@ -52,7 +52,7 @@ public class Locus() : FilesystemTest("locus")
             ClusterSize = 4096,
             VolumeName  = "Label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,

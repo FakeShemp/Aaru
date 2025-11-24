@@ -44,7 +44,7 @@ public sealed partial class DeviceReport
     public MmcSd MmcSdReport()
     {
         var    report = new MmcSd();
-        bool   sense  = true;
+        var    sense  = true;
         byte[] cid    = [];
         byte[] csd    = [];
         byte[] ecsd   = [];

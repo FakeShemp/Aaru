@@ -140,7 +140,7 @@ partial class Dump
 
         cmdBuf = new byte[2352 * blocksToRead + subSize * blocksToRead];
 
-        for(int b = 0; b < blocksToRead; b++)
+        for(var b = 0; b < blocksToRead; b++)
         {
             Array.Copy(dataBuf, 2352    * b, cmdBuf, (2352 + subSize) * b,        2352);
             Array.Copy(subBuf,  subSize * b, cmdBuf, (2352 + subSize) * b + 2352, subSize);

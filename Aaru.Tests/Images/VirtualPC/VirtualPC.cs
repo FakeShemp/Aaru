@@ -42,7 +42,7 @@ public class VirtualPc : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc40_dynamic_128mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -58,7 +58,7 @@ public class VirtualPc : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc40_fixed_128mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -74,7 +74,7 @@ public class VirtualPc : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc50_dynamic_512mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -90,7 +90,7 @@ public class VirtualPc : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc50_fixed_512mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -106,7 +106,7 @@ public class VirtualPc : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc50_dynamic_250mb.lz",
             MediaType  = MediaType.Unknown,
@@ -114,7 +114,7 @@ public class VirtualPc : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "a6041066df8f52f5d14b8200766d6bb5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc50_fixed_10mb.lz",
             MediaType  = MediaType.Unknown,
@@ -122,7 +122,7 @@ public class VirtualPc : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1c843b778d48a67b78e4ca65ab602673"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc504_dynamic_250mb.lz",
             MediaType  = MediaType.Unknown,
@@ -130,7 +130,7 @@ public class VirtualPc : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "e924cd1bbb16f6a6056f81df410922ae"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc504_fixed_10mb.lz",
             MediaType  = MediaType.Unknown,
@@ -138,7 +138,7 @@ public class VirtualPc : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b790693b1c94bed209ee1bb9d0b6a075"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc60_differencing_parent_250mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -146,7 +146,7 @@ public class VirtualPc : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1f9e3dc39db37a9e01fede6a12844222"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc60_dynamic_250mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -154,7 +154,7 @@ public class VirtualPc : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "943a9da318111f50a92c3f2314fad1e0"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc60_fixed_10mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -162,7 +162,7 @@ public class VirtualPc : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "4b4e98a5bba2469382132f9289ae1c57"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc601_dynamic_250mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -170,7 +170,7 @@ public class VirtualPc : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1f9e3dc39db37a9e01fede6a12844222"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc601_fixed_10mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -178,7 +178,7 @@ public class VirtualPc : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "4b4e98a5bba2469382132f9289ae1c57"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc702_differencing_parent_250mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -186,7 +186,7 @@ public class VirtualPc : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "df41b76f8532fc8ef775f89212191244"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc702_dynamic_250mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -194,7 +194,7 @@ public class VirtualPc : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1f9e3dc39db37a9e01fede6a12844222"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vpc702_fixed_10mb.vhd.lz",
             MediaType  = MediaType.Unknown,

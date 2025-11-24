@@ -40,7 +40,7 @@ public class Mbr : PartitionSchemeTest
 
     public override PartitionTest[] Tests =>
     [
-        new PartitionTest
+        new()
         {
             TestFile = "concurrentdos_6.0.aif",
             Partitions =
@@ -83,7 +83,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "darwin_1.4.1.aif",
             Partitions =
@@ -108,7 +108,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "darwin_6.0.2.aif",
             Partitions =
@@ -151,7 +151,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "darwin_8.0.1.aif",
             Partitions =
@@ -194,7 +194,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "drdos_3.40.aif",
             Partitions =
@@ -237,7 +237,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "drdos_3.41.aif",
             Partitions =
@@ -280,7 +280,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "drdos_5.00.aif",
             Partitions =
@@ -332,7 +332,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "drdos_6.00.aif",
             Partitions =
@@ -384,7 +384,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "drdos_7.02.aif",
             Partitions =
@@ -436,7 +436,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "drdos_7.03.aif",
             Partitions =
@@ -488,7 +488,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "drdos_8.0.aif",
             Partitions =
@@ -540,7 +540,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "linux.aif",
             Partitions =
@@ -592,7 +592,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "macosx_10.3.aif",
             Partitions =
@@ -653,7 +653,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "macosx_10.4.aif",
             Partitions =
@@ -714,7 +714,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "msdos_3.30a.aif",
             Partitions =
@@ -865,7 +865,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "msdos_5.00.aif",
             Partitions =
@@ -989,7 +989,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "msdos_6.00.aif",
             Partitions =
@@ -1077,7 +1077,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "msdos_6.20.aif",
             Partitions =
@@ -1138,7 +1138,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "msdos_6.21.aif",
             Partitions =
@@ -1208,7 +1208,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "msdos_6.22.aif",
             Partitions =
@@ -1260,7 +1260,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "multiuserdos_7.22r04.aif",
             Partitions =
@@ -1312,7 +1312,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "novelldos_7.00.aif",
             Partitions =
@@ -1364,7 +1364,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "opendos_7.01.aif",
             Partitions =
@@ -1416,7 +1416,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "parted.aif",
             Partitions =
@@ -1450,7 +1450,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "pcdos_2000.aif",
             Partitions =
@@ -1502,7 +1502,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "pcdos_2.00.aif",
             Partitions =
@@ -1518,7 +1518,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "pcdos_2.10.aif",
             Partitions =
@@ -1534,7 +1534,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "pcdos_3.00.aif",
             Partitions =
@@ -1550,7 +1550,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "pcdos_3.10.aif",
             Partitions =
@@ -1566,7 +1566,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "pcdos_3.30.aif",
             Partitions =
@@ -1717,7 +1717,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "pcdos_4.00.aif",
             Partitions =
@@ -1769,7 +1769,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "pcdos_5.00.aif",
             Partitions =
@@ -1821,7 +1821,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "pcdos_6.10.aif",
             Partitions =
@@ -1873,7 +1873,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "win95.aif",
             Partitions =
@@ -1925,7 +1925,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "win96osr25.aif",
             Partitions =
@@ -1986,7 +1986,7 @@ public class Mbr : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "winnt_3.10.aif",
             Partitions =

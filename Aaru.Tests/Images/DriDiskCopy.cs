@@ -41,7 +41,7 @@ public class DriDiskCopy : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0000.IMG.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -49,7 +49,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "e8bbbd22db87181974e12ba0227ea011"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0001.IMG.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -57,7 +57,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "9f5635f3df4d880a500910b0ad1ab535"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0009.IMG.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -73,7 +73,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0010.IMG.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -81,7 +81,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "9e2b01f4397db2a6c76e2bc267df37b3"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0024.IMG.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -97,7 +97,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0025.IMG.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -105,7 +105,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "f7dd138edcab7bd328d7396d48aac395"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0030.IMG.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -121,7 +121,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0035.IMG.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -137,7 +137,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0036.IMG.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -153,7 +153,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0037.IMG.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -169,7 +169,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0038.IMG.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -185,7 +185,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0039.IMG.lz",
             MediaType  = MediaType.DOS_35_SS_DD_8,
@@ -201,7 +201,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0040.IMG.lz",
             MediaType  = MediaType.DOS_35_SS_DD_8,
@@ -217,7 +217,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0041.IMG.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -233,7 +233,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0042.IMG.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -249,7 +249,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0043.IMG.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -265,7 +265,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0044.IMG.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -281,7 +281,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0045.IMG.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -297,7 +297,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0046.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -313,7 +313,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0047.IMG.lz",
             MediaType  = MediaType.DOS_35_DS_DD_8,
@@ -329,7 +329,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0048.IMG.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -345,7 +345,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0049.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -361,7 +361,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0050.IMG.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -377,7 +377,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0051.IMG.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -393,7 +393,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0052.IMG.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -409,7 +409,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0053.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -425,7 +425,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0054.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -433,7 +433,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "803b01a0b440c2837d37c21308f30cd5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0055.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -449,7 +449,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0056.IMG.lz",
             MediaType  = MediaType.DMF,
@@ -465,7 +465,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0057.IMG.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -481,7 +481,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0058.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -497,7 +497,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0059.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -513,7 +513,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0060.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -529,7 +529,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0069.IMG.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -545,7 +545,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0073.IMG.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -561,7 +561,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0074.IMG.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -577,7 +577,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0075.IMG.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -593,7 +593,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0076.IMG.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -609,7 +609,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0077.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -625,7 +625,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0078.IMG.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -633,7 +633,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "c9a193837db7d8a5eb025eb41e8a76d7"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0080.IMG.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -649,7 +649,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0081.IMG.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -665,7 +665,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0082.IMG.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -681,7 +681,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0083.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -697,7 +697,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0084.IMG.lz",
             MediaType  = MediaType.DMF,
@@ -713,7 +713,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0085.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -729,7 +729,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0089.IMG.lz",
             MediaType  = MediaType.XDF_525,
@@ -737,7 +737,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "0abf995856080e5292e63c63f7c97a45"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0090.IMG.lz",
             MediaType  = MediaType.XDF_35,
@@ -745,7 +745,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "8be2aaf6ecea213aee9fc82c8a85061e"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0091.IMG.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -761,7 +761,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0092.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -777,7 +777,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0093.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -793,7 +793,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0094.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -809,7 +809,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0097.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -825,7 +825,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0098.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -841,7 +841,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0099.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -857,7 +857,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0101.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -873,7 +873,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0103.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -889,7 +889,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0105.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -897,7 +897,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "d40a99cb549fcfb26fcf9ef01b5dfca7"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0106.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -913,7 +913,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0107.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -929,7 +929,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0108.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -945,7 +945,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0109.IMG.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -961,7 +961,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0110.IMG.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -977,7 +977,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0111.IMG.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -993,7 +993,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0112.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -1009,7 +1009,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0113.IMG.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1025,7 +1025,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0114.IMG.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -1041,7 +1041,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0115.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -1057,7 +1057,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0116.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -1073,7 +1073,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0117.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -1089,7 +1089,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0120.IMG.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -1105,7 +1105,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0121.IMG.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -1121,7 +1121,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0122.IMG.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -1137,7 +1137,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0123.IMG.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -1153,7 +1153,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0124.IMG.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -1169,7 +1169,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0125.IMG.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1185,7 +1185,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0126.IMG.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1201,7 +1201,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0163.IMG.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -1217,7 +1217,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0164.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -1233,7 +1233,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0166.IMG.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1249,7 +1249,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0168.IMG.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -1265,7 +1265,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0169.IMG.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1281,7 +1281,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0173.IMG.lz",
             MediaType  = MediaType.DOS_35_SS_DD_9,
@@ -1289,7 +1289,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "028769dc0abefab1740cc309432588b6"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0174.IMG.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1305,7 +1305,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0175.IMG.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1321,7 +1321,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0180.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -1337,7 +1337,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0181.IMG.lz",
             MediaType  = MediaType.DMF,
@@ -1353,7 +1353,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0182.IMG.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -1369,7 +1369,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0183.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -1385,7 +1385,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0262.IMG.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1401,7 +1401,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0263.IMG.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1417,7 +1417,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0264.IMG.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -1433,7 +1433,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0265.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -1449,7 +1449,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0266.IMG.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1465,7 +1465,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0267.IMG.lz",
             MediaType  = MediaType.XDF_525,
@@ -1481,7 +1481,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0268.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -1497,7 +1497,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0269.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -1513,7 +1513,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0270.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -1529,7 +1529,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0271.IMG.lz",
             MediaType  = MediaType.DMF,
@@ -1545,7 +1545,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0272.IMG.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -1561,7 +1561,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0273.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -1577,7 +1577,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0280.IMG.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -1593,7 +1593,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0281.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -1609,7 +1609,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0282.IMG.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -1625,7 +1625,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0283.IMG.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -1643,7 +1643,7 @@ public class DriDiskCopy : BlockMediaImageTest
             }
             */
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0284.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -1659,7 +1659,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0285.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -1675,7 +1675,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0287.IMG.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1691,7 +1691,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0288.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -1707,7 +1707,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0289.IMG.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1723,7 +1723,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0290.IMG.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -1739,7 +1739,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0291.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -1755,7 +1755,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0299.IMG.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -1771,7 +1771,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0300.IMG.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -1787,7 +1787,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0301.IMG.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -1803,7 +1803,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0302.IMG.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -1819,7 +1819,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0303.IMG.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -1835,7 +1835,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0304.IMG.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1851,7 +1851,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0305.IMG.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1867,7 +1867,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0308.IMG.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1883,7 +1883,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0311.IMG.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -1899,7 +1899,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0314.IMG.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1915,7 +1915,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0316.IMG.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1931,7 +1931,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0317.IMG.lz",
             MediaType  = MediaType.DMF,
@@ -1947,7 +1947,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0318.IMG.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -1963,7 +1963,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0319.IMG.lz",
             MediaType  = MediaType.DMF,
@@ -1979,7 +1979,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0320.IMG.lz",
             MediaType  = MediaType.DMF,
@@ -1995,7 +1995,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0322.IMG.lz",
             MediaType  = MediaType.Unknown,
@@ -2011,7 +2011,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1dd8.img.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -2027,7 +2027,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1dd.img.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -2043,7 +2043,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_2m_fast.img.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -2059,7 +2059,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_2m_max.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2075,7 +2075,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd8.img.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -2091,7 +2091,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_freedos_800s.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2099,7 +2099,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "29054ef703394ee3b35e849468a412ba"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd.img.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -2107,7 +2107,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "6213897b7dbf263f12abf76901d43862"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_maxiform_1640s.img.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -2123,7 +2123,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_maxiform_840s.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2139,7 +2139,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_qcopy_1476s.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2155,7 +2155,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_qcopy_1600s.img.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2171,7 +2171,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_qcopy_1640s.img.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -2187,7 +2187,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_2m_fast.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2203,7 +2203,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_2m_max.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2219,7 +2219,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd.img.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -2235,7 +2235,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_maxiform_2788s.img.lz",
             MediaType  = MediaType.FDFORMAT_525_HD,
@@ -2251,7 +2251,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_nec.img.lz",
             MediaType  = MediaType.SHARP_525,
@@ -2259,7 +2259,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "84812b791fd2113b4aa00894f6894339"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_xdf.img.lz",
             MediaType  = MediaType.XDF_525,
@@ -2267,7 +2267,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "d78dc81491edeec99aa202d02f3daf00"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_2m.dsk.lz",
             MediaType  = MediaType.Unknown,
@@ -2283,7 +2283,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_2m_fast.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2299,7 +2299,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_2mgui.dsk.lz",
             MediaType  = MediaType.Unknown,
@@ -2307,7 +2307,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 128,
             Md5        = "beb782f6bc970e32ceef79cd112e2e48"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_2m_max.dsk.lz",
             MediaType  = MediaType.Unknown,
@@ -2323,7 +2323,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_2m_max.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2339,7 +2339,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd.dsk.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -2355,7 +2355,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fdformat_800.dsk.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2371,7 +2371,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fdformat_820.dsk.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -2387,7 +2387,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_freedos_1600s.img.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2403,7 +2403,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_freedos.dsk.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2419,7 +2419,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd.img.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -2435,7 +2435,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_maxiform_1600s.img.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2451,7 +2451,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_qcopy_1494s.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2467,7 +2467,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_qcopy_1600s.img.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2483,7 +2483,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_qcopy_1660s.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2499,7 +2499,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2ed.img.lz",
             MediaType  = MediaType.ECMA_147,
@@ -2515,7 +2515,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_2m.dsk.lz",
             MediaType  = MediaType.Unknown,
@@ -2523,7 +2523,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2f6964d410b275c8e9f60fe2f24b361a"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_2m_fast.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2539,7 +2539,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_2mgui.dsk.lz",
             MediaType  = MediaType.Unknown,
@@ -2547,7 +2547,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 128,
             Md5        = "0037b5497d5cb0c7721085f61e223b6a"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_2m_max.dsk.lz",
             MediaType  = MediaType.Unknown,
@@ -2563,7 +2563,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_2m_max.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2579,7 +2579,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_dmf.img.lz",
             MediaType  = MediaType.DMF,
@@ -2595,7 +2595,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd.dsk.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -2611,7 +2611,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_168.dsk.lz",
             MediaType  = MediaType.DMF,
@@ -2627,7 +2627,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_172.dsk.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -2643,7 +2643,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_freedos_3360s.img.lz",
             MediaType  = MediaType.DMF,
@@ -2659,7 +2659,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_freedos_3486s.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2675,7 +2675,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd.img.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -2691,7 +2691,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_maxiform_3200s.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2707,7 +2707,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_nec.img.lz",
             MediaType  = MediaType.SHARP_525,
@@ -2715,7 +2715,7 @@ public class DriDiskCopy : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "626ec389d4f8968170401b3775181a2b"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2460s.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2731,7 +2731,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2720s.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2747,7 +2747,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2788s.img.lz",
             MediaType  = MediaType.FDFORMAT_525_HD,
@@ -2763,7 +2763,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2880s.img.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -2779,7 +2779,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2952s.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2795,7 +2795,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2988s.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2811,7 +2811,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_3200s.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2827,7 +2827,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_3320s.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2843,7 +2843,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_3360s.img.lz",
             MediaType  = MediaType.DMF,
@@ -2859,7 +2859,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_3486s.img.lz",
             MediaType  = MediaType.Unknown,
@@ -2875,7 +2875,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_xdf.dsk.lz",
             MediaType  = MediaType.XDF_35,
@@ -2891,7 +2891,7 @@ public class DriDiskCopy : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_xdf.img.lz",
             MediaType  = MediaType.XDF_35,

@@ -32,7 +32,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 namespace Aaru.Decoders.SCSI;
 

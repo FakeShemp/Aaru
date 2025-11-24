@@ -42,7 +42,7 @@ public class Uncompressed : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1dd8_all.dcf.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -58,7 +58,7 @@ public class Uncompressed : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1dd8_belelung.dcf.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -74,7 +74,7 @@ public class Uncompressed : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1dd8_fat.dcf.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -90,7 +90,7 @@ public class Uncompressed : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1dd_all.dcf.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -106,7 +106,7 @@ public class Uncompressed : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1dd_belelung.dcf.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -122,7 +122,7 @@ public class Uncompressed : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1dd_fat.dcf.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -138,7 +138,7 @@ public class Uncompressed : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd8_all.dcf.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -154,7 +154,7 @@ public class Uncompressed : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd8_belelung.dcf.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -170,7 +170,7 @@ public class Uncompressed : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd8_fat.dcf.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -188,7 +188,7 @@ public class Uncompressed : BlockMediaImageTest
         },
 
         // TODO: False positive CP/M filesystem
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_all.dcf.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -198,7 +198,7 @@ public class Uncompressed : BlockMediaImageTest
         },
 
         // TODO: False positive CP/M filesystem
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_belelung.dcf.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -206,7 +206,7 @@ public class Uncompressed : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "d2a33090ec03bfb536e7356deacf4bbc"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_fat.dcf.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -214,7 +214,7 @@ public class Uncompressed : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "d2a33090ec03bfb536e7356deacf4bbc"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_all.dcf.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -230,7 +230,7 @@ public class Uncompressed : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_belelung.dcf.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -246,7 +246,7 @@ public class Uncompressed : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_fat.dcf.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -262,7 +262,7 @@ public class Uncompressed : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_all.dcf.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -278,7 +278,7 @@ public class Uncompressed : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_belelung.dcf.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -294,7 +294,7 @@ public class Uncompressed : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fat.dcf.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -310,7 +310,7 @@ public class Uncompressed : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_all.dcf.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -326,7 +326,7 @@ public class Uncompressed : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_belelung.dcf.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -342,7 +342,7 @@ public class Uncompressed : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fat.dcf.lz",
             MediaType  = MediaType.DOS_35_HD,

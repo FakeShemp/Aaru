@@ -45,7 +45,7 @@ public class Adfs() : FilesystemTest("adfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "adfs_d.adf.lz",
             MediaType    = MediaType.ACORN_35_DS_DD,
@@ -56,7 +56,7 @@ public class Adfs() : FilesystemTest("adfs")
             VolumeName   = "ADFSD",
             VolumeSerial = "3E48"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "adfs_e.adf.lz",
             MediaType    = MediaType.ACORN_35_DS_DD,
@@ -67,7 +67,7 @@ public class Adfs() : FilesystemTest("adfs")
             VolumeName   = "ADFSE     ",
             VolumeSerial = "E13A"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "adfs_f.adf.lz",
             MediaType   = MediaType.ACORN_35_DS_HD,
@@ -76,7 +76,7 @@ public class Adfs() : FilesystemTest("adfs")
             Clusters    = 1600,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "adfs_e+.adf.lz",
             MediaType    = MediaType.ACORN_35_DS_DD,
@@ -87,7 +87,7 @@ public class Adfs() : FilesystemTest("adfs")
             VolumeName   = "ADFSE+    ",
             VolumeSerial = "1142"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "adfs_f+.adf.lz",
             MediaType   = MediaType.ACORN_35_DS_HD,
@@ -96,7 +96,7 @@ public class Adfs() : FilesystemTest("adfs")
             Clusters    = 1600,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "adfs_s.adf.lz",
             MediaType    = MediaType.ACORN_525_SS_DD_40,
@@ -107,7 +107,7 @@ public class Adfs() : FilesystemTest("adfs")
             VolumeName   = "$",
             VolumeSerial = "F20D"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "adfs_m.adf.lz",
             MediaType    = MediaType.ACORN_525_SS_DD_80,
@@ -118,7 +118,7 @@ public class Adfs() : FilesystemTest("adfs")
             VolumeName   = "$",
             VolumeSerial = "D6CA"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "adfs_l.adf.lz",
             MediaType    = MediaType.ACORN_525_DS_DD,
@@ -129,7 +129,7 @@ public class Adfs() : FilesystemTest("adfs")
             VolumeName   = "$",
             VolumeSerial = "0CA6"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "hdd_old.hdf.lz",
             MediaType    = MediaType.GENERIC_HDD,
@@ -140,7 +140,7 @@ public class Adfs() : FilesystemTest("adfs")
             VolumeName   = "VolLablOld",
             VolumeSerial = "080E"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "hdd_new.hdf.lz",
             MediaType   = MediaType.GENERIC_HDD,

@@ -40,7 +40,7 @@ public class AppleMap : PartitionSchemeTest
 
     public override PartitionTest[] Tests =>
     [
-        new PartitionTest
+        new()
         {
             TestFile = "d2_driver.aif",
             Partitions =
@@ -86,7 +86,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "hdt_1.8_encrypted1.aif",
             Partitions =
@@ -122,7 +122,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "hdt_1.8_encrypted2.aif",
             Partitions =
@@ -158,7 +158,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "hdt_1.8_password.aif",
             Partitions =
@@ -194,7 +194,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "hdt_1.8.aif",
             Partitions =
@@ -230,7 +230,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "linux.aif",
             Partitions =
@@ -307,7 +307,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "macos_1.1.aif",
             Partitions =
@@ -333,7 +333,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "macos_2.0.aif",
             Partitions =
@@ -359,7 +359,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "macos_4.2.aif",
             Partitions =
@@ -385,7 +385,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "macos_4.3.aif",
             Partitions =
@@ -411,7 +411,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "macos_6.0.2.aif",
             Partitions =
@@ -567,7 +567,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "macos_6.0.3.aif",
             Partitions =
@@ -693,7 +693,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "macos_6.0.4.aif",
             Partitions =
@@ -819,7 +819,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "macos_6.0.5.aif",
             Partitions =
@@ -975,7 +975,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "macos_6.0.7.aif",
             Partitions =
@@ -1121,7 +1121,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "macos_6.0.8.aif",
             Partitions =
@@ -1277,7 +1277,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "macos_6.0.aif",
             Partitions =
@@ -1403,7 +1403,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "macos_7.0.aif",
             Partitions =
@@ -1509,7 +1509,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "macos_7.1.1.aif",
             Partitions =
@@ -1625,7 +1625,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "macos_7.5.aif",
             Partitions =
@@ -1661,7 +1661,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "parted.aif",
             Partitions =
@@ -1698,7 +1698,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "silverlining_2.2.1.aif",
             Partitions =
@@ -1763,7 +1763,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "speedtools_3.6.aif",
             Partitions =
@@ -1809,7 +1809,7 @@ public class AppleMap : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "vcpformatter_2.1.1.aif",
             Partitions =

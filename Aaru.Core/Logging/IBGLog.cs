@@ -252,7 +252,8 @@ sealed class IbgLog
             _ibgStartSet   = true;
         }
 
-        _ibgSb.Append(_ibgCulture, $"{_ibgIntSpeed / _ibgSnaps / _ibgDivider:0.00},{_ibgIntSector},{_ibgSampleRate:0},0")
+        _ibgSb.Append(_ibgCulture,
+                      $"{_ibgIntSpeed / _ibgSnaps / _ibgDivider:0.00},{_ibgIntSector},{_ibgSampleRate:0},0")
               .AppendLine();
 
         if(_ibgIntSpeed / _ibgSnaps / _ibgDivider > _ibgMaxSpeed) _ibgMaxSpeed = _ibgIntSpeed / _ibgDivider;

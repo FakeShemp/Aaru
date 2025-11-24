@@ -39,7 +39,7 @@ public class Vtoc : PartitionSchemeTest
 
     public override PartitionTest[] Tests =>
     [
-        new PartitionTest
+        new()
         {
             TestFile = "att_unix_vtoc.aif",
             Partitions =

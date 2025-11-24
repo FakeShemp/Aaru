@@ -43,7 +43,7 @@ public class MBR() : FilesystemTest("hfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.3.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -54,7 +54,7 @@ public class MBR() : FilesystemTest("hfs")
             VolumeName   = "Volume label",
             VolumeSerial = "5426B36FBE19CF1E"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.4.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -65,7 +65,7 @@ public class MBR() : FilesystemTest("hfs")
             VolumeName   = "Volume label",
             VolumeSerial = "E7E1830009BA60A8"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -75,7 +75,7 @@ public class MBR() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "darwin_1.3.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -85,7 +85,7 @@ public class MBR() : FilesystemTest("hfs")
             ClusterSize = 4096,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "darwin_1.4.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -95,7 +95,7 @@ public class MBR() : FilesystemTest("hfs")
             ClusterSize = 4096,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "darwin_6.0.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -105,7 +105,7 @@ public class MBR() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_7.0.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -116,7 +116,7 @@ public class MBR() : FilesystemTest("hfs")
             VolumeName   = "Volume label",
             VolumeSerial = "8BF73DE208CD7E7B"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_8.0.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -127,7 +127,7 @@ public class MBR() : FilesystemTest("hfs")
             VolumeName   = "Volume label",
             VolumeSerial = "D149994212CC652E"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_4.19_hfs_flashdrive.aif",
             MediaType   = MediaType.GENERIC_HDD,

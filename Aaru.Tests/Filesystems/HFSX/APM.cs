@@ -43,7 +43,7 @@ public class APM() : FilesystemTest("hfsx")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.4_journal.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -54,7 +54,7 @@ public class APM() : FilesystemTest("hfsx")
             SystemId     = "HFSJ",
             VolumeSerial = "62F6BD837D62D1DB"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.4.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -65,7 +65,7 @@ public class APM() : FilesystemTest("hfsx")
             SystemId     = "10.0",
             VolumeSerial = "32517120509F8539"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.11.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -76,7 +76,7 @@ public class APM() : FilesystemTest("hfsx")
             SystemId     = "10.0",
             VolumeSerial = "CC2D56884950D9AE"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.11_journal.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -87,7 +87,7 @@ public class APM() : FilesystemTest("hfsx")
             SystemId     = "HFSJ",
             VolumeSerial = "7AF1175D8EA7A072"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_7.0.1_journal.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -98,7 +98,7 @@ public class APM() : FilesystemTest("hfsx")
             SystemId     = "HFSJ",
             VolumeSerial = "675A390EBFDFC534"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_7.0.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -109,7 +109,7 @@ public class APM() : FilesystemTest("hfsx")
             SystemId     = "10.0",
             VolumeSerial = "EA0C27012D10135B"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_8.0.1_journal.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -120,7 +120,7 @@ public class APM() : FilesystemTest("hfsx")
             SystemId     = "HFSJ",
             VolumeSerial = "50059A9AA0119AD3"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_8.0.1.aif",
             MediaType    = MediaType.GENERIC_HDD,

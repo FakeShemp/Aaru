@@ -64,9 +64,9 @@ partial class Dump
         MediaType     dskType = MediaType.Unknown;
         bool          sense;
         byte[]        tmpBuf;
-        bool          compactDisc      = true;
-        bool          gotConfiguration = false;
-        bool          isXbox           = false;
+        var           compactDisc      = true;
+        var           gotConfiguration = false;
+        var           isXbox           = false;
         DVDDecryption dvdDecrypt       = null;
         _speedMultiplier = 1;
 
@@ -1020,7 +1020,7 @@ partial class Dump
                     Checksums = Checksum.GetChecksums(tag)
                 };
 
-                byte[] tmp = new byte[tag.Length + 4];
+                var tmp = new byte[tag.Length + 4];
                 Array.Copy(tag, 0, tmp, 4, tag.Length);
                 tmp[0] = (byte)((tag.Length & 0xFF00) >> 8);
                 tmp[1] = (byte)(tag.Length & 0xFF);

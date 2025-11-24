@@ -43,7 +43,7 @@ public class Whole() : FilesystemTest("befs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "beos_r3.1.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -53,7 +53,7 @@ public class Whole() : FilesystemTest("befs")
             ClusterSize = 1024,
             VolumeName  = "volume label goes brrrr"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "beos_r4.5.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -63,7 +63,7 @@ public class Whole() : FilesystemTest("befs")
             ClusterSize = 1024,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "beos_r5.img.lz",
             MediaType   = MediaType.DOS_35_HD,

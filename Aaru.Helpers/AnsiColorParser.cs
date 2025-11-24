@@ -63,10 +63,7 @@ public static partial class AnsiColorParser
         if(!m.Success) throw new ArgumentException("No ANSI SGR sequence found.", nameof(input));
 
         int[] parts = m.Groups["params"]
-                       .Value.Split([
-                                        ';'
-                                    ],
-                                    StringSplitOptions.RemoveEmptyEntries)
+                       .Value.Split([';'], StringSplitOptions.RemoveEmptyEntries)
                        .Select(int.Parse)
                        .ToArray();
 
@@ -132,10 +129,7 @@ public static partial class AnsiColorParser
                 int ci = index - 16;
                 int r  = ci / 36, g = ci / 6 % 6, b = ci % 6;
 
-                int[] levels =
-                [
-                    0, 95, 135, 175, 215, 255
-                ];
+                int[] levels = [0, 95, 135, 175, 215, 255];
 
                 return Color.FromArgb(levels[r], levels[g], levels[b]);
             }

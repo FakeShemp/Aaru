@@ -44,7 +44,7 @@ public class Raw : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "profile_los202.raw.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -52,7 +52,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "24001116ee48e6545e4514b3ea18b4e2"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "profile_los31.raw.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -60,7 +60,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2e328345fda18a97721c4a35cb2bb5bb"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "profile_macworksxl3.raw.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -68,7 +68,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "78cdf7207060bf05c272cb8b22fc6449"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "profile_uniplus.raw.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -76,7 +76,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "fc729677df4ba92da98137058aa1c298"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "profile_xenix_10Mb.raw.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -84,7 +84,7 @@ public class Raw : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "e98bf459bd20cfb466d92a91086cdaa7"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "profile_xenix.raw.lz",
             MediaType  = MediaType.GENERIC_HDD,

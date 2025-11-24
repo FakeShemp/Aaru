@@ -46,7 +46,7 @@ public class Rw : OpticalMediaImageTest
 
     public override OpticalImageTestExpected[] Tests =>
     [
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_audiocd.toc",
             MediaType     = MediaType.CDDA,
@@ -171,7 +171,7 @@ public class Rw : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdr.toc",
             MediaType     = MediaType.CDROM,
@@ -210,7 +210,7 @@ public class Rw : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdrom.toc",
             MediaType     = MediaType.CDROM,
@@ -249,7 +249,7 @@ public class Rw : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdrw.toc",
             MediaType     = MediaType.CDROM,
@@ -282,7 +282,7 @@ public class Rw : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "test_multi_karaoke_sampler.toc",
             MediaType     = MediaType.CDROM,

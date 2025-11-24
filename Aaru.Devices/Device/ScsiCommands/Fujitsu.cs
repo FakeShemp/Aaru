@@ -52,11 +52,11 @@ public partial class Device
                                string                 firstHalf,   string secondHalf, uint timeout, out double duration)
     {
         byte[]     tmp;
-        byte[]     firstHalfBytes  = new byte[8];
-        byte[]     secondHalfBytes = new byte[8];
-        byte[]     buffer          = new byte[17];
-        bool       displayLen      = false;
-        bool       halfMsg         = false;
+        var        firstHalfBytes  = new byte[8];
+        var        secondHalfBytes = new byte[8];
+        var        buffer          = new byte[17];
+        var        displayLen      = false;
+        var        halfMsg         = false;
         Span<byte> cdb             = CdbBuffer[..10];
         senseBuffer = SenseBuffer;
         cdb.Clear();

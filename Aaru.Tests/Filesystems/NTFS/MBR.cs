@@ -44,7 +44,7 @@ public class MBR() : FilesystemTest("ntfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "win10.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -55,7 +55,7 @@ public class MBR() : FilesystemTest("ntfs")
             ClusterSize  = 4096,
             VolumeSerial = "C46C1B3C6C1B28A6"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "win2000.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -66,7 +66,7 @@ public class MBR() : FilesystemTest("ntfs")
             ClusterSize  = 1024,
             VolumeSerial = "8070C8EC70C8E9CC"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "winnt_3.10.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -77,7 +77,7 @@ public class MBR() : FilesystemTest("ntfs")
             ClusterSize  = 512,
             VolumeSerial = "10CC6AC6CC6AA5A6"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "winnt_3.50.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -88,7 +88,7 @@ public class MBR() : FilesystemTest("ntfs")
             ClusterSize  = 512,
             VolumeSerial = "7A14F50014F4BFE5"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "winnt_3.51.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -99,7 +99,7 @@ public class MBR() : FilesystemTest("ntfs")
             ClusterSize  = 512,
             VolumeSerial = "24884447884419A6"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "winnt_4.00.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -110,7 +110,7 @@ public class MBR() : FilesystemTest("ntfs")
             ClusterSize  = 512,
             VolumeSerial = "DE047EC1047E9C69"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "winvista.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -121,7 +121,7 @@ public class MBR() : FilesystemTest("ntfs")
             ClusterSize  = 4096,
             VolumeSerial = "E20AF54B0AF51D6B"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -132,7 +132,7 @@ public class MBR() : FilesystemTest("ntfs")
             ClusterSize  = 4096,
             VolumeSerial = "065BB96B7C1BCFDA"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "haiku_hrev51259.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -143,7 +143,7 @@ public class MBR() : FilesystemTest("ntfs")
             ClusterSize  = 4096,
             VolumeSerial = "323BED1E2A2FF4D5"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_4.19_ntfs3g_flashdrive.aif",
             MediaType    = MediaType.GENERIC_HDD,

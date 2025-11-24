@@ -43,7 +43,7 @@ public class DiskCopy42 : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DOS_1440.img.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -59,7 +59,7 @@ public class DiskCopy42 : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DOS_720.img.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -75,7 +75,7 @@ public class DiskCopy42 : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "HFS_1440.img.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -83,7 +83,7 @@ public class DiskCopy42 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "3160038ca028ccf52ad7863790072145"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "HFS_800.img.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -91,7 +91,7 @@ public class DiskCopy42 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "5e255c4bc0f6a26ecd27845b37e65aaa"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "ProDOS_1440.img.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -99,7 +99,7 @@ public class DiskCopy42 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "7975e8cf7579a6848d6fb4e546d1f682"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "ProDOS_800.img.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -107,7 +107,7 @@ public class DiskCopy42 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "a72da7aedadbe194c22a3d71c62e4766"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "UFS_1440.img.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -115,7 +115,7 @@ public class DiskCopy42 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b37823c7a90d1917f719ba5927b23da8"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "UFS_720.img.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -123,7 +123,7 @@ public class DiskCopy42 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "4942032f7bf1d115237ea1764424828b"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "UFS_800.img.lz",
             MediaType  = MediaType.AppleSonyDS,

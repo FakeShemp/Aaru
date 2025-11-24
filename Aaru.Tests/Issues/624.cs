@@ -17,7 +17,7 @@ public class _624 : WritableOpticalMediaImageTest
 
     public override OpticalImageTestExpected[] Tests =>
     [
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "alice.iso",
             MediaType     = MediaType.CD,

@@ -56,4 +56,3 @@ public delegate void ExceptionDelegate(Exception ex, string message, params obje
 /// <param name="format">A composite format string.</param>
 /// <param name="arg">An array of objects to write using <paramref name="format" />.</param>
 public delegate void InformationDelegate(string format, params object[] arg);
-

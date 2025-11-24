@@ -40,7 +40,7 @@ public class Sun : PartitionSchemeTest
 
     public override PartitionTest[] Tests =>
     [
-        new PartitionTest
+        new()
         {
             TestFile = "linux.aif",
             Partitions =
@@ -110,7 +110,7 @@ public class Sun : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "parted.aif",
             Partitions =

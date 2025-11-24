@@ -43,7 +43,7 @@ public class Hammer() : FilesystemTest("hammer")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "dflybsd_3.6.1.vdi.lz",
             MediaType    = MediaType.GENERIC_HDD,
@@ -54,7 +54,7 @@ public class Hammer() : FilesystemTest("hammer")
             VolumeName   = "Volume label",
             VolumeSerial = "f8e1a8bb-626d-11e7-94b5-0900274691e4"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "dflybsd_4.0.5.vdi.lz",
             MediaType    = MediaType.GENERIC_HDD,

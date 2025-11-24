@@ -41,7 +41,7 @@ public class CopyQm : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0000.CQM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -49,7 +49,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "e8bbbd22db87181974e12ba0227ea011"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0001.CQM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -57,7 +57,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "9f5635f3df4d880a500910b0ad1ab535"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0002.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -65,7 +65,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "9176f59e9205846b6212e084f46ed95c"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0003.CQM.lz",
             MediaType  = MediaType.ACORN_35_DS_DD,
@@ -73,7 +73,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "85574aebeef03eb355bf8541955d06ea"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0004.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -81,7 +81,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "1045bfd216ae1ae480dd0ef626f5ff39"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0006.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -89,7 +89,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "46fce47baf08c6f093f2c355a603543d"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0009.CQM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -105,7 +105,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0010.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -113,7 +113,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "9e2b01f4397db2a6c76e2bc267df37b3"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0011.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -121,7 +121,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "dbbf55398d930e14c2b0a035dd1277b9"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0012.CQM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -129,7 +129,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "656002e6e620cb3b73c27f4c21d32edb"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0013.CQM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -137,7 +137,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1244cc2c101c66e6bb4ad5183b356b19"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0017.CQM.lz",
             MediaType  = MediaType.XDF_525,
@@ -145,7 +145,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "8cad624afc06ab756f9800eba22ee886"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0018.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -153,7 +153,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "84cce7b4d8c8e21040163cd2d03a730c"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0019.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -161,7 +161,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "76a1ef9485ffd5da1e9836725e375ada"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0020.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -169,7 +169,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "d236783dfd1dc29f350c51949b1e9e68"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0021.CQM.lz",
             MediaType  = MediaType.XDF_525,
@@ -177,7 +177,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "6915f208cdda762eea2fe64ad754e72f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0023.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -185,7 +185,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "b52f26c3c5b9b2cfc93a287a7fca3548"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0024.CQM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -201,7 +201,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0025.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -209,7 +209,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "4e4cafed1cc22ea72201169427e5e1b6"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0026.CQM.lz",
             MediaType  = MediaType.ACORN_35_DS_DD,
@@ -217,7 +217,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "a579b349a5a24218d59a44e36bdb1333"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0027.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -225,7 +225,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "3135430552171a832339a8a93d44cc90"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0028.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -233,7 +233,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1a4c7487382c98b7bc74623ddfb488e6"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0029.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -241,7 +241,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "a8a9caa886a338b66181cfa21db6b620"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0030.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -257,7 +257,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0031.CQM.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_40,
@@ -265,7 +265,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "e640835966327f3f662e1db8e0575510"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0032.CQM.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_40,
@@ -273,7 +273,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "ff3534234d1d2dd88bf6e83be23d9227"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0033.CQM.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_80,
@@ -281,7 +281,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "dfaff34a6556b515642f1e54f839b02e"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0034.CQM.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_80,
@@ -289,7 +289,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "ca8f5c7f9ed161b03ccb166eb9d62146"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0035.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -305,7 +305,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0036.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -321,7 +321,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0037.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -337,7 +337,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0038.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -353,7 +353,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0039.CQM.lz",
             MediaType  = MediaType.DOS_35_SS_DD_8,
@@ -369,7 +369,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0040.CQM.lz",
             MediaType  = MediaType.DOS_35_SS_DD_8,
@@ -385,7 +385,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0041.CQM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -401,7 +401,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0042.CQM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -417,7 +417,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0043.CQM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -433,7 +433,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0044.CQM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -449,7 +449,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0045.CQM.lz",
             MediaType  = MediaType.NEC_35_HD_15,
@@ -465,7 +465,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0046.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -481,7 +481,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0047.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_8,
@@ -497,7 +497,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0048.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -513,7 +513,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0049.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -529,7 +529,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0050.CQM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -545,7 +545,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0051.CQM.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -561,7 +561,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0052.CQM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -577,7 +577,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0053.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -593,7 +593,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0054.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -609,7 +609,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0055.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -625,7 +625,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0056.CQM.lz",
             MediaType  = MediaType.DMF,
@@ -641,7 +641,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0057.CQM.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -657,7 +657,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0058.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -673,7 +673,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0059.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -689,7 +689,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0060.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -705,7 +705,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0069.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -721,7 +721,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0070.CQM.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -729,7 +729,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "d1e978b679c63a218c3f77a7ca2c7206"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0073.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -745,7 +745,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0074.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -761,7 +761,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0075.CQM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -777,7 +777,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0076.CQM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -793,7 +793,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0077.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -809,7 +809,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0078.CQM.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -817,7 +817,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "c9a193837db7d8a5eb025eb41e8a76d7"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0080.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -833,7 +833,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0081.CQM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -849,7 +849,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0082.CQM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -865,7 +865,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0083.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -881,7 +881,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0084.CQM.lz",
             MediaType  = MediaType.DMF,
@@ -897,7 +897,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0085.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -913,7 +913,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0105.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -929,7 +929,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0106.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -945,7 +945,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0107.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -961,7 +961,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0108.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -977,7 +977,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0109.CQM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -993,7 +993,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0110.CQM.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -1009,7 +1009,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0111.CQM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1025,7 +1025,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0112.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1041,7 +1041,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0113.CQM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1057,7 +1057,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0114.CQM.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -1073,7 +1073,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0115.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1089,7 +1089,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0116.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1105,7 +1105,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0117.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1121,7 +1121,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0120.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -1137,7 +1137,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0121.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -1153,7 +1153,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0122.CQM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -1169,7 +1169,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0123.CQM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -1185,7 +1185,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0124.CQM.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -1201,7 +1201,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0125.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1217,7 +1217,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0126.CQM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1233,7 +1233,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0147.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -1241,7 +1241,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "6efa72a33021d5051546c3e0dd4c3c09"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0148.CQM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -1249,7 +1249,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "8b5acfd14818ff9556d3d81361ce4862"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0149.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1257,7 +1257,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "cf42d08469548a31caf2649a1d08a85f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0150.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1265,7 +1265,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "62745e10683cf2ec1dac177535459891"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0151.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -1273,7 +1273,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "298c377de52947c472a85d281b6d3d4d"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0153.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -1281,7 +1281,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "298c377de52947c472a85d281b6d3d4d"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0158.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1289,7 +1289,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "8b5acfd14818ff9556d3d81361ce4862"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0159.CQM.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_40,
@@ -1297,7 +1297,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "6efa72a33021d5051546c3e0dd4c3c09"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0162.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -1305,7 +1305,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "e63014a4299f52f22e6e2c9609f51979"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0163.CQM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -1321,7 +1321,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0164.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1337,7 +1337,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0166.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1353,7 +1353,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0167.CQM.lz",
             MediaType  = MediaType.ACORN_35_DS_DD,
@@ -1361,7 +1361,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "185bc63e4304a2d2554615362b2d25c5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0168.CQM.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -1377,7 +1377,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0169.CQM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1393,7 +1393,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0173.CQM.lz",
             MediaType  = MediaType.DOS_35_SS_DD_9,
@@ -1409,7 +1409,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0174.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1425,7 +1425,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0175.CQM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1441,7 +1441,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0180.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1457,7 +1457,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0181.CQM.lz",
             MediaType  = MediaType.DMF,
@@ -1473,7 +1473,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0182.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1481,7 +1481,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "865ad9072cb6c7458f7d86d7e9368622"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0183.CQM.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -1489,7 +1489,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2461e458438f0033bc5811fd6958ad02"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0184.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1497,7 +1497,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "606d5fbf174708c7ecfbfdd2a50fec9c"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0185.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1505,7 +1505,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 2048,
             Md5        = "6173d4c7b6a1addb14a4cbe088ede9d7"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0186.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1513,7 +1513,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 8192,
             Md5        = "5f47876d515d9495789f5e27ed313959"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0197.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1521,7 +1521,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "65531301132413a81f3994eaf0b16f50"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0198.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1529,7 +1529,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "a13fbf4d230f421d1bc4d21b714dc36b"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0199.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1537,7 +1537,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "de0170cd10ddd839a63370355b2ba4ed"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0200.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1545,7 +1545,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "1045bfd216ae1ae480dd0ef626f5ff39"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0201.CQM.lz",
             MediaType  = MediaType.ACORN_35_DS_DD,
@@ -1553,7 +1553,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "85574aebeef03eb355bf8541955d06ea"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0202.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1561,7 +1561,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "1045bfd216ae1ae480dd0ef626f5ff39"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0203.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1569,7 +1569,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "8a16a3008739516fc3ba4c878868d056"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0204.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -1577,7 +1577,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "46fce47baf08c6f093f2c355a603543d"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0205.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1585,7 +1585,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "ee73a5d5c8dfac236baf7b99811696f9"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0206.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1593,7 +1593,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "8245ddd644583bd78ac0638133c89824"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0207.CQM.lz",
             MediaType  = MediaType.XDF_525,
@@ -1601,7 +1601,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "33c51a3d6f13cfedb5f08bf4c3cba7b9"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0209.CQM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1609,7 +1609,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "85574aebeef03eb355bf8541955d06ea"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0210.CQM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1617,7 +1617,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "85574aebeef03eb355bf8541955d06ea"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0211.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1625,7 +1625,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "647f14749f59be471aac04a71a079a64"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0212.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1633,7 +1633,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "517cdd5e42a4673f733d1aedfb46770f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0213.CQM.lz",
             MediaType  = MediaType.ACORN_35_DS_DD,
@@ -1641,7 +1641,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "6ad92e9522e4ba902c01beecb5943bb1"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0214.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1649,7 +1649,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "8e077143864bb20e36f25a4685860a1e"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0215.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1657,7 +1657,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "9724c94417cef88b2ad2f3c1db9d8730"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0216.CQM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1665,7 +1665,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "40199611e6e75bbc37ad6c52a5b77eae"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0221.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1673,7 +1673,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "f92b2e52259531d50bfb403dc1274ab1"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0222.CQM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1681,7 +1681,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "85574aebeef03eb355bf8541955d06ea"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0225.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1689,7 +1689,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "dbcd4aa7c1c670a667c89b309bd9de42"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0228.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1697,7 +1697,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "d88f521c048df99b8ef5f01a8a001455"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0232.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1705,7 +1705,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b76bd117ce24d933cdefe09b1de2164a"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0234.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1713,7 +1713,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "a50f82253aa4d8dea4fb193d64a66778"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0240.CQM.lz",
             MediaType  = MediaType.ATARI_525_DD,
@@ -1721,7 +1721,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "d1ab955f0961ab94e6cf69f78134a84b"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0241.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1729,7 +1729,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "8b62738f15bcc916a668eaa67eec86e7"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0242.CQM.lz",
             MediaType  = MediaType.NEC_35_HD_8,
@@ -1745,7 +1745,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0243.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1753,7 +1753,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "9866ab8e58fa4be25010184aec4ad3aa"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0244.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1761,7 +1761,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "9dab329ae098b29889ab08278de38f95"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0245.CQM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1769,7 +1769,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "0d71b4952dadbfb1061acc1f4640c787"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0246.CQM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1777,7 +1777,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "af7ac6b5b9d2d57dad22dbb64ef7de38"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0247.CQM.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_80,
@@ -1785,7 +1785,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "f8f81f945aaad6fbfe7e2db1905302c1"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0248.CQM.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_80,
@@ -1793,7 +1793,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "f6f81c75b5ba45d91c1886c6dda9caee"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0250.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1801,7 +1801,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "0b9cb8107cbb94c5e36aea438a04dc98"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0251.CQM.lz",
             MediaType  = MediaType.ACORN_525_DS_DD,
@@ -1809,7 +1809,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "d075e50705f4ddca7ba4dbc981ec1176"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0252.CQM.lz",
             MediaType  = MediaType.ACORN_525_SS_DD_80,
@@ -1817,7 +1817,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "9f86480c86bae33a5b444e4a7ed55048"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0253.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1825,7 +1825,7 @@ public class CopyQm : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "231891ccd0cc599cfe25419c669fc5f8"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0254.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -1841,7 +1841,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0258.CQM.lz",
             MediaType  = MediaType.SHARP_525,
@@ -1857,7 +1857,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0262.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -1873,7 +1873,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0263.CQM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -1889,7 +1889,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0264.CQM.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -1905,7 +1905,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0265.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1921,7 +1921,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0266.CQM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -1937,7 +1937,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0267.CQM.lz",
             MediaType  = MediaType.XDF_525,
@@ -1953,7 +1953,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0268.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1969,7 +1969,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0269.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -1985,7 +1985,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0270.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -2001,7 +2001,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0271.CQM.lz",
             MediaType  = MediaType.DMF,
@@ -2017,7 +2017,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0272.CQM.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -2033,7 +2033,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0273.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -2049,7 +2049,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0280.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -2065,7 +2065,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0281.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -2081,7 +2081,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0282.CQM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -2097,7 +2097,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0283.CQM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -2115,7 +2115,7 @@ public class CopyQm : BlockMediaImageTest
             }
             */
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0284.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -2131,7 +2131,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0285.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -2147,7 +2147,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0287.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -2163,7 +2163,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0288.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -2179,7 +2179,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0289.CQM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2195,7 +2195,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0290.CQM.lz",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -2211,7 +2211,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0291.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -2227,7 +2227,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0299.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -2243,7 +2243,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0300.CQM.lz",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -2259,7 +2259,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0301.CQM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -2275,7 +2275,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0302.CQM.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -2291,7 +2291,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0303.CQM.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -2307,7 +2307,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0304.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -2323,7 +2323,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0305.CQM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -2339,7 +2339,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0307.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -2355,7 +2355,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0308.CQM.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2371,7 +2371,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0311.CQM.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -2387,7 +2387,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0314.CQM.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -2403,7 +2403,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0316.CQM.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -2419,7 +2419,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0317.CQM.lz",
             MediaType  = MediaType.DMF,
@@ -2435,7 +2435,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0318.CQM.lz",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -2451,7 +2451,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0319.CQM.lz",
             MediaType  = MediaType.DMF,
@@ -2467,7 +2467,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0320.CQM.lz",
             MediaType  = MediaType.DMF,
@@ -2483,7 +2483,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0322.CQM.lz",
             MediaType  = MediaType.Unknown,
@@ -2499,7 +2499,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd.cqm.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -2515,7 +2515,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fdformat_800.cqm.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2531,7 +2531,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_freedos.cqm.lz",
             MediaType  = MediaType.CBM_35_DD,
@@ -2547,7 +2547,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_blind.cqm.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -2563,7 +2563,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd.cqm.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -2579,7 +2579,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_168.cqm.lz",
             MediaType  = MediaType.DMF,
@@ -2595,7 +2595,7 @@ public class CopyQm : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_freedos.cqm.lz",
             MediaType  = MediaType.DMF,

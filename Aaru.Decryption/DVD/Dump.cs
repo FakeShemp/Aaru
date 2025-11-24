@@ -35,7 +35,6 @@
 // ****************************************************************************/
 
 using System;
-using System.Linq;
 using Aaru.Decoders.DVD;
 using Aaru.Devices;
 using Aaru.Logging;
@@ -378,10 +377,10 @@ public sealed class Dump(Device dev)
         buffer      = [];
         senseBuffer = dev.SenseBuffer;
 
-        bool   sense     = false;
-        byte[] challenge = new byte[CHALLENGE_SIZE];
-        byte[] key1      = new byte[KEY_SIZE];
-        byte   variant   = 0;
+        var  sense     = false;
+        var  challenge = new byte[CHALLENGE_SIZE];
+        var  key1      = new byte[KEY_SIZE];
+        byte variant   = 0;
 
         for(byte i = 0; i < 4; i++)
         {

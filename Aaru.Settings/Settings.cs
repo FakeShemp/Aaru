@@ -130,7 +130,7 @@ public static class Settings
         PlatformID ptId     = DetectOS.GetRealPlatformID();
         string     homePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         LocalDbPath = "local.db";
-        string oldMainDbPath = "master.db";
+        var oldMainDbPath = "master.db";
         MainDbPath = "main.db";
 
         try

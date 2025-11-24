@@ -11,10 +11,9 @@ public sealed partial class Amg
 #region IArchive Members
 
     /// <inheritdoc />
-    public bool Identify(IFilter filter)
-    {
-        return false;
-/*
+    public bool Identify(IFilter filter) => false;
+
+    /*
         if(filter.DataForkLength < Marshal.SizeOf<ArcHeader>()) return false;
 
         Stream stream = filter.GetDataForkStream();
@@ -29,8 +28,6 @@ public sealed partial class Amg
         // Not a valid magic
         return header.magic == ARC_MAGIC;
 */
-    }
-
     /// <inheritdoc />
     public void GetInformation(IFilter filter, Encoding encoding, out string information)
     {
@@ -42,7 +39,7 @@ public sealed partial class Amg
         Stream stream = filter.GetDataForkStream();
         stream.Position = 0;
 
-        byte[] hdr = new byte[Marshal.SizeOf<ArcHeader>()];
+        var hdr = new byte[Marshal.SizeOf<ArcHeader>()];
 
         stream.ReadExactly(hdr, 0, hdr.Length);
 
@@ -61,7 +58,7 @@ public sealed partial class Amg
 
         if(header.commentLength > 0)
         {
-            byte[] buffer = new byte[header.commentLength];
+            var buffer = new byte[header.commentLength];
             stream.ReadExactly(buffer, 0, buffer.Length);
             sb.AppendLine(Localization.Archive_comment);
             sb.AppendLine(Markup.Escape(StringHandlers.CToString(buffer, encoding)));

@@ -46,7 +46,7 @@ public class ExtendedCSD
 
     readonly Decoders.MMC.ExtendedCSD[] _decoded =
     [
-        new Decoders.MMC.ExtendedCSD
+        new()
         {
             Reserved0                                 = new byte[15],
             CommandQueueModeEnable                    = 0,

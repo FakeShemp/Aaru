@@ -162,14 +162,18 @@ public static partial class Modes
         }
 
         if(page.SecondsPerMinute > 0)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization.Each_minute_has_0_seconds}[/]",
                             $"[lime]{page.SecondsPerMinute}[/]")
               .AppendLine();
+        }
 
         if(page.FramesPerSecond > 0)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization.Each_second_has_0_frames}[/]",
                             $"[lime]{page.FramesPerSecond}[/]")
               .AppendLine();
+        }
 
         return sb.ToString();
     }

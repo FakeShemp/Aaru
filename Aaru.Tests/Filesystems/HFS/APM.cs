@@ -43,7 +43,7 @@ public class APM() : FilesystemTest("hfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "amigaos_3.9.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -53,7 +53,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 8192,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "darwin_1.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -63,7 +63,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 4096,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "darwin_1.3.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -73,7 +73,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 4096,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "darwin_1.4.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -83,7 +83,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 4096,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "darwin_6.0.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -93,7 +93,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_7.0.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -104,7 +104,7 @@ public class APM() : FilesystemTest("hfs")
             VolumeName   = "Volume label",
             VolumeSerial = "AE72FE7C300796B3"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_8.0.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -115,7 +115,7 @@ public class APM() : FilesystemTest("hfs")
             VolumeName   = "Volume label",
             VolumeSerial = "5D4A28AA69D62082"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_1.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -125,7 +125,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_2.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -135,7 +135,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_4.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -145,7 +145,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_4.3.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -155,7 +155,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_6.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -165,7 +165,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_6.0.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -175,7 +175,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_6.0.3.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -185,7 +185,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_6.0.4.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -195,7 +195,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Test disk"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_6.0.5.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -205,7 +205,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_6.0.7.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -215,7 +215,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 1024,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_6.0.8.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -225,7 +225,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_7.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -235,7 +235,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_7.1.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -245,7 +245,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_7.5.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -256,7 +256,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_7.5.3.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -266,7 +266,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_7.6.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -276,7 +276,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_8.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -287,7 +287,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_8.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -298,7 +298,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_9.0.4.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -308,7 +308,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_9.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -318,7 +318,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_9.2.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -328,7 +328,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_9.2.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -338,7 +338,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.0.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -349,7 +349,7 @@ public class APM() : FilesystemTest("hfs")
             VolumeName   = "Volume label",
             VolumeSerial = "BD1F12F12468C949"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -360,7 +360,7 @@ public class APM() : FilesystemTest("hfs")
             VolumeName   = "Volume label",
             VolumeSerial = "6AC7046792447A85"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.2.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -371,7 +371,7 @@ public class APM() : FilesystemTest("hfs")
             VolumeName   = "Volume label",
             VolumeSerial = "8D00F9766E58A900"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.3.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -382,7 +382,7 @@ public class APM() : FilesystemTest("hfs")
             VolumeName   = "Volume label",
             VolumeSerial = "4D9FC602A1273D8D"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.4.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -393,7 +393,7 @@ public class APM() : FilesystemTest("hfs")
             VolumeName   = "Volume label",
             VolumeSerial = "B28973FD0129BD10"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "rhapsody_dr1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -403,7 +403,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 3584,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "d2_driver.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -413,7 +413,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "hdt_1.8.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -423,7 +423,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "parted.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -433,7 +433,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 1024,
             VolumeName  = "Untitled"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "silverlining_2.2.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -443,7 +443,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Untitled  #1"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "speedtools_3.6.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -453,7 +453,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "24 MB Disk"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "nextstep_3.3.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -463,7 +463,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "openstep_4.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -473,7 +473,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "openstep_4.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -483,7 +483,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "aux_3.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -493,7 +493,7 @@ public class APM() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "morphos_3.13.aif",
             MediaType   = MediaType.GENERIC_HDD,

@@ -27,7 +27,6 @@
 // ****************************************************************************/
 
 using System;
-using System.Linq;
 using System.Text;
 using Aaru.CommonTypes.AaruMetadata;
 using Aaru.CommonTypes.Enums;

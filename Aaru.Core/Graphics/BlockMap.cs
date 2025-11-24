@@ -183,6 +183,64 @@ public class BlockMap : IMediaGraph
         }
     }
 
+    void PaintSector(ulong sector, SKColor color)
+    {
+        SKRect rect =
+            GetSquareRectangle(_sectorsPerSquare == 0 ? (int)sector : (int)(sector / (ulong)_sectorsPerSquare));
+
+        _canvas.DrawRect(rect,
+                         new SKPaint
+                         {
+                             Style = SKPaintStyle.StrokeAndFill,
+                             Color = color
+                         });
+    }
+
+    void PaintSectors(ulong startingSector, uint length, SKColor color)
+    {
+        for(ulong sector = startingSector; sector < startingSector + length; sector++)
+        {
+            SKRect rect =
+                GetSquareRectangle(_sectorsPerSquare == 0 ? (int)sector : (int)(sector / (ulong)_sectorsPerSquare));
+
+            _canvas.DrawRect(rect,
+                             new SKPaint
+                             {
+                                 Style = SKPaintStyle.StrokeAndFill,
+                                 Color = color
+                             });
+        }
+    }
+
+    void PaintSectors(IEnumerable<ulong> sectors, SKColor color)
+    {
+        foreach(SKRect rect in sectors.Select(sector => GetSquareRectangle(_sectorsPerSquare == 0
+                                                                               ? (int)sector
+                                                                               : (int)(sector /
+                                                                                           (ulong)_sectorsPerSquare))))
+        {
+            _canvas.DrawRect(rect,
+                             new SKPaint
+                             {
+                                 Style = SKPaintStyle.StrokeAndFill,
+                                 Color = color
+                             });
+        }
+    }
+
+    SKRect GetSquareRectangle(int square)
+    {
+        int row    = square / _columns;
+        int column = square % _columns;
+
+        float x  = 1 + column * (_squareSize + 1);
+        float y  = 1 + row    * (_squareSize + 1);
+        float xp = x + _squareSize;
+        float yp = y + _squareSize;
+
+        return new SKRect(x, y, xp, yp);
+    }
+
 #region IMediaGraph Members
 
     /// <inheritdoc />
@@ -260,62 +318,4 @@ public class BlockMap : IMediaGraph
     }
 
 #endregion
-
-    void PaintSector(ulong sector, SKColor color)
-    {
-        SKRect rect =
-            GetSquareRectangle(_sectorsPerSquare == 0 ? (int)sector : (int)(sector / (ulong)_sectorsPerSquare));
-
-        _canvas.DrawRect(rect,
-                         new SKPaint
-                         {
-                             Style = SKPaintStyle.StrokeAndFill,
-                             Color = color
-                         });
-    }
-
-    void PaintSectors(ulong startingSector, uint length, SKColor color)
-    {
-        for(ulong sector = startingSector; sector < startingSector + length; sector++)
-        {
-            SKRect rect =
-                GetSquareRectangle(_sectorsPerSquare == 0 ? (int)sector : (int)(sector / (ulong)_sectorsPerSquare));
-
-            _canvas.DrawRect(rect,
-                             new SKPaint
-                             {
-                                 Style = SKPaintStyle.StrokeAndFill,
-                                 Color = color
-                             });
-        }
-    }
-
-    void PaintSectors(IEnumerable<ulong> sectors, SKColor color)
-    {
-        foreach(SKRect rect in sectors.Select(sector => GetSquareRectangle(_sectorsPerSquare == 0
-                                                                               ? (int)sector
-                                                                               : (int)(sector /
-                                                                                           (ulong)_sectorsPerSquare))))
-        {
-            _canvas.DrawRect(rect,
-                             new SKPaint
-                             {
-                                 Style = SKPaintStyle.StrokeAndFill,
-                                 Color = color
-                             });
-        }
-    }
-
-    SKRect GetSquareRectangle(int square)
-    {
-        int row    = square / _columns;
-        int column = square % _columns;
-
-        float x  = 1 + column * (_squareSize + 1);
-        float y  = 1 + row    * (_squareSize + 1);
-        float xp = x + _squareSize;
-        float yp = y + _squareSize;
-
-        return new SKRect(x, y, xp, yp);
-    }
 }

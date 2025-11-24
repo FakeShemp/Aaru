@@ -137,15 +137,19 @@ public partial class MhddLogViewModel : ViewModelBase
             Match sectorSizeMatch = SectorSizeRegex().Match(header);
 
             if(sectorSizeMatch.Success)
+            {
                 SectorSize = string.Format(UI._0_bytes_markup,
                                            ParseNumberWithSeparator(sectorSizeMatch.Groups[1].Value));
+            }
 
             // Parse SCAN BLOCK SIZE field
             Match scanBlockMatch = ScanBlockSizeRegex().Match(header);
 
             if(scanBlockMatch.Success)
+            {
                 ScanBlockSize = string.Format(UI._0_sectors_markup,
                                               ParseNumberWithSeparator(scanBlockMatch.Groups[1].Value));
+            }
         }
         catch(Exception ex)
         {

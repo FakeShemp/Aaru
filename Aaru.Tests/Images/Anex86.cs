@@ -41,7 +41,7 @@ public class Anex86 : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "anex86_10mb.hdi.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -49,7 +49,7 @@ public class Anex86 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "1c5387e38e58165c517c059e5d48905d"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "anex86_15mb.hdi.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -57,7 +57,7 @@ public class Anex86 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "a84366658c1c3bd09af4d0d42fbf716e"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "anex86_20mb.hdi.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -65,7 +65,7 @@ public class Anex86 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "919c9eecf1b65b10870f617cb976668a"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "anex86_30mb.hdi.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -73,7 +73,7 @@ public class Anex86 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "02d35af02581afb2e56792dcaba2c1af"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "anex86_40mb.hdi.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -81,7 +81,7 @@ public class Anex86 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "b8c3f858f1a9d300d3e74f36eea04354"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "anex86_5mb.hdi.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -89,7 +89,7 @@ public class Anex86 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "c348bbbaf99fcb8c8e66de157aef62f4"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "blank_md2hd.fdi.lz",
             MediaType  = MediaType.SHARP_525,
@@ -97,7 +97,7 @@ public class Anex86 : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "c3587f7020743067cf948c9d5c5edb27"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "msdos33d_md2hd.fdi.lz",
             MediaType  = MediaType.SHARP_525,
@@ -115,7 +115,7 @@ public class Anex86 : BlockMediaImageTest
             }
             */
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "msdos50_epson_md2hd.fdi.lz",
             MediaType  = MediaType.SHARP_525,
@@ -131,7 +131,7 @@ public class Anex86 : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "msdos50_md2hd.fdi.lz",
             MediaType  = MediaType.SHARP_525,
@@ -147,7 +147,7 @@ public class Anex86 : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "msdos62_md2hd.fdi.lz",
             MediaType  = MediaType.SHARP_525,

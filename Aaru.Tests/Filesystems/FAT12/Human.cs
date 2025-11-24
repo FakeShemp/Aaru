@@ -43,7 +43,7 @@ public class Human() : ReadOnlyFilesystemTest("fat12")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "diska.aif",
             MediaType   = MediaType.SHARP_525,
@@ -54,7 +54,7 @@ public class Human() : ReadOnlyFilesystemTest("fat12")
             ClusterSize = 1024,
             SystemId    = "Hudson soft 2.00"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "diskb.aif",
             MediaType   = MediaType.SHARP_525,

@@ -41,7 +41,7 @@ public class Nero : OpticalMediaImageTest
 
     public override OpticalImageTestExpected[] Tests =>
     [
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "cdiready_the_apprentice.nrg",
             MediaType     = MediaType.CDDA,
@@ -229,7 +229,7 @@ public class Nero : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_audiocd.nrg",
             MediaType     = MediaType.CDDA,
@@ -353,7 +353,7 @@ public class Nero : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdrom.nrg",
             MediaType     = MediaType.CDROM,
@@ -391,7 +391,7 @@ public class Nero : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_cdrw.nrg",
             MediaType     = MediaType.CDROM,
@@ -423,7 +423,7 @@ public class Nero : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_dvdram_v2.nrg",
             MediaType = MediaType.DVDROM,
@@ -453,7 +453,7 @@ public class Nero : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_dvd-r+dl.nrg",
             MediaType = MediaType.DVDROM,
@@ -483,7 +483,7 @@ public class Nero : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "report_dvdrom.nrg",
             MediaType = MediaType.DVDROM,
@@ -513,7 +513,7 @@ public class Nero : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "report_enhancedcd.nrg",
             MediaType     = MediaType.CDPLUS,
@@ -648,7 +648,7 @@ public class Nero : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "test_multi_karaoke_sampler.nrg",
             MediaType     = MediaType.CDROMXA,

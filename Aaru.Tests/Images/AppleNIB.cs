@@ -41,7 +41,7 @@ public class AppleNib : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "dos32.nib.lz",
             MediaType  = MediaType.Apple32SS,
@@ -57,7 +57,7 @@ public class AppleNib : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "dos33.nib.lz",
             MediaType  = MediaType.Apple33SS,
@@ -73,7 +73,7 @@ public class AppleNib : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "pascal.nib.lz",
             MediaType  = MediaType.Apple33SS,
@@ -81,7 +81,7 @@ public class AppleNib : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "4c4926103a32ac15f7e430ec3ced4be5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos.nib.lz",
             MediaType  = MediaType.Apple33SS,

@@ -43,7 +43,7 @@ public class MBR() : FilesystemTest("coherent")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "coherentunix_4.2.10.aif",
             MediaType   = MediaType.GENERIC_HDD,

@@ -43,7 +43,7 @@ public class MBR : FilesystemTest
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "minix_3.1.2a.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -53,7 +53,7 @@ public class MBR : FilesystemTest
             ClusterSize = 4096,
             Type        = "minix3"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_4.19_minix3_flashdrive.aif",
             MediaType   = MediaType.GENERIC_HDD,

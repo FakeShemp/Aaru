@@ -43,7 +43,7 @@ public class RDB() : FilesystemTest("hfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "amigaos_3.9.aif",
             MediaType   = MediaType.GENERIC_HDD,

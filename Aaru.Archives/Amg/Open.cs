@@ -20,7 +20,7 @@ public sealed partial class Amg
         _stream          = filter.GetDataForkStream();
         _stream.Position = 0;
 
-        byte[] hdr = new byte[Marshal.SizeOf<ArcHeader>()];
+        var hdr = new byte[Marshal.SizeOf<ArcHeader>()];
 
         _stream.ReadExactly(hdr, 0, hdr.Length);
 
@@ -39,7 +39,7 @@ public sealed partial class Amg
 
         while(_stream.Position + fileHeaderLen < _stream.Length)
         {
-            byte[] fileHdr = new byte[fileHeaderLen];
+            var fileHdr = new byte[fileHeaderLen];
 
             _stream.ReadExactly(fileHdr, 0, fileHdr.Length);
 
@@ -65,7 +65,7 @@ public sealed partial class Amg
 
             if(fh.pathLength > 0)
             {
-                byte[] buffer = new byte[fh.pathLength];
+                var buffer = new byte[fh.pathLength];
                 _stream.ReadExactly(buffer, 0, buffer.Length);
                 string path = StringHandlers.CToString(buffer, encoding);
                 path           = path.Replace('\\', Path.DirectorySeparatorChar);
@@ -74,7 +74,7 @@ public sealed partial class Amg
 
             if(fh.commentLength > 0)
             {
-                byte[] buffer = new byte[fh.commentLength];
+                var buffer = new byte[fh.commentLength];
                 _stream.ReadExactly(buffer, 0, buffer.Length);
                 entry.Comment = StringHandlers.CToString(buffer, encoding);
             }

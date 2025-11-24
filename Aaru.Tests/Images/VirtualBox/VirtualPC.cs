@@ -44,7 +44,7 @@ public class VirtualPc : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "virtualbox_linux_dynamic_250mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -52,7 +52,7 @@ public class VirtualPc : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "ab3248888d6f10ef30a084fac6a1e2fd"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "virtualbox_linux_fixed_10mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -60,7 +60,7 @@ public class VirtualPc : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "f1c9645dbc14efddc7d8a322685f26eb"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "virtualbox_macos_dynamic_250mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -68,7 +68,7 @@ public class VirtualPc : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "ab3248888d6f10ef30a084fac6a1e2fd"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "virtualbox_macos_fixed_10mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -76,7 +76,7 @@ public class VirtualPc : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "f1c9645dbc14efddc7d8a322685f26eb"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "virtualbox_windows_dynamic_250mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -84,7 +84,7 @@ public class VirtualPc : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "ab3248888d6f10ef30a084fac6a1e2fd"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "virtualbox_windows_fixed_10mb.vhd.lz",
             MediaType  = MediaType.Unknown,

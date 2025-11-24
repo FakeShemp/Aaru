@@ -42,7 +42,7 @@ public class VirtualPC : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "qemu_dynamic_250mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -58,7 +58,7 @@ public class VirtualPC : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "qemu_fixed_10mb.vhd.lz",
             MediaType  = MediaType.Unknown,
@@ -74,7 +74,7 @@ public class VirtualPC : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "virtualpc.vhd.lz",
             MediaType  = MediaType.Unknown,

@@ -42,7 +42,7 @@ public class MBR() : FilesystemTest("qnx4")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "qnx_4.24.aif",
             MediaType   = MediaType.GENERIC_HDD,

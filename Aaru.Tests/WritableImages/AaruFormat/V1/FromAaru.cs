@@ -15,7 +15,7 @@ public class FromAaru : WritableOpticalMediaImageTest
 
     public override OpticalImageTestExpected[] Tests =>
     [
-        new OpticalImageTestExpected
+        new()
         {
             TestFile      = "test_multisession.aif",
             MediaType     = MediaType.CDR,

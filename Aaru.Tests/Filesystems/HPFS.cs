@@ -45,7 +45,7 @@ public class Hpfs() : FilesystemTest("hpfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "ecs.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -58,7 +58,7 @@ public class Hpfs() : FilesystemTest("hpfs")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "2BBBD814"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "msos2_1.21.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -71,7 +71,7 @@ public class Hpfs() : FilesystemTest("hpfs")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "AC0DDC15"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "msos2_1.30.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -84,7 +84,7 @@ public class Hpfs() : FilesystemTest("hpfs")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "ABEB2C15"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "os2_1.20.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -97,7 +97,7 @@ public class Hpfs() : FilesystemTest("hpfs")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "6D3D2815"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "os2_1.30.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -110,7 +110,7 @@ public class Hpfs() : FilesystemTest("hpfs")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "6D195815"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "os2_6.307.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -123,7 +123,7 @@ public class Hpfs() : FilesystemTest("hpfs")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "6D24F815"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "os2_6.514.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -136,7 +136,7 @@ public class Hpfs() : FilesystemTest("hpfs")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "6D27F415"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "os2_6.617.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -149,7 +149,7 @@ public class Hpfs() : FilesystemTest("hpfs")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "6D396415"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "os2_8.162.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -162,7 +162,7 @@ public class Hpfs() : FilesystemTest("hpfs")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "6D118415"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "os2_9.023.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -175,7 +175,7 @@ public class Hpfs() : FilesystemTest("hpfs")
             VolumeName   = "VOLUME LABE",
             VolumeSerial = "ACA08415"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "winnt_3.10.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -188,7 +188,7 @@ public class Hpfs() : FilesystemTest("hpfs")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "E851CB14"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "winnt_3.50.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -201,7 +201,7 @@ public class Hpfs() : FilesystemTest("hpfs")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "A4EDC29C"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "ecs20_fstester.aif",
             MediaType    = MediaType.GENERIC_HDD,

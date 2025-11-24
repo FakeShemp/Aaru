@@ -39,7 +39,7 @@ public class Pc98 : PartitionSchemeTest
 
     public override PartitionTest[] Tests =>
     [
-        new PartitionTest
+        new()
         {
             TestFile = "msdos330.aif",
             Partitions =
@@ -126,7 +126,7 @@ public class Pc98 : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "msdos330_alt.aif",
             Partitions =
@@ -163,7 +163,7 @@ public class Pc98 : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "msdos500_epson.aif",
             Partitions =
@@ -250,7 +250,7 @@ public class Pc98 : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "msdos500.aif",
             Partitions =
@@ -337,7 +337,7 @@ public class Pc98 : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "msdos620.aif",
             Partitions =

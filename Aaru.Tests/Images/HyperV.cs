@@ -42,7 +42,7 @@ public class HyperV : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "dynamic_exfat.vhdx.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -50,7 +50,7 @@ public class HyperV : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b3b3e6b89763ef45f6863d7fd1195778"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "dynamic_fat32.vhdx.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -71,7 +71,7 @@ public class HyperV : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "dynamic_ntfs.vhdx.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -79,7 +79,7 @@ public class HyperV : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "bc6be23bbb139bd6fcd928f212205ce1"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "dynamic_udf.vhdx.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -87,7 +87,7 @@ public class HyperV : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "cfc501f3bcc12a00aa08db30e80c25ae"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "fixed_exfat.vhdx.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -95,7 +95,7 @@ public class HyperV : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "06e97867ff89301fef7e9451ad7aa4ed"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "fixed_fat32.vhdx.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -103,7 +103,7 @@ public class HyperV : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "d544a96ac1bd4431b884e244717d3dca"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "fixed_ntfs.vhdx.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -111,7 +111,7 @@ public class HyperV : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b10ed3ac22d882f7080b6f9859d1e646"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "fixed_udf.vhdx.lz",
             MediaType  = MediaType.GENERIC_HDD,

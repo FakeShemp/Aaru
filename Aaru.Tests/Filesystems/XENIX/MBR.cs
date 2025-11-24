@@ -43,7 +43,7 @@ public class MBR() : FilesystemTest("xenixfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "xenix_2.3.2d.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -52,7 +52,7 @@ public class MBR() : FilesystemTest("xenixfs")
             ClusterSize = 1024,
             VolumeName  = ""
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "xenix_2.3.4h.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -61,7 +61,7 @@ public class MBR() : FilesystemTest("xenixfs")
             ClusterSize = 1024,
             VolumeName  = ""
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "scoopenserver_5.0.7hw.aif",
             MediaType   = MediaType.GENERIC_HDD,

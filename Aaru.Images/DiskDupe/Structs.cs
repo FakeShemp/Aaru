@@ -41,31 +41,31 @@ public sealed partial class DiskDupe
 {
     readonly DiskType[] _diskTypes =
     [
-        new DiskType
+        new()
         {
             cyl = 0,
             hd  = 0,
             spt = 0
         }, // Type 0 - invalid
-        new DiskType
+        new()
         {
             cyl = 40,
             hd  = 2,
             spt = 9
         }, // Type 1 - 360k
-        new DiskType
+        new()
         {
             cyl = 80,
             hd  = 2,
             spt = 15
         }, // Type 2 - 1.2m
-        new DiskType
+        new()
         {
             cyl = 80,
             hd  = 2,
             spt = 9
         }, // Type 3 - 720k
-        new DiskType
+        new()
         {
             cyl = 80,
             hd  = 2,

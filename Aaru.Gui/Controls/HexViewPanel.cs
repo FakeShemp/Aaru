@@ -329,8 +329,9 @@ public class HexViewPanel : UserControl
             foreach(ColorRange range in ColorRanges)
             {
                 for(int i = range.Start; i <= range.End && i < _data.Length; i++)
-                    if(!colorLookup.ContainsKey(i))
-                        colorLookup[i] = range.Color;
+                {
+                    if(!colorLookup.ContainsKey(i)) colorLookup[i] = range.Color;
+                }
             }
         }
 

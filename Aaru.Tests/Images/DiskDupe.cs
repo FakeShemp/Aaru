@@ -42,7 +42,7 @@ public class DiskDupe : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "1.DDI.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -60,7 +60,7 @@ public class DiskDupe : BlockMediaImageTest
             }
             */
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "2.DDI.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -78,7 +78,7 @@ public class DiskDupe : BlockMediaImageTest
             }
             */
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "3.DDI.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -94,7 +94,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0000.DDI.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -102,7 +102,7 @@ public class DiskDupe : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "0fca5f810ce3179bbc67c7967370f1c2"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0009.DDI.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -118,7 +118,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0024.DDI.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -134,7 +134,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0052.DDI.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -150,7 +150,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0076.DDI.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -166,7 +166,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0078.DDI.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -174,7 +174,7 @@ public class DiskDupe : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "410203d55d05581ad377fc8ffda0f4e8"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0080.DDI.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -190,7 +190,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0082.DDI.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -206,7 +206,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0111.DDI.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -222,7 +222,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0123.DDI.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -238,7 +238,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0124.DDI.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -254,7 +254,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0125.DDI.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -270,7 +270,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0126.DDI.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -286,7 +286,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0163.DDI.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -302,7 +302,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0166.DDI.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -318,7 +318,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0168.DDI.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -334,7 +334,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0169.DDI.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -350,7 +350,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0283.DDI.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -368,7 +368,7 @@ public class DiskDupe : BlockMediaImageTest
             }
             */
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0287.DDI.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -384,7 +384,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0302.DDI.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -400,7 +400,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0304.DDI.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -416,7 +416,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0305.DDI.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -432,7 +432,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0314.DDI.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -448,7 +448,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DSKA0316.DDI.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -466,7 +466,7 @@ public class DiskDupe : BlockMediaImageTest
         },
 
         // TODO: CP/M false positive
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd.ddi.lz",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -474,7 +474,7 @@ public class DiskDupe : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "6715d0ed2097a762e24e64165bd6c801"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd.ddi.lz",
             MediaType  = MediaType.DOS_525_HD,
@@ -490,7 +490,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd.ddi.lz",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -506,7 +506,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_alt.ddi.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -522,7 +522,7 @@ public class DiskDupe : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd.ddi.lz",
             MediaType  = MediaType.DOS_35_HD,

@@ -44,7 +44,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat16")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "msdos_3.30A_mf2ed.img.lz",
             MediaType   = MediaType.ECMA_147,
@@ -55,7 +55,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat16")
             ClusterSize = 512,
             SystemId    = "MSDOS3.3"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "msdos_3.31_mf2ed.img.lz",
             MediaType   = MediaType.ECMA_147,
@@ -66,7 +66,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat16")
             ClusterSize = 512,
             SystemId    = "IBM  3.3"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.2.17_mf2hd.img.lz",
             MediaType    = MediaType.DOS_35_HD,
@@ -78,7 +78,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609C51D1"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.2.20_mf2hd.img.lz",
             MediaType    = MediaType.DOS_35_HD,
@@ -90,7 +90,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609C817B"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.4.18_mf2hd.img.lz",
             MediaType    = MediaType.DOS_35_HD,
@@ -102,7 +102,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609CA5B2"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.2.17_mf2hd_umsdos.img.lz",
             MediaType    = MediaType.DOS_35_HD,
@@ -114,7 +114,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609C545C"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.2.20_mf2hd_umsdos.img.lz",
             MediaType    = MediaType.DOS_35_HD,
@@ -126,7 +126,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609C87E7"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_2.4.18_mf2hd_umsdos.img.lz",
             MediaType    = MediaType.DOS_35_HD,
@@ -138,7 +138,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "609CA685"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macos_8.5.img.lz",
             MediaType    = MediaType.GENERIC_HDD,
@@ -150,7 +150,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "FAT",
             VolumeSerial = "34050000"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macos_8.6.img.lz",
             MediaType    = MediaType.GENERIC_HDD,
@@ -162,7 +162,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "FAT",
             VolumeSerial = "A6040000"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "pcexchange_3.0.3.img.lz",
             MediaType    = MediaType.GENERIC_HDD,
@@ -174,7 +174,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "A1360000"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "pcexchange_3.0.4.img.lz",
             MediaType    = MediaType.GENERIC_HDD,
@@ -186,7 +186,7 @@ public class Whole() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VOLUMELABEL",
             VolumeSerial = "4B320000"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "pcexchange_3.0.5.img.lz",
             MediaType    = MediaType.GENERIC_HDD,

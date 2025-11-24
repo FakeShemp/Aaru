@@ -42,7 +42,7 @@ public class Toast : OpticalMediaImageTest
 
     public override OpticalImageTestExpected[] Tests =>
     [
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "toast_3.5.7_iso9660_xa_apple.toast.lz",
             MediaType = MediaType.CD,
@@ -72,7 +72,7 @@ public class Toast : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "toast_3.5.7_iso9660_xa_dos_apple.toast.lz",
             MediaType = MediaType.CD,
@@ -102,7 +102,7 @@ public class Toast : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "toast_3.5.7_iso9660_xa_dos.toast.lz",
             MediaType = MediaType.CD,
@@ -132,7 +132,7 @@ public class Toast : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "toast_3.5.7_iso9660_xa_ebook_eng.toast.lz",
             MediaType = MediaType.CD,
@@ -162,7 +162,7 @@ public class Toast : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "toast_3.5.7_iso9660_xa_ebook_fra.toast.lz",
             MediaType = MediaType.CD,
@@ -192,7 +192,7 @@ public class Toast : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "toast_3.5.7_iso9660_xa_joliet_apple.toast.lz",
             MediaType = MediaType.CD,
@@ -222,7 +222,7 @@ public class Toast : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "toast_3.5.7_iso9660_xa_joliet.toast.lz",
             MediaType = MediaType.CD,
@@ -252,7 +252,7 @@ public class Toast : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "toast_3.5.7_iso9660_xa_mac_apple.toast.lz",
             MediaType = MediaType.CD,
@@ -282,7 +282,7 @@ public class Toast : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "toast_3.5.7_iso9660_xa_mac.toast.lz",
             MediaType = MediaType.CD,
@@ -312,7 +312,7 @@ public class Toast : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "toast_3.5.7_iso9660_xa_ver_apple.toast.lz",
             MediaType = MediaType.CD,
@@ -342,7 +342,7 @@ public class Toast : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "toast_3.5.7_iso9660_xa_ver_dos_apple.toast.lz",
             MediaType = MediaType.CD,
@@ -372,7 +372,7 @@ public class Toast : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "toast_3.5.7_iso9660_xa_ver_dos.toast.lz",
             MediaType = MediaType.CD,
@@ -402,7 +402,7 @@ public class Toast : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "toast_3.5.7_iso9660_xa_ver_joliet_apple.toast.lz",
             MediaType = MediaType.CD,
@@ -432,7 +432,7 @@ public class Toast : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "toast_3.5.7_iso9660_xa_ver_joliet.toast.lz",
             MediaType = MediaType.CD,
@@ -462,7 +462,7 @@ public class Toast : OpticalMediaImageTest
                 }
             ]
         },
-        new OpticalImageTestExpected
+        new()
         {
             TestFile  = "toast_3.5.7_iso9660_xa_ver.toast.lz",
             MediaType = MediaType.CD,

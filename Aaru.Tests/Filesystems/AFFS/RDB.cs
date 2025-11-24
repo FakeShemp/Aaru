@@ -45,7 +45,7 @@ public class RDB() : FilesystemTest("affs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "amigaos_3.9.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -56,7 +56,7 @@ public class RDB() : FilesystemTest("affs")
             VolumeName   = "Volume label",
             VolumeSerial = "A56D0F5C"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "amigaos_3.9_intl.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -67,7 +67,7 @@ public class RDB() : FilesystemTest("affs")
             VolumeName   = "Volume label",
             VolumeSerial = "A56D049C"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "aros.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -78,7 +78,7 @@ public class RDB() : FilesystemTest("affs")
             VolumeName   = "Volume label",
             VolumeSerial = "A58307A9"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "aros_intl.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -89,7 +89,7 @@ public class RDB() : FilesystemTest("affs")
             VolumeName   = "Volume label",
             VolumeSerial = "A58304BE"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "amigaos_4.0.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -100,7 +100,7 @@ public class RDB() : FilesystemTest("affs")
             VolumeName   = "Volume label",
             VolumeSerial = "A56CC7EE"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "amigaos_4.0_intl.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -111,7 +111,7 @@ public class RDB() : FilesystemTest("affs")
             VolumeName   = "Volume label",
             VolumeSerial = "A56CDDC4"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "amigaos_4.0_cache.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -122,7 +122,7 @@ public class RDB() : FilesystemTest("affs")
             VolumeName   = "Volume label",
             VolumeSerial = "A56CC133"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "morphos_3.13.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -133,7 +133,7 @@ public class RDB() : FilesystemTest("affs")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "1D93009A"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "morphos_3.13_cache.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -144,7 +144,7 @@ public class RDB() : FilesystemTest("affs")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "1D9107DA"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "morphos_3.13_intl.aif",
             MediaType    = MediaType.GENERIC_HDD,

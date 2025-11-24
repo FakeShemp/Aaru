@@ -50,7 +50,7 @@
   <ItemGroup>
     <PackageReference Include="Aaru.Checksums.Native"/>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
-    <PackageReference Include="Sentry" />
+    <PackageReference Include="Sentry"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Aaru.Generators\Aaru.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>

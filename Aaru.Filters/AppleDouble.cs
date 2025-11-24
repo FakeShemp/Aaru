@@ -33,7 +33,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using Aaru.CommonTypes.Attributes;
 using Aaru.CommonTypes.Enums;
@@ -515,8 +514,7 @@ public sealed partial class AppleDouble : IFilter
                     }
                     else if(_proDosHome.SequenceEqual(_header.homeFilesystem))
                     {
-                        ProDOSFileInfo prodosinfo =
-                            Marshal.ByteArrayToStructureBigEndian<ProDOSFileInfo>(finfo);
+                        ProDOSFileInfo prodosinfo = Marshal.ByteArrayToStructureBigEndian<ProDOSFileInfo>(finfo);
 
                         CreationTime  = DateHandlers.MacToDateTime(prodosinfo.creationDate);
                         LastWriteTime = DateHandlers.MacToDateTime(prodosinfo.modificationDate);

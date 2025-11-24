@@ -42,7 +42,7 @@ public class Partclone : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "ext2.partclone.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -50,7 +50,7 @@ public class Partclone : BlockMediaImageTest
             SectorSize = 4096,
             Md5        = "ff239c91166b6b13fa826dd258b40666"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "fat16.partclone.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -66,7 +66,7 @@ public class Partclone : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "fat32.partclone.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -84,7 +84,7 @@ public class Partclone : BlockMediaImageTest
             }
             */
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "hfsplus.partclone.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -92,7 +92,7 @@ public class Partclone : BlockMediaImageTest
             SectorSize = 4096,
             Md5        = "880a6777d05c496901e930684abbecff"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "ntfs.partclone.lz",
             MediaType  = MediaType.GENERIC_HDD,

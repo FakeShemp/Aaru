@@ -56,7 +56,7 @@ public sealed partial class Zoo
                     ArchiveSupportedFeature.SupportsFilenames |
                     ArchiveSupportedFeature.SupportsSubdirectories;
 
-        byte[] hdr = new byte[Marshal.SizeOf<ZooHeader>()];
+        var hdr = new byte[Marshal.SizeOf<ZooHeader>()];
 
         _stream.ReadExactly(hdr, 0, hdr.Length);
 
@@ -86,7 +86,7 @@ public sealed partial class Zoo
 
         do
         {
-            byte[] buf = new byte[Marshal.SizeOf<Direntry>()];
+            var buf = new byte[Marshal.SizeOf<Direntry>()];
 
             if(_stream.Position + buf.Length >= _stream.Length) break;
 
@@ -94,7 +94,7 @@ public sealed partial class Zoo
 
             entry = Marshal.ByteArrayToStructureLittleEndian<Direntry>(buf);
 
-            int pos = 56; // dir_crc
+            var pos = 56; // dir_crc
 
             if(entry.namlen > 0)
             {

@@ -121,5 +121,6 @@ public static class AaruLogging
     ///     Writes the exception to the debug output console.
     /// </summary>
     /// <param name="ex">Exception.</param>
-    public static void Exception(Exception ex, string message, params object[] arg) => WriteExceptionEvent?.Invoke(ex, message, arg);
+    public static void Exception(Exception ex, string message, params object[] arg) =>
+        WriteExceptionEvent?.Invoke(ex, message, arg);
 }

@@ -41,7 +41,7 @@ public class Parallels : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "parallels.hdd.lz",
             MediaType  = MediaType.GENERIC_HDD,

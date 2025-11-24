@@ -42,7 +42,7 @@ public class V1 : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "hdd.chd",
             MediaType  = MediaType.GENERIC_HDD,

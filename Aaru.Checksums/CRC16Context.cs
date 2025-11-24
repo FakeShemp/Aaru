@@ -83,121 +83,6 @@ public partial class Crc16Context : IChecksum
         if(!_useNative) _table = table ?? GenerateTable(polynomial, inverse);
     }
 
-#region IChecksum Members
-
-    /// <inheritdoc />
-    public string Name => "Adler-32";
-
-    /// <inheritdoc />
-    public Guid Id => new("D69CF1E7-4A7B-4605-9291-3A1BE4C2951F");
-
-    /// <inheritdoc />
-    public string Author => Authors.NataliaPortillo;
-
-    /// <inheritdoc />
-    /// <summary>Updates the hash with data.</summary>
-    /// <param name="data">Data buffer.</param>
-    /// <param name="len">Length of buffer to hash.</param>
-    public void Update(byte[] data, uint len)
-    {
-        switch(_useNative)
-        {
-            case true when _useCcitt:
-                crc16_ccitt_update(_nativeContext, data, len);
-
-                break;
-            case true when _useIbm:
-                crc16_update(_nativeContext, data, len);
-
-                break;
-            default:
-            {
-                if(_inverse)
-                    StepInverse(ref _hashInt, _table, data, len);
-                else
-                    Step(ref _hashInt, _table, data, len);
-
-                break;
-            }
-        }
-    }
-
-    /// <inheritdoc />
-    /// <summary>Updates the hash with data.</summary>
-    /// <param name="data">Data buffer.</param>
-    public void Update(byte[] data) => Update(data, (uint)data.Length);
-
-    /// <inheritdoc />
-    /// <summary>Returns a byte array of the hash value.</summary>
-    public byte[] Final()
-    {
-        ushort crc = 0;
-
-        switch(_useNative)
-        {
-            case true when _useCcitt:
-                crc16_ccitt_final(_nativeContext, ref crc);
-                crc16_ccitt_free(_nativeContext);
-
-                break;
-            case true when _useIbm:
-                crc16_final(_nativeContext, ref crc);
-                crc16_free(_nativeContext);
-
-                break;
-            default:
-            {
-                if(_inverse)
-                    crc = (ushort)~(_hashInt ^ _finalSeed);
-                else
-                    crc = (ushort)(_hashInt ^ _finalSeed);
-
-                break;
-            }
-        }
-
-        return BigEndianBitConverter.GetBytes(crc);
-    }
-
-    /// <inheritdoc />
-    /// <summary>Returns a hexadecimal representation of the hash value.</summary>
-    public string End()
-    {
-        var    crc16Output = new StringBuilder();
-        ushort final       = 0;
-
-        switch(_useNative)
-        {
-            case true when _useCcitt:
-                crc16_ccitt_final(_nativeContext, ref final);
-                crc16_ccitt_free(_nativeContext);
-
-                break;
-            case true when _useIbm:
-                crc16_final(_nativeContext, ref final);
-                crc16_free(_nativeContext);
-
-                break;
-            default:
-            {
-                if(_inverse)
-                    final = (ushort)~(_hashInt ^ _finalSeed);
-                else
-                    final = (ushort)(_hashInt ^ _finalSeed);
-
-                break;
-            }
-        }
-
-        byte[] finalBytes = BigEndianBitConverter.GetBytes(final);
-
-        foreach(byte t in finalBytes) crc16Output.Append(t.ToString("x2"));
-
-        return crc16Output.ToString();
-    }
-
-#endregion
-
     [LibraryImport("libAaru.Checksums.Native", SetLastError = true)]
     private static partial IntPtr crc16_init();
 
@@ -632,4 +517,119 @@ public partial class Crc16Context : IChecksum
 
         return localHashInt;
     }
+
+#region IChecksum Members
+
+    /// <inheritdoc />
+    public string Name => "Adler-32";
+
+    /// <inheritdoc />
+    public Guid Id => new("D69CF1E7-4A7B-4605-9291-3A1BE4C2951F");
+
+    /// <inheritdoc />
+    public string Author => Authors.NataliaPortillo;
+
+    /// <inheritdoc />
+    /// <summary>Updates the hash with data.</summary>
+    /// <param name="data">Data buffer.</param>
+    /// <param name="len">Length of buffer to hash.</param>
+    public void Update(byte[] data, uint len)
+    {
+        switch(_useNative)
+        {
+            case true when _useCcitt:
+                crc16_ccitt_update(_nativeContext, data, len);
+
+                break;
+            case true when _useIbm:
+                crc16_update(_nativeContext, data, len);
+
+                break;
+            default:
+            {
+                if(_inverse)
+                    StepInverse(ref _hashInt, _table, data, len);
+                else
+                    Step(ref _hashInt, _table, data, len);
+
+                break;
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    /// <summary>Updates the hash with data.</summary>
+    /// <param name="data">Data buffer.</param>
+    public void Update(byte[] data) => Update(data, (uint)data.Length);
+
+    /// <inheritdoc />
+    /// <summary>Returns a byte array of the hash value.</summary>
+    public byte[] Final()
+    {
+        ushort crc = 0;
+
+        switch(_useNative)
+        {
+            case true when _useCcitt:
+                crc16_ccitt_final(_nativeContext, ref crc);
+                crc16_ccitt_free(_nativeContext);
+
+                break;
+            case true when _useIbm:
+                crc16_final(_nativeContext, ref crc);
+                crc16_free(_nativeContext);
+
+                break;
+            default:
+            {
+                if(_inverse)
+                    crc = (ushort)~(_hashInt ^ _finalSeed);
+                else
+                    crc = (ushort)(_hashInt ^ _finalSeed);
+
+                break;
+            }
+        }
+
+        return BigEndianBitConverter.GetBytes(crc);
+    }
+
+    /// <inheritdoc />
+    /// <summary>Returns a hexadecimal representation of the hash value.</summary>
+    public string End()
+    {
+        var    crc16Output = new StringBuilder();
+        ushort final       = 0;
+
+        switch(_useNative)
+        {
+            case true when _useCcitt:
+                crc16_ccitt_final(_nativeContext, ref final);
+                crc16_ccitt_free(_nativeContext);
+
+                break;
+            case true when _useIbm:
+                crc16_final(_nativeContext, ref final);
+                crc16_free(_nativeContext);
+
+                break;
+            default:
+            {
+                if(_inverse)
+                    final = (ushort)~(_hashInt ^ _finalSeed);
+                else
+                    final = (ushort)(_hashInt ^ _finalSeed);
+
+                break;
+            }
+        }
+
+        byte[] finalBytes = BigEndianBitConverter.GetBytes(final);
+
+        foreach(byte t in finalBytes) crc16Output.Append(t.ToString("x2"));
+
+        return crc16Output.ToString();
+    }
+
+#endregion
 }

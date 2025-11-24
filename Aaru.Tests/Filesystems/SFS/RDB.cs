@@ -43,7 +43,7 @@ public class RDB() : FilesystemTest("sfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "uae.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -52,7 +52,7 @@ public class RDB() : FilesystemTest("sfs")
             Clusters    = 127000,
             ClusterSize = 2048
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "aros.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -61,7 +61,7 @@ public class RDB() : FilesystemTest("sfs")
             Clusters    = 407232,
             ClusterSize = 512
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "amigaos_4.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -70,7 +70,7 @@ public class RDB() : FilesystemTest("sfs")
             Clusters    = 511040,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "amigaos_4.0_sfs2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -79,7 +79,7 @@ public class RDB() : FilesystemTest("sfs")
             Clusters    = 511040,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "morphos_3.13.aif",
             MediaType   = MediaType.GENERIC_HDD,

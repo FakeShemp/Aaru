@@ -367,49 +367,43 @@ public class PluginRegisterGenerator : ISourceGenerator
                                                     ?.Identifier.ValueText ==
                                                       "IArchive") ==
                true)
-            {
-                if(!Archives.Contains(plugin.Identifier.Text)) Archives.Add(plugin.Identifier.Text);
-            }
+                if(!Archives.Contains(plugin.Identifier.Text))
+                    Archives.Add(plugin.Identifier.Text);
 
             if(plugin.BaseList?.Types.Any(static t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)
                                                     ?.Identifier.ValueText ==
                                                       "IChecksum") ==
                true)
-            {
-                if(!Checksums.Contains(plugin.Identifier.Text)) Checksums.Add(plugin.Identifier.Text);
-            }
+                if(!Checksums.Contains(plugin.Identifier.Text))
+                    Checksums.Add(plugin.Identifier.Text);
 
             if(plugin.BaseList?.Types.Any(static t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)
                                                     ?.Identifier.ValueText ==
                                                       "IFilesystem") ==
                true)
-            {
-                if(!FileSystems.Contains(plugin.Identifier.Text)) FileSystems.Add(plugin.Identifier.Text);
-            }
+                if(!FileSystems.Contains(plugin.Identifier.Text))
+                    FileSystems.Add(plugin.Identifier.Text);
 
             if(plugin.BaseList?.Types.Any(static t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)
                                                     ?.Identifier.ValueText ==
                                                       "IFilter") ==
                true)
-            {
-                if(!Filters.Contains(plugin.Identifier.Text)) Filters.Add(plugin.Identifier.Text);
-            }
+                if(!Filters.Contains(plugin.Identifier.Text))
+                    Filters.Add(plugin.Identifier.Text);
 
             if(plugin.BaseList?.Types.Any(static t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)
                                                     ?.Identifier.ValueText ==
                                                       "IFloppyImage") ==
                true)
-            {
-                if(!FloppyImagePlugins.Contains(plugin.Identifier.Text)) FloppyImagePlugins.Add(plugin.Identifier.Text);
-            }
+                if(!FloppyImagePlugins.Contains(plugin.Identifier.Text))
+                    FloppyImagePlugins.Add(plugin.Identifier.Text);
 
             if(plugin.BaseList?.Types.Any(static t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)
                                                     ?.Identifier.ValueText ==
                                                       "IFluxImage") ==
                true)
-            {
-                if(!FluxImagePlugins.Contains(plugin.Identifier.Text)) FluxImagePlugins.Add(plugin.Identifier.Text);
-            }
+                if(!FluxImagePlugins.Contains(plugin.Identifier.Text))
+                    FluxImagePlugins.Add(plugin.Identifier.Text);
 
 
             if(plugin.BaseList?.Types.Any(static t =>
@@ -420,17 +414,15 @@ public class PluginRegisterGenerator : ISourceGenerator
                                                         or "ITapeImage"
                                                         or "IFluxImage") ==
                true)
-            {
-                if(!MediaImagePlugins.Contains(plugin.Identifier.Text)) MediaImagePlugins.Add(plugin.Identifier.Text);
-            }
+                if(!MediaImagePlugins.Contains(plugin.Identifier.Text))
+                    MediaImagePlugins.Add(plugin.Identifier.Text);
 
             if(plugin.BaseList?.Types.Any(static t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)
                                                     ?.Identifier.ValueText ==
                                                       "IPartition") ==
                true)
-            {
-                if(!PartitionPlugins.Contains(plugin.Identifier.Text)) PartitionPlugins.Add(plugin.Identifier.Text);
-            }
+                if(!PartitionPlugins.Contains(plugin.Identifier.Text))
+                    PartitionPlugins.Add(plugin.Identifier.Text);
 
             if(plugin.BaseList?.Types.Any(static t =>
                                               ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier

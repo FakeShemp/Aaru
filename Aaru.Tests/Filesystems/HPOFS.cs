@@ -45,7 +45,7 @@ public class Hpofs() : FilesystemTest("hpofs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "rid1.img.lz",
             MediaType    = MediaType.DOS_35_HD,
@@ -57,7 +57,7 @@ public class Hpofs() : FilesystemTest("hpofs")
             VolumeName   = "VOLUME LABEL",
             VolumeSerial = "AC226814"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "rid10.img.lz",
             MediaType    = MediaType.DOS_35_HD,
@@ -69,7 +69,7 @@ public class Hpofs() : FilesystemTest("hpofs")
             VolumeName   = "VOLUME LABEL",
             VolumeSerial = "AC160814"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "rid66percent.img.lz",
             MediaType    = MediaType.DOS_35_HD,
@@ -81,7 +81,7 @@ public class Hpofs() : FilesystemTest("hpofs")
             VolumeName   = "VOLUME LABEL",
             VolumeSerial = "AC306C14"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "rid266.img.lz",
             MediaType    = MediaType.DOS_35_HD,

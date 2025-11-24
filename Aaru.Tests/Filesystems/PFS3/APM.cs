@@ -45,7 +45,7 @@ public class APM() : FilesystemTest("pfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "morphos_3.13.aif",
             MediaType   = MediaType.GENERIC_HDD,

@@ -39,7 +39,7 @@ public class Sgi : PartitionSchemeTest
 
     public override PartitionTest[] Tests =>
     [
-        new PartitionTest
+        new()
         {
             TestFile = "linux.aif",
             Partitions =
@@ -172,7 +172,7 @@ public class Sgi : PartitionSchemeTest
                 }
             ]
         },
-        new PartitionTest
+        new()
         {
             TestFile = "parted.aif",
             Partitions =

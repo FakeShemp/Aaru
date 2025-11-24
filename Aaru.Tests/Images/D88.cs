@@ -41,7 +41,7 @@ public class D88 : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "1942 (1987)(ASCII)(JP).d77.lz",
             MediaType  = MediaType.NEC_525_SS,
@@ -49,7 +49,7 @@ public class D88 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "a4103c39cd7fd9fc3de8418dfcf22364"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "'Ashe (1988)(Quasar)(Disk 4 of 4)(User Disk).d88.lz",
             MediaType  = MediaType.NEC_525_SS,
@@ -57,7 +57,7 @@ public class D88 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "b948048c03e0b3d34d77f5c9dced0b41"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "Crimsin (1988)(Xtalsoft)(Disk 3 of 3).d88.lz",
             MediaType  = MediaType.NEC_525_SS,
@@ -65,7 +65,7 @@ public class D88 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "f91152fab791d4dc0677a289d90478a5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "Dragon Slayer (1986)(Falcom - Login)(JP).d88.lz",
             MediaType  = MediaType.Unknown,
@@ -73,7 +73,7 @@ public class D88 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "39b01df04a6312b09f1b83c9f3a46b22"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "D-Side - Lagrange L-2 Part II (1986)(Compaq)(JP).d88.lz",
             MediaType  = MediaType.Unknown,
@@ -81,7 +81,7 @@ public class D88 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "ef775ec1f41b8b725ea83ec8c5ca04e2"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "File Master FM, The v1.01 (1986)(Kyoto Media)(JP).d77.lz",
             MediaType  = MediaType.NEC_525_SS,
@@ -89,7 +89,7 @@ public class D88 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "5c2b22f824524cd6c539aaeb2ecb84cd"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "Gandhara (1987)(Enix)(JP).d88.lz",
             MediaType  = MediaType.NEC_525_SS,
@@ -97,7 +97,7 @@ public class D88 : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "6bddf3dd32877f7b552cbf9da6b89f76"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "Might & Magic (198x)(Star Craft)(Disk 1 of 3)(Disk A).d88.lz",
             MediaType  = MediaType.Unknown,
@@ -105,7 +105,7 @@ public class D88 : BlockMediaImageTest
             SectorSize = 128,
             Md5        = "003cd0292879733b6eab7ca79ab9cfeb"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "msdos33d_md2dd.d88.lz",
             MediaType  = MediaType.Unknown,
@@ -113,7 +113,7 @@ public class D88 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "acb738a5a945e4e2ba1504a14a529933"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "msdos33d_md2hd.d88.lz",
             MediaType  = MediaType.SHARP_525,
@@ -121,7 +121,7 @@ public class D88 : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "106068dbdf13803979c7bbb63612f43d"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "msdos50_epson_md2dd.d88.lz",
             MediaType  = MediaType.Unknown,
@@ -137,7 +137,7 @@ public class D88 : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "msdos50_epson_md2hd.d88.lz",
             MediaType  = MediaType.SHARP_525,
@@ -153,7 +153,7 @@ public class D88 : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "msdos50_md2dd.d88.lz",
             MediaType  = MediaType.Unknown,
@@ -161,7 +161,7 @@ public class D88 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "7a3332e82b0fe8c5673a2615f6c0b9a2"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "msdos50_md2hd.d88.lz",
             MediaType  = MediaType.SHARP_525,
@@ -177,7 +177,7 @@ public class D88 : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "msdos62_md2dd.d88.lz",
             MediaType  = MediaType.Unknown,
@@ -185,7 +185,7 @@ public class D88 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "07fb4c225d4b5a2e2a1046ae66fc153c"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "msdos62_md2hd.d88.lz",
             MediaType  = MediaType.SHARP_525,
@@ -201,7 +201,7 @@ public class D88 : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "R-Type (1988)(Irem)(Disk 1 of 2).d88.lz",
             MediaType  = MediaType.Unknown,
@@ -209,7 +209,7 @@ public class D88 : BlockMediaImageTest
             SectorSize = 1024,
             Md5        = "9d675e5147b55cee0b2bc05476eef825"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "Towns System Software v1.1L30 (1992)(Fujitsu)(JP).d88.lz",
             MediaType  = MediaType.SHARP_525,
@@ -225,7 +225,7 @@ public class D88 : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "Visual Instrument Player (198x)(Kamiya)(JP)(Disk 1 of 2).d88.lz",
             MediaType  = MediaType.NEC_525_SS,

@@ -39,7 +39,7 @@ public class Minix : PartitionSchemeTest
 
     public override PartitionTest[] Tests =>
     [
-        new PartitionTest
+        new()
         {
             TestFile = "minix_3.1.2a.aif",
             Partitions =

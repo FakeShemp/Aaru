@@ -37,8 +37,8 @@ public static class FileAttributesExtensions
     /// </summary>
     public static string ToAttributeChars(this FileAttributes flags)
     {
-        char[] attr                                  = new char[19];
-        for(int i = 0; i < attr.Length; i++) attr[i] = '.';
+        var attr                                     = new char[19];
+        for(var i = 0; i < attr.Length; i++) attr[i] = '.';
 
         (FileAttributes Flag, int Slot, char Symbol)[] attrs =
         [
@@ -63,8 +63,9 @@ public static class FileAttributesExtensions
 
         // 4) Post-process extras: only overwrite slots still ‘.’
         foreach((FileAttributes flag, int slot, char symbol) in attrs)
-            if(slot >= 0 && slot < attr.Length && attr[slot] == '.' && flags.HasFlag(flag))
-                attr[slot] = symbol;
+        {
+            if(slot >= 0 && slot < attr.Length && attr[slot] == '.' && flags.HasFlag(flag)) attr[slot] = symbol;
+        }
 
         return new string(attr);
     }

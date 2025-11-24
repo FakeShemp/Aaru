@@ -43,7 +43,7 @@ public class Whole : FilesystemTest
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "minix_3.1.2a_dsdd.img.lz",
             MediaType   = MediaType.DOS_525_DS_DD_9,
@@ -53,7 +53,7 @@ public class Whole : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix3"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "minix_3.1.2a_dshd.img.lz",
             MediaType   = MediaType.DOS_525_HD,
@@ -63,7 +63,7 @@ public class Whole : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix3"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "minix_3.1.2a_mf2dd.img.lz",
             MediaType   = MediaType.DOS_35_DS_DD_9,
@@ -73,7 +73,7 @@ public class Whole : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix3"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "minix_3.1.2a_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -83,7 +83,7 @@ public class Whole : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix3"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.0.29_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -93,7 +93,7 @@ public class Whole : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix2"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.0.34_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -103,7 +103,7 @@ public class Whole : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix2"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.0.37_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -113,7 +113,7 @@ public class Whole : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix2"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.0.38_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -123,7 +123,7 @@ public class Whole : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix2"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.2.17_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -133,7 +133,7 @@ public class Whole : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix2"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.2.20_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -143,7 +143,7 @@ public class Whole : FilesystemTest
             ClusterSize = 1024,
             Type        = "minix2"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.4.18_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,

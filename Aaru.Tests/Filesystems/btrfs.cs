@@ -43,7 +43,7 @@ public class Btrfs() : FilesystemTest("btrfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -54,7 +54,7 @@ public class Btrfs() : FilesystemTest("btrfs")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "a4fc5201-85cc-6840-8a68-998cab9ae897"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_4.19_btrfs_flashdrive.aif",
             MediaType    = MediaType.GENERIC_HDD,

@@ -69,9 +69,9 @@ public abstract class FsExtractIssueTest
             });
         }
 
-        bool filesystemFound = false;
+        var filesystemFound = false;
 
-        for(int i = 0; i < partitions.Count; i++)
+        for(var i = 0; i < partitions.Count; i++)
         {
             Core.Filesystems.Identify(imageFormat, out List<string> idPlugins, partitions[i]);
 
@@ -172,7 +172,7 @@ public abstract class FsExtractIssueTest
                 }
             }
 
-            byte[]      buffer = new byte[stat.Length];
+            var         buffer = new byte[stat.Length];
             ErrorNumber ret    = fs.OpenFile(path + "/" + entry, out IFileNode fileNode);
 
             Assert.That(ret,

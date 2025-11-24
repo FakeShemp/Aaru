@@ -43,7 +43,7 @@ public class RDB() : FilesystemTest("sysv_r4")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "amix.aif",
             MediaType   = MediaType.GENERIC_HDD,

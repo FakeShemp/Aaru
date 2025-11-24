@@ -46,7 +46,7 @@ public class ROCo : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_DOS_1440.img",
             MediaType  = MediaType.DOS_35_HD,
@@ -62,7 +62,7 @@ public class ROCo : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_DOS_1440.smi",
             MediaType  = MediaType.DOS_35_HD,
@@ -78,7 +78,7 @@ public class ROCo : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_DOS_720.img",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -94,7 +94,7 @@ public class ROCo : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_DOS_720.smi",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -110,7 +110,7 @@ public class ROCo : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_DOS_DMF.img",
             MediaType  = MediaType.DMF,
@@ -126,7 +126,7 @@ public class ROCo : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_DOS_DMF.smi",
             MediaType  = MediaType.DMF,
@@ -142,7 +142,7 @@ public class ROCo : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_HFS_1440.img",
             MediaType  = MediaType.DOS_35_HD,
@@ -150,7 +150,7 @@ public class ROCo : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "3160038ca028ccf52ad7863790072145"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_HFS_1440.smi",
             MediaType  = MediaType.DOS_35_HD,
@@ -158,7 +158,7 @@ public class ROCo : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "3160038ca028ccf52ad7863790072145"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_HFS_800.img",
             MediaType  = MediaType.AppleSonyDS,
@@ -166,7 +166,7 @@ public class ROCo : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "5e255c4bc0f6a26ecd27845b37e65aaa"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_HFS_800.smi",
             MediaType  = MediaType.AppleSonyDS,
@@ -174,7 +174,7 @@ public class ROCo : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "5e255c4bc0f6a26ecd27845b37e65aaa"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_HFS_DMF.img",
             MediaType  = MediaType.DMF,
@@ -182,7 +182,7 @@ public class ROCo : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "652dc979c177f2d8e846587158b38478"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_HFS_DMF.smi",
             MediaType  = MediaType.DMF,
@@ -190,7 +190,7 @@ public class ROCo : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "652dc979c177f2d8e846587158b38478"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_PD_1440.img",
             MediaType  = MediaType.DOS_35_HD,
@@ -198,7 +198,7 @@ public class ROCo : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "7975e8cf7579a6848d6fb4e546d1f682"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_PD_1440.smi",
             MediaType  = MediaType.DOS_35_HD,
@@ -206,7 +206,7 @@ public class ROCo : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "7975e8cf7579a6848d6fb4e546d1f682"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_PD_800.img",
             MediaType  = MediaType.AppleSonyDS,
@@ -214,7 +214,7 @@ public class ROCo : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "a72da7aedadbe194c22a3d71c62e4766"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_PD_800.smi",
             MediaType  = MediaType.AppleSonyDS,
@@ -222,7 +222,7 @@ public class ROCo : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "a72da7aedadbe194c22a3d71c62e4766"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_PD_DMF.img",
             MediaType  = MediaType.DMF,
@@ -230,7 +230,7 @@ public class ROCo : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "7fbf0251a93cb36d98e68b7d19624de5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DC6_RC_PD_DMF.smi",
             MediaType  = MediaType.DMF,

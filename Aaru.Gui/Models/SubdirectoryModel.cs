@@ -32,7 +32,6 @@
 
 using System.Collections.ObjectModel;
 using Aaru.CommonTypes.Interfaces;
-using Avalonia.Media;
 using Avalonia.Media.Imaging;
 
 namespace Aaru.Gui.Models;

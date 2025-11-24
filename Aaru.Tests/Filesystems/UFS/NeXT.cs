@@ -43,7 +43,7 @@ public class NeXT : FilesystemTest
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "nextstep_3.3.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -53,7 +53,7 @@ public class NeXT : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "openstep_4.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -63,7 +63,7 @@ public class NeXT : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "openstep_4.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -73,7 +73,7 @@ public class NeXT : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "rhapsody_dr1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -83,7 +83,7 @@ public class NeXT : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "rhapsody_dr2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -93,7 +93,7 @@ public class NeXT : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macosx_1.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -103,7 +103,7 @@ public class NeXT : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macosx_1.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -113,7 +113,7 @@ public class NeXT : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macosx_1.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -123,7 +123,7 @@ public class NeXT : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macosx_1.2v3.aif",
             MediaType   = MediaType.GENERIC_HDD,

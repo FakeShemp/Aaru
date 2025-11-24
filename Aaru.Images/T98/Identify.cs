@@ -52,15 +52,14 @@ public sealed partial class T98
 
         if(stream.Length % 256 != 0) return false;
 
-        byte[] hdrB = new byte[256];
+        var hdrB = new byte[256];
         stream.EnsureRead(hdrB, 0, hdrB.Length);
 
-        for(int i = 4; i < 256; i++)
-        {
-            if(hdrB[i] != 0) return false;
-        }
+        for(var i = 4; i < 256; i++)
+            if(hdrB[i] != 0)
+                return false;
 
-        int cylinders = BitConverter.ToInt32(hdrB, 0);
+        var cylinders = BitConverter.ToInt32(hdrB, 0);
 
         AaruLogging.Debug(MODULE_NAME, Localization.cylinders_equal_0, cylinders);
 

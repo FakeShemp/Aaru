@@ -44,7 +44,7 @@ public class Whole() : FilesystemTest("aofs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "amigaos_3.9.adf.lz",
             MediaType    = MediaType.CBM_AMIGA_35_DD,
@@ -55,7 +55,7 @@ public class Whole() : FilesystemTest("aofs")
             VolumeName   = "Volume label",
             VolumeSerial = "A5D9FE71"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "amigaos_3.9_intl.adf.lz",
             MediaType    = MediaType.CBM_AMIGA_35_DD,

@@ -44,7 +44,7 @@ public class Whole() : FilesystemTest("xenixfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "scoopenserver_5.0.7hw_dmf.img.lz",
             MediaType   = MediaType.DMF,
@@ -53,7 +53,7 @@ public class Whole() : FilesystemTest("xenixfs")
             ClusterSize = 1024,
             VolumeName  = ""
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "scoopenserver_5.0.7hw_dshd.img.lz",
             MediaType   = MediaType.DOS_525_HD,
@@ -62,7 +62,7 @@ public class Whole() : FilesystemTest("xenixfs")
             ClusterSize = 1024,
             VolumeName  = ""
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "scoopenserver_5.0.7hw_mf2dd.img.lz",
             MediaType   = MediaType.DOS_35_DS_DD_9,
@@ -71,7 +71,7 @@ public class Whole() : FilesystemTest("xenixfs")
             ClusterSize = 1024,
             VolumeName  = ""
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "scoopenserver_5.0.7hw_mf2ed.img.lz",
             MediaType   = MediaType.ECMA_147,
@@ -80,7 +80,7 @@ public class Whole() : FilesystemTest("xenixfs")
             ClusterSize = 1024,
             VolumeName  = ""
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "scoopenserver_5.0.7hw_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,

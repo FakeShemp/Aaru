@@ -44,7 +44,7 @@ public class Rdxx : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DOS_1440.img",
             MediaType  = MediaType.DOS_35_HD,
@@ -60,7 +60,7 @@ public class Rdxx : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DOS_720.img",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -76,7 +76,7 @@ public class Rdxx : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DOS_DMF.img",
             MediaType  = MediaType.DMF,
@@ -92,7 +92,7 @@ public class Rdxx : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "DOS_SP_5Mb.img",
             MediaType  = MediaType.GENERIC_HDD,
@@ -108,7 +108,7 @@ public class Rdxx : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "HFS_1440.img",
             MediaType  = MediaType.DOS_35_HD,
@@ -116,7 +116,7 @@ public class Rdxx : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "3160038ca028ccf52ad7863790072145"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "HFS_800.img",
             MediaType  = MediaType.AppleSonyDS,
@@ -124,7 +124,7 @@ public class Rdxx : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "5e255c4bc0f6a26ecd27845b37e65aaa"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "HFS_DMF.img",
             MediaType  = MediaType.DMF,
@@ -132,7 +132,7 @@ public class Rdxx : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "652dc979c177f2d8e846587158b38478"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "HFSP_SP_5Mb.img",
             MediaType  = MediaType.GENERIC_HDD,
@@ -140,7 +140,7 @@ public class Rdxx : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "5841dbaceb4937df2518742c2d5cb8d5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "HFS_SP_5Mb.img",
             MediaType  = MediaType.GENERIC_HDD,
@@ -148,7 +148,7 @@ public class Rdxx : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "506c3deb99e78579b4d77e76224d3b4e"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "ProDOS_1440.img",
             MediaType  = MediaType.DOS_35_HD,
@@ -156,7 +156,7 @@ public class Rdxx : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "7975e8cf7579a6848d6fb4e546d1f682"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "ProDOS_800.img",
             MediaType  = MediaType.AppleSonyDS,
@@ -164,7 +164,7 @@ public class Rdxx : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "a72da7aedadbe194c22a3d71c62e4766"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "ProDOS_DMF.img",
             MediaType  = MediaType.DMF,
@@ -172,7 +172,7 @@ public class Rdxx : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "7fbf0251a93cb36d98e68b7d19624de5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "UFS_1440.img",
             MediaType  = MediaType.DOS_35_HD,
@@ -180,7 +180,7 @@ public class Rdxx : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b37823c7a90d1917f719ba5927b23da8"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "UFS_720.img",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -188,7 +188,7 @@ public class Rdxx : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "4942032f7bf1d115237ea1764424828b"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "UFS_800.img",
             MediaType  = MediaType.AppleSonyDS,
@@ -196,7 +196,7 @@ public class Rdxx : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "85574aebeef03eb355bf8541955d06ea"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "UFS_DMF.img",
             MediaType  = MediaType.DMF,

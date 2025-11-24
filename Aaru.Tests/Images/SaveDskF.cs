@@ -41,7 +41,7 @@ public class SaveDskF : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5dd8_c.dsk",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -49,7 +49,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "5a1e0a75d31d88c1ce7429fd333c268f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5dd8_ck.dsk",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -57,7 +57,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "5a1e0a75d31d88c1ce7429fd333c268f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5dd8_na.dsk",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -65,7 +65,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "4989762c82f173f9b52e0bdb8cf5becb"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5dd8_nak.dsk",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -73,7 +73,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "4989762c82f173f9b52e0bdb8cf5becb"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5dd8_n.dsk",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -81,7 +81,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "5a1e0a75d31d88c1ce7429fd333c268f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5dd8_nk.dsk",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -89,7 +89,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "5a1e0a75d31d88c1ce7429fd333c268f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5dd_c.dsk",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -97,7 +97,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "c1a67b27bc76b64d0845965501b24120"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5dd_ck.dsk",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -105,7 +105,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "c1a67b27bc76b64d0845965501b24120"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5dd_na.dsk",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -113,7 +113,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "8a4d35dd0d97e6bca8b000170a43a56f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5dd_nak.dsk",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -121,7 +121,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "8a4d35dd0d97e6bca8b000170a43a56f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5dd_n.dsk",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -129,7 +129,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "c1a67b27bc76b64d0845965501b24120"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5dd_nk.dsk",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -137,7 +137,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "c1a67b27bc76b64d0845965501b24120"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5hd_c.dsk",
             MediaType  = MediaType.DOS_525_HD,
@@ -145,7 +145,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1c28b4c3cdc1dbf19c24a5eca3891a87"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5hd_ck.dsk",
             MediaType  = MediaType.DOS_525_HD,
@@ -153,7 +153,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1c28b4c3cdc1dbf19c24a5eca3891a87"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5hd_na.dsk",
             MediaType  = MediaType.DOS_525_HD,
@@ -161,7 +161,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2ce745ac23712d3eb03d7a11ba933b12"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5hd_nak.dsk",
             MediaType  = MediaType.DOS_525_HD,
@@ -169,7 +169,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2ce745ac23712d3eb03d7a11ba933b12"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5hd_n.dsk",
             MediaType  = MediaType.DOS_525_HD,
@@ -177,7 +177,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1c28b4c3cdc1dbf19c24a5eca3891a87"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5hd_nk.dsk",
             MediaType  = MediaType.DOS_525_HD,
@@ -185,7 +185,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1c28b4c3cdc1dbf19c24a5eca3891a87"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5sd8_c.dsk",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -193,7 +193,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "65ce0cd08d90c882df12637c9c72c1ba"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5sd8_ck.dsk",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -201,7 +201,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "65ce0cd08d90c882df12637c9c72c1ba"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5sd8_na.dsk",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -209,7 +209,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "6f5d09c13a7b481bad9ea78042e61e00"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5sd8_nak.dsk",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -217,7 +217,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "6f5d09c13a7b481bad9ea78042e61e00"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5sd8_n.dsk",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -225,7 +225,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "65ce0cd08d90c882df12637c9c72c1ba"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5sd8_nk.dsk",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -233,7 +233,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "65ce0cd08d90c882df12637c9c72c1ba"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5sd_c.dsk",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -241,7 +241,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "412fdc582506c0d7e76735d403b30759"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5sd_ck.dsk",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -249,7 +249,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "412fdc582506c0d7e76735d403b30759"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5sd_na.dsk",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -257,7 +257,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "fd81fceb26bda5b02053c5c729a6f67f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5sd_nak.dsk",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -265,7 +265,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "fd81fceb26bda5b02053c5c729a6f67f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5sd_n.dsk",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -273,7 +273,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "412fdc582506c0d7e76735d403b30759"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "5sd_nk.dsk",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -281,7 +281,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "412fdc582506c0d7e76735d403b30759"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1dd8.dsk",
             MediaType  = MediaType.DOS_525_SS_DD_8,
@@ -297,7 +297,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1dd.dsk",
             MediaType  = MediaType.DOS_525_SS_DD_9,
@@ -313,7 +313,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1dd_fdformat_f200.dsk",
             MediaType  = MediaType.Unknown,
@@ -329,7 +329,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md1dd_fdformat_f205.dsk",
             MediaType  = MediaType.Unknown,
@@ -345,7 +345,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_2m_fast.dsk",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -361,7 +361,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_2m_max.dsk",
             MediaType  = MediaType.Unknown,
@@ -377,7 +377,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd8.dsk",
             MediaType  = MediaType.DOS_525_DS_DD_8,
@@ -393,7 +393,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd.dsk",
             MediaType  = MediaType.DOS_525_DS_DD_9,
@@ -401,7 +401,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "6213897b7dbf263f12abf76901d43862"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_fdformat_f400.dsk",
             MediaType  = MediaType.Unknown,
@@ -417,7 +417,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_fdformat_f410.dsk",
             MediaType  = MediaType.Unknown,
@@ -433,7 +433,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_fdformat_f720.dsk",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -449,7 +449,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_fdformat_f800.dsk",
             MediaType  = MediaType.CBM_35_DD,
@@ -465,7 +465,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_fdformat_f820.dsk",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -481,7 +481,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_freedos_800s.dsk",
             MediaType  = MediaType.Unknown,
@@ -497,7 +497,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_maxiform_1640s.dsk",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -513,7 +513,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_maxiform_840s.dsk",
             MediaType  = MediaType.Unknown,
@@ -529,7 +529,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_qcopy_1476s.dsk",
             MediaType  = MediaType.Unknown,
@@ -545,7 +545,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_qcopy_1600s.dsk",
             MediaType  = MediaType.CBM_35_DD,
@@ -561,7 +561,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2dd_qcopy_1640s.dsk",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -577,7 +577,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_2m_fast.dsk",
             MediaType  = MediaType.Unknown,
@@ -593,7 +593,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_2m_max.dsk",
             MediaType  = MediaType.Unknown,
@@ -609,7 +609,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd.dsk",
             MediaType  = MediaType.DOS_525_HD,
@@ -625,7 +625,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_fdformat_f144.dsk",
             MediaType  = MediaType.DOS_35_HD,
@@ -641,7 +641,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_fdformat_f148.dsk",
             MediaType  = MediaType.Unknown,
@@ -657,7 +657,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_maxiform_2788s.dsk",
             MediaType  = MediaType.FDFORMAT_525_HD,
@@ -673,7 +673,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "md2hd_xdf.dsk",
             MediaType  = MediaType.XDF_525,
@@ -681,7 +681,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "d78dc81491edeec99aa202d02f3daf00"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_2m.dsk",
             MediaType  = MediaType.Unknown,
@@ -697,7 +697,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_2m_fast.dsk",
             MediaType  = MediaType.Unknown,
@@ -713,7 +713,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_2mgui.dsk",
             MediaType  = MediaType.Unknown,
@@ -721,7 +721,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 128,
             Md5        = "beb782f6bc970e32ceef79cd112e2e48"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_2m_max.dsk",
             MediaType  = MediaType.Unknown,
@@ -737,7 +737,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_c.dsk",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -745,7 +745,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2aefc1e97f29bf9982e0fd7091dfb9f5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_ck.dsk",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -753,7 +753,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2aefc1e97f29bf9982e0fd7091dfb9f5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd.dsk",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -769,7 +769,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fdformat_800.dsk",
             MediaType  = MediaType.CBM_35_DD,
@@ -785,7 +785,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fdformat_820.dsk",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -801,7 +801,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fdformat_f800.dsk",
             MediaType  = MediaType.CBM_35_DD,
@@ -817,7 +817,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_fdformat_f820.dsk",
             MediaType  = MediaType.FDFORMAT_35_DD,
@@ -833,7 +833,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_freedos_1600s.dsk",
             MediaType  = MediaType.CBM_35_DD,
@@ -849,7 +849,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_maxiform_1600s.dsk",
             MediaType  = MediaType.CBM_35_DD,
@@ -865,7 +865,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_na.dsk",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -873,7 +873,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "e574be0d057f2ef775dfb685561d27cf"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_nak.dsk",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -881,7 +881,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "e574be0d057f2ef775dfb685561d27cf"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_n.dsk",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -889,7 +889,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2aefc1e97f29bf9982e0fd7091dfb9f5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_nk.dsk",
             MediaType  = MediaType.DOS_35_DS_DD_9,
@@ -897,7 +897,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2aefc1e97f29bf9982e0fd7091dfb9f5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_qcopy_1494s.dsk",
             MediaType  = MediaType.Unknown,
@@ -913,7 +913,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_qcopy_1600s.dsk",
             MediaType  = MediaType.CBM_35_DD,
@@ -929,7 +929,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2dd_qcopy_1660s.dsk",
             MediaType  = MediaType.Unknown,
@@ -945,7 +945,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2ed_c.dsk",
             MediaType  = MediaType.ECMA_147,
@@ -953,7 +953,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "e4746aa9629a2325c520db1c8a641ac6"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2ed_ck.dsk",
             MediaType  = MediaType.ECMA_147,
@@ -961,7 +961,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "e4746aa9629a2325c520db1c8a641ac6"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2ed.dsk",
             MediaType  = MediaType.ECMA_147,
@@ -977,7 +977,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2ed_na.dsk",
             MediaType  = MediaType.ECMA_147,
@@ -985,7 +985,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "42e73287b23ac985c9825466cae26859"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2ed_nak.dsk",
             MediaType  = MediaType.ECMA_147,
@@ -993,7 +993,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "42e73287b23ac985c9825466cae26859"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2ed_n.dsk",
             MediaType  = MediaType.ECMA_147,
@@ -1001,7 +1001,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "e4746aa9629a2325c520db1c8a641ac6"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2ed_nk.dsk",
             MediaType  = MediaType.ECMA_147,
@@ -1009,7 +1009,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "e4746aa9629a2325c520db1c8a641ac6"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_2m.dsk",
             MediaType  = MediaType.Unknown,
@@ -1017,7 +1017,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2f6964d410b275c8e9f60fe2f24b361a"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_2m_fast.dsk",
             MediaType  = MediaType.Unknown,
@@ -1033,7 +1033,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_2mgui.dsk",
             MediaType  = MediaType.Unknown,
@@ -1041,7 +1041,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 128,
             Md5        = "786e45bbfcb369913968aa31365f00bb"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_2m_max.dsk",
             MediaType  = MediaType.Unknown,
@@ -1057,7 +1057,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_c.dsk",
             MediaType  = MediaType.DOS_35_HD,
@@ -1065,7 +1065,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "003e9130d83a23018f488f9fa89cae5e"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_ck.dsk",
             MediaType  = MediaType.DOS_35_HD,
@@ -1073,7 +1073,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "003e9130d83a23018f488f9fa89cae5e"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_dmf.dsk",
             MediaType  = MediaType.DMF,
@@ -1089,7 +1089,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd.dsk",
             MediaType  = MediaType.DOS_35_HD,
@@ -1097,7 +1097,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "00e61c06bf29f0c04a7eabe2dbd7efb6"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_168.dsk",
             MediaType  = MediaType.DMF,
@@ -1113,7 +1113,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_172.dsk",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -1129,7 +1129,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_f168.dsk",
             MediaType  = MediaType.DMF,
@@ -1145,7 +1145,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_f16.dsk",
             MediaType  = MediaType.Unknown,
@@ -1161,7 +1161,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_fdformat_f172.dsk",
             MediaType  = MediaType.FDFORMAT_35_HD,
@@ -1177,7 +1177,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_freedos_3360s.dsk",
             MediaType  = MediaType.DMF,
@@ -1193,7 +1193,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_freedos_3486s.dsk",
             MediaType  = MediaType.Unknown,
@@ -1209,7 +1209,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_maxiform_3200s.dsk",
             MediaType  = MediaType.Unknown,
@@ -1225,7 +1225,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_na.dsk",
             MediaType  = MediaType.DOS_35_HD,
@@ -1233,7 +1233,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "009cc68e28b2b13814d3afbec9d9e59f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_nak.dsk",
             MediaType  = MediaType.DOS_35_HD,
@@ -1241,7 +1241,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "009cc68e28b2b13814d3afbec9d9e59f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_n.dsk",
             MediaType  = MediaType.DOS_35_HD,
@@ -1249,7 +1249,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "003e9130d83a23018f488f9fa89cae5e"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_nk.dsk",
             MediaType  = MediaType.DOS_35_HD,
@@ -1257,7 +1257,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "003e9130d83a23018f488f9fa89cae5e"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2460s.dsk",
             MediaType  = MediaType.Unknown,
@@ -1273,7 +1273,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2720s.dsk",
             MediaType  = MediaType.Unknown,
@@ -1289,7 +1289,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2788s.dsk",
             MediaType  = MediaType.FDFORMAT_525_HD,
@@ -1305,7 +1305,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2880s.dsk",
             MediaType  = MediaType.DOS_35_HD,
@@ -1321,7 +1321,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2952s.dsk",
             MediaType  = MediaType.Unknown,
@@ -1337,7 +1337,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_2988s.dsk",
             MediaType  = MediaType.Unknown,
@@ -1353,7 +1353,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_3200s.dsk",
             MediaType  = MediaType.Unknown,
@@ -1369,7 +1369,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_3320s.dsk",
             MediaType  = MediaType.Unknown,
@@ -1385,7 +1385,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_3360s.dsk",
             MediaType  = MediaType.DMF,
@@ -1401,7 +1401,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_qcopy_3486s.dsk",
             MediaType  = MediaType.Unknown,
@@ -1417,7 +1417,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_xdf_c.dsk",
             MediaType  = MediaType.XDF_35,
@@ -1425,7 +1425,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2770e5b1b7935ca6e9695a32008b936a"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_xdf_ck.dsk",
             MediaType  = MediaType.XDF_35,
@@ -1433,7 +1433,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2770e5b1b7935ca6e9695a32008b936a"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_xdf.dsk",
             MediaType  = MediaType.XDF_35,
@@ -1449,7 +1449,7 @@ public class SaveDskF : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_xdf_na.dsk",
             MediaType  = MediaType.XDF_35,
@@ -1457,7 +1457,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "34b4bdab5fcc17076cceb7c1a39ea430"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_xdf_nak.dsk",
             MediaType  = MediaType.XDF_35,
@@ -1465,7 +1465,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "34b4bdab5fcc17076cceb7c1a39ea430"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_xdf_n.dsk",
             MediaType  = MediaType.XDF_35,
@@ -1473,7 +1473,7 @@ public class SaveDskF : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2770e5b1b7935ca6e9695a32008b936a"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "mf2hd_xdf_nk.dsk",
             MediaType  = MediaType.XDF_35,

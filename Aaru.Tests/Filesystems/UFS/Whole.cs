@@ -44,7 +44,7 @@ public class Whole : FilesystemTest
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "amix_mf2dd.adf.lz",
             MediaType   = MediaType.CBM_AMIGA_35_DD,
@@ -54,7 +54,7 @@ public class Whole : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "netbsd_1.6_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -64,7 +64,7 @@ public class Whole : FilesystemTest
             ClusterSize = 512,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "netbsd_1.6_mf2hd_ffs43.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -74,7 +74,7 @@ public class Whole : FilesystemTest
             ClusterSize = 512,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "att_unix_svr4v2.1_dsdd.img.lz",
             MediaType   = MediaType.DOS_525_DS_DD_9,
@@ -84,7 +84,7 @@ public class Whole : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "att_unix_svr4v2.1_dshd.img.lz",
             MediaType   = MediaType.DOS_525_HD,
@@ -94,7 +94,7 @@ public class Whole : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "att_unix_svr4v2.1_mf2dd.img.lz",
             MediaType   = MediaType.DOS_35_DS_DD_9,
@@ -104,7 +104,7 @@ public class Whole : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "att_unix_svr4v2.1_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -114,7 +114,7 @@ public class Whole : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "solaris_2.4_mf2dd.img.lz",
             MediaType   = MediaType.DOS_35_DS_DD_9,
@@ -124,7 +124,7 @@ public class Whole : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "dflybsd_1.0_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -134,7 +134,7 @@ public class Whole : FilesystemTest
             ClusterSize = 512,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "dflybsd_1.0_mf2hd_ffs43.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -144,7 +144,7 @@ public class Whole : FilesystemTest
             ClusterSize = 512,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "netbsd_6.1.5_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -154,7 +154,7 @@ public class Whole : FilesystemTest
             ClusterSize = 512,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "netbsd_6.1.5_mf2hd_ffs43.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -164,7 +164,7 @@ public class Whole : FilesystemTest
             ClusterSize = 512,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "netbsd_6.1.5_mf2hd_ufs2.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -175,7 +175,7 @@ public class Whole : FilesystemTest
             VolumeName  = "",
             Type        = "ufs2"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "netbsd_7.1_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -185,7 +185,7 @@ public class Whole : FilesystemTest
             ClusterSize = 512,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "netbsd_7.1_mf2hd_ffs43.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -195,7 +195,7 @@ public class Whole : FilesystemTest
             ClusterSize = 512,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "netbsd_7.1_mf2hd_ufs2.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -206,7 +206,7 @@ public class Whole : FilesystemTest
             VolumeName  = "",
             Type        = "ufs2"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "netbsd_7.1_mf2hd_be.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -216,7 +216,7 @@ public class Whole : FilesystemTest
             ClusterSize = 512,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "netbsd_7.1_mf2hd_ffs43_be.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -226,7 +226,7 @@ public class Whole : FilesystemTest
             ClusterSize = 512,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "netbsd_7.1_mf2hd_ufs2_be.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -237,7 +237,7 @@ public class Whole : FilesystemTest
             VolumeName  = "",
             Type        = "ufs2"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "openbsd_4.7_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -247,7 +247,7 @@ public class Whole : FilesystemTest
             ClusterSize = 2048,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "openbsd_4.7_mf2hd_ffs43.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -257,7 +257,7 @@ public class Whole : FilesystemTest
             ClusterSize = 2048,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "openbsd_4.7_mf2hd_ufs2.img.lz",
             MediaType   = MediaType.DOS_35_HD,

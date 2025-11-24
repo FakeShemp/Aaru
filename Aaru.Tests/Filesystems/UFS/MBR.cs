@@ -43,7 +43,7 @@ public class MBR : FilesystemTest
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/linux.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -53,7 +53,7 @@ public class MBR : FilesystemTest
             ClusterSize = 2048,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs2/linux.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -64,7 +64,7 @@ public class MBR : FilesystemTest
             Type        = "ufs2",
             VolumeName  = "VolumeLabel"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/darwin_1.3.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -74,7 +74,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/darwin_1.4.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -84,7 +84,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/darwin_6.0.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -94,7 +94,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/darwin_7.0.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -104,7 +104,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/darwin_8.0.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -114,7 +114,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/dflybsd_1.2.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -124,7 +124,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/dflybsd_3.6.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -134,7 +134,7 @@ public class MBR : FilesystemTest
             ClusterSize = 2048,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/dflybsd_4.0.5.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -144,7 +144,7 @@ public class MBR : FilesystemTest
             ClusterSize = 2048,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/netbsd_1.6.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -154,7 +154,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/netbsd_6.1.5.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -164,7 +164,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/netbsd_7.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -174,7 +174,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/netbsd_7.1_be.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -184,7 +184,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/openbsd_4.7.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -194,7 +194,7 @@ public class MBR : FilesystemTest
             ClusterSize = 2048,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/darwin_1.3.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -204,7 +204,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/darwin_1.4.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -214,7 +214,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/darwin_6.0.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -224,7 +224,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/darwin_7.0.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -234,7 +234,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/darwin_8.0.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -244,7 +244,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/dflybsd_1.2.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -254,7 +254,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/dflybsd_3.6.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -264,7 +264,7 @@ public class MBR : FilesystemTest
             ClusterSize = 2048,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/dflybsd_4.0.5.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -274,7 +274,7 @@ public class MBR : FilesystemTest
             ClusterSize = 2048,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/freebsd_6.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -284,7 +284,7 @@ public class MBR : FilesystemTest
             ClusterSize = 2048,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/freebsd_7.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -294,7 +294,7 @@ public class MBR : FilesystemTest
             ClusterSize = 2048,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/freebsd_8.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -304,7 +304,7 @@ public class MBR : FilesystemTest
             ClusterSize = 2048,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/netbsd_1.6.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -314,7 +314,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/netbsd_6.1.5.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -324,7 +324,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/netbsd_7.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -334,7 +334,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/netbsd_7.1_be.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -344,7 +344,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/solaris_7.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -354,7 +354,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/solaris_9.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -364,7 +364,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs2/freebsd_6.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -375,7 +375,7 @@ public class MBR : FilesystemTest
             Type        = "ufs2",
             VolumeName  = ""
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs2/freebsd_7.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -386,7 +386,7 @@ public class MBR : FilesystemTest
             Type        = "ufs2",
             VolumeName  = ""
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs2/freebsd_8.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -397,7 +397,7 @@ public class MBR : FilesystemTest
             Type        = "ufs2",
             VolumeName  = ""
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs2/netbsd_7.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -408,7 +408,7 @@ public class MBR : FilesystemTest
             Type        = "ufs2",
             VolumeName  = ""
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs2/netbsd_7.1_be.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -419,7 +419,7 @@ public class MBR : FilesystemTest
             Type        = "ufs2",
             VolumeName  = ""
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs2/netbsd_6.1.5.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -430,7 +430,7 @@ public class MBR : FilesystemTest
             Type        = "ufs2",
             VolumeName  = ""
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs2/openbsd_4.7.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -441,7 +441,7 @@ public class MBR : FilesystemTest
             Type        = "ufs2",
             VolumeName  = ""
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/dflybsd_1.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -452,7 +452,7 @@ public class MBR : FilesystemTest
             Type        = "ufs",
             VolumeName  = null
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/dflybsd_1.0.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -463,7 +463,7 @@ public class MBR : FilesystemTest
             Type        = "ufs",
             VolumeName  = null
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/openbsd_4.7.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -473,7 +473,7 @@ public class MBR : FilesystemTest
             ClusterSize = 2048,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/macosx_10.3.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -483,7 +483,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/macosx_10.3.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -493,7 +493,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ffs43/macosx_10.4.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -503,7 +503,7 @@ public class MBR : FilesystemTest
             ClusterSize = 1024,
             Type        = "ufs"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ufs1/macosx_10.4.aif",
             MediaType   = MediaType.GENERIC_HDD,

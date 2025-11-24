@@ -45,7 +45,7 @@ public class Whole : FilesystemTest
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -58,7 +58,7 @@ public class Whole : FilesystemTest
             VolumeName   = "Volume label",
             VolumeSerial = "595c5d00c5b3405aLinuxUDF"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.11.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -71,7 +71,7 @@ public class Whole : FilesystemTest
             VolumeName   = "Volume label",
             VolumeSerial = "4DD0458B (Mac OS X newfs_udf) UDF Volume Set"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "solaris_9.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -84,7 +84,7 @@ public class Whole : FilesystemTest
             VolumeName   = "*NoLabel*",
             VolumeSerial = "595EB55A"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_4.19_udf_1.50_flashdrive.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -97,7 +97,7 @@ public class Whole : FilesystemTest
             VolumeName   = "DicSetter",
             VolumeSerial = "5cc78f8bba4dfe00LinuxUDF"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "netbsd_6.1.5.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -110,7 +110,7 @@ public class Whole : FilesystemTest
             VolumeName   = "anonymous",
             VolumeSerial = "441072592d72c6e9"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "netbsd_7.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -123,7 +123,7 @@ public class Whole : FilesystemTest
             VolumeName   = "anonymous",
             VolumeSerial = "5b2ab9f9605af1ae"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "appleudf_1.5.3.aif",
             MediaType    = MediaType.GENERIC_HDD,

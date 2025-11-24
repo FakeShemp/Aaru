@@ -106,12 +106,12 @@ public partial class Device
     static bool CheckSectorNumber(IReadOnlyList<byte> buffer, uint firstLba, uint transferLength, uint layerbreak,
                                   bool                otp)
     {
-        for(int i = 0; i < transferLength; i++)
+        for(var i = 0; i < transferLength; i++)
         {
-            byte   layer        = (byte)(buffer[0 + 2064 * i] & 0x1);
+            var    layer        = (byte)(buffer[0 + 2064 * i] & 0x1);
             byte[] sectorBuffer = [0x0, buffer[1 + 2064 * i], buffer[2 + 2064 * i], buffer[3 + 2064 * i]];
 
-            uint sectorNumber = BigEndianBitConverter.ToUInt32(sectorBuffer, 0);
+            var sectorNumber = BigEndianBitConverter.ToUInt32(sectorBuffer, 0);
 
 
             if(otp)

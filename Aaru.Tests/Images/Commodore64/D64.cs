@@ -42,7 +42,7 @@ public class D64 : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "0 Grad Nord (1985)(Ariolasoft)(de)(Side A).d64.lz",
             MediaType  = MediaType.CBM_1540,

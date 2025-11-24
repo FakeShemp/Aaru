@@ -43,7 +43,7 @@ public class MBR() : FilesystemTest("Extended Acer Fast Filesystem")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "scoopenserver_5.0.7hw.aif",
             MediaType   = MediaType.GENERIC_HDD,

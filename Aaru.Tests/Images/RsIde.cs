@@ -41,7 +41,7 @@ public class RsIde : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "divide.hdf.lz",
             MediaType  = MediaType.GENERIC_HDD,

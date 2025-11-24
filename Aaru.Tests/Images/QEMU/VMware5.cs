@@ -42,7 +42,7 @@ public class VMware5 : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vmdk5.vmdk.lz",
             MediaType  = MediaType.GENERIC_HDD,

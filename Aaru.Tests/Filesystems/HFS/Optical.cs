@@ -43,7 +43,7 @@ public class Optical() : FilesystemTest("hfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "toast_3.5.7_hfs_from_volume.aif",
             MediaType   = MediaType.CD,
@@ -53,7 +53,7 @@ public class Optical() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Disk utils"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "toast_3.5.7_iso9660_hfs.aif",
             MediaType   = MediaType.CD,
@@ -63,7 +63,7 @@ public class Optical() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Disk utils"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "toast_4.1.3_hfs_from_volume.aif",
             MediaType   = MediaType.CD,
@@ -73,7 +73,7 @@ public class Optical() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Disk utils"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "toast_4.1.3_iso9660_hfs.aif",
             MediaType   = MediaType.CD,
@@ -83,7 +83,7 @@ public class Optical() : FilesystemTest("hfs")
             ClusterSize = 2048,
             VolumeName  = "Disk utils"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "toast_3.5.7_hfs_from_files.aif",
             MediaType   = MediaType.CD,
@@ -93,7 +93,7 @@ public class Optical() : FilesystemTest("hfs")
             ClusterSize = 12288,
             VolumeName  = "Disk utils"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "toast_4.1.3_hfs_from_files.aif",
             MediaType   = MediaType.CD,

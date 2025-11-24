@@ -44,7 +44,7 @@ public class Whole() : FilesystemTest("hfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_1.1_mf2dd.img.lz",
             MediaType   = MediaType.AppleSonyDS,
@@ -54,7 +54,7 @@ public class Whole() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_2.0_mf2dd.img.lz",
             MediaType   = MediaType.AppleSonyDS,
@@ -64,7 +64,7 @@ public class Whole() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "macos_6.0.7_mf2dd.img.lz",
             MediaType   = MediaType.AppleSonyDS,
@@ -74,7 +74,7 @@ public class Whole() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "nextstep_3.3_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -84,7 +84,7 @@ public class Whole() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "openstep_4.0_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -94,7 +94,7 @@ public class Whole() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "openstep_4.2_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -104,7 +104,7 @@ public class Whole() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "rhapsody_dr1_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -114,7 +114,7 @@ public class Whole() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "Volume label"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "ecs20_mf2hd_fstester.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -124,7 +124,7 @@ public class Whole() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "VOLUME LABEL"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.2.17_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -134,7 +134,7 @@ public class Whole() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "VolumeLabel"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.2.20_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,
@@ -144,7 +144,7 @@ public class Whole() : FilesystemTest("hfs")
             ClusterSize = 512,
             VolumeName  = "VolumeLabel"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.4.18_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,

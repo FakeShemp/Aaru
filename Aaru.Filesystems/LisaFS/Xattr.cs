@@ -42,31 +42,6 @@ namespace Aaru.Filesystems;
 
 public sealed partial class LisaFS
 {
-#region IReadOnlyFilesystem Members
-
-    /// <inheritdoc />
-    public ErrorNumber ListXAttr(string path, out List<string> xattrs)
-    {
-        xattrs = null;
-        ErrorNumber error = LookupFileId(path, out short fileId, out bool isDir);
-
-        if(error != ErrorNumber.NoError) return error;
-
-        return isDir ? ErrorNumber.InvalidArgument : ListXAttr(fileId, out xattrs);
-    }
-
-    /// <inheritdoc />
-    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf)
-    {
-        ErrorNumber error = LookupFileId(path, out short fileId, out bool isDir);
-
-        if(error != ErrorNumber.NoError) return error;
-
-        return isDir ? ErrorNumber.InvalidArgument : GetXattr(fileId, xattr, out buf);
-    }
-
-#endregion
-
     /// <summary>Lists special Apple Lisa filesystem features as extended attributes</summary>
     /// <returns>Error number.</returns>
     /// <param name="fileId">File identifier.</param>
@@ -199,4 +174,29 @@ public sealed partial class LisaFS
 
         return ErrorNumber.NoError;
     }
+
+#region IReadOnlyFilesystem Members
+
+    /// <inheritdoc />
+    public ErrorNumber ListXAttr(string path, out List<string> xattrs)
+    {
+        xattrs = null;
+        ErrorNumber error = LookupFileId(path, out short fileId, out bool isDir);
+
+        if(error != ErrorNumber.NoError) return error;
+
+        return isDir ? ErrorNumber.InvalidArgument : ListXAttr(fileId, out xattrs);
+    }
+
+    /// <inheritdoc />
+    public ErrorNumber GetXattr(string path, string xattr, ref byte[] buf)
+    {
+        ErrorNumber error = LookupFileId(path, out short fileId, out bool isDir);
+
+        if(error != ErrorNumber.NoError) return error;
+
+        return isDir ? ErrorNumber.InvalidArgument : GetXattr(fileId, xattr, out buf);
+    }
+
+#endregion
 }

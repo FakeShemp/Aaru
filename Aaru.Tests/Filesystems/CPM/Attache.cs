@@ -42,7 +42,7 @@ public class Attache() : FilesystemTest("cpmfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "filename.imd",
             MediaType   = MediaType.Unknown,
@@ -51,7 +51,7 @@ public class Attache() : FilesystemTest("cpmfs")
             Clusters    = 395,
             ClusterSize = 1024
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "files.imd",
             MediaType   = MediaType.Unknown,

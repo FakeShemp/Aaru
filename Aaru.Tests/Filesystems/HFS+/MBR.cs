@@ -46,7 +46,7 @@ public class MBR() : FilesystemTest("hfsplus")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.3.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -57,7 +57,7 @@ public class MBR() : FilesystemTest("hfsplus")
             SystemId     = "10.0",
             VolumeSerial = "97B4DC7AC201699A"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.3_journal.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -68,7 +68,7 @@ public class MBR() : FilesystemTest("hfsplus")
             SystemId     = "HFSJ",
             VolumeSerial = "9BF2CE504121C20F"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.4.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -79,7 +79,7 @@ public class MBR() : FilesystemTest("hfsplus")
             SystemId     = "10.0",
             VolumeSerial = "092FD8AF262EAE9C"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.4_journal.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -90,7 +90,7 @@ public class MBR() : FilesystemTest("hfsplus")
             SystemId     = "HFSJ",
             VolumeSerial = "326CC53BB867CCDC"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.11.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -101,7 +101,7 @@ public class MBR() : FilesystemTest("hfsplus")
             SystemId     = "10.0",
             VolumeSerial = "C84F550907D13F50"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "macosx_10.11_journal.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -112,7 +112,7 @@ public class MBR() : FilesystemTest("hfsplus")
             SystemId     = "HFSJ",
             VolumeSerial = "016599F88029F73D"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -122,7 +122,7 @@ public class MBR() : FilesystemTest("hfsplus")
             ClusterSize = 4096,
             SystemId    = "10.0"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_journal.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -132,7 +132,7 @@ public class MBR() : FilesystemTest("hfsplus")
             ClusterSize = 4096,
             SystemId    = "10.0"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "darwin_1.3.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -142,7 +142,7 @@ public class MBR() : FilesystemTest("hfsplus")
             ClusterSize = 4096,
             SystemId    = "10.0"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "darwin_1.4.1.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -152,7 +152,7 @@ public class MBR() : FilesystemTest("hfsplus")
             ClusterSize = 4096,
             SystemId    = "10.0"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "darwin_6.0.2.aif",
             MediaType   = MediaType.GENERIC_HDD,
@@ -162,7 +162,7 @@ public class MBR() : FilesystemTest("hfsplus")
             ClusterSize = 4096,
             SystemId    = "10.0"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_7.0.1_journal.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -173,7 +173,7 @@ public class MBR() : FilesystemTest("hfsplus")
             SystemId     = "HFSJ",
             VolumeSerial = "B2B3DCFC3EBF92F9"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_7.0.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -184,7 +184,7 @@ public class MBR() : FilesystemTest("hfsplus")
             SystemId     = "10.0",
             VolumeSerial = "EF9142272A79F2C7"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_8.0.1_journal.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -195,7 +195,7 @@ public class MBR() : FilesystemTest("hfsplus")
             SystemId     = "HFSJ",
             VolumeSerial = "191CACE470B64449"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "darwin_8.0.1.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -206,7 +206,7 @@ public class MBR() : FilesystemTest("hfsplus")
             SystemId     = "10.0",
             VolumeSerial = "27E25570C58F3CDB"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "linux_4.19_hfs+_flashdrive.aif",
             MediaType    = MediaType.GENERIC_HDD,

@@ -46,7 +46,7 @@ public class MBR_RDB() : FilesystemTest("sfs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "aros.aif",
             MediaType   = MediaType.GENERIC_HDD,

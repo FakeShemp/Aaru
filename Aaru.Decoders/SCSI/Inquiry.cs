@@ -32,7 +32,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Text;
 using Aaru.CommonTypes.Structs.Devices.SCSI;
 using Aaru.Helpers;
@@ -2512,7 +2511,7 @@ public static class Inquiry
         {
             if(response.KreonPresent)
             {
-                byte[] vendor = new byte[7];
+                var vendor = new byte[7];
                 Array.Copy(response.VendorSpecific, 11, vendor, 0, 7);
                 sb.AppendLine($"[bold][blue]{Localization.Vendor_specific_bytes_47_to_55}[/][/]");
                 sb.AppendLine("============================================================");

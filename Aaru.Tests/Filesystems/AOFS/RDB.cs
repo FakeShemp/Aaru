@@ -45,7 +45,7 @@ public class RDB() : FilesystemTest("aofs")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "amigaos_3.9.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -56,7 +56,7 @@ public class RDB() : FilesystemTest("aofs")
             VolumeName   = "Volume label",
             VolumeSerial = "A56D13BB"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "amigaos_3.9_intl.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -67,7 +67,7 @@ public class RDB() : FilesystemTest("aofs")
             VolumeName   = "Volume label",
             VolumeSerial = "A56D0415"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "aros.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -78,7 +78,7 @@ public class RDB() : FilesystemTest("aofs")
             VolumeName   = "Volume label",
             VolumeSerial = "A582F3A0"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "aros_intl.aif",
             MediaType    = MediaType.GENERIC_HDD,

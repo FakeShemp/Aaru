@@ -154,8 +154,9 @@ public sealed partial class XboxFatPlugin
             _fat32 = MemoryMarshal.Cast<byte, uint>(buffer).ToArray();
 
             if(!_littleEndian)
-                for(var i = 0; i < _fat32.Length; i++)
-                    _fat32[i] = Swapping.Swap(_fat32[i]);
+            {
+                for(var i = 0; i < _fat32.Length; i++) _fat32[i] = Swapping.Swap(_fat32[i]);
+            }
 
             AaruLogging.Debug(MODULE_NAME, "fat32[0] == FATX32_ID = {0}", _fat32[0] == FATX32_ID);
 
@@ -185,8 +186,9 @@ public sealed partial class XboxFatPlugin
             _fat16 = MemoryMarshal.Cast<byte, ushort>(buffer).ToArray();
 
             if(!_littleEndian)
-                for(var i = 0; i < _fat16.Length; i++)
-                    _fat16[i] = Swapping.Swap(_fat16[i]);
+            {
+                for(var i = 0; i < _fat16.Length; i++) _fat16[i] = Swapping.Swap(_fat16[i]);
+            }
 
             AaruLogging.Debug(MODULE_NAME, "fat16[0] == FATX16_ID = {0}", _fat16[0] == FATX16_ID);
 

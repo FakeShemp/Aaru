@@ -41,7 +41,7 @@ public class Apple2Mg : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "blank140.2mg.lz",
             MediaType  = MediaType.Apple33SS,
@@ -49,7 +49,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "7db5d585270ab858043d50e60068d45f"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "dos32.2mg.lz",
             MediaType  = MediaType.Apple32SS,
@@ -65,7 +65,7 @@ public class Apple2Mg : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "dos32_alt.2mg.lz",
             MediaType  = MediaType.Apple32SS,
@@ -81,7 +81,7 @@ public class Apple2Mg : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "dos33_dic.2mg.lz",
             MediaType  = MediaType.Apple33SS,
@@ -97,7 +97,7 @@ public class Apple2Mg : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "dos33-do.2mg.lz",
             MediaType  = MediaType.Apple33SS,
@@ -113,7 +113,7 @@ public class Apple2Mg : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "dos33-nib.2mg.lz",
             MediaType  = MediaType.Apple33SS,
@@ -129,7 +129,7 @@ public class Apple2Mg : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "dos33_nib.2mg.lz",
             MediaType  = MediaType.Apple33SS,
@@ -145,7 +145,7 @@ public class Apple2Mg : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "dos33-po.2mg.lz",
             MediaType  = MediaType.Apple33SS,
@@ -161,7 +161,7 @@ public class Apple2Mg : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "dos33_po.2mg.lz",
             MediaType  = MediaType.Apple33SS,
@@ -177,7 +177,7 @@ public class Apple2Mg : BlockMediaImageTest
                 }
             ]
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "hfs1440.2mg.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -185,7 +185,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "535648d1f9838b695403f2f48d5ac94c"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "hfs800_dic.2mg.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -193,7 +193,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2762f41d0379b476042fc62891baac84"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "hfs_do.2mg.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -201,7 +201,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2762f41d0379b476042fc62891baac84"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "hfs_po.2mg.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -209,7 +209,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "2762f41d0379b476042fc62891baac84"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "modified_do.2mg.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -217,7 +217,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b748f6df3e60e7169d42ec6fcc857ea4"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "modified_po.2mg.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -225,7 +225,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b748f6df3e60e7169d42ec6fcc857ea4"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "pascal800_do.2mg.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -233,7 +233,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "dbd0ec8a3126236910709faf923adcf2"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "pascal800_p.2mg.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -241,7 +241,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "dbd0ec8a3126236910709faf923adcf2"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "pascal_dic.2mg.lz",
             MediaType  = MediaType.Apple33SS,
@@ -249,7 +249,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "4c4926103a32ac15f7e430ec3ced4be5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "pascal_do.2mg.lz",
             MediaType  = MediaType.Apple33SS,
@@ -257,7 +257,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "4c4926103a32ac15f7e430ec3ced4be5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "pascal_nib.2mg.lz",
             MediaType  = MediaType.Apple33SS,
@@ -265,7 +265,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "4c4926103a32ac15f7e430ec3ced4be5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "pascal_po.2mg.lz",
             MediaType  = MediaType.Apple33SS,
@@ -273,7 +273,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "4c4926103a32ac15f7e430ec3ced4be5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos1440.2mg.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -281,7 +281,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "eb9b60c78b30d2b6541ed0781944b6da"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos1440_po.2mg.lz",
             MediaType  = MediaType.DOS_35_HD,
@@ -289,7 +289,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "1fe841b418ede51133878641e01544b5"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos5mb.2mg.lz",
             MediaType  = MediaType.Unknown,
@@ -297,7 +297,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b156441e159a625ee00a0659dfb6e2f8"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos5m_dic.2mg.lz",
             MediaType  = MediaType.Unknown,
@@ -305,7 +305,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b156441e159a625ee00a0659dfb6e2f8"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos800_dic.2mg.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -313,7 +313,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "fcf747bd356b48d442ff74adb8f3516b"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos800_do.2mg.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -321,7 +321,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "fcf747bd356b48d442ff74adb8f3516b"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos800_po.2mg.lz",
             MediaType  = MediaType.AppleSonyDS,
@@ -329,7 +329,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "fcf747bd356b48d442ff74adb8f3516b"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos_dic.2mg.lz",
             MediaType  = MediaType.Apple33SS,
@@ -337,7 +337,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "11ef56c80c94347d2e3f921d5c36c8de"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos_do.2mg.lz",
             MediaType  = MediaType.Apple33SS,
@@ -345,7 +345,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "11ef56c80c94347d2e3f921d5c36c8de"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos_nib.2mg.lz",
             MediaType  = MediaType.Apple33SS,
@@ -353,7 +353,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "11ef56c80c94347d2e3f921d5c36c8de"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos_po.2mg.lz",
             MediaType  = MediaType.Apple33SS,
@@ -361,7 +361,7 @@ public class Apple2Mg : BlockMediaImageTest
             SectorSize = 256,
             Md5        = "11ef56c80c94347d2e3f921d5c36c8de"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "prodos.2mg.lz",
             MediaType  = MediaType.Apple33SS,

@@ -42,7 +42,7 @@ public class HyperV : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "vhdx.vhdx.lz",
             MediaType  = MediaType.GENERIC_HDD,

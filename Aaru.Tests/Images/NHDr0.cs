@@ -44,7 +44,7 @@ public class NHDr0 : BlockMediaImageTest
 
     public override BlockImageTestExpected[] Tests =>
     [
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "t98n_128.nhd.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -52,7 +52,7 @@ public class NHDr0 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "af7c3cfa315b6661300017f865bf26d6"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "t98n_20.nhd.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -60,7 +60,7 @@ public class NHDr0 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "bcb390d0b4d12feac29dbadc1a623c99"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "t98n_256.nhd.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -68,7 +68,7 @@ public class NHDr0 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "e50e78b3742f5f89dd1a5573ba3141c4"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "t98n_41.nhd.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -76,7 +76,7 @@ public class NHDr0 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "007acca6fb53f90728d78f7c40c2b094"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "t98n_512.nhd.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -84,7 +84,7 @@ public class NHDr0 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "42d1cb6fc2a9df39ecd53002edd978d6"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "t98n_65.nhd.lz",
             MediaType  = MediaType.GENERIC_HDD,
@@ -92,7 +92,7 @@ public class NHDr0 : BlockMediaImageTest
             SectorSize = 512,
             Md5        = "b53f5b406234663de6c2bdffac88322d"
         },
-        new BlockImageTestExpected
+        new()
         {
             TestFile   = "t98n_80.nhd.lz",
             MediaType  = MediaType.GENERIC_HDD,

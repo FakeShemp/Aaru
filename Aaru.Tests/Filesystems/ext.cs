@@ -45,7 +45,7 @@ public class Ext() : FilesystemTest("ext")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "linux_2.0.37.aif",
             MediaType   = MediaType.GENERIC_HDD,

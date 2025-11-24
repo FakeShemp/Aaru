@@ -44,7 +44,7 @@ public class Whole() : FilesystemTest("coherent")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile    = "coherentunix_4.2.10_dsdd.img.lz",
             MediaType   = MediaType.DOS_525_DS_DD_9,
@@ -54,7 +54,7 @@ public class Whole() : FilesystemTest("coherent")
             ClusterSize = 512,
             VolumeName  = "noname"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "coherentunix_4.2.10_dshd.img.lz",
             MediaType   = MediaType.DOS_525_HD,
@@ -64,7 +64,7 @@ public class Whole() : FilesystemTest("coherent")
             ClusterSize = 512,
             VolumeName  = "noname"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "coherentunix_4.2.10_mf2dd.img.lz",
             MediaType   = MediaType.DOS_35_DS_DD_9,
@@ -74,7 +74,7 @@ public class Whole() : FilesystemTest("coherent")
             ClusterSize = 512,
             VolumeName  = "noname"
         },
-        new FileSystemTest
+        new()
         {
             TestFile    = "coherentunix_4.2.10_mf2hd.img.lz",
             MediaType   = MediaType.DOS_35_HD,

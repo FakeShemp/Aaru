@@ -240,7 +240,7 @@ public static partial class DetectOS
     /// <returns>Current operating system version</returns>
     public static string GetVersion()
     {
-        string environ = Environment.OSVersion.Version.ToString();
+        var environ = Environment.OSVersion.Version.ToString();
 
         switch(GetRealPlatformID())
         {

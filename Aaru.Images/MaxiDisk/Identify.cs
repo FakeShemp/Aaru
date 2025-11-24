@@ -48,7 +48,7 @@ public sealed partial class MaxiDisk
 
         if(stream.Length < 8) return false;
 
-        byte[] buffer = new byte[8];
+        var buffer = new byte[8];
         stream.Seek(0, SeekOrigin.Begin);
         stream.EnsureRead(buffer, 0, buffer.Length);
 

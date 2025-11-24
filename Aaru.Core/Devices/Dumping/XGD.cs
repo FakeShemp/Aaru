@@ -1088,8 +1088,9 @@ partial class Dump
             List<ulong> tmpList = [];
 
             foreach(ulong ur in _resume.BadBlocks)
-                for(ulong i = ur; i < ur + blocksToRead; i++)
-                    tmpList.Add(i);
+            {
+                for(ulong i = ur; i < ur + blocksToRead; i++) tmpList.Add(i);
+            }
 
             tmpList.Sort();
 

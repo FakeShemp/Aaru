@@ -43,7 +43,7 @@ public class Atari() : ReadOnlyFilesystemTest("fat16")
 
     public override FileSystemTest[] Tests =>
     [
-        new FileSystemTest
+        new()
         {
             TestFile     = "tos_1.00_gem.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -54,7 +54,7 @@ public class Atari() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "DA6664"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "tos_1.00_bgm.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -65,7 +65,7 @@ public class Atari() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "D0EFA1"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "tos_1.02_gem.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -76,7 +76,7 @@ public class Atari() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "1079CC"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "tos_1.02_bgm.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -87,7 +87,7 @@ public class Atari() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "9C65B3"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "tos_1.04_gem.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -98,7 +98,7 @@ public class Atari() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "DD5AA6"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "tos_1.04_bgm.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -109,7 +109,7 @@ public class Atari() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "D430E2"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "tos_1.06_gem.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -120,7 +120,7 @@ public class Atari() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "D0599C"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "tos_1.06_bgm.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -131,7 +131,7 @@ public class Atari() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "895043"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "tos_1.62_gem.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -142,7 +142,7 @@ public class Atari() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "D22E19"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "tos_1.62_bgm.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -153,7 +153,7 @@ public class Atari() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "6566D8"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "tos_2.06_gem.aif",
             MediaType    = MediaType.GENERIC_HDD,
@@ -164,7 +164,7 @@ public class Atari() : ReadOnlyFilesystemTest("fat16")
             VolumeName   = "VolumeLabel",
             VolumeSerial = "700332"
         },
-        new FileSystemTest
+        new()
         {
             TestFile     = "tos_2.06_bgm.aif",
             MediaType    = MediaType.GENERIC_HDD,
