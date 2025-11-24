@@ -698,11 +698,5 @@ namespace Aaru.Archives {
                 return ResourceManager.GetString("Archive_contains_0_files", resourceCulture);
             }
         }
-        
-        internal static string Converting_negative_sector_0_of_1 {
-            get {
-                return ResourceManager.GetString("Converting_negative_sector_0_of_1", resourceCulture);
-            }
-        }
     }
 }

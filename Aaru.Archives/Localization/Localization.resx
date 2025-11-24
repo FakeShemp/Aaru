@@ -350,7 +350,4 @@
     <data name="Archive_contains_0_files" xml:space="preserve">
         <value>[slateblue1]Archive contains [green]{0}[/] files[/]</value>
     </data>
-    <data name="Converting_negative_sector_0_of_1" xml:space="preserve">
-        <value>[slateblue1]Converting sector -[lime]{0}[/] of -[violet]{1}[/][/]</value>
-    </data>
 </root>
