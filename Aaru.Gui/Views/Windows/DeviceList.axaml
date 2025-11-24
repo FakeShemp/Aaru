@@ -128,7 +128,7 @@
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Spacing="8">
-            <Button Command="{Binding OpenDeviceCommand}">
+            <Button Command="{Binding OpenDeviceCommand, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.Title_Open_device}" />
             </Button>
         </StackPanel>

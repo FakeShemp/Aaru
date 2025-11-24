@@ -55,13 +55,13 @@
                HorizontalAlignment="Stretch"
                VerticalAlignment="Stretch"
                Grid.Row="0" />
-        <TextBlock Text="{Binding Message}"
+        <TextBlock Text="{Binding Message, Mode=OneWay}"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    Grid.Row="1" />
-        <ProgressBar Maximum="{Binding MaxProgress}"
+        <ProgressBar Maximum="{Binding MaxProgress, Mode=OneWay}"
                      Minimum="0"
-                     Value="{Binding CurrentProgress}"
+                     Value="{Binding CurrentProgress, Mode=OneWay}"
                      HorizontalAlignment="Stretch"
                      VerticalAlignment="Bottom"
                      Grid.Row="2" />

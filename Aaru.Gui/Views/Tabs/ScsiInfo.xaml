@@ -47,7 +47,7 @@
         <tabs:ScsiInfoViewModel />
     </Design.DataContext>
     <TabControl>
-        <TabItem IsVisible="{Binding !!InquiryData}">
+        <TabItem IsVisible="{Binding !!InquiryData, Mode=OneWay}">
             <TabItem.Header>
                 <TextBlock Text="{x:Static localization:UI.Title_INQUIRY}" />
             </TabItem.Header>

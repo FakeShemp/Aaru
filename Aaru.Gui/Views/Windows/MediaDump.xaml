@@ -46,7 +46,7 @@
         x:Class="Aaru.Gui.Views.Windows.MediaDump"
         Icon="/Assets/aaru-logo.png"
         x:DataType="windows:MediaDumpViewModel"
-        Title="{Binding Title}">
+        Title="{Binding Title, Mode=OneWay}">
     <Design.DataContext>
         <windows:MediaDumpViewModel />
     </Design.DataContext>

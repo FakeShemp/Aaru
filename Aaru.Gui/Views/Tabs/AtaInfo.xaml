@@ -68,7 +68,7 @@
             <TextBlock Text="{x:Static localization:Core.Device_supports_MCPT_Command_Set}" />
         </CheckBox>
         <TextBlock Grid.Row="3"
-                   Text="{Binding AtaMcptText}" />
+                   Text="{Binding AtaMcptText, Mode=OneWay}" />
         <CheckBox Grid.Row="4"
                   IsEnabled="False"
                   IsChecked="{Binding AtaMcptWriteProtectionChecked, Mode=OneWay}"
@@ -76,7 +76,7 @@
             <TextBlock Text="{x:Static localization:Core.Media_card_is_write_protected}" />
         </CheckBox>
         <TextBlock Grid.Row="5"
-                   Text="{Binding AtaMcptSpecificDataText}" />
+                   Text="{Binding AtaMcptSpecificDataText, Mode=OneWay}" />
         <StackPanel Grid.Row="6"
                     Orientation="Horizontal"
                     HorizontalAlignment="Left"
