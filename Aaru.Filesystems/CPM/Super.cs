@@ -169,8 +169,9 @@ public sealed partial class CPM
                 if(errno != ErrorNumber.NoError) return errno;
 
                 if(_workingDefinition.complement)
-                    for(var b = 0; b < readSector.Length; b++)
-                        readSector[b] = (byte)(~readSector[b] & 0xFF);
+                {
+                    for(var b = 0; b < readSector.Length; b++) readSector[b] = (byte)(~readSector[b] & 0xFF);
+                }
 
                 deinterleavedSectors.Add((ulong)p, readSector);
             }
@@ -340,8 +341,7 @@ public sealed partial class CPM
                     // allocate block 0 for a file because that's where the directory resides.
                     // There is also a field telling how many bytes are used in the last block, but its meaning is
                     // non-standard so we must ignore it.
-                    foreach(ushort blk in entry.allocations.Where(blk => !blocks.Contains(blk) && blk != 0))
-                        blocks.Add(blk);
+                    blocks.AddRange(entry.allocations.Where(blk => !blocks.Contains(blk) && blk != 0));
 
                     // Save the file
                     fInfo.UID = (ulong)user;

@@ -844,8 +844,7 @@ partial class Dump
                             {
                                 (outputFormat as IWritableOpticalImage).SetTracks(tracks.ToList());
 
-                                foreach(ulong newPregapSector in newPregapSectors)
-                                    _resume.BadBlocks.Add(newPregapSector);
+                                _resume.BadBlocks.AddRange(newPregapSectors);
 
                                 if(i >= blocksToRead)
                                     i -= blocksToRead;
@@ -1109,7 +1108,7 @@ partial class Dump
                     {
                         (outputFormat as IWritableOpticalImage).SetTracks(tracks.ToList());
 
-                        foreach(ulong newPregapSector in newPregapSectors) _resume.BadBlocks.Add(newPregapSector);
+                        _resume.BadBlocks.AddRange(newPregapSectors);
 
                         if(i >= blocksToRead)
                             i -= blocksToRead;
