@@ -2106,7 +2106,12 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                 case SectorTagType.CdSectorEccP:
                                 case SectorTagType.CdSectorEccQ:
                                 case SectorTagType.CdSectorEcc:
-                                    // This tags are inline in long sector
+                                    // These tags are inline in long sector
+                                    continue;
+                                case SectorTagType.CdTrackFlags:
+                                case SectorTagType.CdTrackIsrc:
+                                case SectorTagType.CdTrackText:
+                                    // These tags are track tags
                                     continue;
                             }
 
@@ -2300,7 +2305,12 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                                 case SectorTagType.CdSectorEccP:
                                 case SectorTagType.CdSectorEccQ:
                                 case SectorTagType.CdSectorEcc:
-                                    // This tags are inline in long sector
+                                    // These tags are inline in long sector
+                                    continue;
+                                case SectorTagType.CdTrackFlags:
+                                case SectorTagType.CdTrackIsrc:
+                                case SectorTagType.CdTrackText:
+                                    // These tags are track tags
                                     continue;
                             }
 
