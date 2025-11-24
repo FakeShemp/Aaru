@@ -68,6 +68,8 @@ public sealed partial class DiskCopy42
     public IEnumerable<MediaTagType> SupportedMediaTags => [];
 
     /// <inheritdoc />
+
+    // ReSharper disable once ArrayWithDefaultValuesInitialization
     public IEnumerable<SectorTagType> SupportedSectorTags => [SectorTagType.AppleSonyTag];
 
     /// <inheritdoc />

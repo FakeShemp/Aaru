@@ -143,12 +143,9 @@ partial class Dump
                         // not encrypted even if the CMI says it is.
                         if(titleKey.Value.Key.All(static k => k == 0))
                         {
-                            outputFormat.WriteSectorTag([0, 0, 0, 0, 0], i + j, false, SectorTagType.DvdSectorTitleKey);
+                            outputFormat.WriteSectorTag(new byte[5], i + j, false, SectorTagType.DvdSectorTitleKey);
 
-                            outputFormat.WriteSectorTag([0, 0, 0, 0, 0],
-                                                        i + j,
-                                                        false,
-                                                        SectorTagType.DvdTitleKeyDecrypted);
+                            outputFormat.WriteSectorTag(new byte[5], i + j, false, SectorTagType.DvdTitleKeyDecrypted);
 
                             _resume.MissingTitleKeys.Remove(i + j);
 

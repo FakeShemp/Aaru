@@ -553,7 +553,7 @@ public sealed partial class Gdi
 
             if(tag != SectorTagType.CdTrackFlags) return ErrorNumber.NotSupported;
 
-            buffer = [0x00];
+            buffer = new byte[1];
 
             return ErrorNumber.NoError;
         }

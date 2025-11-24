@@ -34,11 +34,11 @@ public class CSD
 
     readonly bool[] read_partial_blocks = [false, true, true];
 
-    readonly bool[] write_misaligned_block = [false, false, false];
+    readonly bool[] write_misaligned_block = new bool[3];
 
-    readonly bool[] read_misaligned_block = [false, false, false];
+    readonly bool[] read_misaligned_block = new bool[3];
 
-    readonly bool[] dsr_implemented = [false, false, false];
+    readonly bool[] dsr_implemented = new bool[3];
 
     readonly uint[] card_sizes = [1959, 1959, 3919];
 
@@ -52,7 +52,7 @@ public class CSD
 
     readonly byte[] size_multiplier = [3, 3, 5];
 
-    readonly byte[] sector_sizes = [0, 0, 0];
+    readonly byte[] sector_sizes = new byte[3];
 
     readonly byte[] erase_sector_sizes = [31, 15, 31];
 
@@ -60,25 +60,25 @@ public class CSD
 
     readonly bool[] write_protect_group_enable = [true, true, true];
 
-    readonly byte[] default_eccs = [0, 0, 0];
+    readonly byte[] default_eccs = new byte[3];
 
     readonly byte[] r2w_factors = [4, 2, 5];
 
     readonly byte[] write_block_lengths = [9, 9, 9];
 
-    readonly bool[] write_partial_blocks = [false, false, false];
+    readonly bool[] write_partial_blocks = new bool[3];
 
-    readonly bool[] file_format_group = [false, false, false];
+    readonly bool[] file_format_group = new bool[3];
 
     readonly bool[] copy = [true, false, false];
 
-    readonly bool[] permanent_write_protect = [false, false, false];
+    readonly bool[] permanent_write_protect = new bool[3];
 
-    readonly bool[] temporary_write_protect = [false, false, false];
+    readonly bool[] temporary_write_protect = new bool[3];
 
-    readonly byte[] file_format = [0, 0, 0];
+    readonly byte[] file_format = new byte[3];
 
-    readonly byte[] ecc = [0, 0, 0];
+    readonly byte[] ecc = new byte[3];
 
     [Test]
     public void Test()

@@ -24,7 +24,7 @@ public class SCR
         "0235000000000000", "0235000000000000", "02b5800000000000", "00a5000008070302"
     ];
 
-    readonly byte[] structure_version = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    readonly byte[] structure_version = new byte[14];
 
     readonly byte[] specification_version = [2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 0];
 
@@ -42,12 +42,9 @@ public class SCR
         true, false, true, false, false, true, true, true, false, true, false, false, true, false
     ];
 
-    readonly byte[] ex_security = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    readonly byte[] ex_security = new byte[14];
 
-    readonly bool[] sd_spec4 =
-    [
-        false, false, false, false, false, false, false, false, false, false, false, false, false, false
-    ];
+    readonly bool[] sd_spec4 = new bool[14];
 
     readonly byte[] sd_specx = [2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0];
 
@@ -55,10 +52,9 @@ public class SCR
 
     readonly byte[][] mfg =
     [
-        [0x01, 0x00, 0x00, 0x00], [0x1c, 0x02, 0x21, 0x02], [0x01, 0x00, 0x00, 0x00], [0x00, 0x00, 0x00, 0x00],
-        [0x1c, 0x02, 0x14, 0x02], [0x00, 0x00, 0x00, 0x00], [0x00, 0x00, 0x00, 0x00], [0x00, 0x00, 0x00, 0x00],
-        [0x00, 0x00, 0x00, 0x00], [0x01, 0x00, 0x00, 0x00], [0x00, 0x00, 0x00, 0x00], [0x00, 0x00, 0x00, 0x00],
-        [0x00, 0x00, 0x00, 0x00], [0x08, 0x07, 0x03, 0x02]
+        [0x01, 0x00, 0x00, 0x00], [0x1c, 0x02, 0x21, 0x02], [0x01, 0x00, 0x00, 0x00], new byte[4],
+        [0x1c, 0x02, 0x14, 0x02], new byte[4], new byte[4], new byte[4], new byte[4], [0x01, 0x00, 0x00, 0x00],
+        new byte[4], new byte[4], new byte[4], [0x08, 0x07, 0x03, 0x02]
     ];
 
     [Test]

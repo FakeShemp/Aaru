@@ -676,7 +676,7 @@ public sealed partial class Alcohol120
             byte lastSession  = 0;
             var  tocMs        = new MemoryStream();
 
-            tocMs.Write([0, 0], 0, 2); // Reserved for TOC session numbers
+            tocMs.Write(new byte[2], 0, 2); // Reserved for TOC session numbers
 
             foreach(KeyValuePair<int, Dictionary<int, Track>> sessionToc in _alcToc)
             {

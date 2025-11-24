@@ -1073,7 +1073,7 @@ public sealed partial class Alcohol120
         _descriptorStream.Write(filename, 0, filename.Length);
 
         // Write filename null termination
-        _descriptorStream.Write([0, 0], 0, 2);
+        _descriptorStream.Write(new byte[2], 0, 2);
 
         _descriptorStream.Flush();
         _descriptorStream.Close();

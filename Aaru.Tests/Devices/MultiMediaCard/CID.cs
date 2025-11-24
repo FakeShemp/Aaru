@@ -18,7 +18,7 @@ public class CID
 
     readonly byte[] manufacturers = [0x15, 0x06, 0x2c];
 
-    readonly ushort[] applications = [0, 0, 0];
+    readonly ushort[] applications = new ushort[3];
 
     readonly string[] names = ["000000", "32M   ", "AF HMP"];
 
@@ -28,7 +28,7 @@ public class CID
 
     readonly byte[] dates = [0x97, 0xc6, 0x68];
 
-    readonly byte[] crcs = [0x00, 0x00, 0x00];
+    readonly byte[] crcs = new byte[3];
 
     [Test]
     public void Test()

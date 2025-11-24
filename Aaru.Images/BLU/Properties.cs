@@ -72,6 +72,8 @@ public sealed partial class Blu
     public IEnumerable<MediaTagType> SupportedMediaTags => [];
 
     /// <inheritdoc />
+
+    // ReSharper disable once ArrayWithDefaultValuesInitialization
     public IEnumerable<SectorTagType> SupportedSectorTags => [SectorTagType.AppleSonyTag];
 
     /// <inheritdoc />

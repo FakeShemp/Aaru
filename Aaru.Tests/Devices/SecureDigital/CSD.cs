@@ -46,20 +46,11 @@ public class CSD
         false, false, false, true, true, false, false, true, true, false, false, false, false, true
     ];
 
-    readonly bool[] write_misaligned_block =
-    [
-        false, false, false, false, false, false, false, false, false, false, false, false, false, false
-    ];
+    readonly bool[] write_misaligned_block = new bool[14];
 
-    readonly bool[] read_misaligned_block =
-    [
-        false, false, false, false, false, false, false, false, false, false, false, false, false, false
-    ];
+    readonly bool[] read_misaligned_block = new bool[14];
 
-    readonly bool[] dsr_implemented =
-    [
-        false, false, false, false, false, false, false, false, false, false, false, false, false, false
-    ];
+    readonly bool[] dsr_implemented = new bool[14];
 
     readonly uint[] card_sizes =
     [
@@ -102,17 +93,11 @@ public class CSD
         false, false, false, true, false, true, true, false, false, false, false, true, false, false, false
     ];
 
-    readonly bool[] permanent_write_protect =
-    [
-        false, false, false, false, false, false, false, false, false, false, false, false, false, false
-    ];
+    readonly bool[] permanent_write_protect = new bool[14];
 
-    readonly bool[] temporary_write_protect =
-    [
-        false, false, false, false, false, false, false, false, false, false, false, false, false, false
-    ];
+    readonly bool[] temporary_write_protect = new bool[14];
 
-    readonly byte[] file_format = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    readonly byte[] file_format = new byte[14];
 
     [Test]
     public void Test()

@@ -700,7 +700,7 @@ public sealed partial class BlindWrite5
         Partitions = [];
         var fullTocStream = new MemoryStream();
 
-        fullTocStream.Write([0, 0], 0, 2);
+        fullTocStream.Write(new byte[2], 0, 2);
 
         ulong offsetBytes = 0;
         _offsetMap = new Dictionary<uint, ulong>();

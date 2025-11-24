@@ -314,10 +314,7 @@ partial class Dump
 
                     if(key.All(static k => k == 0))
                     {
-                        outputFormat.WriteSectorTag([0, 0, 0, 0, 0],
-                                                    badSector,
-                                                    false,
-                                                    SectorTagType.DvdTitleKeyDecrypted);
+                        outputFormat.WriteSectorTag(new byte[5], badSector, false, SectorTagType.DvdTitleKeyDecrypted);
 
                         _resume.MissingTitleKeys?.Remove(badSector);
                     }
@@ -449,9 +446,9 @@ partial class Dump
             // If the decoded title key is zeroed, there should be no copy protection
             if((titleKey.Value.CMI & 0x80) >> 7 == 0 || titleKey.Value.Key.All(static k => k == 0))
             {
-                outputFormat.WriteSectorTag([0, 0, 0, 0, 0], missingKey, false, SectorTagType.DvdSectorTitleKey);
+                outputFormat.WriteSectorTag(new byte[5], missingKey, false, SectorTagType.DvdSectorTitleKey);
 
-                outputFormat.WriteSectorTag([0, 0, 0, 0, 0], missingKey, false, SectorTagType.DvdTitleKeyDecrypted);
+                outputFormat.WriteSectorTag(new byte[5], missingKey, false, SectorTagType.DvdTitleKeyDecrypted);
 
                 _resume.MissingTitleKeys.Remove(missingKey);
 

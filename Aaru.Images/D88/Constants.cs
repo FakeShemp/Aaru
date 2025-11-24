@@ -38,5 +38,5 @@ namespace Aaru.Images;
 public sealed partial class D88
 {
     const    byte   READ_ONLY      = 0x10;
-    readonly byte[] _reservedEmpty = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+    readonly byte[] _reservedEmpty = new byte[9];
 }
