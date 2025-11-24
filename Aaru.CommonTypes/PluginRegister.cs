@@ -286,7 +286,7 @@ public class PluginRegister
             }
         }
 
-        if(!noFilter?.Identify(path) == true)
+        if(noFilter?.Identify(path) == false)
         {
             transaction.Finish();
 

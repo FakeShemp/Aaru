@@ -1747,7 +1747,7 @@ public sealed partial class DeviceReport
                                                                    _dev.Timeout,
                                                                    out _);
 
-                        if(!mediaTest.CanReadC2Pointers == true)
+                        if(mediaTest.CanReadC2Pointers == false)
                         {
                             mediaTest.CanReadC2Pointers = !_dev.ReadCd(out buffer,
                                                                        out _,
