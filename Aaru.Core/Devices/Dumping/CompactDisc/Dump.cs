@@ -479,10 +479,9 @@ sealed partial class Dump
                 // Sometimes drive returns a pregap here but MSF 00:02:3x => FRAME 3x (hexadecimal 0x20 to 0x27)
                 bcdSubchannel = (tmpBuf[21] & 0x30) > 0;
 
-                if(bcdSubchannel)
-                    UpdateStatus?.Invoke(Localization.Core.Drive_returns_subchannel_in_BCD);
-                else
-                    UpdateStatus?.Invoke(Localization.Core.Drive_does_not_returns_subchannel_in_BCD);
+                UpdateStatus?.Invoke(bcdSubchannel
+                                         ? Localization.Core.Drive_returns_subchannel_in_BCD
+                                         : Localization.Core.Drive_does_not_returns_subchannel_in_BCD);
             }
         }
 
@@ -1084,9 +1083,8 @@ sealed partial class Dump
             foreach(int sub in _resume.BadSubchannels) subchannelExtents.Add(sub);
 
             if(_resume.NextBlock < blocks)
-            {
-                for(ulong i = _resume.NextBlock; i < blocks; i++) subchannelExtents.Add((int)i);
-            }
+                for(ulong i = _resume.NextBlock; i < blocks; i++)
+                    subchannelExtents.Add((int)i);
         }
 
         if(_resume.NextBlock > 0)
@@ -1512,9 +1510,8 @@ sealed partial class Dump
                         supportsLongSectors);
 
         foreach(Tuple<ulong, ulong> leadoutExtent in leadOutExtents.ToArray())
-        {
-            for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++) subchannelExtents.Remove((int)e);
-        }
+            for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++)
+                subchannelExtents.Remove((int)e);
 
         if(subchannelExtents.Count > 0 && _retryPasses > 0 && _retrySubchannel)
         {

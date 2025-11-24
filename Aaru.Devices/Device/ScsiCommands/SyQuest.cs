@@ -102,14 +102,9 @@ public partial class Device
         else
             buffer = [];
 
-        if(!inhibitDma)
-        {
-            LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out sense);
-        }
-        else
-        {
-            LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out sense);
-        }
+        LastError = !inhibitDma
+                        ? SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In,   out duration, out sense)
+                        : SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out sense);
 
         Error = LastError != 0;
 
@@ -180,14 +175,9 @@ public partial class Device
         else
             buffer = [];
 
-        if(!inhibitDma)
-        {
-            LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In, out duration, out sense);
-        }
-        else
-        {
-            LastError = SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out sense);
-        }
+        LastError = !inhibitDma
+                        ? SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In,   out duration, out sense)
+                        : SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out sense);
 
         Error = LastError != 0;
 

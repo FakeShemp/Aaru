@@ -757,10 +757,9 @@ partial class Dump
         // Set speed
         if(_speedMultiplier >= 0)
         {
-            if(_speed == 0)
-                UpdateStatus?.Invoke(Localization.Core.Setting_speed_to_MAX);
-            else
-                UpdateStatus?.Invoke(string.Format(Localization.Core.Setting_speed_to_0_x, _speed));
+            UpdateStatus?.Invoke(_speed == 0
+                                     ? Localization.Core.Setting_speed_to_MAX
+                                     : string.Format(Localization.Core.Setting_speed_to_0_x, _speed));
 
             _speed *= _speedMultiplier;
 
