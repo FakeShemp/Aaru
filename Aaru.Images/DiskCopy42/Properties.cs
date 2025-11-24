@@ -65,32 +65,26 @@ public sealed partial class DiskCopy42
     public string Format => Localization.DiskCopy42_Name;
 
     /// <inheritdoc />
-    public IEnumerable<MediaTagType> SupportedMediaTags => Array.Empty<MediaTagType>();
+    public IEnumerable<MediaTagType> SupportedMediaTags => [];
 
     /// <inheritdoc />
-    public IEnumerable<SectorTagType> SupportedSectorTags => new[]
-    {
-        SectorTagType.AppleSonyTag
-    };
+    public IEnumerable<SectorTagType> SupportedSectorTags => [SectorTagType.AppleSonyTag];
 
     /// <inheritdoc />
-    public IEnumerable<MediaType> SupportedMediaTypes => new[]
-    {
+    public IEnumerable<MediaType> SupportedMediaTypes =>
+    [
         MediaType.AppleFileWare, MediaType.AppleHD20, MediaType.AppleProfile, MediaType.AppleSonyDS,
         MediaType.AppleSonySS, MediaType.AppleWidget, MediaType.DOS_35_DS_DD_9, MediaType.DOS_35_HD, MediaType.DMF
-    };
+    ];
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions => new[]
-    {
-        ("macosx", typeof(bool), Localization.Use_Mac_OS_X_format_byte, (object)false)
-    };
+    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions =>
+    [
+        ("macosx", typeof(bool), Localization.Use_Mac_OS_X_format_byte, false)
+    ];
 
     /// <inheritdoc />
-    public IEnumerable<string> KnownExtensions => new[]
-    {
-        ".dc42", ".diskcopy42", ".image"
-    };
+    public IEnumerable<string> KnownExtensions => [".dc42", ".diskcopy42", ".image"];
 
     /// <inheritdoc />
     public bool IsWriting { get; private set; }

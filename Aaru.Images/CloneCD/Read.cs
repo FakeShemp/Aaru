@@ -226,11 +226,7 @@ public sealed partial class CloneCd
                             AaruLogging.Debug(MODULE_NAME, Localization.Found_CD_Text_Entry_at_line_0, lineNumber);
 
                             string[] bytes = cdtEntMatch.Groups["value"]
-                                                        .Value.Split(new[]
-                                                                     {
-                                                                         ' '
-                                                                     },
-                                                                     StringSplitOptions.RemoveEmptyEntries);
+                                                        .Value.Split([' '], StringSplitOptions.RemoveEmptyEntries);
 
                             foreach(string byt in bytes) cdtMs.WriteByte(Convert.ToByte(byt, 16));
                         }

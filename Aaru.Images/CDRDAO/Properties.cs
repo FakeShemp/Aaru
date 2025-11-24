@@ -185,42 +185,37 @@ public sealed partial class Cdrdao
 
     // TODO: Decode CD-Text to text
     /// <inheritdoc />
-    public IEnumerable<MediaTagType> SupportedMediaTags => new[]
-    {
-        MediaTagType.CD_MCN
-    };
+    public IEnumerable<MediaTagType> SupportedMediaTags => [MediaTagType.CD_MCN];
 
     /// <inheritdoc />
-    public IEnumerable<SectorTagType> SupportedSectorTags => new[]
-    {
-        SectorTagType.CdSectorEcc, SectorTagType.CdSectorEccP, SectorTagType.CdSectorEccQ, SectorTagType.CdSectorEdc,
-        SectorTagType.CdSectorHeader, SectorTagType.CdSectorSubchannel, SectorTagType.CdSectorSubHeader,
-        SectorTagType.CdSectorSync, SectorTagType.CdTrackFlags, SectorTagType.CdTrackIsrc
-    };
+    public IEnumerable<SectorTagType> SupportedSectorTags =>
+    [
+        SectorTagType.CdSectorEcc, SectorTagType.CdSectorEccP, SectorTagType.CdSectorEccQ,
+        SectorTagType.CdSectorEdc, SectorTagType.CdSectorHeader, SectorTagType.CdSectorSubchannel,
+        SectorTagType.CdSectorSubHeader, SectorTagType.CdSectorSync, SectorTagType.CdTrackFlags,
+        SectorTagType.CdTrackIsrc
+    ];
 
     /// <inheritdoc />
-    public IEnumerable<MediaType> SupportedMediaTypes => new[]
-    {
-        MediaType.CD, MediaType.CDDA, MediaType.CDEG, MediaType.CDG, MediaType.CDI, MediaType.CDMIDI, MediaType.CDMRW,
-        MediaType.CDPLUS, MediaType.CDR, MediaType.CDROM, MediaType.CDROMXA, MediaType.CDRW, MediaType.CDV,
-        MediaType.DDCD, MediaType.DDCDR, MediaType.DDCDRW, MediaType.MEGACD, MediaType.PS1CD, MediaType.PS2CD,
-        MediaType.SuperCDROM2, MediaType.SVCD, MediaType.SATURNCD, MediaType.ThreeDO, MediaType.VCD, MediaType.VCDHD,
-        MediaType.NeoGeoCD, MediaType.PCFX, MediaType.CDTV, MediaType.CD32, MediaType.Nuon, MediaType.Playdia,
-        MediaType.Pippin, MediaType.FMTOWNS, MediaType.MilCD, MediaType.VideoNow, MediaType.VideoNowColor,
-        MediaType.VideoNowXp, MediaType.CVD, MediaType.PCD
-    };
+    public IEnumerable<MediaType> SupportedMediaTypes =>
+    [
+        MediaType.CD, MediaType.CDDA, MediaType.CDEG, MediaType.CDG, MediaType.CDI, MediaType.CDMIDI,
+        MediaType.CDMRW, MediaType.CDPLUS, MediaType.CDR, MediaType.CDROM, MediaType.CDROMXA, MediaType.CDRW,
+        MediaType.CDV, MediaType.DDCD, MediaType.DDCDR, MediaType.DDCDRW, MediaType.MEGACD, MediaType.PS1CD,
+        MediaType.PS2CD, MediaType.SuperCDROM2, MediaType.SVCD, MediaType.SATURNCD, MediaType.ThreeDO,
+        MediaType.VCD, MediaType.VCDHD, MediaType.NeoGeoCD, MediaType.PCFX, MediaType.CDTV, MediaType.CD32,
+        MediaType.Nuon, MediaType.Playdia, MediaType.Pippin, MediaType.FMTOWNS, MediaType.MilCD, MediaType.VideoNow,
+        MediaType.VideoNowColor, MediaType.VideoNowXp, MediaType.CVD, MediaType.PCD
+    ];
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions => new[]
-    {
-        ("separate", typeof(bool), Localization.Write_each_track_to_a_separate_file, (object)false)
-    };
+    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions =>
+    [
+        ("separate", typeof(bool), Localization.Write_each_track_to_a_separate_file, false)
+    ];
 
     /// <inheritdoc />
-    public IEnumerable<string> KnownExtensions => new[]
-    {
-        ".toc"
-    };
+    public IEnumerable<string> KnownExtensions => [".toc"];
 
     /// <inheritdoc />
     public bool IsWriting { get; private set; }

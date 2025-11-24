@@ -67,27 +67,20 @@ public sealed partial class Nhdr0
     public Metadata AaruMetadata => null;
 
     /// <inheritdoc />
-    public IEnumerable<MediaTagType> SupportedMediaTags => Array.Empty<MediaTagType>();
+    public IEnumerable<MediaTagType> SupportedMediaTags => [];
 
     /// <inheritdoc />
-    public IEnumerable<SectorTagType> SupportedSectorTags => Array.Empty<SectorTagType>();
+    public IEnumerable<SectorTagType> SupportedSectorTags => [];
 
     /// <inheritdoc />
-    public IEnumerable<MediaType> SupportedMediaTypes => new[]
-    {
-        MediaType.GENERIC_HDD, MediaType.Unknown
-    };
+    public IEnumerable<MediaType> SupportedMediaTypes => [MediaType.GENERIC_HDD, MediaType.Unknown];
 
     // TODO: Support dynamic images
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions =>
-        Array.Empty<(string name, Type type, string description, object @default)>();
+    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions => [];
 
     /// <inheritdoc />
-    public IEnumerable<string> KnownExtensions => new[]
-    {
-        ".nhd"
-    };
+    public IEnumerable<string> KnownExtensions => [".nhd"];
 
     /// <inheritdoc />
     public bool IsWriting { get; private set; }

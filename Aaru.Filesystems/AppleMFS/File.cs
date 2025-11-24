@@ -46,11 +46,7 @@ public sealed partial class AppleMFS
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        string[] pathElements = path.Split(new[]
-                                           {
-                                               '/'
-                                           },
-                                           StringSplitOptions.RemoveEmptyEntries);
+        string[] pathElements = path.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
 
         if(pathElements.Length != 1) return ErrorNumber.NotSupported;
 
@@ -157,11 +153,7 @@ public sealed partial class AppleMFS
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        string[] pathElements = path.Split(new[]
-                                           {
-                                               '/'
-                                           },
-                                           StringSplitOptions.RemoveEmptyEntries);
+        string[] pathElements = path.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
 
         if(pathElements.Length != 1) return ErrorNumber.NotSupported;
 
@@ -292,11 +284,7 @@ public sealed partial class AppleMFS
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        string[] pathElements = path.Split(new[]
-                                           {
-                                               '/'
-                                           },
-                                           StringSplitOptions.RemoveEmptyEntries);
+        string[] pathElements = path.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
 
         if(pathElements.Length != 1) return ErrorNumber.NotSupported;
 

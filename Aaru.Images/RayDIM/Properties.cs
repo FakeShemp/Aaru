@@ -67,15 +67,15 @@ public sealed partial class RayDim
     public Metadata AaruMetadata => null;
 
     /// <inheritdoc />
-    public IEnumerable<MediaTagType> SupportedMediaTags => Array.Empty<MediaTagType>();
+    public IEnumerable<MediaTagType> SupportedMediaTags => [];
 
     /// <inheritdoc />
-    public IEnumerable<SectorTagType> SupportedSectorTags => Array.Empty<SectorTagType>();
+    public IEnumerable<SectorTagType> SupportedSectorTags => [];
 
     // TODO: Test with real hardware to see real supported media
     /// <inheritdoc />
-    public IEnumerable<MediaType> SupportedMediaTypes => new[]
-    {
+    public IEnumerable<MediaType> SupportedMediaTypes =>
+    [
         MediaType.Apricot_35, MediaType.ATARI_35_DS_DD, MediaType.ATARI_35_DS_DD_11, MediaType.ATARI_35_SS_DD,
         MediaType.ATARI_35_SS_DD_11, MediaType.DMF, MediaType.DMF_82, MediaType.DOS_35_DS_DD_8,
         MediaType.DOS_35_DS_DD_9, MediaType.DOS_35_ED, MediaType.DOS_35_HD, MediaType.DOS_35_SS_DD_8,
@@ -83,17 +83,13 @@ public sealed partial class RayDim
         MediaType.DOS_525_SS_DD_8, MediaType.DOS_525_SS_DD_9, MediaType.FDFORMAT_35_DD, MediaType.FDFORMAT_35_HD,
         MediaType.FDFORMAT_525_DD, MediaType.FDFORMAT_525_HD, MediaType.RX50, MediaType.XDF_35, MediaType.XDF_525,
         MediaType.MetaFloppy_Mod_I, MediaType.MetaFloppy_Mod_II
-    };
+    ];
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions =>
-        Array.Empty<(string name, Type type, string description, object @default)>();
+    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions => [];
 
     /// <inheritdoc />
-    public IEnumerable<string> KnownExtensions => new[]
-    {
-        ".dim"
-    };
+    public IEnumerable<string> KnownExtensions => [".dim"];
 
     /// <inheritdoc />
     public bool IsWriting { get; private set; }

@@ -75,28 +75,24 @@ public sealed partial class A2R
 #region IWritableImage Members
 
     /// <inheritdoc />
-    public IEnumerable<string> KnownExtensions => new[]
-    {
-        ".a2r"
-    };
+    public IEnumerable<string> KnownExtensions => [".a2r"];
 
     /// <inheritdoc />
     public IEnumerable<MediaTagType> SupportedMediaTags => null;
 
     /// <inheritdoc />
-    public IEnumerable<MediaType> SupportedMediaTypes => new[]
-    {
+    public IEnumerable<MediaType> SupportedMediaTypes =>
+    [
         // TODO: A2R supports a lot more formats, please add more whence tested.
         MediaType.DOS_35_DS_DD_9, MediaType.DOS_35_HD, MediaType.DOS_525_DS_DD_9, MediaType.DOS_525_HD,
         MediaType.Apple32SS, MediaType.AppleSonyDS, MediaType.Unknown
-    };
+    ];
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions =>
-        Array.Empty<(string name, Type type, string description, object @default)>();
+    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions => [];
 
     /// <inheritdoc />
-    public IEnumerable<SectorTagType> SupportedSectorTags => Array.Empty<SectorTagType>();
+    public IEnumerable<SectorTagType> SupportedSectorTags => [];
 
     /// <inheritdoc />
     public bool IsWriting { get; private set; }

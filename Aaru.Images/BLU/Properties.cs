@@ -69,31 +69,24 @@ public sealed partial class Blu
     public Metadata AaruMetadata => null;
 
     /// <inheritdoc />
-    public IEnumerable<MediaTagType> SupportedMediaTags => Array.Empty<MediaTagType>();
+    public IEnumerable<MediaTagType> SupportedMediaTags => [];
 
     /// <inheritdoc />
-    public IEnumerable<SectorTagType> SupportedSectorTags => new[]
-    {
-        SectorTagType.AppleSonyTag
-    };
+    public IEnumerable<SectorTagType> SupportedSectorTags => [SectorTagType.AppleSonyTag];
 
     /// <inheritdoc />
-    public IEnumerable<MediaType> SupportedMediaTypes => new[]
-    {
+    public IEnumerable<MediaType> SupportedMediaTypes =>
+    [
         MediaType.AppleProfile, MediaType.AppleWidget, MediaType.PriamDataTower, MediaType.GENERIC_HDD,
         MediaType.Unknown, MediaType.FlashDrive, MediaType.CompactFlash, MediaType.CompactFlashType2,
         MediaType.PCCardTypeI, MediaType.PCCardTypeII, MediaType.PCCardTypeIII, MediaType.PCCardTypeIV
-    };
+    ];
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions =>
-        Array.Empty<(string name, Type type, string description, object @default)>();
+    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions => [];
 
     /// <inheritdoc />
-    public IEnumerable<string> KnownExtensions => new[]
-    {
-        ".blu"
-    }; // Just invented
+    public IEnumerable<string> KnownExtensions => [".blu"]; // Just invented
 
     /// <inheritdoc />
     public bool IsWriting { get; private set; }

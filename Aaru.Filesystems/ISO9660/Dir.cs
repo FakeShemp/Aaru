@@ -951,11 +951,7 @@ public sealed partial class ISO9660
                                  ? path[1..].ToLower(CultureInfo.CurrentUICulture)
                                  : path.ToLower(CultureInfo.CurrentUICulture);
 
-            string[] pieces = cutPath.Split(new[]
-                                            {
-                                                '/'
-                                            },
-                                            StringSplitOptions.RemoveEmptyEntries);
+            string[] pieces = cutPath.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
 
             var currentParent = 1;
             var currentPiece  = 0;
@@ -1151,11 +1147,7 @@ public sealed partial class ISO9660
             return ErrorNumber.NoError;
         }
 
-        string[] pieces = cutPath.Split(new[]
-                                        {
-                                            '/'
-                                        },
-                                        StringSplitOptions.RemoveEmptyEntries);
+        string[] pieces = cutPath.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
 
         KeyValuePair<string, DecodedDirectoryEntry> entry =
             _rootDirectoryCache.FirstOrDefault(t => t.Key.Equals(pieces[0], StringComparison.CurrentCultureIgnoreCase));

@@ -188,11 +188,7 @@ public abstract class WritableOpticalMediaImageTest : BaseWritableMediaImageTest
                                           inputFormat.Info.MediaType,
                                           testFile));
 
-                bool useLong = inputFormat.Info.ReadableSectorTags.Except(new[]
-                                           {
-                                               SectorTagType.CdTrackFlags
-                                           })
-                                          .Any();
+                bool useLong = inputFormat.Info.ReadableSectorTags.Except([SectorTagType.CdTrackFlags]).Any();
 
                 // TODO: Can be done with LINQ only
                 foreach(SectorTagType unused in inputFormat.Info.ReadableSectorTags

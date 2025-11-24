@@ -67,31 +67,24 @@ public sealed partial class RsIde
     public Metadata AaruMetadata => null;
 
     /// <inheritdoc />
-    public IEnumerable<MediaTagType> SupportedMediaTags => new[]
-    {
-        MediaTagType.ATA_IDENTIFY
-    };
+    public IEnumerable<MediaTagType> SupportedMediaTags => [MediaTagType.ATA_IDENTIFY];
 
     /// <inheritdoc />
-    public IEnumerable<SectorTagType> SupportedSectorTags => Array.Empty<SectorTagType>();
+    public IEnumerable<SectorTagType> SupportedSectorTags => [];
 
     /// <inheritdoc />
-    public IEnumerable<MediaType> SupportedMediaTypes => new[]
-    {
+    public IEnumerable<MediaType> SupportedMediaTypes =>
+    [
         MediaType.GENERIC_HDD, MediaType.Unknown, MediaType.FlashDrive, MediaType.CompactFlash,
         MediaType.CompactFlashType2, MediaType.PCCardTypeI, MediaType.PCCardTypeII, MediaType.PCCardTypeIII,
         MediaType.PCCardTypeIV
-    };
+    ];
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions =>
-        Array.Empty<(string name, Type type, string description, object @default)>();
+    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions => [];
 
     /// <inheritdoc />
-    public IEnumerable<string> KnownExtensions => new[]
-    {
-        ".ide"
-    };
+    public IEnumerable<string> KnownExtensions => [".ide"];
 
     /// <inheritdoc />
     public bool IsWriting { get; private set; }

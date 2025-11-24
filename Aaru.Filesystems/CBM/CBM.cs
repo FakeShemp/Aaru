@@ -48,6 +48,22 @@ public sealed partial class CBM : IReadOnlyFilesystem
     byte[]                         _root;
     FileSystemInfo                 _statfs;
 
+    static Dictionary<string, string> GetDefaultOptions() => new()
+    {
+        {
+            "debug", false.ToString()
+        }
+    };
+
+    ulong CbmChsToLba(byte track, byte sector, bool is1581)
+    {
+        if(track is 0 or > 40) return 0;
+
+        if(is1581) return (ulong)((track - 1) * 40 + sector - 1);
+
+        return trackStartingLbas[track - 1] + sector;
+    }
+
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
@@ -82,27 +98,10 @@ public sealed partial class CBM : IReadOnlyFilesystem
     public FileSystem Metadata { get; private set; }
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions =>
-        Array.Empty<(string name, Type type, string description)>();
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
 
     /// <inheritdoc />
     public Dictionary<string, string> Namespaces => null;
 
 #endregion
-
-    static Dictionary<string, string> GetDefaultOptions() => new()
-    {
-        {
-            "debug", false.ToString()
-        }
-    };
-
-    ulong CbmChsToLba(byte track, byte sector, bool is1581)
-    {
-        if(track is 0 or > 40) return 0;
-
-        if(is1581) return (ulong)((track - 1) * 40 + sector - 1);
-
-        return trackStartingLbas[track - 1] + sector;
-    }
 }

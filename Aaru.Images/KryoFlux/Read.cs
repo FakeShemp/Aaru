@@ -166,11 +166,7 @@ public sealed partial class KryoFlux
                         trackStream.EnsureRead(kfinfo, 0, oobBlk.length);
                         string kfinfoStr = StringHandlers.CToString(kfinfo);
 
-                        string[] lines = kfinfoStr.Split(new[]
-                                                         {
-                                                             ','
-                                                         },
-                                                         StringSplitOptions.RemoveEmptyEntries);
+                        string[] lines = kfinfoStr.Split([','], StringSplitOptions.RemoveEmptyEntries);
 
                         DateTime blockDate = DateTime.Now;
                         DateTime blockTime = DateTime.Now;

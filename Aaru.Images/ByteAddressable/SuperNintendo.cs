@@ -249,26 +249,19 @@ public class SuperNintendo : IByteAddressableImage
     public bool IsWriting { get; private set; }
 
     /// <inheritdoc />
-    public IEnumerable<string> KnownExtensions => new[]
-    {
-        ".sfc"
-    };
+    public IEnumerable<string> KnownExtensions => [".sfc"];
 
     /// <inheritdoc />
-    public IEnumerable<MediaTagType> SupportedMediaTags => Array.Empty<MediaTagType>();
+    public IEnumerable<MediaTagType> SupportedMediaTags => [];
 
     /// <inheritdoc />
-    public IEnumerable<MediaType> SupportedMediaTypes => new[]
-    {
-        MediaType.SNESGamePak, MediaType.SNESGamePakUS
-    };
+    public IEnumerable<MediaType> SupportedMediaTypes => [MediaType.SNESGamePak, MediaType.SNESGamePakUS];
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions =>
-        Array.Empty<(string name, Type type, string description, object @default)>();
+    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions => [];
 
     /// <inheritdoc />
-    public IEnumerable<SectorTagType> SupportedSectorTags => Array.Empty<SectorTagType>();
+    public IEnumerable<SectorTagType> SupportedSectorTags => [];
 
     /// <inheritdoc />
     public bool Create(string path,            MediaType mediaType, Dictionary<string, string> options, ulong sectors,

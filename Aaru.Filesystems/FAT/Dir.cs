@@ -88,11 +88,7 @@ public sealed partial class FAT
             return ErrorNumber.NoError;
         }
 
-        string[] pieces = cutPath.Split(new[]
-                                        {
-                                            '/'
-                                        },
-                                        StringSplitOptions.RemoveEmptyEntries);
+        string[] pieces = cutPath.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
 
         KeyValuePair<string, CompleteDirectoryEntry> entry =
             _rootDirectoryCache.FirstOrDefault(t => t.Key.ToLower(_cultureInfo) == pieces[0]);

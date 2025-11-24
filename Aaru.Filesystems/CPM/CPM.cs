@@ -99,8 +99,7 @@ public sealed partial class CPM : IReadOnlyFilesystem
     public string Author => Authors.NataliaPortillo;
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions =>
-        Array.Empty<(string name, Type type, string description)>();
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
 
     /// <inheritdoc />
     public Dictionary<string, string> Namespaces => null;

@@ -56,6 +56,13 @@ public sealed partial class PascalPlugin : IReadOnlyFilesystem
     /// <summary>Apple II disks use 256 bytes / sector, but filesystem assumes it's 512 bytes / sector</summary>
     uint _multiplier;
 
+    static Dictionary<string, string> GetDefaultOptions() => new()
+    {
+        {
+            "debug", false.ToString()
+        }
+    };
+
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
@@ -90,18 +97,10 @@ public sealed partial class PascalPlugin : IReadOnlyFilesystem
     }
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions =>
-        Array.Empty<(string name, Type type, string description)>();
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
 
     /// <inheritdoc />
     public Dictionary<string, string> Namespaces => null;
 
 #endregion
-
-    static Dictionary<string, string> GetDefaultOptions() => new()
-    {
-        {
-            "debug", false.ToString()
-        }
-    };
 }

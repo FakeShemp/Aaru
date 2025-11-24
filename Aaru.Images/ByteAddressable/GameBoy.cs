@@ -146,26 +146,19 @@ public partial class GameBoy : IByteAddressableImage
     public bool IsWriting { get; private set; }
 
     /// <inheritdoc />
-    public IEnumerable<string> KnownExtensions => new[]
-    {
-        ".gb", ".gbc", ".sgb"
-    };
+    public IEnumerable<string> KnownExtensions => [".gb", ".gbc", ".sgb"];
 
     /// <inheritdoc />
-    public IEnumerable<MediaTagType> SupportedMediaTags => Array.Empty<MediaTagType>();
+    public IEnumerable<MediaTagType> SupportedMediaTags => [];
 
     /// <inheritdoc />
-    public IEnumerable<MediaType> SupportedMediaTypes => new[]
-    {
-        MediaType.GameBoyGamePak
-    };
+    public IEnumerable<MediaType> SupportedMediaTypes => [MediaType.GameBoyGamePak];
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions =>
-        Array.Empty<(string name, Type type, string description, object @default)>();
+    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions => [];
 
     /// <inheritdoc />
-    public IEnumerable<SectorTagType> SupportedSectorTags => Array.Empty<SectorTagType>();
+    public IEnumerable<SectorTagType> SupportedSectorTags => [];
 
     /// <inheritdoc />
     public bool Create(string path,            MediaType mediaType, Dictionary<string, string> options, ulong sectors,

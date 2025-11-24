@@ -67,15 +67,15 @@ public sealed partial class Anex86
     public Metadata AaruMetadata => null;
 
     /// <inheritdoc />
-    public IEnumerable<MediaTagType> SupportedMediaTags => Array.Empty<MediaTagType>();
+    public IEnumerable<MediaTagType> SupportedMediaTags => [];
 
     /// <inheritdoc />
-    public IEnumerable<SectorTagType> SupportedSectorTags => Array.Empty<SectorTagType>();
+    public IEnumerable<SectorTagType> SupportedSectorTags => [];
 
     // TODO: Test with real hardware to see real supported media
     /// <inheritdoc />
-    public IEnumerable<MediaType> SupportedMediaTypes => new[]
-    {
+    public IEnumerable<MediaType> SupportedMediaTypes =>
+    [
         MediaType.IBM23FD, MediaType.ECMA_66, MediaType.DOS_525_SS_DD_8, MediaType.DOS_525_SS_DD_9,
         MediaType.ACORN_525_SS_SD_40, MediaType.ACORN_525_SS_DD_40, MediaType.ATARI_525_SD, MediaType.ATARI_525_DD,
         MediaType.ATARI_525_ED, MediaType.DOS_525_DS_DD_8, MediaType.DOS_525_DS_DD_9, MediaType.ECMA_70,
@@ -85,20 +85,17 @@ public sealed partial class Anex86
         MediaType.ACORN_35_DS_DD, MediaType.DOS_35_DS_DD_8, MediaType.DOS_35_DS_DD_9, MediaType.ACORN_35_DS_HD,
         MediaType.DOS_525_HD, MediaType.ACORN_525_DS_DD, MediaType.DOS_35_HD, MediaType.XDF_525, MediaType.DMF,
         MediaType.XDF_35, MediaType.DOS_35_ED, MediaType.FDFORMAT_35_DD, MediaType.FDFORMAT_525_HD,
-        MediaType.FDFORMAT_35_HD, MediaType.NEC_35_TD, MediaType.Unknown, MediaType.GENERIC_HDD, MediaType.FlashDrive,
-        MediaType.CompactFlash, MediaType.CompactFlashType2, MediaType.PCCardTypeI, MediaType.PCCardTypeII,
-        MediaType.PCCardTypeIII, MediaType.PCCardTypeIV, MediaType.MetaFloppy_Mod_I, MediaType.MetaFloppy_Mod_II
-    };
+        MediaType.FDFORMAT_35_HD, MediaType.NEC_35_TD, MediaType.Unknown, MediaType.GENERIC_HDD,
+        MediaType.FlashDrive, MediaType.CompactFlash, MediaType.CompactFlashType2, MediaType.PCCardTypeI,
+        MediaType.PCCardTypeII, MediaType.PCCardTypeIII, MediaType.PCCardTypeIV, MediaType.MetaFloppy_Mod_I,
+        MediaType.MetaFloppy_Mod_II
+    ];
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions =>
-        Array.Empty<(string name, Type type, string description, object @default)>();
+    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions => [];
 
     /// <inheritdoc />
-    public IEnumerable<string> KnownExtensions => new[]
-    {
-        ".fdi", ".hdi"
-    };
+    public IEnumerable<string> KnownExtensions => [".fdi", ".hdi"];
 
     /// <inheritdoc />
     public bool IsWriting { get; private set; }

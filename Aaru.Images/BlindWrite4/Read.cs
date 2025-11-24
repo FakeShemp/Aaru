@@ -407,10 +407,8 @@ public sealed partial class BlindWrite4
                 if(_dataFilter != null) break;
 
                 _dataFilter = PluginRegister.Singleton.GetFilter(Path.Combine(imageFilter.ParentFolder,
-                                                                              _header.DataFile.Split(new[]
-                                                                                      {
-                                                                                          '\\'
-                                                                                      },
+                                                                              _header.DataFile
+                                                                                 .Split(['\\'],
                                                                                       StringSplitOptions
                                                                                          .RemoveEmptyEntries)
                                                                                  .Last()));
@@ -418,10 +416,8 @@ public sealed partial class BlindWrite4
                 if(_dataFilter != null) break;
 
                 _dataFilter = PluginRegister.Singleton.GetFilter(Path.Combine(imageFilter.ParentFolder,
-                                                                              _header.DataFile.Split(new[]
-                                                                                      {
-                                                                                          '\\'
-                                                                                      },
+                                                                              _header.DataFile
+                                                                                 .Split(['\\'],
                                                                                       StringSplitOptions
                                                                                          .RemoveEmptyEntries)
                                                                                  .Last()
@@ -430,10 +426,8 @@ public sealed partial class BlindWrite4
                 if(_dataFilter != null) break;
 
                 _dataFilter = PluginRegister.Singleton.GetFilter(Path.Combine(imageFilter.ParentFolder,
-                                                                              _header.DataFile.Split(new[]
-                                                                                      {
-                                                                                          '\\'
-                                                                                      },
+                                                                              _header.DataFile
+                                                                                 .Split(['\\'],
                                                                                       StringSplitOptions
                                                                                          .RemoveEmptyEntries)
                                                                                  .Last()
@@ -465,26 +459,21 @@ public sealed partial class BlindWrite4
                                                                    _header.SubchannelFile
                                                                           .ToUpper(CultureInfo.CurrentCulture)))) ??
                   PluginRegister.Singleton.GetFilter(Path.Combine(imageFilter.ParentFolder,
-                                                                  _header.SubchannelFile.Split(new[]
-                                                                              {
-                                                                                  '\\'
-                                                                              },
-                                                                              StringSplitOptions.RemoveEmptyEntries)
+                                                                  _header.SubchannelFile
+                                                                         .Split(['\\'],
+                                                                                    StringSplitOptions
+                                                                                       .RemoveEmptyEntries)
                                                                          .Last()))) ??
                  PluginRegister.Singleton.GetFilter(Path.Combine(imageFilter.ParentFolder,
-                                                                 _header.SubchannelFile.Split(new[]
-                                                                             {
-                                                                                 '\\'
-                                                                             },
-                                                                             StringSplitOptions.RemoveEmptyEntries)
+                                                                 _header.SubchannelFile
+                                                                        .Split(['\\'],
+                                                                               StringSplitOptions.RemoveEmptyEntries)
                                                                         .Last()
                                                                         .ToLower(CultureInfo.CurrentCulture)))) ??
                 PluginRegister.Singleton.GetFilter(Path.Combine(imageFilter.ParentFolder,
-                                                                _header.SubchannelFile.Split(new[]
-                                                                            {
-                                                                                '\\'
-                                                                            },
-                                                                            StringSplitOptions.RemoveEmptyEntries)
+                                                                _header.SubchannelFile
+                                                                       .Split(['\\'],
+                                                                              StringSplitOptions.RemoveEmptyEntries)
                                                                        .Last()
                                                                        .ToUpper(CultureInfo.CurrentCulture)));
         }
@@ -532,10 +521,8 @@ public sealed partial class BlindWrite4
                         if(track.Filter != null) break;
 
                         track.Filter = PluginRegister.Singleton.GetFilter(Path.Combine(imageFilter.ParentFolder,
-                                                                              bwTrack.filename.Split(new[]
-                                                                                      {
-                                                                                          '\\'
-                                                                                      },
+                                                                              bwTrack.filename
+                                                                                 .Split(['\\'],
                                                                                       StringSplitOptions
                                                                                          .RemoveEmptyEntries)
                                                                                  .Last()));
@@ -543,10 +530,8 @@ public sealed partial class BlindWrite4
                         if(track.Filter != null) break;
 
                         track.Filter = PluginRegister.Singleton.GetFilter(Path.Combine(imageFilter.ParentFolder,
-                                                                              bwTrack.filename.Split(new[]
-                                                                                      {
-                                                                                          '\\'
-                                                                                      },
+                                                                              bwTrack.filename
+                                                                                 .Split(['\\'],
                                                                                       StringSplitOptions
                                                                                          .RemoveEmptyEntries)
                                                                                  .Last()
@@ -556,10 +541,8 @@ public sealed partial class BlindWrite4
                         if(track.Filter != null) break;
 
                         track.Filter = PluginRegister.Singleton.GetFilter(Path.Combine(imageFilter.ParentFolder,
-                                                                              bwTrack.filename.Split(new[]
-                                                                                      {
-                                                                                          '\\'
-                                                                                      },
+                                                                              bwTrack.filename
+                                                                                 .Split(['\\'],
                                                                                       StringSplitOptions
                                                                                          .RemoveEmptyEntries)
                                                                                  .Last()
@@ -745,9 +728,8 @@ public sealed partial class BlindWrite4
 
         // As long as subchannel is written for any track, it is present for all tracks
         if(Tracks.Any(static t => t.SubchannelType == TrackSubchannelType.Packed))
-        {
-            foreach(Track track in Tracks) track.SubchannelType = TrackSubchannelType.Packed;
-        }
+            foreach(Track track in Tracks)
+                track.SubchannelType = TrackSubchannelType.Packed;
 
         _imageInfo.MediaType = MediaType.CD;
 

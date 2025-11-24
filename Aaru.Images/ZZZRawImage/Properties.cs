@@ -174,7 +174,7 @@ public sealed partial class ZZZRawImage
                                                                              .ToArray();
 
     /// <inheritdoc />
-    public IEnumerable<SectorTagType> SupportedSectorTags => Array.Empty<SectorTagType>();
+    public IEnumerable<SectorTagType> SupportedSectorTags => [];
 
     /// <inheritdoc />
     public IEnumerable<MediaType> SupportedMediaTypes
@@ -217,15 +217,14 @@ public sealed partial class ZZZRawImage
     }
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions =>
-        Array.Empty<(string name, Type type, string description, object @default)>();
+    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions => [];
 
     /// <inheritdoc />
-    public IEnumerable<string> KnownExtensions => new[]
-    {
-        ".adf", ".adl", ".d81", ".dsk", ".hdf", ".ima", ".img", ".iso", ".ssd", ".st", ".1kn", ".2kn", ".4kn", ".8kn",
-        ".16kn", ".32kn", ".64kn", ".512e", ".512", ".128", ".256"
-    };
+    public IEnumerable<string> KnownExtensions =>
+    [
+        ".adf", ".adl", ".d81", ".dsk", ".hdf", ".ima", ".img", ".iso", ".ssd", ".st", ".1kn", ".2kn", ".4kn",
+        ".8kn", ".16kn", ".32kn", ".64kn", ".512e", ".512", ".128", ".256"
+    ];
 
     /// <inheritdoc />
     public bool IsWriting { get; private set; }

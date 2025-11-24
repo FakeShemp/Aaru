@@ -132,11 +132,7 @@ public sealed partial class OperaFS
             return ErrorNumber.NoError;
         }
 
-        string[] pieces = cutPath.Split(new[]
-                                        {
-                                            '/'
-                                        },
-                                        StringSplitOptions.RemoveEmptyEntries);
+        string[] pieces = cutPath.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
 
         KeyValuePair<string, DirectoryEntryWithPointers> entry =
             _rootDirectoryCache.FirstOrDefault(t => t.Key.Equals(pieces[0], StringComparison.CurrentCultureIgnoreCase));

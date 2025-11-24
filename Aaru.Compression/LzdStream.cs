@@ -61,9 +61,9 @@ public partial class LzdStream : Stream
         if(buffer == null) throw new ArgumentNullException(nameof(buffer));
         if(offset < 0 || count < 0 || offset + count > buffer.Length) throw new ArgumentOutOfRangeException();
 
-        int totalRead = 0;
-        int totalOut  = 0;
-        int iter      = 0;
+        var totalRead = 0;
+        var totalOut  = 0;
+        var iter      = 0;
 
         while(totalRead < count)
         {
@@ -115,7 +115,7 @@ public partial class LzdStream : Stream
                 if(!_flushed)
                 {
                     Debug.WriteLine($"[FEED] size=0 flushed={_flushed} (final empty feed)");
-                    var f = (LZDStatus)LZD_FeedNative(_ctx, Array.Empty<byte>(), UIntPtr.Zero);
+                    var f = (LZDStatus)LZD_FeedNative(_ctx, [], UIntPtr.Zero);
                     if(f == LZDStatus.ERROR) ThrowDecoderError();
                     _flushed = true;
                     Debug.WriteLine(">>> SET _flushed=true");

@@ -59,6 +59,13 @@ public sealed partial class XboxFatPlugin : IReadOnlyFilesystem
     FileSystemInfo                                         _statfs;
     Superblock                                             _superblock;
 
+    static Dictionary<string, string> GetDefaultOptions() => new()
+    {
+        {
+            "debug", false.ToString()
+        }
+    };
+
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
@@ -93,18 +100,10 @@ public sealed partial class XboxFatPlugin : IReadOnlyFilesystem
     }
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions =>
-        Array.Empty<(string name, Type type, string description)>();
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
 
     /// <inheritdoc />
     public Dictionary<string, string> Namespaces => null;
 
 #endregion
-
-    static Dictionary<string, string> GetDefaultOptions() => new()
-    {
-        {
-            "debug", false.ToString()
-        }
-    };
 }

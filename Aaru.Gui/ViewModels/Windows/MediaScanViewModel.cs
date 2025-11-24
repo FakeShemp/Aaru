@@ -63,7 +63,7 @@ public sealed partial class MediaScanViewModel : ViewModelBase
 {
     readonly Device                                        _device;
     readonly string                                        _devicePath;
-    readonly List<(ulong startingSector, double duration)> _pendingSectorData     = new();
+    readonly List<(ulong startingSector, double duration)> _pendingSectorData     = [];
     readonly object                                        _pendingSectorDataLock = new();
     readonly Window                                        _view;
     [ObservableProperty]

@@ -327,7 +327,7 @@ public abstract class BlockMediaImageTest : BaseMediaImageTest
                                 while(currentLevel.Count > 0)
                                 {
                                     currentDepth++;
-                                    List<ReadOnlyFilesystemTest.NextLevel> nextLevels = new();
+                                    List<ReadOnlyFilesystemTest.NextLevel> nextLevels = [];
 
                                     foreach(ReadOnlyFilesystemTest.NextLevel subLevel in currentLevel)
                                     {

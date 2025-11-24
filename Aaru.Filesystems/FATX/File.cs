@@ -80,11 +80,7 @@ public sealed partial class XboxFatPlugin
 
         string cutPath = path.StartsWith('/') ? path[1..].ToLower(_cultureInfo) : path.ToLower(_cultureInfo);
 
-        string[] pieces = cutPath.Split(new[]
-                                        {
-                                            '/'
-                                        },
-                                        StringSplitOptions.RemoveEmptyEntries);
+        string[] pieces = cutPath.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
 
         if(pieces.Length == 0) return ErrorNumber.InvalidArgument;
 

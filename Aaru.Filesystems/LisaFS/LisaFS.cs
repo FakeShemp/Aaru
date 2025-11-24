@@ -50,6 +50,13 @@ public sealed partial class LisaFS : IReadOnlyFilesystem
     SRecord[]    _srecords;
     ulong        _volumePrefix;
 
+    static Dictionary<string, string> GetDefaultOptions() => new()
+    {
+        {
+            "debug", false.ToString()
+        }
+    };
+
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
@@ -66,8 +73,7 @@ public sealed partial class LisaFS : IReadOnlyFilesystem
 
     // TODO: Implement Lisa 7/7 namespace (needs decoding {!CATALOG} file)
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions =>
-        Array.Empty<(string name, Type type, string description)>();
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
 
     /// <inheritdoc />
     public Dictionary<string, string> Namespaces => new()
@@ -81,13 +87,6 @@ public sealed partial class LisaFS : IReadOnlyFilesystem
     };
 
 #endregion
-
-    static Dictionary<string, string> GetDefaultOptions() => new()
-    {
-        {
-            "debug", false.ToString()
-        }
-    };
 
 #region Caches
 

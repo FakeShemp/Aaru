@@ -49,6 +49,13 @@ public sealed partial class OperaFS : IReadOnlyFilesystem
     FileSystemInfo                                                     _statfs;
     uint                                                               _volumeBlockSizeRatio;
 
+    static Dictionary<string, string> GetDefaultOptions() => new()
+    {
+        {
+            "debug", false.ToString()
+        }
+    };
+
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
@@ -83,18 +90,10 @@ public sealed partial class OperaFS : IReadOnlyFilesystem
     }
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions =>
-        Array.Empty<(string name, Type type, string description)>();
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
 
     /// <inheritdoc />
     public Dictionary<string, string> Namespaces => null;
 
 #endregion
-
-    static Dictionary<string, string> GetDefaultOptions() => new()
-    {
-        {
-            "debug", false.ToString()
-        }
-    };
 }

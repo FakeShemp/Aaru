@@ -501,8 +501,9 @@ public sealed partial class Cdrdao
         }
 
         if(_writingTracks != null && _writingStreams != null)
-            foreach(FileStream oldTrack in _writingStreams.Select(static t => t.Value).Distinct())
-                oldTrack.Close();
+        {
+            foreach(FileStream oldTrack in _writingStreams.Select(static t => t.Value).Distinct()) oldTrack.Close();
+        }
 
         ulong currentOffset = 0;
         _writingTracks = [];
@@ -598,11 +599,7 @@ public sealed partial class Cdrdao
 
         if(!string.IsNullOrWhiteSpace(_discimage.Comment))
         {
-            string[] commentLines = _discimage.Comment.Split(new[]
-                                                             {
-                                                                 '\n'
-                                                             },
-                                                             StringSplitOptions.RemoveEmptyEntries);
+            string[] commentLines = _discimage.Comment.Split(['\n'], StringSplitOptions.RemoveEmptyEntries);
 
             foreach(string line in commentLines) _descriptorStream.WriteLine("// {0}", line);
         }

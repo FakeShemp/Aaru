@@ -53,6 +53,13 @@ public sealed partial class AppleDOS : IReadOnlyFilesystem
     uint         _usedSectors;
     Vtoc         _vtoc;
 
+    static Dictionary<string, string> GetDefaultOptions() => new()
+    {
+        {
+            "debug", false.ToString()
+        }
+    };
+
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
@@ -68,20 +75,12 @@ public sealed partial class AppleDOS : IReadOnlyFilesystem
     public string Author => Authors.NataliaPortillo;
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions =>
-        Array.Empty<(string name, Type type, string description)>();
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
 
     /// <inheritdoc />
     public Dictionary<string, string> Namespaces => null;
 
 #endregion
-
-    static Dictionary<string, string> GetDefaultOptions() => new()
-    {
-        {
-            "debug", false.ToString()
-        }
-    };
 
 #region Caches
 

@@ -45,19 +45,16 @@ public sealed partial class CPM
     {
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        string[] pathElements = path.Split(new[]
-                                           {
-                                               '/'
-                                           },
-                                           StringSplitOptions.RemoveEmptyEntries);
+        string[] pathElements = path.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
 
         if(pathElements.Length != 1) return ErrorNumber.NotSupported;
 
         if(!_fileCache.ContainsKey(pathElements[0].ToUpperInvariant())) return ErrorNumber.NoSuchFile;
 
         if(string.Compare(xattr, "com.caldera.cpm.password", StringComparison.InvariantCulture) == 0)
-            if(!_passwordCache.TryGetValue(pathElements[0].ToUpperInvariant(), out buf))
-                return ErrorNumber.NoError;
+        {
+            if(!_passwordCache.TryGetValue(pathElements[0].ToUpperInvariant(), out buf)) return ErrorNumber.NoError;
+        }
 
         if(string.Compare(xattr, "com.caldera.cpm.password.text", StringComparison.InvariantCulture) != 0)
             return ErrorNumber.NoSuchExtendedAttribute;
@@ -74,11 +71,7 @@ public sealed partial class CPM
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        string[] pathElements = path.Split(new[]
-                                           {
-                                               '/'
-                                           },
-                                           StringSplitOptions.RemoveEmptyEntries);
+        string[] pathElements = path.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
 
         if(pathElements.Length != 1) return ErrorNumber.NotSupported;
 

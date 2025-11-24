@@ -76,13 +76,12 @@ public sealed partial class ISO9660 : IReadOnlyFilesystem
 
     /// <inheritdoc />
     public IEnumerable<(string name, Type type, string description)> SupportedOptions =>
-        new (string name, Type type, string description)[]
-        {
-            ("use_path_table", typeof(bool), "Use path table for directory traversal"),
-            ("use_trans_tbl", typeof(bool), "Use TRANS.TBL for filenames"),
-            ("use_evd", typeof(bool),
-             "If present, use Enhanced Volume Descriptor with specified encoding (overrides namespace)")
-        };
+    [
+        ("use_path_table", typeof(bool), "Use path table for directory traversal"),
+        ("use_trans_tbl", typeof(bool), "Use TRANS.TBL for filenames"),
+        ("use_evd", typeof(bool),
+         "If present, use Enhanced Volume Descriptor with specified encoding (overrides namespace)")
+    ];
 
     /// <inheritdoc />
     public Dictionary<string, string> Namespaces => new()

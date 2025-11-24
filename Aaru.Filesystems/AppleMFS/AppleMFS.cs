@@ -60,6 +60,13 @@ public sealed partial class AppleMFS : IReadOnlyFilesystem
     int                         _sectorsPerBlock;
     MasterDirectoryBlock        _volMdb;
 
+    static Dictionary<string, string> GetDefaultOptions() => new()
+    {
+        {
+            "debug", false.ToString()
+        }
+    };
+
 #region IReadOnlyFilesystem Members
 
     /// <inheritdoc />
@@ -76,18 +83,10 @@ public sealed partial class AppleMFS : IReadOnlyFilesystem
 
     // TODO: Implement Finder namespace (requires decoding Desktop database)
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description)> SupportedOptions =>
-        Array.Empty<(string name, Type type, string description)>();
+    public IEnumerable<(string name, Type type, string description)> SupportedOptions => [];
 
     /// <inheritdoc />
     public Dictionary<string, string> Namespaces => null;
 
 #endregion
-
-    static Dictionary<string, string> GetDefaultOptions() => new()
-    {
-        {
-            "debug", false.ToString()
-        }
-    };
 }

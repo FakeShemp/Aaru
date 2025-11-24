@@ -73,31 +73,28 @@ public sealed partial class Vhd
     public Metadata AaruMetadata => null;
 
     /// <inheritdoc />
-    public IEnumerable<MediaTagType> SupportedMediaTags => Array.Empty<MediaTagType>();
+    public IEnumerable<MediaTagType> SupportedMediaTags => [];
 
     /// <inheritdoc />
-    public IEnumerable<SectorTagType> SupportedSectorTags => Array.Empty<SectorTagType>();
+    public IEnumerable<SectorTagType> SupportedSectorTags => [];
 
     /// <inheritdoc />
-    public IEnumerable<MediaType> SupportedMediaTypes => new[]
-    {
+    public IEnumerable<MediaType> SupportedMediaTypes =>
+    [
         MediaType.GENERIC_HDD, MediaType.Unknown, MediaType.FlashDrive, MediaType.CompactFlash,
         MediaType.CompactFlashType2, MediaType.PCCardTypeI, MediaType.PCCardTypeII, MediaType.PCCardTypeIII,
         MediaType.PCCardTypeIV
-    };
+    ];
 
     /// <inheritdoc />
-    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions => new[]
-    {
-        ("dynamic", typeof(bool), Localization.Create_a_dynamic_image, (object)true),
+    public IEnumerable<(string name, Type type, string description, object @default)> SupportedOptions =>
+    [
+        ("dynamic", typeof(bool), Localization.Create_a_dynamic_image, true),
         ("block_size", typeof(uint), Localization.Vhd_Block_size_Must_be_a_power_of_2, 2097152)
-    };
+    ];
 
     /// <inheritdoc />
-    public IEnumerable<string> KnownExtensions => new[]
-    {
-        ".vhd"
-    };
+    public IEnumerable<string> KnownExtensions => [".vhd"];
 
     /// <inheritdoc />
     public bool IsWriting { get; private set; }

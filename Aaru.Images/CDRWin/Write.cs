@@ -436,8 +436,9 @@ public sealed partial class CdrWin
         }
 
         if(_writingTracks != null && _writingStreams != null)
-            foreach(FileStream oldTrack in _writingStreams.Select(static t => t.Value).Distinct())
-                oldTrack.Close();
+        {
+            foreach(FileStream oldTrack in _writingStreams.Select(static t => t.Value).Distinct()) oldTrack.Close();
+        }
 
         _writingTracks = [];
 
@@ -505,11 +506,7 @@ public sealed partial class CdrWin
 
         if(!string.IsNullOrWhiteSpace(_discImage.Comment))
         {
-            string[] commentLines = _discImage.Comment.Split(new[]
-                                                             {
-                                                                 '\n'
-                                                             },
-                                                             StringSplitOptions.RemoveEmptyEntries);
+            string[] commentLines = _discImage.Comment.Split(['\n'], StringSplitOptions.RemoveEmptyEntries);
 
             foreach(string line in commentLines) _descriptorStream.WriteLine("REM {0}", line);
         }
