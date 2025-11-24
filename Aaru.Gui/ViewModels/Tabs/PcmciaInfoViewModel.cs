@@ -55,7 +55,6 @@ public sealed partial class PcmciaInfoViewModel : ViewModelBase
     readonly Window _view;
     [ObservableProperty]
     string _pcmciaCisText;
-    PcmciaCisModel _selectedCis;
 
     internal PcmciaInfoViewModel([CanBeNull] byte[] pcmciaCis, Window view)
     {
@@ -157,13 +156,13 @@ public sealed partial class PcmciaInfoViewModel : ViewModelBase
 
     public PcmciaCisModel SelectedCis
     {
-        get => _selectedCis;
+        get;
         set
         {
-            if(_selectedCis == value) return;
+            if(field == value) return;
 
             PcmciaCisText = value?.Description;
-            SetProperty(ref _selectedCis, value);
+            SetProperty(ref field, value);
         }
     }
 

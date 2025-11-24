@@ -41,18 +41,17 @@ namespace Aaru.Gui;
 
 static class ConsoleHandler
 {
-    static bool _debug;
     static bool _verbose;
 
     public static bool Debug
     {
         set
         {
-            if(_debug == value) return;
+            if(field == value) return;
 
-            _debug = value;
+            field = value;
 
-            if(_debug)
+            if(field)
             {
                 AaruLogging.DebugEvent          += OnDebugWriteHandler;
                 AaruLogging.WriteExceptionEvent += OnWriteExceptionEvent;
@@ -67,13 +66,14 @@ static class ConsoleHandler
 
     public static ObservableCollection<LogEntry> Entries { get; } = [];
 
-    static void OnWriteExceptionEvent([NotNull] Exception ex, string message, params object[] objects) => Entries.Add(new LogEntry
-    {
-        Message   = string.Format(message, objects),
-        Module    = null,
-        Timestamp = DateTime.Now,
-        Type      = UI.LogEntry_Type_Exception
-    });
+    static void OnWriteExceptionEvent([NotNull] Exception ex, string message, params object[] objects) =>
+        Entries.Add(new LogEntry
+        {
+            Message   = string.Format(message, objects),
+            Module    = null,
+            Timestamp = DateTime.Now,
+            Type      = UI.LogEntry_Type_Exception
+        });
 
     internal static void Init()
     {

@@ -64,9 +64,6 @@ public sealed partial class ScsiInfoViewModel : ViewModelBase
     string _mmcFeatureText;
     [ObservableProperty]
     string _modeSensePageText;
-    object _selectedEvpdPage;
-    object _selectedMmcFeature;
-    object _selectedModeSensePage;
 
     public ScsiInfoViewModel(byte[] scsiInquiryData, Inquiry? scsiInquiry, Dictionary<byte, byte[]> scsiEvpdPages,
                              Modes.DecodedMode? scsiMode, PeripheralDeviceTypes scsiType, byte[] scsiModeSense6,
@@ -728,40 +725,40 @@ public sealed partial class ScsiInfoViewModel : ViewModelBase
 
     public object SelectedModeSensePage
     {
-        get => _selectedModeSensePage;
+        get;
         set
         {
-            if(value == _selectedModeSensePage) return;
+            if(value == field) return;
 
             if(value is ScsiPageModel pageModel) ModeSensePageText = pageModel.Description;
 
-            SetProperty(ref _selectedModeSensePage, value);
+            SetProperty(ref field, value);
         }
     }
 
     public object SelectedEvpdPage
     {
-        get => _selectedEvpdPage;
+        get;
         set
         {
-            if(value == _selectedEvpdPage) return;
+            if(value == field) return;
 
             if(value is ScsiPageModel pageModel) EvpdPageText = pageModel.Description;
 
-            SetProperty(ref _selectedEvpdPage, value);
+            SetProperty(ref field, value);
         }
     }
 
     public object SelectedMmcFeature
     {
-        get => _selectedMmcFeature;
+        get;
         set
         {
-            if(value == _selectedMmcFeature) return;
+            if(value == field) return;
 
             if(value is ScsiPageModel pageModel) MmcFeatureText = pageModel.Description;
 
-            SetProperty(ref _selectedMmcFeature, value);
+            SetProperty(ref field, value);
         }
     }
 

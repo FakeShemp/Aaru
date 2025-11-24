@@ -96,7 +96,6 @@ public partial class MainWindowViewModel : ViewModelBase
     string _title;
     [ObservableProperty]
     ObservableCollection<RootModel> _treeRoot;
-    object _treeViewSelectedItem;
 
     public MainWindowViewModel(Window view)
     {
@@ -187,12 +186,12 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public object TreeViewSelectedItem
     {
-        get => _treeViewSelectedItem;
+        get;
         set
         {
-            if(value == _treeViewSelectedItem) return;
+            if(value == field) return;
 
-            SetProperty(ref _treeViewSelectedItem, value);
+            SetProperty(ref field, value);
 
             ContentPanel = null;
 

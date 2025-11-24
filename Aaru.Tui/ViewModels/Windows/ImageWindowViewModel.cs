@@ -79,7 +79,6 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
     string _partitionStart;
     [ObservableProperty]
     string _partitionType;
-    FileSystemModelNode? _selectedNode;
     [ObservableProperty]
     string? _status;
 
@@ -93,29 +92,28 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
 
     public FileSystemModelNode? SelectedNode
     {
-        get => _selectedNode;
+        get;
         set
         {
-            SetProperty(ref _selectedNode, value);
+            SetProperty(ref field, value);
 
-            if(_selectedNode is null) return;
+            if(field is null) return;
 
-            if(_selectedNode.Partition is not null && _selectedNode.Filesystem is null)
+            if(field.Partition is not null && field.Filesystem is null)
             {
                 IsPartitionInformationVisible = true;
 
-                PartitionSequence = _selectedNode.Partition.Value.Sequence.ToString();
-                PartitionName     = _selectedNode.Partition.Value.Name;
-                PartitionType     = _selectedNode.Partition.Value.Type;
-                PartitionStart    = _selectedNode.Partition.Value.Start.ToString();
-                PartitionOffset   = ByteSize.FromBytes(_selectedNode.Partition.Value.Offset).Humanize();
+                PartitionSequence = field.Partition.Value.Sequence.ToString();
+                PartitionName     = field.Partition.Value.Name;
+                PartitionType     = field.Partition.Value.Type;
+                PartitionStart    = field.Partition.Value.Start.ToString();
+                PartitionOffset   = ByteSize.FromBytes(field.Partition.Value.Offset).Humanize();
 
-                PartitionLength =
-                    string.Format(Localization.Resources._0_sectors, _selectedNode.Partition.Value.Length);
+                PartitionLength = string.Format(Localization.Resources._0_sectors, field.Partition.Value.Length);
 
-                PartitionSize        = ByteSize.FromBytes(_selectedNode.Partition.Value.Size).Humanize();
-                PartitionScheme      = _selectedNode.Partition.Value.Scheme;
-                PartitionDescription = _selectedNode.Partition.Value.Description;
+                PartitionSize        = ByteSize.FromBytes(field.Partition.Value.Size).Humanize();
+                PartitionScheme      = field.Partition.Value.Scheme;
+                PartitionDescription = field.Partition.Value.Description;
 
                 OnPropertyChanged(nameof(PartitionSequence));
                 OnPropertyChanged(nameof(PartitionName));
@@ -130,10 +128,10 @@ public sealed partial class ImageWindowViewModel : ViewModelBase
             else
                 IsPartitionInformationVisible = false;
 
-            if(_selectedNode.Filesystem is not null)
+            if(field.Filesystem is not null)
             {
                 IsFilesystemInformationVisible = true;
-                FilesystemInformation          = _selectedNode.FilesystemInformation ?? "";
+                FilesystemInformation          = field.FilesystemInformation ?? "";
 
                 OnPropertyChanged(nameof(FilesystemInformation));
             }

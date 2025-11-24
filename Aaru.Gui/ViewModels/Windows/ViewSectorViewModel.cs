@@ -45,14 +45,12 @@ public sealed partial class ViewSectorViewModel : ViewModelBase
     readonly IMediaImage _inputFormat;
     [ObservableProperty]
     List<ColorRange> _highlightRanges;
-    bool _longSectorChecked;
     [ObservableProperty]
     bool _longSectorVisible;
     [ObservableProperty]
     string _printHexText;
     [ObservableProperty]
     byte[] _sectorData;
-    double _sectorNumber;
     [ObservableProperty]
     string _totalSectorsText;
 
@@ -70,10 +68,10 @@ public sealed partial class ViewSectorViewModel : ViewModelBase
 
     public bool LongSectorChecked
     {
-        get => _longSectorChecked;
+        get;
         set
         {
-            SetProperty(ref _longSectorChecked, value);
+            SetProperty(ref field, value);
 
             ErrorNumber errno = LongSectorChecked
                                     ? _inputFormat.ReadSectorLong((ulong)SectorNumber, false, out byte[] sector, out _)
@@ -88,10 +86,10 @@ public sealed partial class ViewSectorViewModel : ViewModelBase
 
     public double SectorNumber
     {
-        get => _sectorNumber;
+        get;
         set
         {
-            SetProperty(ref _sectorNumber, value);
+            SetProperty(ref field, value);
 
             ErrorNumber errno = LongSectorChecked
                                     ? _inputFormat.ReadSectorLong((ulong)SectorNumber, false, out byte[] sector, out _)

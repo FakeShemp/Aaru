@@ -39,7 +39,6 @@ namespace Aaru.Compression;
 /// <summary>Handles native implementations of compression algorithms</summary>
 public static partial class Native
 {
-    static bool _checked;
     static bool _supported;
 
     /// <summary>Set to return native as never supported</summary>
@@ -55,10 +54,10 @@ public static partial class Native
         {
             if(ForceManaged) return false;
 
-            if(_checked) return _supported;
+            if(field) return _supported;
 
             ulong version;
-            _checked = true;
+            field = true;
 
             try
             {

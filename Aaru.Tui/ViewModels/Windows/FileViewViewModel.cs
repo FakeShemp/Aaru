@@ -37,7 +37,6 @@ public sealed partial class FileViewViewModel : ViewModelBase
     string _informationalVersion;
     [ObservableProperty]
     bool _isStatusVisible;
-    FileModel? _selectedFile;
     [ObservableProperty]
     string _status;
 
@@ -62,10 +61,10 @@ public sealed partial class FileViewViewModel : ViewModelBase
 
     public FileModel? SelectedFile
     {
-        get => _selectedFile;
+        get;
         set
         {
-            SetProperty(ref _selectedFile, value);
+            SetProperty(ref field, value);
             OnPropertyChanged(nameof(IsFileInfoAvailable));
             OnPropertyChanged(nameof(SelectedFileIsNotDirectory));
             OnPropertyChanged(nameof(SelectedFileLength));

@@ -52,7 +52,6 @@ namespace Aaru.Gui.ViewModels.Dialogs;
 public sealed class ConsoleViewModel : ViewModelBase
 {
     readonly Console _view;
-    bool             _debugChecked;
 
     public ConsoleViewModel(Console view)
     {
@@ -67,11 +66,11 @@ public sealed class ConsoleViewModel : ViewModelBase
 
     public bool DebugChecked
     {
-        get => _debugChecked;
+        get;
         set
         {
             ConsoleHandler.Debug = value;
-            SetProperty(ref _debugChecked, value);
+            SetProperty(ref field, value);
         }
     }
 

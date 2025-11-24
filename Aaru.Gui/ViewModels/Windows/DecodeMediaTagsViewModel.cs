@@ -66,7 +66,6 @@ public sealed partial class DecodeMediaTagsViewModel : ViewModelBase
     bool _decodedVisible;
     [ObservableProperty]
     byte[] _hexData;
-    MediaTagModel _selectedTag;
 
     public DecodeMediaTagsViewModel([NotNull] IMediaImage inputFormat)
     {
@@ -93,10 +92,10 @@ public sealed partial class DecodeMediaTagsViewModel : ViewModelBase
 
     public MediaTagModel SelectedTag
     {
-        get => _selectedTag;
+        get;
         set
         {
-            SetProperty(ref _selectedTag, value);
+            SetProperty(ref field, value);
 
             if(value is null) return;
 
