@@ -149,7 +149,7 @@ partial class Dump
 
             var firstSectorToRead = (uint)i;
 
-            Track track = tracks.OrderBy(t => t.StartSector).LastOrDefault(t => i >= t.StartSector);
+            Track track = tracks.OrderBy(static t => t.StartSector).LastOrDefault(t => i >= t.StartSector);
 
             blocksToRead = 0;
             bool inData = nextData;
@@ -799,9 +799,7 @@ partial class Dump
                             }
 
                             if(supportsLongSectors)
-                            {
                                 outputFormat.WriteSectorsLong(data, i + r, false, 1, [sectorStatus]);
-                            }
                             else
                             {
                                 var cooked = new MemoryStream();
@@ -856,7 +854,7 @@ partial class Dump
 
                                 if(i > 0) i--;
 
-                                foreach(Track aTrack in tracks.Where(aTrack => aTrack.Type == TrackType.Audio))
+                                foreach(Track aTrack in tracks.Where(static aTrack => aTrack.Type == TrackType.Audio))
                                     audioExtents.Add(aTrack.StartSector, aTrack.EndSector);
 
                                 continue;
@@ -1071,9 +1069,7 @@ partial class Dump
                     }
 
                     if(supportsLongSectors)
-                    {
                         outputFormat.WriteSectorsLong(data, i, false, blocksToRead, sectorStatus);
-                    }
                     else
                     {
                         var cooked = new MemoryStream();
@@ -1122,7 +1118,7 @@ partial class Dump
 
                         if(i > 0) i--;
 
-                        foreach(Track aTrack in tracks.Where(aTrack => aTrack.Type == TrackType.Audio))
+                        foreach(Track aTrack in tracks.Where(static aTrack => aTrack.Type == TrackType.Audio))
                             audioExtents.Add(aTrack.StartSector, aTrack.EndSector);
 
                         continue;

@@ -88,24 +88,24 @@ public abstract class OpticalMediaImageTest : BaseMediaImageTest
                                     Has.Count.EqualTo(test.Tracks.Length),
                                     string.Format(Localization.Tracks_0, testFile));
 
-                        image.Tracks.Select(t => t.Session)
+                        image.Tracks.Select(static t => t.Session)
                              .Should()
-                             .BeEquivalentTo(test.Tracks.Select(s => s.Session),
+                             .BeEquivalentTo(test.Tracks.Select(static s => s.Session),
                                              string.Format(Localization.Track_session_0, testFile));
 
-                        image.Tracks.Select(t => t.StartSector)
+                        image.Tracks.Select(static t => t.StartSector)
                              .Should()
-                             .BeEquivalentTo(test.Tracks.Select(s => s.Start),
+                             .BeEquivalentTo(test.Tracks.Select(static s => s.Start),
                                              string.Format(Localization.Track_start_0, testFile));
 
-                        image.Tracks.Select(t => t.EndSector)
+                        image.Tracks.Select(static t => t.EndSector)
                              .Should()
-                             .BeEquivalentTo(test.Tracks.Select(s => s.End),
+                             .BeEquivalentTo(test.Tracks.Select(static s => s.End),
                                              string.Format(Localization.Track_end_0, testFile));
 
-                        image.Tracks.Select(t => t.Pregap)
+                        image.Tracks.Select(static t => t.Pregap)
                              .Should()
-                             .BeEquivalentTo(test.Tracks.Select(s => s.Pregap),
+                             .BeEquivalentTo(test.Tracks.Select(static s => s.Pregap),
                                              string.Format(Localization.Track_pregap_0, testFile));
 
                         var trackNo = 0;
@@ -133,7 +133,7 @@ public abstract class OpticalMediaImageTest : BaseMediaImageTest
                         }
 
                         flags.Should()
-                             .BeEquivalentTo(test.Tracks.Select(s => s.Flags),
+                             .BeEquivalentTo(test.Tracks.Select(static s => s.Flags),
                                              string.Format(Localization.Track_flags_0, testFile));
 
                         Assert.That(image.Info.Sectors - 1,

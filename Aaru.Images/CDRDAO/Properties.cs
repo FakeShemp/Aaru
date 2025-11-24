@@ -84,8 +84,8 @@ public sealed partial class Cdrdao
     {
         get
         {
-            Track firstTrack = Tracks.First(t => t.Sequence == Tracks.Min(m => m.Sequence));
-            Track lastTrack  = Tracks.First(t => t.Sequence == Tracks.Max(m => m.Sequence));
+            Track firstTrack = Tracks.First(t => t.Sequence == Tracks.Min(static m => m.Sequence));
+            Track lastTrack  = Tracks.First(t => t.Sequence == Tracks.Max(static m => m.Sequence));
 
             return
             [
@@ -160,13 +160,13 @@ public sealed partial class Cdrdao
                     {
                         aaruTrack.Indexes[0] = -150;
 
-                        foreach(KeyValuePair<int, ulong> idx in cdrTrack.Indexes.OrderBy(i => i.Key))
+                        foreach(KeyValuePair<int, ulong> idx in cdrTrack.Indexes.OrderBy(static i => i.Key))
                             aaruTrack.Indexes[(ushort)idx.Key] = (int)idx.Value;
                     }
                 }
                 else
                 {
-                    foreach(KeyValuePair<int, ulong> idx in cdrTrack.Indexes.OrderBy(i => i.Key))
+                    foreach(KeyValuePair<int, ulong> idx in cdrTrack.Indexes.OrderBy(static i => i.Key))
                         aaruTrack.Indexes[(ushort)idx.Key] = (int)idx.Value;
                 }
 

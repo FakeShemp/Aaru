@@ -251,8 +251,9 @@ public abstract class OpticalImageConvertIssueTest
                 tracks[i].Indexes[idx.Key] = idx.Value;
         }
 
-        foreach(SectorTagType tag in inputFormat.Info.ReadableSectorTags.Where(t => t == SectorTagType.CdTrackIsrc)
-                                                .OrderBy(t => t))
+        foreach(SectorTagType tag in inputFormat.Info.ReadableSectorTags
+                                                .Where(static t => t == SectorTagType.CdTrackIsrc)
+                                                .OrderBy(static t => t))
         {
             foreach(Track track in tracks)
             {
@@ -264,8 +265,9 @@ public abstract class OpticalImageConvertIssueTest
             }
         }
 
-        foreach(SectorTagType tag in inputFormat.Info.ReadableSectorTags.Where(t => t == SectorTagType.CdTrackFlags)
-                                                .OrderBy(t => t))
+        foreach(SectorTagType tag in inputFormat.Info.ReadableSectorTags
+                                                .Where(static t => t == SectorTagType.CdTrackFlags)
+                                                .OrderBy(static t => t))
         {
             foreach(Track track in tracks)
             {
@@ -284,7 +286,7 @@ public abstract class OpticalImageConvertIssueTest
             subchannelExtents.Add((int)s);
         }
 
-        foreach(SectorTagType tag in inputFormat.Info.ReadableSectorTags.OrderBy(t => t).TakeWhile(_ => UseLong))
+        foreach(SectorTagType tag in inputFormat.Info.ReadableSectorTags.OrderBy(static t => t).TakeWhile(_ => UseLong))
         {
             switch(tag)
             {

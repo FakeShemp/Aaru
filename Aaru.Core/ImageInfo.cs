@@ -950,7 +950,7 @@ public static class ImageInfo
 
             AnsiConsole.Write(table);
 
-            if(!opticalImage.Tracks.Any(t => t.Indexes.Any())) return;
+            if(!opticalImage.Tracks.Any(static t => t.Indexes.Any())) return;
 
             AaruLogging.WriteLine();
 

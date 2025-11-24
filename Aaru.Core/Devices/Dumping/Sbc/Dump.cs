@@ -196,7 +196,7 @@ partial class Dump
 
                     // TODO: Fix this
                     containsFloppyPage = decMode?.Pages?.Aggregate(containsFloppyPage,
-                                                                   (current, modePage) =>
+                                                                   static (current, modePage) =>
                                                                        current | modePage.Page == 0x05) ==
                                          true;
                 }
@@ -522,7 +522,7 @@ partial class Dump
                             });
                         }
                         else
-                            tracks = tracks.OrderBy(t => t.Sequence).ToList();
+                            tracks = tracks.OrderBy(static t => t.Sequence).ToList();
 
                         ret = outputFormat.Create(_outputPath,
                                                   dskType,
@@ -725,8 +725,8 @@ partial class Dump
             bool discIs80Mm =
                 mediaTags?.TryGetValue(MediaTagType.DVD_PFI, out byte[] pfiBytes) == true &&
                 PFI.Decode(pfiBytes, dskType)?.DiscSize                           == DVDSize.Eighty ||
-                mediaTags?.TryGetValue(MediaTagType.BD_DI, out byte[] diBytes)       == true &&
-                DI.Decode(diBytes)?.Units?.Any(s => s.DiscSize == DI.BluSize.Eighty) == true;
+                mediaTags?.TryGetValue(MediaTagType.BD_DI, out byte[] diBytes)              == true &&
+                DI.Decode(diBytes)?.Units?.Any(static s => s.DiscSize == DI.BluSize.Eighty) == true;
 
             Spiral.DiscParameters discSpiralParameters = Spiral.DiscParametersFromMediaType(dskType, discIs80Mm);
 
@@ -780,7 +780,7 @@ partial class Dump
            (CopyrightType)cmi[0] == CopyrightType.CSS)
         {
             UpdateStatus?.Invoke(Localization.Core.Title_keys_dumping_is_enabled_This_will_be_very_slow);
-            _resume.MissingTitleKeys ??= [..Enumerable.Range(0, (int)blocks).Select(n => (ulong)n)];
+            _resume.MissingTitleKeys ??= [..Enumerable.Range(0, (int)blocks).Select(static n => (ulong)n)];
         }
 
         if(_dev.ScsiType == PeripheralDeviceTypes.OpticalDevice)
@@ -1361,7 +1361,7 @@ partial class Dump
 
                     if(filesystems.Count > 0)
                     {
-                        foreach(var filesystem in filesystems.Select(o => new
+                        foreach(var filesystem in filesystems.Select(static o => new
                                                               {
                                                                   o.start,
                                                                   o.type

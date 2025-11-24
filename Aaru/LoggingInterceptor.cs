@@ -33,11 +33,11 @@ public class LoggingInterceptor : ICommandInterceptor
         // Configure Serilog
         LoggerConfiguration loggerConfig = new LoggerConfiguration().MinimumLevel.ControlledBy(_levelSwitch)
                                                                     .Enrich.FromLogContext()
-                                                                    .WriteTo.Logger(lc => lc
-                                                                        .Filter.ByExcluding(e =>
+                                                                    .WriteTo.Logger(static lc => lc
+                                                                        .Filter.ByExcluding(static e =>
                                                                              e.Level == LogEventLevel.Information)
                                                                         .WriteTo.Spectre(renderTextAsMarkup: true)
-                                                                        .WriteTo.Sentry(o =>
+                                                                        .WriteTo.Sentry(static o =>
                                                                          {
                                                                              o.Dsn =
                                                                                  "https://153a04fb97b78bb57a8013b8b30db04f@sentry.claunia.com/8";

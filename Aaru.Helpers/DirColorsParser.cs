@@ -41,7 +41,7 @@ namespace Aaru.Helpers;
 /// </summary>
 public sealed class DirColorsParser
 {
-    private static readonly Lazy<DirColorsParser> _instance = new(() => new DirColorsParser());
+    private static readonly Lazy<DirColorsParser> _instance = new(static () => new DirColorsParser());
 
     private DirColorsParser()
     {
@@ -83,13 +83,13 @@ public sealed class DirColorsParser
                 sgr     = parts[1];
             }
 
-            if(!pattern.StartsWith("DIR",  StringComparison.OrdinalIgnoreCase) &&
-               pattern is not ['.', ..]                                        &&
+            if(!pattern.StartsWith("DIR", StringComparison.OrdinalIgnoreCase) &&
+               pattern is not ['.', ..]                                       &&
                !pattern.StartsWith("NORM", StringComparison.OrdinalIgnoreCase))
                 continue; // ( DIR, FILE, LINK, EXECUTABLE, or SUID)
 
             // Build ANSI escape sequence
-            string ansi = $"\e[{sgr}m";
+            var    ansi = $"\e[{sgr}m";
             string hex;
 
             try

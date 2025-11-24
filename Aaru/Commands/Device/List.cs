@@ -95,7 +95,7 @@ sealed class ListDevicesCommand : Command<ListDevicesCommand.Settings>
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
 
-            foreach(DeviceInfo dev in devices.OrderBy(d => d.Path))
+            foreach(DeviceInfo dev in devices.OrderBy(static d => d.Path))
             {
                 table.AddRow($"[italic][olive]{Markup.Escape(dev.Path        ?? "")}[/][/]",
                              $"[italic][slateblue1]{Markup.Escape(dev.Vendor ?? "")}[/][/]",

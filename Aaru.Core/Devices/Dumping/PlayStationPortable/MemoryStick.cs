@@ -432,7 +432,7 @@ public partial class Dump
 
                         if(dcMode10.HasValue)
                         {
-                            foreach(Modes.ModePage modePage in dcMode10.Value.Pages.Where(modePage =>
+                            foreach(Modes.ModePage modePage in dcMode10.Value.Pages.Where(static modePage =>
                                         modePage is { Page: 0x01, Subpage: 0x00 }))
                                 currentModePage = modePage;
                         }
@@ -442,7 +442,7 @@ public partial class Dump
                 {
                     if(dcMode6.HasValue)
                     {
-                        foreach(Modes.ModePage modePage in dcMode6.Value.Pages.Where(modePage =>
+                        foreach(Modes.ModePage modePage in dcMode6.Value.Pages.Where(static modePage =>
                                     modePage is { Page: 0x01, Subpage: 0x00 }))
                             currentModePage = modePage;
                     }
@@ -713,7 +713,7 @@ public partial class Dump
 
                 if(filesystems.Count > 0)
                 {
-                    foreach(var filesystem in filesystems.Select(o => new
+                    foreach(var filesystem in filesystems.Select(static o => new
                                                           {
                                                               o.start,
                                                               o.type

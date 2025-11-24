@@ -501,14 +501,13 @@ public sealed partial class Cdrdao
         }
 
         if(_writingTracks != null && _writingStreams != null)
-        {
-            foreach(FileStream oldTrack in _writingStreams.Select(t => t.Value).Distinct()) oldTrack.Close();
-        }
+            foreach(FileStream oldTrack in _writingStreams.Select(static t => t.Value).Distinct())
+                oldTrack.Close();
 
         ulong currentOffset = 0;
         _writingTracks = [];
 
-        foreach(Track track in tracks.OrderBy(t => t.Sequence))
+        foreach(Track track in tracks.OrderBy(static t => t.Sequence))
         {
             if(track.SubchannelType is TrackSubchannelType.Q16 or TrackSubchannelType.Q16Interleaved)
             {
@@ -582,12 +581,12 @@ public sealed partial class Cdrdao
             _writingStreams.First().Value.Close();
         }
 
-        bool data = _writingTracks.Count(t => t.Type != TrackType.Audio) > 0;
+        bool data = _writingTracks.Count(static t => t.Type != TrackType.Audio) > 0;
 
         bool mode2 =
-            _writingTracks.Count(t => t.Type is TrackType.CdMode2Form1
-                                             or TrackType.CdMode2Form2
-                                             or TrackType.CdMode2Formless) >
+            _writingTracks.Count(static t => t.Type is TrackType.CdMode2Form1
+                                                    or TrackType.CdMode2Form2
+                                                    or TrackType.CdMode2Formless) >
             0;
 
         if(mode2)
@@ -654,7 +653,8 @@ public sealed partial class Cdrdao
                                         (ulong)(track.RawBytesPerSector +
                                                 (track.SubchannelType != TrackSubchannelType.None ? 96 : 0)));
 
-            foreach(KeyValuePair<ushort, int> index in track.Indexes.OrderBy(i => i.Key).Where(i => i.Key > 1))
+            foreach(KeyValuePair<ushort, int> index in track.Indexes.OrderBy(static i => i.Key)
+                                                            .Where(static i => i.Key > 1))
             {
                 msf = LbaToMsf((ulong)index.Value - (track.Pregap + track.StartSector));
 

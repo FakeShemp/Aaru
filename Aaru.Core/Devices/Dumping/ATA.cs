@@ -904,7 +904,7 @@ public partial class Dump
 
                         if(filesystems.Count > 0)
                         {
-                            foreach(var filesystem in filesystems.Select(o => new
+                            foreach(var filesystem in filesystems.Select(static o => new
                                                                   {
                                                                       o.start,
                                                                       o.type

@@ -63,9 +63,8 @@ public sealed partial class Cpcdsk
         int pos;
 
         for(pos = 0; pos < 254; pos++)
-        {
-            if(headerB[pos] == 0x0D && headerB[pos + 1] == 0x0A) break;
-        }
+            if(headerB[pos] == 0x0D && headerB[pos + 1] == 0x0A)
+                break;
 
         if(pos >= 254) return ErrorNumber.InvalidArgument;
 
@@ -270,7 +269,7 @@ public sealed partial class Cpcdsk
                     thisTrackAddressMarks[(trackInfo.sectorsInfo[k - 1].id & 0x3F) - 1] = addressMark;
                 }
 
-                foreach(KeyValuePair<int, byte[]> s in thisTrackSectors.OrderBy(k => k.Key))
+                foreach(KeyValuePair<int, byte[]> s in thisTrackSectors.OrderBy(static k => k.Key))
                 {
                     _sectors.Add(currentSector, s.Value);
                     _addressMarks.Add(currentSector, s.Value);

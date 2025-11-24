@@ -59,7 +59,7 @@ sealed class ListEncodingsCommand : Command<ListEncodingsCommand.Settings>
         AaruLogging.Information(UI.List_encodings_command);
 
         var encodings = Encoding.GetEncodings()
-                                .Select(info => new CommonEncodingInfo
+                                .Select(static info => new CommonEncodingInfo
                                  {
                                      Name        = info.Name,
                                      DisplayName = info.GetEncoding().EncodingName
@@ -67,7 +67,7 @@ sealed class ListEncodingsCommand : Command<ListEncodingsCommand.Settings>
                                 .ToList();
 
         encodings.AddRange(Claunia.Encoding.Encoding.GetEncodings()
-                                  .Select(info => new CommonEncodingInfo
+                                  .Select(static info => new CommonEncodingInfo
                                    {
                                        Name        = info.Name,
                                        DisplayName = info.DisplayName
@@ -79,7 +79,7 @@ sealed class ListEncodingsCommand : Command<ListEncodingsCommand.Settings>
         table.Border(TableBorder.Rounded);
         table.BorderColor(Color.Yellow);
 
-        foreach(CommonEncodingInfo info in encodings.OrderBy(t => t.DisplayName))
+        foreach(CommonEncodingInfo info in encodings.OrderBy(static t => t.DisplayName))
         {
             table.AddRow($"[italic][darkgreen]{Markup.Escape(info.Name)}[/][/]",
                          $"[italic][slateblue1]{Markup.Escape(info.DisplayName)}[/][/]");

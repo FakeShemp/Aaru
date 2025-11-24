@@ -1089,8 +1089,9 @@ partial class Dump
             List<ulong> tmpList = [];
 
             foreach(ulong ur in _resume.BadBlocks)
-                for(ulong i = ur; i < ur + blocksToRead; i++)
-                    tmpList.Add(i);
+            {
+                for(ulong i = ur; i < ur + blocksToRead; i++) tmpList.Add(i);
+            }
 
             tmpList.Sort();
 
@@ -1135,7 +1136,7 @@ partial class Dump
 
                         if(dcMode10.HasValue)
                         {
-                            foreach(Modes.ModePage modePage in dcMode10.Value.Pages.Where(modePage =>
+                            foreach(Modes.ModePage modePage in dcMode10.Value.Pages.Where(static modePage =>
                                         modePage is { Page: 0x01, Subpage: 0x00 }))
                                 currentModePage = modePage;
                         }
@@ -1145,7 +1146,7 @@ partial class Dump
                 {
                     if(dcMode6.HasValue)
                     {
-                        foreach(Modes.ModePage modePage in dcMode6.Value.Pages.Where(modePage =>
+                        foreach(Modes.ModePage modePage in dcMode6.Value.Pages.Where(static modePage =>
                                     modePage is { Page: 0x01, Subpage: 0x00 }))
                             currentModePage = modePage;
                     }

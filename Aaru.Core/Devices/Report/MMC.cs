@@ -53,8 +53,8 @@ public sealed partial class DeviceReport
 
         while(offset + 4 < response.Length)
         {
-            ushort code = (ushort)((response[offset + 0] << 8) + response[offset + 1]);
-            byte[] data = new byte[response[offset + 3] + 4];
+            var code = (ushort)((response[offset + 0] << 8) + response[offset + 1]);
+            var data = new byte[response[offset + 3] + 4];
 
             if(code != 0x0108)
             {
@@ -76,7 +76,7 @@ public sealed partial class DeviceReport
     /// <returns>MMC features report</returns>
     public MmcFeatures ReportMmcFeatures()
     {
-        bool   sense  = true;
+        var    sense  = true;
         byte[] buffer = [];
 
         Spectre.ProgressSingleSpinner(ctx =>
@@ -478,7 +478,7 @@ public sealed partial class DeviceReport
 
                     if(ftr010C.HasValue)
                     {
-                        byte[] temp = new byte[4];
+                        var temp = new byte[4];
                         temp[0] = (byte)((ftr010C.Value.Century & 0xFF00) >> 8);
                         temp[1] = (byte)(ftr010C.Value.Century & 0xFF);
                         temp[2] = (byte)((ftr010C.Value.Year & 0xFF00) >> 8);
@@ -578,7 +578,7 @@ public sealed partial class DeviceReport
     public TestedMedia ReportMmcMedia(string mediaType, bool tryPlextor, bool tryPioneer, bool tryNec, bool tryHldtst,
                                       bool   tryMediaTekF106, bool tryLiteOn)
     {
-        bool               sense       = true;
+        var                sense       = true;
         byte[]             buffer      = [];
         ReadOnlySpan<byte> senseBuffer = [];
         var                mediaTest   = new TestedMedia();
@@ -609,7 +609,7 @@ public sealed partial class DeviceReport
         if(!sense && !_dev.Error)
         {
             mediaTest.SupportsReadCapacity16 = true;
-            byte[] temp = new byte[8];
+            var temp = new byte[8];
             Array.Copy(buffer, 0, temp, 0, 8);
             Array.Reverse(temp);
             mediaTest.Blocks    = BitConverter.ToUInt64(temp, 0) + 1;
@@ -2749,8 +2749,8 @@ public sealed partial class DeviceReport
 
         if(tryMediaTekF106)
         {
-            bool triedLba0    = false;
-            bool triedLeadOut = false;
+            var triedLba0    = false;
+            var triedLeadOut = false;
 
             Spectre.ProgressSingleSpinner(ctx =>
             {
@@ -3036,7 +3036,7 @@ public sealed partial class DeviceReport
                 {
                     FullTOC.CDFullTOC decodedToc = decodedTocNullable.Value;
 
-                    if(!decodedToc.TrackDescriptors.Any(t => t.SessionNumber > 1))
+                    if(!decodedToc.TrackDescriptors.Any(static t => t.SessionNumber > 1))
                     {
                         AaruLogging.Error(Localization.Core
                                                       .Could_not_find_second_session_Have_you_inserted_the_correct_type_of_disc);
@@ -3045,10 +3045,13 @@ public sealed partial class DeviceReport
                     }
 
                     FullTOC.TrackDataDescriptor firstSessionLeadOutTrack =
-                        decodedToc.TrackDescriptors.FirstOrDefault(t => t is { SessionNumber: 1, POINT: 0xA2 });
+                        decodedToc.TrackDescriptors.FirstOrDefault(static t => t is { SessionNumber: 1, POINT: 0xA2 });
 
                     FullTOC.TrackDataDescriptor secondSessionFirstTrack =
-                        decodedToc.TrackDescriptors.FirstOrDefault(t => t is { SessionNumber: > 1, POINT: <= 99 });
+                        decodedToc.TrackDescriptors.FirstOrDefault(static t => t is
+                                                                               {
+                                                                                   SessionNumber: > 1, POINT: <= 99
+                                                                               });
 
                     if(firstSessionLeadOutTrack.SessionNumber == 0 || secondSessionFirstTrack.SessionNumber == 0)
                     {
@@ -3071,16 +3074,16 @@ public sealed partial class DeviceReport
                                       secondSessionFirstTrack.PFRAME);
 
                     // Skip Lead-Out pre-gap
-                    uint firstSessionLeadOutLba = (uint)(firstSessionLeadOutTrack.PMIN * 60 * 75 +
-                                                         firstSessionLeadOutTrack.PSEC * 75      +
-                                                         firstSessionLeadOutTrack.PFRAME         +
-                                                         150);
+                    var firstSessionLeadOutLba = (uint)(firstSessionLeadOutTrack.PMIN * 60 * 75 +
+                                                        firstSessionLeadOutTrack.PSEC * 75      +
+                                                        firstSessionLeadOutTrack.PFRAME         +
+                                                        150);
 
                     // Skip second session track pre-gap
-                    uint secondSessionLeadInLba = (uint)(secondSessionFirstTrack.PMIN * 60 * 75 +
-                                                         secondSessionFirstTrack.PSEC * 75      +
-                                                         secondSessionFirstTrack.PFRAME -
-                                                         300);
+                    var secondSessionLeadInLba = (uint)(secondSessionFirstTrack.PMIN * 60 * 75 +
+                                                        secondSessionFirstTrack.PSEC * 75      +
+                                                        secondSessionFirstTrack.PFRAME -
+                                                        300);
 
                     Spectre.ProgressSingleSpinner(ctx =>
                     {

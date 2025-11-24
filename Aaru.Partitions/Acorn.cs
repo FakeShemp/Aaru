@@ -194,7 +194,7 @@ public sealed class Acorn : IPartition
 
         IcsTable table = Marshal.ByteArrayToStructureLittleEndian<IcsTable>(sector);
 
-        foreach(IcsEntry entry in table.entries.Where(entry => entry.size != 0))
+        foreach(IcsEntry entry in table.entries.Where(static entry => entry.size != 0))
         {
             // FileCore partition
             Partition part;

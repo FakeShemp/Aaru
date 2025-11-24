@@ -290,8 +290,8 @@ public sealed partial class A2R
 
                     string[] metaFields = metaData.Split('\n');
 
-                    foreach(string[] keyValue in metaFields.Select(field => field.Split('\t'))
-                                                           .Where(keyValue => keyValue.Length == 2))
+                    foreach(string[] keyValue in metaFields.Select(static field => field.Split('\t'))
+                                                           .Where(static keyValue => keyValue.Length == 2))
                         _meta.Add(keyValue[0], keyValue[1]);
 
                     if(_meta.TryGetValue("image_date", out string imageDate))

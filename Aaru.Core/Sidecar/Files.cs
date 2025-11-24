@@ -79,9 +79,9 @@ public sealed partial class Sidecar
 
         filesystem.CloseDir(node);
 
-        if(files.Count > 0) contents.Files = files.OrderBy(f => f.Name).ToList();
+        if(files.Count > 0) contents.Files = files.OrderBy(static f => f.Name).ToList();
 
-        if(directories.Count > 0) contents.Directories = directories.OrderBy(d => d.Name).ToList();
+        if(directories.Count > 0) contents.Directories = directories.OrderBy(static d => d.Name).ToList();
 
         return contents;
     }
@@ -133,9 +133,9 @@ public sealed partial class Sidecar
             files.Add(SidecarFile(filesystem, path + "/" + filename, dirent, entryStat));
         }
 
-        if(files.Count > 0) directory.Files = files.OrderBy(f => f.Name).ToList();
+        if(files.Count > 0) directory.Files = files.OrderBy(static f => f.Name).ToList();
 
-        if(directories.Count > 0) directory.Directories = directories.OrderBy(d => d.Name).ToList();
+        if(directories.Count > 0) directory.Directories = directories.OrderBy(static d => d.Name).ToList();
 
         return directory;
     }
@@ -229,7 +229,7 @@ public sealed partial class Sidecar
             });
         }
 
-        if(xattrTypes.Count > 0) file.ExtendedAttributes = xattrTypes.OrderBy(x => x.Name).ToList();
+        if(xattrTypes.Count > 0) file.ExtendedAttributes = xattrTypes.OrderBy(static x => x.Name).ToList();
 
         return file;
     }

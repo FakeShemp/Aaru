@@ -283,9 +283,8 @@ partial class Dump
         Modes.DecodedMode? decMode = null;
 
         if(!sense && !_dev.Error)
-        {
-            if(Modes.DecodeMode10(cmdBuf, _dev.ScsiType).HasValue) decMode = Modes.DecodeMode10(cmdBuf, _dev.ScsiType);
-        }
+            if(Modes.DecodeMode10(cmdBuf, _dev.ScsiType).HasValue)
+                decMode = Modes.DecodeMode10(cmdBuf, _dev.ScsiType);
 
         UpdateStatus?.Invoke(Localization.Core.Requesting_MODE_SENSE_6);
 
@@ -313,9 +312,8 @@ partial class Dump
         if(sense || _dev.Error) sense = _dev.ModeSense(out cmdBuf, out senseBuf, 5, out duration);
 
         if(!sense && !_dev.Error)
-        {
-            if(Modes.DecodeMode6(cmdBuf, _dev.ScsiType).HasValue) decMode = Modes.DecodeMode6(cmdBuf, _dev.ScsiType);
-        }
+            if(Modes.DecodeMode6(cmdBuf, _dev.ScsiType).HasValue)
+                decMode = Modes.DecodeMode6(cmdBuf, _dev.ScsiType);
 
         // TODO: Check partitions page
         if(decMode.HasValue)
@@ -858,11 +856,11 @@ partial class Dump
             currentBlock = _resume.NextBlock;
 
             currentTapeFile =
-                outputTape.Files.FirstOrDefault(f => f.LastBlock == outputTape?.Files.Max(g => g.LastBlock));
+                outputTape.Files.FirstOrDefault(f => f.LastBlock == outputTape?.Files.Max(static g => g.LastBlock));
 
             currentTapePartition =
                 outputTape.TapePartitions.FirstOrDefault(p => p.LastBlock ==
-                                                              outputTape?.TapePartitions.Max(g => g.LastBlock));
+                                                              outputTape?.TapePartitions.Max(static g => g.LastBlock));
         }
 
         if(mode6Data != null) outputTape.WriteMediaTag(mode6Data, MediaTagType.SCSI_MODESENSE_6);
@@ -1422,7 +1420,7 @@ partial class Dump
 
                 if(filesystems.Count > 0)
                 {
-                    foreach(var filesystem in filesystems.Select(o => new
+                    foreach(var filesystem in filesystems.Select(static o => new
                                                           {
                                                               o.start,
                                                               o.type

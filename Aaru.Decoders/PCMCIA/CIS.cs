@@ -290,7 +290,7 @@ public static class CIS
         {
             sb.AppendLine("\t" + Localization.Additional_information);
 
-            foreach(string info in tuple.AdditionalInformation.Where(info => !string.IsNullOrEmpty(info)))
+            foreach(string info in tuple.AdditionalInformation.Where(static info => !string.IsNullOrEmpty(info)))
                 sb.Append($"\t\t{info}").AppendLine();
         }
 

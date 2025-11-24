@@ -105,9 +105,9 @@ public sealed class Entropy
 
                 UpdateProgressEvent?.Invoke(string.Format(Localization.Core.Entropying_track_0_of_1,
                                                           currentTrack.Sequence,
-                                                          inputTracks.Max(t => t.Sequence)),
+                                                          inputTracks.Max(static t => t.Sequence)),
                                             currentTrack.Sequence,
-                                            inputTracks.Max(t => t.Sequence));
+                                            inputTracks.Max(static t => t.Sequence));
 
                 var          entTable              = new ulong[256];
                 ulong        trackSize             = 0;
@@ -156,7 +156,7 @@ public sealed class Entropy
                 EndProgress2Event?.Invoke();
 
                 trackEntropy.Entropy += entTable.Select(l => l / (double)trackSize)
-                                                .Select(frequency => -(frequency * Math.Log(frequency, 2)))
+                                                .Select(static frequency => -(frequency * Math.Log(frequency, 2)))
                                                 .Sum();
 
                 if(duplicatedSectors) trackEntropy.UniqueSectors = uniqueSectorsPerTrack.Count;
@@ -230,7 +230,7 @@ public sealed class Entropy
         EndProgressEvent?.Invoke();
 
         entropy.Entropy += entTable.Select(l => l / (double)diskSize)
-                                   .Select(frequency => -(frequency * Math.Log(frequency, 2)))
+                                   .Select(static frequency => -(frequency * Math.Log(frequency, 2)))
                                    .Sum();
 
         if(duplicatedSectors) entropy.UniqueSectors = uniqueSectors.Count;
@@ -277,7 +277,7 @@ public sealed class Entropy
         EndProgressEvent?.Invoke();
 
         entropy.Entropy += entTable.Select(l => l / (double)data.Length)
-                                   .Select(frequency => -(frequency * Math.Log(frequency, 2)))
+                                   .Select(static frequency => -(frequency * Math.Log(frequency, 2)))
                                    .Sum();
 
         return entropy;

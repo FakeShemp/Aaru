@@ -66,13 +66,13 @@ public sealed class ScsiInfo
 
         MediaType     = MediaType.Unknown;
         MediaInserted = false;
-        int                resets = 0;
+        var                resets = 0;
         bool               sense;
         byte[]             cmdBuf;
         ReadOnlySpan<byte> senseBuf;
-        bool               containsFloppyPage    = false;
-        int                sessions              = 1;
-        int                firstTrackLastSession = 1;
+        var                containsFloppyPage    = false;
+        var                sessions              = 1;
+        var                firstTrackLastSession = 1;
 
         if(dev.IsRemovable)
         {
@@ -97,7 +97,7 @@ public sealed class ScsiInfo
                     {
                         case 0x3A:
                         {
-                            int leftRetries = 5;
+                            var leftRetries = 5;
 
                             while(leftRetries > 0)
                             {
@@ -121,7 +121,7 @@ public sealed class ScsiInfo
                         }
                         case 0x04 when decSense?.ASCQ == 0x01:
                         {
-                            int leftRetries = 10;
+                            var leftRetries = 10;
 
                             while(leftRetries > 0)
                             {
@@ -175,7 +175,7 @@ public sealed class ScsiInfo
                 scsiDensityCode = (byte)DeviceInfo.ScsiMode.Value.Header.BlockDescriptors[0].Density;
 
             if(DeviceInfo.ScsiMode?.Pages != null)
-                containsFloppyPage = DeviceInfo.ScsiMode.Value.Pages.Any(p => p.Page == 0x05);
+                containsFloppyPage = DeviceInfo.ScsiMode.Value.Pages.Any(static p => p.Page == 0x05);
         }
 
         Blocks    = 0;
@@ -217,7 +217,7 @@ public sealed class ScsiInfo
 
                     if(ReadCapacity16 != null)
                     {
-                        byte[] temp = new byte[8];
+                        var temp = new byte[8];
 
                         Array.Copy(cmdBuf, 0, temp, 0, 8);
                         Array.Reverse(temp);
@@ -1487,9 +1487,11 @@ public sealed class ScsiInfo
         sense = dev.ReadMediaSerialNumber(out cmdBuf, out senseBuf, dev.Timeout, out _);
 
         if(sense)
+        {
             AaruLogging.Debug(MODULE_NAME,
                               Localization.Core.READ_MEDIA_SERIAL_NUMBER_0,
                               Sense.PrettifySense(senseBuf.ToArray()));
+        }
         else
         {
             if(cmdBuf.Length >= 4) MediaSerialNumber = cmdBuf;

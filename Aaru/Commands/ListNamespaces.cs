@@ -77,7 +77,7 @@ sealed class ListNamespacesCommand : Command<ListNamespacesCommand.Settings>
             table.AddColumn(new TableColumn(new Markup(UI.Title_Namespace).Centered()));
             table.AddColumn(new TableColumn(new Markup(UI.Title_Description).Centered()));
 
-            foreach(KeyValuePair<string, string> @namespace in fs.Namespaces.OrderBy(t => t.Key))
+            foreach(KeyValuePair<string, string> @namespace in fs.Namespaces.OrderBy(static t => t.Key))
             {
                 table.AddRow($"[italic][darkgreen]{Markup.Escape(@namespace.Key)}[/][/]",
                              $"[italic][slateblue1]{Markup.Escape(@namespace.Value)}[/][/]");

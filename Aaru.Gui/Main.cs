@@ -37,7 +37,7 @@ public static class Main
 {
     public static int Start(string[] args)
     {
-        SentrySdk.Init(options =>
+        SentrySdk.Init(static options =>
         {
             // A Sentry Data Source Name (DSN) is required.
             // See https://docs.sentry.io/product/sentry-basics/dsn-explainer/

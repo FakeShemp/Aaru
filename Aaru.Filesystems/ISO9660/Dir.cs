@@ -55,9 +55,7 @@ public sealed partial class ISO9660
         while(entryOff + _cdiDirectoryRecordSize < data.Length)
         {
             CdiDirectoryRecord record =
-                Marshal.ByteArrayToStructureBigEndian<CdiDirectoryRecord>(data,
-                    entryOff,
-                    _cdiDirectoryRecordSize);
+                Marshal.ByteArrayToStructureBigEndian<CdiDirectoryRecord>(data, entryOff, _cdiDirectoryRecordSize);
 
             if(record.length == 0)
             {
@@ -107,9 +105,7 @@ public sealed partial class ISO9660
             if(systemAreaStart % 2 != 0) systemAreaStart++;
 
             entry.CdiSystemArea =
-                Marshal.ByteArrayToStructureBigEndian<CdiSystemArea>(data,
-                                                                              systemAreaStart,
-                                                                              _cdiSystemAreaSize);
+                Marshal.ByteArrayToStructureBigEndian<CdiSystemArea>(data, systemAreaStart, _cdiSystemAreaSize);
 
             if(entry.CdiSystemArea.Value.attributes.HasFlag(CdiAttributes.Directory))
                 entry.Flags |= FileFlags.Directory;
@@ -352,18 +348,19 @@ public sealed partial class ISO9660
 
         // Relocated directories should be shown in correct place when using Rock Ridge namespace
         return _namespace == Namespace.Rrip
-                   ? entries.Where(e => !e.Value.RockRidgeRelocated).ToDictionary(x => x.Key, x => x.Value)
+                   ? entries.Where(static e => !e.Value.RockRidgeRelocated)
+                            .ToDictionary(static x => x.Key, static x => x.Value)
                    : entries;
     }
 
     void DecodeTransTable(Dictionary<string, DecodedDirectoryEntry> entries)
     {
         KeyValuePair<string, DecodedDirectoryEntry> transTblEntry =
-            entries.FirstOrDefault(e => !e.Value.Flags.HasFlag(FileFlags.Directory) &&
-                                        (e.Value.Filename.Equals("trans.tbl",
-                                                                 StringComparison.CurrentCultureIgnoreCase) ||
-                                         e.Value.Filename.Equals("trans.tbl;1",
-                                                                 StringComparison.CurrentCultureIgnoreCase)));
+            entries.FirstOrDefault(static e => !e.Value.Flags.HasFlag(FileFlags.Directory) &&
+                                               (e.Value.Filename.Equals("trans.tbl",
+                                                                        StringComparison.CurrentCultureIgnoreCase) ||
+                                                e.Value.Filename.Equals("trans.tbl;1",
+                                                                        StringComparison.CurrentCultureIgnoreCase)));
 
         if(transTblEntry.Value == null) return;
 
@@ -568,8 +565,8 @@ public sealed partial class ISO9660
                     break;
                 case XA_MAGIC:
                     entry.XA = Marshal.ByteArrayToStructureBigEndian<CdromXa>(data,
-                        systemAreaOff,
-                        Marshal.SizeOf<CdromXa>());
+                                                                              systemAreaOff,
+                                                                              Marshal.SizeOf<CdromXa>());
 
                     systemAreaOff += Marshal.SizeOf<CdromXa>();
 
@@ -580,8 +577,8 @@ public sealed partial class ISO9660
                 case AMIGA_MAGIC:
                     AmigaEntry amiga =
                         Marshal.ByteArrayToStructureBigEndian<AmigaEntry>(data,
-                            systemAreaOff,
-                            Marshal.SizeOf<AmigaEntry>());
+                                                                          systemAreaOff,
+                                                                          Marshal.SizeOf<AmigaEntry>());
 
                     var protectionLength = 0;
 
@@ -996,8 +993,8 @@ public sealed partial class ISO9660
 
             CdiDirectoryRecord record =
                 Marshal.ByteArrayToStructureBigEndian<CdiDirectoryRecord>(sector,
-                    tEntry.XattrLength,
-                    _cdiDirectoryRecordSize);
+                                                                          tEntry.XattrLength,
+                                                                          _cdiDirectoryRecordSize);
 
             if(record.length == 0) break;
 
@@ -1020,9 +1017,7 @@ public sealed partial class ISO9660
             if(systemAreaStart % 2 != 0) systemAreaStart++;
 
             entry.CdiSystemArea =
-                Marshal.ByteArrayToStructureBigEndian<CdiSystemArea>(sector,
-                                                                              systemAreaStart,
-                                                                              _cdiSystemAreaSize);
+                Marshal.ByteArrayToStructureBigEndian<CdiSystemArea>(sector, systemAreaStart, _cdiSystemAreaSize);
 
             if(entry.CdiSystemArea.Value.attributes.HasFlag(CdiAttributes.Directory))
                 entry.Flags |= FileFlags.Directory;

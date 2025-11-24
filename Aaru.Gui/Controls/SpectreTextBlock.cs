@@ -384,8 +384,8 @@ public partial class SpectreTextBlock : TextBlock
 
             // Find which markup tags apply to this content segment
             var applicableMarkups = markups.Where(m => m.OpenTagEnd <= start && m.CloseTagStart >= end)
-                                           .OrderBy(m => m.Start)        // Outermost first (earliest start)
-                                           .ThenByDescending(m => m.End) // Then by latest end
+                                           .OrderBy(static m => m.Start)        // Outermost first (earliest start)
+                                           .ThenByDescending(static m => m.End) // Then by latest end
                                            .ToList();
 
             var run = new Run(Text.Substring(start, end - start));

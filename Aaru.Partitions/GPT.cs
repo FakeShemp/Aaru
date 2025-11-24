@@ -186,8 +186,8 @@ public sealed class GuidPartitionTable : IPartition
 
         ulong pSeq = 0;
 
-        foreach(Entry entry in entries.Where(entry => entry.partitionType != Guid.Empty &&
-                                                      entry.partitionId   != Guid.Empty))
+        foreach(Entry entry in entries.Where(static entry => entry.partitionType != Guid.Empty &&
+                                                             entry.partitionId   != Guid.Empty))
         {
             AaruLogging.Debug(MODULE_NAME, "entry.partitionType = {0}",    entry.partitionType);
             AaruLogging.Debug(MODULE_NAME, "entry.partitionId = {0}",      entry.partitionId);

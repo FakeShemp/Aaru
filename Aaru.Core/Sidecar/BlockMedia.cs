@@ -1048,8 +1048,9 @@ public sealed partial class Sidecar
                             scpBlockTrackTypes.Add(scpBlockTrackType);
                         }
 
-                        sidecar.BlockMedias[0].Track =
-                            scpBlockTrackTypes.OrderBy(t => t.Cylinder).ThenBy(t => t.Head).ToList();
+                        sidecar.BlockMedias[0].Track = scpBlockTrackTypes.OrderBy(static t => t.Cylinder)
+                                                                         .ThenBy(static t => t.Head)
+                                                                         .ToList();
                     }
                     else
                     {
@@ -1157,8 +1158,9 @@ public sealed partial class Sidecar
                             kfBlockTrackTypes.Add(kfBlockTrackType);
                         }
 
-                        sidecar.BlockMedias[0].Track =
-                            kfBlockTrackTypes.OrderBy(t => t.Cylinder).ThenBy(t => t.Head).ToList();
+                        sidecar.BlockMedias[0].Track = kfBlockTrackTypes.OrderBy(static t => t.Cylinder)
+                                                                        .ThenBy(static t => t.Head)
+                                                                        .ToList();
                     }
                     else
                     {
@@ -1249,7 +1251,9 @@ public sealed partial class Sidecar
                     dfiBlockTrackTypes.Add(dfiBlockTrackType);
                 }
 
-                sidecar.BlockMedias[0].Track = dfiBlockTrackTypes.OrderBy(t => t.Cylinder).ThenBy(t => t.Head).ToList();
+                sidecar.BlockMedias[0].Track = dfiBlockTrackTypes.OrderBy(static t => t.Cylinder)
+                                                                 .ThenBy(static t => t.Head)
+                                                                 .ToList();
             }
             else
             {

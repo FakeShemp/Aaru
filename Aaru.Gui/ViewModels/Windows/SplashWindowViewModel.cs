@@ -147,16 +147,16 @@ public sealed partial class SplashWindowViewModel(SplashWindow view) : ViewModel
 
             // Remove duplicates
             foreach(var duplicate in ctx.SeenDevices.AsEnumerable()
-                                        .GroupBy(a => new
+                                        .GroupBy(static a => new
                                          {
                                              a.Manufacturer,
                                              a.Model,
                                              a.Revision,
                                              a.Bus
                                          })
-                                        .Where(a => a.Count() > 1)
+                                        .Where(static a => a.Count() > 1)
                                         .Distinct()
-                                        .Select(a => a.Key))
+                                        .Select(static a => a.Key))
             {
                 ctx.RemoveRange(ctx.SeenDevices
                                    .Where(d => d.Manufacturer == duplicate.Manufacturer &&
@@ -167,9 +167,9 @@ public sealed partial class SplashWindowViewModel(SplashWindow view) : ViewModel
             }
 
             // Remove nulls
-            ctx.RemoveRange(ctx.SeenDevices.Where(d => d.Manufacturer == null &&
-                                                       d.Model        == null &&
-                                                       d.Revision     == null));
+            ctx.RemoveRange(ctx.SeenDevices.Where(static d => d.Manufacturer == null &&
+                                                              d.Model        == null &&
+                                                              d.Revision     == null));
 
             ctx.SaveChanges();
 

@@ -98,7 +98,8 @@ public sealed partial class ScsiInfoViewModel : ViewModelBase
 
             if(scsiMode.Value.Pages != null)
             {
-                foreach(Modes.ModePage page in scsiMode.Value.Pages.OrderBy(t => t.Page).ThenBy(t => t.Subpage))
+                foreach(Modes.ModePage page in scsiMode.Value.Pages.OrderBy(static t => t.Page)
+                                                       .ThenBy(static t => t.Subpage))
                 {
                     string pageNumberText = page.Subpage == 0
                                                 ? string.Format(UI.MODE_0,           page.Page)
@@ -437,7 +438,7 @@ public sealed partial class ScsiInfoViewModel : ViewModelBase
 
         if(scsiEvpdPages != null)
         {
-            foreach(KeyValuePair<byte, byte[]> page in scsiEvpdPages.OrderBy(t => t.Key))
+            foreach(KeyValuePair<byte, byte[]> page in scsiEvpdPages.OrderBy(static t => t.Key))
             {
                 var    evpdPageTitle = "";
                 string evpdDecodedPage;

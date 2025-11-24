@@ -840,10 +840,11 @@ public sealed partial class BlindWrite5
                                            .ToList();
 
                 if(fileCharsForThisTrack.Count == 0 &&
-                   _filePaths.Any(f => Path.GetExtension(f.FilePath).ToLowerInvariant() == ".b00"))
+                   _filePaths.Any(static f => Path.GetExtension(f.FilePath).ToLowerInvariant() == ".b00"))
                 {
                     DataFileCharacteristics splitStartChars =
-                        _filePaths.FirstOrDefault(f => Path.GetExtension(f.FilePath).ToLowerInvariant() == ".b00");
+                        _filePaths.FirstOrDefault(static f => Path.GetExtension(f.FilePath).ToLowerInvariant() ==
+                                                              ".b00");
 
                     string filename           = Path.GetFileNameWithoutExtension(splitStartChars.FilePath);
                     var    lowerCaseExtension = false;

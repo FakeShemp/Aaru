@@ -110,7 +110,7 @@ public sealed class DEC : IPartition
                                                         Sequence = counter,
                                                         Scheme   = Name
                                                     })
-                                                   .Where(part => part.Size > 0))
+                                                   .Where(static part => part.Size > 0))
         {
             partitions.Add(part);
             counter++;

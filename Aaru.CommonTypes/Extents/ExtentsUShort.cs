@@ -122,7 +122,7 @@ public sealed class ExtentsUShort
             _backend.Add(new Tuple<ushort, ushort>(item, item));
 
         // Sort
-        _backend = _backend.OrderBy(t => t.Item1).ToList();
+        _backend = _backend.OrderBy(static t => t.Item1).ToList();
     }
 
     /// <summary>Adds a new extent</summary>
@@ -210,7 +210,7 @@ public sealed class ExtentsUShort
         if(toAddTwo != null) _backend.Add(toAddTwo);
 
         // Sort
-        _backend = _backend.OrderBy(t => t.Item1).ToList();
+        _backend = _backend.OrderBy(static t => t.Item1).ToList();
 
         return true;
     }

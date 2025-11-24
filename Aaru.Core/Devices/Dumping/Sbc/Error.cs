@@ -102,7 +102,7 @@ partial class Dump
 
                     if(dcMode10?.Pages != null)
                     {
-                        foreach(Modes.ModePage modePage in dcMode10.Value.Pages.Where(modePage =>
+                        foreach(Modes.ModePage modePage in dcMode10.Value.Pages.Where(static modePage =>
                                     modePage is { Page: 0x01, Subpage: 0x00 }))
                             currentModePage = modePage;
                     }
@@ -112,10 +112,8 @@ partial class Dump
             {
                 if(dcMode6.Value.Pages != null)
                 {
-                    foreach(Modes.ModePage modePage in dcMode6.Value.Pages.Where(modePage => modePage is
-                            {
-                                Page: 0x01, Subpage: 0x00
-                            }))
+                    foreach(Modes.ModePage modePage in dcMode6.Value.Pages.Where(static modePage =>
+                                modePage is { Page: 0x01, Subpage: 0x00 }))
                         currentModePage = modePage;
                 }
             }
@@ -449,7 +447,7 @@ partial class Dump
 
             // If the CMI bit is 1, the sector is using copy protection, else it is not
             // If the decoded title key is zeroed, there should be no copy protection
-            if((titleKey.Value.CMI & 0x80) >> 7 == 0 || titleKey.Value.Key.All(k => k == 0))
+            if((titleKey.Value.CMI & 0x80) >> 7 == 0 || titleKey.Value.Key.All(static k => k == 0))
             {
                 outputFormat.WriteSectorTag([0, 0, 0, 0, 0], missingKey, false, SectorTagType.DvdSectorTitleKey);
 

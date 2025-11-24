@@ -119,7 +119,8 @@ public sealed partial class AppleDOS
         _fileCache   = new Dictionary<string, byte[]>();
         _extentCache = new Dictionary<string, byte[]>();
 
-        foreach(ErrorNumber error in _catalogCache.Keys.Select(CacheFile).Where(error => error != ErrorNumber.NoError))
+        foreach(ErrorNumber error in _catalogCache.Keys.Select(CacheFile)
+                                                  .Where(static error => error != ErrorNumber.NoError))
             return error;
 
         uint tracksOnBoot = 1;

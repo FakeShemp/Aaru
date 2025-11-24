@@ -338,7 +338,7 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
                          $"[blue]{Markup.Escape(image2Info.DriveSerialNumber ?? "")}[/]");
 
             foreach(MediaTagType diskTag in
-                    (Enum.GetValues(typeof(MediaTagType)) as MediaTagType[]).OrderBy(e => e.ToString()))
+                    (Enum.GetValues(typeof(MediaTagType)) as MediaTagType[]).OrderBy(static e => e.ToString()))
             {
                 table.AddRow(string.Format(UI.Has_tag_0_Question, diskTag),
                              image1DiskTags.ContainsKey(diskTag)

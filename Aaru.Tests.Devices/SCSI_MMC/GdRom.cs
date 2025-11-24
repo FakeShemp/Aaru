@@ -13,7 +13,7 @@ static partial class ScsiMmc
 {
     static void CheckGdromReadability(string devPath, Device dev)
     {
-        bool               tocIsNotBcd = false;
+        var                tocIsNotBcd = false;
         bool               sense;
         ReadOnlySpan<byte> senseBuffer;
 
@@ -31,7 +31,7 @@ static partial class ScsiMmc
 
         AaruLogging.WriteLine(Localization.Sending_READ_FULL_TOC_to_the_device);
 
-        int retries = 0;
+        var retries = 0;
 
         do
         {
@@ -75,7 +75,7 @@ static partial class ScsiMmc
         // Guaranteed to never fall into default
         FullTOC.CDFullTOC toc = decodedToc ?? default(FullTOC.CDFullTOC);
 
-        FullTOC.TrackDataDescriptor leadOutTrack = toc.TrackDescriptors.FirstOrDefault(t => t.POINT == 0xA2);
+        FullTOC.TrackDataDescriptor leadOutTrack = toc.TrackDescriptors.FirstOrDefault(static t => t.POINT == 0xA2);
 
         if(leadOutTrack.POINT != 0xA2)
         {
@@ -180,7 +180,7 @@ static partial class ScsiMmc
         // Guaranteed to never fall into default
         toc = decodedToc ?? default(FullTOC.CDFullTOC);
 
-        FullTOC.TrackDataDescriptor newLeadOutTrack = toc.TrackDescriptors.FirstOrDefault(t => t.POINT == 0xA2);
+        FullTOC.TrackDataDescriptor newLeadOutTrack = toc.TrackDescriptors.FirstOrDefault(static t => t.POINT == 0xA2);
 
         if(newLeadOutTrack.POINT != 0xA2)
         {

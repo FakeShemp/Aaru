@@ -181,7 +181,7 @@ public static class ListDevices
                     StringHandlers.CToString(descriptorB, Encoding.ASCII, start: descriptor.SerialNumberOffset);
 
                 // fix any serial numbers that are returned as hex-strings
-                if(Array.TrueForAll(info.Serial.ToCharArray(), c => "0123456789abcdef".IndexOf(c) >= 0) &&
+                if(Array.TrueForAll(info.Serial.ToCharArray(), static c => "0123456789abcdef".IndexOf(c) >= 0) &&
                    info.Serial.Length == 40)
                     info.Serial = HexStringToString(info.Serial).Trim();
             }

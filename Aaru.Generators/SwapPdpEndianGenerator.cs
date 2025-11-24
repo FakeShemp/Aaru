@@ -106,7 +106,7 @@ public class SwapPdpEndianGenerator : IIncrementalGenerator
 
         // Create unique file name by including containing types
         string fileName = containingTypes.Count > 0
-                              ? $"{string.Join("_", containingTypes.Select(t => t.Name))}_{structName}_SwapPdpEndian.g.cs"
+                              ? $"{string.Join("_", containingTypes.Select(static t => t.Name))}_{structName}_SwapPdpEndian.g.cs"
                               : $"{structName}_SwapPdpEndian.g.cs";
 
         context.AddSource(fileName, SourceText.From(generatedSource, Encoding.UTF8));

@@ -346,7 +346,7 @@ public sealed partial class CdrWin
                                     Start = extentStart,
                                     End   = extentEnd
                                 }
-                            }.OrderBy(e => e.Start)
+                            }.OrderBy(static e => e.Start)
                              .ToList();
                     }
                 }
@@ -1021,7 +1021,7 @@ public sealed partial class CdrWin
                 else
                     sessions[s - 1].EndSector = sessions[s - 1].StartSector + sessionSectors - 1;
 
-                CdrWinTrack firstSessionTrack = cueTracks.OrderBy(t => t.Sequence).First(t => t.Session == s);
+                CdrWinTrack firstSessionTrack = cueTracks.OrderBy(static t => t.Sequence).First(t => t.Session == s);
 
                 firstSessionTrack.Indexes.TryGetValue(0, out firstSessionTrack.Pregap);
 
@@ -1364,7 +1364,7 @@ public sealed partial class CdrWin
 
             for(var s = 1; s <= sessions.Length; s++) _discImage.Sessions.Add(sessions[s - 1]);
 
-            _imageInfo.Sectors = _discImage.Sessions.MaxBy(s => s.EndSector).EndSector + 1;
+            _imageInfo.Sectors = _discImage.Sessions.MaxBy(static s => s.EndSector).EndSector + 1;
 
             AaruLogging.Debug(MODULE_NAME, Localization.Session_information);
 
@@ -1613,7 +1613,7 @@ public sealed partial class CdrWin
                 return ErrorNumber.InvalidArgument;
             }
 
-            if(_discImage.Tracks.All(t => t.Isrc == null))
+            if(_discImage.Tracks.All(static t => t.Isrc == null))
                 _imageInfo.ReadableSectorTags.Remove(SectorTagType.CdTrackIsrc);
 
             if(_isCd) return ErrorNumber.NoError;
@@ -1997,7 +1997,7 @@ public sealed partial class CdrWin
             case CDRWIN_TRACK_TYPE_MODE2_FORM2:
                 if(tag != SectorTagType.CdSectorSubchannel                                   ||
                    !_imageInfo.ReadableSectorTags.Contains(SectorTagType.CdSectorSubchannel) ||
-                   _discImage.Tracks.All(t => t.TrackType != CDRWIN_TRACK_TYPE_CDG))
+                   _discImage.Tracks.All(static t => t.TrackType != CDRWIN_TRACK_TYPE_CDG))
                     return ErrorNumber.NoData;
 
                 buffer = new byte[length * 96];
@@ -2017,7 +2017,7 @@ public sealed partial class CdrWin
                     case SectorTagType.CdSectorEccQ:
                         if(tag != SectorTagType.CdSectorSubchannel                                   ||
                            !_imageInfo.ReadableSectorTags.Contains(SectorTagType.CdSectorSubchannel) ||
-                           _discImage.Tracks.All(t => t.TrackType != CDRWIN_TRACK_TYPE_CDG))
+                           _discImage.Tracks.All(static t => t.TrackType != CDRWIN_TRACK_TYPE_CDG))
                             return ErrorNumber.NotSupported;
 
                         buffer = new byte[length * 96];
@@ -2070,7 +2070,7 @@ public sealed partial class CdrWin
                     case SectorTagType.CdSectorSubHeader:
                         if(tag != SectorTagType.CdSectorSubchannel                                   ||
                            !_imageInfo.ReadableSectorTags.Contains(SectorTagType.CdSectorSubchannel) ||
-                           _discImage.Tracks.All(t => t.TrackType != CDRWIN_TRACK_TYPE_CDG))
+                           _discImage.Tracks.All(static t => t.TrackType != CDRWIN_TRACK_TYPE_CDG))
                             return ErrorNumber.NotSupported;
 
                         buffer = new byte[length * 96];
@@ -2455,7 +2455,7 @@ public sealed partial class CdrWin
 
     /// <inheritdoc />
     public List<Track> GetSessionTracks(ushort session) =>
-        Tracks.Where(t => t.Session == session).OrderBy(t => t.Sequence).ToList();
+        Tracks.Where(t => t.Session == session).OrderBy(static t => t.Sequence).ToList();
 
 #endregion
 }

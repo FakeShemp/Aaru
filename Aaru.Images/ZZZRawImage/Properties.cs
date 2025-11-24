@@ -169,8 +169,8 @@ public sealed partial class ZZZRawImage
 
     /// <inheritdoc />
     public IEnumerable<MediaTagType> SupportedMediaTags => _readWriteSidecars.Concat(_writeOnlySidecars)
-                                                                             .OrderBy(t => t.tag)
-                                                                             .Select(t => t.tag)
+                                                                             .OrderBy(static t => t.tag)
+                                                                             .Select(static t => t.tag)
                                                                              .ToArray();
 
     /// <inheritdoc />

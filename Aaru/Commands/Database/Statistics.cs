@@ -88,9 +88,9 @@ sealed class StatisticsCommand : AsyncCommand<StatisticsCommand.Settings>
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
 
-            if(ctx.Commands.Any(c => c.Name == "analyze"))
+            if(ctx.Commands.Any(static c => c.Name == "analyze"))
             {
-                foreach(Command oldAnalyze in ctx.Commands.Where(c => c.Name == "analyze"))
+                foreach(Command oldAnalyze in ctx.Commands.Where(static c => c.Name == "analyze"))
                 {
                     oldAnalyze.Name = "fs-info";
                     ctx.Commands.Update(oldAnalyze);
@@ -98,7 +98,7 @@ sealed class StatisticsCommand : AsyncCommand<StatisticsCommand.Settings>
 
                 ulong count = 0;
 
-                foreach(Command fsInfo in ctx.Commands.Where(c => c.Name == "fs-info" && c.Synchronized))
+                foreach(Command fsInfo in ctx.Commands.Where(static c => c.Name == "fs-info" && c.Synchronized))
                 {
                     count += fsInfo.Count;
                     ctx.Remove(fsInfo);
@@ -117,10 +117,10 @@ sealed class StatisticsCommand : AsyncCommand<StatisticsCommand.Settings>
                 await ctx.SaveChangesAsync(cancellationToken);
             }
 
-            foreach(string command in ctx.Commands.Select(c => c.Name).Distinct().OrderBy(c => c))
+            foreach(string command in ctx.Commands.Select(static c => c.Name).Distinct().OrderBy(static c => c))
             {
                 ulong count = ctx.Commands.Where(c => c.Name == command && c.Synchronized)
-                                 .Select(c => c.Count)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
                 count += (ulong)ctx.Commands.LongCount(c => c.Name == command && !c.Synchronized);
@@ -151,10 +151,10 @@ sealed class StatisticsCommand : AsyncCommand<StatisticsCommand.Settings>
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
 
-            foreach(string filter in ctx.Filters.Select(c => c.Name).Distinct().OrderBy(c => c))
+            foreach(string filter in ctx.Filters.Select(static c => c.Name).Distinct().OrderBy(static c => c))
             {
                 ulong count = ctx.Filters.Where(c => c.Name == filter && c.Synchronized)
-                                 .Select(c => c.Count)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
                 count += (ulong)ctx.Filters.LongCount(c => c.Name == filter && !c.Synchronized);
@@ -185,10 +185,10 @@ sealed class StatisticsCommand : AsyncCommand<StatisticsCommand.Settings>
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
 
-            foreach(string format in ctx.MediaFormats.Select(c => c.Name).Distinct().OrderBy(c => c))
+            foreach(string format in ctx.MediaFormats.Select(static c => c.Name).Distinct().OrderBy(static c => c))
             {
                 ulong count = ctx.MediaFormats.Where(c => c.Name == format && c.Synchronized)
-                                 .Select(c => c.Count)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
                 count += (ulong)ctx.MediaFormats.LongCount(c => c.Name == format && !c.Synchronized);
@@ -219,10 +219,10 @@ sealed class StatisticsCommand : AsyncCommand<StatisticsCommand.Settings>
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
 
-            foreach(string partition in ctx.Partitions.Select(c => c.Name).Distinct().OrderBy(c => c))
+            foreach(string partition in ctx.Partitions.Select(static c => c.Name).Distinct().OrderBy(static c => c))
             {
                 ulong count = ctx.Partitions.Where(c => c.Name == partition && c.Synchronized)
-                                 .Select(c => c.Count)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
                 count += (ulong)ctx.Partitions.LongCount(c => c.Name == partition && !c.Synchronized);
@@ -253,10 +253,10 @@ sealed class StatisticsCommand : AsyncCommand<StatisticsCommand.Settings>
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
 
-            foreach(string filesystem in ctx.Filesystems.Select(c => c.Name).Distinct().OrderBy(c => c))
+            foreach(string filesystem in ctx.Filesystems.Select(static c => c.Name).Distinct().OrderBy(static c => c))
             {
                 ulong count = ctx.Filesystems.Where(c => c.Name == filesystem && c.Synchronized)
-                                 .Select(c => c.Count)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
                 count += (ulong)ctx.Filesystems.LongCount(c => c.Name == filesystem && !c.Synchronized);
@@ -288,10 +288,10 @@ sealed class StatisticsCommand : AsyncCommand<StatisticsCommand.Settings>
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
 
-            foreach(DeviceStat ds in ctx.SeenDevices.OrderBy(ds => ds.Manufacturer)
-                                        .ThenBy(ds => ds.Model)
-                                        .ThenBy(ds => ds.Revision)
-                                        .ThenBy(ds => ds.Bus))
+            foreach(DeviceStat ds in ctx.SeenDevices.OrderBy(static ds => ds.Manufacturer)
+                                        .ThenBy(static ds => ds.Model)
+                                        .ThenBy(static ds => ds.Revision)
+                                        .ThenBy(static ds => ds.Bus))
             {
                 table.AddRow($"[italic][blue]{Markup.Escape(ds.Manufacturer ?? "")}[/][/]",
                              $"[italic][purple]{Markup.Escape(ds.Model      ?? "")}[/][/]",
@@ -310,7 +310,7 @@ sealed class StatisticsCommand : AsyncCommand<StatisticsCommand.Settings>
             thereAreStats = true;
         }
 
-        if(ctx.Medias.Any(ms => ms.Real))
+        if(ctx.Medias.Any(static ms => ms.Real))
         {
             table = new Table
             {
@@ -327,10 +327,13 @@ sealed class StatisticsCommand : AsyncCommand<StatisticsCommand.Settings>
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
 
-            foreach(string media in ctx.Medias.Where(ms => ms.Real).Select(ms => ms.Type).Distinct().OrderBy(ms => ms))
+            foreach(string media in ctx.Medias.Where(static ms => ms.Real)
+                                       .Select(static ms => ms.Type)
+                                       .Distinct()
+                                       .OrderBy(static ms => ms))
             {
                 ulong count = ctx.Medias.Where(c => c.Type == media && c.Synchronized && c.Real)
-                                 .Select(c => c.Count)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
                 count += (ulong)ctx.Medias.LongCount(c => c.Type == media && !c.Synchronized && c.Real);
@@ -347,7 +350,7 @@ sealed class StatisticsCommand : AsyncCommand<StatisticsCommand.Settings>
             AaruLogging.WriteLine();
         }
 
-        if(ctx.Medias.Any(ms => !ms.Real))
+        if(ctx.Medias.Any(static ms => !ms.Real))
         {
             table = new Table
             {
@@ -364,10 +367,13 @@ sealed class StatisticsCommand : AsyncCommand<StatisticsCommand.Settings>
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
 
-            foreach(string media in ctx.Medias.Where(ms => !ms.Real).Select(ms => ms.Type).Distinct().OrderBy(ms => ms))
+            foreach(string media in ctx.Medias.Where(static ms => !ms.Real)
+                                       .Select(static ms => ms.Type)
+                                       .Distinct()
+                                       .OrderBy(static ms => ms))
             {
                 ulong count = ctx.Medias.Where(c => c.Type == media && c.Synchronized && !c.Real)
-                                 .Select(c => c.Count)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
                 count += (ulong)ctx.Medias.LongCount(c => c.Type == media && !c.Synchronized && !c.Real);

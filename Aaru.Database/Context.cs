@@ -125,31 +125,31 @@ public sealed class AaruContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity("Aaru.CommonTypes.Metadata.Ata",
-                            b => b.HasOne("Aaru.CommonTypes.Metadata.TestedMedia", "ReadCapabilities")
-                                  .WithMany()
-                                  .HasForeignKey("ReadCapabilitiesId")
-                                  .OnDelete(DeleteBehavior.SetNull));
+                            static b => b.HasOne("Aaru.CommonTypes.Metadata.TestedMedia", "ReadCapabilities")
+                                         .WithMany()
+                                         .HasForeignKey("ReadCapabilitiesId")
+                                         .OnDelete(DeleteBehavior.SetNull));
 
         modelBuilder.Entity("Aaru.CommonTypes.Metadata.BlockDescriptor",
-                            b => b.HasOne("Aaru.CommonTypes.Metadata.ScsiMode", null)
-                                  .WithMany("BlockDescriptors")
-                                  .HasForeignKey("ScsiModeId")
-                                  .OnDelete(DeleteBehavior.Cascade));
+                            static b => b.HasOne("Aaru.CommonTypes.Metadata.ScsiMode", null)
+                                         .WithMany("BlockDescriptors")
+                                         .HasForeignKey("ScsiModeId")
+                                         .OnDelete(DeleteBehavior.Cascade));
 
         modelBuilder.Entity("Aaru.CommonTypes.Metadata.DensityCode",
-                            b => b.HasOne("Aaru.CommonTypes.Metadata.SscSupportedMedia", null)
-                                  .WithMany("DensityCodes")
-                                  .HasForeignKey("SscSupportedMediaId")
-                                  .OnDelete(DeleteBehavior.Cascade));
+                            static b => b.HasOne("Aaru.CommonTypes.Metadata.SscSupportedMedia", null)
+                                         .WithMany("DensityCodes")
+                                         .HasForeignKey("SscSupportedMediaId")
+                                         .OnDelete(DeleteBehavior.Cascade));
 
         modelBuilder.Entity("Aaru.CommonTypes.Metadata.Mmc",
-                            b => b.HasOne("Aaru.CommonTypes.Metadata.MmcFeatures", "Features")
-                                  .WithMany()
-                                  .HasForeignKey("FeaturesId")
-                                  .OnDelete(DeleteBehavior.SetNull));
+                            static b => b.HasOne("Aaru.CommonTypes.Metadata.MmcFeatures", "Features")
+                                         .WithMany()
+                                         .HasForeignKey("FeaturesId")
+                                         .OnDelete(DeleteBehavior.SetNull));
 
         modelBuilder.Entity("Aaru.CommonTypes.Metadata.Scsi",
-                            b =>
+                            static b =>
                             {
                                 b.HasOne("Aaru.CommonTypes.Metadata.ScsiMode", "ModeSense")
                                  .WithMany()
@@ -173,7 +173,7 @@ public sealed class AaruContext : DbContext
                             });
 
         modelBuilder.Entity("Aaru.CommonTypes.Metadata.ScsiPage",
-                            b =>
+                            static b =>
                             {
                                 b.HasOne("Aaru.CommonTypes.Metadata.Scsi", null)
                                  .WithMany("EVPDPages")
@@ -187,7 +187,7 @@ public sealed class AaruContext : DbContext
                             });
 
         modelBuilder.Entity("Aaru.CommonTypes.Metadata.SscSupportedMedia",
-                            b =>
+                            static b =>
                             {
                                 b.HasOne("Aaru.CommonTypes.Metadata.Ssc", null)
                                  .WithMany("SupportedMediaTypes")
@@ -201,7 +201,7 @@ public sealed class AaruContext : DbContext
                             });
 
         modelBuilder.Entity("Aaru.CommonTypes.Metadata.SupportedDensity",
-                            b =>
+                            static b =>
                             {
                                 b.HasOne("Aaru.CommonTypes.Metadata.Ssc", null)
                                  .WithMany("SupportedDensities")
@@ -215,7 +215,7 @@ public sealed class AaruContext : DbContext
                             });
 
         modelBuilder.Entity("Aaru.CommonTypes.Metadata.TestedMedia",
-                            b =>
+                            static b =>
                             {
                                 b.HasOne("Aaru.CommonTypes.Metadata.Ata", null)
                                  .WithMany("RemovableMedias")
@@ -244,13 +244,13 @@ public sealed class AaruContext : DbContext
                             });
 
         modelBuilder.Entity("Aaru.CommonTypes.Metadata.TestedSequentialMedia",
-                            b => b.HasOne("Aaru.CommonTypes.Metadata.Ssc", null)
-                                  .WithMany("TestedMedia")
-                                  .HasForeignKey("SscId")
-                                  .OnDelete(DeleteBehavior.SetNull));
+                            static b => b.HasOne("Aaru.CommonTypes.Metadata.Ssc", null)
+                                         .WithMany("TestedMedia")
+                                         .HasForeignKey("SscId")
+                                         .OnDelete(DeleteBehavior.SetNull));
 
         modelBuilder.Entity("Aaru.Database.Models.Device",
-                            b =>
+                            static b =>
                             {
                                 b.HasOne("Aaru.CommonTypes.Metadata.Ata", "ATA")
                                  .WithMany()
@@ -294,7 +294,7 @@ public sealed class AaruContext : DbContext
                             });
 
         modelBuilder.Entity("Aaru.Database.Models.Report",
-                            b =>
+                            static b =>
                             {
                                 b.HasOne("Aaru.CommonTypes.Metadata.Ata", "ATA")
                                  .WithMany()
@@ -337,15 +337,15 @@ public sealed class AaruContext : DbContext
                                  .OnDelete(DeleteBehavior.SetNull);
                             });
 
-        modelBuilder.Entity<CdOffset>().HasIndex(b => b.ModifiedWhen);
+        modelBuilder.Entity<CdOffset>().HasIndex(static b => b.ModifiedWhen);
 
-        modelBuilder.Entity<UsbProduct>().HasIndex(b => b.ModifiedWhen);
-        modelBuilder.Entity<UsbProduct>().HasIndex(b => b.ProductId);
-        modelBuilder.Entity<UsbProduct>().HasIndex(b => b.VendorId);
+        modelBuilder.Entity<UsbProduct>().HasIndex(static b => b.ModifiedWhen);
+        modelBuilder.Entity<UsbProduct>().HasIndex(static b => b.ProductId);
+        modelBuilder.Entity<UsbProduct>().HasIndex(static b => b.VendorId);
 
-        modelBuilder.Entity<UsbVendor>().HasIndex(b => b.ModifiedWhen);
+        modelBuilder.Entity<UsbVendor>().HasIndex(static b => b.ModifiedWhen);
 
-        modelBuilder.Entity<NesHeaderInfo>().HasIndex(b => b.Sha256);
-        modelBuilder.Entity<NesHeaderInfo>().HasIndex(b => b.ModifiedWhen);
+        modelBuilder.Entity<NesHeaderInfo>().HasIndex(static b => b.Sha256);
+        modelBuilder.Entity<NesHeaderInfo>().HasIndex(static b => b.ModifiedWhen);
     }
 }

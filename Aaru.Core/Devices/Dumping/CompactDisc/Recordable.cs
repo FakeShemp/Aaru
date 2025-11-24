@@ -118,7 +118,7 @@ partial class Dump
 
             if(track.Sequence == 0)
             {
-                track      = tracks.FirstOrDefault(t => (int)t.Sequence == 1);
+                track      = tracks.FirstOrDefault(static t => (int)t.Sequence == 1);
                 trackStart = 0;
                 pregap     = track?.StartSector ?? 0;
             }

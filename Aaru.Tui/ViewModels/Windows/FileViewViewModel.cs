@@ -192,7 +192,7 @@ public sealed partial class FileViewViewModel : ViewModelBase
         Files.Add(parentDirectory);
 
         foreach(FileModel model in Directory.GetDirectories(CurrentPath, "*", SearchOption.TopDirectoryOnly)
-                                            .Select(directory => new FileModel
+                                            .Select(static directory => new FileModel
                                              {
                                                  Path     = directory,
                                                  Filename = Path.GetFileName(directory),

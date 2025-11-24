@@ -56,8 +56,8 @@ public sealed partial class CdrWin
         long      readBytes;
         byte[]    verifyBytes;
 
-        IFilter[] filters = _discImage.Tracks.OrderBy(t => t.Sequence)
-                                      .Select(t => t.TrackFile.DataFilter)
+        IFilter[] filters = _discImage.Tracks.OrderBy(static t => t.Sequence)
+                                      .Select(static t => t.TrackFile.DataFilter)
                                       .Distinct()
                                       .ToArray();
 
@@ -65,7 +65,7 @@ public sealed partial class CdrWin
         {
             var ctx = new Sha1Context();
 
-            foreach(Stream stream in filters.Select(filter => filter.GetDataForkStream()))
+            foreach(Stream stream in filters.Select(static filter => filter.GetDataForkStream()))
             {
                 readBytes   = 0;
                 verifyBytes = new byte[verifySize];
@@ -93,7 +93,7 @@ public sealed partial class CdrWin
         {
             var ctx = new Md5Context();
 
-            foreach(Stream stream in filters.Select(filter => filter.GetDataForkStream()))
+            foreach(Stream stream in filters.Select(static filter => filter.GetDataForkStream()))
             {
                 readBytes   = 0;
                 verifyBytes = new byte[verifySize];
@@ -121,7 +121,7 @@ public sealed partial class CdrWin
         {
             var ctx = new Crc32Context();
 
-            foreach(Stream stream in filters.Select(filter => filter.GetDataForkStream()))
+            foreach(Stream stream in filters.Select(static filter => filter.GetDataForkStream()))
             {
                 readBytes   = 0;
                 verifyBytes = new byte[verifySize];

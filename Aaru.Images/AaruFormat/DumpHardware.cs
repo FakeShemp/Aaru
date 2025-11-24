@@ -14,6 +14,16 @@ namespace Aaru.Images;
 
 public sealed partial class AaruFormat
 {
+    // AARU_EXPORT int32_t AARU_CALL aaruf_set_dumphw(void *context, uint8_t *data, size_t length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_dumphw", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_set_dumphw(IntPtr context, [In] byte[] data, nuint length);
+
+    // AARU_EXPORT int32_t AARU_CALL aaruf_get_dumphw(void *context, uint8_t *buffer, size_t *length)
+    [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_dumphw", SetLastError = true)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
+    private static partial Status aaruf_get_dumphw(IntPtr context, byte[] buffer, ref nuint length);
+
 #region IWritableOpticalImage Members
 
     /// <inheritdoc />
@@ -283,7 +293,7 @@ public sealed partial class AaruFormat
                     });
                 }
 
-                dump.Extents = dump.Extents.OrderBy(t => t.Start).ToList();
+                dump.Extents = dump.Extents.OrderBy(static t => t.Start).ToList();
 
                 if(dump.Extents.Count > 0) dumpHardware.Add(dump);
             }
@@ -295,14 +305,4 @@ public sealed partial class AaruFormat
     }
 
 #endregion
-
-    // AARU_EXPORT int32_t AARU_CALL aaruf_set_dumphw(void *context, uint8_t *data, size_t length)
-    [LibraryImport("libaaruformat", EntryPoint = "aaruf_set_dumphw", SetLastError = true)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
-    private static partial Status aaruf_set_dumphw(IntPtr context, [In] byte[] data, nuint length);
-
-    // AARU_EXPORT int32_t AARU_CALL aaruf_get_dumphw(void *context, uint8_t *buffer, size_t *length)
-    [LibraryImport("libaaruformat", EntryPoint = "aaruf_get_dumphw", SetLastError = true)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvStdcall)])]
-    private static partial Status aaruf_get_dumphw(IntPtr context, byte[] buffer, ref nuint length);
 }

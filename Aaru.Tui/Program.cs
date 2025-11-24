@@ -35,7 +35,7 @@ public static class Program
 {
     public static int Main(string[] args)
     {
-        SentrySdk.Init(options =>
+        SentrySdk.Init(static options =>
         {
             // A Sentry Data Source Name (DSN) is required.
             // See https://docs.sentry.io/product/sentry-basics/dsn-explainer/
@@ -59,7 +59,7 @@ public static class Program
             options.IsGlobalModeEnabled = true;
         });
 
-        SentrySdk.ConfigureScope(scope => scope.SetExtra("Args", Environment.GetCommandLineArgs()));
+        SentrySdk.ConfigureScope(static scope => scope.SetExtra("Args", Environment.GetCommandLineArgs()));
 
         // There are too many places that depend on this being inited to be sure all are covered, so init it here.
         PluginBase.Init();

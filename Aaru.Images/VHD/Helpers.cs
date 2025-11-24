@@ -39,7 +39,7 @@ public sealed partial class Vhd
 {
     static uint VhdChecksum(IEnumerable<byte> data)
     {
-        uint checksum = data.Aggregate<byte, uint>(0, (current, b) => current + b);
+        uint checksum = data.Aggregate<byte, uint>(0, static (current, b) => current + b);
 
         return ~checksum;
     }

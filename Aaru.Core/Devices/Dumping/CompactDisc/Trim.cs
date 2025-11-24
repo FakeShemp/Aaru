@@ -124,7 +124,7 @@ partial class Dump
 
             PulseProgress?.Invoke(string.Format(Localization.Core.Trimming_sector_0, badSector));
 
-            Track track = tracks.OrderBy(t => t.StartSector).LastOrDefault(t => badSector >= t.StartSector);
+            Track track = tracks.OrderBy(static t => t.StartSector).LastOrDefault(t => badSector >= t.StartSector);
 
             byte sectorsToTrim   = 1;
             var  badSectorToRead = (uint)badSector;

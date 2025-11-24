@@ -69,7 +69,7 @@ public sealed partial class AboutViewModel : ViewModelBase
 
         _ = Task.Run(() =>
         {
-            foreach(Assembly assembly in AppDomain.CurrentDomain.GetAssemblies().OrderBy(a => a.FullName))
+            foreach(Assembly assembly in AppDomain.CurrentDomain.GetAssemblies().OrderBy(static a => a.FullName))
             {
                 string name = assembly.GetName().Name;
 

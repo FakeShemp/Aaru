@@ -320,7 +320,7 @@ public sealed class ErrorLog
 
         DecodedSense? decodedSense = Sense.Decode(senseBuffer);
         string        prettySense  = Sense.PrettifySense(senseBuffer.ToArray());
-        string        hexSense     = string.Join(' ', senseBuffer.Select(b => $"{b:X2}"));
+        var           hexSense     = string.Join(' ', senseBuffer.Select(static b => $"{b:X2}"));
 
         if(decodedSense.HasValue)
         {
@@ -384,12 +384,12 @@ public sealed class ErrorLog
             _logSw.WriteLine(Localization.Core.SCSI_reading_LBA_0_operating_system_error_1, block, errno);
             _logSw.Flush();
 
-            if(senseBuffer is null || senseBuffer.Length == 0 || senseBuffer.All(s => s == 0)) return;
+            if(senseBuffer is null || senseBuffer.Length == 0 || senseBuffer.All(static s => s == 0)) return;
         }
 
         DecodedSense? decodedSense = Sense.Decode(senseBuffer);
         string        prettySense  = Sense.PrettifySense(senseBuffer.ToArray());
-        string        hexSense     = string.Join(' ', senseBuffer.Select(b => $"{b:X2}"));
+        var           hexSense     = string.Join(' ', senseBuffer.Select(static b => $"{b:X2}"));
 
         if(decodedSense.HasValue)
         {
@@ -456,7 +456,7 @@ public sealed class ErrorLog
         // TODO: Decode response
         _logSw.WriteLine(Localization.Core.SD_MMC_command_0_error_1,
                          command,
-                         string.Join(" - ", response.Select(r => $"0x{r:X8}")));
+                         string.Join(" - ", response.Select(static r => $"0x{r:X8}")));
 
         _logSw.Flush();
     }
@@ -487,7 +487,7 @@ public sealed class ErrorLog
                              ? Localization.Core.SD_MMC_reading_LBA_0_byte_addressed_error_1
                              : Localization.Core.SD_MMC_reading_LBA_0_block_addressed_error_1,
                          block,
-                         string.Join(" - ", response.Select(r => $"0x{r:X8}")));
+                         string.Join(" - ", response.Select(static r => $"0x{r:X8}")));
 
         throw new NotImplementedException();
     }

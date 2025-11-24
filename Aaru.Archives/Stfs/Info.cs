@@ -12,6 +12,11 @@ namespace Aaru.Archives;
 
 public sealed partial class Stfs
 {
+    static void ReverseShorts(byte[] shorts, int start, int count)
+    {
+        for(int i = start; i < start + count; i += 2) (shorts[i], shorts[i + 1]) = (shorts[i + 1], shorts[i]);
+    }
+
 #region IArchive Members
 
     /// <inheritdoc />
@@ -22,7 +27,7 @@ public sealed partial class Stfs
         Stream stream = filter.GetDataForkStream();
         stream.Position = 0;
 
-        byte[] hdr = new byte[Marshal.SizeOf<RemotePackage>()];
+        var hdr = new byte[Marshal.SizeOf<RemotePackage>()];
 
         stream.ReadExactly(hdr, 0, hdr.Length);
 
@@ -44,7 +49,7 @@ public sealed partial class Stfs
         Stream stream = filter.GetDataForkStream();
         stream.Position = 0;
 
-        byte[] hdr = new byte[Marshal.SizeOf<RemotePackage>()];
+        var hdr = new byte[Marshal.SizeOf<RemotePackage>()];
 
         stream.ReadExactly(hdr, 0, hdr.Length);
 
@@ -133,35 +138,36 @@ public sealed partial class Stfs
         sb.AppendFormat(Localization.Descriptor_type_0, header.Metadata.DescriptorType).AppendLine();
 
         foreach(LocalizedString displayName in
-                header.Metadata.DisplayName.Where(displayName => displayName.Name is not ""))
+                header.Metadata.DisplayName.Where(static displayName => displayName.Name is not ""))
             sb.AppendFormat(Localization.Display_name_0, Markup.Escape(displayName.Name)).AppendLine();
 
         foreach(LocalizedString description in
-                header.Metadata.DisplayDescription.Where(description => description.Name is not ""))
+                header.Metadata.DisplayDescription.Where(static description => description.Name is not ""))
             sb.AppendFormat(Localization.Display_description_0, Markup.Escape(description.Name)).AppendLine();
 
-        if(header.Metadata.DeviceId.Any(c => c != 0x00))
+        if(header.Metadata.DeviceId.Any(static c => c != 0x00))
+        {
             sb.AppendFormat(Localization.Device_ID_0,
                             StringHandlers.CToString(header.Metadata.DeviceId, Encoding.ASCII).Trim())
               .AppendLine();
+        }
 
-        if(header.Metadata.ConsoleId.Any(c => c != 0x00))
+        if(header.Metadata.ConsoleId.Any(static c => c != 0x00))
+        {
             sb.AppendFormat(Localization.Console_ID_0,
                             BitConverter.ToString(header.Metadata.ConsoleId).Replace("-", ""))
               .AppendLine();
+        }
 
-        if(header.Metadata.ProfileId.Any(c => c != 0x00))
+        if(header.Metadata.ProfileId.Any(static c => c != 0x00))
+        {
             sb.AppendFormat(Localization.Profile_ID_0,
                             BitConverter.ToString(header.Metadata.ProfileId).Replace("-", ""))
               .AppendLine();
+        }
 
         information = sb.ToString();
     }
 
 #endregion
-
-    static void ReverseShorts(byte[] shorts, int start, int count)
-    {
-        for(int i = start; i < start + count; i += 2) (shorts[i], shorts[i + 1]) = (shorts[i + 1], shorts[i]);
-    }
 }

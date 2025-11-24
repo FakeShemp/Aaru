@@ -58,8 +58,7 @@ public sealed partial class AppleMFS
 
             entry.flTyp = _directoryBlocks[offset + 1];
 
-            entry.flUsrWds =
-                Marshal.ByteArrayToStructureBigEndian<AppleCommon.FInfo>(_directoryBlocks, offset + 2, 16);
+            entry.flUsrWds = Marshal.ByteArrayToStructureBigEndian<AppleCommon.FInfo>(_directoryBlocks, offset + 2, 16);
 
             entry.flFlNum  = BigEndianBitConverter.ToUInt32(_directoryBlocks, offset + 18);
             entry.flStBlk  = BigEndianBitConverter.ToUInt16(_directoryBlocks, offset + 22);
@@ -132,7 +131,7 @@ public sealed partial class AppleMFS
         if(!string.IsNullOrEmpty(path) && string.Compare(path, "/", StringComparison.OrdinalIgnoreCase) != 0)
             return ErrorNumber.NotSupported;
 
-        var contents = _idToFilename.Select(kvp => kvp.Value).ToList();
+        var contents = _idToFilename.Select(static kvp => kvp.Value).ToList();
 
         if(_debug)
         {

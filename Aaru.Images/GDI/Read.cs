@@ -171,7 +171,7 @@ public sealed partial class Gdi
                 {
                     sessions[s].Sequence = 1;
 
-                    foreach(GdiTrack trk in _discImage.Tracks.Where(trk => !trk.HighDensity))
+                    foreach(GdiTrack trk in _discImage.Tracks.Where(static trk => !trk.HighDensity))
                     {
                         if(sessions[s].StartTrack == 0)
                             sessions[s].StartTrack                                            = trk.Sequence;
@@ -189,7 +189,7 @@ public sealed partial class Gdi
                 {
                     sessions[s].Sequence = 2;
 
-                    foreach(GdiTrack trk in _discImage.Tracks.Where(trk => trk.HighDensity))
+                    foreach(GdiTrack trk in _discImage.Tracks.Where(static trk => trk.HighDensity))
                     {
                         if(sessions[s].StartTrack == 0)
                             sessions[s].StartTrack                                            = trk.Sequence;
@@ -305,8 +305,8 @@ public sealed partial class Gdi
 
             _imageInfo.SectorSize = 2352; // All others
 
-            foreach(GdiTrack unused in
-                    _discImage.Tracks.Where(track => (track.Flags & 0x4) == 0x4 && track.Bps == 2352))
+            foreach(GdiTrack unused in _discImage.Tracks.Where(static track =>
+                                                                   (track.Flags & 0x4) == 0x4 && track.Bps == 2352))
             {
                 _imageInfo.ReadableSectorTags.Add(SectorTagType.CdSectorSync);
                 _imageInfo.ReadableSectorTags.Add(SectorTagType.CdSectorHeader);

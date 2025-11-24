@@ -43,7 +43,7 @@ public class PluginRegisterGenerator : ISourceGenerator
     public void Initialize(GeneratorInitializationContext context) =>
 
         // Nothing to do
-        context.RegisterForSyntaxNotifications(() => new PluginFinder());
+        context.RegisterForSyntaxNotifications(static () => new PluginFinder());
 
     /// <inheritdoc />
     public void Execute(GeneratorExecutionContext context)
@@ -62,11 +62,11 @@ public class PluginRegisterGenerator : ISourceGenerator
         if(pluginRegister == null) return;
 
         var @namespace =
-            (pluginRegister.Ancestors().FirstOrDefault(x => x is FileScopedNamespaceDeclarationSyntax) as
+            (pluginRegister.Ancestors().FirstOrDefault(static x => x is FileScopedNamespaceDeclarationSyntax) as
                  FileScopedNamespaceDeclarationSyntax)?.Name.ToString();
 
         @namespace ??=
-            (pluginRegister.Ancestors().FirstOrDefault(x => x is NamespaceDeclarationSyntax) as
+            (pluginRegister.Ancestors().FirstOrDefault(static x => x is NamespaceDeclarationSyntax) as
                  NamespaceDeclarationSyntax)?.ToString();
 
         string className = pluginRegister.Identifier.Text;
@@ -357,114 +357,127 @@ public class PluginRegisterGenerator : ISourceGenerator
         {
             if(syntaxNode is not ClassDeclarationSyntax plugin) return;
 
-            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
-                                              .ValueText ==
-                                               "IPluginRegister") ==
+            if(plugin.BaseList?.Types.Any(static t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)
+                                                    ?.Identifier.ValueText ==
+                                                      "IPluginRegister") ==
                true)
                 Register = plugin;
 
-            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
-                                              .ValueText ==
-                                               "IArchive") ==
+            if(plugin.BaseList?.Types.Any(static t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)
+                                                    ?.Identifier.ValueText ==
+                                                      "IArchive") ==
                true)
-                if(!Archives.Contains(plugin.Identifier.Text))
-                    Archives.Add(plugin.Identifier.Text);
+            {
+                if(!Archives.Contains(plugin.Identifier.Text)) Archives.Add(plugin.Identifier.Text);
+            }
 
-            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
-                                              .ValueText ==
-                                               "IChecksum") ==
+            if(plugin.BaseList?.Types.Any(static t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)
+                                                    ?.Identifier.ValueText ==
+                                                      "IChecksum") ==
                true)
-                if(!Checksums.Contains(plugin.Identifier.Text))
-                    Checksums.Add(plugin.Identifier.Text);
+            {
+                if(!Checksums.Contains(plugin.Identifier.Text)) Checksums.Add(plugin.Identifier.Text);
+            }
 
-            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
-                                              .ValueText ==
-                                               "IFilesystem") ==
+            if(plugin.BaseList?.Types.Any(static t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)
+                                                    ?.Identifier.ValueText ==
+                                                      "IFilesystem") ==
                true)
-                if(!FileSystems.Contains(plugin.Identifier.Text))
-                    FileSystems.Add(plugin.Identifier.Text);
+            {
+                if(!FileSystems.Contains(plugin.Identifier.Text)) FileSystems.Add(plugin.Identifier.Text);
+            }
 
-            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
-                                              .ValueText ==
-                                               "IFilter") ==
+            if(plugin.BaseList?.Types.Any(static t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)
+                                                    ?.Identifier.ValueText ==
+                                                      "IFilter") ==
                true)
-                if(!Filters.Contains(plugin.Identifier.Text))
-                    Filters.Add(plugin.Identifier.Text);
+            {
+                if(!Filters.Contains(plugin.Identifier.Text)) Filters.Add(plugin.Identifier.Text);
+            }
 
-            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
-                                              .ValueText ==
-                                               "IFloppyImage") ==
+            if(plugin.BaseList?.Types.Any(static t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)
+                                                    ?.Identifier.ValueText ==
+                                                      "IFloppyImage") ==
                true)
-                if(!FloppyImagePlugins.Contains(plugin.Identifier.Text))
-                    FloppyImagePlugins.Add(plugin.Identifier.Text);
+            {
+                if(!FloppyImagePlugins.Contains(plugin.Identifier.Text)) FloppyImagePlugins.Add(plugin.Identifier.Text);
+            }
 
-            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
-                                              .ValueText ==
-                                               "IFluxImage") ==
+            if(plugin.BaseList?.Types.Any(static t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)
+                                                    ?.Identifier.ValueText ==
+                                                      "IFluxImage") ==
                true)
-                if(!FluxImagePlugins.Contains(plugin.Identifier.Text))
-                    FluxImagePlugins.Add(plugin.Identifier.Text);
+            {
+                if(!FluxImagePlugins.Contains(plugin.Identifier.Text)) FluxImagePlugins.Add(plugin.Identifier.Text);
+            }
 
 
-            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
-                                              .ValueText is "IMediaImage"
-                                                         or "IOpticalMediaImage"
-                                                         or "IFloppyImage"
-                                                         or "ITapeImage"
-                                                         or "IFluxImage") ==
+            if(plugin.BaseList?.Types.Any(static t =>
+                                              ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                             .ValueText is "IMediaImage"
+                                                        or "IOpticalMediaImage"
+                                                        or "IFloppyImage"
+                                                        or "ITapeImage"
+                                                        or "IFluxImage") ==
                true)
-                if(!MediaImagePlugins.Contains(plugin.Identifier.Text))
-                    MediaImagePlugins.Add(plugin.Identifier.Text);
+            {
+                if(!MediaImagePlugins.Contains(plugin.Identifier.Text)) MediaImagePlugins.Add(plugin.Identifier.Text);
+            }
 
-            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
-                                              .ValueText ==
-                                               "IPartition") ==
+            if(plugin.BaseList?.Types.Any(static t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)
+                                                    ?.Identifier.ValueText ==
+                                                      "IPartition") ==
                true)
-                if(!PartitionPlugins.Contains(plugin.Identifier.Text))
-                    PartitionPlugins.Add(plugin.Identifier.Text);
+            {
+                if(!PartitionPlugins.Contains(plugin.Identifier.Text)) PartitionPlugins.Add(plugin.Identifier.Text);
+            }
 
-            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
-                                              .ValueText ==
-                                               "IReadOnlyFilesystem") ==
+            if(plugin.BaseList?.Types.Any(static t =>
+                                              ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                             .ValueText ==
+                                              "IReadOnlyFilesystem") ==
                true)
             {
                 if(!ReadOnlyFileSystems.Contains(plugin.Identifier.Text))
                     ReadOnlyFileSystems.Add(plugin.Identifier.Text);
             }
 
-            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
-                                              .ValueText ==
-                                               "IWritableFloppyImage") ==
+            if(plugin.BaseList?.Types.Any(static t =>
+                                              ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                             .ValueText ==
+                                              "IWritableFloppyImage") ==
                true)
             {
                 if(!WritableFloppyImagePlugins.Contains(plugin.Identifier.Text))
                     WritableFloppyImagePlugins.Add(plugin.Identifier.Text);
             }
 
-            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
-                                              .ValueText ==
-                                               "IWritableFluxImage") ==
+            if(plugin.BaseList?.Types.Any(static t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)
+                                                    ?.Identifier.ValueText ==
+                                                      "IWritableFluxImage") ==
                true)
             {
                 if(!WritableFluxImagePlugins.Contains(plugin.Identifier.Text))
                     WritableFluxImagePlugins.Add(plugin.Identifier.Text);
             }
 
-            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
-                                              .ValueText is "IWritableImage"
-                                                         or "IWritableOpticalImage"
-                                                         or "IWritableTapeImage"
-                                                         or "IByteAddressableImage"
-                                                         or "IWritableFluxImage") ==
+            if(plugin.BaseList?.Types.Any(static t =>
+                                              ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                             .ValueText is "IWritableImage"
+                                                        or "IWritableOpticalImage"
+                                                        or "IWritableTapeImage"
+                                                        or "IByteAddressableImage"
+                                                        or "IWritableFluxImage") ==
                true)
             {
                 if(!WritableImagePlugins.Contains(plugin.Identifier.Text))
                     WritableImagePlugins.Add(plugin.Identifier.Text);
             }
 
-            if(plugin.BaseList?.Types.Any(t => ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
-                                              .ValueText ==
-                                               "IByteAddressableImage") ==
+            if(plugin.BaseList?.Types.Any(static t =>
+                                              ((t as SimpleBaseTypeSyntax)?.Type as IdentifierNameSyntax)?.Identifier
+                                             .ValueText ==
+                                              "IByteAddressableImage") ==
                true)
             {
                 if(!ByteAddressableImagePlugins.Contains(plugin.Identifier.Text))

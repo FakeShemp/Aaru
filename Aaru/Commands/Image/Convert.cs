@@ -295,7 +295,7 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         if((outputFormat as IWritableOpticalImage)?.OpticalCapabilities.HasFlag(OpticalImageCapabilities
                                                                                    .CanStoreHiddenTracks) !=
            true &&
-           (inputFormat as IOpticalMediaImage)?.Tracks?.Any(t => t.Sequence == 0) == true)
+           (inputFormat as IOpticalMediaImage)?.Tracks?.Any(static t => t.Sequence == 0) == true)
         {
             // TODO: Disabled until 6.0
             /*if(!_force)
@@ -578,8 +578,9 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                     tracks[i].Indexes[idx.Key] = idx.Value;
             }
 
-            foreach(SectorTagType tag in inputOptical.Info.ReadableSectorTags.Where(t => t == SectorTagType.CdTrackIsrc)
-                                                     .OrderBy(t => t))
+            foreach(SectorTagType tag in inputOptical.Info.ReadableSectorTags
+                                                     .Where(static t => t == SectorTagType.CdTrackIsrc)
+                                                     .OrderBy(static t => t))
             {
                 foreach(Track track in tracks)
                 {
@@ -592,8 +593,8 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
             }
 
             foreach(SectorTagType tag in inputOptical.Info.ReadableSectorTags
-                                                     .Where(t => t == SectorTagType.CdTrackFlags)
-                                                     .OrderBy(t => t))
+                                                     .Where(static t => t == SectorTagType.CdTrackFlags)
+                                                     .OrderBy(static t => t))
             {
                 foreach(Track track in tracks)
                 {
@@ -612,7 +613,8 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
                 subchannelExtents.Add((int)s);
             }
 
-            foreach(SectorTagType tag in inputOptical.Info.ReadableSectorTags.OrderBy(t => t).TakeWhile(_ => useLong))
+            foreach(SectorTagType tag in inputOptical.Info.ReadableSectorTags.OrderBy(static t => t)
+                                                     .TakeWhile(_ => useLong))
             {
                 switch(tag)
                 {

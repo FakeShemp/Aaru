@@ -482,7 +482,7 @@ public sealed partial class Alcohol120
 
         if(!_isDvd)
         {
-            CommonTypes.Structs.Track[] tmpTracks = tracks.OrderBy(t => t.Sequence).ToArray();
+            CommonTypes.Structs.Track[] tmpTracks = tracks.OrderBy(static t => t.Sequence).ToArray();
 
             for(var i = 1; i < tmpTracks.Length; i++)
             {
@@ -506,7 +506,7 @@ public sealed partial class Alcohol120
             tracks = tmpTracks.ToList();
         }
 
-        foreach(CommonTypes.Structs.Track track in tracks.OrderBy(t => t.Sequence))
+        foreach(CommonTypes.Structs.Track track in tracks.OrderBy(static t => t.Sequence))
         {
             uint subchannelSize;
 
@@ -550,7 +550,7 @@ public sealed partial class Alcohol120
 
         byte sessions = byte.MinValue;
 
-        foreach(CommonTypes.Structs.Track t in _writingTracks.Where(t => t.Session > byte.MinValue))
+        foreach(CommonTypes.Structs.Track t in _writingTracks.Where(static t => t.Session > byte.MinValue))
             sessions = (byte)t.Session;
 
         var header = new Header
@@ -573,7 +573,7 @@ public sealed partial class Alcohol120
         _alcSessions    = new Dictionary<int, Session>();
         _alcTracks      = new Dictionary<int, Track>();
         _alcToc         = new Dictionary<int, Dictionary<int, Track>>();
-        _writingTracks  = _writingTracks.OrderBy(t => t.Session).ThenBy(t => t.Sequence).ToList();
+        _writingTracks  = _writingTracks.OrderBy(static t => t.Session).ThenBy(static t => t.Sequence).ToList();
         _alcTrackExtras = new Dictionary<int, TrackExtra>();
         long currentTrackOffset = header.sessionOffset + Marshal.SizeOf<Session>() * sessions;
 
@@ -740,10 +740,10 @@ public sealed partial class Alcohol120
                                               unknown2 = new byte[24],
                                               psec = (byte)(_imageInfo.MediaType == MediaType.CDI
                                                                 ? 0x10
-                                                                : _writingTracks.Any(t => t.Type is TrackType
-                                                                       .CdMode2Form1
-                                                                 or TrackType.CdMode2Form2
-                                                                 or TrackType.CdMode2Formless)
+                                                                : _writingTracks.Any(static t =>
+                                                                    t.Type is TrackType.CdMode2Form1
+                                                                           or TrackType.CdMode2Form2
+                                                                           or TrackType.CdMode2Formless)
                                                                     ? 0x20
                                                                     : 0),
                                               extraOffset = (uint)currentExtraOffset
@@ -781,7 +781,7 @@ public sealed partial class Alcohol120
                 }
 
                 foreach(CommonTypes.Structs.Track track in _writingTracks.Where(t => t.Session == i)
-                                                                         .OrderBy(t => t.Sequence))
+                                                                         .OrderBy(static t => t.Sequence))
                 {
                     var alcTrk = new Track();
 
@@ -911,7 +911,10 @@ public sealed partial class Alcohol120
                         LbaToMsf(_writingTracks.First(t => t.Session == i + 1).StartSector - 150);
 
                     (byte minute, byte second, byte frame) leadoutPmsf =
-                        LbaToMsf(_writingTracks.OrderBy(t => t.Session).ThenBy(t => t.Sequence).Last().StartSector);
+                        LbaToMsf(_writingTracks.OrderBy(static t => t.Session)
+                                               .ThenBy(static t => t.Sequence)
+                                               .Last()
+                                               .StartSector);
 
                     thisSessionTracks.Add(0xB0,
                                           new Track

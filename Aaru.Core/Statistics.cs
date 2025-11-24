@@ -152,11 +152,13 @@ public static class Statistics
 
             if(nameValueStats?.Count > 0) dto.Versions = nameValueStats;
 
-            if(ctx.Medias.Any(c => !c.Synchronized))
+            if(ctx.Medias.Any(static c => !c.Synchronized))
             {
                 dto.Medias = [];
 
-                foreach(string media in ctx.Medias.Where(c => !c.Synchronized).Select(c => c.Type).Distinct())
+                foreach(string media in ctx.Medias.Where(static c => !c.Synchronized)
+                                           .Select(static c => c.Type)
+                                           .Distinct())
                 {
                     if(ctx.Medias.Any(c => !c.Synchronized && c.Type == media && c.Real))
                     {
@@ -180,11 +182,11 @@ public static class Statistics
                 }
             }
 
-            if(ctx.SeenDevices.Any(c => !c.Synchronized))
+            if(ctx.SeenDevices.Any(static c => !c.Synchronized))
             {
                 dto.Devices = [];
 
-                foreach(DeviceStat device in ctx.SeenDevices.Where(c => !c.Synchronized))
+                foreach(DeviceStat device in ctx.SeenDevices.Where(static c => !c.Synchronized))
                 {
                     dto.Devices.Add(new DeviceStats
                     {
@@ -240,9 +242,11 @@ public static class Statistics
             await UpdateStatsAsync(ctx.Partitions);
             await UpdateStatsAsync(ctx.Versions);
 
-            if(ctx.Medias.Any(c => !c.Synchronized))
+            if(ctx.Medias.Any(static c => !c.Synchronized))
             {
-                foreach(string media in ctx.Medias.Where(c => !c.Synchronized).Select(c => c.Type).Distinct())
+                foreach(string media in ctx.Medias.Where(static c => !c.Synchronized)
+                                           .Select(static c => c.Type)
+                                           .Distinct())
                 {
                     if(ctx.Medias.Any(c => !c.Synchronized && c.Type == media && c.Real))
                     {
@@ -285,9 +289,9 @@ public static class Statistics
                 }
             }
 
-            if(ctx.SeenDevices.Any(c => !c.Synchronized))
+            if(ctx.SeenDevices.Any(static c => !c.Synchronized))
             {
-                foreach(DeviceStat device in ctx.SeenDevices.Where(c => !c.Synchronized))
+                foreach(DeviceStat device in ctx.SeenDevices.Where(static c => !c.Synchronized))
                 {
                     device.Synchronized = true;
                     ctx.Update(device);
@@ -328,12 +332,12 @@ public static class Statistics
 
     static async Task UpdateOperatingSystemAsync<T>(DbSet<T> source) where T : BaseOperatingSystem, new()
     {
-        if(!source.Any(c => !c.Synchronized)) return;
+        if(!source.Any(static c => !c.Synchronized)) return;
 
-        foreach(string name in source.Where(c => !c.Synchronized).Select(c => c.Name).Distinct())
+        foreach(string name in source.Where(static c => !c.Synchronized).Select(static c => c.Name).Distinct())
         {
             foreach(string version in source.Where(c => !c.Synchronized && c.Name == name)
-                                            .Select(c => c.Version)
+                                            .Select(static c => c.Version)
                                             .Distinct())
             {
                 T existing =
@@ -357,9 +361,9 @@ public static class Statistics
 
     static async Task UpdateStatsAsync<T>(DbSet<T> source) where T : NameCountModel, new()
     {
-        if(!source.Any(c => !c.Synchronized)) return;
+        if(!source.Any(static c => !c.Synchronized)) return;
 
-        foreach(string nvs in source.Where(c => !c.Synchronized).Select(c => c.Name).Distinct())
+        foreach(string nvs in source.Where(static c => !c.Synchronized).Select(static c => c.Name).Distinct())
         {
             T existing = await source.FirstOrDefaultAsync(c => c.Synchronized && c.Name == nvs) ??
                          new T
@@ -378,10 +382,10 @@ public static class Statistics
     {
         destination = [];
 
-        foreach(string remoteOsName in source.Where(c => !c.Synchronized).Select(c => c.Name).Distinct())
+        foreach(string remoteOsName in source.Where(static c => !c.Synchronized).Select(static c => c.Name).Distinct())
         {
             foreach(string remoteOsVersion in source.Where(c => !c.Synchronized && c.Name == remoteOsName)
-                                                    .Select(c => c.Version)
+                                                    .Select(static c => c.Version)
                                                     .Distinct())
             {
                 destination.Add(new OsStats
@@ -400,9 +404,9 @@ public static class Statistics
     {
         destination = [];
 
-        if(!source.Any(c => !c.Synchronized)) return;
+        if(!source.Any(static c => !c.Synchronized)) return;
 
-        foreach(string nvs in source.Where(c => !c.Synchronized).Select(c => c.Name).Distinct())
+        foreach(string nvs in source.Where(static c => !c.Synchronized).Select(static c => c.Name).Distinct())
         {
             destination.Add(new NameValueStats
             {

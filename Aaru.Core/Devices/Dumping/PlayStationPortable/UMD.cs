@@ -457,7 +457,7 @@ public partial class Dump
 
                     if(dcMode6.HasValue)
                     {
-                        foreach(Modes.ModePage modePage in dcMode6.Value.Pages.Where(modePage =>
+                        foreach(Modes.ModePage modePage in dcMode6.Value.Pages.Where(static modePage =>
                                     modePage is { Page: 0x01, Subpage: 0x00 }))
                             currentModePage = modePage;
                     }

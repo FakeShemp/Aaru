@@ -70,7 +70,7 @@ public sealed partial class StatisticsViewModel : ViewModelBase
     [ObservableProperty]
     bool _decodeVisible;
     [ObservableProperty]
-    string _DeviceInfoText;
+    string _deviceInfoText;
     [ObservableProperty]
     bool _deviceInfoVisible;
     [ObservableProperty]
@@ -140,9 +140,9 @@ public sealed partial class StatisticsViewModel : ViewModelBase
 
         if(ctx.Commands.Any())
         {
-            if(ctx.Commands.Any(c => c.Name == "analyze"))
+            if(ctx.Commands.Any(static c => c.Name == "analyze"))
             {
-                foreach(Command oldAnalyze in ctx.Commands.Where(c => c.Name == "analyze"))
+                foreach(Command oldAnalyze in ctx.Commands.Where(static c => c.Name == "analyze"))
                 {
                     oldAnalyze.Name = "fs-info";
                     ctx.Commands.Update(oldAnalyze);
@@ -150,7 +150,7 @@ public sealed partial class StatisticsViewModel : ViewModelBase
 
                 ulong count = 0;
 
-                foreach(Command fsInfo in ctx.Commands.Where(c => c.Name == "fs-info" && c.Synchronized))
+                foreach(Command fsInfo in ctx.Commands.Where(static c => c.Name == "fs-info" && c.Synchronized))
                 {
                     count += fsInfo.Count;
                     ctx.Remove(fsInfo);
@@ -169,193 +169,193 @@ public sealed partial class StatisticsViewModel : ViewModelBase
                 ctx.SaveChanges();
             }
 
-            if(ctx.Commands.Any(c => c.Name == "fs-info"))
+            if(ctx.Commands.Any(static c => c.Name == "fs-info"))
             {
-                ulong count = ctx.Commands.Where(c => c.Name == "fs-info" && c.Synchronized)
-                                 .Select(c => c.Count)
+                ulong count = ctx.Commands.Where(static c => c.Name == "fs-info" && c.Synchronized)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
-                count += (ulong)ctx.Commands.LongCount(c => c.Name == "fs-info" && !c.Synchronized);
+                count += (ulong)ctx.Commands.LongCount(static c => c.Name == "fs-info" && !c.Synchronized);
 
                 FsInfoVisible = true;
                 FsInfoText    = string.Format(UI.You_have_called_the_Filesystem_Info_command_0_times, count);
             }
 
-            if(ctx.Commands.Any(c => c.Name == "checksum"))
+            if(ctx.Commands.Any(static c => c.Name == "checksum"))
             {
-                ulong count = ctx.Commands.Where(c => c.Name == "checksum" && c.Synchronized)
-                                 .Select(c => c.Count)
+                ulong count = ctx.Commands.Where(static c => c.Name == "checksum" && c.Synchronized)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
-                count += (ulong)ctx.Commands.LongCount(c => c.Name == "checksum" && !c.Synchronized);
+                count += (ulong)ctx.Commands.LongCount(static c => c.Name == "checksum" && !c.Synchronized);
 
                 ChecksumVisible = true;
                 ChecksumText    = string.Format(UI.You_have_called_the_Checksum_command_0_times, count);
             }
 
-            if(ctx.Commands.Any(c => c.Name == "compare"))
+            if(ctx.Commands.Any(static c => c.Name == "compare"))
             {
-                ulong count = ctx.Commands.Where(c => c.Name == "compare" && c.Synchronized)
-                                 .Select(c => c.Count)
+                ulong count = ctx.Commands.Where(static c => c.Name == "compare" && c.Synchronized)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
-                count += (ulong)ctx.Commands.LongCount(c => c.Name == "compare" && !c.Synchronized);
+                count += (ulong)ctx.Commands.LongCount(static c => c.Name == "compare" && !c.Synchronized);
 
                 CompareVisible = true;
                 CompareText    = string.Format(UI.You_have_called_the_Compare_command_0_times, count);
             }
 
-            if(ctx.Commands.Any(c => c.Name == "convert-image"))
+            if(ctx.Commands.Any(static c => c.Name == "convert-image"))
             {
-                ulong count = ctx.Commands.Where(c => c.Name == "convert-image" && c.Synchronized)
-                                 .Select(c => c.Count)
+                ulong count = ctx.Commands.Where(static c => c.Name == "convert-image" && c.Synchronized)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
-                count += (ulong)ctx.Commands.LongCount(c => c.Name == "convert-image" && !c.Synchronized);
+                count += (ulong)ctx.Commands.LongCount(static c => c.Name == "convert-image" && !c.Synchronized);
 
                 ConvertImageVisible = true;
                 ConvertImageText    = string.Format(UI.You_have_called_the_Convert_Image_command_0_times, count);
             }
 
-            if(ctx.Commands.Any(c => c.Name == "create-sidecar"))
+            if(ctx.Commands.Any(static c => c.Name == "create-sidecar"))
             {
-                ulong count = ctx.Commands.Where(c => c.Name == "create-sidecar" && c.Synchronized)
-                                 .Select(c => c.Count)
+                ulong count = ctx.Commands.Where(static c => c.Name == "create-sidecar" && c.Synchronized)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
-                count += (ulong)ctx.Commands.LongCount(c => c.Name == "create-sidecar" && !c.Synchronized);
+                count += (ulong)ctx.Commands.LongCount(static c => c.Name == "create-sidecar" && !c.Synchronized);
 
                 CreateSidecarVisible = true;
                 CreateSidecarText    = string.Format(UI.You_have_called_the_Create_Sidecar_command_0_times, count);
             }
 
-            if(ctx.Commands.Any(c => c.Name == "decode"))
+            if(ctx.Commands.Any(static c => c.Name == "decode"))
             {
-                ulong count = ctx.Commands.Where(c => c.Name == "decode" && c.Synchronized)
-                                 .Select(c => c.Count)
+                ulong count = ctx.Commands.Where(static c => c.Name == "decode" && c.Synchronized)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
-                count += (ulong)ctx.Commands.LongCount(c => c.Name == "decode" && !c.Synchronized);
+                count += (ulong)ctx.Commands.LongCount(static c => c.Name == "decode" && !c.Synchronized);
 
                 DecodeVisible = true;
                 DecodeText    = string.Format(UI.You_have_called_the_Decode_command_0_times, count);
             }
 
-            if(ctx.Commands.Any(c => c.Name == "device-info"))
+            if(ctx.Commands.Any(static c => c.Name == "device-info"))
             {
-                ulong count = ctx.Commands.Where(c => c.Name == "device-info" && c.Synchronized)
-                                 .Select(c => c.Count)
+                ulong count = ctx.Commands.Where(static c => c.Name == "device-info" && c.Synchronized)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
-                count += (ulong)ctx.Commands.LongCount(c => c.Name == "device-info" && !c.Synchronized);
+                count += (ulong)ctx.Commands.LongCount(static c => c.Name == "device-info" && !c.Synchronized);
 
                 DeviceInfoVisible = true;
                 DeviceInfoText    = string.Format(UI.You_have_called_the_Device_Info_command_0_times, count);
             }
 
-            if(ctx.Commands.Any(c => c.Name == "device-report"))
+            if(ctx.Commands.Any(static c => c.Name == "device-report"))
             {
-                ulong count = ctx.Commands.Where(c => c.Name == "device-report" && c.Synchronized)
-                                 .Select(c => c.Count)
+                ulong count = ctx.Commands.Where(static c => c.Name == "device-report" && c.Synchronized)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
-                count += (ulong)ctx.Commands.LongCount(c => c.Name == "device-report" && !c.Synchronized);
+                count += (ulong)ctx.Commands.LongCount(static c => c.Name == "device-report" && !c.Synchronized);
 
                 DeviceReportVisible = true;
                 DeviceReportText    = string.Format(UI.You_have_called_the_Device_Report_command_0_times, count);
             }
 
-            if(ctx.Commands.Any(c => c.Name == "dump-media"))
+            if(ctx.Commands.Any(static c => c.Name == "dump-media"))
             {
-                ulong count = ctx.Commands.Where(c => c.Name == "dump-media" && c.Synchronized)
-                                 .Select(c => c.Count)
+                ulong count = ctx.Commands.Where(static c => c.Name == "dump-media" && c.Synchronized)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
-                count += (ulong)ctx.Commands.LongCount(c => c.Name == "dump-media" && !c.Synchronized);
+                count += (ulong)ctx.Commands.LongCount(static c => c.Name == "dump-media" && !c.Synchronized);
 
                 DumpMediaVisible = true;
                 DumpMediaText    = string.Format(UI.You_have_called_the_Dump_Media_command_0_times, count);
             }
 
-            if(ctx.Commands.Any(c => c.Name == "entropy"))
+            if(ctx.Commands.Any(static c => c.Name == "entropy"))
             {
-                ulong count = ctx.Commands.Where(c => c.Name == "entropy" && c.Synchronized)
-                                 .Select(c => c.Count)
+                ulong count = ctx.Commands.Where(static c => c.Name == "entropy" && c.Synchronized)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
-                count += (ulong)ctx.Commands.LongCount(c => c.Name == "entropy" && !c.Synchronized);
+                count += (ulong)ctx.Commands.LongCount(static c => c.Name == "entropy" && !c.Synchronized);
 
                 EntropyVisible = true;
                 EntropyText    = string.Format(UI.You_have_called_the_Entropy_command_0_times, count);
             }
 
-            if(ctx.Commands.Any(c => c.Name == "formats"))
+            if(ctx.Commands.Any(static c => c.Name == "formats"))
             {
-                ulong count = ctx.Commands.Where(c => c.Name == "formats" && c.Synchronized)
-                                 .Select(c => c.Count)
+                ulong count = ctx.Commands.Where(static c => c.Name == "formats" && c.Synchronized)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
-                count += (ulong)ctx.Commands.LongCount(c => c.Name == "formats" && !c.Synchronized);
+                count += (ulong)ctx.Commands.LongCount(static c => c.Name == "formats" && !c.Synchronized);
 
                 FormatsCommandVisible = true;
                 FormatsCommandText    = string.Format(UI.You_have_called_the_Formats_command_0_times, count);
             }
 
-            if(ctx.Commands.Any(c => c.Name == "image-info"))
+            if(ctx.Commands.Any(static c => c.Name == "image-info"))
             {
-                ulong count = ctx.Commands.Where(c => c.Name == "image-info" && c.Synchronized)
-                                 .Select(c => c.Count)
+                ulong count = ctx.Commands.Where(static c => c.Name == "image-info" && c.Synchronized)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
-                count += (ulong)ctx.Commands.LongCount(c => c.Name == "image-info" && !c.Synchronized);
+                count += (ulong)ctx.Commands.LongCount(static c => c.Name == "image-info" && !c.Synchronized);
 
                 ImageInfoVisible = true;
                 ImageInfoText    = string.Format(UI.You_have_called_the_Image_Info_command_0_times, count);
             }
 
-            if(ctx.Commands.Any(c => c.Name == "media-info"))
+            if(ctx.Commands.Any(static c => c.Name == "media-info"))
             {
-                ulong count = ctx.Commands.Where(c => c.Name == "media-info" && c.Synchronized)
-                                 .Select(c => c.Count)
+                ulong count = ctx.Commands.Where(static c => c.Name == "media-info" && c.Synchronized)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
-                count += (ulong)ctx.Commands.LongCount(c => c.Name == "media-info" && !c.Synchronized);
+                count += (ulong)ctx.Commands.LongCount(static c => c.Name == "media-info" && !c.Synchronized);
 
                 MediaInfoVisible = true;
                 MediaInfoText    = string.Format(UI.You_have_called_the_Media_Info_command_0_times, count);
             }
 
-            if(ctx.Commands.Any(c => c.Name == "media-scan"))
+            if(ctx.Commands.Any(static c => c.Name == "media-scan"))
             {
-                ulong count = ctx.Commands.Where(c => c.Name == "media-scan" && c.Synchronized)
-                                 .Select(c => c.Count)
+                ulong count = ctx.Commands.Where(static c => c.Name == "media-scan" && c.Synchronized)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
-                count += (ulong)ctx.Commands.LongCount(c => c.Name == "media-scan" && !c.Synchronized);
+                count += (ulong)ctx.Commands.LongCount(static c => c.Name == "media-scan" && !c.Synchronized);
 
                 MediaScanVisible = true;
                 MediaScanText    = string.Format(UI.You_have_called_the_Media_Scan_command_0_times, count);
             }
 
-            if(ctx.Commands.Any(c => c.Name == "printhex"))
+            if(ctx.Commands.Any(static c => c.Name == "printhex"))
             {
-                ulong count = ctx.Commands.Where(c => c.Name == "printhex" && c.Synchronized)
-                                 .Select(c => c.Count)
+                ulong count = ctx.Commands.Where(static c => c.Name == "printhex" && c.Synchronized)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
-                count += (ulong)ctx.Commands.LongCount(c => c.Name == "printhex" && !c.Synchronized);
+                count += (ulong)ctx.Commands.LongCount(static c => c.Name == "printhex" && !c.Synchronized);
 
                 PrintHexVisible = true;
                 PrintHexText    = string.Format(UI.You_have_called_the_Print_Hex_command_0_times, count);
             }
 
-            if(ctx.Commands.Any(c => c.Name == "verify"))
+            if(ctx.Commands.Any(static c => c.Name == "verify"))
             {
-                ulong count = ctx.Commands.Where(c => c.Name == "verify" && c.Synchronized)
-                                 .Select(c => c.Count)
+                ulong count = ctx.Commands.Where(static c => c.Name == "verify" && c.Synchronized)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
-                count += (ulong)ctx.Commands.LongCount(c => c.Name == "verify" && !c.Synchronized);
+                count += (ulong)ctx.Commands.LongCount(static c => c.Name == "verify" && !c.Synchronized);
 
                 VerifyVisible = true;
                 VerifyText    = string.Format(UI.You_have_called_the_Verify_command_0_times, count);
@@ -383,10 +383,10 @@ public sealed partial class StatisticsViewModel : ViewModelBase
         {
             FiltersVisible = true;
 
-            foreach(string nvs in ctx.Filters.Select(n => n.Name).Distinct())
+            foreach(string nvs in ctx.Filters.Select(static n => n.Name).Distinct())
             {
                 ulong count = ctx.Filters.Where(c => c.Name == nvs && c.Synchronized)
-                                 .Select(c => c.Count)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
                 count += (ulong)ctx.Filters.LongCount(c => c.Name == nvs && !c.Synchronized);
@@ -403,10 +403,10 @@ public sealed partial class StatisticsViewModel : ViewModelBase
         {
             FormatsVisible = true;
 
-            foreach(string nvs in ctx.MediaFormats.Select(n => n.Name).Distinct())
+            foreach(string nvs in ctx.MediaFormats.Select(static n => n.Name).Distinct())
             {
                 ulong count = ctx.MediaFormats.Where(c => c.Name == nvs && c.Synchronized)
-                                 .Select(c => c.Count)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
                 count += (ulong)ctx.MediaFormats.LongCount(c => c.Name == nvs && !c.Synchronized);
@@ -423,10 +423,10 @@ public sealed partial class StatisticsViewModel : ViewModelBase
         {
             PartitionsVisible = true;
 
-            foreach(string nvs in ctx.Partitions.Select(n => n.Name).Distinct())
+            foreach(string nvs in ctx.Partitions.Select(static n => n.Name).Distinct())
             {
                 ulong count = ctx.Partitions.Where(c => c.Name == nvs && c.Synchronized)
-                                 .Select(c => c.Count)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
                 count += (ulong)ctx.Partitions.LongCount(c => c.Name == nvs && !c.Synchronized);
@@ -443,10 +443,10 @@ public sealed partial class StatisticsViewModel : ViewModelBase
         {
             FilesystemsVisible = true;
 
-            foreach(string nvs in ctx.Filesystems.Select(n => n.Name).Distinct())
+            foreach(string nvs in ctx.Filesystems.Select(static n => n.Name).Distinct())
             {
                 ulong count = ctx.Filesystems.Where(c => c.Name == nvs && c.Synchronized)
-                                 .Select(c => c.Count)
+                                 .Select(static c => c.Count)
                                  .FirstOrDefault();
 
                 count += (ulong)ctx.Filesystems.LongCount(c => c.Name == nvs && !c.Synchronized);
@@ -463,10 +463,10 @@ public sealed partial class StatisticsViewModel : ViewModelBase
         {
             DevicesVisible = true;
 
-            foreach(DeviceStat ds in ctx.SeenDevices.OrderBy(n => n.Manufacturer)
-                                        .ThenBy(n => n.Manufacturer)
-                                        .ThenBy(n => n.Revision)
-                                        .ThenBy(n => n.Bus))
+            foreach(DeviceStat ds in ctx.SeenDevices.OrderBy(static n => n.Manufacturer)
+                                        .ThenBy(static n => n.Manufacturer)
+                                        .ThenBy(static n => n.Revision)
+                                        .ThenBy(static n => n.Bus))
             {
                 Devices.Add(new DeviceStatsModel
                 {
@@ -482,10 +482,10 @@ public sealed partial class StatisticsViewModel : ViewModelBase
 
         MediasVisible = true;
 
-        foreach(string media in ctx.Medias.OrderBy(ms => ms.Type).Select(ms => ms.Type).Distinct())
+        foreach(string media in ctx.Medias.OrderBy(static ms => ms.Type).Select(static ms => ms.Type).Distinct())
         {
             ulong count = ctx.Medias.Where(c => c.Type == media && c.Synchronized && c.Real)
-                             .Select(c => c.Count)
+                             .Select(static c => c.Count)
                              .FirstOrDefault();
 
             count += (ulong)ctx.Medias.LongCount(c => c.Type == media && !c.Synchronized && c.Real);
@@ -501,7 +501,7 @@ public sealed partial class StatisticsViewModel : ViewModelBase
             }
 
             count = ctx.Medias.Where(c => c.Type == media && c.Synchronized && !c.Real)
-                       .Select(c => c.Count)
+                       .Select(static c => c.Count)
                        .FirstOrDefault();
 
             count += (ulong)ctx.Medias.LongCount(c => c.Type == media && !c.Synchronized && !c.Real);

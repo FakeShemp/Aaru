@@ -239,7 +239,7 @@ public sealed class HexViewLine
     {
         get
         {
-            var hex = string.Join(" ", Bytes.Select(b => $"{b:X2}"));
+            var hex = string.Join(" ", Bytes.Select(static b => $"{b:X2}"));
 
             // Pad to 16 bytes worth of hex (16 * 3 - 1 = 47 chars)
             return hex.PadRight(47);

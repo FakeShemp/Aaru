@@ -86,7 +86,7 @@ public static class FullTOC
             return null;
         }
 
-        for(int i = 0; i < (decoded.DataLength - 2) / 11; i++)
+        for(var i = 0; i < (decoded.DataLength - 2) / 11; i++)
         {
             decoded.TrackDescriptors[i].SessionNumber = CDFullTOCResponse[0 + i * 11 + 4];
             decoded.TrackDescriptors[i].ADR           = (byte)((CDFullTOCResponse[1 + i * 11 + 4] & 0xF0) >> 4);
@@ -115,7 +115,7 @@ public static class FullTOC
 
         var sb = new StringBuilder();
 
-        int lastSession = 0;
+        var lastSession = 0;
 
         sb.AppendFormat(Localization.First_complete_session_number_0, response.FirstCompleteSession).AppendLine();
         sb.AppendFormat(Localization.Last_complete_session_number_0,  response.LastCompleteSession).AppendLine();
@@ -641,7 +641,7 @@ public static class FullTOC
 
                     case 6:
                     {
-                        uint id = (uint)((descriptor.Min << 16) + (descriptor.Sec << 8) + descriptor.Frame);
+                        var id = (uint)((descriptor.Min << 16) + (descriptor.Sec << 8) + descriptor.Frame);
                         sb.AppendFormat(Localization.Disc_ID_0_X6, id & 0x00FFFFFF).AppendLine();
 
                         break;
@@ -669,7 +669,7 @@ public static class FullTOC
         List<TrackDataDescriptor> trackDescriptors = [];
         byte                      currentTrack     = 0;
 
-        foreach(Track track in tracks.OrderBy(t => t.Session).ThenBy(t => t.Sequence))
+        foreach(Track track in tracks.OrderBy(static t => t.Session).ThenBy(static t => t.Sequence))
         {
             if(track.Session < toc.FirstCompleteSession) toc.FirstCompleteSession = (byte)track.Session;
 
@@ -686,11 +686,12 @@ public static class FullTOC
         }
 
         sessionEndingTrack.TryAdd(toc.LastCompleteSession,
-                                  (byte)tracks.Where(t => t.Session == toc.LastCompleteSession).Max(t => t.Sequence));
+                                  (byte)tracks.Where(t => t.Session == toc.LastCompleteSession)
+                                              .Max(static t => t.Sequence));
 
         byte currentSession = 0;
 
-        foreach(Track track in tracks.OrderBy(t => t.Session).ThenBy(t => t.Sequence))
+        foreach(Track track in tracks.OrderBy(static t => t.Session).ThenBy(static t => t.Sequence))
         {
             trackFlags.TryGetValue((byte)track.Sequence, out byte trackControl);
 
@@ -702,7 +703,7 @@ public static class FullTOC
                 (byte minute, byte second, byte frame) leadoutAmsf = LbaToMsf(track.StartSector - 150);
 
                 (byte minute, byte second, byte frame) leadoutPmsf =
-                    LbaToMsf(tracks.OrderBy(t => t.Session).ThenBy(t => t.Sequence).Last().StartSector);
+                    LbaToMsf(tracks.OrderBy(static t => t.Session).ThenBy(static t => t.Sequence).Last().StartSector);
 
                 // Lead-out
                 trackDescriptors.Add(new TrackDataDescriptor

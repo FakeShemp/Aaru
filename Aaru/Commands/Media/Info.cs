@@ -807,7 +807,7 @@ sealed class MediaInfoCommand : Command<MediaInfoCommand.Settings>
 
             if(tracks != null)
             {
-                var firstLba = (uint)tracks.Min(t => t.StartSector);
+                var firstLba = (uint)tracks.Min(static t => t.StartSector);
 
                 bool supportsPqSubchannel = Dump.SupportsPqSubchannel(dev, null, firstLba);
                 bool supportsRwSubchannel = Dump.SupportsRwSubchannel(dev, null, firstLba);

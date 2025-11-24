@@ -436,13 +436,12 @@ public sealed partial class CdrWin
         }
 
         if(_writingTracks != null && _writingStreams != null)
-        {
-            foreach(FileStream oldTrack in _writingStreams.Select(t => t.Value).Distinct()) oldTrack.Close();
-        }
+            foreach(FileStream oldTrack in _writingStreams.Select(static t => t.Value).Distinct())
+                oldTrack.Close();
 
         _writingTracks = [];
 
-        foreach(Track track in tracks.OrderBy(t => t.Sequence))
+        foreach(Track track in tracks.OrderBy(static t => t.Sequence))
         {
             track.File = _separateTracksWriting
                              ? _writingBaseName + $"_track{track.Sequence:D2}.bin"
@@ -530,7 +529,7 @@ public sealed partial class CdrWin
         if(DumpHardware != null)
         {
             foreach(var dumpData in from dump in DumpHardware
-                                    from extent in dump.Extents.OrderBy(e => e.Start)
+                                    from extent in dump.Extents.OrderBy(static e => e.Start)
                                     select new
                                     {
                                         dump.Manufacturer,
@@ -608,7 +607,7 @@ public sealed partial class CdrWin
 
             if(track.Pregap > 0 && _isCd)
             {
-                if(track.Sequence > _writingTracks.Where(t => t.Session == track.Session).Min(t => t.Sequence))
+                if(track.Sequence > _writingTracks.Where(t => t.Session == track.Session).Min(static t => t.Sequence))
                 {
                     _descriptorStream.WriteLine("    INDEX {0:D2} {1:D2}:{2:D2}:{3:D2}",
                                                 0,
@@ -636,7 +635,7 @@ public sealed partial class CdrWin
 
             if(_isCd)
             {
-                foreach(KeyValuePair<ushort, int> index in track.Indexes.Where(i => i.Key > 1))
+                foreach(KeyValuePair<ushort, int> index in track.Indexes.Where(static i => i.Key > 1))
                 {
                     msf = LbaToMsf((ulong)index.Value);
 
@@ -648,11 +647,12 @@ public sealed partial class CdrWin
                 }
             }
 
-            ushort lastSession = _writingTracks.Max(t => t.Session);
+            ushort lastSession = _writingTracks.Max(static t => t.Session);
 
             if(currentSession >= lastSession) continue;
 
-            Track lastTrackInSession = _writingTracks.Where(t => t.Session == currentSession).MaxBy(t => t.Sequence);
+            Track lastTrackInSession =
+                _writingTracks.Where(t => t.Session == currentSession).MaxBy(static t => t.Sequence);
 
             if(track.Sequence != lastTrackInSession.Sequence) continue;
 

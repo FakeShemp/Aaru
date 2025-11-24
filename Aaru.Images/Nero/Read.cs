@@ -1001,7 +1001,7 @@ public sealed partial class Nero
                 if(_cuesheetV1?.Entries?.Count > 0)
                 {
                     foreach(CueEntryV1 entry in _cuesheetV1.Entries.Where(e => e.TrackNumber == neroTrack.Sequence)
-                                                           .OrderBy(e => e.IndexNumber))
+                                                           .OrderBy(static e => e.IndexNumber))
                     {
                         track.Indexes[entry.IndexNumber] =
                             entry.Minute * 60 * 75 + entry.Second * 75 + entry.Frame - 150;
@@ -1012,7 +1012,7 @@ public sealed partial class Nero
                 else if(_cuesheetV2?.Entries?.Count > 0)
                 {
                     foreach(CueEntryV2 entry in _cuesheetV2.Entries.Where(e => e.TrackNumber == neroTrack.Sequence)
-                                                           .OrderBy(e => e.IndexNumber))
+                                                           .OrderBy(static e => e.IndexNumber))
                     {
                         track.Indexes[entry.IndexNumber] = entry.LbaStart;
                         _trackFlags[entry.TrackNumber]   = (byte)((entry.Mode & 0xF0) >> 4);
@@ -1430,7 +1430,7 @@ public sealed partial class Nero
                Tracks.Count > 0xF          &&
                moreTracksThanSessionTracks &&
                onlyOneSession              &&
-               Tracks.Any(t => t.Session > 0))
+               Tracks.Any(static t => t.Session > 0))
             {
                 foreach(Track track in Tracks) track.Session = 1;
 

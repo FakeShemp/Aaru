@@ -569,7 +569,7 @@ public sealed partial class CloneCd
                 Tracks.Add(currentTrack);
             }
 
-            Track[] tmpTracks = Tracks.OrderBy(t => t.Sequence).ToArray();
+            Track[] tmpTracks = Tracks.OrderBy(static t => t.Sequence).ToArray();
 
             ulong currentDataOffset       = 0;
             ulong currentSubchannelOffset = 0;
@@ -616,8 +616,8 @@ public sealed partial class CloneCd
 
                 if(trackIndexes.TryGetValue((byte)tmpTrack.Sequence, out Dictionary<byte, int> indexes))
                 {
-                    foreach((byte index, int value) in indexes.OrderBy(i => i.Key)
-                                                              .Where(trackIndex => trackIndex.Key > 1))
+                    foreach((byte index, int value) in indexes.OrderBy(static i => i.Key)
+                                                              .Where(static trackIndex => trackIndex.Key > 1))
 
                         // Untested as of 20210711
                         tmpTrack.Indexes[index] = value;
@@ -956,15 +956,15 @@ public sealed partial class CloneCd
 
         foreach(KeyValuePair<uint, ulong> kvp in _offsetMap.Where(kvp => sectorAddress >= kvp.Value)
                                                            .SelectMany(_ => Tracks,
-                                                                       (kvp, track) => new
+                                                                       static (kvp, track) => new
                                                                        {
                                                                            kvp,
                                                                            track
                                                                        })
-                                                           .Where(t => t.track.Sequence == t.kvp.Key)
+                                                           .Where(static t => t.track.Sequence == t.kvp.Key)
                                                            .Where(t => sectorAddress - t.kvp.Value <
                                                                        t.track.EndSector - t.track.StartSector + 1)
-                                                           .Select(t => t.kvp))
+                                                           .Select(static t => t.kvp))
             return ReadSectorsTag(sectorAddress - kvp.Value, length, kvp.Key, tag, out buffer);
 
         return ErrorNumber.SectorNotFound;

@@ -37,11 +37,11 @@ static partial class MainClass
 {
     public static void Main()
     {
-        AaruLogging.WriteLineEvent        += Console.WriteLine;
-        AaruLogging.WriteEvent            += Console.Write;
-        AaruLogging.ErrorEvent   += Console.Error.WriteLine;
-        AaruLogging.DebugEvent   += Console.Error.WriteLine;
-        AaruLogging.VerboseEvent += Console.WriteLine;
+        AaruLogging.WriteLineEvent += Console.WriteLine;
+        AaruLogging.WriteEvent     += Console.Write;
+        AaruLogging.ErrorEvent     += Console.Error.WriteLine;
+        AaruLogging.DebugEvent     += Console.Error.WriteLine;
+        AaruLogging.VerboseEvent   += Console.WriteLine;
 
         DeviceInfo[] devices = Aaru.Devices.Device.ListDevices();
 
@@ -52,7 +52,7 @@ static partial class MainClass
             return;
         }
 
-        devices = devices.OrderBy(d => d.Path).ToArray();
+        devices = devices.OrderBy(static d => d.Path).ToArray();
 
         while(true)
         {
@@ -78,7 +78,7 @@ static partial class MainClass
                                   "----------",
                                   "--------");
 
-            for(int i = 0; i < devices.Length; i++)
+            for(var i = 0; i < devices.Length; i++)
             {
                 AaruLogging.WriteLine("{6,-8}|{0,-22}|{1,-16}|{2,-24}|{3,-24}|{4,-10}|{5,-10}",
                                       devices[i].Path,

@@ -108,7 +108,7 @@ public class SwapEndianGenerator : IIncrementalGenerator
 
         // Create unique file name by including containing types
         string fileName = containingTypes.Count > 0
-                              ? $"{string.Join("_", containingTypes.Select(t => t.Name))}_{structName}_SwapEndian.g.cs"
+                              ? $"{string.Join("_", containingTypes.Select(static t => t.Name))}_{structName}_SwapEndian.g.cs"
                               : $"{structName}_SwapEndian.g.cs";
 
         context.AddSource(fileName, SourceText.From(generatedSource, Encoding.UTF8));
@@ -361,8 +361,7 @@ public class SwapEndianGenerator : IIncrementalGenerator
                           "byte" or "Byte" or "sbyte" or "SByte" =>
                               $"        // {fieldName} - no swap needed for byte types",
 
-                          "string" or "String" =>
-                              $"        // {fieldName} - no swap needed for string types",
+                          "string" or "String" => $"        // {fieldName} - no swap needed for string types",
 
                           "Guid" => $"        // TODO: Implement GUID swap for {fieldName}",
 
@@ -442,7 +441,7 @@ public class SwapEndianGenerator : IIncrementalGenerator
         // Fallback to assuming it's a nested struct
     }
 
-    private static (string code, bool usesEnumHelper) HandleStructOrEnumArray(string fieldName, string elementType,
+    private static (string code, bool usesEnumHelper) HandleStructOrEnumArray(string      fieldName, string elementType,
                                                                               ITypeSymbol typeSymbol)
     {
         // Check if we have semantic information about the array type
@@ -615,4 +614,3 @@ public class SwapEndianGenerator : IIncrementalGenerator
                                                                    }
                                                            """;
 }
-

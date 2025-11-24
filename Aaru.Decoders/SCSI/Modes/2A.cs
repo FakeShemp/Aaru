@@ -149,9 +149,11 @@ public static partial class Modes
         }
 
         if(modePage.BufferSize > 0)
+        {
             sb.AppendFormat($"\t[slateblue1]{Localization.Drive_has_0_Kbyte_of_buffer}[/]",
                             $"[aqua]{modePage.BufferSize}[/]")
               .AppendLine();
+        }
 
         if(modePage.MaximumSpeed > 0)
         {
@@ -251,7 +253,7 @@ public static partial class Modes
         if(modePage.WriteSpeedPerformanceDescriptors != null)
         {
             foreach(ModePage_2A_WriteDescriptor descriptor in
-                    modePage.WriteSpeedPerformanceDescriptors.Where(descriptor => descriptor.WriteSpeed > 0))
+                    modePage.WriteSpeedPerformanceDescriptors.Where(static descriptor => descriptor.WriteSpeed > 0))
             {
                 switch(descriptor.RotationControl)
                 {

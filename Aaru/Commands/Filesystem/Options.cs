@@ -82,7 +82,7 @@ sealed class ListOptionsCommand : Command<ListOptionsCommand.Settings>
             table.Border(TableBorder.Rounded);
             table.BorderColor(Color.Yellow);
 
-            foreach((string name, Type type, string description) option in options.OrderBy(t => t.name))
+            foreach((string name, Type type, string description) option in options.OrderBy(static t => t.name))
             {
                 table.AddRow($"[purple]{Markup.Escape(option.name)}[/]",
                              $"[italic][olive]{TypeToString(option.type)}[/][/]",

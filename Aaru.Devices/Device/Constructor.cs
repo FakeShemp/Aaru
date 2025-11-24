@@ -215,8 +215,9 @@ public partial class Device : IDisposable
             if(string.IsNullOrEmpty(dev.Serial))
                 dev.Serial = dev.UsbSerialString;
             else
-                foreach(char c in dev.Serial.Where(c => !char.IsControl(c)))
-                    dev.Serial = $"{dev.Serial}{c:X2}";
+            {
+                foreach(char c in dev.Serial.Where(static c => !char.IsControl(c))) dev.Serial = $"{dev.Serial}{c:X2}";
+            }
         }
 
         if(dev.IsFireWire)
@@ -228,8 +229,9 @@ public partial class Device : IDisposable
             if(string.IsNullOrEmpty(dev.Serial))
                 dev.Serial = $"{dev.FirewireGuid:X16}";
             else
-                foreach(char c in dev.Serial.Where(c => !char.IsControl(c)))
-                    dev.Serial = $"{dev.Serial}{c:X2}";
+            {
+                foreach(char c in dev.Serial.Where(static c => !char.IsControl(c))) dev.Serial = $"{dev.Serial}{c:X2}";
+            }
         }
 
         // Some optical drives are not getting the correct serial, and IDENTIFY PACKET DEVICE is blocked without

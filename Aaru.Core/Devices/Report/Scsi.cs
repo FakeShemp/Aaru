@@ -50,7 +50,7 @@ public sealed partial class DeviceReport
     /// <returns>SCSI report</returns>
     public Scsi ReportScsiInquiry()
     {
-        bool   sense  = true;
+        var    sense  = true;
         byte[] buffer = [];
 
         Spectre.ProgressSingleSpinner(ctx =>
@@ -85,7 +85,7 @@ public sealed partial class DeviceReport
             return inquiry;
 
         // Clear Seagate serial number
-        for(int i = 36; i <= 43; i++) inquiry[i] = 0;
+        for(var i = 36; i <= 43; i++) inquiry[i] = 0;
 
         return inquiry;
     }
@@ -95,7 +95,7 @@ public sealed partial class DeviceReport
     /// <returns>List of decoded SCSI EVPD pages</returns>
     public List<ScsiPage> ReportEvpdPages(string vendor)
     {
-        bool   sense  = false;
+        var    sense  = false;
         byte[] buffer = [];
 
         Spectre.ProgressSingleSpinner(ctx =>
@@ -115,10 +115,10 @@ public sealed partial class DeviceReport
         Spectre.ProgressSingleSpinner(ctx =>
         {
             ProgressTask task = ctx.AddTask(Localization.Core.Querying_SCSI_EVPD_pages,
-                                            maxValue: evpdPages.Count(page => page != 0x80))
+                                            maxValue: evpdPages.Count(static page => page != 0x80))
                                    .IsIndeterminate();
 
-            foreach(byte page in evpdPages.Where(page => page != 0x80))
+            foreach(byte page in evpdPages.Where(static page => page != 0x80))
             {
                 task.Description = string.Format(Localization.Core.Querying_SCSI_EVPD_0, page);
                 task.Increment(1);
@@ -135,7 +135,7 @@ public sealed partial class DeviceReport
 
                         break;
                     case 0x80:
-                        byte[] identify = new byte[512];
+                        var identify = new byte[512];
                         Array.Copy(buffer, 60, identify, 0, 512);
                         identify = ClearIdentify(identify);
                         Array.Copy(identify, 0, buffer, 60, 512);
@@ -184,7 +184,7 @@ public sealed partial class DeviceReport
 
         if(pageResponse.Length < 6) return null;
 
-        int position = 4;
+        var position = 4;
 
         while(position < pageResponse.Length)
         {
@@ -192,7 +192,7 @@ public sealed partial class DeviceReport
 
             if(length + position + 4 >= pageResponse.Length) length = (byte)(pageResponse.Length - position - 4);
 
-            byte[] empty = new byte[length];
+            var empty = new byte[length];
             Array.Copy(empty, 0, pageResponse, position + 4, length);
 
             position += 4 + length;
@@ -226,7 +226,7 @@ public sealed partial class DeviceReport
                         ScsiModeSensePageControl.Changeable
                     })
             {
-                bool saveBuffer = false;
+                var saveBuffer = false;
 
                 sense = _dev.ModeSense10(out byte[] mode10Buffer,
                                          out _,
@@ -335,7 +335,7 @@ public sealed partial class DeviceReport
                         ScsiModeSensePageControl.Changeable
                     })
             {
-                bool saveBuffer = false;
+                var saveBuffer = false;
 
                 sense = _dev.ModeSense6(out byte[] mode6Buffer,
                                         out _,
@@ -511,7 +511,7 @@ public sealed partial class DeviceReport
     public TestedMedia ReportScsiMedia()
     {
         var                mediaTest   = new TestedMedia();
-        bool               sense       = true;
+        var                sense       = true;
         byte[]             buffer      = [];
         ReadOnlySpan<byte> senseBuffer = [];
 
@@ -541,7 +541,7 @@ public sealed partial class DeviceReport
         if(!sense && !_dev.Error)
         {
             mediaTest.SupportsReadCapacity16 = true;
-            byte[] temp = new byte[8];
+            var temp = new byte[8];
             Array.Copy(buffer, 0, temp, 0, 8);
             Array.Reverse(temp);
             mediaTest.Blocks    = BitConverter.ToUInt64(temp, 0) + 1;
@@ -886,7 +886,7 @@ public sealed partial class DeviceReport
     /// <returns>Media report</returns>
     public TestedMedia ReportScsi()
     {
-        bool               sense       = true;
+        var                sense       = true;
         byte[]             buffer      = [];
         ReadOnlySpan<byte> senseBuffer = [];
 
@@ -921,7 +921,7 @@ public sealed partial class DeviceReport
         if(!sense && !_dev.Error)
         {
             capabilities.SupportsReadCapacity16 = true;
-            byte[] temp = new byte[8];
+            var temp = new byte[8];
             Array.Copy(buffer, 0, temp, 0, 8);
             Array.Reverse(temp);
             capabilities.Blocks    = BitConverter.ToUInt64(temp, 0) + 1;

@@ -234,7 +234,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
 
             if(responseLine is null) break;
 
-            if(responseLine.Any(c => c < 0x20))
+            if(responseLine.Any(static c => c < 0x20))
             {
                 AaruLogging.Error(UI.Invalid_characters_found_in_list_of_files);
 
@@ -536,11 +536,11 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
                        .Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn())
                        .Start(ctx =>
                         {
-                            dumper.UpdateStatus += text => { AaruLogging.WriteLine(text); };
+                            dumper.UpdateStatus += static text => { AaruLogging.WriteLine(text); };
 
-                            dumper.ErrorMessage += text => { AaruLogging.Error(text); };
+                            dumper.ErrorMessage += static text => AaruLogging.Error(text);
 
-                            dumper.StoppingErrorMessage += text => { AaruLogging.Error(text); };
+                            dumper.StoppingErrorMessage += static text => { AaruLogging.Error(text); };
 
                             dumper.UpdateProgress += (text, current, maximum) =>
                             {
@@ -563,7 +563,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
 
                             dumper.InitProgress += () => { _progressTask1 = ctx.AddTask("Progress"); };
 
-                            dumper.EndProgress += () =>
+                            dumper.EndProgress += static () =>
                             {
                                 _progressTask1?.StopTask();
                                 _progressTask1 = null;
@@ -571,7 +571,7 @@ sealed class DumpMediaCommand : Command<DumpMediaCommand.Settings>
 
                             dumper.InitProgress2 += () => { _progressTask2 = ctx.AddTask("Progress"); };
 
-                            dumper.EndProgress2 += () =>
+                            dumper.EndProgress2 += static () =>
                             {
                                 _progressTask2?.StopTask();
                                 _progressTask2 = null;

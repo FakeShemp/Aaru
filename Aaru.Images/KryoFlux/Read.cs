@@ -176,7 +176,8 @@ public sealed partial class KryoFlux
                         DateTime blockTime = DateTime.Now;
                         var      foundDate = false;
 
-                        foreach(string[] kvp in lines.Select(line => line.Split('=')).Where(kvp => kvp.Length == 2))
+                        foreach(string[] kvp in lines.Select(static line => line.Split('='))
+                                                     .Where(static kvp => kvp.Length == 2))
                         {
                             kvp[0] = kvp[0].Trim();
                             kvp[1] = kvp[1].Trim();

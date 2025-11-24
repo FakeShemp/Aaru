@@ -150,7 +150,7 @@ sealed partial class Dump
             return;
         }
 
-        firstLba = (uint)tracks.Min(t => t.StartSector);
+        firstLba = (uint)tracks.Min(static t => t.StartSector);
 
         // Check subchannels support
         supportsPqSubchannel = SupportsPqSubchannel(_dev, UpdateStatus, firstLba) ||
@@ -517,7 +517,7 @@ sealed partial class Dump
         }
 
         if(!outputOptical.OpticalCapabilities.HasFlag(OpticalImageCapabilities.CanStoreAudioTracks) &&
-           tracks.Any(track => track.Type == TrackType.Audio))
+           tracks.Any(static track => track.Type == TrackType.Audio))
         {
             StoppingErrorMessage?.Invoke(Localization.Core.Output_format_does_not_support_audio_tracks_cannot_continue);
 
@@ -525,8 +525,8 @@ sealed partial class Dump
         }
 
         if(!outputOptical.OpticalCapabilities.HasFlag(OpticalImageCapabilities.CanStorePregaps) &&
-           tracks.Where(track => track.Sequence != tracks.First(t => t.Session == track.Session).Sequence)
-                 .Any(track => track.Pregap     > 0))
+           tracks.Where(track => track.Sequence    != tracks.First(t => t.Session == track.Session).Sequence)
+                 .Any(static track => track.Pregap > 0))
         {
             if(!_force)
             {
@@ -658,14 +658,14 @@ sealed partial class Dump
             [
                 new()
                 {
-                    Sequence          = (uint)(tracks.Any(t => t.Sequence == 1) ? 0 : 1),
+                    Sequence          = (uint)(tracks.Any(static t => t.Sequence == 1) ? 0 : 1),
                     Session           = 1,
                     Type              = hiddenData ? TrackType.Data : TrackType.Audio,
                     StartSector       = 0,
                     BytesPerSector    = (int)sectorSize,
                     RawBytesPerSector = (int)sectorSize,
                     SubchannelType    = subType,
-                    EndSector         = tracks.First(t => t.Sequence >= 1).StartSector - 1
+                    EndSector         = tracks.First(static t => t.Sequence >= 1).StartSector - 1
                 }
             ];
 
@@ -673,11 +673,11 @@ sealed partial class Dump
             tracks = trkList.ToArray();
         }
 
-        if(tracks.Any(t => t.Type == TrackType.Audio) && desiredSubchannel != MmcSubchannel.Raw)
+        if(tracks.Any(static t => t.Type == TrackType.Audio) && desiredSubchannel != MmcSubchannel.Raw)
             UpdateStatus?.Invoke(Localization.Core.WARNING_If_disc_says_CDG_CDEG_CDMIDI_dump_will_be_incorrect);
 
         // Check mode for tracks
-        foreach(Track trk in tracks.Where(t => t.Type != TrackType.Audio))
+        foreach(Track trk in tracks.Where(static t => t.Type != TrackType.Audio))
         {
             if(!readcd)
             {
@@ -787,7 +787,7 @@ sealed partial class Dump
                 return;
             }
 
-            if(tracks.Any(t => t.Type == TrackType.Audio))
+            if(tracks.Any(static t => t.Type == TrackType.Audio))
             {
                 StoppingErrorMessage?.Invoke(Localization.Core
                                                          .Output_format_does_not_support_audio_tracks_not_continuing);
@@ -796,7 +796,7 @@ sealed partial class Dump
                 return;
             }
 
-            if(tracks.Any(t => t.Type != TrackType.CdMode1))
+            if(tracks.Any(static t => t.Type != TrackType.CdMode1))
             {
                 StoppingErrorMessage?.Invoke(Localization.Core
                                                          .Output_format_only_supports_MODE_1_tracks_not_continuing);
@@ -928,7 +928,7 @@ sealed partial class Dump
 
         var cdiWithHiddenTrack1 = false;
 
-        if(dskType is MediaType.CDIREADY && tracks.Min(t => t.Sequence) == 1)
+        if(dskType is MediaType.CDIREADY && tracks.Min(static t => t.Sequence) == 1)
         {
             cdiWithHiddenTrack1 = true;
             dskType             = MediaType.CDI;
@@ -1084,9 +1084,8 @@ sealed partial class Dump
             foreach(int sub in _resume.BadSubchannels) subchannelExtents.Add(sub);
 
             if(_resume.NextBlock < blocks)
-            {
-                for(ulong i = _resume.NextBlock; i < blocks; i++) subchannelExtents.Add((int)i);
-            }
+                for(ulong i = _resume.NextBlock; i < blocks; i++)
+                    subchannelExtents.Add((int)i);
         }
 
         if(_resume.NextBlock > 0)
@@ -1107,7 +1106,7 @@ sealed partial class Dump
         // Check offset
         if(_fixOffset)
         {
-            if(tracks.All(t => t.Type != TrackType.Audio))
+            if(tracks.All(static t => t.Type != TrackType.Audio))
             {
                 // No audio tracks so no need to fix offset
                 UpdateStatus.Invoke(Localization.Core.No_audio_tracks_disabling_offset_fix);
@@ -1123,7 +1122,7 @@ sealed partial class Dump
                 _fixOffset = false;
             }
         }
-        else if(tracks.Any(t => t.Type == TrackType.Audio))
+        else if(tracks.Any(static t => t.Type == TrackType.Audio))
         {
             UpdateStatus?.Invoke(Localization.Core
                                              .There_are_audio_tracks_and_offset_fixing_is_disabled_dump_may_not_be_correct);
@@ -1153,7 +1152,7 @@ sealed partial class Dump
                 UpdateStatus?.Invoke(Localization.Core.Drive_reading_offset_not_found_in_database);
                 UpdateStatus?.Invoke(Localization.Core.Disc_offset_cannot_be_calculated);
 
-                if(tracks.Any(t => t.Type == TrackType.Audio))
+                if(tracks.Any(static t => t.Type == TrackType.Audio))
                     UpdateStatus?.Invoke(Localization.Core.Dump_may_not_be_correct);
 
                 if(_fixOffset) _fixOffset = false;
@@ -1238,16 +1237,18 @@ sealed partial class Dump
 
         // Try to read the first track pregap
         if(_dumpFirstTrackPregap && readcd)
+        {
             ReadCdFirstTrackPregap(blockSize,
                                    ref currentSpeed,
                                    mediaTags,
                                    supportedSubchannel,
                                    ref totalDuration,
                                    outputOptical);
+        }
 
         audioExtents = new ExtentsULong();
 
-        foreach(Track audioTrack in tracks.Where(t => t.Type == TrackType.Audio))
+        foreach(Track audioTrack in tracks.Where(static t => t.Type == TrackType.Audio))
             audioExtents.Add(audioTrack.StartSector, audioTrack.EndSector);
 
         // Set speed
@@ -1269,7 +1270,7 @@ sealed partial class Dump
 
         if(dskType == MediaType.CDIREADY || cdiWithHiddenTrack1)
         {
-            Track track0 = tracks.FirstOrDefault(t => t.Sequence is 0 or 1);
+            Track track0 = tracks.FirstOrDefault(static t => t.Sequence is 0 or 1);
 
             track0.Type = TrackType.CdMode2Formless;
 
@@ -1510,9 +1511,8 @@ sealed partial class Dump
                         supportsLongSectors);
 
         foreach(Tuple<ulong, ulong> leadoutExtent in leadOutExtents.ToArray())
-        {
-            for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++) subchannelExtents.Remove((int)e);
-        }
+            for(ulong e = leadoutExtent.Item1; e <= leadoutExtent.Item2; e++)
+                subchannelExtents.Remove((int)e);
 
         if(subchannelExtents.Count > 0 && _retryPasses > 0 && _retrySubchannel)
         {
@@ -1614,7 +1614,7 @@ sealed partial class Dump
         foreach(Track trk in tracks)
         {
             // Fix track starts in each session's first track
-            if(tracks.Where(t => t.Session == trk.Session).MinBy(t => t.Sequence).Sequence == trk.Sequence)
+            if(tracks.Where(t => t.Session == trk.Session).MinBy(static t => t.Sequence).Sequence == trk.Sequence)
             {
                 if(trk.Sequence == 1) continue;
 

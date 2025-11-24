@@ -285,7 +285,7 @@ public sealed partial class CloneCd
 
         Tracks = [];
 
-        foreach(Track track in tracks.OrderBy(t => t.Sequence))
+        foreach(Track track in tracks.OrderBy(static t => t.Sequence))
         {
             Track newTrack = track;
 

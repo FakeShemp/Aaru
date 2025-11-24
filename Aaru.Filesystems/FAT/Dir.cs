@@ -308,7 +308,7 @@ public sealed partial class FAT
             // Check OS/2 .LONGNAME
             if(_eaCache != null && _namespace is Namespace.Os2 or Namespace.Ecs && !_fat32)
             {
-                var filesWithEas = currentDirectory.Where(t => t.Value.Dirent.ea_handle != 0).ToList();
+                var filesWithEas = currentDirectory.Where(static t => t.Value.Dirent.ea_handle != 0).ToList();
 
                 foreach(KeyValuePair<string, CompleteDirectoryEntry> fileWithEa in filesWithEas)
                 {

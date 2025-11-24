@@ -139,7 +139,7 @@ partial class Dump
 
                     if(dcMode10?.Pages != null)
                     {
-                        foreach(Modes.ModePage modePage in dcMode10.Value.Pages.Where(modePage =>
+                        foreach(Modes.ModePage modePage in dcMode10.Value.Pages.Where(static modePage =>
                                     modePage is { Page: 0x01, Subpage: 0x00 }))
                             currentModePage = modePage;
                     }
@@ -149,10 +149,8 @@ partial class Dump
             {
                 if(dcMode6.Value.Pages != null)
                 {
-                    foreach(Modes.ModePage modePage in dcMode6.Value.Pages.Where(modePage => modePage is
-                            {
-                                Page: 0x01, Subpage: 0x00
-                            }))
+                    foreach(Modes.ModePage modePage in dcMode6.Value.Pages.Where(static modePage =>
+                                modePage is { Page: 0x01, Subpage: 0x00 }))
                         currentModePage = modePage;
                 }
             }
@@ -467,9 +465,8 @@ partial class Dump
 
                 // MEDIUM ERROR, retry with ignore error below
                 if(decSense is { ASC: 0x11 })
-                {
-                    if(!sectorsNotEvenPartial.Contains(badSector)) sectorsNotEvenPartial.Add(badSector);
-                }
+                    if(!sectorsNotEvenPartial.Contains(badSector))
+                        sectorsNotEvenPartial.Add(badSector);
             }
 
             // Because one block has been partially used to fix the offset
@@ -519,8 +516,7 @@ partial class Dump
                             extents.Add(badSector);
                             _mediaGraph?.PaintSectorGood(badSector);
 
-                            UpdateStatus?.Invoke(string.Format(UI.Fixed_ECC_Q_for_sector_0,
-                                                               badSector));
+                            UpdateStatus?.Invoke(string.Format(UI.Fixed_ECC_Q_for_sector_0, badSector));
 
                             sectorsNotEvenPartial.Remove(badSector);
                         }
@@ -688,7 +684,8 @@ partial class Dump
                     PulseProgress?.Invoke(string.Format(Localization.Core.Trying_to_get_partial_data_for_sector_0,
                                                         badSector));
 
-                    Track track = tracks.OrderBy(t => t.StartSector).LastOrDefault(t => badSector >= t.StartSector);
+                    Track track = tracks.OrderBy(static t => t.StartSector)
+                                        .LastOrDefault(t => badSector >= t.StartSector);
 
                     if(readcd)
                     {
@@ -852,7 +849,7 @@ partial class Dump
         {
             var badSector = (uint)bs;
 
-            Track track = tracks.OrderBy(t => t.StartSector).LastOrDefault(t => badSector >= t.StartSector);
+            Track track = tracks.OrderBy(static t => t.StartSector).LastOrDefault(t => badSector >= t.StartSector);
 
             if(_aborted)
             {

@@ -194,9 +194,8 @@ public sealed partial class FAT
                 };
 
                 if((fat32Bpb.flags & 0xF8) == 0x00)
-                {
-                    if((fat32Bpb.flags & 0x01) == 0x01) Metadata.Dirty = true;
-                }
+                    if((fat32Bpb.flags & 0x01) == 0x01)
+                        Metadata.Dirty = true;
 
                 if((fat32Bpb.mirror_flags & 0x80) == 0x80) _useFirstFat = (fat32Bpb.mirror_flags & 0xF) != 1;
 
@@ -461,9 +460,8 @@ public sealed partial class FAT
             if(fakeBpb.signature is 0x28 or 0x29 || andosOemCorrect)
             {
                 if((fakeBpb.flags & 0xF8) == 0x00)
-                {
-                    if((fakeBpb.flags & 0x01) == 0x01) Metadata.Dirty = true;
-                }
+                    if((fakeBpb.flags & 0x01) == 0x01)
+                        Metadata.Dirty = true;
 
                 if(fakeBpb.signature == 0x29 || andosOemCorrect)
                 {
@@ -884,7 +882,7 @@ public sealed partial class FAT
         // Check OS/2 .LONGNAME
         if(_eaCache != null && _namespace is Namespace.Os2 or Namespace.Ecs && !_fat32)
         {
-            var rootFilesWithEas = _rootDirectoryCache.Where(t => t.Value.Dirent.ea_handle != 0).ToList();
+            var rootFilesWithEas = _rootDirectoryCache.Where(static t => t.Value.Dirent.ea_handle != 0).ToList();
 
             foreach(KeyValuePair<string, CompleteDirectoryEntry> fileWithEa in rootFilesWithEas)
             {

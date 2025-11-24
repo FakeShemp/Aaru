@@ -124,15 +124,17 @@ partial class Dump
 
         if(filesystems.Count > 0)
         {
-            foreach(var filesystem in filesystems.Select(o => new
+            foreach(var filesystem in filesystems.Select(static o => new
                                                   {
                                                       o.start,
                                                       o.type
                                                   })
                                                  .Distinct())
+            {
                 AaruLogging.WriteLine(Localization.Core.Found_filesystem_0_at_sector_1,
                                       filesystem.type,
                                       filesystem.start);
+            }
         }
 
         sidecar.OpticalDiscs[0].Dimensions = Dimensions.FromMediaType(mediaType);

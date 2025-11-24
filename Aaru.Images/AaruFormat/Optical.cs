@@ -113,7 +113,7 @@ public sealed partial class AaruFormat
 
             if(_tracks is null) return _tracks;
 
-            foreach(Track track in Tracks.OrderBy(t => t.StartSector))
+            foreach(Track track in Tracks.OrderBy(static t => t.StartSector))
             {
                 switch(track.Sequence)
                 {
@@ -123,7 +123,7 @@ public sealed partial class AaruFormat
                         track.Indexes[1] = (int)track.StartSector;
 
                         continue;
-                    case 1 when Tracks.All(t => t.Sequence != 0):
+                    case 1 when Tracks.All(static t => t.Sequence != 0):
                         track.Pregap     = 150;
                         track.Indexes[0] = -150;
                         track.Indexes[1] = (int)track.StartSector;
@@ -171,7 +171,7 @@ public sealed partial class AaruFormat
 
             List<Session> sessions = [];
 
-            for(var i = 1; i <= Tracks.Max(t => t.Session); i++)
+            for(var i = 1; i <= Tracks.Max(static t => t.Session); i++)
             {
                 sessions.Add(new Session
                 {

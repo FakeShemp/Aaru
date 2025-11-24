@@ -67,7 +67,7 @@ public sealed partial class AppleDOS
             // Read the catalog sector
             CatalogSector catSector = Marshal.ByteArrayToStructureLittleEndian<CatalogSector>(catSectorB);
 
-            foreach(FileEntry entry in catSector.entries.Where(entry => entry.extentTrack > 0))
+            foreach(FileEntry entry in catSector.entries.Where(static entry => entry.extentTrack > 0))
             {
                 _track1UsedByFiles |= entry.extentTrack == 1;
                 _track2UsedByFiles |= entry.extentTrack == 2;

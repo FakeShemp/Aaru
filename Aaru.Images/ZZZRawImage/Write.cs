@@ -293,7 +293,7 @@ public sealed partial class ZZZRawImage
         {
             string suffix = _readWriteSidecars.Concat(_writeOnlySidecars)
                                               .Where(t => t.tag == tag.Key)
-                                              .Select(t => t.name)
+                                              .Select(static t => t.name)
                                               .FirstOrDefault();
 
             if(suffix == null) continue;

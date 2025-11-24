@@ -251,7 +251,8 @@ partial class Dump
             var   trackRetries = 0;
 
             // First track of each session has at least 150 sectors of pregap and is not always readable
-            if(tracks.Where(trk => trk.Session == track.Session).MinBy(trk => trk.Sequence).Sequence == track.Sequence)
+            if(tracks.Where(trk => trk.Session == track.Session).MinBy(static trk => trk.Sequence).Sequence ==
+               track.Sequence)
             {
                 AaruLogging.Debug(PREGAP_MODULE_NAME, Localization.Core.Skipping_track_0, track.Sequence);
 
@@ -563,7 +564,7 @@ partial class Dump
                                                        lba));
                 }
 
-                if(subBuf.All(b => b == 0))
+                if(subBuf.All(static b => b == 0))
                 {
                     inexactPositioning = true;
 
@@ -681,7 +682,8 @@ partial class Dump
             trk.Pregap = (ulong)pregaps[trk.Sequence];
 
             // Do not reduce pregap, or starting position of session's first track
-            if(tracks.Where(t => t.Session == trk.Session).MinBy(t => t.Sequence).Sequence == trk.Sequence) continue;
+            if(tracks.Where(t => t.Session == trk.Session).MinBy(static t => t.Sequence).Sequence == trk.Sequence)
+                continue;
 
             if(dumping)
             {
@@ -845,8 +847,8 @@ partial class Dump
 
             if(!sense)
                 subBuf = DeinterleaveQ(cmdBuf);
-            else if(dbDev?.ATAPI?.RemovableMedias?.Any(d => d.SupportsPlextorReadCDDA == true) == true ||
-                    dbDev?.SCSI?.RemovableMedias?.Any(d => d.SupportsPlextorReadCDDA  == true) == true ||
+            else if(dbDev?.ATAPI?.RemovableMedias?.Any(static d => d.SupportsPlextorReadCDDA == true) == true ||
+                    dbDev?.SCSI?.RemovableMedias?.Any(static d => d.SupportsPlextorReadCDDA  == true) == true ||
                     dev.Manufacturer.Equals("plextor", StringComparison.InvariantCultureIgnoreCase))
                 sense = dev.PlextorReadCdDa(out cmdBuf, out _, lba, 96, 1, PlextorSubchannel.All, dev.Timeout, out _);
 

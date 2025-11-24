@@ -80,7 +80,7 @@ public sealed partial class DeviceReport
 
         AaruLogging.WriteLine(Localization.Core.Sending_READ_FULL_TOC_to_the_device);
 
-        int                retries = 0;
+        var                retries = 0;
         bool               sense;
         byte[]             buffer;
         ReadOnlySpan<byte> senseBuffer;
@@ -127,7 +127,7 @@ public sealed partial class DeviceReport
         // Guaranteed to never fall into default
         FullTOC.CDFullTOC toc = decodedToc ?? default(FullTOC.CDFullTOC);
 
-        FullTOC.TrackDataDescriptor leadOutTrack = toc.TrackDescriptors.FirstOrDefault(t => t.POINT == 0xA2);
+        FullTOC.TrackDataDescriptor leadOutTrack = toc.TrackDescriptors.FirstOrDefault(static t => t.POINT == 0xA2);
 
         if(leadOutTrack.POINT != 0xA2)
         {
@@ -139,8 +139,8 @@ public sealed partial class DeviceReport
             return;
         }
 
-        int  min         = 0, sec, frame;
-        bool tocIsNotBcd = false;
+        int min         = 0, sec, frame;
+        var tocIsNotBcd = false;
 
         report.GdRomSwapDiscCapabilities.SwapDiscLeadOutPMIN  = leadOutTrack.PMIN;
         report.GdRomSwapDiscCapabilities.SwapDiscLeadOutPSEC  = leadOutTrack.PSEC;
@@ -241,7 +241,7 @@ public sealed partial class DeviceReport
         // Guaranteed to never fall into default
         toc = decodedToc ?? default(FullTOC.CDFullTOC);
 
-        FullTOC.TrackDataDescriptor newLeadOutTrack = toc.TrackDescriptors.FirstOrDefault(t => t.POINT == 0xA2);
+        FullTOC.TrackDataDescriptor newLeadOutTrack = toc.TrackDescriptors.FirstOrDefault(static t => t.POINT == 0xA2);
 
         if(newLeadOutTrack.POINT != 0xA2)
         {
@@ -1849,8 +1849,8 @@ public sealed partial class DeviceReport
         if(pressedKey.Key == ConsoleKey.N) return;
 
         uint          startingSector = 45000;
-        bool          readAsAudio    = false;
-        bool          aborted        = false;
+        var           readAsAudio    = false;
+        var           aborted        = false;
         MmcSubchannel subchannel     = MmcSubchannel.None;
         uint          blockSize      = 2352;
 
@@ -1977,7 +1977,7 @@ public sealed partial class DeviceReport
 
         byte[] lastSuccessfulPq = null;
         byte[] lastSuccessfulRw = null;
-        bool   trackModeChange  = false;
+        var    trackModeChange  = false;
 
         AaruLogging.WriteLine();
 

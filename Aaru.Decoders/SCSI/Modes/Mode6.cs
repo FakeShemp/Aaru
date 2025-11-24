@@ -238,7 +238,7 @@ public static partial class Modes
     {
         var modeSize = 0;
 
-        if(mode.Pages != null) modeSize += mode.Pages.Sum(page => page.PageResponse.Length);
+        if(mode.Pages != null) modeSize += mode.Pages.Sum(static page => page.PageResponse.Length);
 
         byte[] hdr = EncodeModeHeader6(mode.Header, deviceType);
         modeSize += hdr.Length;

@@ -199,19 +199,19 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
                                     _progressTask2.MaxValue    =   maximum;
                                 };
 
-                                sidecarClass.EndProgressEvent += () =>
+                                sidecarClass.EndProgressEvent += static () =>
                                 {
                                     _progressTask1?.StopTask();
                                     _progressTask1 = null;
                                 };
 
-                                sidecarClass.EndProgressEvent2 += () =>
+                                sidecarClass.EndProgressEvent2 += static () =>
                                 {
                                     _progressTask2?.StopTask();
                                     _progressTask2 = null;
                                 };
 
-                                sidecarClass.UpdateStatusEvent += text => { AaruLogging.WriteLine(text); };
+                                sidecarClass.UpdateStatusEvent += static text => { AaruLogging.WriteLine(text); };
 
                                 Console.CancelKeyPress += (_, e) =>
                                 {
@@ -294,19 +294,19 @@ sealed class CreateSidecarCommand : Command<CreateSidecarCommand.Settings>
                                 _progressTask2.MaxValue    =   maximum;
                             };
 
-                            sidecarClass.EndProgressEvent += () =>
+                            sidecarClass.EndProgressEvent += static () =>
                             {
                                 _progressTask1?.StopTask();
                                 _progressTask1 = null;
                             };
 
-                            sidecarClass.EndProgressEvent2 += () =>
+                            sidecarClass.EndProgressEvent2 += static () =>
                             {
                                 _progressTask2?.StopTask();
                                 _progressTask2 = null;
                             };
 
-                            sidecarClass.UpdateStatusEvent += text => { AaruLogging.WriteLine(text); };
+                            sidecarClass.UpdateStatusEvent += static text => { AaruLogging.WriteLine(text); };
 
                             Console.CancelKeyPress += (_, e) =>
                             {

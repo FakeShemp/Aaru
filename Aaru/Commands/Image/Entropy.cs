@@ -143,13 +143,13 @@ sealed class EntropyCommand : Command<EntropyCommand.Settings>
                             _progressTask2.MaxValue    =   maximum;
                         };
 
-                        entropyCalculator.EndProgressEvent += () =>
+                        entropyCalculator.EndProgressEvent += static () =>
                         {
                             _progressTask1?.StopTask();
                             _progressTask1 = null;
                         };
 
-                        entropyCalculator.EndProgress2Event += () =>
+                        entropyCalculator.EndProgress2Event += static () =>
                         {
                             _progressTask2?.StopTask();
                             _progressTask2 = null;

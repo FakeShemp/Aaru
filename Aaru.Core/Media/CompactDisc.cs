@@ -131,28 +131,29 @@ public static class CompactDisc
                 if(deSub[p] != 0 && deSub[p] != 255) pOk = false;
 
                 for(var w = 0; w < 8; w++)
-                    if((deSub[p] >> w & 1) > 0)
-                        pWeight++;
+                {
+                    if((deSub[p] >> w & 1) > 0) pWeight++;
+                }
             }
 
             // This seems to be a somewhat common pattern
-            bool rOk = deSub.Skip(subPos + 24).Take(12).All(r => r == 0x00) ||
-                       deSub.Skip(subPos + 24).Take(12).All(r => r == 0xFF);
+            bool rOk = deSub.Skip(subPos + 24).Take(12).All(static r => r == 0x00) ||
+                       deSub.Skip(subPos + 24).Take(12).All(static r => r == 0xFF);
 
-            bool sOk = deSub.Skip(subPos + 36).Take(12).All(s => s == 0x00) ||
-                       deSub.Skip(subPos + 36).Take(12).All(s => s == 0xFF);
+            bool sOk = deSub.Skip(subPos + 36).Take(12).All(static s => s == 0x00) ||
+                       deSub.Skip(subPos + 36).Take(12).All(static s => s == 0xFF);
 
-            bool tOk = deSub.Skip(subPos + 48).Take(12).All(t => t == 0x00) ||
-                       deSub.Skip(subPos + 48).Take(12).All(t => t == 0xFF);
+            bool tOk = deSub.Skip(subPos + 48).Take(12).All(static t => t == 0x00) ||
+                       deSub.Skip(subPos + 48).Take(12).All(static t => t == 0xFF);
 
-            bool uOk = deSub.Skip(subPos + 60).Take(12).All(u => u == 0x00) ||
-                       deSub.Skip(subPos + 60).Take(12).All(u => u == 0xFF);
+            bool uOk = deSub.Skip(subPos + 60).Take(12).All(static u => u == 0x00) ||
+                       deSub.Skip(subPos + 60).Take(12).All(static u => u == 0xFF);
 
-            bool vOk = deSub.Skip(subPos + 72).Take(12).All(v => v == 0x00) ||
-                       deSub.Skip(subPos + 72).Take(12).All(v => v == 0xFF);
+            bool vOk = deSub.Skip(subPos + 72).Take(12).All(static v => v == 0x00) ||
+                       deSub.Skip(subPos + 72).Take(12).All(static v => v == 0xFF);
 
-            bool wOk = deSub.Skip(subPos + 84).Take(12).All(w => w == 0x00) ||
-                       deSub.Skip(subPos + 84).Take(12).All(w => w == 0xFF);
+            bool wOk = deSub.Skip(subPos + 84).Take(12).All(static w => w == 0x00) ||
+                       deSub.Skip(subPos + 84).Take(12).All(static w => w == 0xFF);
 
             bool rwOk         = rOk && sOk && tOk && uOk && vOk && wOk;
             var  rwPacket     = false;
@@ -176,11 +177,13 @@ public static class CompactDisc
             if(!pOk && fixSubchannel)
             {
                 if(pWeight >= 48)
-                    for(int p = subPos; p < subPos + 12; p++)
-                        deSub[p] = 255;
+                {
+                    for(int p = subPos; p < subPos + 12; p++) deSub[p] = 255;
+                }
                 else
-                    for(int p = subPos; p < subPos + 12; p++)
-                        deSub[p] = 0;
+                {
+                    for(int p = subPos; p < subPos + 12; p++) deSub[p] = 0;
+                }
 
                 pOk    = true;
                 @fixed = true;
@@ -404,8 +407,8 @@ public static class CompactDisc
                             // When we are not, we go from index 0.
                             smallestPregapLbaPerTrack.TryAdd(trackNo, dumping ? 1 : 0);
 
-                            uint firstTrackNumberInSameSession =
-                                tracks.Where(t => t.Session == tracks[i].Session).Min(t => t.Sequence);
+                            uint firstTrackNumberInSameSession = tracks.Where(t => t.Session == tracks[i].Session)
+                                                                       .Min(static t => t.Sequence);
 
                             if(tracks[i].Sequence == firstTrackNumberInSameSession) continue;
 
@@ -1502,7 +1505,7 @@ public static class CompactDisc
             // Hidden track
             if(track.Sequence == 0)
             {
-                track      = tracks.FirstOrDefault(t => (int)t.Sequence == 1);
+                track      = tracks.FirstOrDefault(static t => (int)t.Sequence == 1);
                 trackStart = 0;
                 pregap     = track?.StartSector ?? 0;
             }

@@ -72,7 +72,8 @@ public class Remote : IDisposable
         {
             IPHostEntry ipHostEntry = Dns.GetHostEntry(_host);
 
-            ipAddress = ipHostEntry.AddressList.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork);
+            ipAddress =
+                ipHostEntry.AddressList.FirstOrDefault(static a => a.AddressFamily == AddressFamily.InterNetwork);
         }
 
         if(ipAddress is null)
@@ -89,7 +90,7 @@ public class Remote : IDisposable
 
         AaruLogging.WriteLine(Localization.Connected_to_0, uri.Host);
 
-        byte[] hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
+        var hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
 
         int len = Receive(_socket, hdrBuf, hdrBuf.Length, SocketFlags.Peek);
 
@@ -238,7 +239,7 @@ public class Remote : IDisposable
                 return false;
             }
 
-            byte[] hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
+            var hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
 
             len = Receive(_socket, hdrBuf, hdrBuf.Length, SocketFlags.Peek);
 
@@ -331,7 +332,7 @@ public class Remote : IDisposable
             return [];
         }
 
-        byte[] hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
+        var hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
 
         len = Receive(_socket, hdrBuf, hdrBuf.Length, SocketFlags.Peek);
 
@@ -451,7 +452,7 @@ public class Remote : IDisposable
             return false;
         }
 
-        byte[] hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
+        var hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
 
         len = Receive(_socket, hdrBuf, hdrBuf.Length, SocketFlags.Peek);
 
@@ -525,8 +526,8 @@ public class Remote : IDisposable
     public int SendScsiCommand(Span<byte>    cdb,       ref byte[] buffer,   Span<byte> senseBuffer, uint timeout,
                                ScsiDirection direction, out double duration, out bool   sense)
     {
-        duration    = 0;
-        sense       = true;
+        duration = 0;
+        sense    = true;
 
         var cmdPkt = new AaruPacketCmdScsi
         {
@@ -548,7 +549,7 @@ public class Remote : IDisposable
         cmdPkt.hdr.len = (uint)(Marshal.SizeOf<AaruPacketCmdScsi>() + cmdPkt.cdb_len + cmdPkt.buf_len);
 
         byte[] pktBuf = Marshal.StructureToByteArrayLittleEndian(cmdPkt);
-        byte[] buf    = new byte[cmdPkt.hdr.len];
+        var    buf    = new byte[cmdPkt.hdr.len];
 
         Array.Copy(pktBuf, 0, buf, 0, Marshal.SizeOf<AaruPacketCmdScsi>());
 
@@ -570,7 +571,7 @@ public class Remote : IDisposable
             return -1;
         }
 
-        byte[] hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
+        var hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
 
         len = Receive(_socket, hdrBuf, hdrBuf.Length, SocketFlags.Peek);
 
@@ -661,7 +662,7 @@ public class Remote : IDisposable
         cmdPkt.hdr.len = (uint)(Marshal.SizeOf<AaruPacketCmdAtaChs>() + cmdPkt.buf_len);
 
         byte[] pktBuf = Marshal.StructureToByteArrayLittleEndian(cmdPkt);
-        byte[] buf    = new byte[cmdPkt.hdr.len];
+        var    buf    = new byte[cmdPkt.hdr.len];
 
         Array.Copy(pktBuf, 0, buf, 0, Marshal.SizeOf<AaruPacketCmdAtaChs>());
 
@@ -676,7 +677,7 @@ public class Remote : IDisposable
             return -1;
         }
 
-        byte[] hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
+        var hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
 
         len = Receive(_socket, hdrBuf, hdrBuf.Length, SocketFlags.Peek);
 
@@ -767,7 +768,7 @@ public class Remote : IDisposable
         cmdPkt.hdr.len = (uint)(Marshal.SizeOf<AaruPacketCmdAtaLba28>() + cmdPkt.buf_len);
 
         byte[] pktBuf = Marshal.StructureToByteArrayLittleEndian(cmdPkt);
-        byte[] buf    = new byte[cmdPkt.hdr.len];
+        var    buf    = new byte[cmdPkt.hdr.len];
 
         Array.Copy(pktBuf, 0, buf, 0, Marshal.SizeOf<AaruPacketCmdAtaLba28>());
 
@@ -782,7 +783,7 @@ public class Remote : IDisposable
             return -1;
         }
 
-        byte[] hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
+        var hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
 
         len = Receive(_socket, hdrBuf, hdrBuf.Length, SocketFlags.Peek);
 
@@ -873,7 +874,7 @@ public class Remote : IDisposable
         cmdPkt.hdr.len = (uint)(Marshal.SizeOf<AaruPacketCmdAtaLba48>() + cmdPkt.buf_len);
 
         byte[] pktBuf = Marshal.StructureToByteArrayLittleEndian(cmdPkt);
-        byte[] buf    = new byte[cmdPkt.hdr.len];
+        var    buf    = new byte[cmdPkt.hdr.len];
 
         Array.Copy(pktBuf, 0, buf, 0, Marshal.SizeOf<AaruPacketCmdAtaLba48>());
 
@@ -888,7 +889,7 @@ public class Remote : IDisposable
             return -1;
         }
 
-        byte[] hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
+        var hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
 
         len = Receive(_socket, hdrBuf, hdrBuf.Length, SocketFlags.Peek);
 
@@ -985,7 +986,7 @@ public class Remote : IDisposable
         cmdPkt.hdr.len = (uint)(Marshal.SizeOf<AaruPacketCmdSdhci>() + cmdPkt.command.buf_len);
 
         byte[] pktBuf = Marshal.StructureToByteArrayLittleEndian(cmdPkt);
-        byte[] buf    = new byte[cmdPkt.hdr.len];
+        var    buf    = new byte[cmdPkt.hdr.len];
 
         Array.Copy(pktBuf, 0, buf, 0, Marshal.SizeOf<AaruPacketCmdSdhci>());
 
@@ -1000,7 +1001,7 @@ public class Remote : IDisposable
             return -1;
         }
 
-        byte[] hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
+        var hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
 
         len = Receive(_socket, hdrBuf, hdrBuf.Length, SocketFlags.Peek);
 
@@ -1081,7 +1082,7 @@ public class Remote : IDisposable
             return DeviceType.Unknown;
         }
 
-        byte[] hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
+        var hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
 
         len = Receive(_socket, hdrBuf, hdrBuf.Length, SocketFlags.Peek);
 
@@ -1159,7 +1160,7 @@ public class Remote : IDisposable
             return false;
         }
 
-        byte[] hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
+        var hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
 
         len = Receive(_socket, hdrBuf, hdrBuf.Length, SocketFlags.Peek);
 
@@ -1284,7 +1285,7 @@ public class Remote : IDisposable
             return false;
         }
 
-        byte[] hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
+        var hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
 
         len = Receive(_socket, hdrBuf, hdrBuf.Length, SocketFlags.Peek);
 
@@ -1375,7 +1376,7 @@ public class Remote : IDisposable
             return false;
         }
 
-        byte[] hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
+        var hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
 
         len = Receive(_socket, hdrBuf, hdrBuf.Length, SocketFlags.Peek);
 
@@ -1455,7 +1456,7 @@ public class Remote : IDisposable
             return false;
         }
 
-        byte[] hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
+        var hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
 
         len = Receive(_socket, hdrBuf, hdrBuf.Length, SocketFlags.Peek);
 
@@ -1509,7 +1510,7 @@ public class Remote : IDisposable
     /// <returns>Retrieved number of bytes</returns>
     static int Receive(Socket socket, byte[] buffer, int size, SocketFlags socketFlags)
     {
-        int offset = 0;
+        var offset = 0;
 
         while(size > 0)
         {
@@ -1572,7 +1573,8 @@ public class Remote : IDisposable
         long packetSize = Marshal.SizeOf<AaruPacketMultiCmdSdhci>() +
                           Marshal.SizeOf<AaruCmdSdhci>() * commands.LongLength;
 
-        packetSize = commands.Aggregate(packetSize, (current, command) => current + (command.buffer?.Length ?? 0));
+        packetSize =
+            commands.Aggregate(packetSize, static (current, command) => current + (command.buffer?.Length ?? 0));
 
         var packet = new AaruPacketMultiCmdSdhci
         {
@@ -1587,7 +1589,7 @@ public class Remote : IDisposable
             }
         };
 
-        byte[] buf = new byte[packetSize];
+        var    buf = new byte[packetSize];
         byte[] tmp = Marshal.StructureToByteArrayLittleEndian(packet);
 
         Array.Copy(tmp, 0, buf, 0, tmp.Length);
@@ -1613,8 +1615,8 @@ public class Remote : IDisposable
             off += tmp.Length;
         }
 
-        foreach(Devices.Device.MmcSingleCommand command in
-                commands.Where(command => (command.buffer?.Length ?? 0) != 0))
+        foreach(Devices.Device.MmcSingleCommand command in commands.Where(static command =>
+                                                                              (command.buffer?.Length ?? 0) != 0))
         {
             Array.Copy(command.buffer, 0, buf, off, command.buffer.Length);
 
@@ -1630,7 +1632,7 @@ public class Remote : IDisposable
             return -1;
         }
 
-        byte[] hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
+        var hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
 
         len = Receive(_socket, hdrBuf, hdrBuf.Length, SocketFlags.Peek);
 
@@ -1681,7 +1683,7 @@ public class Remote : IDisposable
 
         off = Marshal.SizeOf<AaruPacketMultiCmdSdhci>();
 
-        int error = 0;
+        var error = 0;
 
         foreach(Devices.Device.MmcSingleCommand command in commands)
         {
@@ -1723,7 +1725,7 @@ public class Remote : IDisposable
     {
         sense    = false;
         duration = 0;
-        int error = 0;
+        var error = 0;
 
         foreach(Devices.Device.MmcSingleCommand command in commands)
         {
@@ -1777,7 +1779,7 @@ public class Remote : IDisposable
             return false;
         }
 
-        byte[] hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
+        var hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
 
         len = Receive(_socket, hdrBuf, hdrBuf.Length, SocketFlags.Peek);
 
@@ -1879,7 +1881,7 @@ public class Remote : IDisposable
             return false;
         }
 
-        byte[] hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
+        var hdrBuf = new byte[Marshal.SizeOf<AaruPacketHeader>()];
 
         len = Receive(_socket, hdrBuf, hdrBuf.Length, SocketFlags.Peek);
 

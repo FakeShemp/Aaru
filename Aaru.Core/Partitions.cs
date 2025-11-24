@@ -70,10 +70,7 @@ public static class Partitions
 
                     foundPartitions.AddRange(partitions);
 
-                    AaruLogging.Debug(MODULE_NAME,
-                                               Localization.Core.Found_0_at_1,
-                                               plugin.Name,
-                                               tapeFile.FirstBlock);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_0_at_1, plugin.Name, tapeFile.FirstBlock);
                 }
 
                 checkedLocations.Add(tapeFile.FirstBlock);
@@ -93,10 +90,7 @@ public static class Partitions
 
                     foundPartitions.AddRange(partitions);
 
-                    AaruLogging.Debug(MODULE_NAME,
-                                               Localization.Core.Found_0_at_1,
-                                               plugin.Name,
-                                               imagePartition.Start);
+                    AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_0_at_1, plugin.Name, imagePartition.Start);
                 }
 
                 checkedLocations.Add(imagePartition.Start);
@@ -135,17 +129,11 @@ public static class Partitions
             {
                 if(plugin is null) continue;
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Core.Trying_0_at_1,
-                                           plugin.Name,
-                                           foundPartitions[0].Start);
+                AaruLogging.Debug(MODULE_NAME, Localization.Core.Trying_0_at_1, plugin.Name, foundPartitions[0].Start);
 
                 if(!plugin.GetInformation(image, out List<Partition> partitions, foundPartitions[0].Start)) continue;
 
-                AaruLogging.Debug(MODULE_NAME,
-                                           Localization.Core.Found_0_at_1,
-                                           plugin.Name,
-                                           foundPartitions[0].Start);
+                AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_0_at_1, plugin.Name, foundPartitions[0].Start);
 
                 children.AddRange(partitions);
             }
@@ -179,12 +167,12 @@ public static class Partitions
         // Be sure that device partitions are not excluded if not mapped by any scheme...
         if(tapeImage is not null)
         {
-            var startLocations = childPartitions.Select(detectedPartition => detectedPartition.Start).ToList();
+            var startLocations = childPartitions.Select(static detectedPartition => detectedPartition.Start).ToList();
 
             if(tapeImage.Files != null)
             {
                 childPartitions.AddRange(tapeImage.Files.Where(f => !startLocations.Contains(f.FirstBlock))
-                                                  .Select(tapeFile => new Partition
+                                                  .Select(static tapeFile => new Partition
                                                    {
                                                        Start    = tapeFile.FirstBlock,
                                                        Length   = tapeFile.LastBlock - tapeFile.FirstBlock + 1,
@@ -195,7 +183,7 @@ public static class Partitions
 
         if(partitionableImage is not null)
         {
-            var startLocations = childPartitions.Select(detectedPartition => detectedPartition.Start).ToList();
+            var startLocations = childPartitions.Select(static detectedPartition => detectedPartition.Start).ToList();
 
             if(partitionableImage.Partitions != null)
             {
@@ -205,9 +193,9 @@ public static class Partitions
             }
         }
 
-        Partition[] childArray = childPartitions.OrderBy(part => part.Start)
-                                                .ThenBy(part => part.Length)
-                                                .ThenBy(part => part.Scheme)
+        Partition[] childArray = childPartitions.OrderBy(static part => part.Start)
+                                                .ThenBy(static part => part.Length)
+                                                .ThenBy(static part => part.Scheme)
                                                 .ToArray();
 
         for(long i = 0; i < childArray.LongLength; i++) childArray[i].Sequence = (ulong)i;

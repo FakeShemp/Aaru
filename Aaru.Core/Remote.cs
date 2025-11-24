@@ -145,18 +145,21 @@ public static class Remote
             {
                 List<DateTime> latestAll = [];
 
-                if(await mctx.UsbVendors.AnyAsync()) latestAll.Add(await mctx.UsbVendors.MaxAsync(v => v.ModifiedWhen));
+                if(await mctx.UsbVendors.AnyAsync())
+                    latestAll.Add(await mctx.UsbVendors.MaxAsync(static v => v.ModifiedWhen));
 
                 if(await mctx.UsbProducts.AnyAsync())
-                    latestAll.Add(await mctx.UsbProducts.MaxAsync(p => p.ModifiedWhen));
+                    latestAll.Add(await mctx.UsbProducts.MaxAsync(static p => p.ModifiedWhen));
 
-                if(await mctx.CdOffsets.AnyAsync()) latestAll.Add(await mctx.CdOffsets.MaxAsync(o => o.ModifiedWhen));
+                if(await mctx.CdOffsets.AnyAsync())
+                    latestAll.Add(await mctx.CdOffsets.MaxAsync(static o => o.ModifiedWhen));
 
-                if(await mctx.Devices.AnyAsync()) latestAll.Add(await mctx.Devices.MaxAsync(d => d.LastSynchronized));
+                if(await mctx.Devices.AnyAsync())
+                    latestAll.Add(await mctx.Devices.MaxAsync(static d => d.LastSynchronized));
 
                 if(latestAll.Any())
                 {
-                    latest     = latestAll.Max(t => t);
+                    latest     = latestAll.Max(static t => t);
                     lastUpdate = (latest.ToFileTimeUtc() - new DateTime(1970, 1, 1).ToFileTimeUtc()) / 10000000;
                 }
             }

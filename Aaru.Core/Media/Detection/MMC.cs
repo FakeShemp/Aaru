@@ -127,7 +127,7 @@ public static class MMC
 
         byte[] syncMark = [0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00];
 
-        byte[] testMark = new byte[12];
+        var testMark = new byte[12];
         Array.Copy(sector, 0, testMark, 0, 12);
 
         return syncMark.SequenceEqual(testMark) && (sector[0xF] == 0 || sector[0xF] == 1 || sector[0xF] == 2);
@@ -141,9 +141,9 @@ public static class MMC
 
         byte[] syncMark = [0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00];
 
-        byte[] testMark = new byte[12];
+        var testMark = new byte[12];
 
-        for(int i = 0; i <= 2336; i++)
+        for(var i = 0; i <= 2336; i++)
         {
             Array.Copy(sector, i, testMark, 0, 12);
 
@@ -177,7 +177,7 @@ public static class MMC
 
     static byte[] DescrambleAndFixOffset(byte[] sector, int offsetBytes, int sectorsForOffset)
     {
-        byte[] descrambled = new byte[2352];
+        var descrambled = new byte[2352];
 
         int offsetFix = offsetBytes < 0 ? 2352 * sectorsForOffset + offsetBytes : offsetBytes;
 
@@ -200,7 +200,7 @@ public static class MMC
 
         if(!isData || sector0[0xF] != 2 && sector0[0xF] != 1) return false;
 
-        byte[] testMark = new byte[4];
+        var testMark = new byte[4];
         Array.Copy(sector16, 24, testMark, 0, 4);
 
         return cdiMark.SequenceEqual(testMark);
@@ -210,13 +210,13 @@ public static class MMC
     {
         if(videoFrame is null || videoFrame.Length < _videoNowColorFrameMarker.Length) return false;
 
-        byte[] buffer = new byte[_videoNowColorFrameMarker.Length];
+        var buffer = new byte[_videoNowColorFrameMarker.Length];
 
-        for(int framePosition = 0; framePosition + buffer.Length < videoFrame.Length; framePosition++)
+        for(var framePosition = 0; framePosition + buffer.Length < videoFrame.Length; framePosition++)
         {
             Array.Copy(videoFrame, framePosition, buffer, 0, buffer.Length);
 
-            for(int ab = 9; ab < buffer.Length; ab += 10) buffer[ab] = 0;
+            for(var ab = 9; ab < buffer.Length; ab += 10) buffer[ab] = 0;
 
             if(!_videoNowColorFrameMarker.SequenceEqual(buffer)) continue;
 
@@ -228,13 +228,13 @@ public static class MMC
 
     internal static int GetVideoNowColorOffset(byte[] data)
     {
-        byte[] buffer = new byte[_videoNowColorFrameMarker.Length];
+        var buffer = new byte[_videoNowColorFrameMarker.Length];
 
-        for(int framePosition = 0; framePosition + buffer.Length < data.Length; framePosition++)
+        for(var framePosition = 0; framePosition + buffer.Length < data.Length; framePosition++)
         {
             Array.Copy(data, framePosition, buffer, 0, buffer.Length);
 
-            for(int ab = 9; ab < buffer.Length; ab += 10) buffer[ab] = 0;
+            for(var ab = 9; ab < buffer.Length; ab += 10) buffer[ab] = 0;
 
             if(!_videoNowColorFrameMarker.SequenceEqual(buffer)) continue;
 
@@ -309,10 +309,10 @@ public static class MMC
                         };
         }
 
-        if(decodedToc?.TrackDescriptors.Any(t => t.SessionNumber == 2) == true)
+        if(decodedToc?.TrackDescriptors.Any(static t => t.SessionNumber == 2) == true)
         {
-            secondSessionFirstTrack =
-                decodedToc.Value.TrackDescriptors.Where(t => t.SessionNumber == 2).Min(t => t.POINT);
+            secondSessionFirstTrack = decodedToc.Value.TrackDescriptors.Where(static t => t.SessionNumber == 2)
+                                                .Min(static t => t.POINT);
         }
 
         if(mediaType is MediaType.CD or MediaType.CDROMXA or MediaType.CDI)
@@ -332,15 +332,15 @@ public static class MMC
 
         if(mediaType is MediaType.CD or MediaType.CDROMXA)
         {
-            bool hasDataTrack                  = false;
-            bool hasAudioTrack                 = false;
-            bool allFirstSessionTracksAreAudio = true;
-            bool hasVideoTrack                 = false;
+            var hasDataTrack                  = false;
+            var hasAudioTrack                 = false;
+            var allFirstSessionTracksAreAudio = true;
+            var hasVideoTrack                 = false;
 
             if(decodedToc.HasValue)
             {
                 FullTOC.TrackDataDescriptor a0Track =
-                    decodedToc.Value.TrackDescriptors.FirstOrDefault(t => t is { POINT: 0xA0, ADR: 1 });
+                    decodedToc.Value.TrackDescriptors.FirstOrDefault(static t => t is { POINT: 0xA0, ADR: 1 });
 
                 if(a0Track.POINT == 0xA0)
                 {
@@ -361,7 +361,7 @@ public static class MMC
                 }
 
                 foreach(FullTOC.TrackDataDescriptor track in
-                        decodedToc.Value.TrackDescriptors.Where(t => t.POINT is > 0 and <= 0x99))
+                        decodedToc.Value.TrackDescriptors.Where(static t => t.POINT is > 0 and <= 0x99))
                 {
                     if(track.TNO == 1 &&
                        ((TocControl)(track.CONTROL & 0x0D) == TocControl.DataTrack ||
@@ -371,11 +371,11 @@ public static class MMC
                     if((TocControl)(track.CONTROL & 0x0D) == TocControl.DataTrack ||
                        (TocControl)(track.CONTROL & 0x0D) == TocControl.DataTrackIncremental)
                     {
-                        uint startAddress = (uint)(track.PHOUR * 3600 * 75 +
-                                                   track.PMIN  * 60   * 75 +
-                                                   track.PSEC  * 75        +
-                                                   track.PFRAME -
-                                                   150);
+                        var startAddress = (uint)(track.PHOUR * 3600 * 75 +
+                                                  track.PMIN  * 60   * 75 +
+                                                  track.PSEC  * 75        +
+                                                  track.PFRAME -
+                                                  150);
 
                         if(startAddress < startOfFirstDataTrack) startOfFirstDataTrack = startAddress;
 
@@ -428,17 +428,17 @@ public static class MMC
             if(mediaType is MediaType.CD or MediaType.CDROM && hasDataTrack)
             {
                 foreach(uint startAddress in decodedToc.Value.TrackDescriptors
-                                                       .Where(t => t.POINT is > 0 and <= 0x99 &&
-                                                                   ((TocControl)(t.CONTROL & 0x0D) ==
-                                                                    TocControl.DataTrack ||
-                                                                    (TocControl)(t.CONTROL & 0x0D) ==
-                                                                    TocControl.DataTrackIncremental))
-                                                       .Select(track => (uint)(track.PHOUR * 3600 * 75 +
-                                                                               track.PMIN  * 60   * 75 +
-                                                                               track.PSEC  * 75        +
-                                                                               track.PFRAME -
-                                                                               150) +
-                                                                        16))
+                                                       .Where(static t => t.POINT is > 0 and <= 0x99 &&
+                                                                          ((TocControl)(t.CONTROL & 0x0D) ==
+                                                                           TocControl.DataTrack ||
+                                                                           (TocControl)(t.CONTROL & 0x0D) ==
+                                                                           TocControl.DataTrackIncremental))
+                                                       .Select(static track => (uint)(track.PHOUR     * 3600 * 75 +
+                                                                                           track.PMIN * 60   * 75 +
+                                                                                           track.PSEC * 75        +
+                                                                                           track.PFRAME -
+                                                                                           150) +
+                                                                               16))
                 {
                     sense = dev.ReadCd(out cmdBuf,
                                        out _,
@@ -489,11 +489,11 @@ public static class MMC
             FullTOC.TrackDataDescriptor secondSessionFirstTrackTrack =
                 decodedToc.Value.TrackDescriptors.First(t => t.POINT == secondSessionFirstTrack);
 
-            uint firstSectorSecondSessionFirstTrack = (uint)(secondSessionFirstTrackTrack.PHOUR * 3600 * 75 +
-                                                             secondSessionFirstTrackTrack.PMIN  * 60   * 75 +
-                                                             secondSessionFirstTrackTrack.PSEC  * 75        +
-                                                             secondSessionFirstTrackTrack.PFRAME -
-                                                             150);
+            var firstSectorSecondSessionFirstTrack = (uint)(secondSessionFirstTrackTrack.PHOUR * 3600 * 75 +
+                                                            secondSessionFirstTrackTrack.PMIN  * 60   * 75 +
+                                                            secondSessionFirstTrackTrack.PSEC  * 75        +
+                                                            secondSessionFirstTrackTrack.PFRAME -
+                                                            150);
 
             sense = dev.ReadCd(out cmdBuf,
                                out _,
@@ -580,7 +580,7 @@ public static class MMC
 
         videoNowColorFrame = new byte[9 * 2352];
 
-        for(int i = 0; i < 9; i++)
+        for(var i = 0; i < 9; i++)
         {
             sense = dev.ReadCd(out cmdBuf,
                                out _,
@@ -631,15 +631,16 @@ public static class MMC
 
         FullTOC.TrackDataDescriptor? firstTrack =
             decodedToc?.TrackDescriptors.FirstOrDefault(t => t.POINT ==
-                                                             decodedToc.Value.TrackDescriptors.Min(m => m.POINT));
+                                                             decodedToc.Value.TrackDescriptors
+                                                                       .Min(static m => m.POINT));
 
         if(firstTrack?.POINT is >= 1 and < 0xA0)
         {
-            uint firstTrackSector = (uint)(firstTrack.Value.PHOUR * 3600 * 75 +
-                                           firstTrack.Value.PMIN  * 60   * 75 +
-                                           firstTrack.Value.PSEC  * 75        +
-                                           firstTrack.Value.PFRAME -
-                                           150);
+            var firstTrackSector = (uint)(firstTrack.Value.PHOUR * 3600 * 75 +
+                                          firstTrack.Value.PMIN  * 60   * 75 +
+                                          firstTrack.Value.PSEC  * 75        +
+                                          firstTrack.Value.PFRAME -
+                                          150);
 
             // Check for hidden data before start of track 1
             if(firstTrackSector > 0)
@@ -707,8 +708,8 @@ public static class MMC
 
                             if(combinedOffset % 2352 != 0) sectorsForOffset++;
 
-                            int lba0  = 0;
-                            int lba16 = 16;
+                            var lba0  = 0;
+                            var lba16 = 16;
 
                             if(combinedOffset < 0)
                             {
@@ -1602,8 +1603,8 @@ public static class MMC
                    isoSector[5] != 0x31)
                     return;
 
-                uint rootStart  = BitConverter.ToUInt32(isoSector, 158);
-                uint rootLength = BitConverter.ToUInt32(isoSector, 166);
+                var rootStart  = BitConverter.ToUInt32(isoSector, 158);
+                var rootLength = BitConverter.ToUInt32(isoSector, 166);
 
                 if(rootStart == 0 || rootLength == 0) return;
 
@@ -1646,7 +1647,7 @@ public static class MMC
 
                 if(isoSector.Length < 2048) return;
 
-                int  rootPos   = 0;
+                var  rootPos   = 0;
                 uint pcdStart  = 0;
                 uint pcdLength = 0;
 
@@ -1654,8 +1655,8 @@ public static class MMC
                       rootPos                      < isoSector.Length &&
                       rootPos + isoSector[rootPos] <= isoSector.Length)
                 {
-                    int    nameLen = isoSector[rootPos + 32];
-                    byte[] tmpName = new byte[nameLen];
+                    int nameLen = isoSector[rootPos + 32];
+                    var tmpName = new byte[nameLen];
                     Array.Copy(isoSector, rootPos + 33, tmpName, 0, nameLen);
                     string name = StringHandlers.CToString(tmpName).ToUpperInvariant();
 
@@ -1709,7 +1710,7 @@ public static class MMC
 
                     if(isoSector.Length < 2048) return;
 
-                    for(int pi = 0; pi < pcdLength; pi++)
+                    for(var pi = 0; pi < pcdLength; pi++)
                     {
                         int  pcdPos  = pi * 2048;
                         uint infoPos = 0;
@@ -1718,8 +1719,8 @@ public static class MMC
                               pcdPos                     < isoSector.Length &&
                               pcdPos + isoSector[pcdPos] <= isoSector.Length)
                         {
-                            int    nameLen = isoSector[pcdPos + 32];
-                            byte[] tmpName = new byte[nameLen];
+                            int nameLen = isoSector[pcdPos + 32];
+                            var tmpName = new byte[nameLen];
                             Array.Copy(isoSector, pcdPos + 33, tmpName, 0, nameLen);
                             string name = StringHandlers.CToString(tmpName).ToUpperInvariant();
 
@@ -1754,7 +1755,7 @@ public static class MMC
 
                             if(sense) break;
 
-                            byte[] systemId = new byte[8];
+                            var systemId = new byte[8];
                             Array.Copy(isoSector, 0, systemId, 0, 8);
 
                             string id = StringHandlers.CToString(systemId).TrimEnd();
@@ -1845,7 +1846,7 @@ public static class MMC
                     // The decryption key is applied as XOR. As first byte is originally always NULL, it gives us the key :)
                     byte decryptByte = ps2BootSectors[0];
 
-                    for(int i = 0; i < 0x6000; i++) ps2BootSectors[i] ^= decryptByte;
+                    for(var i = 0; i < 0x6000; i++) ps2BootSectors[i] ^= decryptByte;
 
                     string ps2BootSectorsHash = Sha256Context.Data(ps2BootSectors, out _);
 
@@ -1865,7 +1866,7 @@ public static class MMC
 
                 if(sector0 != null)
                 {
-                    byte[] syncBytes = new byte[7];
+                    var syncBytes = new byte[7];
                     Array.Copy(sector0, 0, syncBytes, 0, 7);
 
                     if(_operaId.SequenceEqual(syncBytes))
@@ -1889,8 +1890,8 @@ public static class MMC
 
                 if(playdia1 != null && playdia2 != null)
                 {
-                    byte[] pd1 = new byte[_playdiaCopyright.Length];
-                    byte[] pd2 = new byte[_playdiaCopyright.Length];
+                    var pd1 = new byte[_playdiaCopyright.Length];
+                    var pd2 = new byte[_playdiaCopyright.Length];
 
                     Array.Copy(playdia1, 38, pd1, 0, pd1.Length);
                     Array.Copy(playdia2, 0,  pd2, 0, pd1.Length);
@@ -1907,7 +1908,7 @@ public static class MMC
 
                 if(secondDataSectorNotZero != null)
                 {
-                    byte[] pce = new byte[_pcEngineSignature.Length];
+                    var pce = new byte[_pcEngineSignature.Length];
                     Array.Copy(secondDataSectorNotZero, 32, pce, 0, pce.Length);
 
                     if(_pcEngineSignature.SequenceEqual(pce))
@@ -1922,7 +1923,7 @@ public static class MMC
 
                 if(firstDataSectorNotZero != null)
                 {
-                    byte[] pcfx = new byte[_pcFxSignature.Length];
+                    var pcfx = new byte[_pcFxSignature.Length];
                     Array.Copy(firstDataSectorNotZero, 0, pcfx, 0, pcfx.Length);
 
                     if(_pcFxSignature.SequenceEqual(pcfx))
@@ -1937,9 +1938,9 @@ public static class MMC
 
                 if(firstTrackSecondSessionAudio != null)
                 {
-                    byte[] jaguar = new byte[_atariSignature.Length];
+                    var jaguar = new byte[_atariSignature.Length];
 
-                    for(int i = 0; i + jaguar.Length <= firstTrackSecondSessionAudio.Length; i += 2)
+                    for(var i = 0; i + jaguar.Length <= firstTrackSecondSessionAudio.Length; i += 2)
                     {
                         Array.Copy(firstTrackSecondSessionAudio, i, jaguar, 0, jaguar.Length);
 
@@ -1955,7 +1956,7 @@ public static class MMC
 
                 if(firstTrackSecondSession?.Length >= 2336)
                 {
-                    byte[] milcd = new byte[2048];
+                    var milcd = new byte[2048];
                     Array.Copy(firstTrackSecondSession, 24, milcd, 0, 2048);
 
                     if(Dreamcast.DecodeIPBin(milcd).HasValue)
@@ -2001,13 +2002,13 @@ public static class MMC
 
                     if(!sense)
                     {
-                        bool cdg    = false;
-                        bool cdeg   = false;
-                        bool cdmidi = false;
+                        var cdg    = false;
+                        var cdeg   = false;
+                        var cdmidi = false;
 
-                        for(int i = 0; i < 8; i++)
+                        for(var i = 0; i < 8; i++)
                         {
-                            byte[] tmpSub = new byte[96];
+                            var tmpSub = new byte[96];
                             Array.Copy(subBuf, i * 96, tmpSub, 0, 96);
                             DetectRwPackets(tmpSub, out bool cdgPacket, out bool cdegPacket, out bool cdmidiPacket);
 
@@ -2121,8 +2122,8 @@ public static class MMC
                    isoSector[5] != 0x31)
                     return;
 
-                uint rootStart  = BitConverter.ToUInt32(isoSector, 158);
-                uint rootLength = BitConverter.ToUInt32(isoSector, 166);
+                var rootStart  = BitConverter.ToUInt32(isoSector, 158);
+                var rootLength = BitConverter.ToUInt32(isoSector, 166);
 
                 if(rootStart == 0 || rootLength == 0) return;
 
@@ -2175,7 +2176,7 @@ public static class MMC
                 uint         ps1Start      = 0;
                 uint         ps1Length     = 0;
 
-                for(int ri = 0; ri < rootLength; ri++)
+                for(var ri = 0; ri < rootLength; ri++)
                 {
                     int rootPos = ri * 2048;
 
@@ -2183,8 +2184,8 @@ public static class MMC
                           isoSector[rootPos]           > 0                &&
                           rootPos + isoSector[rootPos] <= isoSector.Length)
                     {
-                        int    nameLen = isoSector[rootPos + 32];
-                        byte[] tmpName = new byte[nameLen];
+                        int nameLen = isoSector[rootPos + 32];
+                        var tmpName = new byte[nameLen];
                         Array.Copy(isoSector, rootPos + 33, tmpName, 0, nameLen);
                         string name = StringHandlers.CToString(tmpName).ToUpperInvariant();
 
@@ -2294,8 +2295,8 @@ public static class MMC
                     {
                         using var sr = new StringReader(iplTxt);
 
-                        bool correctNeoGeoCd = true;
-                        int  lineNumber      = 0;
+                        var correctNeoGeoCd = true;
+                        var lineNumber      = 0;
 
                         while(sr.Peek() > 0)
                         {
@@ -2436,7 +2437,7 @@ public static class MMC
 
                     uint infoPos = 0;
 
-                    for(int vi = 0; vi < vcdLength; vi++)
+                    for(var vi = 0; vi < vcdLength; vi++)
                     {
                         int vcdPos = vi * 2048;
 
@@ -2444,8 +2445,8 @@ public static class MMC
                               isoSector[vcdPos]          > 0                &&
                               vcdPos + isoSector[vcdPos] <= isoSector.Length)
                         {
-                            int    nameLen = isoSector[vcdPos + 32];
-                            byte[] tmpName = new byte[nameLen];
+                            int nameLen = isoSector[vcdPos + 32];
+                            var tmpName = new byte[nameLen];
                             Array.Copy(isoSector, vcdPos + 33, tmpName, 0, nameLen);
                             string name = StringHandlers.CToString(tmpName).ToUpperInvariant();
 
@@ -2481,7 +2482,7 @@ public static class MMC
 
                         if(sense) break;
 
-                        byte[] systemId = new byte[8];
+                        var systemId = new byte[8];
                         Array.Copy(isoSector, 0, systemId, 0, 8);
 
                         string id = StringHandlers.CToString(systemId).TrimEnd();
@@ -2552,7 +2553,7 @@ public static class MMC
 
                     uint infoPos = 0;
 
-                    for(int pi = 0; pi < pcdLength; pi++)
+                    for(var pi = 0; pi < pcdLength; pi++)
                     {
                         int pcdPos = pi * 2048;
 
@@ -2560,8 +2561,8 @@ public static class MMC
                               isoSector[pcdPos]          > 0                &&
                               pcdPos + isoSector[pcdPos] <= isoSector.Length)
                         {
-                            int    nameLen = isoSector[pcdPos + 32];
-                            byte[] tmpName = new byte[nameLen];
+                            int nameLen = isoSector[pcdPos + 32];
+                            var tmpName = new byte[nameLen];
                             Array.Copy(isoSector, pcdPos + 33, tmpName, 0, nameLen);
                             string name = StringHandlers.CToString(tmpName).ToUpperInvariant();
 
@@ -2597,7 +2598,7 @@ public static class MMC
 
                         if(sense) break;
 
-                        byte[] systemId = new byte[8];
+                        var systemId = new byte[8];
                         Array.Copy(isoSector, 0, systemId, 0, 8);
 
                         string id = StringHandlers.CToString(systemId).TrimEnd();
@@ -2734,7 +2735,7 @@ public static class MMC
                     // The decryption key is applied as XOR. As first byte is originally always NULL, it gives us the key :)
                     byte decryptByte = ps2BootSectors[0];
 
-                    for(int i = 0; i < 0x6000; i++) ps2BootSectors[i] ^= decryptByte;
+                    for(var i = 0; i < 0x6000; i++) ps2BootSectors[i] ^= decryptByte;
 
                     string ps2BootSectorsHash = Sha256Context.Data(ps2BootSectors, out _);
 
@@ -2752,7 +2753,7 @@ public static class MMC
 
                 if(sector1 != null)
                 {
-                    byte[] tmp = new byte[_ps3Id.Length];
+                    var tmp = new byte[_ps3Id.Length];
                     Array.Copy(sector1, 0, tmp, 0, tmp.Length);
 
                     if(tmp.SequenceEqual(_ps3Id))
@@ -2809,7 +2810,7 @@ public static class MMC
                         case "BDU":
                             if(sector1 != null)
                             {
-                                byte[] tmp = new byte[_ps5Id.Length];
+                                var tmp = new byte[_ps5Id.Length];
                                 Array.Copy(sector1, 1024, tmp, 0, tmp.Length);
 
                                 if(tmp.SequenceEqual(_ps5Id))
@@ -2841,20 +2842,20 @@ public static class MMC
         cdegPacket   = false;
         cdmidiPacket = false;
 
-        byte[] cdSubRwPack1 = new byte[24];
-        byte[] cdSubRwPack2 = new byte[24];
-        byte[] cdSubRwPack3 = new byte[24];
-        byte[] cdSubRwPack4 = new byte[24];
+        var cdSubRwPack1 = new byte[24];
+        var cdSubRwPack2 = new byte[24];
+        var cdSubRwPack3 = new byte[24];
+        var cdSubRwPack4 = new byte[24];
 
-        int i = 0;
+        var i = 0;
 
-        for(int j = 0; j < 24; j++) cdSubRwPack1[j] = (byte)(subchannel[i++] & 0x3F);
+        for(var j = 0; j < 24; j++) cdSubRwPack1[j] = (byte)(subchannel[i++] & 0x3F);
 
-        for(int j = 0; j < 24; j++) cdSubRwPack2[j] = (byte)(subchannel[i++] & 0x3F);
+        for(var j = 0; j < 24; j++) cdSubRwPack2[j] = (byte)(subchannel[i++] & 0x3F);
 
-        for(int j = 0; j < 24; j++) cdSubRwPack3[j] = (byte)(subchannel[i++] & 0x3F);
+        for(var j = 0; j < 24; j++) cdSubRwPack3[j] = (byte)(subchannel[i++] & 0x3F);
 
-        for(int j = 0; j < 24; j++) cdSubRwPack4[j] = (byte)(subchannel[i++] & 0x3F);
+        for(var j = 0; j < 24; j++) cdSubRwPack4[j] = (byte)(subchannel[i++] & 0x3F);
 
         switch(cdSubRwPack1[0])
         {

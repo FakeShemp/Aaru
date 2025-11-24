@@ -114,9 +114,9 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
                    .Columns(new TaskDescriptionColumn(), new ProgressBarColumn(), new PercentageColumn())
                    .Start(ctx =>
                     {
-                        scanner.UpdateStatus += text => { AaruLogging.WriteLine(text); };
+                        scanner.UpdateStatus += static text => { AaruLogging.WriteLine(text); };
 
-                        scanner.StoppingErrorMessage += text => { AaruLogging.Error(text); };
+                        scanner.StoppingErrorMessage += static text => { AaruLogging.Error(text); };
 
                         scanner.UpdateProgress += (text, current, maximum) =>
                         {
@@ -139,7 +139,7 @@ sealed class MediaScanCommand : Command<MediaScanCommand.Settings>
 
                         scanner.InitProgress += () => { _progressTask1 = ctx.AddTask("Progress"); };
 
-                        scanner.EndProgress += () =>
+                        scanner.EndProgress += static () =>
                         {
                             _progressTask1?.StopTask();
                             _progressTask1 = null;

@@ -871,7 +871,8 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
             HashSet<int>             subchannelExtents         = [];
             Dictionary<byte, int>    smallestPregapLbaPerTrack = [];
 
-            foreach(SectorTagType tag in _inputFormat.Info.ReadableSectorTags.Where(t => t == SectorTagType.CdTrackIsrc)
+            foreach(SectorTagType tag in _inputFormat.Info.ReadableSectorTags
+                                                     .Where(static t => t == SectorTagType.CdTrackIsrc)
                                                      .Order())
             {
                 foreach(Track track in inputOptical.Tracks)
@@ -885,7 +886,7 @@ public sealed partial class ImageConvertViewModel : ViewModelBase
             }
 
             foreach(SectorTagType tag in _inputFormat.Info.ReadableSectorTags
-                                                     .Where(t => t == SectorTagType.CdTrackFlags)
+                                                     .Where(static t => t == SectorTagType.CdTrackFlags)
                                                      .Order())
             {
                 foreach(Track track in inputOptical.Tracks)

@@ -77,7 +77,7 @@ public sealed partial class AaruFormat
             ulong           currentTrackOffset = 0;
             List<Partition> partitions         = [];
 
-            foreach(Track track in Tracks.OrderBy(t => t.StartSector))
+            foreach(Track track in Tracks.OrderBy(static t => t.StartSector))
             {
                 partitions.Add(new Partition
                 {

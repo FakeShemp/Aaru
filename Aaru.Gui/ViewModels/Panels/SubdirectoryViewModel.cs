@@ -164,7 +164,7 @@ public sealed class SubdirectoryViewModel
                    filename.Contains('|')                                               ||
                    filename.Contains('?')                                               ||
                    filename.Contains('*')                                               ||
-                   filename.Any(c => c < 32)                                            ||
+                   filename.Any(static c => c < 32)                                     ||
                    filename.Equals("CON",  StringComparison.InvariantCultureIgnoreCase) ||
                    filename.Equals("PRN",  StringComparison.InvariantCultureIgnoreCase) ||
                    filename.Equals("AUX",  StringComparison.InvariantCultureIgnoreCase) ||

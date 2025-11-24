@@ -82,7 +82,7 @@ class MainClass
         if(args.Length == 1 && args[0].Equals("gui", StringComparison.InvariantCultureIgnoreCase))
             return Gui.Main.Start(args);
 
-        SentrySdk.Init(options =>
+        SentrySdk.Init(static options =>
         {
             // A Sentry Data Source Name (DSN) is required.
             // See https://docs.sentry.io/product/sentry-basics/dsn-explainer/
@@ -106,11 +106,11 @@ class MainClass
             options.IsGlobalModeEnabled = true;
         });
 
-        SentrySdk.ConfigureScope(scope => scope.SetExtra("Args", Environment.GetCommandLineArgs()));
+        SentrySdk.ConfigureScope(static scope => scope.SetExtra("Args", Environment.GetCommandLineArgs()));
 
         try
         {
-            AaruLogging.WriteLineEvent += (format, objects) =>
+            AaruLogging.WriteLineEvent += static (format, objects) =>
             {
                 if(objects is null)
                     AnsiConsole.MarkupLine(format);
@@ -125,7 +125,7 @@ class MainClass
                 Log.Information(formatted);
             };
 
-            AaruLogging.WriteEvent += (format, objects) =>
+            AaruLogging.WriteEvent += static (format, objects) =>
             {
                 if(objects is null)
                     AnsiConsole.Markup(format);
@@ -143,10 +143,10 @@ class MainClass
             AaruLogging.ErrorEvent   += Log.Error;
             AaruLogging.VerboseEvent += Log.Verbose;
 
-            AaruLogging.DebugEvent += (module, format, objects) =>
+            AaruLogging.DebugEvent += static (module, format, objects) =>
                 Log.Debug(string.Format($"[blue]({module})[/] {format}", objects));
 
-            AaruLogging.WriteExceptionEvent += (ex, message, objects) =>
+            AaruLogging.WriteExceptionEvent += static (ex, message, objects) =>
             {
                 // Display exception on console
                 AnsiConsole.WriteException(ex);
@@ -217,16 +217,16 @@ class MainClass
 
             // Remove duplicates
             foreach(var duplicate in ctx.SeenDevices.AsEnumerable()
-                                        .GroupBy(a => new
+                                        .GroupBy(static a => new
                                          {
                                              a.Manufacturer,
                                              a.Model,
                                              a.Revision,
                                              a.Bus
                                          })
-                                        .Where(a => a.Count() > 1)
+                                        .Where(static a => a.Count() > 1)
                                         .Distinct()
-                                        .Select(a => a.Key))
+                                        .Select(static a => a.Key))
             {
                 ctx.RemoveRange(ctx.SeenDevices
                                    .Where(d => d.Manufacturer == duplicate.Manufacturer &&
@@ -237,9 +237,9 @@ class MainClass
             }
 
             // Remove nulls
-            ctx.RemoveRange(ctx.SeenDevices.Where(d => d.Manufacturer == null &&
-                                                       d.Model        == null &&
-                                                       d.Revision     == null));
+            ctx.RemoveRange(ctx.SeenDevices.Where(static d => d.Manufacturer == null &&
+                                                              d.Model        == null &&
+                                                              d.Revision     == null));
 
             await ctx.SaveChangesAsync();
 
@@ -292,12 +292,12 @@ class MainClass
 
             var app = new CommandApp();
 
-            app.Configure(config =>
+            app.Configure(static config =>
             {
                 config.UseAssemblyInformationalVersion();
 
                 config.AddBranch<ArchiveFamily>("archive",
-                                                archive =>
+                                                static archive =>
                                                 {
                                                     archive.SetDescription(UI.Archive_Command_Family_Description);
 
@@ -317,7 +317,7 @@ class MainClass
                       .WithAlias("arc");
 
                 config.AddBranch<DeviceFamily>("device",
-                                               device =>
+                                               static device =>
                                                {
                                                    device.SetDescription(UI.Device_Command_Family_Description);
 
@@ -336,7 +336,7 @@ class MainClass
                       .WithAlias("dev");
 
                 config.AddBranch<FilesystemFamily>("filesystem",
-                                                   fs =>
+                                                   static fs =>
                                                    {
                                                        fs.SetDescription(UI.Filesystem_Command_Family_Description);
 
@@ -359,7 +359,7 @@ class MainClass
                       .WithAlias("fi");
 
                 config.AddBranch<ImageFamily>("image",
-                                              image =>
+                                              static image =>
                                               {
                                                   image.SetDescription(UI.Image_Command_Family_Description);
 
@@ -404,7 +404,7 @@ class MainClass
                       .WithAlias("img");
 
                 config.AddBranch<MediaFamily>("media",
-                                              media =>
+                                              static media =>
                                               {
                                                   media.SetDescription(UI.Media_Command_Family_Description);
 
@@ -423,7 +423,7 @@ class MainClass
                       .WithAlias("m");
 
                 config.AddBranch<DatabaseFamily>("database",
-                                                 db =>
+                                                 static db =>
                                                  {
                                                      db.SetDescription(UI.Database_Command_Family_Description);
 

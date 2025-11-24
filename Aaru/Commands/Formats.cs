@@ -168,8 +168,8 @@ sealed class FormatsCommand : Command<FormatsCommand.Settings>
         AnsiConsole.WriteLine();
 
         var idOnlyFilesystems = plugins.Filesystems.Where(t => !plugins.ReadOnlyFilesystems.ContainsKey(t.Key))
-                                       .Select(t => t.Value)
-                                       .Where(t => t is not null)
+                                       .Select(static t => t.Value)
+                                       .Where(static t => t is not null)
                                        .ToList();
 
         table = new Table

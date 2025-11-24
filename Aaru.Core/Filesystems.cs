@@ -59,7 +59,7 @@ public static class Filesystems
 
         idPlugins = [];
 
-        foreach(IFilesystem plugin in plugins.Filesystems.Values.Where(p => p is not null))
+        foreach(IFilesystem plugin in plugins.Filesystems.Values.Where(static p => p is not null))
         {
             try
             {

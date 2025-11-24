@@ -684,8 +684,8 @@ public sealed partial class Sidecar
 
             if(trk.Indexes?.Count > 0)
             {
-                xmlTrk.Indexes = trk.Indexes?.OrderBy(i => i.Key)
-                                    .Select(i => new TrackIndex
+                xmlTrk.Indexes = trk.Indexes?.OrderBy(static i => i.Key)
+                                    .Select(static i => new TrackIndex
                                      {
                                          Index = i.Key,
                                          Value = i.Value

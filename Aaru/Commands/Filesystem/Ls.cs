@@ -373,8 +373,10 @@ sealed class LsCommand : Command<LsCommand.Settings>
             Alignment = Justify.Left
         });
 
-        foreach(KeyValuePair<string, FileEntryInfo> entry in
-                stats.OrderBy(e => e.Value?.Attributes.HasFlag(FileAttributes.Directory) == false))
+        foreach(KeyValuePair<string, FileEntryInfo> entry in stats.OrderBy(static e =>
+                                                                               e.Value?.Attributes
+                                                                                  .HasFlag(FileAttributes.Directory) ==
+                                                                               false))
         {
             if(entry.Value != null)
             {
@@ -433,7 +435,7 @@ sealed class LsCommand : Command<LsCommand.Settings>
 
 
         foreach(KeyValuePair<string, FileEntryInfo> subdirectory in
-                stats.Where(e => e.Value?.Attributes.HasFlag(FileAttributes.Directory) == true))
+                stats.Where(static e => e.Value?.Attributes.HasFlag(FileAttributes.Directory) == true))
             ListFilesInDir(path + "/" + subdirectory.Key, fs);
     }
 

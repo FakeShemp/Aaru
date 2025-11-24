@@ -95,9 +95,9 @@ partial class Dump
         if(toc.HasValue)
         {
             FullTOC.TrackDataDescriptor[] sortedTracks =
-                toc.Value.TrackDescriptors.OrderBy(track => track.POINT).ToArray();
+                toc.Value.TrackDescriptors.OrderBy(static track => track.POINT).ToArray();
 
-            foreach(FullTOC.TrackDataDescriptor trk in sortedTracks.Where(trk => trk.ADR is 1 or 4))
+            foreach(FullTOC.TrackDataDescriptor trk in sortedTracks.Where(static trk => trk.ADR is 1 or 4))
             {
                 switch(trk.POINT)
                 {
@@ -190,8 +190,9 @@ partial class Dump
 
             if(oldToc.HasValue)
             {
-                foreach(TOC.CDTOCTrackDataDescriptor trk in oldToc.Value.TrackDescriptors.OrderBy(t => t.TrackNumber)
-                                                                  .Where(trk => trk.ADR is 1 or 4))
+                foreach(TOC.CDTOCTrackDataDescriptor trk in oldToc.Value.TrackDescriptors
+                                                                  .OrderBy(static t => t.TrackNumber)
+                                                                  .Where(static trk => trk.ADR is 1 or 4))
                 {
                     switch(trk.TrackNumber)
                     {
@@ -250,7 +251,7 @@ partial class Dump
 
         if(!sense)
         {
-            byte[] temp = new byte[8];
+            var temp = new byte[8];
 
             Array.Copy(cmdBuf, 0, temp, 0, 8);
             Array.Reverse(temp);

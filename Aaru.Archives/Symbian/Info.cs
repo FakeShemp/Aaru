@@ -55,7 +55,7 @@ public sealed partial class Symbian
 
         Stream stream = filter.GetDataForkStream();
 
-        byte[] hdr = new byte[Marshal.SizeOf<SymbianHeader>()];
+        var hdr = new byte[Marshal.SizeOf<SymbianHeader>()];
 
         stream.EnsureRead(hdr, 0, hdr.Length);
 
@@ -78,7 +78,7 @@ public sealed partial class Symbian
 
         if(stream.Length < Marshal.SizeOf<SymbianHeader>()) return;
 
-        byte[] buffer = new byte[Marshal.SizeOf<SymbianHeader>()];
+        var buffer = new byte[Marshal.SizeOf<SymbianHeader>()];
 
         stream.Seek(0, SeekOrigin.Begin);
         stream.EnsureRead(buffer, 0, buffer.Length);
@@ -164,7 +164,7 @@ public sealed partial class Symbian
 
         // Go to enumerate languages
         br.BaseStream.Seek(sh.lang_ptr, SeekOrigin.Begin);
-        for(int i = 0; i < sh.languages; i++) languages.Add(((LanguageCodes)br.ReadUInt16()).ToString("G"));
+        for(var i = 0; i < sh.languages; i++) languages.Add(((LanguageCodes)br.ReadUInt16()).ToString("G"));
 
         // Go to component record
         br.BaseStream.Seek(sh.comp_ptr, SeekOrigin.Begin);
@@ -186,7 +186,7 @@ public sealed partial class Symbian
         span                          = buffer;
         componentRecord.namesPointers = MemoryMarshal.Cast<byte, uint>(span)[..languages.Count].ToArray();
 
-        for(int i = 0; i < sh.languages; i++)
+        for(var i = 0; i < sh.languages; i++)
         {
             AaruLogging.Debug(MODULE_NAME,
                               Localization.Found_component_name_for_language_0_at_1_with_a_length_of_2_bytes,
@@ -202,7 +202,7 @@ public sealed partial class Symbian
         // Go to capabilities (???)
         br.BaseStream.Seek(sh.caps_ptr, SeekOrigin.Begin);
 
-        for(int i = 0; i < sh.capabilities; i++)
+        for(var i = 0; i < sh.capabilities; i++)
         {
             uint cap_Key   = br.ReadUInt32();
             uint cap_Value = br.ReadUInt32();
@@ -228,7 +228,7 @@ public sealed partial class Symbian
 
         description.AppendFormat(Localization.File_contains_0_languages, sh.languages).AppendLine();
 
-        for(int i = 0; i < languages.Count; i++)
+        for(var i = 0; i < languages.Count; i++)
         {
             if(i > 0) description.Append(", ");
             description.Append($"[italic][rosybrown]{languages[i]}[/][/]");
@@ -237,7 +237,7 @@ public sealed partial class Symbian
         description.AppendLine();
         description.AppendLine();
 
-        for(int i = 0; i < languages.Count; i++)
+        for(var i = 0; i < languages.Count; i++)
         {
             description.AppendFormat(Localization.Component_name_for_language_with_code_0_1,
                                      languages[i],
@@ -254,7 +254,7 @@ public sealed partial class Symbian
 
         if(sh.requisites > 0)
         {
-            for(int r = 0; r < sh.requisites; r++)
+            for(var r = 0; r < sh.requisites; r++)
             {
                 br.BaseStream.Seek(offset, SeekOrigin.Begin);
 
@@ -286,7 +286,7 @@ public sealed partial class Symbian
 
                 offset = (uint)br.BaseStream.Position;
 
-                for(int i = 0; i < languages.Count; i++)
+                for(var i = 0; i < languages.Count; i++)
                 {
                     br.BaseStream.Seek(requisiteRecord.namesPointers[i], SeekOrigin.Begin);
                     buffer = br.ReadBytes((int)requisiteRecord.namesLengths[i]);
@@ -311,7 +311,7 @@ public sealed partial class Symbian
 
         uint currentFile = 0;
         offset = sh.files_ptr;
-        int conditionLevel = 0;
+        var conditionLevel = 0;
         _options = [];
 
         // Get only the options records
@@ -338,11 +338,11 @@ public sealed partial class Symbian
         // Conditions do as well
         _conditions.Reverse();
 
-        if(_files.Any(t => t.language is null))
+        if(_files.Any(static t => t.language is null))
         {
             description.AppendLine(Localization.Files_for_all_languages);
 
-            foreach(DecodedFileRecord file in _files.Where(t => t.language is null))
+            foreach(DecodedFileRecord file in _files.Where(static t => t.language is null))
                 description.AppendLine($"[green]{Markup.Escape(file.destinationName)}[/]");
 
             description.AppendLine();
@@ -362,7 +362,7 @@ public sealed partial class Symbian
 
         if(_options.Count > 0)
         {
-            for(int i = 0; i < _options.Count; i++)
+            for(var i = 0; i < _options.Count; i++)
             {
                 OptionRecord option = _options[i];
 
