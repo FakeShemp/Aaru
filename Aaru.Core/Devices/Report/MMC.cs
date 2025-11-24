@@ -2650,9 +2650,17 @@ public sealed partial class DeviceReport
 
         Spectre.ProgressSingleSpinner(ctx =>
         {
-            ReadOnlySpan<byte> localSense;
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_10).IsIndeterminate();
-            sense      = _dev.ReadLong10(out buffer, out localSense, false, false, 16, 0xFFFF, _dev.Timeout, out _);
+
+            sense = _dev.ReadLong10(out buffer,
+                                    out ReadOnlySpan<byte> localSense,
+                                    false,
+                                    false,
+                                    16,
+                                    0xFFFF,
+                                    _dev.Timeout,
+                                    out _);
+
             senseBytes = localSense.ToArray();
         });
 
@@ -2847,10 +2855,13 @@ public sealed partial class DeviceReport
 
                 if(!triedLba0) return;
 
-                ReadOnlySpan<byte> localSense;
-
                 mediaTest.CanReadF1_06 =
-                    !_dev.MediaTekReadDram(out buffer, out localSense, 0, 0xB00, _dev.Timeout, out _);
+                    !_dev.MediaTekReadDram(out buffer,
+                                           out ReadOnlySpan<byte> localSense,
+                                           0,
+                                           0xB00,
+                                           _dev.Timeout,
+                                           out _);
 
                 mediaTest.ReadF1_06Data = mediaTest.CanReadF1_06 == true ? buffer : localSense.ToArray();
 
@@ -2993,10 +3004,13 @@ public sealed partial class DeviceReport
 
                 if(!triedLeadOut) return;
 
-                ReadOnlySpan<byte> localSense;
-
                 mediaTest.CanReadF1_06LeadOut =
-                    !_dev.MediaTekReadDram(out buffer, out localSense, 0, 0xB00, _dev.Timeout, out _);
+                    !_dev.MediaTekReadDram(out buffer,
+                                           out ReadOnlySpan<byte> localSense,
+                                           0,
+                                           0xB00,
+                                           _dev.Timeout,
+                                           out _);
 
                 mediaTest.ReadF1_06LeadOutData = mediaTest.CanReadF1_06LeadOut == true ? buffer : localSense.ToArray();
 

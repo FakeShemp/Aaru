@@ -675,9 +675,17 @@ public sealed partial class DeviceReport
 
         Spectre.ProgressSingleSpinner(ctx =>
         {
-            ReadOnlySpan<byte> localSense;
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_10).IsIndeterminate();
-            sense      = _dev.ReadLong10(out buffer, out localSense, false, false, 0, 0xFFFF, _dev.Timeout, out _);
+
+            sense = _dev.ReadLong10(out buffer,
+                                    out ReadOnlySpan<byte> localSense,
+                                    false,
+                                    false,
+                                    0,
+                                    0xFFFF,
+                                    _dev.Timeout,
+                                    out _);
+
             senseBytes = localSense.ToArray();
         });
 
@@ -707,9 +715,15 @@ public sealed partial class DeviceReport
 
         Spectre.ProgressSingleSpinner(ctx =>
         {
-            ReadOnlySpan<byte> localSense;
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_16).IsIndeterminate();
-            sense = _dev.ReadLong16(out buffer, out localSense, false, 0, 0xFFFF, _dev.Timeout, out _);
+
+            sense = _dev.ReadLong16(out buffer,
+                                    out ReadOnlySpan<byte> localSense,
+                                    false,
+                                    0,
+                                    0xFFFF,
+                                    _dev.Timeout,
+                                    out _);
 
             if(sense && !_dev.Error)
             {
@@ -1059,9 +1073,17 @@ public sealed partial class DeviceReport
 
         Spectre.ProgressSingleSpinner(ctx =>
         {
-            ReadOnlySpan<byte> localSense;
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_10).IsIndeterminate();
-            sense      = _dev.ReadLong10(out buffer, out localSense, false, false, 0, 0xFFFF, _dev.Timeout, out _);
+
+            sense = _dev.ReadLong10(out buffer,
+                                    out ReadOnlySpan<byte> localSense,
+                                    false,
+                                    false,
+                                    0,
+                                    0xFFFF,
+                                    _dev.Timeout,
+                                    out _);
+
             senseBytes = localSense.ToArray();
         });
 
@@ -1091,9 +1113,16 @@ public sealed partial class DeviceReport
 
         Spectre.ProgressSingleSpinner(ctx =>
         {
-            ReadOnlySpan<byte> localSense;
             ctx.AddTask(Localization.Core.Trying_SCSI_READ_LONG_16).IsIndeterminate();
-            sense      = _dev.ReadLong16(out buffer, out localSense, false, 0, 0xFFFF, _dev.Timeout, out _);
+
+            sense = _dev.ReadLong16(out buffer,
+                                    out ReadOnlySpan<byte> localSense,
+                                    false,
+                                    0,
+                                    0xFFFF,
+                                    _dev.Timeout,
+                                    out _);
+
             senseBytes = localSense.ToArray();
         });
 

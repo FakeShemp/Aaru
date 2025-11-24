@@ -253,10 +253,9 @@ sealed class ConvertImageCommand : Command<ConvertImageCommand.Settings>
         if(mediaCapabilityResult != (int)ErrorNumber.NoError) return mediaCapabilityResult;
 
         // Validate sector tags compatibility between formats
-        bool useLong;
 
         int sectorTagValidationResult =
-            ValidateSectorTags(outputFormat as IWritableImage, inputFormat, settings, out useLong);
+            ValidateSectorTags(outputFormat as IWritableImage, inputFormat, settings, out bool useLong);
 
         if(sectorTagValidationResult != (int)ErrorNumber.NoError) return sectorTagValidationResult;
 

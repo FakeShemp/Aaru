@@ -725,11 +725,11 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                  .StartAsync(Localization.Core.Waiting_for_drive_to_become_ready,
                                                              async ctx =>
                                                              {
-                                                                 ReadOnlySpan<byte> localSense;
-
-                                                                 sense = dev.ScsiTestUnitReady(out localSense,
-                                                                     dev.Timeout,
-                                                                     out _);
+                                                                 sense =
+                                                                     dev.ScsiTestUnitReady(out ReadOnlySpan<byte>
+                                                                             localSense,
+                                                                         dev.Timeout,
+                                                                         out _);
 
                                                                  if(!sense) return;
 
@@ -941,11 +941,11 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                              .StartAsync(Localization.Core.Waiting_for_drive_to_become_ready,
                                                          async ctx =>
                                                          {
-                                                             ReadOnlySpan<byte> localSense;
-
-                                                             sense = dev.ScsiTestUnitReady(out localSense,
-                                                                 dev.Timeout,
-                                                                 out _);
+                                                             sense =
+                                                                 dev.ScsiTestUnitReady(out ReadOnlySpan<byte>
+                                                                         localSense,
+                                                                     dev.Timeout,
+                                                                     out _);
 
                                                              AaruLogging.Debug(MODULE_NAME, "sense = {0}", sense);
 
@@ -1060,11 +1060,11 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                              .StartAsync(Localization.Core.Waiting_for_drive_to_become_ready,
                                                          async ctx =>
                                                          {
-                                                             ReadOnlySpan<byte> localSense;
-
-                                                             sense = dev.ScsiTestUnitReady(out localSense,
-                                                                 dev.Timeout,
-                                                                 out _);
+                                                             sense =
+                                                                 dev.ScsiTestUnitReady(out ReadOnlySpan<byte>
+                                                                         localSense,
+                                                                     dev.Timeout,
+                                                                     out _);
 
                                                              if(!sense) return;
 
@@ -1276,11 +1276,11 @@ sealed class DeviceReportCommand : AsyncCommand<DeviceReportCommand.Settings>
                                                  .StartAsync(Localization.Core.Waiting_for_drive_to_become_ready,
                                                              async ctx =>
                                                              {
-                                                                 ReadOnlySpan<byte> localSense;
-
-                                                                 sense = dev.ScsiTestUnitReady(out localSense,
-                                                                     dev.Timeout,
-                                                                     out _);
+                                                                 sense =
+                                                                     dev.ScsiTestUnitReady(out ReadOnlySpan<byte>
+                                                                             localSense,
+                                                                         dev.Timeout,
+                                                                         out _);
 
                                                                  if(!sense) return;
 

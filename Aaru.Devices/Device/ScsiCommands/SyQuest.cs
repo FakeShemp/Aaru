@@ -80,7 +80,6 @@ public partial class Device
         senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..6];
         cdb.Clear();
-        bool sense;
 
         cdb[0] = (byte)ScsiCommands.Read6;
         cdb[1] = (byte)((lba & 0x1F0000) >> 16);
@@ -103,7 +102,7 @@ public partial class Device
             buffer = [];
 
         LastError = !inhibitDma
-                        ? SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In,   out duration, out sense)
+                        ? SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In,   out duration, out bool sense)
                         : SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out sense);
 
         Error = LastError != 0;
@@ -151,7 +150,6 @@ public partial class Device
         senseBuffer = SenseBuffer;
         Span<byte> cdb = CdbBuffer[..10];
         cdb.Clear();
-        bool sense;
 
         cdb[0] = (byte)ScsiCommands.Read10;
         cdb[2] = (byte)((lba & 0xFF000000) >> 24);
@@ -176,7 +174,7 @@ public partial class Device
             buffer = [];
 
         LastError = !inhibitDma
-                        ? SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In,   out duration, out sense)
+                        ? SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.In,   out duration, out bool sense)
                         : SendScsiCommand(cdb, ref buffer, timeout, ScsiDirection.None, out duration, out sense);
 
         Error = LastError != 0;
