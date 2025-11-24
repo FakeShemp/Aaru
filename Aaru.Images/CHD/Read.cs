@@ -498,7 +498,7 @@ public sealed partial class Chd
                         }
 
                         string gddd      = StringHandlers.CToString(meta);
-                        var    gdddRegEx = new Regex(REGEX_METADATA_HDD);
+                        Regex  gdddRegEx = MetadataHddRegex();
                         Match  gdddMatch = gdddRegEx.Match(gddd);
 
                         if(gdddMatch.Success)
@@ -671,7 +671,7 @@ public sealed partial class Chd
                         }
 
                         string chtr      = StringHandlers.CToString(meta);
-                        var    chtrRegEx = new Regex(REGEX_METADATA_CDROM);
+                        Regex  chtrRegEx = MetadataCdromRegex();
                         Match  chtrMatch = chtrRegEx.Match(chtr);
 
                         if(chtrMatch.Success)
@@ -816,7 +816,7 @@ public sealed partial class Chd
                         }
 
                         string cht2      = StringHandlers.CToString(meta);
-                        var    cht2RegEx = new Regex(REGEX_METADATA_CDROM2);
+                        Regex  cht2RegEx = MetadataCdrom2Regex();
                         Match  cht2Match = cht2RegEx.Match(cht2);
 
                         if(cht2Match.Success)
@@ -1001,7 +1001,7 @@ public sealed partial class Chd
                         }
 
                         string chgd      = StringHandlers.CToString(meta);
-                        var    chgdRegEx = new Regex(REGEX_METADATA_GDROM);
+                        Regex  chgdRegEx = MetadataGdromRegex();
                         Match  chgdMatch = chgdRegEx.Match(chgd);
 
                         if(chgdMatch.Success)

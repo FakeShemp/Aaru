@@ -60,7 +60,7 @@ public sealed partial class DriDiskCopy
 
         string sig = StringHandlers.CToString(_footer.signature);
 
-        var   regexSignature = new Regex(REGEX_DRI);
+        Regex regexSignature = DriRegex();
         Match matchSignature = regexSignature.Match(sig);
 
         if(!matchSignature.Success) return ErrorNumber.InvalidArgument;

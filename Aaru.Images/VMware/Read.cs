@@ -188,15 +188,15 @@ public sealed partial class VMware
         {
             ddfStream.Seek(0, SeekOrigin.Begin);
 
-            var regexVersion   = new Regex(REGEX_VERSION);
-            var regexCid       = new Regex(REGEX_CID);
-            var regexParentCid = new Regex(REGEX_CID_PARENT);
-            var regexType      = new Regex(REGEX_TYPE);
-            var regexExtent    = new Regex(REGEX_EXTENT);
-            var regexParent    = new Regex(PARENT_REGEX);
-            var regexCylinders = new Regex(REGEX_DDB_CYLINDERS);
-            var regexHeads     = new Regex(REGEX_DDB_HEADS);
-            var regexSectors   = new Regex(REGEX_DDB_SECTORS);
+            Regex regexVersion   = VersionRegex();
+            Regex regexCid       = CidRegex();
+            Regex regexParentCid = CidParentRegex();
+            Regex regexType      = TypeRegex();
+            Regex regexExtent    = ExtentRegex();
+            Regex regexParent    = ParentRegex();
+            Regex regexCylinders = DdbCylindersRegex();
+            Regex regexHeads     = DdbHeadsRegex();
+            Regex regexSectors   = DdbSectorsRegex();
 
             var ddfStreamRdr = new StreamReader(ddfStream);
 

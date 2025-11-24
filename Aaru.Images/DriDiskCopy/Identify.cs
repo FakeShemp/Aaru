@@ -49,7 +49,7 @@ public sealed partial class DriDiskCopy
 
         if((stream.Length - Marshal.SizeOf<Footer>()) % 512 != 0) return false;
 
-        byte[] buffer = new byte[Marshal.SizeOf<Footer>()];
+        var buffer = new byte[Marshal.SizeOf<Footer>()];
         stream.Seek(-buffer.Length, SeekOrigin.End);
         stream.EnsureRead(buffer, 0, buffer.Length);
 
@@ -73,9 +73,7 @@ public sealed partial class DriDiskCopy
         AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.fats_no = {0}",  tmpFooter.bpb.fats_no);
         AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.sectors = {0}",  tmpFooter.bpb.sectors);
 
-        AaruLogging.Debug(MODULE_NAME,
-                                   "tmp_footer.bpb.media_descriptor = {0}",
-                                   tmpFooter.bpb.media_descriptor);
+        AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.media_descriptor = {0}", tmpFooter.bpb.media_descriptor);
 
         AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.spfat = {0}",    tmpFooter.bpb.spfat);
         AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.sptrack = {0}",  tmpFooter.bpb.sptrack);
@@ -87,10 +85,10 @@ public sealed partial class DriDiskCopy
         AaruLogging.Debug(MODULE_NAME, "tmp_footer.bpb.sptrack2 = {0}", tmpFooter.bpb.sptrack2);
 
         AaruLogging.Debug(MODULE_NAME,
-                                   "ArrayHelpers.ArrayIsNullOrEmpty(tmp_footer.bpb.unknown5) = {0}",
-                                   ArrayHelpers.ArrayIsNullOrEmpty(tmpFooter.bpb.unknown5));
+                          "ArrayHelpers.ArrayIsNullOrEmpty(tmp_footer.bpb.unknown5) = {0}",
+                          ArrayHelpers.ArrayIsNullOrEmpty(tmpFooter.bpb.unknown5));
 
-        var   regexSignature = new Regex(REGEX_DRI);
+        Regex regexSignature = DriRegex();
         Match matchSignature = regexSignature.Match(sig);
 
         AaruLogging.Debug(MODULE_NAME, "MatchSignature.Success? = {0}", matchSignature.Success);

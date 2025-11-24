@@ -56,13 +56,13 @@ public sealed partial class Imd
         string hdrStr = StringHandlers.CToString(hdr, Encoding.ASCII);
 
         // IMD for DOS
-        Match imd = new Regex(REGEX_HEADER).Match(hdrStr);
+        Match imd = HeaderRegex().Match(hdrStr);
 
         // SAMdisk
-        Match sam = new Regex(REGEX_SAMDISK).Match(hdrStr);
+        Match sam = SamdiskRegex().Match(hdrStr);
 
         // z88dk
-        Match z88dk = new Regex(REGEX_Z88DK).Match(hdrStr);
+        Match z88dk = Z88dkRegex().Match(hdrStr);
 
         return imd.Success || sam.Success || z88dk.Success;
     }

@@ -31,6 +31,7 @@
 // ****************************************************************************/
 
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 
 namespace Aaru.Images;
 
@@ -48,4 +49,13 @@ public sealed partial class Imd
     // ReSharper disable once InconsistentNaming
     const string REGEX_Z88DK =
         @"IMD z88dk:\s+(?<day>\d+)\/\s*(?<month>\d+)\/(?<year>\d+)\s+(?<hour>\d+):\s*(?<minute>\d+):(?<second>\d+)\r\n";
+
+    [GeneratedRegex(REGEX_HEADER)]
+    private static partial Regex HeaderRegex();
+
+    [GeneratedRegex(REGEX_SAMDISK)]
+    private static partial Regex SamdiskRegex();
+
+    [GeneratedRegex(REGEX_Z88DK)]
+    private static partial Regex Z88dkRegex();
 }

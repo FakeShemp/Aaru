@@ -30,9 +30,14 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System.Text.RegularExpressions;
+
 namespace Aaru.Images;
 
 public sealed partial class DriDiskCopy
 {
     const string REGEX_DRI = @"DiskImage\s(?<version>\d+.\d+)\s\(C\)\s\d+\,*\d*\s+Digital Research Inc";
+
+    [GeneratedRegex(REGEX_DRI)]
+    private static partial Regex DriRegex();
 }

@@ -64,7 +64,7 @@ public sealed partial class Gdi
             var highDensity = false;
 
             // Initialize all RegExs
-            var regexTrack = new Regex(REGEX_TRACK);
+            Regex regexTrack = TrackRegex();
 
             // Initialize all RegEx matches
 

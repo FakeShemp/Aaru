@@ -52,14 +52,14 @@ public sealed partial class CdrWin
         try
         {
             imageFilter.GetDataForkStream().Seek(0, SeekOrigin.Begin);
-            byte[] testArray = new byte[512];
+            var testArray = new byte[512];
             imageFilter.GetDataForkStream().EnsureRead(testArray, 0, 512);
             imageFilter.GetDataForkStream().Seek(0, SeekOrigin.Begin);
 
             // Check for unexpected control characters that shouldn't be present in a text file and can crash this plugin
-            bool twoConsecutiveNulls = false;
+            var twoConsecutiveNulls = false;
 
-            for(int i = 0; i < 512; i++)
+            for(var i = 0; i < 512; i++)
             {
                 if(i >= imageFilter.GetDataForkStream().Length) break;
 
@@ -82,11 +82,11 @@ public sealed partial class CdrWin
             {
                 string line = _cueStream.ReadLine();
 
-                var sr = new Regex(REGEX_SESSION);
-                var rr = new Regex(REGEX_COMMENT);
-                var cr = new Regex(REGEX_MCN);
-                var fr = new Regex(REGEX_FILE);
-                var tr = new Regex(REGEX_CDTEXT);
+                Regex sr = SessionRegex();
+                Regex rr = CommentRegex();
+                Regex cr = McnRegex();
+                Regex fr = FileRegex();
+                Regex tr = CdtextRegex();
 
                 // First line must be SESSION, REM, CATALOG, FILE or CDTEXTFILE.
                 Match sm = sr.Match(line ?? "");

@@ -49,7 +49,7 @@ namespace Aaru.Decoders.SCSI;
 [SuppressMessage("ReSharper", "NotAccessedField.Global")]
 [SuppressMessage("ReSharper", "UnassignedField.Global")]
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
-public static class EVPD
+public static partial class EVPD
 {
     /// <summary>Decodes VPD page 0x00: Supported VPD pages</summary>
     /// <returns>A byte array containing all supported VPD pages.</returns>
@@ -60,7 +60,7 @@ public static class EVPD
 
         if(page.Length != page[3] + 4) return null;
 
-        byte[] decoded = new byte[page.Length - 4];
+        var decoded = new byte[page.Length - 4];
 
         Array.Copy(page, 4, decoded, 0, page.Length - 4);
 
@@ -78,7 +78,7 @@ public static class EVPD
 
         if(page.Length != page[3] + 4) return null;
 
-        byte[] ascii = new byte[page[4]];
+        var ascii = new byte[page[4]];
 
         Array.Copy(page, 5, ascii, 0, page[4]);
 
@@ -94,11 +94,11 @@ public static class EVPD
 
         if(page.Length != page[3] + 4) return null;
 
-        byte[] ascii = new byte[page.Length - 4];
+        var ascii = new byte[page.Length - 4];
 
         Array.Copy(page, 4, ascii, 0, page.Length - 4);
 
-        for(int i = 0; i < ascii.Length - 1; i++)
+        for(var i = 0; i < ascii.Length - 1; i++)
         {
             if(ascii[i] == 0x00) break;
 
@@ -117,7 +117,7 @@ public static class EVPD
 
         if(page.Length != page[3] + 4) return null;
 
-        byte[] ascii = new byte[page.Length - 4];
+        var ascii = new byte[page.Length - 4];
 
         Array.Copy(page, 4, ascii, 0, page.Length - 4);
 
@@ -132,7 +132,7 @@ public static class EVPD
 
         if(page.Length != page[3] + 4) return null;
 
-        byte[] ascii = new byte[page.Length - 4];
+        var ascii = new byte[page.Length - 4];
 
         Array.Copy(page, 4, ascii, 0, page.Length - 4);
 
@@ -149,7 +149,7 @@ public static class EVPD
 
         if(page.Length != 12) return 0;
 
-        byte[] bitmap = new byte[8];
+        var bitmap = new byte[8];
 
         Array.Copy(page, 4, bitmap, 0, 8);
 
@@ -166,7 +166,7 @@ public static class EVPD
 
         if(page.Length != page[3] + 4) return null;
 
-        byte[] ascii = new byte[page.Length - 4];
+        var ascii = new byte[page.Length - 4];
 
         Array.Copy(page, 4, ascii, 0, page.Length - 4);
 
@@ -183,8 +183,8 @@ public static class EVPD
 
         if(page.Length != page[3] + 4) return null;
 
-        byte[] element = new byte[page.Length - 4];
-        var    sb      = new StringBuilder();
+        var element = new byte[page.Length - 4];
+        var sb      = new StringBuilder();
 
         foreach(byte b in element) sb.Append($"{b:X2}");
 
@@ -231,7 +231,7 @@ public static class EVPD
             Default              = (ScsiDefinitions)(pageResponse[5] & 0x7F)
         };
 
-        int                   position    = 6;
+        var                   position    = 6;
         List<ScsiDefinitions> definitions = [];
 
         while(position < pageResponse.Length)
@@ -387,7 +387,7 @@ public static class EVPD
             PageLength           = (byte)(pageResponse[3] + 4)
         };
 
-        int                           position    = 4;
+        var                           position    = 4;
         List<IdentificatonDescriptor> descriptors = [];
 
         while(position < pageResponse.Length)
@@ -565,7 +565,7 @@ public static class EVPD
                         sb.AppendFormat($"\t[slateblue1]{Localization.IEEE_EUI_64_0_X2}",
                                         $"[teal]{descriptor.Binary[0]}");
 
-                        for(int i = 1; i < descriptor.Binary.Length; i++) sb.Append($":{descriptor.Binary[i]:X2}");
+                        for(var i = 1; i < descriptor.Binary.Length; i++) sb.Append($":{descriptor.Binary[i]:X2}");
 
                         sb.AppendLine("[/][/]");
                     }
@@ -582,7 +582,7 @@ public static class EVPD
                     {
                         sb.AppendFormat($"\t[slateblue1]{Localization.NAA_0_X2}", $"[teal]{descriptor.Binary[0]}");
 
-                        for(int i = 1; i < descriptor.Binary.Length; i++) sb.Append($":{descriptor.Binary[i]:X2}");
+                        for(var i = 1; i < descriptor.Binary.Length; i++) sb.Append($":{descriptor.Binary[i]:X2}");
 
                         sb.AppendLine("[/][/]");
                     }
@@ -646,7 +646,7 @@ public static class EVPD
                         sb.AppendFormat($"\t[slateblue1]{Localization.MD5_logical_unit_identifier_0_x2}",
                                         $"[teal]{descriptor.Binary[0]}");
 
-                        for(int i = 1; i < descriptor.Binary.Length; i++) sb.Append($"{descriptor.Binary[i]:x2}");
+                        for(var i = 1; i < descriptor.Binary.Length; i++) sb.Append($"{descriptor.Binary[i]:x2}");
 
                         sb.AppendLine("[/][/]");
                     }
@@ -866,7 +866,7 @@ public static class EVPD
             PageLength           = (byte)(pageResponse[3] + 4)
         };
 
-        int                      position    = 4;
+        var                      position    = 4;
         List<SoftwareIdentifier> identifiers = [];
 
         while(position < pageResponse.Length)
@@ -908,7 +908,7 @@ public static class EVPD
         {
             sb.AppendFormat("\t" + "{0:X2}", identifier.Identifier[0]);
 
-            for(int i = 1; i < identifier.Identifier.Length; i++) sb.Append($":{identifier.Identifier[i]:X2}");
+            for(var i = 1; i < identifier.Identifier.Length; i++) sb.Append($":{identifier.Identifier[i]:X2}");
 
             sb.AppendLine();
         }
@@ -975,7 +975,7 @@ public static class EVPD
             PageLength           = (ushort)((pageResponse[2] << 8) + pageResponse[3] + 4)
         };
 
-        int                     position    = 4;
+        var                     position    = 4;
         List<NetworkDescriptor> descriptors = [];
 
         while(position < pageResponse.Length)
@@ -1796,7 +1796,7 @@ public static class EVPD
             CartridgeSerialNumber = new byte[32]
         };
 
-        byte[] buf = new byte[8];
+        var buf = new byte[8];
         Array.Copy(pageResponse, 24, buf, 0, 8);
         decoded.InitiatorID = BitConverter.ToUInt64(buf.Reverse().ToArray(), 0);
         Array.Copy(pageResponse, 32, decoded.CartridgeSerialNumber, 0, 32);
@@ -2205,15 +2205,11 @@ public static class EVPD
 
         List<byte> array = [];
 
-        const string fwRegExStr = @"Firmware Rev\s+=\s+(?<fw>\d+\.\d+)\s+Build date\s+=\s+(?<date>(\w|\d|\s*.)*)\s*$";
+        Regex fwRegEx    = HpFirmwareRegex();
+        Regex fwcRegEx   = HpFirmwareConfigurationRegex();
+        Regex servoRegEx = HpServoRevisionRegex();
 
-        const string fwcRegExStr   = @"FW_CONF\s+=\s+(?<value>0x[0-9A-Fa-f]{8})\s*$";
-        const string servoRegExStr = @"Servo\s+Rev\s+=\s+(?<version>\d+\.\d+)\s*$";
-        var          fwRegEx       = new Regex(fwRegExStr);
-        var          fwcRegEx      = new Regex(fwcRegExStr);
-        var          servoRegEx    = new Regex(servoRegExStr);
-
-        for(int pos = 5; pos < pageResponse.Length; pos++)
+        for(var pos = 5; pos < pageResponse.Length; pos++)
         {
             if(pageResponse[pos] == 0x00)
             {
@@ -2382,6 +2378,15 @@ public static class EVPD
 
         return sb.ToString();
     }
+
+    [GeneratedRegex(@"Firmware Rev\s+=\s+(?<fw>\d+\.\d+)\s+Build date\s+=\s+(?<date>(\w|\d|\s*.)*)\s*$")]
+    private static partial Regex HpFirmwareRegex();
+
+    [GeneratedRegex(@"FW_CONF\s+=\s+(?<value>0x[0-9A-Fa-f]{8})\s*$")]
+    private static partial Regex HpFirmwareConfigurationRegex();
+
+    [GeneratedRegex(@"Servo\s+Rev\s+=\s+(?<version>\d+\.\d+)\s*$")]
+    private static partial Regex HpServoRevisionRegex();
 
 #endregion EVPD Page 0xC0 (Seagate): Firmware numbers page
 }

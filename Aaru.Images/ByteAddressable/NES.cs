@@ -19,7 +19,7 @@ using Aaru.Logging;
 namespace Aaru.Images;
 
 [SuppressMessage("ReSharper", "UnusedType.Global")]
-public class Nes : IByteAddressableImage
+public partial class Nes : IByteAddressableImage
 {
     int           _chrLen;
     int           _chrNvramLen;
@@ -740,7 +740,7 @@ public class Nes : IByteAddressableImage
 
                     break;
                 case LinearMemoryType.Mapper when !foundMapper:
-                    regex = new Regex(@"NES Mapper ?(<mapper>\d+)");
+                    regex = MapperRegex();
                     match = regex.Match(map.Description);
 
                     if(match.Success)
@@ -758,7 +758,7 @@ public class Nes : IByteAddressableImage
 
                     break;
                 case LinearMemoryType.Mapper when !foundSubMapper:
-                    regex = new Regex(@"NES Sub-Mapper ?(<mapper>\d+)");
+                    regex = SubmapperRegex();
                     match = regex.Match(map.Description);
 
                     if(match.Success)
@@ -868,6 +868,12 @@ public class Nes : IByteAddressableImage
 
         return ErrorNumber.NoError;
     }
+
+    [GeneratedRegex(@"NES Mapper ?(<mapper>\d+)")]
+    private static partial Regex MapperRegex();
+
+    [GeneratedRegex(@"NES Sub-Mapper ?(<mapper>\d+)")]
+    private static partial Regex SubmapperRegex();
 
 #endregion
 }

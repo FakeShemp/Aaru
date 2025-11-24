@@ -59,7 +59,7 @@ public sealed partial class RayDim
 
         string signature = StringHandlers.CToString(header.signature);
 
-        var   sx = new Regex(REGEX_SIGNATURE);
+        Regex sx = SignatureRegex();
         Match sm = sx.Match(signature);
 
         if(!sm.Success) return ErrorNumber.InvalidArgument;

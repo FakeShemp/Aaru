@@ -55,7 +55,7 @@ public sealed partial class CopyTape
 
         string mark = Encoding.ASCII.GetString(header);
 
-        var   blockRx = new Regex(BLOCK_REGEX);
+        Regex blockRx = BlockRegex();
         Match blockMt = blockRx.Match(mark);
 
         if(!blockMt.Success) return false;

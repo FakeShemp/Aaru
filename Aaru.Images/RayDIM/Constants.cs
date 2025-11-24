@@ -30,10 +30,15 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System.Text.RegularExpressions;
+
 namespace Aaru.Images;
 
 public sealed partial class RayDim
 {
     const string REGEX_SIGNATURE =
         @"Disk IMage VER (?<major>\d).(?<minor>\d) Copyright \(C\) (?<year>\d{4}) Ray Arachelian, All Rights Reserved\.";
+
+    [GeneratedRegex(REGEX_SIGNATURE)]
+    private static partial Regex SignatureRegex();
 }

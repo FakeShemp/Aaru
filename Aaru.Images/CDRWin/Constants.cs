@@ -30,6 +30,8 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System.Text.RegularExpressions;
+
 namespace Aaru.Images;
 
 public sealed partial class CdrWin
@@ -181,4 +183,118 @@ public sealed partial class CdrWin
     const string REGEX_APPLICATION_VERSION = @"\bREM\s+Ripping Tool Version:\s+(?<application>.+)$";
     const string REGEX_DUMP_EXTENT =
         @"\bREM\s+METADATA DUMP EXTENT:\s+(?<application>.+)\s+\|\s+(?<version>.+)\s+\|\s+(?<os>.+)\s+\|\s+(?<manufacturer>.+)\s+\|\s+(?<model>.+)\s+\|\s+(?<firmware>.+)\s+\|\s+(?<serial>.+)\s+\|\s+(?<start>\d+):(?<end>\d+)$";
+
+    [GeneratedRegex(REGEX_SESSION)]
+    private static partial Regex SessionRegex();
+
+    [GeneratedRegex(REGEX_COMMENT)]
+    private static partial Regex CommentRegex();
+
+    [GeneratedRegex(REGEX_MCN)]
+    private static partial Regex McnRegex();
+
+    [GeneratedRegex(REGEX_FILE)]
+    private static partial Regex FileRegex();
+
+    [GeneratedRegex(REGEX_CDTEXT)]
+    private static partial Regex CdtextRegex();
+
+    [GeneratedRegex(REGEX_MEDIA_TYPE)]
+    private static partial Regex MediaTypeRegex();
+
+    [GeneratedRegex(REGEX_LEAD_OUT)]
+    private static partial Regex LeadOutRegex();
+
+    [GeneratedRegex(REGEX_LBA)]
+    private static partial Regex LbaRegex();
+
+    [GeneratedRegex(REGEX_DISC_ID)]
+    private static partial Regex DiscIdRegex();
+
+    [GeneratedRegex(REGEX_BARCODE)]
+    private static partial Regex BarcodeRegex();
+
+    [GeneratedRegex(REGEX_TITLE)]
+    private static partial Regex TitleRegex();
+
+    [GeneratedRegex(REGEX_GENRE)]
+    private static partial Regex GenreRegex();
+
+    [GeneratedRegex(REGEX_ARRANGER)]
+    private static partial Regex ArrangerRegex();
+
+    [GeneratedRegex(REGEX_COMPOSER)]
+    private static partial Regex ComposerRegex();
+
+    [GeneratedRegex(REGEX_PERFORMER)]
+    private static partial Regex PerformerRegex();
+
+    [GeneratedRegex(REGEX_SONGWRITER)]
+    private static partial Regex SongwriterRegex();
+
+    [GeneratedRegex(REGEX_TRACK)]
+    private static partial Regex TrackRegex();
+
+    [GeneratedRegex(REGEX_ISRC)]
+    private static partial Regex IsrcRegex();
+
+    [GeneratedRegex(REGEX_INDEX)]
+    private static partial Regex IndexRegex();
+
+    [GeneratedRegex(REGEX_PREGAP)]
+    private static partial Regex PregapRegex();
+
+    [GeneratedRegex(REGEX_POSTGAP)]
+    private static partial Regex PostgapRegex();
+
+    [GeneratedRegex(REGEX_FLAGS)]
+    private static partial Regex FlagsRegex();
+
+    [GeneratedRegex(REGEX_APPLICATION)]
+    private static partial Regex ApplicationRegex();
+
+    [GeneratedRegex(REGEX_TRURIP_DISC_HASHES)]
+    private static partial Regex TruripDiscHashesRegex();
+
+    [GeneratedRegex(REGEX_TRURIP_DISC_CRC32)]
+    private static partial Regex TruripDiscCrc32Regex();
+
+    [GeneratedRegex(REGEX_TRURIP_DISC_MD5)]
+    private static partial Regex TruripDiscMd5Regex();
+
+    [GeneratedRegex(REGEX_TRURIP_DISC_SHA1)]
+    private static partial Regex TruripDiscSha1Regex();
+
+    [GeneratedRegex(REGEX_TRURIP_TRACK_METHOD)]
+    private static partial Regex TruripTrackMethodRegex();
+
+    [GeneratedRegex(REGEX_TRURIP_TRACK_CRC32)]
+    private static partial Regex TruripTrackCrc32Regex();
+
+    [GeneratedRegex(REGEX_TRURIP_TRACK_MD5)]
+    private static partial Regex TruripTrackMd5Regex();
+
+    [GeneratedRegex(REGEX_TRURIP_TRACK_SHA1)]
+    private static partial Regex TruripTrackSha1Regex();
+
+    [GeneratedRegex(REGEX_TRURIP_TRACK_UNKNOWN)]
+    private static partial Regex TruripTrackUnknownRegex();
+
+    [GeneratedRegex(REGEX_DIC_MEDIA_TYPE)]
+    private static partial Regex DicMediaTypeRegex();
+
+    [GeneratedRegex(REGEX_APPLICATION_VERSION)]
+    private static partial Regex ApplicationVersionRegex();
+
+    [GeneratedRegex(REGEX_DUMP_EXTENT)]
+    private static partial Regex DumpExtentRegex();
+
+    [GeneratedRegex(REGEX_AARU_MEDIA_TYPE)]
+    private static partial Regex AaruMediaTypeRegex();
+
+    [GeneratedRegex(REGEX_REDUMP_SD_AREA)]
+    private static partial Regex RedumpSdAreaRegex();
+
+    [GeneratedRegex(REGEX_REDUMP_HD_AREA)]
+    private static partial Regex RedumpHdAreaRegex();
 }

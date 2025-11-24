@@ -32,6 +32,8 @@
 
 // ReSharper disable InconsistentNaming
 
+using System.Text.RegularExpressions;
+
 namespace Aaru.Images;
 
 public sealed partial class DiskCopy42
@@ -82,4 +84,7 @@ public sealed partial class DiskCopy42
     /// <summary>Used incorrectly by Mac OS X with certaing disk images</summary>
     const byte kMacOSXFmtByte = 0x00;
     const string REGEX_DCPY = @"(?<application>\S+)\s(?<version>\S+)\rData checksum=\$(?<checksum>\S+)$";
+
+    [GeneratedRegex(REGEX_DCPY)]
+    private static partial Regex DcpyRegex();
 }

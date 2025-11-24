@@ -49,7 +49,7 @@ public sealed partial class RayDim
 
         if(stream.Length < Marshal.SizeOf<Header>()) return false;
 
-        byte[] buffer = new byte[Marshal.SizeOf<Header>()];
+        var buffer = new byte[Marshal.SizeOf<Header>()];
         stream.Seek(0, SeekOrigin.Begin);
         stream.EnsureRead(buffer, 0, buffer.Length);
 
@@ -65,7 +65,7 @@ public sealed partial class RayDim
 
         AaruLogging.Debug(MODULE_NAME, "header.sectorsPerTrack = {0}", header.sectorsPerTrack);
 
-        var   sx = new Regex(REGEX_SIGNATURE);
+        Regex sx = SignatureRegex();
         Match sm = sx.Match(signature);
 
         AaruLogging.Debug(MODULE_NAME, "header.signature matches? = {0}", sm.Success);

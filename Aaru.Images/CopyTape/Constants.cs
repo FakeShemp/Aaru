@@ -30,6 +30,8 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System.Text.RegularExpressions;
+
 namespace Aaru.Images;
 
 public sealed partial class CopyTape
@@ -38,4 +40,16 @@ public sealed partial class CopyTape
     const string PARTIAL_BLOCK_REGEX = @"^CPTP:BLK $";
     const string FILEMARK_REGEX      = @"^CPTP:MRK\n$";
     const string END_OF_TAPE_REGEX   = @"^CPTP:EOT\n$";
+
+    [GeneratedRegex(BLOCK_REGEX)]
+    private static partial Regex BlockRegex();
+
+    [GeneratedRegex(PARTIAL_BLOCK_REGEX)]
+    private static partial Regex PartialBlockRegex();
+
+    [GeneratedRegex(FILEMARK_REGEX)]
+    private static partial Regex FilemarkRegex();
+
+    [GeneratedRegex(END_OF_TAPE_REGEX)]
+    private static partial Regex EndOfTapeRegex();
 }

@@ -216,7 +216,7 @@ public sealed partial class Dart
                         string dArt = StringHandlers.PascalToString(dartRsrc.GetResource(dartRsrc.GetIds()[0]),
                                                                     Encoding.GetEncoding("macintosh"));
 
-                        var   dArtEx    = new Regex(DART_REGEX);
+                        Regex dArtEx    = DartRegex();
                         Match dArtMatch = dArtEx.Match(dArt);
 
                         if(dArtMatch.Success)

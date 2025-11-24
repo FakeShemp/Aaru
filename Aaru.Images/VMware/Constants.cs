@@ -31,6 +31,7 @@
 // ****************************************************************************/
 
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 
 namespace Aaru.Images;
 
@@ -81,4 +82,31 @@ public sealed partial class VMware
     const    uint   SECTOR_SIZE = 512;
     const    uint   MAX_CACHED_SECTORS = MAX_CACHE_SIZE / SECTOR_SIZE;
     readonly byte[] _ddfMagicBytes = "# Disk DescriptorFile"u8.ToArray();
+
+    [GeneratedRegex(REGEX_VERSION)]
+    private static partial Regex VersionRegex();
+
+    [GeneratedRegex(REGEX_CID)]
+    private static partial Regex CidRegex();
+
+    [GeneratedRegex(REGEX_CID_PARENT)]
+    private static partial Regex CidParentRegex();
+
+    [GeneratedRegex(REGEX_TYPE)]
+    private static partial Regex TypeRegex();
+
+    [GeneratedRegex(REGEX_EXTENT)]
+    private static partial Regex ExtentRegex();
+
+    [GeneratedRegex(PARENT_REGEX)]
+    private static partial Regex ParentRegex();
+
+    [GeneratedRegex(REGEX_DDB_CYLINDERS)]
+    private static partial Regex DdbCylindersRegex();
+
+    [GeneratedRegex(REGEX_DDB_HEADS)]
+    private static partial Regex DdbHeadsRegex();
+
+    [GeneratedRegex(REGEX_DDB_SECTORS)]
+    private static partial Regex DdbSectorsRegex();
 }

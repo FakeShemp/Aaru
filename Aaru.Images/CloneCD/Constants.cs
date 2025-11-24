@@ -30,6 +30,8 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System.Text.RegularExpressions;
+
 namespace Aaru.Images;
 
 public sealed partial class CloneCd
@@ -66,4 +68,100 @@ public sealed partial class CloneCd
     const string CDTEXT_ENTRY       = @"^\s*Entry\s*(?<number>\d+)\s*=\s*(?<value>([0-9a-fA-F]+\s*)+)";
     const string TRACK_MODE         = @"^\s*MODE\s*=\s*(?<value>\d+)";
     const string TRACK_INDEX        = @"^\s*INDEX\s*(?<index>\d+)\s*=\s*(?<lba>\d+)";
+
+    [GeneratedRegex(CCD_IDENTIFIER)]
+    private static partial Regex CcdIdentifierRegex();
+
+    [GeneratedRegex(DISC_IDENTIFIER)]
+    private static partial Regex DiscIdentifierRegex();
+
+    [GeneratedRegex(SESSION_IDENTIFIER)]
+    private static partial Regex SessionIdentifierRegex();
+
+    [GeneratedRegex(ENTRY_IDENTIFIER)]
+    private static partial Regex EntryIdentifierRegex();
+
+    [GeneratedRegex(TRACK_IDENTIFIER)]
+    private static partial Regex TrackIdentifierRegex();
+
+    [GeneratedRegex(CDTEXT_IDENTIFIER)]
+    private static partial Regex CdtextIdentifierRegex();
+
+    [GeneratedRegex(CCD_VERSION)]
+    private static partial Regex CcdVersionRegex();
+
+    [GeneratedRegex(DISC_ENTRIES)]
+    private static partial Regex DiscEntriesRegex();
+
+    [GeneratedRegex(DISC_SESSIONS)]
+    private static partial Regex DiscSessionsRegex();
+
+    [GeneratedRegex(DISC_SCRAMBLED)]
+    private static partial Regex DiscScrambledRegex();
+
+    [GeneratedRegex(CDTEXT_LENGTH)]
+    private static partial Regex CdtextLengthRegex();
+
+    [GeneratedRegex(DISC_CATALOG)]
+    private static partial Regex DiscCatalogRegex();
+
+    [GeneratedRegex(SESSION_PREGAP)]
+    private static partial Regex SesionPregapRegex();
+
+    [GeneratedRegex(SESSION_SUBCHANNEL)]
+    private static partial Regex SessionSubchannelRegex();
+
+    [GeneratedRegex(ENTRY_SESSION)]
+    private static partial Regex EntrySessionRegex();
+
+    [GeneratedRegex(ENTRY_POINT)]
+    private static partial Regex EntryPointRegex();
+
+    [GeneratedRegex(ENTRY_ADR)]
+    private static partial Regex EntryAdrRegex();
+
+    [GeneratedRegex(ENTRY_CONTROL)]
+    private static partial Regex EntryControlRegex();
+
+    [GeneratedRegex(ENTRY_TRACKNO)]
+    private static partial Regex EntryTracknoRegex();
+
+    [GeneratedRegex(ENTRY_AMIN)]
+    private static partial Regex EntryAminRegex();
+
+    [GeneratedRegex(ENTRY_ASEC)]
+    private static partial Regex EntryAsecRegex();
+
+    [GeneratedRegex(ENTRY_AFRAME)]
+    private static partial Regex EntryAframeRegex();
+
+    [GeneratedRegex(ENTRY_ALBA)]
+    private static partial Regex EntryAlbaRegex();
+
+    [GeneratedRegex(ENTRY_ZERO)]
+    private static partial Regex EntryZeroRegex();
+
+    [GeneratedRegex(ENTRY_PMIN)]
+    private static partial Regex EntryPminRegex();
+
+    [GeneratedRegex(ENTRY_PSEC)]
+    private static partial Regex EntryPsecRegex();
+
+    [GeneratedRegex(ENTRY_PFRAME)]
+    private static partial Regex EntryPframeRegex();
+
+    [GeneratedRegex(ENTRY_PLBA)]
+    private static partial Regex EntryPlbaRegex();
+
+    [GeneratedRegex(CDTEXT_ENTRIES)]
+    private static partial Regex CdtextEntriesRegex();
+
+    [GeneratedRegex(CDTEXT_ENTRY)]
+    private static partial Regex CdtextEntryRegex();
+
+    [GeneratedRegex(TRACK_MODE)]
+    private static partial Regex TrackModeRegex();
+
+    [GeneratedRegex(TRACK_INDEX)]
+    private static partial Regex TrackIndexRegex();
 }

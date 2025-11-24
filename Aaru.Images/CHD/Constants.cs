@@ -31,6 +31,7 @@
 // ****************************************************************************/
 
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 
 namespace Aaru.Images;
 
@@ -92,4 +93,16 @@ public sealed partial class Chd
     const string TRACK_TYPE_AUDIO        = "AUDIO";
 
     // ReSharper restore InconsistentNaming
+
+    [GeneratedRegex(REGEX_METADATA_HDD)]
+    private static partial Regex MetadataHddRegex();
+
+    [GeneratedRegex(REGEX_METADATA_CDROM)]
+    private static partial Regex MetadataCdromRegex();
+
+    [GeneratedRegex(REGEX_METADATA_CDROM2)]
+    private static partial Regex MetadataCdrom2Regex();
+
+    [GeneratedRegex(REGEX_METADATA_GDROM)]
+    private static partial Regex MetadataGdromRegex();
 }

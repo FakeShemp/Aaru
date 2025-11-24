@@ -51,10 +51,10 @@ public sealed partial class CopyTape
     public ErrorNumber Open(IFilter imageFilter)
     {
         List<long> blockPositions = [];
-        var        partialBlockRx = new Regex(PARTIAL_BLOCK_REGEX);
-        var        blockRx        = new Regex(BLOCK_REGEX);
-        var        filemarkRx     = new Regex(FILEMARK_REGEX);
-        var        eotRx          = new Regex(END_OF_TAPE_REGEX);
+        Regex      partialBlockRx = PartialBlockRegex();
+        Regex      blockRx        = BlockRegex();
+        Regex      filemarkRx     = FilemarkRegex();
+        Regex      eotRx          = EndOfTapeRegex();
 
         if(imageFilter.DataForkLength <= 16) return ErrorNumber.InvalidArgument;
 

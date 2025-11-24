@@ -305,7 +305,7 @@ public sealed partial class DiskCopy42
                         string dCpy = StringHandlers.PascalToString(dCpyRsrc.GetResource(dCpyRsrc.GetIds()[0]),
                                                                     Encoding.GetEncoding("macintosh"));
 
-                        var   dCpyEx    = new Regex(REGEX_DCPY);
+                        Regex dCpyEx    = DcpyRegex();
                         Match dCpyMatch = dCpyEx.Match(dCpy);
 
                         if(dCpyMatch.Success)

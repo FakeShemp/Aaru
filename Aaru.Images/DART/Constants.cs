@@ -31,6 +31,7 @@
 // ****************************************************************************/
 
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 
 namespace Aaru.Images;
 
@@ -77,4 +78,7 @@ public sealed partial class Dart
 
     const string DART_REGEX =
         @"(?<version>\S+), tag checksum=\$(?<tagchk>[0123456789ABCDEF]{8}), data checksum=\$(?<datachk>[0123456789ABCDEF]{8})$";
+
+    [GeneratedRegex(DART_REGEX)]
+    private static partial Regex DartRegex();
 }

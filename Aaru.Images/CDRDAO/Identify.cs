@@ -49,14 +49,14 @@ public sealed partial class Cdrdao
         try
         {
             imageFilter.GetDataForkStream().Seek(0, SeekOrigin.Begin);
-            byte[] testArray = new byte[512];
+            var testArray = new byte[512];
             imageFilter.GetDataForkStream().EnsureRead(testArray, 0, 512);
             imageFilter.GetDataForkStream().Seek(0, SeekOrigin.Begin);
 
             // Check for unexpected control characters that shouldn't be present in a text file and can crash this plugin
-            bool twoConsecutiveNulls = false;
+            var twoConsecutiveNulls = false;
 
-            for(int i = 0; i < 512; i++)
+            for(var i = 0; i < 512; i++)
             {
                 if(i >= imageFilter.GetDataForkStream().Length) break;
 
@@ -75,8 +75,8 @@ public sealed partial class Cdrdao
 
             _tocStream = new StreamReader(imageFilter.GetDataForkStream());
 
-            var cr = new Regex(REGEX_COMMENT);
-            var dr = new Regex(REGEX_DISCTYPE);
+            Regex cr = CommentRegex();
+            Regex dr = DiscTypeRegex();
 
             while(_tocStream.Peek() >= 0)
             {

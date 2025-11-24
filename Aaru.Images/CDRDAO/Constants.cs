@@ -30,6 +30,8 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
+using System.Text.RegularExpressions;
+
 namespace Aaru.Images;
 
 public sealed partial class Cdrdao
@@ -106,4 +108,88 @@ public sealed partial class Cdrdao
     const string REGEX_LANGUAGE         = @"^\s*LANGUAGE\s*(?<code>\d+)\s*\{";
     const string REGEX_LANGUAGE_MAP     = @"^\s*LANGUAGE_MAP\s*\{";
     const string REGEX_LANGUAGE_MAPPING = @"^\s*(?<code>\d+)\s?\:\s?(?<language>\d+|\w+)";
+
+    [GeneratedRegex(REGEX_COMMENT)]
+    private static partial Regex CommentRegex();
+
+    [GeneratedRegex(REGEX_DISCTYPE)]
+    private static partial Regex DiscTypeRegex();
+
+    [GeneratedRegex(REGEX_MCN)]
+    private static partial Regex McnRegex();
+
+    [GeneratedRegex(REGEX_TRACK)]
+    private static partial Regex TrackRegex();
+
+    [GeneratedRegex(REGEX_COPY)]
+    private static partial Regex CopyRegex();
+
+    [GeneratedRegex(REGEX_EMPHASIS)]
+    private static partial Regex EmphasisRegex();
+
+    [GeneratedRegex(REGEX_STEREO)]
+    private static partial Regex StereoRegex();
+
+    [GeneratedRegex(REGEX_ISRC)]
+    private static partial Regex IsrcRegex();
+
+    [GeneratedRegex(REGEX_INDEX)]
+    private static partial Regex IndexRegex();
+
+    [GeneratedRegex(REGEX_PREGAP)]
+    private static partial Regex PregapRegex();
+
+    [GeneratedRegex(REGEX_ZERO_PREGAP)]
+    private static partial Regex ZeroPregapRegex();
+
+    [GeneratedRegex(REGEX_ZERO_DATA)]
+    private static partial Regex ZeroDataRegex();
+
+    [GeneratedRegex(REGEX_ZERO_AUDIO)]
+    private static partial Regex ZeroAudioRegex();
+
+    [GeneratedRegex(REGEX_FILE_AUDIO)]
+    private static partial Regex FileAudioRegex();
+
+    [GeneratedRegex(REGEX_FILE_DATA)]
+    private static partial Regex FileDataRegex();
+
+    [GeneratedRegex(REGEX_TITLE)]
+    private static partial Regex TitleRegex();
+
+    [GeneratedRegex(REGEX_PERFORMER)]
+    private static partial Regex PerformerRegex();
+
+    [GeneratedRegex(REGEX_SONGWRITER)]
+    private static partial Regex SongwriterRegex();
+
+    [GeneratedRegex(REGEX_COMPOSER)]
+    private static partial Regex ComposerRegex();
+
+    [GeneratedRegex(REGEX_ARRANGER)]
+    private static partial Regex ArrangerRegex();
+
+    [GeneratedRegex(REGEX_MESSAGE)]
+    private static partial Regex MessageRegex();
+
+    [GeneratedRegex(REGEX_DISC_ID)]
+    private static partial Regex DiscIdRegex();
+
+    [GeneratedRegex(REGEX_UPC)]
+    private static partial Regex UpcRegex();
+
+    [GeneratedRegex(REGEX_CD_TEXT)]
+    private static partial Regex CdTextRegex();
+
+    [GeneratedRegex(REGEX_LANGUAGE)]
+    private static partial Regex LanguageRegex();
+
+    [GeneratedRegex(REGEX_CLOSURE)]
+    private static partial Regex ClosureRegex();
+
+    [GeneratedRegex(REGEX_LANGUAGE_MAP)]
+    private static partial Regex LanguageMapRegex();
+
+    [GeneratedRegex(REGEX_LANGUAGE_MAPPING)]
+    private static partial Regex LanguageMappingRegex();
 }
