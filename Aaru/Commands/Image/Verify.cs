@@ -66,6 +66,7 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
         AaruLogging.Debug(MODULE_NAME, "--verify-sectors={0}", settings.VerifySectors);
         AaruLogging.Debug(MODULE_NAME, "--create-graph={0}",   settings.CreateGraph);
         AaruLogging.Debug(MODULE_NAME, "--dimensions={0}",     settings.Dimensions);
+        AaruLogging.Debug(MODULE_NAME, " --data-only={0}",     settings.DataOnly);
 
         IFilter inputFilter = null;
 
@@ -215,6 +216,8 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
 
                             foreach(Track currentTrack in inputTracks)
                             {
+                                if(settings.DataOnly && currentTrack.Type == TrackType.Audio) continue;
+
                                 discTask.Description =
                                     string.Format(UI.Checking_track_0_of_1, discTask.Value + 1, inputTracks.Count);
 
@@ -395,16 +398,18 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
             if(failingLbas.Count == (int)inputFormat.Info.Sectors)
                 AaruLogging.Verbose($"\t[red]{UI.all_sectors}[/]");
             else
-                foreach(ulong t in failingLbas)
-                    AaruLogging.Verbose("\t{0}", t);
+            {
+                foreach(ulong t in failingLbas) AaruLogging.Verbose("\t{0}", t);
+            }
 
             AaruLogging.WriteLine($"[yellow3_1]{UI.LBAs_without_checksum}[/]");
 
             if(unknownLbas.Count == (int)inputFormat.Info.Sectors)
                 AaruLogging.Verbose($"\t[yellow3_1]{UI.all_sectors}[/]");
             else
-                foreach(ulong t in unknownLbas)
-                    AaruLogging.Verbose("\t{0}", t);
+            {
+                foreach(ulong t in unknownLbas) AaruLogging.Verbose("\t{0}", t);
+            }
         }
 
         var table = new Table();
@@ -467,6 +472,10 @@ sealed class VerifyCommand : Command<VerifyCommand.Settings>
         [DefaultValue(1080)]
         [CommandOption("-d|--dimensions")]
         public int Dimensions { get; init; }
+        [LocalizedDescription(nameof(UI.Verify_only_data_help))]
+        [DefaultValue(true)]
+        [CommandOption("-t|--data-only")]
+        public bool DataOnly { get; init; }
         [LocalizedDescription(nameof(UI.Media_image_path))]
         [CommandArgument(0, "<image-path>")]
         public string ImagePath { get; init; }

@@ -3338,4 +3338,7 @@ Probadores:
     <data name="Encryption" xml:space="preserve">
         <value>Encriptación</value>
     </data>
+    <data name="Verify_only_data_help" xml:space="preserve">
+        <value>Verificar sólo pistas de datos.</value>
+    </data>
 </root>

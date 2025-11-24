@@ -6675,5 +6675,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Encryption", resourceCulture);
             }
         }
+        
+        public static string Verify_only_data_help {
+            get {
+                return ResourceManager.GetString("Verify_only_data_help", resourceCulture);
+            }
+        }
     }
 }

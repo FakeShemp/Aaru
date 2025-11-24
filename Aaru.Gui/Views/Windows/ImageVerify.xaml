@@ -54,7 +54,7 @@
           RowSpacing="8"
           Margin="12">
         <Grid Grid.Row="0"
-              RowDefinitions="Auto,Auto"
+              RowDefinitions="Auto,Auto,Auto"
               RowSpacing="8"
               IsVisible="{Binding OptionsVisible, Mode=OneWay}">
             <CheckBox Grid.Row="0"
@@ -67,6 +67,12 @@
                       IsEnabled="{Binding VerifySectorsEnabled, Mode=OneWay}"
                       IsVisible="{Binding VerifySectorsVisible, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.Verify_all_sectors_if_supported}" />
+            </CheckBox>
+            <CheckBox Grid.Row="2"
+                      IsChecked="{Binding VerifyOnlyDataChecked, Mode=TwoWay}"
+                      IsEnabled="{Binding VerifySectorsEnabled, Mode=OneWay}"
+                      IsVisible="{Binding VerifySectorsVisible, Mode=OneWay}">
+                <TextBlock Text="{x:Static localization:UI.Verify_only_data_help}" />
             </CheckBox>
         </Grid>
         <Grid Grid.Row="1"

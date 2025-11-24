@@ -38,6 +38,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Windows.Input;
+using Aaru.CommonTypes.Enums;
 using Aaru.CommonTypes.Interfaces;
 using Aaru.CommonTypes.Structs;
 using Aaru.Core;
@@ -125,6 +126,8 @@ public sealed partial class ImageVerifyViewModel : ViewModelBase
     [ObservableProperty]
     bool _verifyImageEnabled;
     [ObservableProperty]
+    bool _VerifyOnlyDataChecked;
+    [ObservableProperty]
     bool _verifySectorsChecked;
     [ObservableProperty]
     bool _verifySectorsEnabled;
@@ -133,19 +136,20 @@ public sealed partial class ImageVerifyViewModel : ViewModelBase
 
     public ImageVerifyViewModel(IMediaImage inputFormat, Window view)
     {
-        _view                = view;
-        StartCommand         = new RelayCommand(Start);
-        CloseCommand         = new RelayCommand(Close);
-        StopCommand          = new RelayCommand(Stop);
-        _inputFormat         = inputFormat;
-        _cancel              = false;
-        ErrorList            = [];
-        UnknownList          = [];
-        VerifyImageEnabled   = true;
-        VerifySectorsEnabled = true;
-        CloseVisible         = true;
-        StartVisible         = true;
-        OptionsVisible       = true;
+        _view                 = view;
+        StartCommand          = new RelayCommand(Start);
+        CloseCommand          = new RelayCommand(Close);
+        StopCommand           = new RelayCommand(Stop);
+        _inputFormat          = inputFormat;
+        _cancel               = false;
+        ErrorList             = [];
+        UnknownList           = [];
+        VerifyImageEnabled    = true;
+        VerifySectorsEnabled  = true;
+        VerifyOnlyDataChecked = true;
+        CloseVisible          = true;
+        StartVisible          = true;
+        OptionsVisible        = true;
 
         VerifySectorsVisible = _inputFormat is IOpticalMediaImage or IVerifiableSectorsImage;
     }
@@ -285,6 +289,8 @@ public sealed partial class ImageVerifyViewModel : ViewModelBase
 
                 foreach(Track currentTrack in inputOptical.Tracks)
                 {
+                    if(VerifyOnlyDataChecked && currentTrack.Type == TrackType.Audio) continue;
+
                     await Dispatcher.UIThread.InvokeAsync(() =>
                     {
                         ProgressText = string.Format(UI.Verifying_track_0_of_1,
