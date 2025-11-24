@@ -153,7 +153,7 @@ public class DeviceDto : DeviceReport
             {
                 SCSI.MultiMediaDevice.ModeSense2AData = null;
 
-                if(SCSI.MultiMediaDevice.Features != null) SCSI.MultiMediaDevice.Features.BinaryData = null;
+                SCSI.MultiMediaDevice.Features?.BinaryData = null;
 
                 if(SCSI.MultiMediaDevice.TestedMedia != null)
                 {
@@ -167,7 +167,7 @@ public class DeviceDto : DeviceReport
             SCSI.SequentialDevice = null;
         }
 
-        if(USB != null) USB.Descriptors = null;
+        USB?.Descriptors = null;
 
         Id                         = id;
         OptimalMultipleSectorsRead = optimalMultipleSectorsRead;

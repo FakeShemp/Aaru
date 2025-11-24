@@ -464,11 +464,11 @@ public class HexViewPanel : UserControl
 
     private void OnOffsetHeaderChanged()
     {
-        if(_offsetHeaderText != null) _offsetHeaderText.Text = OffsetHeader;
+        _offsetHeaderText?.Text = OffsetHeader;
     }
 
     private void OnAsciiHeaderChanged()
     {
-        if(_asciiHeaderText != null) _asciiHeaderText.Text = AsciiHeader;
+        _asciiHeaderText?.Text = AsciiHeader;
     }
 }
