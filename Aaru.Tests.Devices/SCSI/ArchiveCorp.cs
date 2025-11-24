@@ -217,7 +217,7 @@ static class ArchiveCorp
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.ArchiveCorp_RequestBlockAddress_REQUEST_BLOCK_ADDRESS_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -239,7 +239,7 @@ static class ArchiveCorp
 
     static void SeekBlock(string devPath, Device dev)
     {
-        bool   immediate = false;
+        var    immediate = false;
         uint   lba       = 0;
         string strDev;
         int    item;
@@ -325,7 +325,7 @@ static class ArchiveCorp
         AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.SEEK_BLOCK_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+        AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);

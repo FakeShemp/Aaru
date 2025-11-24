@@ -144,11 +144,11 @@ static class Ssc
 
     static void LoadUnload(string devPath, Device dev)
     {
-        bool   load      = true;
-        bool   immediate = false;
-        bool   retense   = false;
-        bool   eot       = false;
-        bool   hold      = false;
+        var    load      = true;
+        var    immediate = false;
+        var    retense   = false;
+        var    eot       = false;
+        var    hold      = false;
         string strDev;
         int    item;
 
@@ -274,7 +274,7 @@ static class Ssc
         AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.LOAD_UNLOAD_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+        AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);
@@ -328,9 +328,9 @@ static class Ssc
 
     static void Locate10(string devPath, Device dev)
     {
-        bool   blockType       = true;
-        bool   immediate       = false;
-        bool   changePartition = false;
+        var    blockType       = true;
+        var    immediate       = false;
+        var    changePartition = false;
         byte   partition       = 0;
         uint   objectId        = 0;
         string strDev;
@@ -458,7 +458,7 @@ static class Ssc
         AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.LOCATE_10_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+        AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);
@@ -513,9 +513,9 @@ static class Ssc
     static void Locate16(string devPath, Device dev)
     {
         SscLogicalIdTypes destType        = SscLogicalIdTypes.FileId;
-        bool              immediate       = false;
-        bool              changePartition = false;
-        bool              bam             = false;
+        var               immediate       = false;
+        var               changePartition = false;
+        var               bam             = false;
         byte              partition       = 0;
         ulong             objectId        = 1;
         string            strDev;
@@ -665,7 +665,7 @@ static class Ssc
         AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.LOCATE_16_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+        AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);
@@ -719,8 +719,8 @@ static class Ssc
 
     static void Read6(string devPath, Device dev)
     {
-        bool   sili      = false;
-        bool   fixedLen  = true;
+        var    sili      = false;
+        var    fixedLen  = true;
         uint   blockSize = 512;
         uint   length    = 1;
         string strDev;
@@ -911,7 +911,7 @@ static class Ssc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_6_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -933,8 +933,8 @@ static class Ssc
 
     static void Read16(string devPath, Device dev)
     {
-        bool   sili       = false;
-        bool   fixedLen   = true;
+        var    sili       = false;
+        var    fixedLen   = true;
         uint   objectSize = 512;
         uint   length     = 1;
         byte   partition  = 0;
@@ -1154,7 +1154,7 @@ static class Ssc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_16_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1241,7 +1241,7 @@ static class Ssc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_BLOCK_LIMITS_decoded_response);
 
-                if(buffer != null) AaruLogging.WriteLine("{0}", BlockLimits.Prettify(buffer));
+                if(buffer != null) AaruLogging.WriteLine(BlockLimits.Prettify(buffer));
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -1266,7 +1266,7 @@ static class Ssc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_BLOCK_LIMITS_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1370,7 +1370,7 @@ static class Ssc
         AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.READ_POSITION_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+        AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);
@@ -1424,9 +1424,9 @@ static class Ssc
 
     static void ReadReverse6(string devPath, Device dev)
     {
-        bool   byteOrder = false;
-        bool   sili      = false;
-        bool   fixedLen  = true;
+        var    byteOrder = false;
+        var    sili      = false;
+        var    fixedLen  = true;
         uint   blockSize = 512;
         uint   length    = 1;
         string strDev;
@@ -1631,7 +1631,7 @@ static class Ssc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_REVERSE_6_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1653,9 +1653,9 @@ static class Ssc
 
     static void ReadReverse16(string devPath, Device dev)
     {
-        bool   byteOrder  = false;
-        bool   sili       = false;
-        bool   fixedLen   = true;
+        var    byteOrder  = false;
+        var    sili       = false;
+        var    fixedLen   = true;
         uint   objectSize = 512;
         uint   length     = 1;
         byte   partition  = 0;
@@ -1889,7 +1889,7 @@ static class Ssc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_REVERSE_16_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1911,8 +1911,8 @@ static class Ssc
 
     static void RecoverBufferedData(string devPath, Device dev)
     {
-        bool   sili      = false;
-        bool   fixedLen  = true;
+        var    sili      = false;
+        var    fixedLen  = true;
         uint   blockSize = 512;
         uint   length    = 1;
         string strDev;
@@ -2103,7 +2103,7 @@ static class Ssc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.RECOVER_BUFFERED_DATA_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -2125,8 +2125,8 @@ static class Ssc
 
     static void ReportDensitySupport(string devPath, Device dev)
     {
-        bool   medium  = false;
-        bool   current = false;
+        var    medium  = false;
+        var    current = false;
         string strDev;
         int    item;
 
@@ -2286,7 +2286,7 @@ static class Ssc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.REPORT_DENSITY_SUPPORT_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -2308,7 +2308,7 @@ static class Ssc
 
     static void Rewind(string devPath, Device dev)
     {
-        bool   immediate = false;
+        var    immediate = false;
         string strDev;
         int    item;
 
@@ -2374,7 +2374,7 @@ static class Ssc
         AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.REWIND_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+        AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);
@@ -2518,7 +2518,7 @@ static class Ssc
         AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.SPACE_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+        AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);
@@ -2638,7 +2638,7 @@ static class Ssc
         AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.TRACK_SELECT_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+        AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);

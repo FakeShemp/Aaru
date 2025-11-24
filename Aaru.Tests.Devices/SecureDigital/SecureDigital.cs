@@ -115,7 +115,7 @@ static class SecureDigital
         uint   address   = 0;
         uint   blockSize = 512;
         ushort count     = 1;
-        bool   byteAddr  = false;
+        var    byteAddr  = false;
         string strDev;
         int    item;
 
@@ -371,7 +371,7 @@ static class SecureDigital
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.SD_SEND_OP_COND_decoded_buffer);
 
-                if(buffer != null) AaruLogging.WriteLine("{0}", Decoders.SecureDigital.Decoders.PrettifyOCR(buffer));
+                if(buffer != null) AaruLogging.WriteLine(Decoders.SecureDigital.Decoders.PrettifyOCR(buffer));
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -547,7 +547,7 @@ static class SecureDigital
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.SEND_CID_decoded_buffer);
 
-                if(buffer != null) AaruLogging.WriteLine("{0}", Decoders.SecureDigital.Decoders.PrettifyCID(buffer));
+                if(buffer != null) AaruLogging.WriteLine(Decoders.SecureDigital.Decoders.PrettifyCID(buffer));
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -642,7 +642,7 @@ static class SecureDigital
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.SEND_CSD_decoded_buffer);
 
-                if(buffer != null) AaruLogging.WriteLine("{0}", Decoders.SecureDigital.Decoders.PrettifyCSD(buffer));
+                if(buffer != null) AaruLogging.WriteLine(Decoders.SecureDigital.Decoders.PrettifyCSD(buffer));
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -737,7 +737,7 @@ static class SecureDigital
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.SEND_SCR_decoded_buffer);
 
-                if(buffer != null) AaruLogging.WriteLine("{0}", Decoders.SecureDigital.Decoders.PrettifySCR(buffer));
+                if(buffer != null) AaruLogging.WriteLine(Decoders.SecureDigital.Decoders.PrettifySCR(buffer));
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();

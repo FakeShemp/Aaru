@@ -98,7 +98,7 @@ static class Certance
         AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.PARK_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+        AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);
@@ -164,7 +164,7 @@ static class Certance
         AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.UNPARK_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+        AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);

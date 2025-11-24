@@ -179,7 +179,7 @@ static class AtaChs
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.IDENTIFY_DEVICE_decoded_response);
 
-                if(buffer != null) AaruLogging.WriteLine("{0}", Decoders.ATA.Identify.Prettify(buffer));
+                if(buffer != null) AaruLogging.WriteLine(Decoders.ATA.Identify.Prettify(buffer));
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -191,7 +191,7 @@ static class AtaChs
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.IDENTIFY_DEVICE_status_registers);
-                AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+                AaruLogging.Write(MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -388,7 +388,7 @@ static class AtaChs
                                           ? Localization.READ_DMA_WITH_RETRIES_status_registers
                                           : Localization.READ_DMA_status_registers);
 
-                AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+                AaruLogging.Write(MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -587,7 +587,7 @@ static class AtaChs
                                           ? Localization.READ_LONG_WITH_RETRIES_status_registers
                                           : Localization.READ_LONG_status_registers);
 
-                AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+                AaruLogging.Write(MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -770,7 +770,7 @@ static class AtaChs
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_MULTIPLE_status_registers);
-                AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+                AaruLogging.Write(MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -969,7 +969,7 @@ static class AtaChs
                                           ? Localization.READ_SECTORS_WITH_RETRIES_status_registers
                                           : Localization.READ_SECTORS_status_registers);
 
-                AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+                AaruLogging.Write(MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1120,7 +1120,7 @@ static class AtaChs
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.SEEK_status_registers);
-                AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+                AaruLogging.Write(MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1295,7 +1295,7 @@ static class AtaChs
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.SET_FEATURES_status_registers);
-                AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+                AaruLogging.Write(MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();

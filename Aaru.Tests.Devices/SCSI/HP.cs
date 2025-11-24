@@ -78,12 +78,12 @@ static class Hp
 
     static void ReadLong(string devPath, Device dev)
     {
-        bool   relative    = false;
+        var    relative    = false;
         uint   address     = 0;
         ushort length      = 1;
         ushort bps         = 512;
-        bool   physical    = false;
-        bool   sectorCount = true;
+        var    physical    = false;
+        var    sectorCount = true;
         string strDev;
         int    item;
 
@@ -300,7 +300,7 @@ static class Hp
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_LONG_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();

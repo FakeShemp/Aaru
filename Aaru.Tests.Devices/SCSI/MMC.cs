@@ -271,292 +271,292 @@ static class Mmc
                             switch(desc.Code)
                             {
                                 case 0x0000:
-                                    AaruLogging.Write("{0}", Features.Prettify_0000(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0000(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0001:
-                                    AaruLogging.Write("{0}", Features.Prettify_0001(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0001(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0002:
-                                    AaruLogging.Write("{0}", Features.Prettify_0002(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0002(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0003:
-                                    AaruLogging.Write("{0}", Features.Prettify_0003(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0003(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0004:
-                                    AaruLogging.Write("{0}", Features.Prettify_0004(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0004(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0010:
-                                    AaruLogging.Write("{0}", Features.Prettify_0010(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0010(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x001D:
-                                    AaruLogging.Write("{0}", Features.Prettify_001D(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_001D(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x001E:
-                                    AaruLogging.Write("{0}", Features.Prettify_001E(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_001E(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x001F:
-                                    AaruLogging.Write("{0}", Features.Prettify_001F(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_001F(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0020:
-                                    AaruLogging.Write("{0}", Features.Prettify_0020(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0020(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0021:
-                                    AaruLogging.Write("{0}", Features.Prettify_0021(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0021(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0022:
-                                    AaruLogging.Write("{0}", Features.Prettify_0022(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0022(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0023:
-                                    AaruLogging.Write("{0}", Features.Prettify_0023(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0023(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0024:
-                                    AaruLogging.Write("{0}", Features.Prettify_0024(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0024(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0025:
-                                    AaruLogging.Write("{0}", Features.Prettify_0025(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0025(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0026:
-                                    AaruLogging.Write("{0}", Features.Prettify_0026(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0026(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0027:
-                                    AaruLogging.Write("{0}", Features.Prettify_0027(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0027(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0028:
-                                    AaruLogging.Write("{0}", Features.Prettify_0028(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0028(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0029:
-                                    AaruLogging.Write("{0}", Features.Prettify_0029(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0029(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x002A:
-                                    AaruLogging.Write("{0}", Features.Prettify_002A(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_002A(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x002B:
-                                    AaruLogging.Write("{0}", Features.Prettify_002B(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_002B(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x002C:
-                                    AaruLogging.Write("{0}", Features.Prettify_002C(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_002C(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x002D:
-                                    AaruLogging.Write("{0}", Features.Prettify_002D(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_002D(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x002E:
-                                    AaruLogging.Write("{0}", Features.Prettify_002E(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_002E(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x002F:
-                                    AaruLogging.Write("{0}", Features.Prettify_002F(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_002F(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0030:
-                                    AaruLogging.Write("{0}", Features.Prettify_0030(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0030(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0031:
-                                    AaruLogging.Write("{0}", Features.Prettify_0031(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0031(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0032:
-                                    AaruLogging.Write("{0}", Features.Prettify_0032(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0032(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0033:
-                                    AaruLogging.Write("{0}", Features.Prettify_0033(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0033(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0035:
-                                    AaruLogging.Write("{0}", Features.Prettify_0035(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0035(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0037:
-                                    AaruLogging.Write("{0}", Features.Prettify_0037(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0037(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0038:
-                                    AaruLogging.Write("{0}", Features.Prettify_0038(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0038(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x003A:
-                                    AaruLogging.Write("{0}", Features.Prettify_003A(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_003A(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x003B:
-                                    AaruLogging.Write("{0}", Features.Prettify_003B(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_003B(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0040:
-                                    AaruLogging.Write("{0}", Features.Prettify_0040(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0040(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0041:
-                                    AaruLogging.Write("{0}", Features.Prettify_0041(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0041(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0042:
-                                    AaruLogging.Write("{0}", Features.Prettify_0042(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0042(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0050:
-                                    AaruLogging.Write("{0}", Features.Prettify_0050(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0050(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0051:
-                                    AaruLogging.Write("{0}", Features.Prettify_0051(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0051(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0080:
-                                    AaruLogging.Write("{0}", Features.Prettify_0080(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0080(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0100:
-                                    AaruLogging.Write("{0}", Features.Prettify_0100(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0100(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0101:
-                                    AaruLogging.Write("{0}", Features.Prettify_0101(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0101(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0102:
-                                    AaruLogging.Write("{0}", Features.Prettify_0102(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0102(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0103:
-                                    AaruLogging.Write("{0}", Features.Prettify_0103(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0103(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0104:
-                                    AaruLogging.Write("{0}", Features.Prettify_0104(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0104(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0105:
-                                    AaruLogging.Write("{0}", Features.Prettify_0105(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0105(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0106:
-                                    AaruLogging.Write("{0}", Features.Prettify_0106(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0106(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0107:
-                                    AaruLogging.Write("{0}", Features.Prettify_0107(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0107(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0108:
-                                    AaruLogging.Write("{0}", Features.Prettify_0108(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0108(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0109:
-                                    AaruLogging.Write("{0}", Features.Prettify_0109(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0109(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x010A:
-                                    AaruLogging.Write("{0}", Features.Prettify_010A(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_010A(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x010B:
-                                    AaruLogging.Write("{0}", Features.Prettify_010B(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_010B(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x010C:
-                                    AaruLogging.Write("{0}", Features.Prettify_010C(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_010C(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x010D:
-                                    AaruLogging.Write("{0}", Features.Prettify_010D(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_010D(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x010E:
-                                    AaruLogging.Write("{0}", Features.Prettify_010E(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_010E(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0110:
-                                    AaruLogging.Write("{0}", Features.Prettify_0110(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0110(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0113:
-                                    AaruLogging.Write("{0}", Features.Prettify_0113(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0113(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
                                 case 0x0142:
-                                    AaruLogging.Write("{0}", Features.Prettify_0142(desc.Data));
+                                    AaruLogging.Write(Features.Prettify_0142(desc.Data));
                                     PrintHex.PrintHexArray(desc.Data, 64);
 
                                     break;
@@ -594,7 +594,7 @@ static class Mmc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.GET_CONFIGURATION_decoded_sense);
 
-                if(senseBuffer != null) AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                if(senseBuffer != null) AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -617,8 +617,8 @@ static class Mmc
 
     static void PreventAllowMediumRemoval(string devPath, Device dev)
     {
-        bool   prevent    = false;
-        bool   persistent = false;
+        var    prevent    = false;
+        var    persistent = false;
         string strDev;
         int    item;
 
@@ -702,7 +702,7 @@ static class Mmc
         AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.PREVENT_ALLOW_MEDIUM_REMOVAL_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+        AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);
@@ -759,12 +759,12 @@ static class Mmc
         uint           address    = 0;
         uint           length     = 1;
         MmcSectorTypes sectorType = MmcSectorTypes.AllTypes;
-        bool           dap        = false;
-        bool           relative   = false;
-        bool           sync       = false;
+        var            dap        = false;
+        var            relative   = false;
+        var            sync       = false;
         MmcHeaderCodes header     = MmcHeaderCodes.None;
-        bool           user       = true;
-        bool           edc        = false;
+        var            user       = true;
+        var            edc        = false;
         MmcErrorField  c2         = MmcErrorField.None;
         MmcSubchannel  subchan    = MmcSubchannel.None;
         uint           blockSize  = 2352;
@@ -1083,7 +1083,7 @@ static class Mmc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_CD_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1112,11 +1112,11 @@ static class Mmc
         const byte     endSecond   = 0;
         byte           endMinute   = 0;
         MmcSectorTypes sectorType  = MmcSectorTypes.AllTypes;
-        bool           dap         = false;
-        bool           sync        = false;
+        var            dap         = false;
+        var            sync        = false;
         MmcHeaderCodes header      = MmcHeaderCodes.None;
-        bool           user        = true;
-        bool           edc         = false;
+        var            user        = true;
+        var            edc         = false;
         MmcErrorField  c2          = MmcErrorField.None;
         MmcSubchannel  subchan     = MmcSubchannel.None;
         uint           blockSize   = 2352;
@@ -1382,8 +1382,8 @@ static class Mmc
         }
 
     start:
-        uint startMsf = (uint)((startMinute << 16) + (startSecond << 8) + startFrame);
-        uint endMsf   = (uint)((startMinute << 16) + (startSecond << 8) + startFrame);
+        var startMsf = (uint)((startMinute << 16) + (startSecond << 8) + startFrame);
+        var endMsf   = (uint)((startMinute << 16) + (startSecond << 8) + startFrame);
         Console.Clear();
 
         bool sense = dev.ReadCdMsf(out byte[] buffer,
@@ -1471,7 +1471,7 @@ static class Mmc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_CD_MSF_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1617,7 +1617,7 @@ static class Mmc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_DISC_INFORMATION_decoded_response);
-                AaruLogging.Write("{0}", DiscInformation.Prettify(buffer));
+                AaruLogging.Write(DiscInformation.Prettify(buffer));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1641,7 +1641,7 @@ static class Mmc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_DISC_INFORMATION_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1951,7 +1951,7 @@ static class Mmc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_DISC_STRUCTURE_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1973,7 +1973,7 @@ static class Mmc
 
     static void ReadTocPmaAtip(string devPath, Device dev)
     {
-        bool   msf     = false;
+        var    msf     = false;
         byte   format  = 0;
         byte   session = 0;
         string strDev;
@@ -2126,32 +2126,32 @@ static class Mmc
                     switch(format)
                     {
                         case 0:
-                            AaruLogging.Write("{0}", TOC.Prettify(buffer));
+                            AaruLogging.Write(TOC.Prettify(buffer));
                             PrintHex.PrintHexArray(buffer, 64);
 
                             break;
                         case 1:
-                            AaruLogging.Write("{0}", Session.Prettify(buffer));
+                            AaruLogging.Write(Session.Prettify(buffer));
                             PrintHex.PrintHexArray(buffer, 64);
 
                             break;
                         case 2:
-                            AaruLogging.Write("{0}", FullTOC.Prettify(buffer));
+                            AaruLogging.Write(FullTOC.Prettify(buffer));
                             PrintHex.PrintHexArray(buffer, 64);
 
                             break;
                         case 3:
-                            AaruLogging.Write("{0}", PMA.Prettify(buffer));
+                            AaruLogging.Write(PMA.Prettify(buffer));
                             PrintHex.PrintHexArray(buffer, 64);
 
                             break;
                         case 4:
-                            AaruLogging.Write("{0}", ATIP.Prettify(buffer));
+                            AaruLogging.Write(ATIP.Prettify(buffer));
                             PrintHex.PrintHexArray(buffer, 64);
 
                             break;
                         case 5:
-                            AaruLogging.Write("{0}", CDTextOnLeadIn.Prettify(buffer));
+                            AaruLogging.Write(CDTextOnLeadIn.Prettify(buffer));
                             PrintHex.PrintHexArray(buffer, 64);
 
                             break;
@@ -2182,7 +2182,7 @@ static class Mmc
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_TOC_PMA_ATIP_decoded_sense);
 
-                if(senseBuffer != null) AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                if(senseBuffer != null) AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -2205,10 +2205,10 @@ static class Mmc
 
     static void StartStopUnit(string devPath, Device dev)
     {
-        bool   immediate         = false;
-        bool   changeFormatLayer = false;
-        bool   loadEject         = false;
-        bool   start             = false;
+        var    immediate         = false;
+        var    changeFormatLayer = false;
+        var    loadEject         = false;
+        var    start             = false;
         byte   formatLayer       = 0;
         byte   powerConditions   = 0;
         string strDev;
@@ -2350,7 +2350,7 @@ static class Mmc
         AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.START_STOP_UNIT_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+        AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);

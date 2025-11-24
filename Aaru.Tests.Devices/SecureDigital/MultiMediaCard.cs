@@ -115,7 +115,7 @@ static class MultiMediaCard
         uint   address   = 0;
         uint   blockSize = 512;
         ushort count     = 1;
-        bool   byteAddr  = false;
+        var    byteAddr  = false;
         string strDev;
         int    item;
 
@@ -371,7 +371,7 @@ static class MultiMediaCard
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.SEND_OP_COND_decoded_buffer);
 
-                if(buffer != null) AaruLogging.WriteLine("{0}", Decoders.MMC.Decoders.PrettifyOCR(buffer));
+                if(buffer != null) AaruLogging.WriteLine(Decoders.MMC.Decoders.PrettifyOCR(buffer));
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -547,7 +547,7 @@ static class MultiMediaCard
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.SEND_CID_decoded_buffer);
 
-                if(buffer != null) AaruLogging.WriteLine("{0}", Decoders.MMC.Decoders.PrettifyCID(buffer));
+                if(buffer != null) AaruLogging.WriteLine(Decoders.MMC.Decoders.PrettifyCID(buffer));
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -642,7 +642,7 @@ static class MultiMediaCard
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.SEND_CSD_decoded_buffer);
 
-                if(buffer != null) AaruLogging.WriteLine("{0}", Decoders.MMC.Decoders.PrettifyCSD(buffer));
+                if(buffer != null) AaruLogging.WriteLine(Decoders.MMC.Decoders.PrettifyCSD(buffer));
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -737,7 +737,7 @@ static class MultiMediaCard
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.SEND_EXT_CSD_decoded_buffer);
 
-                if(buffer != null) AaruLogging.WriteLine("{0}", Decoders.MMC.Decoders.PrettifyExtendedCSD(buffer));
+                if(buffer != null) AaruLogging.WriteLine(Decoders.MMC.Decoders.PrettifyExtendedCSD(buffer));
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();

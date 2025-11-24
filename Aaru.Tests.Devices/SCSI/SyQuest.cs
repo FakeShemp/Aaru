@@ -101,7 +101,7 @@ static class SyQuest
         uint   lba       = 0;
         uint   blockSize = 512;
         byte   count     = 1;
-        bool   noDma     = false;
+        var    noDma     = false;
         string strDev;
         int    item;
 
@@ -292,7 +292,7 @@ static class SyQuest
                                           ? Localization.READ_LONG_6_decoded_sense
                                           : Localization.READ_6_decoded_sense);
 
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -317,7 +317,7 @@ static class SyQuest
         uint   lba       = 0;
         uint   blockSize = 512;
         byte   count     = 1;
-        bool   noDma     = false;
+        var    noDma     = false;
         string strDev;
         int    item;
 
@@ -501,7 +501,7 @@ static class SyQuest
                                           ? Localization.READ_LONG_10_decoded_sense
                                           : Localization.READ_10_decoded_sense);
 
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -599,7 +599,7 @@ static class SyQuest
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_RESET_USAGE_COUNTER_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();

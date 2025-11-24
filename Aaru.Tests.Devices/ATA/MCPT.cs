@@ -142,7 +142,7 @@ static class Mcpt
         AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
         AaruLogging.WriteLine(Localization.Sense_is_0,        sense);
         AaruLogging.WriteLine(Localization.CHECK_MEDIA_CARD_TYPE_status_registers);
-        AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+        AaruLogging.Write(MainClass.DecodeAtaRegisters(errorRegisters));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Send_command_again);

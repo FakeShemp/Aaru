@@ -127,7 +127,7 @@ static class Smart
         AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
         AaruLogging.WriteLine(Localization.Sense_is_0,        sense);
         AaruLogging.WriteLine(Localization.DISABLE_ATTRIBUTE_AUTOSAVE_status_registers);
-        AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+        AaruLogging.Write(MainClass.DecodeAtaRegisters(errorRegisters));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Send_command_again);
@@ -174,7 +174,7 @@ static class Smart
         AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
         AaruLogging.WriteLine(Localization.Sense_is_0,        sense);
         AaruLogging.WriteLine(Localization.DISABLE_OPERATIONS_status_registers);
-        AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+        AaruLogging.Write(MainClass.DecodeAtaRegisters(errorRegisters));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Send_command_again);
@@ -225,7 +225,7 @@ static class Smart
         AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
         AaruLogging.WriteLine(Localization.Sense_is_0,        sense);
         AaruLogging.WriteLine(Localization.ENABLE_ATTRIBUTE_AUTOSAVE_status_registers);
-        AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+        AaruLogging.Write(MainClass.DecodeAtaRegisters(errorRegisters));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Send_command_again);
@@ -272,7 +272,7 @@ static class Smart
         AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
         AaruLogging.WriteLine(Localization.Sense_is_0,        sense);
         AaruLogging.WriteLine(Localization.ENABLE_OPERATIONS_status_registers);
-        AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+        AaruLogging.Write(MainClass.DecodeAtaRegisters(errorRegisters));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Send_command_again);
@@ -374,7 +374,7 @@ static class Smart
         AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
         AaruLogging.WriteLine(Localization.Sense_is_0,        sense);
         AaruLogging.WriteLine(Localization.EXECUTE_OFF_LINE_IMMEDIATE_status_registers);
-        AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+        AaruLogging.Write(MainClass.DecodeAtaRegisters(errorRegisters));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Send_command_again);
@@ -471,7 +471,7 @@ static class Smart
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_DATA_status_registers);
-                AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+                AaruLogging.Write(MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -601,7 +601,7 @@ static class Smart
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_LOG_status_registers);
-                AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+                AaruLogging.Write(MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -634,7 +634,7 @@ static class Smart
         AaruLogging.WriteLine(Localization.Command_took_0_ms, duration);
         AaruLogging.WriteLine(Localization.Sense_is_0,        sense);
         AaruLogging.WriteLine(Localization.RETURN_STATUS_status_registers);
-        AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+        AaruLogging.Write(MainClass.DecodeAtaRegisters(errorRegisters));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Send_command_again);

@@ -134,7 +134,7 @@ static class Atapi
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.IDENTIFY_PACKET_DEVICE_decoded_response);
 
-                if(buffer != null) AaruLogging.WriteLine("{0}", Decoders.ATA.Identify.Prettify(buffer));
+                if(buffer != null) AaruLogging.WriteLine(Decoders.ATA.Identify.Prettify(buffer));
 
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
@@ -146,7 +146,7 @@ static class Atapi
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.IDENTIFY_PACKET_DEVICE_status_registers);
-                AaruLogging.Write("{0}", MainClass.DecodeAtaRegisters(errorRegisters));
+                AaruLogging.Write(MainClass.DecodeAtaRegisters(errorRegisters));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();

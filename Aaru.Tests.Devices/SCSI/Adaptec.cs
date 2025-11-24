@@ -93,7 +93,7 @@ static class Adaptec
 
     static void ReadResetUsageCounter(string devPath, Device dev)
     {
-        bool   drive1 = false;
+        var    drive1 = false;
         string strDev;
         int    item;
 
@@ -222,7 +222,7 @@ static class Adaptec
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_RESET_USAGE_COUNTER_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -320,7 +320,7 @@ static class Adaptec
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_DATA_BUFFER_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -340,7 +340,7 @@ static class Adaptec
 
     static void SetErrorThreshold(string devPath, Device dev)
     {
-        bool   drive1    = false;
+        var    drive1    = false;
         byte   threshold = 0;
         string strDev;
         int    item;
@@ -425,7 +425,7 @@ static class Adaptec
         AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.SET_ERROR_THRESHOLD_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+        AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);
@@ -479,7 +479,7 @@ static class Adaptec
 
     static void Translate(string devPath, Device dev)
     {
-        bool   drive1 = false;
+        var    drive1 = false;
         uint   lba    = 0;
         string strDev;
         int    item;
@@ -623,7 +623,7 @@ static class Adaptec
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.TRANSLATE_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();

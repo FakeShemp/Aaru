@@ -278,7 +278,7 @@ static class Sbc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_6_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -304,11 +304,11 @@ static class Sbc
         uint       blockSize   = 512;
         byte       count       = 1;
         byte       rdprotect   = 0;
-        bool       dpo         = false;
-        bool       fua         = false;
-        bool       fuaNv       = false;
+        var        dpo         = false;
+        var        fua         = false;
+        var        fuaNv       = false;
         const byte groupNumber = 0;
-        bool       relative    = false;
+        var        relative    = false;
         string     strDev;
         int        item;
 
@@ -549,7 +549,7 @@ static class Sbc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_10_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -575,12 +575,12 @@ static class Sbc
         uint       blockSize   = 512;
         byte       count       = 1;
         byte       rdprotect   = 0;
-        bool       dpo         = false;
-        bool       fua         = false;
-        bool       fuaNv       = false;
+        var        dpo         = false;
+        var        fua         = false;
+        var        fuaNv       = false;
         const byte groupNumber = 0;
-        bool       relative    = false;
-        bool       streaming   = false;
+        var        relative    = false;
+        var        streaming   = false;
         string     strDev;
         int        item;
 
@@ -835,7 +835,7 @@ static class Sbc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_12_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -861,11 +861,11 @@ static class Sbc
         uint       blockSize   = 512;
         byte       count       = 1;
         byte       rdprotect   = 0;
-        bool       dpo         = false;
-        bool       fua         = false;
-        bool       fuaNv       = false;
+        var        dpo         = false;
+        var        fua         = false;
+        var        fuaNv       = false;
         const byte groupNumber = 0;
-        bool       streaming   = false;
+        var        streaming   = false;
         string     strDev;
         int        item;
 
@@ -1106,7 +1106,7 @@ static class Sbc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_16_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1130,8 +1130,8 @@ static class Sbc
     {
         uint   lba       = 0;
         ushort blockSize = 512;
-        bool   correct   = false;
-        bool   relative  = false;
+        var    correct   = false;
+        var    relative  = false;
         string strDev;
         int    item;
 
@@ -1302,7 +1302,7 @@ static class Sbc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_LONG_10_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1326,7 +1326,7 @@ static class Sbc
     {
         ulong  lba       = 0;
         uint   blockSize = 512;
-        bool   correct   = false;
+        var    correct   = false;
         string strDev;
         int    item;
 
@@ -1483,7 +1483,7 @@ static class Sbc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_LONG_16_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -1579,7 +1579,7 @@ static class Sbc
         AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.SEEK_6_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+        AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);
@@ -1699,7 +1699,7 @@ static class Sbc
         AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.SEEK_6_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+        AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);

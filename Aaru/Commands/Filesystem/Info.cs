@@ -307,7 +307,7 @@ sealed class FilesystemInfoCommand : Command<FilesystemInfoCommand.Settings>
                                                   out information,
                                                   out FileSystem fsMetadata);
 
-                                AaruLogging.Write("{0}", information);
+                                AaruLogging.Write(information);
                                 Statistics.AddFilesystem(fsMetadata.Type);
 
                                 break;

@@ -354,7 +354,7 @@ public static class ImageInfo
                 }
 
                 AaruLogging.WriteLine(Localization.Core.SCSI_INQUIRY_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", Inquiry.Prettify(inquiry));
+                AaruLogging.Write(Inquiry.Prettify(inquiry));
                 AaruLogging.WriteLine();
             }
         }
@@ -367,7 +367,7 @@ public static class ImageInfo
 
             {
                 AaruLogging.WriteLine(Localization.Core.ATA_IDENTIFY_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", Identify.Prettify(identify));
+                AaruLogging.Write(Identify.Prettify(identify));
                 AaruLogging.WriteLine();
             }
         }
@@ -380,7 +380,7 @@ public static class ImageInfo
 
             {
                 AaruLogging.WriteLine(Localization.Core.ATAPI_IDENTIFY_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", Identify.Prettify(identify));
+                AaruLogging.Write(Identify.Prettify(identify));
                 AaruLogging.WriteLine();
             }
         }
@@ -424,7 +424,7 @@ public static class ImageInfo
 
             if(errno == ErrorNumber.NoError)
             {
-                AaruLogging.Write("{0}", Modes.PrettifyModePage_2A(mode2A));
+                AaruLogging.Write(Modes.PrettifyModePage_2A(mode2A));
                 AaruLogging.WriteLine();
             }
         }
@@ -447,7 +447,7 @@ public static class ImageInfo
                 }
 
                 AaruLogging.WriteLine(Localization.Core.CompactDisc_Table_of_Contents_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", FullTOC.Prettify(toc));
+                AaruLogging.Write(FullTOC.Prettify(toc));
                 AaruLogging.WriteLine();
             }
         }
@@ -471,7 +471,7 @@ public static class ImageInfo
 
                 AaruLogging.WriteLine(Localization.Core.CompactDisc_Program_Memory_Area_contained_in_image_WithMarkup);
 
-                AaruLogging.Write("{0}", PMA.Prettify(pma));
+                AaruLogging.Write(PMA.Prettify(pma));
                 AaruLogging.WriteLine();
             }
         }
@@ -498,7 +498,7 @@ public static class ImageInfo
                 AaruLogging.WriteLine(Localization.Core
                                                   .CompactDisc_Absolute_Time_In_Pregroove_ATIP_contained_in_image_WithMarkup);
 
-                AaruLogging.Write("{0}", ATIP.Prettify(atip));
+                AaruLogging.Write(ATIP.Prettify(atip));
                 AaruLogging.WriteLine();
             }
         }
@@ -523,7 +523,7 @@ public static class ImageInfo
                 }
 
                 AaruLogging.WriteLine(Localization.Core.CompactDisc_Lead_in_CD_Text_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", CDTextOnLeadIn.Prettify(cdtext));
+                AaruLogging.Write(CDTextOnLeadIn.Prettify(cdtext));
                 AaruLogging.WriteLine();
             }
         }
@@ -549,7 +549,7 @@ public static class ImageInfo
             if(errno == ErrorNumber.NoError)
             {
                 AaruLogging.WriteLine(Localization.Core.DVD_RW_Pre_Recorded_Information_WithMarkup);
-                AaruLogging.Write("{0}", PRI.Prettify(pri));
+                AaruLogging.Write(PRI.Prettify(pri));
                 AaruLogging.WriteLine();
             }
         }
@@ -561,7 +561,7 @@ public static class ImageInfo
             if(errno == ErrorNumber.NoError)
             {
                 AaruLogging.WriteLine(Localization.Core.DVD_Physical_Format_Information_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", PFI.Prettify(pfi, imageFormat.Info.MediaType));
+                AaruLogging.Write(PFI.Prettify(pfi, imageFormat.Info.MediaType));
                 AaruLogging.WriteLine();
             }
         }
@@ -575,7 +575,7 @@ public static class ImageInfo
                 AaruLogging.WriteLine(Localization.Core
                                                   .DVD_RAM_Disc_Definition_Structure_contained_in_image_WithMarkup);
 
-                AaruLogging.Write("{0}", DDS.Prettify(dds));
+                AaruLogging.Write(DDS.Prettify(dds));
                 AaruLogging.WriteLine();
             }
         }
@@ -589,7 +589,7 @@ public static class ImageInfo
                 AaruLogging.WriteLine(Localization.Core
                                                   .DVD_R_Physical_Format_Information_contained_in_image_WithMarkup);
 
-                AaruLogging.Write("{0}", PFI.Prettify(pfi, imageFormat.Info.MediaType));
+                AaruLogging.Write(PFI.Prettify(pfi, imageFormat.Info.MediaType));
                 AaruLogging.WriteLine();
             }
         }
@@ -601,7 +601,7 @@ public static class ImageInfo
             if(errno == ErrorNumber.NoError)
             {
                 AaruLogging.WriteLine(Localization.Core.Bluray_Disc_Information_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", DI.Prettify(di));
+                AaruLogging.Write(DI.Prettify(di));
                 AaruLogging.WriteLine();
             }
         }
@@ -613,7 +613,7 @@ public static class ImageInfo
             if(errno == ErrorNumber.NoError)
             {
                 AaruLogging.WriteLine(Localization.Core.Bluray_Disc_Definition_Structure_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", Decoders.Bluray.DDS.Prettify(dds));
+                AaruLogging.Write(Decoders.Bluray.DDS.Prettify(dds));
                 AaruLogging.WriteLine();
             }
         }
@@ -638,15 +638,15 @@ public static class ImageInfo
                                 break;
                             case TupleCodes.CISTPL_DEVICEGEO:
                             case TupleCodes.CISTPL_DEVICEGEO_A:
-                                AaruLogging.WriteLine("{0}", CIS.PrettifyDeviceGeometryTuple(tuple));
+                                AaruLogging.WriteLine(CIS.PrettifyDeviceGeometryTuple(tuple));
 
                                 break;
                             case TupleCodes.CISTPL_MANFID:
-                                AaruLogging.WriteLine("{0}", CIS.PrettifyManufacturerIdentificationTuple(tuple));
+                                AaruLogging.WriteLine(CIS.PrettifyManufacturerIdentificationTuple(tuple));
 
                                 break;
                             case TupleCodes.CISTPL_VERS_1:
-                                AaruLogging.WriteLine("{0}", CIS.PrettifyLevel1VersionTuple(tuple));
+                                AaruLogging.WriteLine(CIS.PrettifyLevel1VersionTuple(tuple));
 
                                 break;
                             case TupleCodes.CISTPL_ALTSTR:
@@ -709,7 +709,7 @@ public static class ImageInfo
             if(errno == ErrorNumber.NoError)
             {
                 AaruLogging.WriteLine(Localization.Core.SecureDigital_CID_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", Decoders.SecureDigital.Decoders.PrettifyCID(cid));
+                AaruLogging.Write(Decoders.SecureDigital.Decoders.PrettifyCID(cid));
                 AaruLogging.WriteLine();
             }
         }
@@ -721,7 +721,7 @@ public static class ImageInfo
             if(errno == ErrorNumber.NoError)
             {
                 AaruLogging.WriteLine(Localization.Core.SecureDigital_CSD_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", Decoders.SecureDigital.Decoders.PrettifyCSD(csd));
+                AaruLogging.Write(Decoders.SecureDigital.Decoders.PrettifyCSD(csd));
                 AaruLogging.WriteLine();
             }
         }
@@ -733,7 +733,7 @@ public static class ImageInfo
             if(errno == ErrorNumber.NoError)
             {
                 AaruLogging.WriteLine(Localization.Core.SecureDigital_SCR_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", Decoders.SecureDigital.Decoders.PrettifySCR(scr));
+                AaruLogging.Write(Decoders.SecureDigital.Decoders.PrettifySCR(scr));
                 AaruLogging.WriteLine();
             }
         }
@@ -745,7 +745,7 @@ public static class ImageInfo
             if(errno == ErrorNumber.NoError)
             {
                 AaruLogging.WriteLine(Localization.Core.SecureDigital_OCR_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", Decoders.SecureDigital.Decoders.PrettifyOCR(ocr));
+                AaruLogging.Write(Decoders.SecureDigital.Decoders.PrettifyOCR(ocr));
                 AaruLogging.WriteLine();
             }
         }
@@ -757,7 +757,7 @@ public static class ImageInfo
             if(errno == ErrorNumber.NoError)
             {
                 AaruLogging.WriteLine(Localization.Core.MultiMediaCard_CID_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", Decoders.MMC.Decoders.PrettifyCID(cid));
+                AaruLogging.Write(Decoders.MMC.Decoders.PrettifyCID(cid));
                 AaruLogging.WriteLine();
             }
         }
@@ -769,7 +769,7 @@ public static class ImageInfo
             if(errno == ErrorNumber.NoError)
             {
                 AaruLogging.WriteLine(Localization.Core.MultiMediaCard_CSD_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", Decoders.MMC.Decoders.PrettifyCSD(csd));
+                AaruLogging.Write(Decoders.MMC.Decoders.PrettifyCSD(csd));
                 AaruLogging.WriteLine();
             }
         }
@@ -781,7 +781,7 @@ public static class ImageInfo
             if(errno == ErrorNumber.NoError)
             {
                 AaruLogging.WriteLine(Localization.Core.MultiMediaCard_Extended_CSD_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", Decoders.MMC.Decoders.PrettifyExtendedCSD(ecsd));
+                AaruLogging.Write(Decoders.MMC.Decoders.PrettifyExtendedCSD(ecsd));
                 AaruLogging.WriteLine();
             }
         }
@@ -793,7 +793,7 @@ public static class ImageInfo
             if(errno == ErrorNumber.NoError)
             {
                 AaruLogging.WriteLine(Localization.Core.MultiMediaCard_OCR_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", Decoders.MMC.Decoders.PrettifyOCR(ocr));
+                AaruLogging.Write(Decoders.MMC.Decoders.PrettifyOCR(ocr));
                 AaruLogging.WriteLine();
             }
         }
@@ -805,7 +805,7 @@ public static class ImageInfo
             if(errno == ErrorNumber.NoError)
             {
                 AaruLogging.WriteLine(Localization.Core.Xbox_Physical_Format_Information_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", PFI.Prettify(xpfi, imageFormat.Info.MediaType));
+                AaruLogging.Write(PFI.Prettify(xpfi, imageFormat.Info.MediaType));
                 AaruLogging.WriteLine();
             }
         }
@@ -823,7 +823,7 @@ public static class ImageInfo
                     if(xmi.HasValue)
                     {
                         AaruLogging.WriteLine(Localization.Core.Xbox_DMI_contained_in_image_WithMarkup);
-                        AaruLogging.Write("{0}", DMI.PrettifyXbox(xmi));
+                        AaruLogging.Write(DMI.PrettifyXbox(xmi));
                         AaruLogging.WriteLine();
                     }
                 }
@@ -835,7 +835,7 @@ public static class ImageInfo
                     if(xmi.HasValue)
                     {
                         AaruLogging.WriteLine(Localization.Core.Xbox_360_DMI_contained_in_image_WithMarkup);
-                        AaruLogging.Write("{0}", DMI.PrettifyXbox360(xmi));
+                        AaruLogging.Write(DMI.PrettifyXbox360(xmi));
                         AaruLogging.WriteLine();
                     }
                 }
@@ -849,7 +849,7 @@ public static class ImageInfo
             if(errno == ErrorNumber.NoError)
             {
                 AaruLogging.WriteLine(Localization.Core.Xbox_Security_Sectors_contained_in_image_WithMarkup);
-                AaruLogging.Write("{0}", SS.Prettify(toc));
+                AaruLogging.Write(SS.Prettify(toc));
                 AaruLogging.WriteLine();
             }
         }

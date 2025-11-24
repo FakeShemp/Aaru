@@ -208,15 +208,15 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                             break;
                         case TupleCodes.CISTPL_DEVICEGEO:
                         case TupleCodes.CISTPL_DEVICEGEO_A:
-                            AaruLogging.WriteLine("{0}", CIS.PrettifyDeviceGeometryTuple(tuple));
+                            AaruLogging.WriteLine(CIS.PrettifyDeviceGeometryTuple(tuple));
 
                             break;
                         case TupleCodes.CISTPL_MANFID:
-                            AaruLogging.WriteLine("{0}", CIS.PrettifyManufacturerIdentificationTuple(tuple));
+                            AaruLogging.WriteLine(CIS.PrettifyManufacturerIdentificationTuple(tuple));
 
                             break;
                         case TupleCodes.CISTPL_VERS_1:
-                            AaruLogging.WriteLine("{0}", CIS.PrettifyLevel1VersionTuple(tuple));
+                            AaruLogging.WriteLine(CIS.PrettifyLevel1VersionTuple(tuple));
 
                             break;
                         case TupleCodes.CISTPL_ALTSTR:
@@ -417,7 +417,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
 
                             break;
                         case 0x81:
-                            AaruLogging.WriteLine("{0}", EVPD.PrettifyPage_81(page.Value));
+                            AaruLogging.WriteLine(EVPD.PrettifyPage_81(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
                                              settings.OutputPrefix,
@@ -438,7 +438,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
 
                             break;
                         case 0x83:
-                            AaruLogging.WriteLine("{0}", EVPD.PrettifyPage_83(page.Value));
+                            AaruLogging.WriteLine(EVPD.PrettifyPage_83(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
                                              settings.OutputPrefix,
@@ -448,7 +448,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
 
                             break;
                         case 0x84:
-                            AaruLogging.WriteLine("{0}", EVPD.PrettifyPage_84(page.Value));
+                            AaruLogging.WriteLine(EVPD.PrettifyPage_84(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
                                              settings.OutputPrefix,
@@ -458,7 +458,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
 
                             break;
                         case 0x85:
-                            AaruLogging.WriteLine("{0}", EVPD.PrettifyPage_85(page.Value));
+                            AaruLogging.WriteLine(EVPD.PrettifyPage_85(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
                                              settings.OutputPrefix,
@@ -468,7 +468,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
 
                             break;
                         case 0x86:
-                            AaruLogging.WriteLine("{0}", EVPD.PrettifyPage_86(page.Value));
+                            AaruLogging.WriteLine(EVPD.PrettifyPage_86(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
                                              settings.OutputPrefix,
@@ -478,7 +478,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
 
                             break;
                         case 0x89:
-                            AaruLogging.WriteLine("{0}", EVPD.PrettifyPage_89(page.Value));
+                            AaruLogging.WriteLine(EVPD.PrettifyPage_89(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
                                              settings.OutputPrefix,
@@ -488,7 +488,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
 
                             break;
                         case 0xB0:
-                            AaruLogging.WriteLine("{0}", EVPD.PrettifyPage_B0(page.Value));
+                            AaruLogging.WriteLine(EVPD.PrettifyPage_B0(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
                                              settings.OutputPrefix,
@@ -545,7 +545,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                                                      .ToLowerInvariant()
                                                      .Trim() ==
                                        "quantum":
-                            AaruLogging.WriteLine("{0}", EVPD.PrettifyPage_C0_Quantum(page.Value));
+                            AaruLogging.WriteLine(EVPD.PrettifyPage_C0_Quantum(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
                                              settings.OutputPrefix,
@@ -558,7 +558,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                                                      .ToLowerInvariant()
                                                      .Trim() ==
                                        "seagate":
-                            AaruLogging.WriteLine("{0}", EVPD.PrettifyPage_C0_Seagate(page.Value));
+                            AaruLogging.WriteLine(EVPD.PrettifyPage_C0_Seagate(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
                                              settings.OutputPrefix,
@@ -571,7 +571,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                                                      .ToLowerInvariant()
                                                      .Trim() ==
                                        "ibm":
-                            AaruLogging.WriteLine("{0}", EVPD.PrettifyPage_C0_IBM(page.Value));
+                            AaruLogging.WriteLine(EVPD.PrettifyPage_C0_IBM(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
                                              settings.OutputPrefix,
@@ -584,7 +584,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                                                      .ToLowerInvariant()
                                                      .Trim() ==
                                        "ibm":
-                            AaruLogging.WriteLine("{0}", EVPD.PrettifyPage_C1_IBM(page.Value));
+                            AaruLogging.WriteLine(EVPD.PrettifyPage_C1_IBM(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
                                              settings.OutputPrefix,
@@ -598,7 +598,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                                                .ToLowerInvariant()
                                                .Trim() ==
                                  "certance":
-                            AaruLogging.WriteLine("{0}", EVPD.PrettifyPage_C0_C1_Certance(page.Value));
+                            AaruLogging.WriteLine(EVPD.PrettifyPage_C0_C1_Certance(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
                                              settings.OutputPrefix,
@@ -612,7 +612,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                                                .ToLowerInvariant()
                                                .Trim() ==
                                  "certance":
-                            AaruLogging.WriteLine("{0}", EVPD.PrettifyPage_C2_C3_C4_C5_C6_Certance(page.Value));
+                            AaruLogging.WriteLine(EVPD.PrettifyPage_C2_C3_C4_C5_C6_Certance(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
                                              settings.OutputPrefix,
@@ -626,7 +626,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                                                .ToLowerInvariant()
                                                .Trim() ==
                                  "hp":
-                            AaruLogging.WriteLine("{0}", EVPD.PrettifyPage_C0_to_C5_HP(page.Value));
+                            AaruLogging.WriteLine(EVPD.PrettifyPage_C0_to_C5_HP(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
                                              settings.OutputPrefix,
@@ -639,7 +639,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                                                      .ToLowerInvariant()
                                                      .Trim() ==
                                        "certance":
-                            AaruLogging.WriteLine("{0}", EVPD.PrettifyPage_DF_Certance(page.Value));
+                            AaruLogging.WriteLine(EVPD.PrettifyPage_DF_Certance(page.Value));
 
                             DataFile.WriteTo(MODULE_NAME,
                                              settings.OutputPrefix,
@@ -1198,21 +1198,21 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                 {
                     noInfo = false;
                     DataFile.WriteTo(MODULE_NAME, settings.OutputPrefix, "_mmc_cid.bin", "MMC CID", devInfo.CID);
-                    AaruLogging.WriteLine("{0}", Decoders.MMC.Decoders.PrettifyCID(devInfo.CID));
+                    AaruLogging.WriteLine(Decoders.MMC.Decoders.PrettifyCID(devInfo.CID));
                 }
 
                 if(devInfo.CSD != null)
                 {
                     noInfo = false;
                     DataFile.WriteTo(MODULE_NAME, settings.OutputPrefix, "_mmc_csd.bin", "MMC CSD", devInfo.CSD);
-                    AaruLogging.WriteLine("{0}", Decoders.MMC.Decoders.PrettifyCSD(devInfo.CSD));
+                    AaruLogging.WriteLine(Decoders.MMC.Decoders.PrettifyCSD(devInfo.CSD));
                 }
 
                 if(devInfo.OCR != null)
                 {
                     noInfo = false;
                     DataFile.WriteTo(MODULE_NAME, settings.OutputPrefix, "_mmc_ocr.bin", "MMC OCR", devInfo.OCR);
-                    AaruLogging.WriteLine("{0}", Decoders.MMC.Decoders.PrettifyOCR(devInfo.OCR));
+                    AaruLogging.WriteLine(Decoders.MMC.Decoders.PrettifyOCR(devInfo.OCR));
                 }
 
                 if(devInfo.ExtendedCSD != null)
@@ -1225,7 +1225,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                                      "MMC Extended CSD",
                                      devInfo.ExtendedCSD);
 
-                    AaruLogging.WriteLine("{0}", Decoders.MMC.Decoders.PrettifyExtendedCSD(devInfo.ExtendedCSD));
+                    AaruLogging.WriteLine(Decoders.MMC.Decoders.PrettifyExtendedCSD(devInfo.ExtendedCSD));
                 }
 
                 if(noInfo) AaruLogging.Error(UI.Could_not_get_any_kind_of_information_from_the_device);
@@ -1246,7 +1246,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                                      "SecureDigital CID",
                                      devInfo.CID);
 
-                    AaruLogging.WriteLine("{0}", Decoders.SecureDigital.Decoders.PrettifyCID(devInfo.CID));
+                    AaruLogging.WriteLine(Decoders.SecureDigital.Decoders.PrettifyCID(devInfo.CID));
                 }
 
                 if(devInfo.CSD != null)
@@ -1259,7 +1259,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                                      "SecureDigital CSD",
                                      devInfo.CSD);
 
-                    AaruLogging.WriteLine("{0}", Decoders.SecureDigital.Decoders.PrettifyCSD(devInfo.CSD));
+                    AaruLogging.WriteLine(Decoders.SecureDigital.Decoders.PrettifyCSD(devInfo.CSD));
                 }
 
                 if(devInfo.OCR != null)
@@ -1272,7 +1272,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                                      "SecureDigital OCR",
                                      devInfo.OCR);
 
-                    AaruLogging.WriteLine("{0}", Decoders.SecureDigital.Decoders.PrettifyOCR(devInfo.OCR));
+                    AaruLogging.WriteLine(Decoders.SecureDigital.Decoders.PrettifyOCR(devInfo.OCR));
                 }
 
                 if(devInfo.SCR != null)
@@ -1285,7 +1285,7 @@ sealed class DeviceInfoCommand : Command<DeviceInfoCommand.Settings>
                                      "SecureDigital SCR",
                                      devInfo.SCR);
 
-                    AaruLogging.WriteLine("{0}", Decoders.SecureDigital.Decoders.PrettifySCR(devInfo.SCR));
+                    AaruLogging.WriteLine(Decoders.SecureDigital.Decoders.PrettifySCR(devInfo.SCR));
                 }
 
                 if(noInfo) AaruLogging.Error(UI.Could_not_get_any_kind_of_information_from_the_device);

@@ -268,7 +268,7 @@ static class Pioneer
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_CD_DA_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -442,8 +442,8 @@ static class Pioneer
         }
 
     start:
-        uint startMsf = (uint)((startMinute << 16) + (startSecond << 8) + startFrame);
-        uint endMsf   = (uint)((startMinute << 16) + (startSecond << 8) + startFrame);
+        var startMsf = (uint)((startMinute << 16) + (startSecond << 8) + startFrame);
+        var endMsf   = (uint)((startMinute << 16) + (startSecond << 8) + startFrame);
         Console.Clear();
 
         bool sense = dev.PioneerReadCdDaMsf(out byte[] buffer,
@@ -524,7 +524,7 @@ static class Pioneer
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_CD_DA_MSF_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();
@@ -548,8 +548,8 @@ static class Pioneer
     {
         uint   address     = 0;
         uint   length      = 1;
-        bool   errorFlags  = false;
-        bool   wholeSector = false;
+        var    errorFlags  = false;
+        var    wholeSector = false;
         string strDev;
         int    item;
 
@@ -720,7 +720,7 @@ static class Pioneer
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0, devPath);
                 AaruLogging.WriteLine(Localization.READ_CD_XA_decoded_sense);
-                AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
                 Console.Clear();

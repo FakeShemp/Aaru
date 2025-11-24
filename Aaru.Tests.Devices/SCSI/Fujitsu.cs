@@ -78,10 +78,10 @@ static class Fujitsu
 
     static void Display(string devPath, Device dev)
     {
-        bool                flash      = false;
+        var                 flash      = false;
         FujitsuDisplayModes mode       = FujitsuDisplayModes.Ready;
-        string              firstHalf  = "AARUTEST";
-        string              secondHalf = "TESTAARU";
+        var                 firstHalf  = "AARUTEST";
+        var                 secondHalf = "TESTAARU";
         string              strDev;
         int                 item;
 
@@ -182,7 +182,7 @@ static class Fujitsu
         AaruLogging.WriteLine(Localization.Sense_buffer_is_null_or_empty_0, senseBuffer.IsEmpty);
 
         AaruLogging.WriteLine(Localization.DISPLAY_decoded_sense);
-        AaruLogging.Write("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+        AaruLogging.Write(Sense.PrettifySense(senseBuffer.ToArray()));
         AaruLogging.WriteLine();
         AaruLogging.WriteLine(Localization.Choose_what_to_do);
         AaruLogging.WriteLine(Localization._1_Print_sense_buffer);

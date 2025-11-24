@@ -54,7 +54,7 @@ static partial class ScsiMmc
         if(sense)
         {
             AaruLogging.WriteLine(Localization.READ_FULL_TOC_failed);
-            AaruLogging.WriteLine("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+            AaruLogging.WriteLine(Sense.PrettifySense(senseBuffer.ToArray()));
             AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
             Console.ReadLine();
 
@@ -127,7 +127,7 @@ static partial class ScsiMmc
         if(sense)
         {
             AaruLogging.WriteLine(Localization.READ_FULL_TOC_failed);
-            AaruLogging.WriteLine("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+            AaruLogging.WriteLine(Sense.PrettifySense(senseBuffer.ToArray()));
             AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
             Console.ReadLine();
 
@@ -231,7 +231,7 @@ static partial class ScsiMmc
         if(sense)
         {
             AaruLogging.WriteLine(Localization.READ_FULL_TOC_failed);
-            AaruLogging.WriteLine("{0}", Sense.PrettifySense(senseBuffer.ToArray()));
+            AaruLogging.WriteLine(Sense.PrettifySense(senseBuffer.ToArray()));
             AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
             Console.ReadLine();
 
@@ -508,7 +508,7 @@ static partial class ScsiMmc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0,            devPath);
                 AaruLogging.WriteLine(Localization.LBA_0_decoded_sense, sectors + 5);
-                AaruLogging.Write("{0}", Sense.PrettifySense(dataSense.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(dataSense.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
 
@@ -539,7 +539,7 @@ static partial class ScsiMmc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0,                      devPath);
                 AaruLogging.WriteLine(Localization.LBA_0_scrambled_decoded_sense, sectors + 5);
-                AaruLogging.Write("{0}", Sense.PrettifySense(scrambledSense.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(scrambledSense.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
 
@@ -570,7 +570,7 @@ static partial class ScsiMmc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0,             devPath);
                 AaruLogging.WriteLine(Localization.LBA_PQ_decoded_sense, sectors + 5);
-                AaruLogging.Write("{0}", Sense.PrettifySense(pqSense.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(pqSense.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
 
@@ -601,7 +601,7 @@ static partial class ScsiMmc
                 Console.Clear();
                 AaruLogging.WriteLine(Localization.Device_0,               devPath);
                 AaruLogging.WriteLine(Localization.LBA_RW_0_decoded_sense, sectors + 5);
-                AaruLogging.Write("{0}", Sense.PrettifySense(rwSense.ToArray()));
+                AaruLogging.Write(Sense.PrettifySense(rwSense.ToArray()));
                 AaruLogging.WriteLine(Localization.Press_any_key_to_continue);
                 Console.ReadKey();
 
