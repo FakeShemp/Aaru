@@ -128,7 +128,7 @@ public sealed partial class AppleMFS
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        if(!string.IsNullOrEmpty(path) && string.Compare(path, "/", StringComparison.OrdinalIgnoreCase) != 0)
+        if(!string.IsNullOrEmpty(path) && !string.Equals(path, "/", StringComparison.OrdinalIgnoreCase))
             return ErrorNumber.NotSupported;
 
         var contents = _idToFilename.Select(static kvp => kvp.Value).ToList();

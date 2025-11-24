@@ -936,7 +936,7 @@ public sealed partial class CPM
                         else
                         {
                             // Head changes after every track
-                            if(string.Compare(def.order, "SIDES", StringComparison.InvariantCultureIgnoreCase) == 0)
+                            if(string.Equals(def.order, "SIDES", StringComparison.InvariantCultureIgnoreCase))
                             {
                                 _sectorMask = new int[def.side1.sectorIds.Length + def.side2.sectorIds.Length];
 
@@ -952,10 +952,7 @@ public sealed partial class CPM
                             }
 
                             // Head changes after whole side
-                            else if(string.Compare(def.order,
-                                                   "CYLINDERS",
-                                                   StringComparison.InvariantCultureIgnoreCase) ==
-                                    0)
+                            else if(string.Equals(def.order, "CYLINDERS", StringComparison.InvariantCultureIgnoreCase))
                             {
                                 for(var m = 0; m < def.side1.sectorIds.Length; m++)
                                     _sectorMask[m] = def.side1.sectorIds[m] - def.side1.sectorIds[0];
@@ -972,10 +969,7 @@ public sealed partial class CPM
                             }
 
                             // TODO: Implement COLUMBIA ordering
-                            else if(string.Compare(def.order,
-                                                   "COLUMBIA",
-                                                   StringComparison.InvariantCultureIgnoreCase) ==
-                                    0)
+                            else if(string.Equals(def.order, "COLUMBIA", StringComparison.InvariantCultureIgnoreCase))
                             {
                                 AaruLogging.Debug(MODULE_NAME,
                                                   Localization
@@ -985,8 +979,7 @@ public sealed partial class CPM
                             }
 
                             // TODO: Implement EAGLE ordering
-                            else if(string.Compare(def.order, "EAGLE", StringComparison.InvariantCultureIgnoreCase) ==
-                                    0)
+                            else if(string.Equals(def.order, "EAGLE", StringComparison.InvariantCultureIgnoreCase))
                             {
                                 AaruLogging.Debug(MODULE_NAME,
                                                   Localization
@@ -1033,8 +1026,9 @@ public sealed partial class CPM
 
                         // Complement of the directory bytes if needed
                         if(def.complement)
-                            for(var b = 0; b < directory.Length; b++)
-                                directory[b] = (byte)(~directory[b] & 0xFF);
+                        {
+                            for(var b = 0; b < directory.Length; b++) directory[b] = (byte)(~directory[b] & 0xFF);
+                        }
 
                         // Check the directory
                         if(CheckDir(directory))

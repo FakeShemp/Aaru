@@ -158,9 +158,9 @@ public sealed partial class AppleDOS
         if(_lockedFiles.Contains(filename)) attributes |= FileAttributes.ReadOnly;
 
         if(_debug &&
-           (string.Compare(path, "$",     StringComparison.InvariantCulture) == 0 ||
-            string.Compare(path, "$Boot", StringComparison.InvariantCulture) == 0 ||
-            string.Compare(path, "$Vtoc", StringComparison.InvariantCulture) == 0))
+           (string.Equals(path, "$",     StringComparison.InvariantCulture) ||
+            string.Equals(path, "$Boot", StringComparison.InvariantCulture) ||
+            string.Equals(path, "$Vtoc", StringComparison.InvariantCulture)))
             attributes |= FileAttributes.System;
 
         return ErrorNumber.NoError;
@@ -182,13 +182,13 @@ public sealed partial class AppleDOS
         if(filename.Length > 30) return ErrorNumber.NameTooLong;
 
         if(_debug &&
-           (string.Compare(path, "$",     StringComparison.InvariantCulture) == 0 ||
-            string.Compare(path, "$Boot", StringComparison.InvariantCulture) == 0 ||
-            string.Compare(path, "$Vtoc", StringComparison.InvariantCulture) == 0))
+           (string.Equals(path, "$",     StringComparison.InvariantCulture) ||
+            string.Equals(path, "$Boot", StringComparison.InvariantCulture) ||
+            string.Equals(path, "$Vtoc", StringComparison.InvariantCulture)))
         {
-            if(string.Compare(path, "$", StringComparison.InvariantCulture) == 0)
+            if(string.Equals(path, "$", StringComparison.InvariantCulture))
                 file = _catalogBlocks;
-            else if(string.Compare(path, "$Vtoc", StringComparison.InvariantCulture) == 0)
+            else if(string.Equals(path, "$Vtoc", StringComparison.InvariantCulture))
                 file = _vtocBlocks;
             else
                 file = _bootBlocks;
@@ -273,16 +273,15 @@ public sealed partial class AppleDOS
         GetAttributes(path, out FileAttributes attrs);
 
         if(_debug &&
-           (string.Compare(path, "$",     StringComparison.InvariantCulture) == 0 ||
-            string.Compare(path, "$Boot", StringComparison.InvariantCulture) == 0 ||
-            string.Compare(path, "$Vtoc", StringComparison.InvariantCulture) == 0))
+           (string.Equals(path, "$",     StringComparison.InvariantCulture) ||
+            string.Equals(path, "$Boot", StringComparison.InvariantCulture) ||
+            string.Equals(path, "$Vtoc", StringComparison.InvariantCulture)))
         {
-            if(string.Compare(path, "$", StringComparison.InvariantCulture) == 0)
+            if(string.Equals(path, "$", StringComparison.InvariantCulture))
                 stat.Length = _catalogBlocks.Length;
-            else if(string.Compare(path, "$Boot", StringComparison.InvariantCulture) == 0)
-                stat.Length = _bootBlocks.Length;
-            else if(string.Compare(path, "$Vtoc", StringComparison.InvariantCulture) == 0)
-                stat.Length = _vtocBlocks.Length;
+            else if(string.Equals(path, "$Boot", StringComparison.InvariantCulture))
+                stat.Length                                                                      = _bootBlocks.Length;
+            else if(string.Equals(path, "$Vtoc", StringComparison.InvariantCulture)) stat.Length = _vtocBlocks.Length;
 
             stat.Blocks = stat.Length / _vtoc.bytesPerSector;
         }

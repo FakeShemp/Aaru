@@ -208,15 +208,15 @@ public sealed partial class AppleMFS
 
         switch(_debug)
         {
-            case true when string.Compare(path, "$", StringComparison.InvariantCulture) == 0:
+            case true when string.Equals(path, "$", StringComparison.InvariantCulture):
                 file = _directoryBlocks;
 
                 break;
-            case true when string.Compare(path, "$Boot", StringComparison.InvariantCulture) == 0 && _bootBlocks != null:
+            case true when string.Equals(path, "$Boot", StringComparison.InvariantCulture) && _bootBlocks != null:
                 file = _bootBlocks;
 
                 break;
-            case true when string.Compare(path, "$Bitmap", StringComparison.InvariantCulture) == 0:
+            case true when string.Equals(path, "$Bitmap", StringComparison.InvariantCulture):
                 file = _blockMapBytes;
 
                 break;
@@ -292,10 +292,10 @@ public sealed partial class AppleMFS
 
         if(_debug)
         {
-            if(string.Compare(path, "$",       StringComparison.InvariantCulture) == 0 ||
-               string.Compare(path, "$Boot",   StringComparison.InvariantCulture) == 0 ||
-               string.Compare(path, "$Bitmap", StringComparison.InvariantCulture) == 0 ||
-               string.Compare(path, "$MDB",    StringComparison.InvariantCulture) == 0)
+            if(string.Equals(path, "$",       StringComparison.InvariantCulture) ||
+               string.Equals(path, "$Boot",   StringComparison.InvariantCulture) ||
+               string.Equals(path, "$Bitmap", StringComparison.InvariantCulture) ||
+               string.Equals(path, "$MDB",    StringComparison.InvariantCulture))
             {
                 stat = new FileEntryInfo
                 {
@@ -305,24 +305,24 @@ public sealed partial class AppleMFS
                     Attributes = FileAttributes.System
                 };
 
-                if(string.Compare(path, "$", StringComparison.InvariantCulture) == 0)
+                if(string.Equals(path, "$", StringComparison.InvariantCulture))
                 {
                     stat.Blocks = _directoryBlocks.Length / stat.BlockSize + _directoryBlocks.Length % stat.BlockSize;
 
                     stat.Length = _directoryBlocks.Length;
                 }
-                else if(string.Compare(path, "$Bitmap", StringComparison.InvariantCulture) == 0)
+                else if(string.Equals(path, "$Bitmap", StringComparison.InvariantCulture))
                 {
                     stat.Blocks = _blockMapBytes.Length / stat.BlockSize + _blockMapBytes.Length % stat.BlockSize;
 
                     stat.Length = _blockMapBytes.Length;
                 }
-                else if(string.Compare(path, "$Boot", StringComparison.InvariantCulture) == 0 && _bootBlocks != null)
+                else if(string.Equals(path, "$Boot", StringComparison.InvariantCulture) && _bootBlocks != null)
                 {
                     stat.Blocks = _bootBlocks.Length / stat.BlockSize + _bootBlocks.Length % stat.BlockSize;
                     stat.Length = _bootBlocks.Length;
                 }
-                else if(string.Compare(path, "$MDB", StringComparison.InvariantCulture) == 0)
+                else if(string.Equals(path, "$MDB", StringComparison.InvariantCulture))
                 {
                     stat.Blocks = _mdbBlocks.Length / stat.BlockSize + _mdbBlocks.Length % stat.BlockSize;
                     stat.Length = _mdbBlocks.Length;

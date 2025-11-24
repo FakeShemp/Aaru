@@ -60,10 +60,10 @@ public sealed partial class AppleMFS
 
         if(_debug)
         {
-            if(string.Compare(path, "$",       StringComparison.InvariantCulture) == 0 ||
-               string.Compare(path, "$Bitmap", StringComparison.InvariantCulture) == 0 ||
-               string.Compare(path, "$Boot",   StringComparison.InvariantCulture) == 0 ||
-               string.Compare(path, "$MDB",    StringComparison.InvariantCulture) == 0)
+            if(string.Equals(path, "$",       StringComparison.InvariantCulture) ||
+               string.Equals(path, "$Bitmap", StringComparison.InvariantCulture) ||
+               string.Equals(path, "$Boot",   StringComparison.InvariantCulture) ||
+               string.Equals(path, "$MDB",    StringComparison.InvariantCulture))
             {
                 if(_device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSonyTag))
                     xattrs.Add("com.apple.macintosh.tags");
@@ -107,15 +107,15 @@ public sealed partial class AppleMFS
 
         if(_debug)
         {
-            if(string.Compare(path, "$",       StringComparison.InvariantCulture) == 0 ||
-               string.Compare(path, "$Bitmap", StringComparison.InvariantCulture) == 0 ||
-               string.Compare(path, "$Boot",   StringComparison.InvariantCulture) == 0 ||
-               string.Compare(path, "$MDB",    StringComparison.InvariantCulture) == 0)
+            if(string.Equals(path, "$",       StringComparison.InvariantCulture) ||
+               string.Equals(path, "$Bitmap", StringComparison.InvariantCulture) ||
+               string.Equals(path, "$Boot",   StringComparison.InvariantCulture) ||
+               string.Equals(path, "$MDB",    StringComparison.InvariantCulture))
             {
                 if(_device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSonyTag) &&
-                   string.Compare(xattr, "com.apple.macintosh.tags", StringComparison.InvariantCulture) == 0)
+                   string.Equals(xattr, "com.apple.macintosh.tags", StringComparison.InvariantCulture))
                 {
-                    if(string.Compare(path, "$", StringComparison.InvariantCulture) == 0)
+                    if(string.Equals(path, "$", StringComparison.InvariantCulture))
                     {
                         buf = new byte[_directoryTags.Length];
                         Array.Copy(_directoryTags, 0, buf, 0, buf.Length);
@@ -123,7 +123,7 @@ public sealed partial class AppleMFS
                         return ErrorNumber.NoError;
                     }
 
-                    if(string.Compare(path, "$Bitmap", StringComparison.InvariantCulture) == 0)
+                    if(string.Equals(path, "$Bitmap", StringComparison.InvariantCulture))
                     {
                         buf = new byte[_bitmapTags.Length];
                         Array.Copy(_bitmapTags, 0, buf, 0, buf.Length);
@@ -131,7 +131,7 @@ public sealed partial class AppleMFS
                         return ErrorNumber.NoError;
                     }
 
-                    if(string.Compare(path, "$Boot", StringComparison.InvariantCulture) == 0)
+                    if(string.Equals(path, "$Boot", StringComparison.InvariantCulture))
                     {
                         buf = new byte[_bootTags.Length];
                         Array.Copy(_bootTags, 0, buf, 0, buf.Length);
@@ -139,7 +139,7 @@ public sealed partial class AppleMFS
                         return ErrorNumber.NoError;
                     }
 
-                    if(string.Compare(path, "$MDB", StringComparison.InvariantCulture) == 0)
+                    if(string.Equals(path, "$MDB", StringComparison.InvariantCulture))
                     {
                         buf = new byte[_mdbTags.Length];
                         Array.Copy(_mdbTags, 0, buf, 0, buf.Length);
@@ -160,17 +160,17 @@ public sealed partial class AppleMFS
 
         switch(entry.flRLgLen)
         {
-            case > 0 when string.Compare(xattr, "com.apple.ResourceFork", StringComparison.InvariantCulture) == 0:
+            case > 0 when string.Equals(xattr, "com.apple.ResourceFork", StringComparison.InvariantCulture):
                 error = ReadFile(path, out buf, true, false);
 
                 return error;
-            case > 0 when string.Compare(xattr, "com.apple.ResourceFork.tags", StringComparison.InvariantCulture) == 0:
+            case > 0 when string.Equals(xattr, "com.apple.ResourceFork.tags", StringComparison.InvariantCulture):
                 error = ReadFile(path, out buf, true, true);
 
                 return error;
         }
 
-        if(string.Compare(xattr, "com.apple.FinderInfo", StringComparison.InvariantCulture) == 0)
+        if(string.Equals(xattr, "com.apple.FinderInfo", StringComparison.InvariantCulture))
         {
             buf = Marshal.StructureToByteArrayBigEndian(entry.flUsrWds);
 
@@ -179,7 +179,7 @@ public sealed partial class AppleMFS
 
         if(!_debug                                                               ||
            !_device.Info.ReadableSectorTags.Contains(SectorTagType.AppleSonyTag) ||
-           string.Compare(xattr, "com.apple.macintosh.tags", StringComparison.InvariantCulture) != 0)
+           !string.Equals(xattr, "com.apple.macintosh.tags", StringComparison.InvariantCulture))
             return ErrorNumber.NoSuchExtendedAttribute;
 
         error = ReadFile(path, out buf, false, true);

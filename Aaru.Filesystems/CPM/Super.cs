@@ -75,7 +75,7 @@ public sealed partial class CPM
         else
         {
             // Head changes after every track
-            if(string.Compare(_workingDefinition.order, "SIDES", StringComparison.InvariantCultureIgnoreCase) == 0)
+            if(string.Equals(_workingDefinition.order, "SIDES", StringComparison.InvariantCultureIgnoreCase))
             {
                 _sectorMask = new int[_workingDefinition.side1.sectorIds.Length +
                                       _workingDefinition.side2.sectorIds.Length];
@@ -94,10 +94,7 @@ public sealed partial class CPM
             }
 
             // Head changes after whole side
-            else if(string.Compare(_workingDefinition.order,
-                                   "CYLINDERS",
-                                   StringComparison.InvariantCultureIgnoreCase) ==
-                    0)
+            else if(string.Equals(_workingDefinition.order, "CYLINDERS", StringComparison.InvariantCultureIgnoreCase))
             {
                 for(var m = 0; m < _workingDefinition.side1.sectorIds.Length; m++)
                     _sectorMask[m] = _workingDefinition.side1.sectorIds[m] - _workingDefinition.side1.sectorIds[0];
@@ -119,8 +116,7 @@ public sealed partial class CPM
             }
 
             // TODO: Implement COLUMBIA ordering
-            else if(string.Compare(_workingDefinition.order, "COLUMBIA", StringComparison.InvariantCultureIgnoreCase) ==
-                    0)
+            else if(string.Equals(_workingDefinition.order, "COLUMBIA", StringComparison.InvariantCultureIgnoreCase))
             {
                 AaruLogging.Debug(MODULE_NAME,
                                   Localization
@@ -130,7 +126,7 @@ public sealed partial class CPM
             }
 
             // TODO: Implement EAGLE ordering
-            else if(string.Compare(_workingDefinition.order, "EAGLE", StringComparison.InvariantCultureIgnoreCase) == 0)
+            else if(string.Equals(_workingDefinition.order, "EAGLE", StringComparison.InvariantCultureIgnoreCase))
             {
                 AaruLogging.Debug(MODULE_NAME,
                                   Localization
@@ -151,8 +147,8 @@ public sealed partial class CPM
         // Deinterleave whole volume
         Dictionary<ulong, byte[]> deinterleavedSectors = new();
 
-        if(_workingDefinition.sides                                                                       == 1 ||
-           string.Compare(_workingDefinition.order, "SIDES", StringComparison.InvariantCultureIgnoreCase) == 0)
+        if(_workingDefinition.sides == 1 ||
+           string.Equals(_workingDefinition.order, "SIDES", StringComparison.InvariantCultureIgnoreCase))
         {
             AaruLogging.Debug(MODULE_NAME, Localization.Deinterleaving_whole_volume);
 
@@ -169,8 +165,9 @@ public sealed partial class CPM
                 if(errno != ErrorNumber.NoError) return errno;
 
                 if(_workingDefinition.complement)
-                    for(var b = 0; b < readSector.Length; b++)
-                        readSector[b] = (byte)(~readSector[b] & 0xFF);
+                {
+                    for(var b = 0; b < readSector.Length; b++) readSector[b] = (byte)(~readSector[b] & 0xFF);
+                }
 
                 deinterleavedSectors.Add((ulong)p, readSector);
             }

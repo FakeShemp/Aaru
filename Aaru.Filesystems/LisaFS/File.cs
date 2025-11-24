@@ -105,9 +105,8 @@ public sealed partial class LisaFS
         if(!_mounted || !_debug) return ErrorNumber.AccessDenied;
 
         if(fileId is > 4 or <= 0)
-        {
-            if(fileId != FILEID_BOOT_SIGNED && fileId != FILEID_LOADER_SIGNED) return ErrorNumber.InvalidArgument;
-        }
+            if(fileId != FILEID_BOOT_SIGNED && fileId != FILEID_LOADER_SIGNED)
+                return ErrorNumber.InvalidArgument;
 
         if(_systemFileCache.TryGetValue(fileId, out buf) && !tags) return ErrorNumber.NoError;
 
@@ -330,9 +329,8 @@ public sealed partial class LisaFS
         if(!tags)
         {
             if(_fileSizeCache.TryGetValue(fileId, out int realSize))
-            {
-                if(realSize > temp.Length) AaruLogging.Error(Localization.File_0_gets_truncated, fileId);
-            }
+                if(realSize > temp.Length)
+                    AaruLogging.Error(Localization.File_0_gets_truncated, fileId);
 
             buf = temp;
 
@@ -368,42 +366,42 @@ public sealed partial class LisaFS
 
         if(_debug && pathElements.Length == 1)
         {
-            if(string.Compare(pathElements[0], "$MDDF", StringComparison.InvariantCulture) == 0)
+            if(string.Equals(pathElements[0], "$MDDF", StringComparison.InvariantCulture))
             {
                 fileId = (short)FILEID_MDDF;
 
                 return ErrorNumber.NoError;
             }
 
-            if(string.Compare(pathElements[0], "$Boot", StringComparison.InvariantCulture) == 0)
+            if(string.Equals(pathElements[0], "$Boot", StringComparison.InvariantCulture))
             {
                 fileId = FILEID_BOOT_SIGNED;
 
                 return ErrorNumber.NoError;
             }
 
-            if(string.Compare(pathElements[0], "$Loader", StringComparison.InvariantCulture) == 0)
+            if(string.Equals(pathElements[0], "$Loader", StringComparison.InvariantCulture))
             {
                 fileId = FILEID_LOADER_SIGNED;
 
                 return ErrorNumber.NoError;
             }
 
-            if(string.Compare(pathElements[0], "$Bitmap", StringComparison.InvariantCulture) == 0)
+            if(string.Equals(pathElements[0], "$Bitmap", StringComparison.InvariantCulture))
             {
                 fileId = (short)FILEID_BITMAP;
 
                 return ErrorNumber.NoError;
             }
 
-            if(string.Compare(pathElements[0], "$S-Record", StringComparison.InvariantCulture) == 0)
+            if(string.Equals(pathElements[0], "$S-Record", StringComparison.InvariantCulture))
             {
                 fileId = (short)FILEID_SRECORD;
 
                 return ErrorNumber.NoError;
             }
 
-            if(string.Compare(pathElements[0], "$", StringComparison.InvariantCulture) == 0)
+            if(string.Equals(pathElements[0], "$", StringComparison.InvariantCulture))
             {
                 fileId = DIRID_ROOT;
                 isDir  = true;
@@ -421,8 +419,8 @@ public sealed partial class LisaFS
                 string filename = StringHandlers.CToString(entry.filename, _encoding);
 
                 // LisaOS is case insensitive
-                if(string.Compare(wantedFilename, filename, StringComparison.InvariantCultureIgnoreCase) != 0 ||
-                   entry.parentID                                                                        != fileId)
+                if(!string.Equals(wantedFilename, filename, StringComparison.InvariantCultureIgnoreCase) ||
+                   entry.parentID != fileId)
                     continue;
 
                 fileId = entry.fileID;

@@ -113,7 +113,7 @@ public sealed partial class AppleDOS
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        if(!string.IsNullOrEmpty(path) && string.Compare(path, "/", StringComparison.OrdinalIgnoreCase) != 0)
+        if(!string.IsNullOrEmpty(path) && !string.Equals(path, "/", StringComparison.OrdinalIgnoreCase))
             return ErrorNumber.NotSupported;
 
         var contents = _catalogCache.Keys.ToList();

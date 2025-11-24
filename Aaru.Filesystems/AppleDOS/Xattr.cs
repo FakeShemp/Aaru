@@ -58,9 +58,9 @@ public sealed partial class AppleDOS
         xattrs = [];
 
         if(_debug &&
-           (string.Compare(path, "$",     StringComparison.InvariantCulture) == 0 ||
-            string.Compare(path, "$Boot", StringComparison.InvariantCulture) == 0 ||
-            string.Compare(path, "$Vtoc", StringComparison.InvariantCulture) == 0)) {}
+           (string.Equals(path, "$",     StringComparison.InvariantCulture) ||
+            string.Equals(path, "$Boot", StringComparison.InvariantCulture) ||
+            string.Equals(path, "$Vtoc", StringComparison.InvariantCulture))) {}
         else
         {
             if(!_catalogCache.ContainsKey(filename)) return ErrorNumber.NoSuchFile;
@@ -87,14 +87,14 @@ public sealed partial class AppleDOS
         if(filename.Length > 30) return ErrorNumber.NameTooLong;
 
         if(_debug &&
-           (string.Compare(path, "$",     StringComparison.InvariantCulture) == 0 ||
-            string.Compare(path, "$Boot", StringComparison.InvariantCulture) == 0 ||
-            string.Compare(path, "$Vtoc", StringComparison.InvariantCulture) == 0))
+           (string.Equals(path, "$",     StringComparison.InvariantCulture) ||
+            string.Equals(path, "$Boot", StringComparison.InvariantCulture) ||
+            string.Equals(path, "$Vtoc", StringComparison.InvariantCulture)))
             return ErrorNumber.NoSuchExtendedAttribute;
 
         if(!_catalogCache.ContainsKey(filename)) return ErrorNumber.NoSuchFile;
 
-        if(string.Compare(xattr, "com.apple.dos.type", StringComparison.InvariantCulture) == 0)
+        if(string.Equals(xattr, "com.apple.dos.type", StringComparison.InvariantCulture))
         {
             if(!_fileTypeCache.TryGetValue(filename, out byte type)) return ErrorNumber.InvalidArgument;
 
@@ -104,7 +104,7 @@ public sealed partial class AppleDOS
             return ErrorNumber.NoError;
         }
 
-        if(string.Compare(xattr, "com.apple.dos.tracksectorlist", StringComparison.InvariantCulture) != 0 || !_debug)
+        if(!string.Equals(xattr, "com.apple.dos.tracksectorlist", StringComparison.InvariantCulture) || !_debug)
             return ErrorNumber.NoSuchExtendedAttribute;
 
         if(!_extentCache.TryGetValue(filename, out byte[] ts)) return ErrorNumber.InvalidArgument;

@@ -63,9 +63,8 @@ public sealed partial class Cpcdsk
         int pos;
 
         for(pos = 0; pos < 254; pos++)
-        {
-            if(headerB[pos] == 0x0D && headerB[pos + 1] == 0x0A) break;
-        }
+            if(headerB[pos] == 0x0D && headerB[pos + 1] == 0x0A)
+                break;
 
         if(pos >= 254) return ErrorNumber.InvalidArgument;
 
@@ -76,12 +75,12 @@ public sealed partial class Cpcdsk
 
         DiskInfo header = Marshal.ByteArrayToStructureLittleEndian<DiskInfo>(headerB);
 
-        if(string.Compare(CPCDSK_ID, magic, StringComparison.InvariantCultureIgnoreCase) != 0 &&
-           string.Compare(EDSK_ID,   magic, StringComparison.InvariantCultureIgnoreCase) != 0 &&
-           string.Compare(DU54_ID,   magic, StringComparison.InvariantCultureIgnoreCase) != 0)
+        if(!string.Equals(CPCDSK_ID, magic, StringComparison.InvariantCultureIgnoreCase) &&
+           !string.Equals(EDSK_ID,   magic, StringComparison.InvariantCultureIgnoreCase) &&
+           !string.Equals(DU54_ID,   magic, StringComparison.InvariantCultureIgnoreCase))
             return ErrorNumber.InvalidArgument;
 
-        _extended = string.Compare(EDSK_ID, magic, StringComparison.InvariantCultureIgnoreCase) == 0;
+        _extended = string.Equals(EDSK_ID, magic, StringComparison.InvariantCultureIgnoreCase);
         AaruLogging.Debug(MODULE_NAME, Localization.Extended_equals_0, _extended);
 
         AaruLogging.Debug(MODULE_NAME, Localization.magic_equals_0_quoted, magic);
@@ -133,10 +132,9 @@ public sealed partial class Cpcdsk
                 stream.EnsureRead(trackB, 0, 256);
                 TrackInfo trackInfo = Marshal.ByteArrayToStructureLittleEndian<TrackInfo>(trackB);
 
-                if(string.Compare(TRACK_ID,
+                if(!string.Equals(TRACK_ID,
                                   Encoding.ASCII.GetString(trackInfo.magic),
-                                  StringComparison.InvariantCultureIgnoreCase) !=
-                   0)
+                                  StringComparison.InvariantCultureIgnoreCase))
                 {
                     AaruLogging.Error(Localization.Not_the_expected_track_info);
 

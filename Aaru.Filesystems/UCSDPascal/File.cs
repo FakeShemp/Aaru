@@ -43,13 +43,12 @@ public sealed partial class PascalPlugin
     {
         entry = new PascalFileEntry();
 
-        foreach(PascalFileEntry ent in _fileEntries.Where(ent => string.Compare(path,
-                                                                                    StringHandlers
-                                                                                       .PascalToString(ent.Filename,
-                                                                                            _encoding),
-                                                                                    StringComparison
-                                                                                       .InvariantCultureIgnoreCase) ==
-                                                                 0))
+        foreach(PascalFileEntry ent in _fileEntries.Where(ent => string.Equals(path,
+                                                                               StringHandlers
+                                                                                  .PascalToString(ent.Filename,
+                                                                                       _encoding),
+                                                                               StringComparison
+                                                                                  .InvariantCultureIgnoreCase)))
         {
             entry = ent;
 
@@ -95,9 +94,9 @@ public sealed partial class PascalPlugin
         byte[] file;
 
         if(_debug &&
-           (string.Compare(path, "$",     StringComparison.InvariantCulture) == 0 ||
-            string.Compare(path, "$Boot", StringComparison.InvariantCulture) == 0))
-            file = string.Compare(path, "$", StringComparison.InvariantCulture) == 0 ? _catalogBlocks : _bootBlocks;
+           (string.Equals(path, "$",     StringComparison.InvariantCulture) ||
+            string.Equals(path, "$Boot", StringComparison.InvariantCulture)))
+            file = string.Equals(path, "$", StringComparison.InvariantCulture) ? _catalogBlocks : _bootBlocks;
         else
         {
             ErrorNumber error = GetFileEntry(path, out PascalFileEntry entry);
@@ -173,8 +172,8 @@ public sealed partial class PascalPlugin
 
         if(_debug)
         {
-            if(string.Compare(path, "$",     StringComparison.InvariantCulture) == 0 ||
-               string.Compare(path, "$Boot", StringComparison.InvariantCulture) == 0)
+            if(string.Equals(path, "$",     StringComparison.InvariantCulture) ||
+               string.Equals(path, "$Boot", StringComparison.InvariantCulture))
             {
                 stat = new FileEntryInfo
                 {
@@ -183,7 +182,7 @@ public sealed partial class PascalPlugin
                     Links      = 1
                 };
 
-                if(string.Compare(path, "$", StringComparison.InvariantCulture) == 0)
+                if(string.Equals(path, "$", StringComparison.InvariantCulture))
                 {
                     stat.Blocks = _catalogBlocks.Length / stat.BlockSize + _catalogBlocks.Length % stat.BlockSize;
 

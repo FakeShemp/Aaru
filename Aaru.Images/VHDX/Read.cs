@@ -294,7 +294,7 @@ public sealed partial class Vhdx
 
                 IFilter parentFilter;
 
-                if(string.Compare(entryType, RELATIVE_PATH_KEY, StringComparison.OrdinalIgnoreCase) == 0)
+                if(string.Equals(entryType, RELATIVE_PATH_KEY, StringComparison.OrdinalIgnoreCase))
                 {
                     stream.Seek(parentEntry.valueOffset + _metadataOffset, SeekOrigin.Begin);
                     var tmpVal = new byte[parentEntry.valueLength];
@@ -338,8 +338,8 @@ public sealed partial class Vhdx
                         SentrySdk.CaptureException(ex);
                     }
                 }
-                else if(string.Compare(entryType, VOLUME_PATH_KEY,         StringComparison.OrdinalIgnoreCase) == 0 ||
-                        string.Compare(entryType, ABSOLUTE_WIN32_PATH_KEY, StringComparison.OrdinalIgnoreCase) == 0)
+                else if(string.Equals(entryType, VOLUME_PATH_KEY,         StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(entryType, ABSOLUTE_WIN32_PATH_KEY, StringComparison.OrdinalIgnoreCase))
                 {
                     stream.Seek(parentEntry.valueOffset + _metadataOffset, SeekOrigin.Begin);
                     var tmpVal = new byte[parentEntry.valueLength];

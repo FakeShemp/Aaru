@@ -51,7 +51,7 @@ public sealed partial class CPM
         if(pathElements.Length != 1) return ErrorNumber.NotSupported;
 
         if(string.IsNullOrEmpty(pathElements[0]) ||
-           string.Compare(pathElements[0], "/", StringComparison.OrdinalIgnoreCase) == 0)
+           string.Equals(pathElements[0], "/", StringComparison.OrdinalIgnoreCase))
         {
             attributes = new FileAttributes();
             attributes = FileAttributes.Directory;
@@ -144,7 +144,7 @@ public sealed partial class CPM
 
         if(pathElements.Length != 1) return ErrorNumber.NotSupported;
 
-        if(!string.IsNullOrEmpty(path) && string.Compare(path, "/", StringComparison.OrdinalIgnoreCase) != 0)
+        if(!string.IsNullOrEmpty(path) && !string.Equals(path, "/", StringComparison.OrdinalIgnoreCase))
         {
             return _statCache.TryGetValue(pathElements[0].ToUpperInvariant(), out stat)
                        ? ErrorNumber.NoError

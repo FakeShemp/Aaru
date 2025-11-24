@@ -57,8 +57,9 @@ public sealed partial class Cpcdsk
         int pos;
 
         for(pos = 0; pos < 254; pos++)
-            if(headerB[pos] == 0x0D && headerB[pos + 1] == 0x0A)
-                break;
+        {
+            if(headerB[pos] == 0x0D && headerB[pos + 1] == 0x0A) break;
+        }
 
         if(pos >= 254) return false;
 
@@ -66,9 +67,9 @@ public sealed partial class Cpcdsk
 
         AaruLogging.Debug(MODULE_NAME, Localization.magic_equals_0_quoted, magic);
 
-        return string.Compare(CPCDSK_ID, magic, StringComparison.InvariantCultureIgnoreCase) == 0 ||
-               string.Compare(EDSK_ID,   magic, StringComparison.InvariantCultureIgnoreCase) == 0 ||
-               string.Compare(DU54_ID,   magic, StringComparison.InvariantCultureIgnoreCase) == 0;
+        return string.Equals(CPCDSK_ID, magic, StringComparison.InvariantCultureIgnoreCase) ||
+               string.Equals(EDSK_ID,   magic, StringComparison.InvariantCultureIgnoreCase) ||
+               string.Equals(DU54_ID,   magic, StringComparison.InvariantCultureIgnoreCase);
     }
 
 #endregion

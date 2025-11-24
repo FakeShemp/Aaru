@@ -46,7 +46,7 @@ public sealed partial class CBM
 
         if(!_mounted) return ErrorNumber.AccessDenied;
 
-        if(!string.IsNullOrEmpty(path) && string.Compare(path, "/", StringComparison.OrdinalIgnoreCase) != 0)
+        if(!string.IsNullOrEmpty(path) && !string.Equals(path, "/", StringComparison.OrdinalIgnoreCase))
             return ErrorNumber.NotSupported;
 
         var contents = _cache.Keys.ToList();

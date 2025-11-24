@@ -851,10 +851,9 @@ public sealed partial class BlindWrite5
                     var    lowerCaseFileName  = false;
                     string basePath;
 
-                    bool version5 = string.Compare(Path.GetExtension(imageFilter.Filename),
-                                                   ".B5T",
-                                                   StringComparison.OrdinalIgnoreCase) ==
-                                    0;
+                    bool version5 = string.Equals(Path.GetExtension(imageFilter.Filename),
+                                                  ".B5T",
+                                                  StringComparison.OrdinalIgnoreCase);
 
                     string firstExtension      = version5 ? "B5I" : "B6I";
                     string firstExtensionLower = version5 ? "b5i" : "b6i";
@@ -1295,10 +1294,9 @@ public sealed partial class BlindWrite5
         _imageInfo.DriveFirmwareRevision = StringHandlers.CToString(_header.revision);
         _imageInfo.Application           = "BlindWrite";
 
-        if(string.Compare(Path.GetExtension(imageFilter.Filename), ".B5T", StringComparison.OrdinalIgnoreCase) == 0)
+        if(string.Equals(Path.GetExtension(imageFilter.Filename), ".B5T", StringComparison.OrdinalIgnoreCase))
             _imageInfo.ApplicationVersion = "5";
-        else if(string.Compare(Path.GetExtension(imageFilter.Filename), ".B6T", StringComparison.OrdinalIgnoreCase) ==
-                0)
+        else if(string.Equals(Path.GetExtension(imageFilter.Filename), ".B6T", StringComparison.OrdinalIgnoreCase))
             _imageInfo.ApplicationVersion = "6";
 
         _imageInfo.Version = "5";
