@@ -32,18 +32,18 @@ public partial class Convert
 
         if(errno != ErrorNumber.NoError) return errno;
 
-        Dictionary<byte, string> isrcs                     = new();
-        Dictionary<byte, byte>   trackFlags                = new();
+        Dictionary<byte, string> isrcs                     = [];
+        Dictionary<byte, byte>   trackFlags                = [];
         string                   mcn                       = null;
         HashSet<int>             subchannelExtents         = [];
-        Dictionary<byte, int>    smallestPregapLbaPerTrack = new();
+        Dictionary<byte, int>    smallestPregapLbaPerTrack = [];
         var                      tracks                    = new Track[inputOptical.Tracks.Count];
 
         for(var i = 0; i < tracks.Length; i++)
         {
             tracks[i] = new Track
             {
-                Indexes           = new Dictionary<ushort, int>(),
+                Indexes           = [],
                 Description       = inputOptical.Tracks[i].Description,
                 EndSector         = inputOptical.Tracks[i].EndSector,
                 StartSector       = inputOptical.Tracks[i].StartSector,
@@ -147,6 +147,7 @@ public partial class Convert
     ErrorNumber ConvertOpticalSectors(IOpticalMediaImage inputOptical, IWritableOpticalImage outputOptical,
                                       bool               useLong)
     {
+        if(_aborted) return ErrorNumber.NoError;
         InitProgress?.Invoke();
         InitProgress2?.Invoke();
         byte[] generatedTitleKeys = null;
@@ -154,6 +155,8 @@ public partial class Convert
 
         foreach(Track track in inputOptical.Tracks)
         {
+            if(_aborted) break;
+
             UpdateProgress?.Invoke(string.Format(UI.Converting_sectors_in_track_0_of_1,
                                                  currentTrack + 1,
                                                  inputOptical.Tracks.Count),
@@ -165,6 +168,7 @@ public partial class Convert
 
             while(doneSectors < trackSectors)
             {
+                if(_aborted) break;
                 byte[] sector;
 
                 uint sectorsToDo;
@@ -340,7 +344,9 @@ public partial class Convert
                                           HashSet<int> subchannelExtents,
                                           Dictionary<byte, int> smallestPregapLbaPerTrack)
     {
-        foreach(SectorTagType tag in inputOptical.Info.ReadableSectorTags.Order().TakeWhile(_ => useLong))
+        foreach(SectorTagType tag in inputOptical.Info.ReadableSectorTags.Order()
+                                                 .TakeWhile(_ => useLong)
+                                                 .TakeWhile(_ => !_aborted))
         {
             switch(tag)
             {
@@ -439,6 +445,7 @@ public partial class Convert
 
                 while(doneSectors < trackSectors)
                 {
+                    if(_aborted) break;
                     uint sectorsToDo;
 
                     if(trackSectors - doneSectors >= _count)
@@ -616,12 +623,15 @@ public partial class Convert
         return ErrorNumber.NoError;
     }
 
+    /// <summary>
+    ///     Decrypts DVD sectors using CSS (Content Scramble System) decryption
+    ///     Retrieves decryption keys from sector tags or generates them from ISO9660 filesystem
+    ///     Only MPEG packets within sectors can be encrypted
+    /// </summary>
     void DecryptDvdSector(ref byte[]     sector, IOpticalMediaImage inputOptical, ulong sectorAddress, uint sectorsToDo,
                           PluginRegister plugins, ref byte[] generatedTitleKeys)
     {
-        // Decrypts DVD sectors using CSS (Content Scramble System) decryption
-        // Retrieves decryption keys from sector tags or generates them from ISO9660 filesystem
-        // Only MPEG packets within sectors can be encrypted
+        if(_aborted) return;
 
         // Only sectors which are MPEG packets can be encrypted.
         if(!Mpeg.ContainsMpegPackets(sector, sectorsToDo)) return;
@@ -682,6 +692,8 @@ public partial class Convert
     /// </summary>
     void GenerateDvdTitleKeys(IOpticalMediaImage inputOptical, PluginRegister plugins, ref byte[] generatedTitleKeys)
     {
+        if(_aborted) return;
+
         List<Partition> partitions = Partitions.GetAll(inputOptical);
 
         partitions = partitions.FindAll(p =>

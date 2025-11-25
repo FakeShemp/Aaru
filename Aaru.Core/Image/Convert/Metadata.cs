@@ -6,11 +6,15 @@ namespace Aaru.Core.Image;
 
 public partial class Convert
 {
+    /// <summary>
+    ///     Builds and applies complete ImageInfo metadata to output image
+    ///     Copies input metadata and applies command-line overrides (title, comments, creator, drive info, etc.)
+    ///     Sets Aaru application version and applies all metadata fields to output format
+    /// </summary>
+    /// <returns></returns>
     ErrorNumber SetImageMetadata()
     {
-        // Builds and applies complete ImageInfo metadata to output image
-        // Copies input metadata and applies command-line overrides (title, comments, creator, drive info, etc.)
-        // Sets Aaru application version and applies all metadata fields to output format
+        if(_aborted) return ErrorNumber.NoError;
 
         var imageInfo = new CommonTypes.Structs.ImageInfo
         {

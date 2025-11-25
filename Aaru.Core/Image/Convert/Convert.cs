@@ -227,6 +227,8 @@ public partial class Convert
 
                 foreach(TapeFile tapeFile in inputTape.Files)
                 {
+                    if(_aborted) break;
+
                     UpdateProgress?.Invoke(string.Format(UI.Converting_file_0_of_partition_1,
                                                          tapeFile.File,
                                                          tapeFile.Partition),
@@ -244,6 +246,8 @@ public partial class Convert
 
                 foreach(TapePartition tapePartition in inputTape.TapePartitions)
                 {
+                    if(_aborted) break;
+
                     UpdateProgress?.Invoke(string.Format(UI.Converting_tape_partition_0, tapePartition.Number),
                                            currentPartition + 1,
                                            inputTape.TapePartitions.Count);
@@ -270,7 +274,7 @@ public partial class Convert
             if(errno != ErrorNumber.NoError) return errno;
         }
 
-        if(_resume != null || dumpHardware != null)
+        if((_resume != null || dumpHardware != null) && !_aborted)
         {
             InitProgress?.Invoke();
 
@@ -287,7 +291,7 @@ public partial class Convert
 
         ret = false;
 
-        if(_sidecar != null || metadata != null)
+        if((_sidecar != null || metadata != null) && !_aborted)
         {
             InitProgress?.Invoke();
             PulseProgress?.Invoke(UI.Writing_metadata);
@@ -299,6 +303,13 @@ public partial class Convert
             if(ret) UpdateStatus?.Invoke(UI.Written_Aaru_Metadata_to_output_image);
 
             EndProgress?.Invoke();
+        }
+
+        if(_aborted)
+        {
+            UpdateStatus?.Invoke(UI.Operation_canceled_the_output_file_is_not_correct);
+
+            return ErrorNumber.Canceled;
         }
 
         var closed = false;

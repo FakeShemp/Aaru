@@ -283,5 +283,9 @@ public enum ErrorNumber
     /// <summary>Specified sector could not be found</summary>
     SectorNotFound = 29,
     /// <summary>Image or device has not been opened</summary>
-    NotOpened = 30
+    NotOpened = 30,
+    /// <summary>Canceled</summary>
+    ECANCELED = Canceled,
+    /// <summary>Canceled</summary>
+    Canceled = -125
 }

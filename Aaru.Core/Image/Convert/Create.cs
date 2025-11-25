@@ -13,6 +13,8 @@ public partial class Convert
     /// <returns>Error code if creation fails</returns>
     private ErrorNumber CreateOutputImage()
     {
+        if(_aborted) return ErrorNumber.NoError;
+
         InitProgress?.Invoke();
         PulseProgress?.Invoke(UI.Invoke_Opening_image_file);
 

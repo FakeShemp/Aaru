@@ -15,6 +15,8 @@ public partial class Convert
     /// <returns>Error code if conversion fails in non-force mode</returns>
     ErrorNumber ConvertNegativeSectors(bool useLong)
     {
+        if(_aborted) return ErrorNumber.NoError;
+
         ErrorNumber errno = ErrorNumber.NoError;
 
         InitProgress?.Invoke();
@@ -22,6 +24,8 @@ public partial class Convert
         // There's no -0
         for(uint i = 1; i <= _negativeSectors; i++)
         {
+            if(_aborted) break;
+
             byte[] sector;
 
             UpdateProgress?.Invoke(string.Format(UI.Converting_negative_sector_0_of_1, i, _negativeSectors),
@@ -96,7 +100,8 @@ public partial class Convert
 
         EndProgress?.Invoke();
 
-        foreach(SectorTagType tag in _inputImage.Info.ReadableSectorTags.TakeWhile(_ => useLong))
+        foreach(SectorTagType tag in _inputImage.Info.ReadableSectorTags.TakeWhile(_ => useLong)
+                                                .TakeWhile(_ => !_aborted))
         {
             switch(tag)
             {
@@ -125,6 +130,8 @@ public partial class Convert
 
             for(uint i = 1; i <= _negativeSectors; i++)
             {
+                if(_aborted) break;
+
                 UpdateProgress?.Invoke(string.Format(UI.Converting_tag_1_for_negative_sector_0, i, tag),
                                        i,
                                        _negativeSectors);
@@ -167,12 +174,15 @@ public partial class Convert
         return errno;
     }
 
+    /// <summary>
+    ///     Converts overflow sectors (lead-out) from input to output image
+    ///     Handles both long and short sector formats with progress indication
+    ///     Also converts associated sector tags if present
+    /// </summary>
+    /// <returns>Error code if conversion fails in non-force mode</returns>
     ErrorNumber ConvertOverflowSectors(bool useLong)
     {
-        // Converts overflow sectors (lead-out) from input to output image
-        // Handles both long and short sector formats with progress indication
-        // Also converts associated sector tags if present
-        // Returns error code if conversion fails in non-force mode
+        if(_aborted) return ErrorNumber.NoError;
 
         ErrorNumber errno = ErrorNumber.NoError;
 
@@ -180,6 +190,8 @@ public partial class Convert
 
         for(uint i = 0; i < _overflowSectors; i++)
         {
+            if(_aborted) break;
+
             byte[] sector;
 
             UpdateProgress?.Invoke(string.Format(UI.Converting_overflow_sector_0_of_1, i, _overflowSectors),
@@ -254,7 +266,8 @@ public partial class Convert
 
         EndProgress?.Invoke();
 
-        foreach(SectorTagType tag in _inputImage.Info.ReadableSectorTags.TakeWhile(_ => useLong))
+        foreach(SectorTagType tag in _inputImage.Info.ReadableSectorTags.TakeWhile(_ => useLong)
+                                                .TakeWhile(_ => !_aborted))
         {
             switch(tag)
             {
@@ -283,6 +296,8 @@ public partial class Convert
 
             for(uint i = 1; i <= _overflowSectors; i++)
             {
+                if(_aborted) break;
+
                 UpdateProgress?.Invoke(string.Format(UI.Converting_tag_1_for_overflow_sector_0, i, tag),
                                        i,
                                        _overflowSectors);

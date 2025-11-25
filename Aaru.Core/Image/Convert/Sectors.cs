@@ -9,6 +9,8 @@ public partial class Convert
 {
     ErrorNumber ConvertSectors(bool useLong, bool isTape)
     {
+        if(_aborted) return ErrorNumber.NoError;
+
         InitProgress?.Invoke();
         ErrorNumber errno       = ErrorNumber.NoError;
         ulong       doneSectors = 0;
@@ -133,6 +135,8 @@ public partial class Convert
 
     ErrorNumber ConvertSectorsTags(bool useLong)
     {
+        if(_aborted) return ErrorNumber.NoError;
+
         foreach(SectorTagType tag in _inputImage.Info.ReadableSectorTags.TakeWhile(_ => useLong))
         {
             switch(tag)

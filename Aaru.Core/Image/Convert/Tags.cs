@@ -16,6 +16,8 @@ public partial class Convert
     /// <returns>Status code</returns>
     ErrorNumber ConvertMediaTags()
     {
+        if(_aborted) return ErrorNumber.NoError;
+
         InitProgress?.Invoke();
         ErrorNumber errorNumber = ErrorNumber.NoError;
 
