@@ -75,7 +75,7 @@ public sealed partial class Sidecar
             new BlockMedia
             {
                 Checksums = imgChecksums,
-                Image = new Image
+                Image = new CommonTypes.AaruMetadata.Image
                 {
                     Format = image.Format,
                     Offset = 0,
@@ -1013,7 +1013,7 @@ public sealed partial class Sidecar
                             {
                                 Cylinder = t / image.Info.Heads,
                                 Head     = (ushort)(t % image.Info.Heads),
-                                Image = new Image
+                                Image = new CommonTypes.AaruMetadata.Image
                                 {
                                     Format = scpImage.Format,
                                     Value  = Path.GetFileName(scpFilePath),
@@ -1126,7 +1126,7 @@ public sealed partial class Sidecar
                             {
                                 Cylinder = kvp.Key / image.Info.Heads,
                                 Head     = (ushort)(kvp.Key % image.Info.Heads),
-                                Image = new Image
+                                Image = new CommonTypes.AaruMetadata.Image
                                 {
                                     Format = kfImage.Format,
                                     Value = kfDir
@@ -1220,7 +1220,7 @@ public sealed partial class Sidecar
                     {
                         Cylinder = (uint)(t   / image.Info.Heads),
                         Head     = (ushort)(t % image.Info.Heads),
-                        Image = new Image
+                        Image = new CommonTypes.AaruMetadata.Image
                         {
                             Format = dfiImage.Format,
                             Value  = Path.GetFileName(dfiFilePath)

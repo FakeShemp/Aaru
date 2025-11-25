@@ -61,12 +61,14 @@ public sealed partial class Sidecar
         new LinearMedia
         {
             Checksums = imgChecksums,
-            Image = new Image
-            {
-                Format = image.Format,
-                Offset = 0,
-                Value  = Path.GetFileName(imagePath)
-            },
+            Image =
+                new CommonTypes.AaruMetadata.Image
+                {
+                    Format = image.Format,
+                    Offset = 0,
+                    Value =
+                        Path.GetFileName(imagePath)
+                },
             Size = image.Info.Sectors
         }
     ];

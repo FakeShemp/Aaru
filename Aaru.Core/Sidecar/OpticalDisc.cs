@@ -72,7 +72,7 @@ public sealed partial class Sidecar
             new OpticalDisc
             {
                 Checksums = imgChecksums,
-                Image = new Image
+                Image = new CommonTypes.AaruMetadata.Image
                 {
                     Format = image.Format,
                     Offset = 0,
@@ -308,7 +308,7 @@ public sealed partial class Sidecar
                     break;
             }
 
-            xmlTrk.Image = new Image
+            xmlTrk.Image = new CommonTypes.AaruMetadata.Image
             {
                 Value  = Path.GetFileName(trk.File),
                 Format = trk.FileType
@@ -413,7 +413,7 @@ public sealed partial class Sidecar
             {
                 xmlTrk.SubChannel = new SubChannel
                 {
-                    Image = new Image
+                    Image = new CommonTypes.AaruMetadata.Image
                     {
                         Value = trk.SubchannelFile
                     },

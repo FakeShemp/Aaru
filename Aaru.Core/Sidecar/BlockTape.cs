@@ -52,7 +52,7 @@ public sealed partial class Sidecar
             [
                 new BlockMedia
                 {
-                    Image = new Image
+                    Image = new CommonTypes.AaruMetadata.Image
                     {
                         Format = "Directory",
                         Value  = folderName
@@ -69,7 +69,7 @@ public sealed partial class Sidecar
                     [
                         new TapePartition
                         {
-                            Image = new Image
+                            Image = new CommonTypes.AaruMetadata.Image
                             {
                                 Format = "Directory",
                                 Value  = folderName
@@ -98,7 +98,7 @@ public sealed partial class Sidecar
 
             var tapeFile = new TapeFile
             {
-                Image = new Image
+                Image = new CommonTypes.AaruMetadata.Image
                 {
                     Format = "Raw disk image (sector by sector copy)",
                     Offset = 0,

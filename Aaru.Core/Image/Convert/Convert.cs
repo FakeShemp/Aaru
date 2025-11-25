@@ -1,0 +1,358 @@
+using System.Collections.Generic;
+using System.Linq;
+using Aaru.CommonTypes;
+using Aaru.CommonTypes.AaruMetadata;
+using Aaru.CommonTypes.Enums;
+using Aaru.CommonTypes.Interfaces;
+using Aaru.CommonTypes.Metadata;
+using Aaru.Localization;
+using MediaType = Aaru.CommonTypes.MediaType;
+using TapeFile = Aaru.CommonTypes.Structs.TapeFile;
+using TapePartition = Aaru.CommonTypes.Structs.TapePartition;
+
+namespace Aaru.Core.Image;
+
+public partial class Convert
+{
+    const    string                                      MODULE_NAME = "Image Conversion";
+    readonly string                                      _comments;
+    readonly uint                                        _count;
+    readonly string                                      _creator;
+    readonly bool                                        _decrypt;
+    readonly string                                      _driveFirmwareRevision;
+    readonly string                                      _driveManufacturer;
+    readonly string                                      _driveModel;
+    readonly string                                      _driveSerialNumber;
+    readonly bool                                        _fixSubchannel;
+    readonly bool                                        _fixSubchannelCrc;
+    readonly bool                                        _fixSubchannelPosition;
+    readonly bool                                        _force;
+    readonly bool                                        _generateSubchannels;
+    readonly (uint cylinders, uint heads, uint sectors)? _geometryValues;
+    readonly IMediaImage                                 _inputImage;
+    readonly int                                         _lastMediaSequence;
+    readonly string                                      _mediaBarcode;
+    readonly string                                      _mediaManufacturer;
+    readonly string                                      _mediaModel;
+    readonly string                                      _mediaPartNumber;
+    readonly int                                         _mediaSequence;
+    readonly string                                      _mediaSerialNumber;
+    readonly string                                      _mediaTitle;
+    readonly MediaType                                   _mediaType;
+    readonly uint                                        _negativeSectors;
+    readonly IWritableImage                              _outputImage;
+    readonly string                                      _outputPath;
+    readonly uint                                        _overflowSectors;
+    readonly Dictionary<string, string>                  _parsedOptions;
+    readonly PluginRegister                              _plugins;
+    readonly Resume                                      _resume;
+    readonly Metadata                                    _sidecar;
+    bool                                                 _aborted;
+
+    // TODO: Abort
+    public Convert(IMediaImage inputImage, IWritableImage outputImage, MediaType mediaType, bool force,
+                   string outputPath, Dictionary<string, string> parsedOptions, uint negativeSectors,
+                   uint overflowSectors, string comments, string creator, string driveFirmwareRevision,
+                   string driveManufacturer, string driveModel, string driveSerialNumber, int lastMediaSequence,
+                   string mediaBarcode, string mediaManufacturer, string mediaModel, string mediaPartNumber,
+                   int mediaSequence, string mediaSerialNumber, string mediaTitle, bool decrypt, uint count,
+                   PluginRegister plugins, bool fixSubchannelPosition, bool fixSubchannel, bool fixSubchannelCrc,
+                   bool generateSubchannels, (uint cylinders, uint heads, uint sectors)? geometryValues, Resume resume,
+                   Metadata sidecar)
+    {
+        _inputImage            = inputImage;
+        _outputImage           = outputImage;
+        _mediaType             = mediaType;
+        _force                 = force;
+        _outputPath            = outputPath;
+        _parsedOptions         = parsedOptions;
+        _negativeSectors       = negativeSectors;
+        _overflowSectors       = overflowSectors;
+        _comments              = comments;
+        _creator               = creator;
+        _driveFirmwareRevision = driveFirmwareRevision;
+        _driveManufacturer     = driveManufacturer;
+        _driveModel            = driveModel;
+        _driveSerialNumber     = driveSerialNumber;
+        _lastMediaSequence     = lastMediaSequence;
+        _mediaBarcode          = mediaBarcode;
+        _mediaManufacturer     = mediaManufacturer;
+        _mediaModel            = mediaModel;
+        _mediaPartNumber       = mediaPartNumber;
+        _mediaSequence         = mediaSequence;
+        _mediaSerialNumber     = mediaSerialNumber;
+        _mediaTitle            = mediaTitle;
+        _decrypt               = decrypt;
+        _count                 = count;
+        _plugins               = plugins;
+        _fixSubchannelPosition = fixSubchannelPosition;
+        _fixSubchannel         = fixSubchannel;
+        _fixSubchannelCrc      = fixSubchannelCrc;
+        _generateSubchannels   = generateSubchannels;
+        _geometryValues        = geometryValues;
+        _resume                = resume;
+        _sidecar               = sidecar;
+    }
+
+    public ErrorNumber Start()
+    {
+        // Validate that output format supports the media type and tags
+        ErrorNumber errno = ValidateMediaCapabilities();
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Validate sector tags compatibility between formats
+        errno = ValidateSectorTags(out bool useLong);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Check and setup tape image support if needed
+        var inputTape  = _inputImage as ITapeImage;
+        var outputTape = _outputImage as IWritableTapeImage;
+
+        errno = ValidateTapeImage(inputTape, outputTape);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        var ret = false;
+
+        errno = SetupTapeImage(inputTape, outputTape);
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Validate optical media capabilities (sessions, hidden tracks, etc.)
+        if((_outputImage as IWritableOpticalImage)?.OpticalCapabilities.HasFlag(OpticalImageCapabilities
+                                                                                   .CanStoreSessions) !=
+           true &&
+           (_inputImage as IOpticalMediaImage)?.Sessions?.Count > 1)
+        {
+            // TODO: Disabled until 6.0
+            /*if(!_force)
+            {*/
+            StoppingErrorMessage?.Invoke(Localization.Core.Output_format_does_not_support_sessions);
+
+            return ErrorNumber.UnsupportedMedia;
+            /*}
+
+            StoppingErrorMessage?.Invoke("Output format does not support sessions, this will end in a loss of data, continuing...");*/
+        }
+
+        // Check for hidden tracks support in optical media
+        if((_outputImage as IWritableOpticalImage)?.OpticalCapabilities.HasFlag(OpticalImageCapabilities
+                                                                                   .CanStoreHiddenTracks) !=
+           true &&
+           (_inputImage as IOpticalMediaImage)?.Tracks?.Any(static t => t.Sequence == 0) == true)
+        {
+            // TODO: Disabled until 6.0
+            /*if(!_force)
+            {*/
+            StoppingErrorMessage?.Invoke(Localization.Core.Output_format_does_not_support_hidden_tracks);
+
+            return ErrorNumber.UnsupportedMedia;
+            /*}
+
+            StoppingErrorMessage?.Invoke("Output format does not support sessions, this will end in a loss of data, continuing...");*/
+        }
+
+        // Create the output image file with appropriate settings
+        errno = CreateOutputImage();
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Set image metadata in the output file
+        errno = SetImageMetadata();
+
+        if(errno != ErrorNumber.NoError) return errno;
+
+        // Prepare metadata and dump hardware information
+        Metadata           metadata     = _inputImage.AaruMetadata;
+        List<DumpHardware> dumpHardware = _inputImage.DumpHardware;
+
+        // Convert media tags from input to output format
+        errno = ConvertMediaTags();
+
+        if(errno != ErrorNumber.NoError && !_force) return errno;
+
+        UpdateStatus?.Invoke(string.Format(UI._0_sectors_to_convert, _inputImage.Info.Sectors));
+
+        // Perform the actual data conversion from input to output image
+        if(_inputImage is IOpticalMediaImage inputOptical      &&
+           _outputImage is IWritableOpticalImage outputOptical &&
+           inputOptical.Tracks != null)
+        {
+            errno = ConvertOptical(inputOptical, outputOptical, useLong);
+
+            if(errno != ErrorNumber.NoError) return errno;
+        }
+        else
+        {
+            if(inputTape == null || outputTape == null || !inputTape.IsTape)
+            {
+                (uint cylinders, uint heads, uint sectors) chs =
+                    _geometryValues != null
+                        ? (_geometryValues.Value.cylinders, _geometryValues.Value.heads, _geometryValues.Value.sectors)
+                        : (_inputImage.Info.Cylinders, _inputImage.Info.Heads, _inputImage.Info.SectorsPerTrack);
+
+                UpdateStatus?.Invoke(string.Format(UI.Setting_geometry_to_0_cylinders_1_heads_and_2_sectors_per_track,
+                                                   chs.cylinders,
+                                                   chs.heads,
+                                                   chs.sectors));
+
+                if(!_outputImage.SetGeometry(chs.cylinders, chs.heads, chs.sectors))
+                {
+                    ErrorMessage?.Invoke(string.Format(UI.Error_0_setting_geometry_image_may_be_incorrect_continuing,
+                                                       _outputImage.ErrorMessage));
+                }
+            }
+
+            errno = ConvertSectors(useLong, inputTape?.IsTape == true);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            errno = ConvertSectorsTags(useLong);
+
+            if(errno != ErrorNumber.NoError) return errno;
+
+            if(_inputImage is IFluxImage inputFlux && _outputImage is IWritableFluxImage outputFlux)
+            {
+                errno = ConvertFlux(inputFlux, outputFlux);
+
+                if(errno != ErrorNumber.NoError) return errno;
+            }
+
+            if(inputTape != null && outputTape != null && inputTape.IsTape)
+            {
+                InitProgress?.Invoke();
+                var currentFile = 0;
+
+                foreach(TapeFile tapeFile in inputTape.Files)
+                {
+                    UpdateProgress?.Invoke(string.Format(UI.Converting_file_0_of_partition_1,
+                                                         tapeFile.File,
+                                                         tapeFile.Partition),
+                                           currentFile + 1,
+                                           inputTape.Files.Count);
+
+                    outputTape.AddFile(tapeFile);
+                    currentFile++;
+                }
+
+                EndProgress?.Invoke();
+
+                InitProgress?.Invoke();
+                var currentPartition = 0;
+
+                foreach(TapePartition tapePartition in inputTape.TapePartitions)
+                {
+                    UpdateProgress?.Invoke(string.Format(UI.Converting_tape_partition_0, tapePartition.Number),
+                                           currentPartition + 1,
+                                           inputTape.TapePartitions.Count);
+
+                    outputTape.AddPartition(tapePartition);
+                    currentPartition++;
+                }
+
+                EndProgress?.Invoke();
+            }
+        }
+
+        if(_negativeSectors > 0)
+        {
+            errno = ConvertNegativeSectors(useLong);
+
+            if(errno != ErrorNumber.NoError) return errno;
+        }
+
+        if(_overflowSectors > 0)
+        {
+            errno = ConvertOverflowSectors(useLong);
+
+            if(errno != ErrorNumber.NoError) return errno;
+        }
+
+        if(_resume != null || dumpHardware != null)
+        {
+            InitProgress?.Invoke();
+
+            PulseProgress?.Invoke(UI.Writing_dump_hardware_list);
+
+            if(_resume != null)
+                ret                           = _outputImage.SetDumpHardware(_resume.Tries);
+            else if(dumpHardware != null) ret = _outputImage.SetDumpHardware(dumpHardware);
+
+            if(ret) UpdateStatus?.Invoke(UI.Written_dump_hardware_list_to_output_image);
+
+            EndProgress?.Invoke();
+        }
+
+        ret = false;
+
+        if(_sidecar != null || metadata != null)
+        {
+            InitProgress?.Invoke();
+            PulseProgress?.Invoke(UI.Writing_metadata);
+
+            if(_sidecar != null)
+                ret                       = _outputImage.SetMetadata(_sidecar);
+            else if(metadata != null) ret = _outputImage.SetMetadata(metadata);
+
+            if(ret) UpdateStatus?.Invoke(UI.Written_Aaru_Metadata_to_output_image);
+
+            EndProgress?.Invoke();
+        }
+
+        var closed = false;
+
+        InitProgress?.Invoke();
+        PulseProgress?.Invoke(UI.Closing_output_image);
+        closed = _outputImage.Close();
+        EndProgress?.Invoke();
+
+        if(!closed)
+        {
+            StoppingErrorMessage?.Invoke(string.Format(UI.Error_0_closing_output_image_Contents_are_not_correct,
+                                                       _outputImage.ErrorMessage));
+
+            return ErrorNumber.WriteError;
+        }
+
+        UpdateStatus?.Invoke(UI.Conversion_done);
+
+        return ErrorNumber.NoError;
+    }
+
+    /// <summary>Event raised when the progress bar is no longer needed</summary>
+    public event EndProgressHandler EndProgress;
+
+    /// <summary>Event raised when a progress bar is needed</summary>
+    public event InitProgressHandler InitProgress;
+
+    /// <summary>Event raised to report status updates</summary>
+    public event UpdateStatusHandler UpdateStatus;
+
+    /// <summary>Event raised to report a non-fatal error</summary>
+    public event ErrorMessageHandler ErrorMessage;
+
+    /// <summary>Event raised to report a fatal error that stops the dumping operation and should call user's attention</summary>
+    public event ErrorMessageHandler StoppingErrorMessage;
+
+    /// <summary>Event raised to update the values of a determinate progress bar</summary>
+    public event UpdateProgressHandler UpdateProgress;
+
+    /// <summary>Event raised to update the status of an indeterminate progress bar</summary>
+    public event PulseProgressHandler PulseProgress;
+
+    /// <summary>Event raised when the progress bar is no longer needed</summary>
+    public event EndProgressHandler2 EndProgress2;
+
+    /// <summary>Event raised when a progress bar is needed</summary>
+    public event InitProgressHandler2 InitProgress2;
+
+    /// <summary>Event raised to update the values of a determinate progress bar</summary>
+    public event UpdateProgressHandler2 UpdateProgress2;
+
+    public void Abort()
+    {
+        _aborted = true;
+    }
+}

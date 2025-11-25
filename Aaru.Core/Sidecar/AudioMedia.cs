@@ -63,7 +63,7 @@ public sealed partial class Sidecar
             new AudioMedia
             {
                 Checksums = imgChecksums,
-                Image = new Image
+                Image = new CommonTypes.AaruMetadata.Image
                 {
                     Format = image.Format,
                     Offset = 0,
