@@ -237,10 +237,11 @@ public sealed partial class AaruFormat
                                          out byte[] sectorBuffer,
                                          out SectorStatus singleSectorStatus);
 
+            sectorStatus[i] = singleSectorStatus;
+
             if(res != ErrorNumber.NoError)
             {
-                buffer          = ms.ToArray();
-                sectorStatus[i] = singleSectorStatus;
+                buffer = ms.ToArray();
 
                 return res;
             }
@@ -267,10 +268,11 @@ public sealed partial class AaruFormat
                                              out byte[] sectorBuffer,
                                              out SectorStatus singleSectorStatus);
 
+            sectorStatus[i] = singleSectorStatus;
+
             if(res != ErrorNumber.NoError)
             {
-                buffer          = ms.ToArray();
-                sectorStatus[i] = singleSectorStatus;
+                buffer = ms.ToArray();
 
                 return res;
             }
