@@ -44,7 +44,7 @@
         <value>[slateblue1]Añadidos [green]{0}[/] fabricantes USB[/]</value>
     </data>
     <data name="Adding_CD_i_Ready_hole_from_LBA_0_to_1_inclusive" xml:space="preserve">
-    <value>Añadido el agujero de CD-i Ready desde el LBA {0} hasta el {1} inclusivos.</value>
+    <value>[slateblue1]Añadido el agujero de [green]CD-i Ready[/] desde el LBA [lime]{0}[/] hasta el [violet]{1}[/] inclusivos.[/]</value>
   </data>
     <data name="Adding_CompactDisc_read_offsets" xml:space="preserve">
         <value>[slateblue1]Añadiendo desplazamientos de lectura de CompactDisc[/]</value>
@@ -1470,7 +1470,7 @@
     <value>Encontrado ID de tupla {0} no descodificado</value>
   </data>
     <data name="ISRC_for_track_0_changed_from_1_to_2" xml:space="preserve">
-    <value>El ISRC de la pista {0} cambió de {1} a {2}.</value>
+    <value>[yellow]El [italic]ISRC[/] de la pista [teal]{0}[/] cambió de [italic][navy]{1}[/][/] a [italic][navy]{2}[/][/].[/]</value>
   </data>
     <data name="Kreon_Can_skip_read_errors" xml:space="preserve">
         <value>[slateblue1]Puede omitir los errores de lectura[/]</value>
@@ -1533,7 +1533,7 @@
     <value>MCN</value>
   </data>
     <data name="MCN_changed_from_0_to_1" xml:space="preserve">
-    <value>El MCN cambió de {0} a {1}.</value>
+    <value>[yellow]El [italic]MCN[/] cambió de [italic][teal]{0}[/][/] a [italic][teal]{1}[/][/].[/]</value>
   </data>
     <data name="Media_barcode_0_WithMarkup" xml:space="preserve">
         <value>[bold][slateblue1]Código de barras del medio:[/][/] [italic]{0}[/]</value>
@@ -2169,7 +2169,7 @@
         <value>[slateblue1]Leyendo cilindro [lime]{0}[/] cabeza [lime]{1}[/] sector [lime]{2}[/] ([aqua]{3}]/])</value>
     </data>
     <data name="Reading_disc_key" xml:space="preserve">
-    <value>Leyendo llave del disco.</value>
+    <value>[slateblue1]Leyendo [italic]llave del disco[/].[/]</value>
   </data>
     <data name="Reading_FAT" xml:space="preserve">
         <value>[slateblue1]Leyendo la FAT...[/]</value>

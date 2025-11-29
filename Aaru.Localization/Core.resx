@@ -648,7 +648,7 @@
     <value>[slateblue1]Reading sector [lime]{0}[/] of [violet]{1}[/] ([aqua]{2}[/])[/]</value>
   </data>
     <data name="Adding_CD_i_Ready_hole_from_LBA_0_to_1_inclusive" xml:space="preserve">
-    <value>Adding CD-i Ready hole from LBA {0} to {1} inclusive.</value>
+    <value>[slateblue1]Adding [green]CD-i Ready[/] hole from LBA [lime]{0}[/] to [violet]{1}[/] inclusive.[/]</value>
   </data>
     <data name="Setting_speed_to_8x_for_audio_reading" xml:space="preserve">
         <value>[slateblue1]Setting speed to [teal]8x[/] for audio reading.[/]</value>
@@ -1412,7 +1412,7 @@
         <value>[olive]Drive reports disc uses CSS copy protection.[/]</value>
     </data>
     <data name="Reading_disc_key" xml:space="preserve">
-    <value>Reading disc key.</value>
+    <value>[slateblue1]Reading [italic]disc key[/].[/]</value>
   </data>
     <data name="Disc_and_drive_authentication_succeeded" xml:space="preserve">
         <value>[green]Disc and drive authentication succeeded.[/]</value>
@@ -2928,13 +2928,13 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
         <value>[slateblue1]Found new [italic]ISRC[/] [italic][navy]{0}[/][/] for track [teal]{1}[/].[/]</value>
     </data>
     <data name="ISRC_for_track_0_changed_from_1_to_2" xml:space="preserve">
-    <value>ISRC for track {0} changed from {1} to {2}.</value>
+    <value>[yellow][italic]ISRC[/] for track [teal]{0}[/] changed from [italic][navy]{1}[/][/] to [italic][navy]{2}[/][/].[/]</value>
   </data>
     <data name="Found_new_MCN_0" xml:space="preserve">
         <value>[slateblue1]Found new [italic]MCN[/] [italic][teal]{0}[/][/].[/]</value>
     </data>
     <data name="MCN_changed_from_0_to_1" xml:space="preserve">
-    <value>MCN changed from {0} to {1}.</value>
+    <value>[yellow][italic]MCN[/] changed from [italic][teal]{0}[/][/] to [italic][teal]{1}[/][/].[/]</value>
   </data>
     <data name="Pregap_for_track_0_set_to_1_sectors" xml:space="preserve">
         <value>[slateblue1]Pregap for track [teal]{0}[/] set to [violet]{1}[/] sectors.[/]</value>
