@@ -918,6 +918,11 @@ public static class MediaType
                 discSubType = "ISO 15041";
 
                 break;
+            case CommonTypes.MediaType.HSM650:
+                discType    = "3.5\" magneto-optical";
+                discSubType = "Sony HyperStorage";
+
+                break;
             case CommonTypes.MediaType.FlashDrive:
                 discType    = "USB flash drive";
                 discSubType = "USB flash drive";

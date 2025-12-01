@@ -1625,6 +1625,9 @@ public enum MediaType : uint
     ISO_14517_512 = 803,
     /// <summary>3,5", M.O., 1041500 sectors, 512 bytes/sector, ISO 15041, 540Mb/cart</summary>
     ISO_15041_512 = 804,
+    /// <summary>3,5", M.O., ??????? sectors, propietary, 650Mb/cart, Sony HyperStorage</summary>
+    [Description("Sony HyperStorage")]
+    HSM650 = 805,
 
 #endregion Magneto-optical, types 800 to 819
 
