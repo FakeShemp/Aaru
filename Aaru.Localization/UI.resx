@@ -3419,4 +3419,10 @@ Do you want to continue?</value>
     <data name="Verify_only_data_help" xml:space="preserve">
         <value>Verify only data tracks.</value>
     </data>
+    <data name="Images_have_different_contents" xml:space="preserve">
+        <value>[red]Images have different contents.[/]</value>
+    </data>
+    <data name="Images_have_identical_contents" xml:space="preserve">
+        <value>[green]Images have identical contents.[/]</value>
+    </data>
 </root>

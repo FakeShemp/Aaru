@@ -420,6 +420,8 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
         if(input1MediaImage is not null && input2MediaImage is null) imagesDiffer = true;
 
+        bool differentContents = false;
+
         if(input1MediaImage is not null && input2MediaImage is not null)
         {
             AnsiConsole.Progress()
@@ -462,13 +464,22 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
                                                               image2Sector);
 
                                     if(different)
-                                        imagesDiffer = true;
+                                    {
+                                        imagesDiffer      = true;
+                                        differentContents = true;
+                                        AaruLogging.Debug(MODULE_NAME, "Sector {0} is different", sector);
+                                    }
+                                    else if(!sameSize)
+                                    {
+                                        imagesDiffer      = true;
+                                        differentContents = true;
 
-                                    //       sb.AppendFormat("Sector {0} is different", sector).AppendLine();
-                                    else if(!sameSize) imagesDiffer = true;
-                                    /*     sb.
-                                           AppendFormat("Sector {0} has different sizes ({1} bytes in image 1, {2} in image 2) but are otherwise identical",
-                                                        sector, image1Sector.LongLength, image2Sector.LongLength).AppendLine();*/
+                                        AaruLogging.Debug(MODULE_NAME,
+                                                          "Sector {0} has different sizes ({1} bytes in image 1, {2} in image 2) but are otherwise identical",
+                                                          sector,
+                                                          image1Sector.LongLength,
+                                                          image2Sector.LongLength);
+                                    }
                                 }
                                 catch(Exception ex)
                                 {
@@ -513,15 +524,18 @@ sealed class CompareCommand : Command<CompareCommand.Settings>
 
                             ArrayHelpers.CompareBytes(out bool different, out bool sameSize, data1, data2);
 
-                            if(different)
-                                imagesDiffer                = true;
-                            else if(!sameSize) imagesDiffer = true;
+                            if(!different && sameSize) return;
+
+                            imagesDiffer      = true;
+                            differentContents = true;
                         });
         }
 
         AaruLogging.WriteLine();
 
         sb.AppendLine(imagesDiffer ? UI.Images_differ : UI.Images_do_not_differ);
+
+        sb.AppendLine(differentContents ? UI.Images_have_different_contents : UI.Images_have_identical_contents);
 
         if(settings.Verbose)
             AnsiConsole.Write(table);

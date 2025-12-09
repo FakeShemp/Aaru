@@ -3344,4 +3344,10 @@ Probadores:
     <data name="Verify_only_data_help" xml:space="preserve">
         <value>Verificar sólo pistas de datos.</value>
     </data>
+    <data name="Images_have_different_contents" xml:space="preserve">
+        <value>[red]Las imágenes tienen diferente contenido.[/]</value>
+    </data>
+    <data name="Images_have_identical_contents" xml:space="preserve">
+        <value>[green]Las imágenes tienen idéntico contenido.[/]</value>
+    </data>
 </root>

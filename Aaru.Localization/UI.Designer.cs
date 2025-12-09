@@ -6687,5 +6687,17 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Verify_only_data_help", resourceCulture);
             }
         }
+        
+        public static string Images_have_different_contents {
+            get {
+                return ResourceManager.GetString("Images_have_different_contents", resourceCulture);
+            }
+        }
+        
+        public static string Images_have_identical_contents {
+            get {
+                return ResourceManager.GetString("Images_have_identical_contents", resourceCulture);
+            }
+        }
     }
 }
