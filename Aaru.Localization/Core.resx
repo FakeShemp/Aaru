@@ -2758,7 +2758,7 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
         <value>[olive]Could not find VideoNow Color frame offset, dump may not be correct.[/]</value>
     </data>
     <data name="VideoNow_Color_frame_is_offset_0_bytes" xml:space="preserve">
-    <value>VideoNow Color frame is offset {0} bytes.</value>
+    <value>[slateblue1]VideoNow Color frame is offset [lime]{0}[/] bytes.[/]</value>
   </data>
     <data name="READ_DISC_STRUCTURE_Recognized_Format_Layers_0" xml:space="preserve">
     <value>READ DISC STRUCTURE: Recognized Format Layers
