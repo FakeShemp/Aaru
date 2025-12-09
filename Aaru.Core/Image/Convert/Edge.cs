@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Aaru.CommonTypes.Enums;
 using Aaru.Localization;
@@ -21,6 +22,8 @@ public partial class Convert
 
         InitProgress?.Invoke();
 
+        List<uint> notDumped = [];
+
         // There's no -0
         for(uint i = 1; i <= _negativeSectors; i++)
         {
@@ -40,7 +43,15 @@ public partial class Convert
                 errno = _inputImage.ReadSectorLong(i, true, out sector, out sectorStatus);
 
                 if(errno == ErrorNumber.NoError)
+                {
+                    if(sectorStatus == SectorStatus.NotDumped)
+                    {
+                        notDumped.Add(i);
+                        continue;
+                    }
+
                     result = _outputImage.WriteSectorLong(sector, i, true, sectorStatus);
+                }
                 else
                 {
                     result = true;
@@ -62,7 +73,15 @@ public partial class Convert
                 errno = _inputImage.ReadSector(i, true, out sector, out sectorStatus);
 
                 if(errno == ErrorNumber.NoError)
+                {
+                    if(sectorStatus == SectorStatus.NotDumped)
+                    {
+                        notDumped.Add(i);
+                        continue;
+                    }
+
                     result = _outputImage.WriteSector(sector, i, true, sectorStatus);
+                }
                 else
                 {
                     result = true;
@@ -132,6 +151,8 @@ public partial class Convert
             {
                 if(_aborted) break;
 
+                if(notDumped.Contains(i)) continue;
+
                 UpdateProgress?.Invoke(string.Format(UI.Converting_tag_1_for_negative_sector_0, i, tag),
                                        i,
                                        _negativeSectors);
@@ -188,6 +209,8 @@ public partial class Convert
 
         InitProgress?.Invoke();
 
+        List<uint> notDumped = [];
+
         for(uint i = 0; i < _overflowSectors; i++)
         {
             if(_aborted) break;
@@ -206,7 +229,14 @@ public partial class Convert
                 errno = _inputImage.ReadSectorLong(_inputImage.Info.Sectors + i, false, out sector, out sectorStatus);
 
                 if(errno == ErrorNumber.NoError)
+                {
+                    if(sectorStatus == SectorStatus.NotDumped)
+                    {
+                        notDumped.Add(i);
+                        continue;
+                    }
                     result = _outputImage.WriteSectorLong(sector, _inputImage.Info.Sectors + i, false, sectorStatus);
+                }
                 else
                 {
                     result = true;
@@ -228,7 +258,14 @@ public partial class Convert
                 errno = _inputImage.ReadSector(_inputImage.Info.Sectors + i, false, out sector, out sectorStatus);
 
                 if(errno == ErrorNumber.NoError)
+                {
+                    if(sectorStatus == SectorStatus.NotDumped)
+                    {
+                        notDumped.Add(i);
+                        continue;
+                    }
                     result = _outputImage.WriteSector(sector, _inputImage.Info.Sectors + i, false, sectorStatus);
+                }
                 else
                 {
                     result = true;
@@ -297,6 +334,8 @@ public partial class Convert
             for(uint i = 1; i <= _overflowSectors; i++)
             {
                 if(_aborted) break;
+
+                if(notDumped.Contains(i)) continue;
 
                 UpdateProgress?.Invoke(string.Format(UI.Converting_tag_1_for_overflow_sector_0, i, tag),
                                        i,
