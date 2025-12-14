@@ -169,7 +169,8 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
     public IEnumerable<LocalizedEnumValue<Architecture>> AvailableArchitectures =>
         LocalizedEnumHelper.GetLocalizedValues<Architecture>().OrderBy(static x => x.Description);
     [NotNull]
-    public IEnumerable<BarcodeType> AvailableBarcodeTypes => Enum.GetValues<BarcodeType>();
+    public IEnumerable<LocalizedEnumValue<BarcodeType>> AvailableBarcodeTypes =>
+        LocalizedEnumHelper.GetLocalizedValues<BarcodeType>().OrderBy(static x => x.Description);
 
     void LoadMetadata([NotNull] string path)
     {

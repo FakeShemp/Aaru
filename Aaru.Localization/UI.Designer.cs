@@ -10311,5 +10311,173 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Architecture_8085", resourceCulture);
             }
         }
+        
+        public static string BarcodeType_Aztec {
+            get {
+                return ResourceManager.GetString("BarcodeType_Aztec", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_CPC_Binary {
+            get {
+                return ResourceManager.GetString("BarcodeType_CPC_Binary", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_Codabar {
+            get {
+                return ResourceManager.GetString("BarcodeType_Codabar", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_Code11 {
+            get {
+                return ResourceManager.GetString("BarcodeType_Code11", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_Code128 {
+            get {
+                return ResourceManager.GetString("BarcodeType_Code128", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_Code39 {
+            get {
+                return ResourceManager.GetString("BarcodeType_Code39", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_Code93 {
+            get {
+                return ResourceManager.GetString("BarcodeType_Code93", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_EAN13 {
+            get {
+                return ResourceManager.GetString("BarcodeType_EAN13", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_EAN2 {
+            get {
+                return ResourceManager.GetString("BarcodeType_EAN2", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_EAN5 {
+            get {
+                return ResourceManager.GetString("BarcodeType_EAN5", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_EAN8 {
+            get {
+                return ResourceManager.GetString("BarcodeType_EAN8", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_EZcode {
+            get {
+                return ResourceManager.GetString("BarcodeType_EZcode", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_FIM {
+            get {
+                return ResourceManager.GetString("BarcodeType_FIM", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_ISBN {
+            get {
+                return ResourceManager.GetString("BarcodeType_ISBN", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_ISRC {
+            get {
+                return ResourceManager.GetString("BarcodeType_ISRC", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_ITF {
+            get {
+                return ResourceManager.GetString("BarcodeType_ITF", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_ITF14 {
+            get {
+                return ResourceManager.GetString("BarcodeType_ITF14", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_MSI {
+            get {
+                return ResourceManager.GetString("BarcodeType_MSI", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_MaxiCode {
+            get {
+                return ResourceManager.GetString("BarcodeType_MaxiCode", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_PDF417 {
+            get {
+                return ResourceManager.GetString("BarcodeType_PDF417", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_POSTNET {
+            get {
+                return ResourceManager.GetString("BarcodeType_POSTNET", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_PatchCode {
+            get {
+                return ResourceManager.GetString("BarcodeType_PatchCode", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_Pharmacode {
+            get {
+                return ResourceManager.GetString("BarcodeType_Pharmacode", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_Plessey {
+            get {
+                return ResourceManager.GetString("BarcodeType_Plessey", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_PostBar {
+            get {
+                return ResourceManager.GetString("BarcodeType_PostBar", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_QR {
+            get {
+                return ResourceManager.GetString("BarcodeType_QR", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_RM4SCC {
+            get {
+                return ResourceManager.GetString("BarcodeType_RM4SCC", resourceCulture);
+            }
+        }
+        
+        public static string BarcodeType_ShotCode {
+            get {
+                return ResourceManager.GetString("BarcodeType_ShotCode", resourceCulture);
+            }
+        }
     }
 }

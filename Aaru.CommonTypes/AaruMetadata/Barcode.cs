@@ -42,6 +42,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+using Aaru.Localization;
 
 namespace Aaru.CommonTypes.AaruMetadata;
 
@@ -49,33 +50,61 @@ namespace Aaru.CommonTypes.AaruMetadata;
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public enum BarcodeType
 {
+    [LocalizedDescription(nameof(UI.BarcodeType_Aztec))]
     Aztec,
+    [LocalizedDescription(nameof(UI.BarcodeType_Codabar))]
     Codabar,
+    [LocalizedDescription(nameof(UI.BarcodeType_Code11))]
     Code11,
+    [LocalizedDescription(nameof(UI.BarcodeType_Code128))]
     Code128,
+    [LocalizedDescription(nameof(UI.BarcodeType_Code39))]
     Code39,
+    [LocalizedDescription(nameof(UI.BarcodeType_Code93))]
     Code93,
+    [LocalizedDescription(nameof(UI.BarcodeType_CPC_Binary))]
     CPC_Binary,
+    [LocalizedDescription(nameof(UI.BarcodeType_EZcode))]
     EZcode,
+    [LocalizedDescription(nameof(UI.BarcodeType_FIM))]
     FIM,
+    [LocalizedDescription(nameof(UI.BarcodeType_ITF))]
     ITF,
+    [LocalizedDescription(nameof(UI.BarcodeType_ITF14))]
     ITF14,
+    [LocalizedDescription(nameof(UI.BarcodeType_EAN13))]
     EAN13,
+    [LocalizedDescription(nameof(UI.BarcodeType_EAN8))]
     EAN8,
+    [LocalizedDescription(nameof(UI.BarcodeType_MaxiCode))]
     MaxiCode,
+    [LocalizedDescription(nameof(UI.BarcodeType_ISBN))]
     ISBN,
+    [LocalizedDescription(nameof(UI.BarcodeType_ISRC))]
     ISRC,
+    [LocalizedDescription(nameof(UI.BarcodeType_MSI))]
     MSI,
+    [LocalizedDescription(nameof(UI.BarcodeType_ShotCode))]
     ShotCode,
+    [LocalizedDescription(nameof(UI.BarcodeType_RM4SCC))]
     RM4SCC,
+    [LocalizedDescription(nameof(UI.BarcodeType_QR))]
     QR,
+    [LocalizedDescription(nameof(UI.BarcodeType_EAN5))]
     EAN5,
+    [LocalizedDescription(nameof(UI.BarcodeType_EAN2))]
     EAN2,
+    [LocalizedDescription(nameof(UI.BarcodeType_POSTNET))]
     POSTNET,
+    [LocalizedDescription(nameof(UI.BarcodeType_PostBar))]
     PostBar,
+    [LocalizedDescription(nameof(UI.BarcodeType_Plessey))]
     Plessey,
+    [LocalizedDescription(nameof(UI.BarcodeType_Pharmacode))]
     Pharmacode,
+    [LocalizedDescription(nameof(UI.BarcodeType_PDF417))]
     PDF417,
+    [LocalizedDescription(nameof(UI.BarcodeType_PatchCode))]
     PatchCode
 }
 

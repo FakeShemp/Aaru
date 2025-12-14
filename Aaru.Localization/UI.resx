@@ -5234,4 +5234,88 @@ Do you want to continue?</value>
     <data name="Architecture_8085" xml:space="preserve">
         <value>Intel 8085</value>
     </data>
+    <data name="BarcodeType_Aztec" xml:space="preserve">
+        <value>Aztec Code</value>
+    </data>
+    <data name="BarcodeType_CPC_Binary" xml:space="preserve">
+        <value>CPC Binary</value>
+    </data>
+    <data name="BarcodeType_Codabar" xml:space="preserve">
+        <value>Codabar</value>
+    </data>
+    <data name="BarcodeType_Code11" xml:space="preserve">
+        <value>Code 11</value>
+    </data>
+    <data name="BarcodeType_Code128" xml:space="preserve">
+        <value>Code 128</value>
+    </data>
+    <data name="BarcodeType_Code39" xml:space="preserve">
+        <value>Code 39</value>
+    </data>
+    <data name="BarcodeType_Code93" xml:space="preserve">
+        <value>Code 93</value>
+    </data>
+    <data name="BarcodeType_EAN13" xml:space="preserve">
+        <value>EAN-13</value>
+    </data>
+    <data name="BarcodeType_EAN2" xml:space="preserve">
+        <value>EAN-2</value>
+    </data>
+    <data name="BarcodeType_EAN5" xml:space="preserve">
+        <value>EAN-5</value>
+    </data>
+    <data name="BarcodeType_EAN8" xml:space="preserve">
+        <value>EAN-8</value>
+    </data>
+    <data name="BarcodeType_EZcode" xml:space="preserve">
+        <value>EZcode</value>
+    </data>
+    <data name="BarcodeType_FIM" xml:space="preserve">
+        <value>FIM (Facing Identification Mark)</value>
+    </data>
+    <data name="BarcodeType_ISBN" xml:space="preserve">
+        <value>ISBN</value>
+    </data>
+    <data name="BarcodeType_ISRC" xml:space="preserve">
+        <value>ISRC (International Standard Recording Code)</value>
+    </data>
+    <data name="BarcodeType_ITF" xml:space="preserve">
+        <value>ITF (Interleaved 2 of 5)</value>
+    </data>
+    <data name="BarcodeType_ITF14" xml:space="preserve">
+        <value>ITF-14</value>
+    </data>
+    <data name="BarcodeType_MSI" xml:space="preserve">
+        <value>MSI (Modified Plessey)</value>
+    </data>
+    <data name="BarcodeType_MaxiCode" xml:space="preserve">
+        <value>MaxiCode</value>
+    </data>
+    <data name="BarcodeType_PDF417" xml:space="preserve">
+        <value>PDF417</value>
+    </data>
+    <data name="BarcodeType_POSTNET" xml:space="preserve">
+        <value>POSTNET</value>
+    </data>
+    <data name="BarcodeType_PatchCode" xml:space="preserve">
+        <value>Patch Code</value>
+    </data>
+    <data name="BarcodeType_Pharmacode" xml:space="preserve">
+        <value>Pharmacode</value>
+    </data>
+    <data name="BarcodeType_Plessey" xml:space="preserve">
+        <value>Plessey</value>
+    </data>
+    <data name="BarcodeType_PostBar" xml:space="preserve">
+        <value>PostBar</value>
+    </data>
+    <data name="BarcodeType_QR" xml:space="preserve">
+        <value>QR Code</value>
+    </data>
+    <data name="BarcodeType_RM4SCC" xml:space="preserve">
+        <value>RM4SCC (Royal Mail 4-State Customer Code)</value>
+    </data>
+    <data name="BarcodeType_ShotCode" xml:space="preserve">
+        <value>ShotCode</value>
+    </data>
 </root>
