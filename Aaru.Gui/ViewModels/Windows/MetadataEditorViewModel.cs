@@ -95,7 +95,7 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
 
     // Enum lists
     [ObservableProperty]
-    ObservableCollection<Language> _languages = [];
+    ObservableCollection<LocalizedEnumValue<Language>> _languages = [];
 
     [ObservableProperty]
     ObservableCollection<LinearMediaViewModel> _linearMedias = [];
@@ -163,7 +163,8 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
     public IEnumerable<LocalizedEnumValue<ReleaseType>> AvailableReleaseTypes =>
         LocalizedEnumHelper.GetLocalizedValues<ReleaseType>();
     [NotNull]
-    public IEnumerable<Language> AvailableLanguages => Enum.GetValues<Language>();
+    public IEnumerable<LocalizedEnumValue<Language>> AvailableLanguages =>
+        LocalizedEnumHelper.GetLocalizedValues<Language>();
     [NotNull]
     public IEnumerable<Architecture> AvailableArchitectures => Enum.GetValues<Architecture>();
     [NotNull]
@@ -203,7 +204,12 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
             LoadStringList(metadata.Systems,       Systems);
 
             // Enum lists
-            LoadEnumList(metadata.Languages,     Languages);
+            if(metadata.Languages != null)
+            {
+                foreach(Language lang in metadata.Languages)
+                    Languages.Add(new LocalizedEnumValue<Language>(lang));
+            }
+
             LoadEnumList(metadata.Architectures, Architectures);
 
             // Complex objects
@@ -300,7 +306,7 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
                 Categories    = Categories.Any() ? [..Categories] : null,
                 Subcategories = Subcategories.Any() ? [..Subcategories] : null,
                 Systems       = Systems.Any() ? [..Systems] : null,
-                Languages     = Languages.Any() ? [..Languages] : null,
+                Languages     = Languages.Any() ? [..Languages.Select(static l => l.Value)] : null,
                 Architectures = Architectures.Any() ? [..Architectures] : null,
                 Barcodes      = Barcodes.Any() ? [..Barcodes.Select(static b => b.ToModel())] : null,
                 Magazines     = Magazines.Any() ? [..Magazines.Select(static m => m.ToModel())] : null,
@@ -431,13 +437,17 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
 
     // Commands for adding items to enum lists
     [RelayCommand]
-    void AddLanguage(Language language)
+    void AddLanguage(object parameter)
     {
-        if(!Languages.Contains(language)) Languages.Add(language);
+        if(parameter is LocalizedEnumValue<Language> langValue)
+        {
+            if(!Languages.Any(l => l.Value == langValue.Value))
+                Languages.Add(langValue);
+        }
     }
 
     [RelayCommand]
-    void RemoveLanguage(Language language) => Languages.Remove(language);
+    void RemoveLanguage(LocalizedEnumValue<Language> language) => Languages.Remove(language);
 
     [RelayCommand]
     void AddArchitecture(Architecture architecture)

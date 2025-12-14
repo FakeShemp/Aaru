@@ -6963,5 +6963,2921 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("ReleaseType_SaaS", resourceCulture);
             }
         }
+        
+        public static string Language_aar {
+            get {
+                return ResourceManager.GetString("Language_aar", resourceCulture);
+            }
+        }
+        
+        public static string Language_abk {
+            get {
+                return ResourceManager.GetString("Language_abk", resourceCulture);
+            }
+        }
+        
+        public static string Language_ace {
+            get {
+                return ResourceManager.GetString("Language_ace", resourceCulture);
+            }
+        }
+        
+        public static string Language_ach {
+            get {
+                return ResourceManager.GetString("Language_ach", resourceCulture);
+            }
+        }
+        
+        public static string Language_ada {
+            get {
+                return ResourceManager.GetString("Language_ada", resourceCulture);
+            }
+        }
+        
+        public static string Language_ady {
+            get {
+                return ResourceManager.GetString("Language_ady", resourceCulture);
+            }
+        }
+        
+        public static string Language_afa {
+            get {
+                return ResourceManager.GetString("Language_afa", resourceCulture);
+            }
+        }
+        
+        public static string Language_afh {
+            get {
+                return ResourceManager.GetString("Language_afh", resourceCulture);
+            }
+        }
+        
+        public static string Language_afr {
+            get {
+                return ResourceManager.GetString("Language_afr", resourceCulture);
+            }
+        }
+        
+        public static string Language_ain {
+            get {
+                return ResourceManager.GetString("Language_ain", resourceCulture);
+            }
+        }
+        
+        public static string Language_aka {
+            get {
+                return ResourceManager.GetString("Language_aka", resourceCulture);
+            }
+        }
+        
+        public static string Language_akk {
+            get {
+                return ResourceManager.GetString("Language_akk", resourceCulture);
+            }
+        }
+        
+        public static string Language_alb {
+            get {
+                return ResourceManager.GetString("Language_alb", resourceCulture);
+            }
+        }
+        
+        public static string Language_ale {
+            get {
+                return ResourceManager.GetString("Language_ale", resourceCulture);
+            }
+        }
+        
+        public static string Language_alg {
+            get {
+                return ResourceManager.GetString("Language_alg", resourceCulture);
+            }
+        }
+        
+        public static string Language_alt {
+            get {
+                return ResourceManager.GetString("Language_alt", resourceCulture);
+            }
+        }
+        
+        public static string Language_amh {
+            get {
+                return ResourceManager.GetString("Language_amh", resourceCulture);
+            }
+        }
+        
+        public static string Language_ang {
+            get {
+                return ResourceManager.GetString("Language_ang", resourceCulture);
+            }
+        }
+        
+        public static string Language_anp {
+            get {
+                return ResourceManager.GetString("Language_anp", resourceCulture);
+            }
+        }
+        
+        public static string Language_apa {
+            get {
+                return ResourceManager.GetString("Language_apa", resourceCulture);
+            }
+        }
+        
+        public static string Language_ara {
+            get {
+                return ResourceManager.GetString("Language_ara", resourceCulture);
+            }
+        }
+        
+        public static string Language_arc {
+            get {
+                return ResourceManager.GetString("Language_arc", resourceCulture);
+            }
+        }
+        
+        public static string Language_arg {
+            get {
+                return ResourceManager.GetString("Language_arg", resourceCulture);
+            }
+        }
+        
+        public static string Language_arm {
+            get {
+                return ResourceManager.GetString("Language_arm", resourceCulture);
+            }
+        }
+        
+        public static string Language_arn {
+            get {
+                return ResourceManager.GetString("Language_arn", resourceCulture);
+            }
+        }
+        
+        public static string Language_arp {
+            get {
+                return ResourceManager.GetString("Language_arp", resourceCulture);
+            }
+        }
+        
+        public static string Language_art {
+            get {
+                return ResourceManager.GetString("Language_art", resourceCulture);
+            }
+        }
+        
+        public static string Language_arw {
+            get {
+                return ResourceManager.GetString("Language_arw", resourceCulture);
+            }
+        }
+        
+        public static string Language_asm {
+            get {
+                return ResourceManager.GetString("Language_asm", resourceCulture);
+            }
+        }
+        
+        public static string Language_ast {
+            get {
+                return ResourceManager.GetString("Language_ast", resourceCulture);
+            }
+        }
+        
+        public static string Language_ath {
+            get {
+                return ResourceManager.GetString("Language_ath", resourceCulture);
+            }
+        }
+        
+        public static string Language_aus {
+            get {
+                return ResourceManager.GetString("Language_aus", resourceCulture);
+            }
+        }
+        
+        public static string Language_ava {
+            get {
+                return ResourceManager.GetString("Language_ava", resourceCulture);
+            }
+        }
+        
+        public static string Language_ave {
+            get {
+                return ResourceManager.GetString("Language_ave", resourceCulture);
+            }
+        }
+        
+        public static string Language_awa {
+            get {
+                return ResourceManager.GetString("Language_awa", resourceCulture);
+            }
+        }
+        
+        public static string Language_aym {
+            get {
+                return ResourceManager.GetString("Language_aym", resourceCulture);
+            }
+        }
+        
+        public static string Language_aze {
+            get {
+                return ResourceManager.GetString("Language_aze", resourceCulture);
+            }
+        }
+        
+        public static string Language_bad {
+            get {
+                return ResourceManager.GetString("Language_bad", resourceCulture);
+            }
+        }
+        
+        public static string Language_bai {
+            get {
+                return ResourceManager.GetString("Language_bai", resourceCulture);
+            }
+        }
+        
+        public static string Language_bak {
+            get {
+                return ResourceManager.GetString("Language_bak", resourceCulture);
+            }
+        }
+        
+        public static string Language_bal {
+            get {
+                return ResourceManager.GetString("Language_bal", resourceCulture);
+            }
+        }
+        
+        public static string Language_bam {
+            get {
+                return ResourceManager.GetString("Language_bam", resourceCulture);
+            }
+        }
+        
+        public static string Language_ban {
+            get {
+                return ResourceManager.GetString("Language_ban", resourceCulture);
+            }
+        }
+        
+        public static string Language_baq {
+            get {
+                return ResourceManager.GetString("Language_baq", resourceCulture);
+            }
+        }
+        
+        public static string Language_bas {
+            get {
+                return ResourceManager.GetString("Language_bas", resourceCulture);
+            }
+        }
+        
+        public static string Language_bat {
+            get {
+                return ResourceManager.GetString("Language_bat", resourceCulture);
+            }
+        }
+        
+        public static string Language_bej {
+            get {
+                return ResourceManager.GetString("Language_bej", resourceCulture);
+            }
+        }
+        
+        public static string Language_bel {
+            get {
+                return ResourceManager.GetString("Language_bel", resourceCulture);
+            }
+        }
+        
+        public static string Language_bem {
+            get {
+                return ResourceManager.GetString("Language_bem", resourceCulture);
+            }
+        }
+        
+        public static string Language_ben {
+            get {
+                return ResourceManager.GetString("Language_ben", resourceCulture);
+            }
+        }
+        
+        public static string Language_ber {
+            get {
+                return ResourceManager.GetString("Language_ber", resourceCulture);
+            }
+        }
+        
+        public static string Language_bho {
+            get {
+                return ResourceManager.GetString("Language_bho", resourceCulture);
+            }
+        }
+        
+        public static string Language_bih {
+            get {
+                return ResourceManager.GetString("Language_bih", resourceCulture);
+            }
+        }
+        
+        public static string Language_bik {
+            get {
+                return ResourceManager.GetString("Language_bik", resourceCulture);
+            }
+        }
+        
+        public static string Language_bin {
+            get {
+                return ResourceManager.GetString("Language_bin", resourceCulture);
+            }
+        }
+        
+        public static string Language_bis {
+            get {
+                return ResourceManager.GetString("Language_bis", resourceCulture);
+            }
+        }
+        
+        public static string Language_bla {
+            get {
+                return ResourceManager.GetString("Language_bla", resourceCulture);
+            }
+        }
+        
+        public static string Language_bnt {
+            get {
+                return ResourceManager.GetString("Language_bnt", resourceCulture);
+            }
+        }
+        
+        public static string Language_bos {
+            get {
+                return ResourceManager.GetString("Language_bos", resourceCulture);
+            }
+        }
+        
+        public static string Language_bra {
+            get {
+                return ResourceManager.GetString("Language_bra", resourceCulture);
+            }
+        }
+        
+        public static string Language_bre {
+            get {
+                return ResourceManager.GetString("Language_bre", resourceCulture);
+            }
+        }
+        
+        public static string Language_btk {
+            get {
+                return ResourceManager.GetString("Language_btk", resourceCulture);
+            }
+        }
+        
+        public static string Language_bua {
+            get {
+                return ResourceManager.GetString("Language_bua", resourceCulture);
+            }
+        }
+        
+        public static string Language_bug {
+            get {
+                return ResourceManager.GetString("Language_bug", resourceCulture);
+            }
+        }
+        
+        public static string Language_bul {
+            get {
+                return ResourceManager.GetString("Language_bul", resourceCulture);
+            }
+        }
+        
+        public static string Language_bur {
+            get {
+                return ResourceManager.GetString("Language_bur", resourceCulture);
+            }
+        }
+        
+        public static string Language_byn {
+            get {
+                return ResourceManager.GetString("Language_byn", resourceCulture);
+            }
+        }
+        
+        public static string Language_cad {
+            get {
+                return ResourceManager.GetString("Language_cad", resourceCulture);
+            }
+        }
+        
+        public static string Language_cai {
+            get {
+                return ResourceManager.GetString("Language_cai", resourceCulture);
+            }
+        }
+        
+        public static string Language_car {
+            get {
+                return ResourceManager.GetString("Language_car", resourceCulture);
+            }
+        }
+        
+        public static string Language_cat {
+            get {
+                return ResourceManager.GetString("Language_cat", resourceCulture);
+            }
+        }
+        
+        public static string Language_cau {
+            get {
+                return ResourceManager.GetString("Language_cau", resourceCulture);
+            }
+        }
+        
+        public static string Language_ceb {
+            get {
+                return ResourceManager.GetString("Language_ceb", resourceCulture);
+            }
+        }
+        
+        public static string Language_cel {
+            get {
+                return ResourceManager.GetString("Language_cel", resourceCulture);
+            }
+        }
+        
+        public static string Language_cha {
+            get {
+                return ResourceManager.GetString("Language_cha", resourceCulture);
+            }
+        }
+        
+        public static string Language_chb {
+            get {
+                return ResourceManager.GetString("Language_chb", resourceCulture);
+            }
+        }
+        
+        public static string Language_che {
+            get {
+                return ResourceManager.GetString("Language_che", resourceCulture);
+            }
+        }
+        
+        public static string Language_chg {
+            get {
+                return ResourceManager.GetString("Language_chg", resourceCulture);
+            }
+        }
+        
+        public static string Language_chi {
+            get {
+                return ResourceManager.GetString("Language_chi", resourceCulture);
+            }
+        }
+        
+        public static string Language_chk {
+            get {
+                return ResourceManager.GetString("Language_chk", resourceCulture);
+            }
+        }
+        
+        public static string Language_chm {
+            get {
+                return ResourceManager.GetString("Language_chm", resourceCulture);
+            }
+        }
+        
+        public static string Language_chn {
+            get {
+                return ResourceManager.GetString("Language_chn", resourceCulture);
+            }
+        }
+        
+        public static string Language_cho {
+            get {
+                return ResourceManager.GetString("Language_cho", resourceCulture);
+            }
+        }
+        
+        public static string Language_chp {
+            get {
+                return ResourceManager.GetString("Language_chp", resourceCulture);
+            }
+        }
+        
+        public static string Language_chr {
+            get {
+                return ResourceManager.GetString("Language_chr", resourceCulture);
+            }
+        }
+        
+        public static string Language_chu {
+            get {
+                return ResourceManager.GetString("Language_chu", resourceCulture);
+            }
+        }
+        
+        public static string Language_chv {
+            get {
+                return ResourceManager.GetString("Language_chv", resourceCulture);
+            }
+        }
+        
+        public static string Language_chy {
+            get {
+                return ResourceManager.GetString("Language_chy", resourceCulture);
+            }
+        }
+        
+        public static string Language_cmc {
+            get {
+                return ResourceManager.GetString("Language_cmc", resourceCulture);
+            }
+        }
+        
+        public static string Language_cop {
+            get {
+                return ResourceManager.GetString("Language_cop", resourceCulture);
+            }
+        }
+        
+        public static string Language_cor {
+            get {
+                return ResourceManager.GetString("Language_cor", resourceCulture);
+            }
+        }
+        
+        public static string Language_cos {
+            get {
+                return ResourceManager.GetString("Language_cos", resourceCulture);
+            }
+        }
+        
+        public static string Language_cpe {
+            get {
+                return ResourceManager.GetString("Language_cpe", resourceCulture);
+            }
+        }
+        
+        public static string Language_cpf {
+            get {
+                return ResourceManager.GetString("Language_cpf", resourceCulture);
+            }
+        }
+        
+        public static string Language_cpp {
+            get {
+                return ResourceManager.GetString("Language_cpp", resourceCulture);
+            }
+        }
+        
+        public static string Language_cre {
+            get {
+                return ResourceManager.GetString("Language_cre", resourceCulture);
+            }
+        }
+        
+        public static string Language_crh {
+            get {
+                return ResourceManager.GetString("Language_crh", resourceCulture);
+            }
+        }
+        
+        public static string Language_crp {
+            get {
+                return ResourceManager.GetString("Language_crp", resourceCulture);
+            }
+        }
+        
+        public static string Language_csb {
+            get {
+                return ResourceManager.GetString("Language_csb", resourceCulture);
+            }
+        }
+        
+        public static string Language_cus {
+            get {
+                return ResourceManager.GetString("Language_cus", resourceCulture);
+            }
+        }
+        
+        public static string Language_cze {
+            get {
+                return ResourceManager.GetString("Language_cze", resourceCulture);
+            }
+        }
+        
+        public static string Language_dak {
+            get {
+                return ResourceManager.GetString("Language_dak", resourceCulture);
+            }
+        }
+        
+        public static string Language_dan {
+            get {
+                return ResourceManager.GetString("Language_dan", resourceCulture);
+            }
+        }
+        
+        public static string Language_dar {
+            get {
+                return ResourceManager.GetString("Language_dar", resourceCulture);
+            }
+        }
+        
+        public static string Language_day {
+            get {
+                return ResourceManager.GetString("Language_day", resourceCulture);
+            }
+        }
+        
+        public static string Language_del {
+            get {
+                return ResourceManager.GetString("Language_del", resourceCulture);
+            }
+        }
+        
+        public static string Language_den {
+            get {
+                return ResourceManager.GetString("Language_den", resourceCulture);
+            }
+        }
+        
+        public static string Language_dgr {
+            get {
+                return ResourceManager.GetString("Language_dgr", resourceCulture);
+            }
+        }
+        
+        public static string Language_din {
+            get {
+                return ResourceManager.GetString("Language_din", resourceCulture);
+            }
+        }
+        
+        public static string Language_div {
+            get {
+                return ResourceManager.GetString("Language_div", resourceCulture);
+            }
+        }
+        
+        public static string Language_doi {
+            get {
+                return ResourceManager.GetString("Language_doi", resourceCulture);
+            }
+        }
+        
+        public static string Language_dra {
+            get {
+                return ResourceManager.GetString("Language_dra", resourceCulture);
+            }
+        }
+        
+        public static string Language_dsb {
+            get {
+                return ResourceManager.GetString("Language_dsb", resourceCulture);
+            }
+        }
+        
+        public static string Language_dua {
+            get {
+                return ResourceManager.GetString("Language_dua", resourceCulture);
+            }
+        }
+        
+        public static string Language_dum {
+            get {
+                return ResourceManager.GetString("Language_dum", resourceCulture);
+            }
+        }
+        
+        public static string Language_dut {
+            get {
+                return ResourceManager.GetString("Language_dut", resourceCulture);
+            }
+        }
+        
+        public static string Language_dyu {
+            get {
+                return ResourceManager.GetString("Language_dyu", resourceCulture);
+            }
+        }
+        
+        public static string Language_dzo {
+            get {
+                return ResourceManager.GetString("Language_dzo", resourceCulture);
+            }
+        }
+        
+        public static string Language_efi {
+            get {
+                return ResourceManager.GetString("Language_efi", resourceCulture);
+            }
+        }
+        
+        public static string Language_egy {
+            get {
+                return ResourceManager.GetString("Language_egy", resourceCulture);
+            }
+        }
+        
+        public static string Language_eka {
+            get {
+                return ResourceManager.GetString("Language_eka", resourceCulture);
+            }
+        }
+        
+        public static string Language_elx {
+            get {
+                return ResourceManager.GetString("Language_elx", resourceCulture);
+            }
+        }
+        
+        public static string Language_eng {
+            get {
+                return ResourceManager.GetString("Language_eng", resourceCulture);
+            }
+        }
+        
+        public static string Language_enm {
+            get {
+                return ResourceManager.GetString("Language_enm", resourceCulture);
+            }
+        }
+        
+        public static string Language_epo {
+            get {
+                return ResourceManager.GetString("Language_epo", resourceCulture);
+            }
+        }
+        
+        public static string Language_est {
+            get {
+                return ResourceManager.GetString("Language_est", resourceCulture);
+            }
+        }
+        
+        public static string Language_ewe {
+            get {
+                return ResourceManager.GetString("Language_ewe", resourceCulture);
+            }
+        }
+        
+        public static string Language_ewo {
+            get {
+                return ResourceManager.GetString("Language_ewo", resourceCulture);
+            }
+        }
+        
+        public static string Language_fan {
+            get {
+                return ResourceManager.GetString("Language_fan", resourceCulture);
+            }
+        }
+        
+        public static string Language_fao {
+            get {
+                return ResourceManager.GetString("Language_fao", resourceCulture);
+            }
+        }
+        
+        public static string Language_fat {
+            get {
+                return ResourceManager.GetString("Language_fat", resourceCulture);
+            }
+        }
+        
+        public static string Language_fij {
+            get {
+                return ResourceManager.GetString("Language_fij", resourceCulture);
+            }
+        }
+        
+        public static string Language_fil {
+            get {
+                return ResourceManager.GetString("Language_fil", resourceCulture);
+            }
+        }
+        
+        public static string Language_fin {
+            get {
+                return ResourceManager.GetString("Language_fin", resourceCulture);
+            }
+        }
+        
+        public static string Language_fiu {
+            get {
+                return ResourceManager.GetString("Language_fiu", resourceCulture);
+            }
+        }
+        
+        public static string Language_fon {
+            get {
+                return ResourceManager.GetString("Language_fon", resourceCulture);
+            }
+        }
+        
+        public static string Language_fre {
+            get {
+                return ResourceManager.GetString("Language_fre", resourceCulture);
+            }
+        }
+        
+        public static string Language_frm {
+            get {
+                return ResourceManager.GetString("Language_frm", resourceCulture);
+            }
+        }
+        
+        public static string Language_fro {
+            get {
+                return ResourceManager.GetString("Language_fro", resourceCulture);
+            }
+        }
+        
+        public static string Language_frr {
+            get {
+                return ResourceManager.GetString("Language_frr", resourceCulture);
+            }
+        }
+        
+        public static string Language_frs {
+            get {
+                return ResourceManager.GetString("Language_frs", resourceCulture);
+            }
+        }
+        
+        public static string Language_fry {
+            get {
+                return ResourceManager.GetString("Language_fry", resourceCulture);
+            }
+        }
+        
+        public static string Language_ful {
+            get {
+                return ResourceManager.GetString("Language_ful", resourceCulture);
+            }
+        }
+        
+        public static string Language_fur {
+            get {
+                return ResourceManager.GetString("Language_fur", resourceCulture);
+            }
+        }
+        
+        public static string Language_gaa {
+            get {
+                return ResourceManager.GetString("Language_gaa", resourceCulture);
+            }
+        }
+        
+        public static string Language_gay {
+            get {
+                return ResourceManager.GetString("Language_gay", resourceCulture);
+            }
+        }
+        
+        public static string Language_gba {
+            get {
+                return ResourceManager.GetString("Language_gba", resourceCulture);
+            }
+        }
+        
+        public static string Language_gem {
+            get {
+                return ResourceManager.GetString("Language_gem", resourceCulture);
+            }
+        }
+        
+        public static string Language_geo {
+            get {
+                return ResourceManager.GetString("Language_geo", resourceCulture);
+            }
+        }
+        
+        public static string Language_ger {
+            get {
+                return ResourceManager.GetString("Language_ger", resourceCulture);
+            }
+        }
+        
+        public static string Language_gez {
+            get {
+                return ResourceManager.GetString("Language_gez", resourceCulture);
+            }
+        }
+        
+        public static string Language_gil {
+            get {
+                return ResourceManager.GetString("Language_gil", resourceCulture);
+            }
+        }
+        
+        public static string Language_gla {
+            get {
+                return ResourceManager.GetString("Language_gla", resourceCulture);
+            }
+        }
+        
+        public static string Language_gle {
+            get {
+                return ResourceManager.GetString("Language_gle", resourceCulture);
+            }
+        }
+        
+        public static string Language_glg {
+            get {
+                return ResourceManager.GetString("Language_glg", resourceCulture);
+            }
+        }
+        
+        public static string Language_glv {
+            get {
+                return ResourceManager.GetString("Language_glv", resourceCulture);
+            }
+        }
+        
+        public static string Language_gmh {
+            get {
+                return ResourceManager.GetString("Language_gmh", resourceCulture);
+            }
+        }
+        
+        public static string Language_goh {
+            get {
+                return ResourceManager.GetString("Language_goh", resourceCulture);
+            }
+        }
+        
+        public static string Language_gon {
+            get {
+                return ResourceManager.GetString("Language_gon", resourceCulture);
+            }
+        }
+        
+        public static string Language_gor {
+            get {
+                return ResourceManager.GetString("Language_gor", resourceCulture);
+            }
+        }
+        
+        public static string Language_got {
+            get {
+                return ResourceManager.GetString("Language_got", resourceCulture);
+            }
+        }
+        
+        public static string Language_grb {
+            get {
+                return ResourceManager.GetString("Language_grb", resourceCulture);
+            }
+        }
+        
+        public static string Language_grc {
+            get {
+                return ResourceManager.GetString("Language_grc", resourceCulture);
+            }
+        }
+        
+        public static string Language_gre {
+            get {
+                return ResourceManager.GetString("Language_gre", resourceCulture);
+            }
+        }
+        
+        public static string Language_grn {
+            get {
+                return ResourceManager.GetString("Language_grn", resourceCulture);
+            }
+        }
+        
+        public static string Language_gsw {
+            get {
+                return ResourceManager.GetString("Language_gsw", resourceCulture);
+            }
+        }
+        
+        public static string Language_guj {
+            get {
+                return ResourceManager.GetString("Language_guj", resourceCulture);
+            }
+        }
+        
+        public static string Language_gwi {
+            get {
+                return ResourceManager.GetString("Language_gwi", resourceCulture);
+            }
+        }
+        
+        public static string Language_hai {
+            get {
+                return ResourceManager.GetString("Language_hai", resourceCulture);
+            }
+        }
+        
+        public static string Language_hat {
+            get {
+                return ResourceManager.GetString("Language_hat", resourceCulture);
+            }
+        }
+        
+        public static string Language_hau {
+            get {
+                return ResourceManager.GetString("Language_hau", resourceCulture);
+            }
+        }
+        
+        public static string Language_haw {
+            get {
+                return ResourceManager.GetString("Language_haw", resourceCulture);
+            }
+        }
+        
+        public static string Language_heb {
+            get {
+                return ResourceManager.GetString("Language_heb", resourceCulture);
+            }
+        }
+        
+        public static string Language_her {
+            get {
+                return ResourceManager.GetString("Language_her", resourceCulture);
+            }
+        }
+        
+        public static string Language_hil {
+            get {
+                return ResourceManager.GetString("Language_hil", resourceCulture);
+            }
+        }
+        
+        public static string Language_him {
+            get {
+                return ResourceManager.GetString("Language_him", resourceCulture);
+            }
+        }
+        
+        public static string Language_hin {
+            get {
+                return ResourceManager.GetString("Language_hin", resourceCulture);
+            }
+        }
+        
+        public static string Language_hit {
+            get {
+                return ResourceManager.GetString("Language_hit", resourceCulture);
+            }
+        }
+        
+        public static string Language_hmn {
+            get {
+                return ResourceManager.GetString("Language_hmn", resourceCulture);
+            }
+        }
+        
+        public static string Language_hmo {
+            get {
+                return ResourceManager.GetString("Language_hmo", resourceCulture);
+            }
+        }
+        
+        public static string Language_hrv {
+            get {
+                return ResourceManager.GetString("Language_hrv", resourceCulture);
+            }
+        }
+        
+        public static string Language_hsb {
+            get {
+                return ResourceManager.GetString("Language_hsb", resourceCulture);
+            }
+        }
+        
+        public static string Language_hun {
+            get {
+                return ResourceManager.GetString("Language_hun", resourceCulture);
+            }
+        }
+        
+        public static string Language_hup {
+            get {
+                return ResourceManager.GetString("Language_hup", resourceCulture);
+            }
+        }
+        
+        public static string Language_iba {
+            get {
+                return ResourceManager.GetString("Language_iba", resourceCulture);
+            }
+        }
+        
+        public static string Language_ibo {
+            get {
+                return ResourceManager.GetString("Language_ibo", resourceCulture);
+            }
+        }
+        
+        public static string Language_ice {
+            get {
+                return ResourceManager.GetString("Language_ice", resourceCulture);
+            }
+        }
+        
+        public static string Language_ido {
+            get {
+                return ResourceManager.GetString("Language_ido", resourceCulture);
+            }
+        }
+        
+        public static string Language_iii {
+            get {
+                return ResourceManager.GetString("Language_iii", resourceCulture);
+            }
+        }
+        
+        public static string Language_ijo {
+            get {
+                return ResourceManager.GetString("Language_ijo", resourceCulture);
+            }
+        }
+        
+        public static string Language_iku {
+            get {
+                return ResourceManager.GetString("Language_iku", resourceCulture);
+            }
+        }
+        
+        public static string Language_ile {
+            get {
+                return ResourceManager.GetString("Language_ile", resourceCulture);
+            }
+        }
+        
+        public static string Language_ilo {
+            get {
+                return ResourceManager.GetString("Language_ilo", resourceCulture);
+            }
+        }
+        
+        public static string Language_ina {
+            get {
+                return ResourceManager.GetString("Language_ina", resourceCulture);
+            }
+        }
+        
+        public static string Language_inc {
+            get {
+                return ResourceManager.GetString("Language_inc", resourceCulture);
+            }
+        }
+        
+        public static string Language_ind {
+            get {
+                return ResourceManager.GetString("Language_ind", resourceCulture);
+            }
+        }
+        
+        public static string Language_ine {
+            get {
+                return ResourceManager.GetString("Language_ine", resourceCulture);
+            }
+        }
+        
+        public static string Language_inh {
+            get {
+                return ResourceManager.GetString("Language_inh", resourceCulture);
+            }
+        }
+        
+        public static string Language_ipk {
+            get {
+                return ResourceManager.GetString("Language_ipk", resourceCulture);
+            }
+        }
+        
+        public static string Language_ira {
+            get {
+                return ResourceManager.GetString("Language_ira", resourceCulture);
+            }
+        }
+        
+        public static string Language_iro {
+            get {
+                return ResourceManager.GetString("Language_iro", resourceCulture);
+            }
+        }
+        
+        public static string Language_ita {
+            get {
+                return ResourceManager.GetString("Language_ita", resourceCulture);
+            }
+        }
+        
+        public static string Language_jav {
+            get {
+                return ResourceManager.GetString("Language_jav", resourceCulture);
+            }
+        }
+        
+        public static string Language_jbo {
+            get {
+                return ResourceManager.GetString("Language_jbo", resourceCulture);
+            }
+        }
+        
+        public static string Language_jpn {
+            get {
+                return ResourceManager.GetString("Language_jpn", resourceCulture);
+            }
+        }
+        
+        public static string Language_jpr {
+            get {
+                return ResourceManager.GetString("Language_jpr", resourceCulture);
+            }
+        }
+        
+        public static string Language_jrb {
+            get {
+                return ResourceManager.GetString("Language_jrb", resourceCulture);
+            }
+        }
+        
+        public static string Language_kaa {
+            get {
+                return ResourceManager.GetString("Language_kaa", resourceCulture);
+            }
+        }
+        
+        public static string Language_kab {
+            get {
+                return ResourceManager.GetString("Language_kab", resourceCulture);
+            }
+        }
+        
+        public static string Language_kac {
+            get {
+                return ResourceManager.GetString("Language_kac", resourceCulture);
+            }
+        }
+        
+        public static string Language_kal {
+            get {
+                return ResourceManager.GetString("Language_kal", resourceCulture);
+            }
+        }
+        
+        public static string Language_kam {
+            get {
+                return ResourceManager.GetString("Language_kam", resourceCulture);
+            }
+        }
+        
+        public static string Language_kan {
+            get {
+                return ResourceManager.GetString("Language_kan", resourceCulture);
+            }
+        }
+        
+        public static string Language_kar {
+            get {
+                return ResourceManager.GetString("Language_kar", resourceCulture);
+            }
+        }
+        
+        public static string Language_kas {
+            get {
+                return ResourceManager.GetString("Language_kas", resourceCulture);
+            }
+        }
+        
+        public static string Language_kau {
+            get {
+                return ResourceManager.GetString("Language_kau", resourceCulture);
+            }
+        }
+        
+        public static string Language_kaw {
+            get {
+                return ResourceManager.GetString("Language_kaw", resourceCulture);
+            }
+        }
+        
+        public static string Language_kaz {
+            get {
+                return ResourceManager.GetString("Language_kaz", resourceCulture);
+            }
+        }
+        
+        public static string Language_kbd {
+            get {
+                return ResourceManager.GetString("Language_kbd", resourceCulture);
+            }
+        }
+        
+        public static string Language_kha {
+            get {
+                return ResourceManager.GetString("Language_kha", resourceCulture);
+            }
+        }
+        
+        public static string Language_khi {
+            get {
+                return ResourceManager.GetString("Language_khi", resourceCulture);
+            }
+        }
+        
+        public static string Language_khm {
+            get {
+                return ResourceManager.GetString("Language_khm", resourceCulture);
+            }
+        }
+        
+        public static string Language_kho {
+            get {
+                return ResourceManager.GetString("Language_kho", resourceCulture);
+            }
+        }
+        
+        public static string Language_kik {
+            get {
+                return ResourceManager.GetString("Language_kik", resourceCulture);
+            }
+        }
+        
+        public static string Language_kin {
+            get {
+                return ResourceManager.GetString("Language_kin", resourceCulture);
+            }
+        }
+        
+        public static string Language_kir {
+            get {
+                return ResourceManager.GetString("Language_kir", resourceCulture);
+            }
+        }
+        
+        public static string Language_kmb {
+            get {
+                return ResourceManager.GetString("Language_kmb", resourceCulture);
+            }
+        }
+        
+        public static string Language_kok {
+            get {
+                return ResourceManager.GetString("Language_kok", resourceCulture);
+            }
+        }
+        
+        public static string Language_kom {
+            get {
+                return ResourceManager.GetString("Language_kom", resourceCulture);
+            }
+        }
+        
+        public static string Language_kon {
+            get {
+                return ResourceManager.GetString("Language_kon", resourceCulture);
+            }
+        }
+        
+        public static string Language_kor {
+            get {
+                return ResourceManager.GetString("Language_kor", resourceCulture);
+            }
+        }
+        
+        public static string Language_kos {
+            get {
+                return ResourceManager.GetString("Language_kos", resourceCulture);
+            }
+        }
+        
+        public static string Language_kpe {
+            get {
+                return ResourceManager.GetString("Language_kpe", resourceCulture);
+            }
+        }
+        
+        public static string Language_krc {
+            get {
+                return ResourceManager.GetString("Language_krc", resourceCulture);
+            }
+        }
+        
+        public static string Language_krl {
+            get {
+                return ResourceManager.GetString("Language_krl", resourceCulture);
+            }
+        }
+        
+        public static string Language_kro {
+            get {
+                return ResourceManager.GetString("Language_kro", resourceCulture);
+            }
+        }
+        
+        public static string Language_kru {
+            get {
+                return ResourceManager.GetString("Language_kru", resourceCulture);
+            }
+        }
+        
+        public static string Language_kua {
+            get {
+                return ResourceManager.GetString("Language_kua", resourceCulture);
+            }
+        }
+        
+        public static string Language_kum {
+            get {
+                return ResourceManager.GetString("Language_kum", resourceCulture);
+            }
+        }
+        
+        public static string Language_kur {
+            get {
+                return ResourceManager.GetString("Language_kur", resourceCulture);
+            }
+        }
+        
+        public static string Language_kut {
+            get {
+                return ResourceManager.GetString("Language_kut", resourceCulture);
+            }
+        }
+        
+        public static string Language_lad {
+            get {
+                return ResourceManager.GetString("Language_lad", resourceCulture);
+            }
+        }
+        
+        public static string Language_lah {
+            get {
+                return ResourceManager.GetString("Language_lah", resourceCulture);
+            }
+        }
+        
+        public static string Language_lam {
+            get {
+                return ResourceManager.GetString("Language_lam", resourceCulture);
+            }
+        }
+        
+        public static string Language_lao {
+            get {
+                return ResourceManager.GetString("Language_lao", resourceCulture);
+            }
+        }
+        
+        public static string Language_lat {
+            get {
+                return ResourceManager.GetString("Language_lat", resourceCulture);
+            }
+        }
+        
+        public static string Language_lav {
+            get {
+                return ResourceManager.GetString("Language_lav", resourceCulture);
+            }
+        }
+        
+        public static string Language_lez {
+            get {
+                return ResourceManager.GetString("Language_lez", resourceCulture);
+            }
+        }
+        
+        public static string Language_lim {
+            get {
+                return ResourceManager.GetString("Language_lim", resourceCulture);
+            }
+        }
+        
+        public static string Language_lin {
+            get {
+                return ResourceManager.GetString("Language_lin", resourceCulture);
+            }
+        }
+        
+        public static string Language_lit {
+            get {
+                return ResourceManager.GetString("Language_lit", resourceCulture);
+            }
+        }
+        
+        public static string Language_lol {
+            get {
+                return ResourceManager.GetString("Language_lol", resourceCulture);
+            }
+        }
+        
+        public static string Language_loz {
+            get {
+                return ResourceManager.GetString("Language_loz", resourceCulture);
+            }
+        }
+        
+        public static string Language_ltz {
+            get {
+                return ResourceManager.GetString("Language_ltz", resourceCulture);
+            }
+        }
+        
+        public static string Language_lua {
+            get {
+                return ResourceManager.GetString("Language_lua", resourceCulture);
+            }
+        }
+        
+        public static string Language_lub {
+            get {
+                return ResourceManager.GetString("Language_lub", resourceCulture);
+            }
+        }
+        
+        public static string Language_lug {
+            get {
+                return ResourceManager.GetString("Language_lug", resourceCulture);
+            }
+        }
+        
+        public static string Language_lui {
+            get {
+                return ResourceManager.GetString("Language_lui", resourceCulture);
+            }
+        }
+        
+        public static string Language_lun {
+            get {
+                return ResourceManager.GetString("Language_lun", resourceCulture);
+            }
+        }
+        
+        public static string Language_luo {
+            get {
+                return ResourceManager.GetString("Language_luo", resourceCulture);
+            }
+        }
+        
+        public static string Language_lus {
+            get {
+                return ResourceManager.GetString("Language_lus", resourceCulture);
+            }
+        }
+        
+        public static string Language_mac {
+            get {
+                return ResourceManager.GetString("Language_mac", resourceCulture);
+            }
+        }
+        
+        public static string Language_mad {
+            get {
+                return ResourceManager.GetString("Language_mad", resourceCulture);
+            }
+        }
+        
+        public static string Language_mag {
+            get {
+                return ResourceManager.GetString("Language_mag", resourceCulture);
+            }
+        }
+        
+        public static string Language_mah {
+            get {
+                return ResourceManager.GetString("Language_mah", resourceCulture);
+            }
+        }
+        
+        public static string Language_mai {
+            get {
+                return ResourceManager.GetString("Language_mai", resourceCulture);
+            }
+        }
+        
+        public static string Language_mak {
+            get {
+                return ResourceManager.GetString("Language_mak", resourceCulture);
+            }
+        }
+        
+        public static string Language_mal {
+            get {
+                return ResourceManager.GetString("Language_mal", resourceCulture);
+            }
+        }
+        
+        public static string Language_man {
+            get {
+                return ResourceManager.GetString("Language_man", resourceCulture);
+            }
+        }
+        
+        public static string Language_mao {
+            get {
+                return ResourceManager.GetString("Language_mao", resourceCulture);
+            }
+        }
+        
+        public static string Language_map {
+            get {
+                return ResourceManager.GetString("Language_map", resourceCulture);
+            }
+        }
+        
+        public static string Language_mar {
+            get {
+                return ResourceManager.GetString("Language_mar", resourceCulture);
+            }
+        }
+        
+        public static string Language_mas {
+            get {
+                return ResourceManager.GetString("Language_mas", resourceCulture);
+            }
+        }
+        
+        public static string Language_may {
+            get {
+                return ResourceManager.GetString("Language_may", resourceCulture);
+            }
+        }
+        
+        public static string Language_mdf {
+            get {
+                return ResourceManager.GetString("Language_mdf", resourceCulture);
+            }
+        }
+        
+        public static string Language_mdr {
+            get {
+                return ResourceManager.GetString("Language_mdr", resourceCulture);
+            }
+        }
+        
+        public static string Language_men {
+            get {
+                return ResourceManager.GetString("Language_men", resourceCulture);
+            }
+        }
+        
+        public static string Language_mga {
+            get {
+                return ResourceManager.GetString("Language_mga", resourceCulture);
+            }
+        }
+        
+        public static string Language_mic {
+            get {
+                return ResourceManager.GetString("Language_mic", resourceCulture);
+            }
+        }
+        
+        public static string Language_min {
+            get {
+                return ResourceManager.GetString("Language_min", resourceCulture);
+            }
+        }
+        
+        public static string Language_mis {
+            get {
+                return ResourceManager.GetString("Language_mis", resourceCulture);
+            }
+        }
+        
+        public static string Language_mkh {
+            get {
+                return ResourceManager.GetString("Language_mkh", resourceCulture);
+            }
+        }
+        
+        public static string Language_mlg {
+            get {
+                return ResourceManager.GetString("Language_mlg", resourceCulture);
+            }
+        }
+        
+        public static string Language_mlt {
+            get {
+                return ResourceManager.GetString("Language_mlt", resourceCulture);
+            }
+        }
+        
+        public static string Language_mnc {
+            get {
+                return ResourceManager.GetString("Language_mnc", resourceCulture);
+            }
+        }
+        
+        public static string Language_mni {
+            get {
+                return ResourceManager.GetString("Language_mni", resourceCulture);
+            }
+        }
+        
+        public static string Language_mno {
+            get {
+                return ResourceManager.GetString("Language_mno", resourceCulture);
+            }
+        }
+        
+        public static string Language_moh {
+            get {
+                return ResourceManager.GetString("Language_moh", resourceCulture);
+            }
+        }
+        
+        public static string Language_mon {
+            get {
+                return ResourceManager.GetString("Language_mon", resourceCulture);
+            }
+        }
+        
+        public static string Language_mos {
+            get {
+                return ResourceManager.GetString("Language_mos", resourceCulture);
+            }
+        }
+        
+        public static string Language_mul {
+            get {
+                return ResourceManager.GetString("Language_mul", resourceCulture);
+            }
+        }
+        
+        public static string Language_mun {
+            get {
+                return ResourceManager.GetString("Language_mun", resourceCulture);
+            }
+        }
+        
+        public static string Language_mus {
+            get {
+                return ResourceManager.GetString("Language_mus", resourceCulture);
+            }
+        }
+        
+        public static string Language_mwl {
+            get {
+                return ResourceManager.GetString("Language_mwl", resourceCulture);
+            }
+        }
+        
+        public static string Language_mwr {
+            get {
+                return ResourceManager.GetString("Language_mwr", resourceCulture);
+            }
+        }
+        
+        public static string Language_myn {
+            get {
+                return ResourceManager.GetString("Language_myn", resourceCulture);
+            }
+        }
+        
+        public static string Language_myv {
+            get {
+                return ResourceManager.GetString("Language_myv", resourceCulture);
+            }
+        }
+        
+        public static string Language_nah {
+            get {
+                return ResourceManager.GetString("Language_nah", resourceCulture);
+            }
+        }
+        
+        public static string Language_nai {
+            get {
+                return ResourceManager.GetString("Language_nai", resourceCulture);
+            }
+        }
+        
+        public static string Language_nap {
+            get {
+                return ResourceManager.GetString("Language_nap", resourceCulture);
+            }
+        }
+        
+        public static string Language_nau {
+            get {
+                return ResourceManager.GetString("Language_nau", resourceCulture);
+            }
+        }
+        
+        public static string Language_nav {
+            get {
+                return ResourceManager.GetString("Language_nav", resourceCulture);
+            }
+        }
+        
+        public static string Language_nbl {
+            get {
+                return ResourceManager.GetString("Language_nbl", resourceCulture);
+            }
+        }
+        
+        public static string Language_nde {
+            get {
+                return ResourceManager.GetString("Language_nde", resourceCulture);
+            }
+        }
+        
+        public static string Language_ndo {
+            get {
+                return ResourceManager.GetString("Language_ndo", resourceCulture);
+            }
+        }
+        
+        public static string Language_nds {
+            get {
+                return ResourceManager.GetString("Language_nds", resourceCulture);
+            }
+        }
+        
+        public static string Language_nep {
+            get {
+                return ResourceManager.GetString("Language_nep", resourceCulture);
+            }
+        }
+        
+        public static string Language_new {
+            get {
+                return ResourceManager.GetString("Language_new", resourceCulture);
+            }
+        }
+        
+        public static string Language_nia {
+            get {
+                return ResourceManager.GetString("Language_nia", resourceCulture);
+            }
+        }
+        
+        public static string Language_nic {
+            get {
+                return ResourceManager.GetString("Language_nic", resourceCulture);
+            }
+        }
+        
+        public static string Language_niu {
+            get {
+                return ResourceManager.GetString("Language_niu", resourceCulture);
+            }
+        }
+        
+        public static string Language_nno {
+            get {
+                return ResourceManager.GetString("Language_nno", resourceCulture);
+            }
+        }
+        
+        public static string Language_nob {
+            get {
+                return ResourceManager.GetString("Language_nob", resourceCulture);
+            }
+        }
+        
+        public static string Language_nog {
+            get {
+                return ResourceManager.GetString("Language_nog", resourceCulture);
+            }
+        }
+        
+        public static string Language_non {
+            get {
+                return ResourceManager.GetString("Language_non", resourceCulture);
+            }
+        }
+        
+        public static string Language_nor {
+            get {
+                return ResourceManager.GetString("Language_nor", resourceCulture);
+            }
+        }
+        
+        public static string Language_nqo {
+            get {
+                return ResourceManager.GetString("Language_nqo", resourceCulture);
+            }
+        }
+        
+        public static string Language_nso {
+            get {
+                return ResourceManager.GetString("Language_nso", resourceCulture);
+            }
+        }
+        
+        public static string Language_nub {
+            get {
+                return ResourceManager.GetString("Language_nub", resourceCulture);
+            }
+        }
+        
+        public static string Language_nwc {
+            get {
+                return ResourceManager.GetString("Language_nwc", resourceCulture);
+            }
+        }
+        
+        public static string Language_nya {
+            get {
+                return ResourceManager.GetString("Language_nya", resourceCulture);
+            }
+        }
+        
+        public static string Language_nym {
+            get {
+                return ResourceManager.GetString("Language_nym", resourceCulture);
+            }
+        }
+        
+        public static string Language_nyn {
+            get {
+                return ResourceManager.GetString("Language_nyn", resourceCulture);
+            }
+        }
+        
+        public static string Language_nyo {
+            get {
+                return ResourceManager.GetString("Language_nyo", resourceCulture);
+            }
+        }
+        
+        public static string Language_nzi {
+            get {
+                return ResourceManager.GetString("Language_nzi", resourceCulture);
+            }
+        }
+        
+        public static string Language_oci {
+            get {
+                return ResourceManager.GetString("Language_oci", resourceCulture);
+            }
+        }
+        
+        public static string Language_oji {
+            get {
+                return ResourceManager.GetString("Language_oji", resourceCulture);
+            }
+        }
+        
+        public static string Language_ori {
+            get {
+                return ResourceManager.GetString("Language_ori", resourceCulture);
+            }
+        }
+        
+        public static string Language_orm {
+            get {
+                return ResourceManager.GetString("Language_orm", resourceCulture);
+            }
+        }
+        
+        public static string Language_osa {
+            get {
+                return ResourceManager.GetString("Language_osa", resourceCulture);
+            }
+        }
+        
+        public static string Language_oss {
+            get {
+                return ResourceManager.GetString("Language_oss", resourceCulture);
+            }
+        }
+        
+        public static string Language_ota {
+            get {
+                return ResourceManager.GetString("Language_ota", resourceCulture);
+            }
+        }
+        
+        public static string Language_oto {
+            get {
+                return ResourceManager.GetString("Language_oto", resourceCulture);
+            }
+        }
+        
+        public static string Language_paa {
+            get {
+                return ResourceManager.GetString("Language_paa", resourceCulture);
+            }
+        }
+        
+        public static string Language_pag {
+            get {
+                return ResourceManager.GetString("Language_pag", resourceCulture);
+            }
+        }
+        
+        public static string Language_pal {
+            get {
+                return ResourceManager.GetString("Language_pal", resourceCulture);
+            }
+        }
+        
+        public static string Language_pam {
+            get {
+                return ResourceManager.GetString("Language_pam", resourceCulture);
+            }
+        }
+        
+        public static string Language_pan {
+            get {
+                return ResourceManager.GetString("Language_pan", resourceCulture);
+            }
+        }
+        
+        public static string Language_pap {
+            get {
+                return ResourceManager.GetString("Language_pap", resourceCulture);
+            }
+        }
+        
+        public static string Language_pau {
+            get {
+                return ResourceManager.GetString("Language_pau", resourceCulture);
+            }
+        }
+        
+        public static string Language_peo {
+            get {
+                return ResourceManager.GetString("Language_peo", resourceCulture);
+            }
+        }
+        
+        public static string Language_per {
+            get {
+                return ResourceManager.GetString("Language_per", resourceCulture);
+            }
+        }
+        
+        public static string Language_phi {
+            get {
+                return ResourceManager.GetString("Language_phi", resourceCulture);
+            }
+        }
+        
+        public static string Language_phn {
+            get {
+                return ResourceManager.GetString("Language_phn", resourceCulture);
+            }
+        }
+        
+        public static string Language_pli {
+            get {
+                return ResourceManager.GetString("Language_pli", resourceCulture);
+            }
+        }
+        
+        public static string Language_pol {
+            get {
+                return ResourceManager.GetString("Language_pol", resourceCulture);
+            }
+        }
+        
+        public static string Language_pon {
+            get {
+                return ResourceManager.GetString("Language_pon", resourceCulture);
+            }
+        }
+        
+        public static string Language_por {
+            get {
+                return ResourceManager.GetString("Language_por", resourceCulture);
+            }
+        }
+        
+        public static string Language_pra {
+            get {
+                return ResourceManager.GetString("Language_pra", resourceCulture);
+            }
+        }
+        
+        public static string Language_pro {
+            get {
+                return ResourceManager.GetString("Language_pro", resourceCulture);
+            }
+        }
+        
+        public static string Language_pus {
+            get {
+                return ResourceManager.GetString("Language_pus", resourceCulture);
+            }
+        }
+        
+        public static string Language_qaaqtz {
+            get {
+                return ResourceManager.GetString("Language_qaaqtz", resourceCulture);
+            }
+        }
+        
+        public static string Language_que {
+            get {
+                return ResourceManager.GetString("Language_que", resourceCulture);
+            }
+        }
+        
+        public static string Language_raj {
+            get {
+                return ResourceManager.GetString("Language_raj", resourceCulture);
+            }
+        }
+        
+        public static string Language_rap {
+            get {
+                return ResourceManager.GetString("Language_rap", resourceCulture);
+            }
+        }
+        
+        public static string Language_rar {
+            get {
+                return ResourceManager.GetString("Language_rar", resourceCulture);
+            }
+        }
+        
+        public static string Language_roa {
+            get {
+                return ResourceManager.GetString("Language_roa", resourceCulture);
+            }
+        }
+        
+        public static string Language_roh {
+            get {
+                return ResourceManager.GetString("Language_roh", resourceCulture);
+            }
+        }
+        
+        public static string Language_rom {
+            get {
+                return ResourceManager.GetString("Language_rom", resourceCulture);
+            }
+        }
+        
+        public static string Language_rum {
+            get {
+                return ResourceManager.GetString("Language_rum", resourceCulture);
+            }
+        }
+        
+        public static string Language_run {
+            get {
+                return ResourceManager.GetString("Language_run", resourceCulture);
+            }
+        }
+        
+        public static string Language_rup {
+            get {
+                return ResourceManager.GetString("Language_rup", resourceCulture);
+            }
+        }
+        
+        public static string Language_rus {
+            get {
+                return ResourceManager.GetString("Language_rus", resourceCulture);
+            }
+        }
+        
+        public static string Language_sad {
+            get {
+                return ResourceManager.GetString("Language_sad", resourceCulture);
+            }
+        }
+        
+        public static string Language_sag {
+            get {
+                return ResourceManager.GetString("Language_sag", resourceCulture);
+            }
+        }
+        
+        public static string Language_sah {
+            get {
+                return ResourceManager.GetString("Language_sah", resourceCulture);
+            }
+        }
+        
+        public static string Language_sai {
+            get {
+                return ResourceManager.GetString("Language_sai", resourceCulture);
+            }
+        }
+        
+        public static string Language_sal {
+            get {
+                return ResourceManager.GetString("Language_sal", resourceCulture);
+            }
+        }
+        
+        public static string Language_sam {
+            get {
+                return ResourceManager.GetString("Language_sam", resourceCulture);
+            }
+        }
+        
+        public static string Language_san {
+            get {
+                return ResourceManager.GetString("Language_san", resourceCulture);
+            }
+        }
+        
+        public static string Language_sas {
+            get {
+                return ResourceManager.GetString("Language_sas", resourceCulture);
+            }
+        }
+        
+        public static string Language_sat {
+            get {
+                return ResourceManager.GetString("Language_sat", resourceCulture);
+            }
+        }
+        
+        public static string Language_scn {
+            get {
+                return ResourceManager.GetString("Language_scn", resourceCulture);
+            }
+        }
+        
+        public static string Language_sco {
+            get {
+                return ResourceManager.GetString("Language_sco", resourceCulture);
+            }
+        }
+        
+        public static string Language_sel {
+            get {
+                return ResourceManager.GetString("Language_sel", resourceCulture);
+            }
+        }
+        
+        public static string Language_sem {
+            get {
+                return ResourceManager.GetString("Language_sem", resourceCulture);
+            }
+        }
+        
+        public static string Language_sga {
+            get {
+                return ResourceManager.GetString("Language_sga", resourceCulture);
+            }
+        }
+        
+        public static string Language_sgn {
+            get {
+                return ResourceManager.GetString("Language_sgn", resourceCulture);
+            }
+        }
+        
+        public static string Language_shn {
+            get {
+                return ResourceManager.GetString("Language_shn", resourceCulture);
+            }
+        }
+        
+        public static string Language_sid {
+            get {
+                return ResourceManager.GetString("Language_sid", resourceCulture);
+            }
+        }
+        
+        public static string Language_sin {
+            get {
+                return ResourceManager.GetString("Language_sin", resourceCulture);
+            }
+        }
+        
+        public static string Language_sio {
+            get {
+                return ResourceManager.GetString("Language_sio", resourceCulture);
+            }
+        }
+        
+        public static string Language_sit {
+            get {
+                return ResourceManager.GetString("Language_sit", resourceCulture);
+            }
+        }
+        
+        public static string Language_sla {
+            get {
+                return ResourceManager.GetString("Language_sla", resourceCulture);
+            }
+        }
+        
+        public static string Language_slo {
+            get {
+                return ResourceManager.GetString("Language_slo", resourceCulture);
+            }
+        }
+        
+        public static string Language_slv {
+            get {
+                return ResourceManager.GetString("Language_slv", resourceCulture);
+            }
+        }
+        
+        public static string Language_sma {
+            get {
+                return ResourceManager.GetString("Language_sma", resourceCulture);
+            }
+        }
+        
+        public static string Language_sme {
+            get {
+                return ResourceManager.GetString("Language_sme", resourceCulture);
+            }
+        }
+        
+        public static string Language_smi {
+            get {
+                return ResourceManager.GetString("Language_smi", resourceCulture);
+            }
+        }
+        
+        public static string Language_smj {
+            get {
+                return ResourceManager.GetString("Language_smj", resourceCulture);
+            }
+        }
+        
+        public static string Language_smn {
+            get {
+                return ResourceManager.GetString("Language_smn", resourceCulture);
+            }
+        }
+        
+        public static string Language_smo {
+            get {
+                return ResourceManager.GetString("Language_smo", resourceCulture);
+            }
+        }
+        
+        public static string Language_sms {
+            get {
+                return ResourceManager.GetString("Language_sms", resourceCulture);
+            }
+        }
+        
+        public static string Language_sna {
+            get {
+                return ResourceManager.GetString("Language_sna", resourceCulture);
+            }
+        }
+        
+        public static string Language_snd {
+            get {
+                return ResourceManager.GetString("Language_snd", resourceCulture);
+            }
+        }
+        
+        public static string Language_snk {
+            get {
+                return ResourceManager.GetString("Language_snk", resourceCulture);
+            }
+        }
+        
+        public static string Language_sog {
+            get {
+                return ResourceManager.GetString("Language_sog", resourceCulture);
+            }
+        }
+        
+        public static string Language_som {
+            get {
+                return ResourceManager.GetString("Language_som", resourceCulture);
+            }
+        }
+        
+        public static string Language_son {
+            get {
+                return ResourceManager.GetString("Language_son", resourceCulture);
+            }
+        }
+        
+        public static string Language_sot {
+            get {
+                return ResourceManager.GetString("Language_sot", resourceCulture);
+            }
+        }
+        
+        public static string Language_spa {
+            get {
+                return ResourceManager.GetString("Language_spa", resourceCulture);
+            }
+        }
+        
+        public static string Language_srd {
+            get {
+                return ResourceManager.GetString("Language_srd", resourceCulture);
+            }
+        }
+        
+        public static string Language_srn {
+            get {
+                return ResourceManager.GetString("Language_srn", resourceCulture);
+            }
+        }
+        
+        public static string Language_srp {
+            get {
+                return ResourceManager.GetString("Language_srp", resourceCulture);
+            }
+        }
+        
+        public static string Language_srr {
+            get {
+                return ResourceManager.GetString("Language_srr", resourceCulture);
+            }
+        }
+        
+        public static string Language_ssa {
+            get {
+                return ResourceManager.GetString("Language_ssa", resourceCulture);
+            }
+        }
+        
+        public static string Language_ssw {
+            get {
+                return ResourceManager.GetString("Language_ssw", resourceCulture);
+            }
+        }
+        
+        public static string Language_suk {
+            get {
+                return ResourceManager.GetString("Language_suk", resourceCulture);
+            }
+        }
+        
+        public static string Language_sun {
+            get {
+                return ResourceManager.GetString("Language_sun", resourceCulture);
+            }
+        }
+        
+        public static string Language_sus {
+            get {
+                return ResourceManager.GetString("Language_sus", resourceCulture);
+            }
+        }
+        
+        public static string Language_sux {
+            get {
+                return ResourceManager.GetString("Language_sux", resourceCulture);
+            }
+        }
+        
+        public static string Language_swa {
+            get {
+                return ResourceManager.GetString("Language_swa", resourceCulture);
+            }
+        }
+        
+        public static string Language_swe {
+            get {
+                return ResourceManager.GetString("Language_swe", resourceCulture);
+            }
+        }
+        
+        public static string Language_syc {
+            get {
+                return ResourceManager.GetString("Language_syc", resourceCulture);
+            }
+        }
+        
+        public static string Language_syr {
+            get {
+                return ResourceManager.GetString("Language_syr", resourceCulture);
+            }
+        }
+        
+        public static string Language_tah {
+            get {
+                return ResourceManager.GetString("Language_tah", resourceCulture);
+            }
+        }
+        
+        public static string Language_tai {
+            get {
+                return ResourceManager.GetString("Language_tai", resourceCulture);
+            }
+        }
+        
+        public static string Language_tam {
+            get {
+                return ResourceManager.GetString("Language_tam", resourceCulture);
+            }
+        }
+        
+        public static string Language_tat {
+            get {
+                return ResourceManager.GetString("Language_tat", resourceCulture);
+            }
+        }
+        
+        public static string Language_tel {
+            get {
+                return ResourceManager.GetString("Language_tel", resourceCulture);
+            }
+        }
+        
+        public static string Language_tem {
+            get {
+                return ResourceManager.GetString("Language_tem", resourceCulture);
+            }
+        }
+        
+        public static string Language_ter {
+            get {
+                return ResourceManager.GetString("Language_ter", resourceCulture);
+            }
+        }
+        
+        public static string Language_tet {
+            get {
+                return ResourceManager.GetString("Language_tet", resourceCulture);
+            }
+        }
+        
+        public static string Language_tgk {
+            get {
+                return ResourceManager.GetString("Language_tgk", resourceCulture);
+            }
+        }
+        
+        public static string Language_tgl {
+            get {
+                return ResourceManager.GetString("Language_tgl", resourceCulture);
+            }
+        }
+        
+        public static string Language_tha {
+            get {
+                return ResourceManager.GetString("Language_tha", resourceCulture);
+            }
+        }
+        
+        public static string Language_tib {
+            get {
+                return ResourceManager.GetString("Language_tib", resourceCulture);
+            }
+        }
+        
+        public static string Language_tig {
+            get {
+                return ResourceManager.GetString("Language_tig", resourceCulture);
+            }
+        }
+        
+        public static string Language_tir {
+            get {
+                return ResourceManager.GetString("Language_tir", resourceCulture);
+            }
+        }
+        
+        public static string Language_tiv {
+            get {
+                return ResourceManager.GetString("Language_tiv", resourceCulture);
+            }
+        }
+        
+        public static string Language_tkl {
+            get {
+                return ResourceManager.GetString("Language_tkl", resourceCulture);
+            }
+        }
+        
+        public static string Language_tlh {
+            get {
+                return ResourceManager.GetString("Language_tlh", resourceCulture);
+            }
+        }
+        
+        public static string Language_tli {
+            get {
+                return ResourceManager.GetString("Language_tli", resourceCulture);
+            }
+        }
+        
+        public static string Language_tmh {
+            get {
+                return ResourceManager.GetString("Language_tmh", resourceCulture);
+            }
+        }
+        
+        public static string Language_tog {
+            get {
+                return ResourceManager.GetString("Language_tog", resourceCulture);
+            }
+        }
+        
+        public static string Language_ton {
+            get {
+                return ResourceManager.GetString("Language_ton", resourceCulture);
+            }
+        }
+        
+        public static string Language_tpi {
+            get {
+                return ResourceManager.GetString("Language_tpi", resourceCulture);
+            }
+        }
+        
+        public static string Language_tsi {
+            get {
+                return ResourceManager.GetString("Language_tsi", resourceCulture);
+            }
+        }
+        
+        public static string Language_tsn {
+            get {
+                return ResourceManager.GetString("Language_tsn", resourceCulture);
+            }
+        }
+        
+        public static string Language_tso {
+            get {
+                return ResourceManager.GetString("Language_tso", resourceCulture);
+            }
+        }
+        
+        public static string Language_tuk {
+            get {
+                return ResourceManager.GetString("Language_tuk", resourceCulture);
+            }
+        }
+        
+        public static string Language_tum {
+            get {
+                return ResourceManager.GetString("Language_tum", resourceCulture);
+            }
+        }
+        
+        public static string Language_tup {
+            get {
+                return ResourceManager.GetString("Language_tup", resourceCulture);
+            }
+        }
+        
+        public static string Language_tur {
+            get {
+                return ResourceManager.GetString("Language_tur", resourceCulture);
+            }
+        }
+        
+        public static string Language_tut {
+            get {
+                return ResourceManager.GetString("Language_tut", resourceCulture);
+            }
+        }
+        
+        public static string Language_tvl {
+            get {
+                return ResourceManager.GetString("Language_tvl", resourceCulture);
+            }
+        }
+        
+        public static string Language_twi {
+            get {
+                return ResourceManager.GetString("Language_twi", resourceCulture);
+            }
+        }
+        
+        public static string Language_tyv {
+            get {
+                return ResourceManager.GetString("Language_tyv", resourceCulture);
+            }
+        }
+        
+        public static string Language_udm {
+            get {
+                return ResourceManager.GetString("Language_udm", resourceCulture);
+            }
+        }
+        
+        public static string Language_uga {
+            get {
+                return ResourceManager.GetString("Language_uga", resourceCulture);
+            }
+        }
+        
+        public static string Language_uig {
+            get {
+                return ResourceManager.GetString("Language_uig", resourceCulture);
+            }
+        }
+        
+        public static string Language_ukr {
+            get {
+                return ResourceManager.GetString("Language_ukr", resourceCulture);
+            }
+        }
+        
+        public static string Language_umb {
+            get {
+                return ResourceManager.GetString("Language_umb", resourceCulture);
+            }
+        }
+        
+        public static string Language_und {
+            get {
+                return ResourceManager.GetString("Language_und", resourceCulture);
+            }
+        }
+        
+        public static string Language_urd {
+            get {
+                return ResourceManager.GetString("Language_urd", resourceCulture);
+            }
+        }
+        
+        public static string Language_uzb {
+            get {
+                return ResourceManager.GetString("Language_uzb", resourceCulture);
+            }
+        }
+        
+        public static string Language_vai {
+            get {
+                return ResourceManager.GetString("Language_vai", resourceCulture);
+            }
+        }
+        
+        public static string Language_ven {
+            get {
+                return ResourceManager.GetString("Language_ven", resourceCulture);
+            }
+        }
+        
+        public static string Language_vie {
+            get {
+                return ResourceManager.GetString("Language_vie", resourceCulture);
+            }
+        }
+        
+        public static string Language_vol {
+            get {
+                return ResourceManager.GetString("Language_vol", resourceCulture);
+            }
+        }
+        
+        public static string Language_vot {
+            get {
+                return ResourceManager.GetString("Language_vot", resourceCulture);
+            }
+        }
+        
+        public static string Language_wak {
+            get {
+                return ResourceManager.GetString("Language_wak", resourceCulture);
+            }
+        }
+        
+        public static string Language_wal {
+            get {
+                return ResourceManager.GetString("Language_wal", resourceCulture);
+            }
+        }
+        
+        public static string Language_war {
+            get {
+                return ResourceManager.GetString("Language_war", resourceCulture);
+            }
+        }
+        
+        public static string Language_was {
+            get {
+                return ResourceManager.GetString("Language_was", resourceCulture);
+            }
+        }
+        
+        public static string Language_wel {
+            get {
+                return ResourceManager.GetString("Language_wel", resourceCulture);
+            }
+        }
+        
+        public static string Language_wen {
+            get {
+                return ResourceManager.GetString("Language_wen", resourceCulture);
+            }
+        }
+        
+        public static string Language_wln {
+            get {
+                return ResourceManager.GetString("Language_wln", resourceCulture);
+            }
+        }
+        
+        public static string Language_wol {
+            get {
+                return ResourceManager.GetString("Language_wol", resourceCulture);
+            }
+        }
+        
+        public static string Language_xal {
+            get {
+                return ResourceManager.GetString("Language_xal", resourceCulture);
+            }
+        }
+        
+        public static string Language_xho {
+            get {
+                return ResourceManager.GetString("Language_xho", resourceCulture);
+            }
+        }
+        
+        public static string Language_yao {
+            get {
+                return ResourceManager.GetString("Language_yao", resourceCulture);
+            }
+        }
+        
+        public static string Language_yap {
+            get {
+                return ResourceManager.GetString("Language_yap", resourceCulture);
+            }
+        }
+        
+        public static string Language_yid {
+            get {
+                return ResourceManager.GetString("Language_yid", resourceCulture);
+            }
+        }
+        
+        public static string Language_yor {
+            get {
+                return ResourceManager.GetString("Language_yor", resourceCulture);
+            }
+        }
+        
+        public static string Language_ypk {
+            get {
+                return ResourceManager.GetString("Language_ypk", resourceCulture);
+            }
+        }
+        
+        public static string Language_zap {
+            get {
+                return ResourceManager.GetString("Language_zap", resourceCulture);
+            }
+        }
+        
+        public static string Language_zbl {
+            get {
+                return ResourceManager.GetString("Language_zbl", resourceCulture);
+            }
+        }
+        
+        public static string Language_zen {
+            get {
+                return ResourceManager.GetString("Language_zen", resourceCulture);
+            }
+        }
+        
+        public static string Language_zgh {
+            get {
+                return ResourceManager.GetString("Language_zgh", resourceCulture);
+            }
+        }
+        
+        public static string Language_zha {
+            get {
+                return ResourceManager.GetString("Language_zha", resourceCulture);
+            }
+        }
+        
+        public static string Language_znd {
+            get {
+                return ResourceManager.GetString("Language_znd", resourceCulture);
+            }
+        }
+        
+        public static string Language_zul {
+            get {
+                return ResourceManager.GetString("Language_zul", resourceCulture);
+            }
+        }
+        
+        public static string Language_zun {
+            get {
+                return ResourceManager.GetString("Language_zun", resourceCulture);
+            }
+        }
+        
+        public static string Language_zxx {
+            get {
+                return ResourceManager.GetString("Language_zxx", resourceCulture);
+            }
+        }
+        
+        public static string Language_zza {
+            get {
+                return ResourceManager.GetString("Language_zza", resourceCulture);
+            }
+        }
     }
 }

@@ -3482,4 +3482,1462 @@ Probadores:
     <data name="ReleaseType_SaaS" xml:space="preserve">
         <value>SaaS (Software como Servicio)</value>
     </data>
+    <data name="Language_aar" xml:space="preserve">
+        <value>Afar</value>
+    </data>
+    <data name="Language_abk" xml:space="preserve">
+        <value>Abjasio</value>
+    </data>
+    <data name="Language_ace" xml:space="preserve">
+        <value>Achinés</value>
+    </data>
+    <data name="Language_ach" xml:space="preserve">
+        <value>Acoli</value>
+    </data>
+    <data name="Language_ada" xml:space="preserve">
+        <value>Adangme</value>
+    </data>
+    <data name="Language_ady" xml:space="preserve">
+        <value>Adigué</value>
+    </data>
+    <data name="Language_afa" xml:space="preserve">
+        <value>Lenguas afroasiáticas</value>
+    </data>
+    <data name="Language_afh" xml:space="preserve">
+        <value>Afrihili</value>
+    </data>
+    <data name="Language_afr" xml:space="preserve">
+        <value>Afrikáans</value>
+    </data>
+    <data name="Language_ain" xml:space="preserve">
+        <value>Ainu</value>
+    </data>
+    <data name="Language_aka" xml:space="preserve">
+        <value>Akan</value>
+    </data>
+    <data name="Language_akk" xml:space="preserve">
+        <value>Acadio</value>
+    </data>
+    <data name="Language_alb" xml:space="preserve">
+        <value>Albanés</value>
+    </data>
+    <data name="Language_ale" xml:space="preserve">
+        <value>Aleutiano</value>
+    </data>
+    <data name="Language_alg" xml:space="preserve">
+        <value>Lenguas algonquinas</value>
+    </data>
+    <data name="Language_alt" xml:space="preserve">
+        <value>Altái meridional</value>
+    </data>
+    <data name="Language_amh" xml:space="preserve">
+        <value>Amhárico</value>
+    </data>
+    <data name="Language_ang" xml:space="preserve">
+        <value>Inglés antiguo</value>
+    </data>
+    <data name="Language_anp" xml:space="preserve">
+        <value>Angika</value>
+    </data>
+    <data name="Language_apa" xml:space="preserve">
+        <value>Lenguas apaches</value>
+    </data>
+    <data name="Language_ara" xml:space="preserve">
+        <value>Árabe</value>
+    </data>
+    <data name="Language_arc" xml:space="preserve">
+        <value>Arameo oficial</value>
+    </data>
+    <data name="Language_arg" xml:space="preserve">
+        <value>Aragonés</value>
+    </data>
+    <data name="Language_arm" xml:space="preserve">
+        <value>Armenio</value>
+    </data>
+    <data name="Language_arn" xml:space="preserve">
+        <value>Mapudungun</value>
+    </data>
+    <data name="Language_arp" xml:space="preserve">
+        <value>Arapaho</value>
+    </data>
+    <data name="Language_art" xml:space="preserve">
+        <value>Lenguas artificiales</value>
+    </data>
+    <data name="Language_arw" xml:space="preserve">
+        <value>Arahuaco</value>
+    </data>
+    <data name="Language_asm" xml:space="preserve">
+        <value>Asamés</value>
+    </data>
+    <data name="Language_ast" xml:space="preserve">
+        <value>Asturiano</value>
+    </data>
+    <data name="Language_ath" xml:space="preserve">
+        <value>Lenguas atabaskas</value>
+    </data>
+    <data name="Language_aus" xml:space="preserve">
+        <value>Lenguas australianas</value>
+    </data>
+    <data name="Language_ava" xml:space="preserve">
+        <value>Avar</value>
+    </data>
+    <data name="Language_ave" xml:space="preserve">
+        <value>Avéstico</value>
+    </data>
+    <data name="Language_awa" xml:space="preserve">
+        <value>Avadhi</value>
+    </data>
+    <data name="Language_aym" xml:space="preserve">
+        <value>Aimara</value>
+    </data>
+    <data name="Language_aze" xml:space="preserve">
+        <value>Azerí</value>
+    </data>
+    <data name="Language_bad" xml:space="preserve">
+        <value>Lenguas banda</value>
+    </data>
+    <data name="Language_bai" xml:space="preserve">
+        <value>Lenguas bamileke</value>
+    </data>
+    <data name="Language_bak" xml:space="preserve">
+        <value>Bashkir</value>
+    </data>
+    <data name="Language_bal" xml:space="preserve">
+        <value>Baluchi</value>
+    </data>
+    <data name="Language_bam" xml:space="preserve">
+        <value>Bambara</value>
+    </data>
+    <data name="Language_ban" xml:space="preserve">
+        <value>Balinés</value>
+    </data>
+    <data name="Language_baq" xml:space="preserve">
+        <value>Vasco</value>
+    </data>
+    <data name="Language_bas" xml:space="preserve">
+        <value>Basa</value>
+    </data>
+    <data name="Language_bat" xml:space="preserve">
+        <value>Lenguas bálticas</value>
+    </data>
+    <data name="Language_bej" xml:space="preserve">
+        <value>Beja</value>
+    </data>
+    <data name="Language_bel" xml:space="preserve">
+        <value>Bielorruso</value>
+    </data>
+    <data name="Language_bem" xml:space="preserve">
+        <value>Bemba</value>
+    </data>
+    <data name="Language_ben" xml:space="preserve">
+        <value>Bengalí</value>
+    </data>
+    <data name="Language_ber" xml:space="preserve">
+        <value>Lenguas bereberes</value>
+    </data>
+    <data name="Language_bho" xml:space="preserve">
+        <value>Bhojpuri</value>
+    </data>
+    <data name="Language_bih" xml:space="preserve">
+        <value>Lenguas bihari</value>
+    </data>
+    <data name="Language_bik" xml:space="preserve">
+        <value>Bikol</value>
+    </data>
+    <data name="Language_bin" xml:space="preserve">
+        <value>Bini</value>
+    </data>
+    <data name="Language_bis" xml:space="preserve">
+        <value>Bislama</value>
+    </data>
+    <data name="Language_bla" xml:space="preserve">
+        <value>Siksika</value>
+    </data>
+    <data name="Language_bnt" xml:space="preserve">
+        <value>Lenguas bantúes</value>
+    </data>
+    <data name="Language_bos" xml:space="preserve">
+        <value>Bosnio</value>
+    </data>
+    <data name="Language_bra" xml:space="preserve">
+        <value>Braj</value>
+    </data>
+    <data name="Language_bre" xml:space="preserve">
+        <value>Bretón</value>
+    </data>
+    <data name="Language_btk" xml:space="preserve">
+        <value>Lenguas batak</value>
+    </data>
+    <data name="Language_bua" xml:space="preserve">
+        <value>Buriato</value>
+    </data>
+    <data name="Language_bug" xml:space="preserve">
+        <value>Buginés</value>
+    </data>
+    <data name="Language_bul" xml:space="preserve">
+        <value>Búlgaro</value>
+    </data>
+    <data name="Language_bur" xml:space="preserve">
+        <value>Birmano</value>
+    </data>
+    <data name="Language_byn" xml:space="preserve">
+        <value>Blin</value>
+    </data>
+    <data name="Language_cad" xml:space="preserve">
+        <value>Caddo</value>
+    </data>
+    <data name="Language_cai" xml:space="preserve">
+        <value>Lenguas indias centroamericanas</value>
+    </data>
+    <data name="Language_car" xml:space="preserve">
+        <value>Caribe galibi</value>
+    </data>
+    <data name="Language_cat" xml:space="preserve">
+        <value>Catalán</value>
+    </data>
+    <data name="Language_cau" xml:space="preserve">
+        <value>Lenguas caucásicas</value>
+    </data>
+    <data name="Language_ceb" xml:space="preserve">
+        <value>Cebuano</value>
+    </data>
+    <data name="Language_cel" xml:space="preserve">
+        <value>Lenguas celtas</value>
+    </data>
+    <data name="Language_cha" xml:space="preserve">
+        <value>Chamorro</value>
+    </data>
+    <data name="Language_chb" xml:space="preserve">
+        <value>Chibcha</value>
+    </data>
+    <data name="Language_che" xml:space="preserve">
+        <value>Checheno</value>
+    </data>
+    <data name="Language_chg" xml:space="preserve">
+        <value>Chagatai</value>
+    </data>
+    <data name="Language_chi" xml:space="preserve">
+        <value>Chino</value>
+    </data>
+    <data name="Language_chk" xml:space="preserve">
+        <value>Chuukés</value>
+    </data>
+    <data name="Language_chm" xml:space="preserve">
+        <value>Mari</value>
+    </data>
+    <data name="Language_chn" xml:space="preserve">
+        <value>Jerga chinook</value>
+    </data>
+    <data name="Language_cho" xml:space="preserve">
+        <value>Choctaw</value>
+    </data>
+    <data name="Language_chp" xml:space="preserve">
+        <value>Chipewyan</value>
+    </data>
+    <data name="Language_chr" xml:space="preserve">
+        <value>Cherokee</value>
+    </data>
+    <data name="Language_chu" xml:space="preserve">
+        <value>Eslavo eclesiástico</value>
+    </data>
+    <data name="Language_chv" xml:space="preserve">
+        <value>Chuvasio</value>
+    </data>
+    <data name="Language_chy" xml:space="preserve">
+        <value>Cheyenne</value>
+    </data>
+    <data name="Language_cmc" xml:space="preserve">
+        <value>Lenguas chámicas</value>
+    </data>
+    <data name="Language_cop" xml:space="preserve">
+        <value>Copto</value>
+    </data>
+    <data name="Language_cor" xml:space="preserve">
+        <value>Córnico</value>
+    </data>
+    <data name="Language_cos" xml:space="preserve">
+        <value>Corso</value>
+    </data>
+    <data name="Language_cpe" xml:space="preserve">
+        <value>Criollos y pidgins basados en inglés</value>
+    </data>
+    <data name="Language_cpf" xml:space="preserve">
+        <value>Criollos y pidgins basados en francés</value>
+    </data>
+    <data name="Language_cpp" xml:space="preserve">
+        <value>Criollos y pidgins basados en portugués</value>
+    </data>
+    <data name="Language_cre" xml:space="preserve">
+        <value>Cree</value>
+    </data>
+    <data name="Language_crh" xml:space="preserve">
+        <value>Tártaro de Crimea</value>
+    </data>
+    <data name="Language_crp" xml:space="preserve">
+        <value>Criollos y pidgins</value>
+    </data>
+    <data name="Language_csb" xml:space="preserve">
+        <value>Casubio</value>
+    </data>
+    <data name="Language_cus" xml:space="preserve">
+        <value>Lenguas cusíticas</value>
+    </data>
+    <data name="Language_cze" xml:space="preserve">
+        <value>Checo</value>
+    </data>
+    <data name="Language_dak" xml:space="preserve">
+        <value>Dakota</value>
+    </data>
+    <data name="Language_dan" xml:space="preserve">
+        <value>Danés</value>
+    </data>
+    <data name="Language_dar" xml:space="preserve">
+        <value>Dargva</value>
+    </data>
+    <data name="Language_day" xml:space="preserve">
+        <value>Lenguas dayak terrestres</value>
+    </data>
+    <data name="Language_del" xml:space="preserve">
+        <value>Delaware</value>
+    </data>
+    <data name="Language_den" xml:space="preserve">
+        <value>Slave</value>
+    </data>
+    <data name="Language_dgr" xml:space="preserve">
+        <value>Dogrib</value>
+    </data>
+    <data name="Language_din" xml:space="preserve">
+        <value>Dinka</value>
+    </data>
+    <data name="Language_div" xml:space="preserve">
+        <value>Dhivehi</value>
+    </data>
+    <data name="Language_doi" xml:space="preserve">
+        <value>Dogri</value>
+    </data>
+    <data name="Language_dra" xml:space="preserve">
+        <value>Lenguas drávidas</value>
+    </data>
+    <data name="Language_dsb" xml:space="preserve">
+        <value>Bajo sorbio</value>
+    </data>
+    <data name="Language_dua" xml:space="preserve">
+        <value>Duala</value>
+    </data>
+    <data name="Language_dum" xml:space="preserve">
+        <value>Neerlandés medio</value>
+    </data>
+    <data name="Language_dut" xml:space="preserve">
+        <value>Neerlandés</value>
+    </data>
+    <data name="Language_dyu" xml:space="preserve">
+        <value>Dyula</value>
+    </data>
+    <data name="Language_dzo" xml:space="preserve">
+        <value>Dzongkha</value>
+    </data>
+    <data name="Language_efi" xml:space="preserve">
+        <value>Efik</value>
+    </data>
+    <data name="Language_egy" xml:space="preserve">
+        <value>Egipcio</value>
+    </data>
+    <data name="Language_eka" xml:space="preserve">
+        <value>Ekajuk</value>
+    </data>
+    <data name="Language_elx" xml:space="preserve">
+        <value>Elamita</value>
+    </data>
+    <data name="Language_eng" xml:space="preserve">
+        <value>Inglés</value>
+    </data>
+    <data name="Language_enm" xml:space="preserve">
+        <value>Inglés medio</value>
+    </data>
+    <data name="Language_epo" xml:space="preserve">
+        <value>Esperanto</value>
+    </data>
+    <data name="Language_est" xml:space="preserve">
+        <value>Estonio</value>
+    </data>
+    <data name="Language_ewe" xml:space="preserve">
+        <value>Ewe</value>
+    </data>
+    <data name="Language_ewo" xml:space="preserve">
+        <value>Ewondo</value>
+    </data>
+    <data name="Language_fan" xml:space="preserve">
+        <value>Fang</value>
+    </data>
+    <data name="Language_fao" xml:space="preserve">
+        <value>Feroés</value>
+    </data>
+    <data name="Language_fat" xml:space="preserve">
+        <value>Fanti</value>
+    </data>
+    <data name="Language_fij" xml:space="preserve">
+        <value>Fiyiano</value>
+    </data>
+    <data name="Language_fil" xml:space="preserve">
+        <value>Filipino</value>
+    </data>
+    <data name="Language_fin" xml:space="preserve">
+        <value>Finés</value>
+    </data>
+    <data name="Language_fiu" xml:space="preserve">
+        <value>Lenguas fino-ugrias</value>
+    </data>
+    <data name="Language_fon" xml:space="preserve">
+        <value>Fon</value>
+    </data>
+    <data name="Language_fre" xml:space="preserve">
+        <value>Francés</value>
+    </data>
+    <data name="Language_frm" xml:space="preserve">
+        <value>Francés medio</value>
+    </data>
+    <data name="Language_fro" xml:space="preserve">
+        <value>Francés antiguo</value>
+    </data>
+    <data name="Language_frr" xml:space="preserve">
+        <value>Frisón septentrional</value>
+    </data>
+    <data name="Language_frs" xml:space="preserve">
+        <value>Frisón oriental</value>
+    </data>
+    <data name="Language_fry" xml:space="preserve">
+        <value>Frisón occidental</value>
+    </data>
+    <data name="Language_ful" xml:space="preserve">
+        <value>Fula</value>
+    </data>
+    <data name="Language_fur" xml:space="preserve">
+        <value>Friulano</value>
+    </data>
+    <data name="Language_gaa" xml:space="preserve">
+        <value>Ga</value>
+    </data>
+    <data name="Language_gay" xml:space="preserve">
+        <value>Gayo</value>
+    </data>
+    <data name="Language_gba" xml:space="preserve">
+        <value>Gbaya</value>
+    </data>
+    <data name="Language_gem" xml:space="preserve">
+        <value>Lenguas germánicas</value>
+    </data>
+    <data name="Language_geo" xml:space="preserve">
+        <value>Georgiano</value>
+    </data>
+    <data name="Language_ger" xml:space="preserve">
+        <value>Alemán</value>
+    </data>
+    <data name="Language_gez" xml:space="preserve">
+        <value>Ge'ez</value>
+    </data>
+    <data name="Language_gil" xml:space="preserve">
+        <value>Gilbertés</value>
+    </data>
+    <data name="Language_gla" xml:space="preserve">
+        <value>Gaélico escocés</value>
+    </data>
+    <data name="Language_gle" xml:space="preserve">
+        <value>Irlandés</value>
+    </data>
+    <data name="Language_glg" xml:space="preserve">
+        <value>Gallego</value>
+    </data>
+    <data name="Language_glv" xml:space="preserve">
+        <value>Manés</value>
+    </data>
+    <data name="Language_gmh" xml:space="preserve">
+        <value>Alemán medio alto</value>
+    </data>
+    <data name="Language_goh" xml:space="preserve">
+        <value>Alemán antiguo alto</value>
+    </data>
+    <data name="Language_gon" xml:space="preserve">
+        <value>Gondi</value>
+    </data>
+    <data name="Language_gor" xml:space="preserve">
+        <value>Gorontalo</value>
+    </data>
+    <data name="Language_got" xml:space="preserve">
+        <value>Gótico</value>
+    </data>
+    <data name="Language_grb" xml:space="preserve">
+        <value>Grebo</value>
+    </data>
+    <data name="Language_grc" xml:space="preserve">
+        <value>Griego antiguo</value>
+    </data>
+    <data name="Language_gre" xml:space="preserve">
+        <value>Griego moderno</value>
+    </data>
+    <data name="Language_grn" xml:space="preserve">
+        <value>Guaraní</value>
+    </data>
+    <data name="Language_gsw" xml:space="preserve">
+        <value>Alemán suizo</value>
+    </data>
+    <data name="Language_guj" xml:space="preserve">
+        <value>Guyaratí</value>
+    </data>
+    <data name="Language_gwi" xml:space="preserve">
+        <value>Gwich'in</value>
+    </data>
+    <data name="Language_hai" xml:space="preserve">
+        <value>Haida</value>
+    </data>
+    <data name="Language_hat" xml:space="preserve">
+        <value>Haitiano</value>
+    </data>
+    <data name="Language_hau" xml:space="preserve">
+        <value>Hausa</value>
+    </data>
+    <data name="Language_haw" xml:space="preserve">
+        <value>Hawaiano</value>
+    </data>
+    <data name="Language_heb" xml:space="preserve">
+        <value>Hebreo</value>
+    </data>
+    <data name="Language_her" xml:space="preserve">
+        <value>Herero</value>
+    </data>
+    <data name="Language_hil" xml:space="preserve">
+        <value>Hiligaynon</value>
+    </data>
+    <data name="Language_him" xml:space="preserve">
+        <value>Lenguas himachalíes</value>
+    </data>
+    <data name="Language_hin" xml:space="preserve">
+        <value>Hindi</value>
+    </data>
+    <data name="Language_hit" xml:space="preserve">
+        <value>Hitita</value>
+    </data>
+    <data name="Language_hmn" xml:space="preserve">
+        <value>Hmong</value>
+    </data>
+    <data name="Language_hmo" xml:space="preserve">
+        <value>Hiri motu</value>
+    </data>
+    <data name="Language_hrv" xml:space="preserve">
+        <value>Croata</value>
+    </data>
+    <data name="Language_hsb" xml:space="preserve">
+        <value>Alto sorbio</value>
+    </data>
+    <data name="Language_hun" xml:space="preserve">
+        <value>Húngaro</value>
+    </data>
+    <data name="Language_hup" xml:space="preserve">
+        <value>Hupa</value>
+    </data>
+    <data name="Language_iba" xml:space="preserve">
+        <value>Iban</value>
+    </data>
+    <data name="Language_ibo" xml:space="preserve">
+        <value>Igbo</value>
+    </data>
+    <data name="Language_ice" xml:space="preserve">
+        <value>Islandés</value>
+    </data>
+    <data name="Language_ido" xml:space="preserve">
+        <value>Ido</value>
+    </data>
+    <data name="Language_iii" xml:space="preserve">
+        <value>Yi de Sichuán</value>
+    </data>
+    <data name="Language_ijo" xml:space="preserve">
+        <value>Lenguas ijo</value>
+    </data>
+    <data name="Language_iku" xml:space="preserve">
+        <value>Inuktitut</value>
+    </data>
+    <data name="Language_ile" xml:space="preserve">
+        <value>Interlingue</value>
+    </data>
+    <data name="Language_ilo" xml:space="preserve">
+        <value>Ilocano</value>
+    </data>
+    <data name="Language_ina" xml:space="preserve">
+        <value>Interlingua</value>
+    </data>
+    <data name="Language_inc" xml:space="preserve">
+        <value>Lenguas índicas</value>
+    </data>
+    <data name="Language_ind" xml:space="preserve">
+        <value>Indonesio</value>
+    </data>
+    <data name="Language_ine" xml:space="preserve">
+        <value>Lenguas indoeuropeas</value>
+    </data>
+    <data name="Language_inh" xml:space="preserve">
+        <value>Ingush</value>
+    </data>
+    <data name="Language_ipk" xml:space="preserve">
+        <value>Inupiaq</value>
+    </data>
+    <data name="Language_ira" xml:space="preserve">
+        <value>Lenguas iranias</value>
+    </data>
+    <data name="Language_iro" xml:space="preserve">
+        <value>Lenguas iroquesas</value>
+    </data>
+    <data name="Language_ita" xml:space="preserve">
+        <value>Italiano</value>
+    </data>
+    <data name="Language_jav" xml:space="preserve">
+        <value>Javanés</value>
+    </data>
+    <data name="Language_jbo" xml:space="preserve">
+        <value>Lojban</value>
+    </data>
+    <data name="Language_jpn" xml:space="preserve">
+        <value>Japonés</value>
+    </data>
+    <data name="Language_jpr" xml:space="preserve">
+        <value>Judeo-persa</value>
+    </data>
+    <data name="Language_jrb" xml:space="preserve">
+        <value>Judeo-árabe</value>
+    </data>
+    <data name="Language_kaa" xml:space="preserve">
+        <value>Karakalpak</value>
+    </data>
+    <data name="Language_kab" xml:space="preserve">
+        <value>Cabilio</value>
+    </data>
+    <data name="Language_kac" xml:space="preserve">
+        <value>Kachin</value>
+    </data>
+    <data name="Language_kal" xml:space="preserve">
+        <value>Groenlandés</value>
+    </data>
+    <data name="Language_kam" xml:space="preserve">
+        <value>Kamba</value>
+    </data>
+    <data name="Language_kan" xml:space="preserve">
+        <value>Canarés</value>
+    </data>
+    <data name="Language_kar" xml:space="preserve">
+        <value>Lenguas karen</value>
+    </data>
+    <data name="Language_kas" xml:space="preserve">
+        <value>Cachemiro</value>
+    </data>
+    <data name="Language_kau" xml:space="preserve">
+        <value>Kanuri</value>
+    </data>
+    <data name="Language_kaw" xml:space="preserve">
+        <value>Kawi</value>
+    </data>
+    <data name="Language_kaz" xml:space="preserve">
+        <value>Kazajo</value>
+    </data>
+    <data name="Language_kbd" xml:space="preserve">
+        <value>Kabardiano</value>
+    </data>
+    <data name="Language_kha" xml:space="preserve">
+        <value>Khasi</value>
+    </data>
+    <data name="Language_khi" xml:space="preserve">
+        <value>Lenguas joisanas</value>
+    </data>
+    <data name="Language_khm" xml:space="preserve">
+        <value>Jemer central</value>
+    </data>
+    <data name="Language_kho" xml:space="preserve">
+        <value>Kotanés</value>
+    </data>
+    <data name="Language_kik" xml:space="preserve">
+        <value>Kikuyu</value>
+    </data>
+    <data name="Language_kin" xml:space="preserve">
+        <value>Kinyarwanda</value>
+    </data>
+    <data name="Language_kir" xml:space="preserve">
+        <value>Kirguís</value>
+    </data>
+    <data name="Language_kmb" xml:space="preserve">
+        <value>Kimbundu</value>
+    </data>
+    <data name="Language_kok" xml:space="preserve">
+        <value>Konkani</value>
+    </data>
+    <data name="Language_kom" xml:space="preserve">
+        <value>Komi</value>
+    </data>
+    <data name="Language_kon" xml:space="preserve">
+        <value>Kongo</value>
+    </data>
+    <data name="Language_kor" xml:space="preserve">
+        <value>Coreano</value>
+    </data>
+    <data name="Language_kos" xml:space="preserve">
+        <value>Kosraeano</value>
+    </data>
+    <data name="Language_kpe" xml:space="preserve">
+        <value>Kpelle</value>
+    </data>
+    <data name="Language_krc" xml:space="preserve">
+        <value>Karachái-bálkaro</value>
+    </data>
+    <data name="Language_krl" xml:space="preserve">
+        <value>Carelio</value>
+    </data>
+    <data name="Language_kro" xml:space="preserve">
+        <value>Lenguas kru</value>
+    </data>
+    <data name="Language_kru" xml:space="preserve">
+        <value>Kurukh</value>
+    </data>
+    <data name="Language_kua" xml:space="preserve">
+        <value>Kuanyama</value>
+    </data>
+    <data name="Language_kum" xml:space="preserve">
+        <value>Kumyk</value>
+    </data>
+    <data name="Language_kur" xml:space="preserve">
+        <value>Kurdo</value>
+    </data>
+    <data name="Language_kut" xml:space="preserve">
+        <value>Kutenai</value>
+    </data>
+    <data name="Language_lad" xml:space="preserve">
+        <value>Ladino</value>
+    </data>
+    <data name="Language_lah" xml:space="preserve">
+        <value>Lahnda</value>
+    </data>
+    <data name="Language_lam" xml:space="preserve">
+        <value>Lamba</value>
+    </data>
+    <data name="Language_lao" xml:space="preserve">
+        <value>Lao</value>
+    </data>
+    <data name="Language_lat" xml:space="preserve">
+        <value>Latín</value>
+    </data>
+    <data name="Language_lav" xml:space="preserve">
+        <value>Letón</value>
+    </data>
+    <data name="Language_lez" xml:space="preserve">
+        <value>Lezgiano</value>
+    </data>
+    <data name="Language_lim" xml:space="preserve">
+        <value>Limburgués</value>
+    </data>
+    <data name="Language_lin" xml:space="preserve">
+        <value>Lingala</value>
+    </data>
+    <data name="Language_lit" xml:space="preserve">
+        <value>Lituano</value>
+    </data>
+    <data name="Language_lol" xml:space="preserve">
+        <value>Mongo</value>
+    </data>
+    <data name="Language_loz" xml:space="preserve">
+        <value>Lozi</value>
+    </data>
+    <data name="Language_ltz" xml:space="preserve">
+        <value>Luxemburgués</value>
+    </data>
+    <data name="Language_lua" xml:space="preserve">
+        <value>Luba-lulua</value>
+    </data>
+    <data name="Language_lub" xml:space="preserve">
+        <value>Luba-katanga</value>
+    </data>
+    <data name="Language_lug" xml:space="preserve">
+        <value>Ganda</value>
+    </data>
+    <data name="Language_lui" xml:space="preserve">
+        <value>Luiseño</value>
+    </data>
+    <data name="Language_lun" xml:space="preserve">
+        <value>Lunda</value>
+    </data>
+    <data name="Language_luo" xml:space="preserve">
+        <value>Luo</value>
+    </data>
+    <data name="Language_lus" xml:space="preserve">
+        <value>Lushai</value>
+    </data>
+    <data name="Language_mac" xml:space="preserve">
+        <value>Macedonio</value>
+    </data>
+    <data name="Language_mad" xml:space="preserve">
+        <value>Madurés</value>
+    </data>
+    <data name="Language_mag" xml:space="preserve">
+        <value>Magahi</value>
+    </data>
+    <data name="Language_mah" xml:space="preserve">
+        <value>Marshalés</value>
+    </data>
+    <data name="Language_mai" xml:space="preserve">
+        <value>Maithili</value>
+    </data>
+    <data name="Language_mak" xml:space="preserve">
+        <value>Makasarés</value>
+    </data>
+    <data name="Language_mal" xml:space="preserve">
+        <value>Malayalam</value>
+    </data>
+    <data name="Language_man" xml:space="preserve">
+        <value>Mandingo</value>
+    </data>
+    <data name="Language_mao" xml:space="preserve">
+        <value>Maorí</value>
+    </data>
+    <data name="Language_map" xml:space="preserve">
+        <value>Lenguas austronesias</value>
+    </data>
+    <data name="Language_mar" xml:space="preserve">
+        <value>Maratí</value>
+    </data>
+    <data name="Language_mas" xml:space="preserve">
+        <value>Masái</value>
+    </data>
+    <data name="Language_may" xml:space="preserve">
+        <value>Malayo</value>
+    </data>
+    <data name="Language_mdf" xml:space="preserve">
+        <value>Moksha</value>
+    </data>
+    <data name="Language_mdr" xml:space="preserve">
+        <value>Mandar</value>
+    </data>
+    <data name="Language_men" xml:space="preserve">
+        <value>Mende</value>
+    </data>
+    <data name="Language_mga" xml:space="preserve">
+        <value>Irlandés medio</value>
+    </data>
+    <data name="Language_mic" xml:space="preserve">
+        <value>Mi'kmaq</value>
+    </data>
+    <data name="Language_min" xml:space="preserve">
+        <value>Minangkabau</value>
+    </data>
+    <data name="Language_mis" xml:space="preserve">
+        <value>Lenguas sin codificar</value>
+    </data>
+    <data name="Language_mkh" xml:space="preserve">
+        <value>Lenguas mon-jemer</value>
+    </data>
+    <data name="Language_mlg" xml:space="preserve">
+        <value>Malgache</value>
+    </data>
+    <data name="Language_mlt" xml:space="preserve">
+        <value>Maltés</value>
+    </data>
+    <data name="Language_mnc" xml:space="preserve">
+        <value>Manchú</value>
+    </data>
+    <data name="Language_mni" xml:space="preserve">
+        <value>Manipurí</value>
+    </data>
+    <data name="Language_mno" xml:space="preserve">
+        <value>Lenguas manobo</value>
+    </data>
+    <data name="Language_moh" xml:space="preserve">
+        <value>Mohawk</value>
+    </data>
+    <data name="Language_mon" xml:space="preserve">
+        <value>Mongol</value>
+    </data>
+    <data name="Language_mos" xml:space="preserve">
+        <value>Mossi</value>
+    </data>
+    <data name="Language_mul" xml:space="preserve">
+        <value>Lenguas múltiples</value>
+    </data>
+    <data name="Language_mun" xml:space="preserve">
+        <value>Lenguas munda</value>
+    </data>
+    <data name="Language_mus" xml:space="preserve">
+        <value>Creek</value>
+    </data>
+    <data name="Language_mwl" xml:space="preserve">
+        <value>Mirandés</value>
+    </data>
+    <data name="Language_mwr" xml:space="preserve">
+        <value>Marwari</value>
+    </data>
+    <data name="Language_myn" xml:space="preserve">
+        <value>Lenguas mayas</value>
+    </data>
+    <data name="Language_myv" xml:space="preserve">
+        <value>Erzya</value>
+    </data>
+    <data name="Language_nah" xml:space="preserve">
+        <value>Lenguas nahuas</value>
+    </data>
+    <data name="Language_nai" xml:space="preserve">
+        <value>Lenguas indias norteamericanas</value>
+    </data>
+    <data name="Language_nap" xml:space="preserve">
+        <value>Napolitano</value>
+    </data>
+    <data name="Language_nau" xml:space="preserve">
+        <value>Nauruano</value>
+    </data>
+    <data name="Language_nav" xml:space="preserve">
+        <value>Navajo</value>
+    </data>
+    <data name="Language_nbl" xml:space="preserve">
+        <value>Ndebele meridional</value>
+    </data>
+    <data name="Language_nde" xml:space="preserve">
+        <value>Ndebele septentrional</value>
+    </data>
+    <data name="Language_ndo" xml:space="preserve">
+        <value>Ndonga</value>
+    </data>
+    <data name="Language_nds" xml:space="preserve">
+        <value>Bajo alemán</value>
+    </data>
+    <data name="Language_nep" xml:space="preserve">
+        <value>Nepalí</value>
+    </data>
+    <data name="Language_new" xml:space="preserve">
+        <value>Nepal bhasa</value>
+    </data>
+    <data name="Language_nia" xml:space="preserve">
+        <value>Nias</value>
+    </data>
+    <data name="Language_nic" xml:space="preserve">
+        <value>Lenguas nígero-kordofanianas</value>
+    </data>
+    <data name="Language_niu" xml:space="preserve">
+        <value>Niueano</value>
+    </data>
+    <data name="Language_nno" xml:space="preserve">
+        <value>Noruego nynorsk</value>
+    </data>
+    <data name="Language_nob" xml:space="preserve">
+        <value>Noruego bokmål</value>
+    </data>
+    <data name="Language_nog" xml:space="preserve">
+        <value>Nogai</value>
+    </data>
+    <data name="Language_non" xml:space="preserve">
+        <value>Nórdico antiguo</value>
+    </data>
+    <data name="Language_nor" xml:space="preserve">
+        <value>Noruego</value>
+    </data>
+    <data name="Language_nqo" xml:space="preserve">
+        <value>N'Ko</value>
+    </data>
+    <data name="Language_nso" xml:space="preserve">
+        <value>Pedi</value>
+    </data>
+    <data name="Language_nub" xml:space="preserve">
+        <value>Lenguas nubias</value>
+    </data>
+    <data name="Language_nwc" xml:space="preserve">
+        <value>Newari clásico</value>
+    </data>
+    <data name="Language_nya" xml:space="preserve">
+        <value>Chichewa</value>
+    </data>
+    <data name="Language_nym" xml:space="preserve">
+        <value>Nyamwezi</value>
+    </data>
+    <data name="Language_nyn" xml:space="preserve">
+        <value>Nyankole</value>
+    </data>
+    <data name="Language_nyo" xml:space="preserve">
+        <value>Nyoro</value>
+    </data>
+    <data name="Language_nzi" xml:space="preserve">
+        <value>Nzima</value>
+    </data>
+    <data name="Language_oci" xml:space="preserve">
+        <value>Occitano</value>
+    </data>
+    <data name="Language_oji" xml:space="preserve">
+        <value>Ojibwa</value>
+    </data>
+    <data name="Language_ori" xml:space="preserve">
+        <value>Oriya</value>
+    </data>
+    <data name="Language_orm" xml:space="preserve">
+        <value>Oromo</value>
+    </data>
+    <data name="Language_osa" xml:space="preserve">
+        <value>Osage</value>
+    </data>
+    <data name="Language_oss" xml:space="preserve">
+        <value>Osetio</value>
+    </data>
+    <data name="Language_ota" xml:space="preserve">
+        <value>Turco otomano</value>
+    </data>
+    <data name="Language_oto" xml:space="preserve">
+        <value>Lenguas otomanas</value>
+    </data>
+    <data name="Language_paa" xml:space="preserve">
+        <value>Lenguas papúes</value>
+    </data>
+    <data name="Language_pag" xml:space="preserve">
+        <value>Pangasinán</value>
+    </data>
+    <data name="Language_pal" xml:space="preserve">
+        <value>Pahlavi</value>
+    </data>
+    <data name="Language_pam" xml:space="preserve">
+        <value>Pampanga</value>
+    </data>
+    <data name="Language_pan" xml:space="preserve">
+        <value>Panyabí</value>
+    </data>
+    <data name="Language_pap" xml:space="preserve">
+        <value>Papiamento</value>
+    </data>
+    <data name="Language_pau" xml:space="preserve">
+        <value>Palauano</value>
+    </data>
+    <data name="Language_peo" xml:space="preserve">
+        <value>Persa antiguo</value>
+    </data>
+    <data name="Language_per" xml:space="preserve">
+        <value>Persa</value>
+    </data>
+    <data name="Language_phi" xml:space="preserve">
+        <value>Lenguas filipinas</value>
+    </data>
+    <data name="Language_phn" xml:space="preserve">
+        <value>Fenicio</value>
+    </data>
+    <data name="Language_pli" xml:space="preserve">
+        <value>Pali</value>
+    </data>
+    <data name="Language_pol" xml:space="preserve">
+        <value>Polaco</value>
+    </data>
+    <data name="Language_pon" xml:space="preserve">
+        <value>Pohnpeiano</value>
+    </data>
+    <data name="Language_por" xml:space="preserve">
+        <value>Portugués</value>
+    </data>
+    <data name="Language_pra" xml:space="preserve">
+        <value>Lenguas prácritas</value>
+    </data>
+    <data name="Language_pro" xml:space="preserve">
+        <value>Provenzal antiguo</value>
+    </data>
+    <data name="Language_pus" xml:space="preserve">
+        <value>Pastún</value>
+    </data>
+    <data name="Language_qaaqtz" xml:space="preserve">
+        <value>Reservado para uso local</value>
+    </data>
+    <data name="Language_que" xml:space="preserve">
+        <value>Quechua</value>
+    </data>
+    <data name="Language_raj" xml:space="preserve">
+        <value>Rajasthani</value>
+    </data>
+    <data name="Language_rap" xml:space="preserve">
+        <value>Rapanui</value>
+    </data>
+    <data name="Language_rar" xml:space="preserve">
+        <value>Rarotongano</value>
+    </data>
+    <data name="Language_roa" xml:space="preserve">
+        <value>Lenguas romances</value>
+    </data>
+    <data name="Language_roh" xml:space="preserve">
+        <value>Romanche</value>
+    </data>
+    <data name="Language_rom" xml:space="preserve">
+        <value>Romaní</value>
+    </data>
+    <data name="Language_rum" xml:space="preserve">
+        <value>Rumano</value>
+    </data>
+    <data name="Language_run" xml:space="preserve">
+        <value>Rundi</value>
+    </data>
+    <data name="Language_rup" xml:space="preserve">
+        <value>Arrumano</value>
+    </data>
+    <data name="Language_rus" xml:space="preserve">
+        <value>Ruso</value>
+    </data>
+    <data name="Language_sad" xml:space="preserve">
+        <value>Sandawe</value>
+    </data>
+    <data name="Language_sag" xml:space="preserve">
+        <value>Sango</value>
+    </data>
+    <data name="Language_sah" xml:space="preserve">
+        <value>Yakuto</value>
+    </data>
+    <data name="Language_sai" xml:space="preserve">
+        <value>Lenguas indias sudamericanas</value>
+    </data>
+    <data name="Language_sal" xml:space="preserve">
+        <value>Lenguas salish</value>
+    </data>
+    <data name="Language_sam" xml:space="preserve">
+        <value>Arameo samaritano</value>
+    </data>
+    <data name="Language_san" xml:space="preserve">
+        <value>Sánscrito</value>
+    </data>
+    <data name="Language_sas" xml:space="preserve">
+        <value>Sasak</value>
+    </data>
+    <data name="Language_sat" xml:space="preserve">
+        <value>Santali</value>
+    </data>
+    <data name="Language_scn" xml:space="preserve">
+        <value>Siciliano</value>
+    </data>
+    <data name="Language_sco" xml:space="preserve">
+        <value>Escocés</value>
+    </data>
+    <data name="Language_sel" xml:space="preserve">
+        <value>Selkup</value>
+    </data>
+    <data name="Language_sem" xml:space="preserve">
+        <value>Lenguas semíticas</value>
+    </data>
+    <data name="Language_sga" xml:space="preserve">
+        <value>Irlandés antiguo</value>
+    </data>
+    <data name="Language_sgn" xml:space="preserve">
+        <value>Lenguas de señas</value>
+    </data>
+    <data name="Language_shn" xml:space="preserve">
+        <value>Shan</value>
+    </data>
+    <data name="Language_sid" xml:space="preserve">
+        <value>Sidamo</value>
+    </data>
+    <data name="Language_sin" xml:space="preserve">
+        <value>Cingalés</value>
+    </data>
+    <data name="Language_sio" xml:space="preserve">
+        <value>Lenguas sioux</value>
+    </data>
+    <data name="Language_sit" xml:space="preserve">
+        <value>Lenguas sino-tibetanas</value>
+    </data>
+    <data name="Language_sla" xml:space="preserve">
+        <value>Lenguas eslavas</value>
+    </data>
+    <data name="Language_slo" xml:space="preserve">
+        <value>Eslovaco</value>
+    </data>
+    <data name="Language_slv" xml:space="preserve">
+        <value>Esloveno</value>
+    </data>
+    <data name="Language_sma" xml:space="preserve">
+        <value>Sami meridional</value>
+    </data>
+    <data name="Language_sme" xml:space="preserve">
+        <value>Sami septentrional</value>
+    </data>
+    <data name="Language_smi" xml:space="preserve">
+        <value>Lenguas sami</value>
+    </data>
+    <data name="Language_smj" xml:space="preserve">
+        <value>Sami de Lule</value>
+    </data>
+    <data name="Language_smn" xml:space="preserve">
+        <value>Sami de Inari</value>
+    </data>
+    <data name="Language_smo" xml:space="preserve">
+        <value>Samoano</value>
+    </data>
+    <data name="Language_sms" xml:space="preserve">
+        <value>Sami skolt</value>
+    </data>
+    <data name="Language_sna" xml:space="preserve">
+        <value>Shona</value>
+    </data>
+    <data name="Language_snd" xml:space="preserve">
+        <value>Sindhi</value>
+    </data>
+    <data name="Language_snk" xml:space="preserve">
+        <value>Soninké</value>
+    </data>
+    <data name="Language_sog" xml:space="preserve">
+        <value>Sogdiano</value>
+    </data>
+    <data name="Language_som" xml:space="preserve">
+        <value>Somalí</value>
+    </data>
+    <data name="Language_son" xml:space="preserve">
+        <value>Lenguas songhai</value>
+    </data>
+    <data name="Language_sot" xml:space="preserve">
+        <value>Sesotho meridional</value>
+    </data>
+    <data name="Language_spa" xml:space="preserve">
+        <value>Español</value>
+    </data>
+    <data name="Language_srd" xml:space="preserve">
+        <value>Sardo</value>
+    </data>
+    <data name="Language_srn" xml:space="preserve">
+        <value>Sranan tongo</value>
+    </data>
+    <data name="Language_srp" xml:space="preserve">
+        <value>Serbio</value>
+    </data>
+    <data name="Language_srr" xml:space="preserve">
+        <value>Serer</value>
+    </data>
+    <data name="Language_ssa" xml:space="preserve">
+        <value>Lenguas nilo-saharianas</value>
+    </data>
+    <data name="Language_ssw" xml:space="preserve">
+        <value>Suazi</value>
+    </data>
+    <data name="Language_suk" xml:space="preserve">
+        <value>Sukuma</value>
+    </data>
+    <data name="Language_sun" xml:space="preserve">
+        <value>Sundanés</value>
+    </data>
+    <data name="Language_sus" xml:space="preserve">
+        <value>Susu</value>
+    </data>
+    <data name="Language_sux" xml:space="preserve">
+        <value>Sumerio</value>
+    </data>
+    <data name="Language_swa" xml:space="preserve">
+        <value>Suajili</value>
+    </data>
+    <data name="Language_swe" xml:space="preserve">
+        <value>Sueco</value>
+    </data>
+    <data name="Language_syc" xml:space="preserve">
+        <value>Siríaco clásico</value>
+    </data>
+    <data name="Language_syr" xml:space="preserve">
+        <value>Siríaco</value>
+    </data>
+    <data name="Language_tah" xml:space="preserve">
+        <value>Tahitiano</value>
+    </data>
+    <data name="Language_tai" xml:space="preserve">
+        <value>Lenguas tai</value>
+    </data>
+    <data name="Language_tam" xml:space="preserve">
+        <value>Tamil</value>
+    </data>
+    <data name="Language_tat" xml:space="preserve">
+        <value>Tártaro</value>
+    </data>
+    <data name="Language_tel" xml:space="preserve">
+        <value>Telugu</value>
+    </data>
+    <data name="Language_tem" xml:space="preserve">
+        <value>Timne</value>
+    </data>
+    <data name="Language_ter" xml:space="preserve">
+        <value>Tereno</value>
+    </data>
+    <data name="Language_tet" xml:space="preserve">
+        <value>Tetum</value>
+    </data>
+    <data name="Language_tgk" xml:space="preserve">
+        <value>Tayiko</value>
+    </data>
+    <data name="Language_tgl" xml:space="preserve">
+        <value>Tagalo</value>
+    </data>
+    <data name="Language_tha" xml:space="preserve">
+        <value>Tailandés</value>
+    </data>
+    <data name="Language_tib" xml:space="preserve">
+        <value>Tibetano</value>
+    </data>
+    <data name="Language_tig" xml:space="preserve">
+        <value>Tigré</value>
+    </data>
+    <data name="Language_tir" xml:space="preserve">
+        <value>Tigriña</value>
+    </data>
+    <data name="Language_tiv" xml:space="preserve">
+        <value>Tiv</value>
+    </data>
+    <data name="Language_tkl" xml:space="preserve">
+        <value>Tokelauano</value>
+    </data>
+    <data name="Language_tlh" xml:space="preserve">
+        <value>Klingon</value>
+    </data>
+    <data name="Language_tli" xml:space="preserve">
+        <value>Tlingit</value>
+    </data>
+    <data name="Language_tmh" xml:space="preserve">
+        <value>Tamashek</value>
+    </data>
+    <data name="Language_tog" xml:space="preserve">
+        <value>Tonga (Nyasa)</value>
+    </data>
+    <data name="Language_ton" xml:space="preserve">
+        <value>Tongano (Islas Tonga)</value>
+    </data>
+    <data name="Language_tpi" xml:space="preserve">
+        <value>Tok pisin</value>
+    </data>
+    <data name="Language_tsi" xml:space="preserve">
+        <value>Tsimshiano</value>
+    </data>
+    <data name="Language_tsn" xml:space="preserve">
+        <value>Tswana</value>
+    </data>
+    <data name="Language_tso" xml:space="preserve">
+        <value>Tsonga</value>
+    </data>
+    <data name="Language_tuk" xml:space="preserve">
+        <value>Turcomano</value>
+    </data>
+    <data name="Language_tum" xml:space="preserve">
+        <value>Tumbuka</value>
+    </data>
+    <data name="Language_tup" xml:space="preserve">
+        <value>Lenguas tupíes</value>
+    </data>
+    <data name="Language_tur" xml:space="preserve">
+        <value>Turco</value>
+    </data>
+    <data name="Language_tut" xml:space="preserve">
+        <value>Lenguas altaicas</value>
+    </data>
+    <data name="Language_tvl" xml:space="preserve">
+        <value>Tuvaluano</value>
+    </data>
+    <data name="Language_twi" xml:space="preserve">
+        <value>Twi</value>
+    </data>
+    <data name="Language_tyv" xml:space="preserve">
+        <value>Tuviniano</value>
+    </data>
+    <data name="Language_udm" xml:space="preserve">
+        <value>Udmurto</value>
+    </data>
+    <data name="Language_uga" xml:space="preserve">
+        <value>Ugarítico</value>
+    </data>
+    <data name="Language_uig" xml:space="preserve">
+        <value>Uigur</value>
+    </data>
+    <data name="Language_ukr" xml:space="preserve">
+        <value>Ucraniano</value>
+    </data>
+    <data name="Language_umb" xml:space="preserve">
+        <value>Umbundu</value>
+    </data>
+    <data name="Language_und" xml:space="preserve">
+        <value>Indeterminado</value>
+    </data>
+    <data name="Language_urd" xml:space="preserve">
+        <value>Urdu</value>
+    </data>
+    <data name="Language_uzb" xml:space="preserve">
+        <value>Uzbeko</value>
+    </data>
+    <data name="Language_vai" xml:space="preserve">
+        <value>Vai</value>
+    </data>
+    <data name="Language_ven" xml:space="preserve">
+        <value>Venda</value>
+    </data>
+    <data name="Language_vie" xml:space="preserve">
+        <value>Vietnamita</value>
+    </data>
+    <data name="Language_vol" xml:space="preserve">
+        <value>Volapük</value>
+    </data>
+    <data name="Language_vot" xml:space="preserve">
+        <value>Vótico</value>
+    </data>
+    <data name="Language_wak" xml:space="preserve">
+        <value>Lenguas wakash</value>
+    </data>
+    <data name="Language_wal" xml:space="preserve">
+        <value>Wolaitta</value>
+    </data>
+    <data name="Language_war" xml:space="preserve">
+        <value>Waray</value>
+    </data>
+    <data name="Language_was" xml:space="preserve">
+        <value>Washo</value>
+    </data>
+    <data name="Language_wel" xml:space="preserve">
+        <value>Galés</value>
+    </data>
+    <data name="Language_wen" xml:space="preserve">
+        <value>Lenguas sorbias</value>
+    </data>
+    <data name="Language_wln" xml:space="preserve">
+        <value>Valón</value>
+    </data>
+    <data name="Language_wol" xml:space="preserve">
+        <value>Wólof</value>
+    </data>
+    <data name="Language_xal" xml:space="preserve">
+        <value>Kalmyk</value>
+    </data>
+    <data name="Language_xho" xml:space="preserve">
+        <value>Xhosa</value>
+    </data>
+    <data name="Language_yao" xml:space="preserve">
+        <value>Yao</value>
+    </data>
+    <data name="Language_yap" xml:space="preserve">
+        <value>Yapés</value>
+    </data>
+    <data name="Language_yid" xml:space="preserve">
+        <value>Yídish</value>
+    </data>
+    <data name="Language_yor" xml:space="preserve">
+        <value>Yoruba</value>
+    </data>
+    <data name="Language_ypk" xml:space="preserve">
+        <value>Lenguas yupik</value>
+    </data>
+    <data name="Language_zap" xml:space="preserve">
+        <value>Zapoteco</value>
+    </data>
+    <data name="Language_zbl" xml:space="preserve">
+        <value>Símbolos Bliss</value>
+    </data>
+    <data name="Language_zen" xml:space="preserve">
+        <value>Zenaga</value>
+    </data>
+    <data name="Language_zgh" xml:space="preserve">
+        <value>Tamazight estándar marroquí</value>
+    </data>
+    <data name="Language_zha" xml:space="preserve">
+        <value>Zhuang</value>
+    </data>
+    <data name="Language_znd" xml:space="preserve">
+        <value>Lenguas zande</value>
+    </data>
+    <data name="Language_zul" xml:space="preserve">
+        <value>Zulú</value>
+    </data>
+    <data name="Language_zun" xml:space="preserve">
+        <value>Zuñi</value>
+    </data>
+    <data name="Language_zxx" xml:space="preserve">
+        <value>Sin contenido lingüístico</value>
+    </data>
+    <data name="Language_zza" xml:space="preserve">
+        <value>Zazaki</value>
+    </data>
 </root>

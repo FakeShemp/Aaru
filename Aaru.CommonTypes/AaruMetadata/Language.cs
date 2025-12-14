@@ -38,6 +38,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+using Aaru.Localization;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ClassNeverInstantiated.Global
@@ -48,491 +49,977 @@ namespace Aaru.CommonTypes.AaruMetadata;
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public enum Language
 {
+    [LocalizedDescription(nameof(UI.Language_aar))]
     aar,
+    [LocalizedDescription(nameof(UI.Language_abk))]
     abk,
+    [LocalizedDescription(nameof(UI.Language_ace))]
     ace,
+    [LocalizedDescription(nameof(UI.Language_ach))]
     ach,
+    [LocalizedDescription(nameof(UI.Language_ada))]
     ada,
+    [LocalizedDescription(nameof(UI.Language_ady))]
     ady,
+    [LocalizedDescription(nameof(UI.Language_afa))]
     afa,
+    [LocalizedDescription(nameof(UI.Language_afh))]
     afh,
+    [LocalizedDescription(nameof(UI.Language_afr))]
     afr,
+    [LocalizedDescription(nameof(UI.Language_ain))]
     ain,
+    [LocalizedDescription(nameof(UI.Language_aka))]
     aka,
+    [LocalizedDescription(nameof(UI.Language_akk))]
     akk,
+    [LocalizedDescription(nameof(UI.Language_alb))]
     alb,
+    [LocalizedDescription(nameof(UI.Language_ale))]
     ale,
+    [LocalizedDescription(nameof(UI.Language_alg))]
     alg,
+    [LocalizedDescription(nameof(UI.Language_alt))]
     alt,
+    [LocalizedDescription(nameof(UI.Language_amh))]
     amh,
+    [LocalizedDescription(nameof(UI.Language_ang))]
     ang,
+    [LocalizedDescription(nameof(UI.Language_anp))]
     anp,
+    [LocalizedDescription(nameof(UI.Language_apa))]
     apa,
+    [LocalizedDescription(nameof(UI.Language_ara))]
     ara,
+    [LocalizedDescription(nameof(UI.Language_arc))]
     arc,
+    [LocalizedDescription(nameof(UI.Language_arg))]
     arg,
+    [LocalizedDescription(nameof(UI.Language_arm))]
     arm,
+    [LocalizedDescription(nameof(UI.Language_arn))]
     arn,
+    [LocalizedDescription(nameof(UI.Language_arp))]
     arp,
+    [LocalizedDescription(nameof(UI.Language_art))]
     art,
+    [LocalizedDescription(nameof(UI.Language_arw))]
     arw,
+    [LocalizedDescription(nameof(UI.Language_asm))]
     asm,
+    [LocalizedDescription(nameof(UI.Language_ast))]
     ast,
+    [LocalizedDescription(nameof(UI.Language_ath))]
     ath,
+    [LocalizedDescription(nameof(UI.Language_aus))]
     aus,
+    [LocalizedDescription(nameof(UI.Language_ava))]
     ava,
+    [LocalizedDescription(nameof(UI.Language_ave))]
     ave,
+    [LocalizedDescription(nameof(UI.Language_awa))]
     awa,
+    [LocalizedDescription(nameof(UI.Language_aym))]
     aym,
+    [LocalizedDescription(nameof(UI.Language_aze))]
     aze,
+    [LocalizedDescription(nameof(UI.Language_bad))]
     bad,
+    [LocalizedDescription(nameof(UI.Language_bai))]
     bai,
+    [LocalizedDescription(nameof(UI.Language_bak))]
     bak,
+    [LocalizedDescription(nameof(UI.Language_bal))]
     bal,
+    [LocalizedDescription(nameof(UI.Language_bam))]
     bam,
+    [LocalizedDescription(nameof(UI.Language_ban))]
     ban,
+    [LocalizedDescription(nameof(UI.Language_baq))]
     baq,
+    [LocalizedDescription(nameof(UI.Language_bas))]
     bas,
+    [LocalizedDescription(nameof(UI.Language_bat))]
     bat,
+    [LocalizedDescription(nameof(UI.Language_bej))]
     bej,
+    [LocalizedDescription(nameof(UI.Language_bel))]
     bel,
+    [LocalizedDescription(nameof(UI.Language_bem))]
     bem,
+    [LocalizedDescription(nameof(UI.Language_ben))]
     ben,
+    [LocalizedDescription(nameof(UI.Language_ber))]
     ber,
+    [LocalizedDescription(nameof(UI.Language_bho))]
     bho,
+    [LocalizedDescription(nameof(UI.Language_bih))]
     bih,
+    [LocalizedDescription(nameof(UI.Language_bik))]
     bik,
+    [LocalizedDescription(nameof(UI.Language_bin))]
     bin,
+    [LocalizedDescription(nameof(UI.Language_bis))]
     bis,
+    [LocalizedDescription(nameof(UI.Language_bla))]
     bla,
+    [LocalizedDescription(nameof(UI.Language_bnt))]
     bnt,
+    [LocalizedDescription(nameof(UI.Language_bos))]
     bos,
+    [LocalizedDescription(nameof(UI.Language_bra))]
     bra,
+    [LocalizedDescription(nameof(UI.Language_bre))]
     bre,
+    [LocalizedDescription(nameof(UI.Language_btk))]
     btk,
+    [LocalizedDescription(nameof(UI.Language_bua))]
     bua,
+    [LocalizedDescription(nameof(UI.Language_bug))]
     bug,
+    [LocalizedDescription(nameof(UI.Language_bul))]
     bul,
+    [LocalizedDescription(nameof(UI.Language_bur))]
     bur,
+    [LocalizedDescription(nameof(UI.Language_byn))]
     byn,
+    [LocalizedDescription(nameof(UI.Language_cad))]
     cad,
+    [LocalizedDescription(nameof(UI.Language_cai))]
     cai,
+    [LocalizedDescription(nameof(UI.Language_car))]
     car,
+    [LocalizedDescription(nameof(UI.Language_cat))]
     cat,
+    [LocalizedDescription(nameof(UI.Language_cau))]
     cau,
+    [LocalizedDescription(nameof(UI.Language_ceb))]
     ceb,
+    [LocalizedDescription(nameof(UI.Language_cel))]
     cel,
+    [LocalizedDescription(nameof(UI.Language_cha))]
     cha,
+    [LocalizedDescription(nameof(UI.Language_chb))]
     chb,
+    [LocalizedDescription(nameof(UI.Language_che))]
     che,
+    [LocalizedDescription(nameof(UI.Language_chg))]
     chg,
+    [LocalizedDescription(nameof(UI.Language_chi))]
     chi,
+    [LocalizedDescription(nameof(UI.Language_chk))]
     chk,
+    [LocalizedDescription(nameof(UI.Language_chm))]
     chm,
+    [LocalizedDescription(nameof(UI.Language_chn))]
     chn,
+    [LocalizedDescription(nameof(UI.Language_cho))]
     cho,
+    [LocalizedDescription(nameof(UI.Language_chp))]
     chp,
+    [LocalizedDescription(nameof(UI.Language_chr))]
     chr,
+    [LocalizedDescription(nameof(UI.Language_chu))]
     chu,
+    [LocalizedDescription(nameof(UI.Language_chv))]
     chv,
+    [LocalizedDescription(nameof(UI.Language_chy))]
     chy,
+    [LocalizedDescription(nameof(UI.Language_cmc))]
     cmc,
+    [LocalizedDescription(nameof(UI.Language_cop))]
     cop,
+    [LocalizedDescription(nameof(UI.Language_cor))]
     cor,
+    [LocalizedDescription(nameof(UI.Language_cos))]
     cos,
+    [LocalizedDescription(nameof(UI.Language_cpe))]
     cpe,
+    [LocalizedDescription(nameof(UI.Language_cpf))]
     cpf,
+    [LocalizedDescription(nameof(UI.Language_cpp))]
     cpp,
+    [LocalizedDescription(nameof(UI.Language_cre))]
     cre,
+    [LocalizedDescription(nameof(UI.Language_crh))]
     crh,
+    [LocalizedDescription(nameof(UI.Language_crp))]
     crp,
+    [LocalizedDescription(nameof(UI.Language_csb))]
     csb,
+    [LocalizedDescription(nameof(UI.Language_cus))]
     cus,
+    [LocalizedDescription(nameof(UI.Language_cze))]
     cze,
+    [LocalizedDescription(nameof(UI.Language_dak))]
     dak,
+    [LocalizedDescription(nameof(UI.Language_dan))]
     dan,
+    [LocalizedDescription(nameof(UI.Language_dar))]
     dar,
+    [LocalizedDescription(nameof(UI.Language_day))]
     day,
+    [LocalizedDescription(nameof(UI.Language_del))]
     del,
+    [LocalizedDescription(nameof(UI.Language_den))]
     den,
+    [LocalizedDescription(nameof(UI.Language_dgr))]
     dgr,
+    [LocalizedDescription(nameof(UI.Language_din))]
     din,
+    [LocalizedDescription(nameof(UI.Language_div))]
     div,
+    [LocalizedDescription(nameof(UI.Language_doi))]
     doi,
+    [LocalizedDescription(nameof(UI.Language_dra))]
     dra,
+    [LocalizedDescription(nameof(UI.Language_dsb))]
     dsb,
+    [LocalizedDescription(nameof(UI.Language_dua))]
     dua,
+    [LocalizedDescription(nameof(UI.Language_dum))]
     dum,
+    [LocalizedDescription(nameof(UI.Language_dut))]
     dut,
+    [LocalizedDescription(nameof(UI.Language_dyu))]
     dyu,
+    [LocalizedDescription(nameof(UI.Language_dzo))]
     dzo,
+    [LocalizedDescription(nameof(UI.Language_efi))]
     efi,
+    [LocalizedDescription(nameof(UI.Language_egy))]
     egy,
+    [LocalizedDescription(nameof(UI.Language_eka))]
     eka,
+    [LocalizedDescription(nameof(UI.Language_elx))]
     elx,
+    [LocalizedDescription(nameof(UI.Language_eng))]
     eng,
+    [LocalizedDescription(nameof(UI.Language_enm))]
     enm,
+    [LocalizedDescription(nameof(UI.Language_epo))]
     epo,
+    [LocalizedDescription(nameof(UI.Language_est))]
     est,
+    [LocalizedDescription(nameof(UI.Language_ewe))]
     ewe,
+    [LocalizedDescription(nameof(UI.Language_ewo))]
     ewo,
+    [LocalizedDescription(nameof(UI.Language_fan))]
     fan,
+    [LocalizedDescription(nameof(UI.Language_fao))]
     fao,
+    [LocalizedDescription(nameof(UI.Language_fat))]
     fat,
+    [LocalizedDescription(nameof(UI.Language_fij))]
     fij,
+    [LocalizedDescription(nameof(UI.Language_fil))]
     fil,
+    [LocalizedDescription(nameof(UI.Language_fin))]
     fin,
+    [LocalizedDescription(nameof(UI.Language_fiu))]
     fiu,
+    [LocalizedDescription(nameof(UI.Language_fon))]
     fon,
+    [LocalizedDescription(nameof(UI.Language_fre))]
     fre,
+    [LocalizedDescription(nameof(UI.Language_frm))]
     frm,
+    [LocalizedDescription(nameof(UI.Language_fro))]
     fro,
+    [LocalizedDescription(nameof(UI.Language_frr))]
     frr,
+    [LocalizedDescription(nameof(UI.Language_frs))]
     frs,
+    [LocalizedDescription(nameof(UI.Language_fry))]
     fry,
+    [LocalizedDescription(nameof(UI.Language_ful))]
     ful,
+    [LocalizedDescription(nameof(UI.Language_fur))]
     fur,
+    [LocalizedDescription(nameof(UI.Language_gaa))]
     gaa,
+    [LocalizedDescription(nameof(UI.Language_gay))]
     gay,
+    [LocalizedDescription(nameof(UI.Language_gba))]
     gba,
+    [LocalizedDescription(nameof(UI.Language_gem))]
     gem,
+    [LocalizedDescription(nameof(UI.Language_geo))]
     geo,
+    [LocalizedDescription(nameof(UI.Language_ger))]
     ger,
+    [LocalizedDescription(nameof(UI.Language_gez))]
     gez,
+    [LocalizedDescription(nameof(UI.Language_gil))]
     gil,
+    [LocalizedDescription(nameof(UI.Language_gla))]
     gla,
+    [LocalizedDescription(nameof(UI.Language_gle))]
     gle,
+    [LocalizedDescription(nameof(UI.Language_glg))]
     glg,
+    [LocalizedDescription(nameof(UI.Language_glv))]
     glv,
+    [LocalizedDescription(nameof(UI.Language_gmh))]
     gmh,
+    [LocalizedDescription(nameof(UI.Language_goh))]
     goh,
+    [LocalizedDescription(nameof(UI.Language_gon))]
     gon,
+    [LocalizedDescription(nameof(UI.Language_gor))]
     gor,
+    [LocalizedDescription(nameof(UI.Language_got))]
     got,
+    [LocalizedDescription(nameof(UI.Language_grb))]
     grb,
+    [LocalizedDescription(nameof(UI.Language_grc))]
     grc,
+    [LocalizedDescription(nameof(UI.Language_gre))]
     gre,
+    [LocalizedDescription(nameof(UI.Language_grn))]
     grn,
+    [LocalizedDescription(nameof(UI.Language_gsw))]
     gsw,
+    [LocalizedDescription(nameof(UI.Language_guj))]
     guj,
+    [LocalizedDescription(nameof(UI.Language_gwi))]
     gwi,
+    [LocalizedDescription(nameof(UI.Language_hai))]
     hai,
+    [LocalizedDescription(nameof(UI.Language_hat))]
     hat,
+    [LocalizedDescription(nameof(UI.Language_hau))]
     hau,
+    [LocalizedDescription(nameof(UI.Language_haw))]
     haw,
+    [LocalizedDescription(nameof(UI.Language_heb))]
     heb,
+    [LocalizedDescription(nameof(UI.Language_her))]
     her,
+    [LocalizedDescription(nameof(UI.Language_hil))]
     hil,
+    [LocalizedDescription(nameof(UI.Language_him))]
     him,
+    [LocalizedDescription(nameof(UI.Language_hin))]
     hin,
+    [LocalizedDescription(nameof(UI.Language_hit))]
     hit,
+    [LocalizedDescription(nameof(UI.Language_hmn))]
     hmn,
+    [LocalizedDescription(nameof(UI.Language_hmo))]
     hmo,
+    [LocalizedDescription(nameof(UI.Language_hrv))]
     hrv,
+    [LocalizedDescription(nameof(UI.Language_hsb))]
     hsb,
+    [LocalizedDescription(nameof(UI.Language_hun))]
     hun,
+    [LocalizedDescription(nameof(UI.Language_hup))]
     hup,
+    [LocalizedDescription(nameof(UI.Language_iba))]
     iba,
+    [LocalizedDescription(nameof(UI.Language_ibo))]
     ibo,
+    [LocalizedDescription(nameof(UI.Language_ice))]
     ice,
+    [LocalizedDescription(nameof(UI.Language_ido))]
     ido,
+    [LocalizedDescription(nameof(UI.Language_iii))]
     iii,
+    [LocalizedDescription(nameof(UI.Language_ijo))]
     ijo,
+    [LocalizedDescription(nameof(UI.Language_iku))]
     iku,
+    [LocalizedDescription(nameof(UI.Language_ile))]
     ile,
+    [LocalizedDescription(nameof(UI.Language_ilo))]
     ilo,
+    [LocalizedDescription(nameof(UI.Language_ina))]
     ina,
+    [LocalizedDescription(nameof(UI.Language_inc))]
     inc,
+    [LocalizedDescription(nameof(UI.Language_ind))]
     ind,
+    [LocalizedDescription(nameof(UI.Language_ine))]
     ine,
+    [LocalizedDescription(nameof(UI.Language_inh))]
     inh,
+    [LocalizedDescription(nameof(UI.Language_ipk))]
     ipk,
+    [LocalizedDescription(nameof(UI.Language_ira))]
     ira,
+    [LocalizedDescription(nameof(UI.Language_iro))]
     iro,
+    [LocalizedDescription(nameof(UI.Language_ita))]
     ita,
+    [LocalizedDescription(nameof(UI.Language_jav))]
     jav,
+    [LocalizedDescription(nameof(UI.Language_jbo))]
     jbo,
+    [LocalizedDescription(nameof(UI.Language_jpn))]
     jpn,
+    [LocalizedDescription(nameof(UI.Language_jpr))]
     jpr,
+    [LocalizedDescription(nameof(UI.Language_jrb))]
     jrb,
+    [LocalizedDescription(nameof(UI.Language_kaa))]
     kaa,
+    [LocalizedDescription(nameof(UI.Language_kab))]
     kab,
+    [LocalizedDescription(nameof(UI.Language_kac))]
     kac,
+    [LocalizedDescription(nameof(UI.Language_kal))]
     kal,
+    [LocalizedDescription(nameof(UI.Language_kam))]
     kam,
+    [LocalizedDescription(nameof(UI.Language_kan))]
     kan,
+    [LocalizedDescription(nameof(UI.Language_kar))]
     kar,
+    [LocalizedDescription(nameof(UI.Language_kas))]
     kas,
+    [LocalizedDescription(nameof(UI.Language_kau))]
     kau,
+    [LocalizedDescription(nameof(UI.Language_kaw))]
     kaw,
+    [LocalizedDescription(nameof(UI.Language_kaz))]
     kaz,
+    [LocalizedDescription(nameof(UI.Language_kbd))]
     kbd,
+    [LocalizedDescription(nameof(UI.Language_kha))]
     kha,
+    [LocalizedDescription(nameof(UI.Language_khi))]
     khi,
+    [LocalizedDescription(nameof(UI.Language_khm))]
     khm,
+    [LocalizedDescription(nameof(UI.Language_kho))]
     kho,
+    [LocalizedDescription(nameof(UI.Language_kik))]
     kik,
+    [LocalizedDescription(nameof(UI.Language_kin))]
     kin,
+    [LocalizedDescription(nameof(UI.Language_kir))]
     kir,
+    [LocalizedDescription(nameof(UI.Language_kmb))]
     kmb,
+    [LocalizedDescription(nameof(UI.Language_kok))]
     kok,
+    [LocalizedDescription(nameof(UI.Language_kom))]
     kom,
+    [LocalizedDescription(nameof(UI.Language_kon))]
     kon,
+    [LocalizedDescription(nameof(UI.Language_kor))]
     kor,
+    [LocalizedDescription(nameof(UI.Language_kos))]
     kos,
+    [LocalizedDescription(nameof(UI.Language_kpe))]
     kpe,
+    [LocalizedDescription(nameof(UI.Language_krc))]
     krc,
+    [LocalizedDescription(nameof(UI.Language_krl))]
     krl,
+    [LocalizedDescription(nameof(UI.Language_kro))]
     kro,
+    [LocalizedDescription(nameof(UI.Language_kru))]
     kru,
+    [LocalizedDescription(nameof(UI.Language_kua))]
     kua,
+    [LocalizedDescription(nameof(UI.Language_kum))]
     kum,
+    [LocalizedDescription(nameof(UI.Language_kur))]
     kur,
+    [LocalizedDescription(nameof(UI.Language_kut))]
     kut,
+    [LocalizedDescription(nameof(UI.Language_lad))]
     lad,
+    [LocalizedDescription(nameof(UI.Language_lah))]
     lah,
+    [LocalizedDescription(nameof(UI.Language_lam))]
     lam,
+    [LocalizedDescription(nameof(UI.Language_lao))]
     lao,
+    [LocalizedDescription(nameof(UI.Language_lat))]
     lat,
+    [LocalizedDescription(nameof(UI.Language_lav))]
     lav,
+    [LocalizedDescription(nameof(UI.Language_lez))]
     lez,
+    [LocalizedDescription(nameof(UI.Language_lim))]
     lim,
+    [LocalizedDescription(nameof(UI.Language_lin))]
     lin,
+    [LocalizedDescription(nameof(UI.Language_lit))]
     lit,
+    [LocalizedDescription(nameof(UI.Language_lol))]
     lol,
+    [LocalizedDescription(nameof(UI.Language_loz))]
     loz,
+    [LocalizedDescription(nameof(UI.Language_ltz))]
     ltz,
+    [LocalizedDescription(nameof(UI.Language_lua))]
     lua,
+    [LocalizedDescription(nameof(UI.Language_lub))]
     lub,
+    [LocalizedDescription(nameof(UI.Language_lug))]
     lug,
+    [LocalizedDescription(nameof(UI.Language_lui))]
     lui,
+    [LocalizedDescription(nameof(UI.Language_lun))]
     lun,
+    [LocalizedDescription(nameof(UI.Language_luo))]
     luo,
+    [LocalizedDescription(nameof(UI.Language_lus))]
     lus,
+    [LocalizedDescription(nameof(UI.Language_mac))]
     mac,
+    [LocalizedDescription(nameof(UI.Language_mad))]
     mad,
+    [LocalizedDescription(nameof(UI.Language_mag))]
     mag,
+    [LocalizedDescription(nameof(UI.Language_mah))]
     mah,
+    [LocalizedDescription(nameof(UI.Language_mai))]
     mai,
+    [LocalizedDescription(nameof(UI.Language_mak))]
     mak,
+    [LocalizedDescription(nameof(UI.Language_mal))]
     mal,
+    [LocalizedDescription(nameof(UI.Language_man))]
     man,
+    [LocalizedDescription(nameof(UI.Language_mao))]
     mao,
+    [LocalizedDescription(nameof(UI.Language_map))]
     map,
+    [LocalizedDescription(nameof(UI.Language_mar))]
     mar,
+    [LocalizedDescription(nameof(UI.Language_mas))]
     mas,
+    [LocalizedDescription(nameof(UI.Language_may))]
     may,
+    [LocalizedDescription(nameof(UI.Language_mdf))]
     mdf,
+    [LocalizedDescription(nameof(UI.Language_mdr))]
     mdr,
+    [LocalizedDescription(nameof(UI.Language_men))]
     men,
+    [LocalizedDescription(nameof(UI.Language_mga))]
     mga,
+    [LocalizedDescription(nameof(UI.Language_mic))]
     mic,
+    [LocalizedDescription(nameof(UI.Language_min))]
     min,
+    [LocalizedDescription(nameof(UI.Language_mis))]
     mis,
+    [LocalizedDescription(nameof(UI.Language_mkh))]
     mkh,
+    [LocalizedDescription(nameof(UI.Language_mlg))]
     mlg,
+    [LocalizedDescription(nameof(UI.Language_mlt))]
     mlt,
+    [LocalizedDescription(nameof(UI.Language_mnc))]
     mnc,
+    [LocalizedDescription(nameof(UI.Language_mni))]
     mni,
+    [LocalizedDescription(nameof(UI.Language_mno))]
     mno,
+    [LocalizedDescription(nameof(UI.Language_moh))]
     moh,
+    [LocalizedDescription(nameof(UI.Language_mon))]
     mon,
+    [LocalizedDescription(nameof(UI.Language_mos))]
     mos,
+    [LocalizedDescription(nameof(UI.Language_mul))]
     mul,
+    [LocalizedDescription(nameof(UI.Language_mun))]
     mun,
+    [LocalizedDescription(nameof(UI.Language_mus))]
     mus,
+    [LocalizedDescription(nameof(UI.Language_mwl))]
     mwl,
+    [LocalizedDescription(nameof(UI.Language_mwr))]
     mwr,
+    [LocalizedDescription(nameof(UI.Language_myn))]
     myn,
+    [LocalizedDescription(nameof(UI.Language_myv))]
     myv,
+    [LocalizedDescription(nameof(UI.Language_nah))]
     nah,
+    [LocalizedDescription(nameof(UI.Language_nai))]
     nai,
+    [LocalizedDescription(nameof(UI.Language_nap))]
     nap,
+    [LocalizedDescription(nameof(UI.Language_nau))]
     nau,
+    [LocalizedDescription(nameof(UI.Language_nav))]
     nav,
+    [LocalizedDescription(nameof(UI.Language_nbl))]
     nbl,
+    [LocalizedDescription(nameof(UI.Language_nde))]
     nde,
+    [LocalizedDescription(nameof(UI.Language_ndo))]
     ndo,
+    [LocalizedDescription(nameof(UI.Language_nds))]
     nds,
+    [LocalizedDescription(nameof(UI.Language_nep))]
     nep,
+    [LocalizedDescription(nameof(UI.Language_new))]
     @new,
+    [LocalizedDescription(nameof(UI.Language_nia))]
     nia,
+    [LocalizedDescription(nameof(UI.Language_nic))]
     nic,
+    [LocalizedDescription(nameof(UI.Language_niu))]
     niu,
+    [LocalizedDescription(nameof(UI.Language_nno))]
     nno,
+    [LocalizedDescription(nameof(UI.Language_nob))]
     nob,
+    [LocalizedDescription(nameof(UI.Language_nog))]
     nog,
+    [LocalizedDescription(nameof(UI.Language_non))]
     non,
+    [LocalizedDescription(nameof(UI.Language_nor))]
     nor,
+    [LocalizedDescription(nameof(UI.Language_nqo))]
     nqo,
+    [LocalizedDescription(nameof(UI.Language_nso))]
     nso,
+    [LocalizedDescription(nameof(UI.Language_nub))]
     nub,
+    [LocalizedDescription(nameof(UI.Language_nwc))]
     nwc,
+    [LocalizedDescription(nameof(UI.Language_nya))]
     nya,
+    [LocalizedDescription(nameof(UI.Language_nym))]
     nym,
+    [LocalizedDescription(nameof(UI.Language_nyn))]
     nyn,
+    [LocalizedDescription(nameof(UI.Language_nyo))]
     nyo,
+    [LocalizedDescription(nameof(UI.Language_nzi))]
     nzi,
+    [LocalizedDescription(nameof(UI.Language_oci))]
     oci,
+    [LocalizedDescription(nameof(UI.Language_oji))]
     oji,
+    [LocalizedDescription(nameof(UI.Language_ori))]
     ori,
+    [LocalizedDescription(nameof(UI.Language_orm))]
     orm,
+    [LocalizedDescription(nameof(UI.Language_osa))]
     osa,
+    [LocalizedDescription(nameof(UI.Language_oss))]
     oss,
+    [LocalizedDescription(nameof(UI.Language_ota))]
     ota,
+    [LocalizedDescription(nameof(UI.Language_oto))]
     oto,
+    [LocalizedDescription(nameof(UI.Language_paa))]
     paa,
+    [LocalizedDescription(nameof(UI.Language_pag))]
     pag,
+    [LocalizedDescription(nameof(UI.Language_pal))]
     pal,
+    [LocalizedDescription(nameof(UI.Language_pam))]
     pam,
+    [LocalizedDescription(nameof(UI.Language_pan))]
     pan,
+    [LocalizedDescription(nameof(UI.Language_pap))]
     pap,
+    [LocalizedDescription(nameof(UI.Language_pau))]
     pau,
+    [LocalizedDescription(nameof(UI.Language_peo))]
     peo,
+    [LocalizedDescription(nameof(UI.Language_per))]
     per,
+    [LocalizedDescription(nameof(UI.Language_phi))]
     phi,
+    [LocalizedDescription(nameof(UI.Language_phn))]
     phn,
+    [LocalizedDescription(nameof(UI.Language_pli))]
     pli,
+    [LocalizedDescription(nameof(UI.Language_pol))]
     pol,
+    [LocalizedDescription(nameof(UI.Language_pon))]
     pon,
+    [LocalizedDescription(nameof(UI.Language_por))]
     por,
+    [LocalizedDescription(nameof(UI.Language_pra))]
     pra,
+    [LocalizedDescription(nameof(UI.Language_pro))]
     pro,
+    [LocalizedDescription(nameof(UI.Language_pus))]
     pus,
     [JsonPropertyName("qaa-qtz")]
+    [LocalizedDescription(nameof(UI.Language_qaaqtz))]
     qaaqtz,
+    [LocalizedDescription(nameof(UI.Language_que))]
     que,
+    [LocalizedDescription(nameof(UI.Language_raj))]
     raj,
+    [LocalizedDescription(nameof(UI.Language_rap))]
     rap,
+    [LocalizedDescription(nameof(UI.Language_rar))]
     rar,
+    [LocalizedDescription(nameof(UI.Language_roa))]
     roa,
+    [LocalizedDescription(nameof(UI.Language_roh))]
     roh,
+    [LocalizedDescription(nameof(UI.Language_rom))]
     rom,
+    [LocalizedDescription(nameof(UI.Language_rum))]
     rum,
+    [LocalizedDescription(nameof(UI.Language_run))]
     run,
+    [LocalizedDescription(nameof(UI.Language_rup))]
     rup,
+    [LocalizedDescription(nameof(UI.Language_rus))]
     rus,
+    [LocalizedDescription(nameof(UI.Language_sad))]
     sad,
+    [LocalizedDescription(nameof(UI.Language_sag))]
     sag,
+    [LocalizedDescription(nameof(UI.Language_sah))]
     sah,
+    [LocalizedDescription(nameof(UI.Language_sai))]
     sai,
+    [LocalizedDescription(nameof(UI.Language_sal))]
     sal,
+    [LocalizedDescription(nameof(UI.Language_sam))]
     sam,
+    [LocalizedDescription(nameof(UI.Language_san))]
     san,
+    [LocalizedDescription(nameof(UI.Language_sas))]
     sas,
+    [LocalizedDescription(nameof(UI.Language_sat))]
     sat,
+    [LocalizedDescription(nameof(UI.Language_scn))]
     scn,
+    [LocalizedDescription(nameof(UI.Language_sco))]
     sco,
+    [LocalizedDescription(nameof(UI.Language_sel))]
     sel,
+    [LocalizedDescription(nameof(UI.Language_sem))]
     sem,
+    [LocalizedDescription(nameof(UI.Language_sga))]
     sga,
+    [LocalizedDescription(nameof(UI.Language_sgn))]
     sgn,
+    [LocalizedDescription(nameof(UI.Language_shn))]
     shn,
+    [LocalizedDescription(nameof(UI.Language_sid))]
     sid,
+    [LocalizedDescription(nameof(UI.Language_sin))]
     sin,
+    [LocalizedDescription(nameof(UI.Language_sio))]
     sio,
+    [LocalizedDescription(nameof(UI.Language_sit))]
     sit,
+    [LocalizedDescription(nameof(UI.Language_sla))]
     sla,
+    [LocalizedDescription(nameof(UI.Language_slo))]
     slo,
+    [LocalizedDescription(nameof(UI.Language_slv))]
     slv,
+    [LocalizedDescription(nameof(UI.Language_sma))]
     sma,
+    [LocalizedDescription(nameof(UI.Language_sme))]
     sme,
+    [LocalizedDescription(nameof(UI.Language_smi))]
     smi,
+    [LocalizedDescription(nameof(UI.Language_smj))]
     smj,
+    [LocalizedDescription(nameof(UI.Language_smn))]
     smn,
+    [LocalizedDescription(nameof(UI.Language_smo))]
     smo,
+    [LocalizedDescription(nameof(UI.Language_sms))]
     sms,
+    [LocalizedDescription(nameof(UI.Language_sna))]
     sna,
+    [LocalizedDescription(nameof(UI.Language_snd))]
     snd,
+    [LocalizedDescription(nameof(UI.Language_snk))]
     snk,
+    [LocalizedDescription(nameof(UI.Language_sog))]
     sog,
+    [LocalizedDescription(nameof(UI.Language_som))]
     som,
+    [LocalizedDescription(nameof(UI.Language_son))]
     son,
+    [LocalizedDescription(nameof(UI.Language_sot))]
     sot,
+    [LocalizedDescription(nameof(UI.Language_spa))]
     spa,
+    [LocalizedDescription(nameof(UI.Language_srd))]
     srd,
+    [LocalizedDescription(nameof(UI.Language_srn))]
     srn,
+    [LocalizedDescription(nameof(UI.Language_srp))]
     srp,
+    [LocalizedDescription(nameof(UI.Language_srr))]
     srr,
+    [LocalizedDescription(nameof(UI.Language_ssa))]
     ssa,
+    [LocalizedDescription(nameof(UI.Language_ssw))]
     ssw,
+    [LocalizedDescription(nameof(UI.Language_suk))]
     suk,
+    [LocalizedDescription(nameof(UI.Language_sun))]
     sun,
+    [LocalizedDescription(nameof(UI.Language_sus))]
     sus,
+    [LocalizedDescription(nameof(UI.Language_sux))]
     sux,
+    [LocalizedDescription(nameof(UI.Language_swa))]
     swa,
+    [LocalizedDescription(nameof(UI.Language_swe))]
     swe,
+    [LocalizedDescription(nameof(UI.Language_syc))]
     syc,
+    [LocalizedDescription(nameof(UI.Language_syr))]
     syr,
+    [LocalizedDescription(nameof(UI.Language_tah))]
     tah,
+    [LocalizedDescription(nameof(UI.Language_tai))]
     tai,
+    [LocalizedDescription(nameof(UI.Language_tam))]
     tam,
+    [LocalizedDescription(nameof(UI.Language_tat))]
     tat,
+    [LocalizedDescription(nameof(UI.Language_tel))]
     tel,
+    [LocalizedDescription(nameof(UI.Language_tem))]
     tem,
+    [LocalizedDescription(nameof(UI.Language_ter))]
     ter,
+    [LocalizedDescription(nameof(UI.Language_tet))]
     tet,
+    [LocalizedDescription(nameof(UI.Language_tgk))]
     tgk,
+    [LocalizedDescription(nameof(UI.Language_tgl))]
     tgl,
+    [LocalizedDescription(nameof(UI.Language_tha))]
     tha,
+    [LocalizedDescription(nameof(UI.Language_tib))]
     tib,
+    [LocalizedDescription(nameof(UI.Language_tig))]
     tig,
+    [LocalizedDescription(nameof(UI.Language_tir))]
     tir,
+    [LocalizedDescription(nameof(UI.Language_tiv))]
     tiv,
+    [LocalizedDescription(nameof(UI.Language_tkl))]
     tkl,
+    [LocalizedDescription(nameof(UI.Language_tlh))]
     tlh,
+    [LocalizedDescription(nameof(UI.Language_tli))]
     tli,
+    [LocalizedDescription(nameof(UI.Language_tmh))]
     tmh,
+    [LocalizedDescription(nameof(UI.Language_tog))]
     tog,
+    [LocalizedDescription(nameof(UI.Language_ton))]
     ton,
+    [LocalizedDescription(nameof(UI.Language_tpi))]
     tpi,
+    [LocalizedDescription(nameof(UI.Language_tsi))]
     tsi,
+    [LocalizedDescription(nameof(UI.Language_tsn))]
     tsn,
+    [LocalizedDescription(nameof(UI.Language_tso))]
     tso,
+    [LocalizedDescription(nameof(UI.Language_tuk))]
     tuk,
+    [LocalizedDescription(nameof(UI.Language_tum))]
     tum,
+    [LocalizedDescription(nameof(UI.Language_tup))]
     tup,
+    [LocalizedDescription(nameof(UI.Language_tur))]
     tur,
+    [LocalizedDescription(nameof(UI.Language_tut))]
     tut,
+    [LocalizedDescription(nameof(UI.Language_tvl))]
     tvl,
+    [LocalizedDescription(nameof(UI.Language_twi))]
     twi,
+    [LocalizedDescription(nameof(UI.Language_tyv))]
     tyv,
+    [LocalizedDescription(nameof(UI.Language_udm))]
     udm,
+    [LocalizedDescription(nameof(UI.Language_uga))]
     uga,
+    [LocalizedDescription(nameof(UI.Language_uig))]
     uig,
+    [LocalizedDescription(nameof(UI.Language_ukr))]
     ukr,
+    [LocalizedDescription(nameof(UI.Language_umb))]
     umb,
+    [LocalizedDescription(nameof(UI.Language_und))]
     und,
+    [LocalizedDescription(nameof(UI.Language_urd))]
     urd,
+    [LocalizedDescription(nameof(UI.Language_uzb))]
     uzb,
+    [LocalizedDescription(nameof(UI.Language_vai))]
     vai,
+    [LocalizedDescription(nameof(UI.Language_ven))]
     ven,
+    [LocalizedDescription(nameof(UI.Language_vie))]
     vie,
+    [LocalizedDescription(nameof(UI.Language_vol))]
     vol,
+    [LocalizedDescription(nameof(UI.Language_vot))]
     vot,
+    [LocalizedDescription(nameof(UI.Language_wak))]
     wak,
+    [LocalizedDescription(nameof(UI.Language_wal))]
     wal,
+    [LocalizedDescription(nameof(UI.Language_war))]
     war,
+    [LocalizedDescription(nameof(UI.Language_was))]
     was,
+    [LocalizedDescription(nameof(UI.Language_wel))]
     wel,
+    [LocalizedDescription(nameof(UI.Language_wen))]
     wen,
+    [LocalizedDescription(nameof(UI.Language_wln))]
     wln,
+    [LocalizedDescription(nameof(UI.Language_wol))]
     wol,
+    [LocalizedDescription(nameof(UI.Language_xal))]
     xal,
+    [LocalizedDescription(nameof(UI.Language_xho))]
     xho,
+    [LocalizedDescription(nameof(UI.Language_yao))]
     yao,
+    [LocalizedDescription(nameof(UI.Language_yap))]
     yap,
+    [LocalizedDescription(nameof(UI.Language_yid))]
     yid,
+    [LocalizedDescription(nameof(UI.Language_yor))]
     yor,
+    [LocalizedDescription(nameof(UI.Language_ypk))]
     ypk,
+    [LocalizedDescription(nameof(UI.Language_zap))]
     zap,
+    [LocalizedDescription(nameof(UI.Language_zbl))]
     zbl,
+    [LocalizedDescription(nameof(UI.Language_zen))]
     zen,
+    [LocalizedDescription(nameof(UI.Language_zgh))]
     zgh,
+    [LocalizedDescription(nameof(UI.Language_zha))]
     zha,
+    [LocalizedDescription(nameof(UI.Language_znd))]
     znd,
+    [LocalizedDescription(nameof(UI.Language_zul))]
     zul,
+    [LocalizedDescription(nameof(UI.Language_zun))]
     zun,
+    [LocalizedDescription(nameof(UI.Language_zxx))]
     zxx,
+    [LocalizedDescription(nameof(UI.Language_zza))]
     zza
 }
