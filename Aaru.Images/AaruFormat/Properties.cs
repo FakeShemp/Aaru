@@ -130,7 +130,7 @@ public sealed partial class AaruFormat
     ];
 
     /// <inheritdoc />
-    public IEnumerable<string> KnownExtensions => [".dicf", ".aaru", ".aaruformat", ".aaruf", ".aif"];
+    public IEnumerable<string> KnownExtensions => [".aif", ".aaru", ".aaruformat", ".aaruf", ".dicf"];
 
     /// <inheritdoc />
     public bool IsWriting { get; private set; }
