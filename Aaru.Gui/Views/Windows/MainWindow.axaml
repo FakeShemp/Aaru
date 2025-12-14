@@ -19,53 +19,89 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="{x:Static localization:UI.Menu_File}">
                 <MenuItem Header="{x:Static localization:UI.Menu_Open}"
+                          InputGesture="{OnPlatform 'Ctrl+O', macOS='Meta+O'}"
+                          HotKey="{OnPlatform 'Ctrl+O', macOS='Meta+O'}"
                           Command="{Binding OpenCommand, Mode=OneWay}" />
                 <MenuItem Header="{x:Static localization:UI.Menu_Open_MHDD_log}"
+                          InputGesture="Ctrl+M"
+                          HotKey="Ctrl+M"
                           Command="{Binding OpenMhddLogCommand, Mode=OneWay}" />
                 <MenuItem Header="{x:Static localization:UI.Menu_Open_IMGBurn_log}"
+                          InputGesture="Ctrl+I"
+                          HotKey="Ctrl+I"
                           Command="{Binding OpenIbgLogCommand, Mode=OneWay}" />
                 <MenuItem Header="{x:Static localization:UI.Menu_Connect_to_AaruRemote}"
+                          InputGesture="{OnPlatform 'Ctrl+R', macOS='Meta+R'}"
+                          HotKey="{OnPlatform 'Ctrl+R', macOS='Meta+R'}"
                           Command="{Binding ConnectToRemoteCommand, Mode=OneWay}" />
                 <MenuItem Header="{x:Static localization:UI.Menu_Open_device}"
+                          InputGesture="{OnPlatform 'Ctrl+D', macOS='Meta+D'}"
+                          HotKey="{OnPlatform 'Ctrl+D', macOS='Meta+D'}"
                           Command="{Binding OpenDeviceCommand, Mode=OneWay}"
                           IsVisible="{Binding DevicesSupported, Mode=OneWay}" />
                 <Separator />
                 <MenuItem Header="{x:Static localization:UI.Menu_Settings}"
+                          InputGesture="{OnPlatform 'Ctrl+Alt+S', macOS='Meta+OemComma'}"
+                          HotKey="{OnPlatform 'Ctrl+Alt+S', macOS='Meta+OemComma'}"
                           IsVisible="{Binding !NativeMenuSupported, Mode=OneWay}"
                           Command="{Binding SettingsCommand, Mode=OneWay}" />
                 <Separator />
                 <MenuItem Header="{x:Static localization:UI.Menu_Exit}"
+                          InputGesture="{OnPlatform 'Alt+F4', macOS='Meta+Q'}"
+                          HotKey="{OnPlatform 'Alt+F4', macOS='Meta+Q'}"
                           IsVisible="{Binding !NativeMenuSupported, Mode=OneWay}"
                           Command="{Binding ExitCommand, Mode=OneWay}" />
             </MenuItem>
             <MenuItem Header="{x:Static localization:UI.Menu_Image}"
                       IsEnabled="{Binding ImageLoaded, Mode=OneWay}">
                 <MenuItem Command="{Binding CalculateEntropyCommand, Mode=OneWay}"
+                          InputGesture="Ctrl+E"
+                          HotKey="Ctrl+E"
                           Header="{x:Static localization:UI.ButtonLabel_Calculate_entropy}" />
                 <MenuItem Command="{Binding VerifyImageCommand, Mode=OneWay}"
+                          InputGesture="Ctrl+V"
+                          HotKey="Ctrl+V"
                           Header="{x:Static localization:UI.ButtonLabel_Verify}" />
                 <MenuItem Command="{Binding ChecksumImageCommand, Mode=OneWay}"
+                          InputGesture="Ctrl+K"
+                          HotKey="Ctrl+K"
                           Header="{x:Static localization:UI.ButtonLabel_Checksum}" />
                 <MenuItem Command="{Binding ConvertImageCommand, Mode=OneWay}"
+                          InputGesture="Ctrl+C"
+                          HotKey="Ctrl+C"
                           Header="{x:Static localization:UI.ButtonLabel_Convert_to}" />
                 <MenuItem Command="{Binding CreateSidecarCommand, Mode=OneWay}"
+                          InputGesture="Ctrl+S"
+                          HotKey="Ctrl+S"
                           Header="{x:Static localization:UI.ButtonLabel_Create_Aaru_Metadata_sidecar}" />
                 <MenuItem Command="{Binding ViewImageSectorsCommand, Mode=OneWay}"
+                          InputGesture="Ctrl+T"
+                          HotKey="Ctrl+T"
                           Header="{x:Static localization:UI.ButtonLabel_View_sectors}" />
                 <MenuItem Command="{Binding DecodeImageMediaTagsCommand, Mode=OneWay}"
+                          InputGesture="Ctrl+G"
+                          HotKey="Ctrl+G"
                           Header="{x:Static localization:UI.ButtonLabel_Decode_media_tags}" />
             </MenuItem>
             <MenuItem Header="{x:Static localization:UI.Menu_Metadata}">
                 <MenuItem Command="{Binding ImageMetadataCommand, Mode=OneWay}"
+                          InputGesture="{OnPlatform 'Ctrl+Shift+M', macOS='Meta+M'}"
+                          HotKey="{OnPlatform 'Ctrl+Shift+M', macOS='Meta+M'}"
                           Header="{x:Static localization:UI.Menu_Edit_image_metadata}" />
                 <Separator />
                 <MenuItem Command="{Binding CreateMetadataCommand, Mode=OneWay}"
-                          Header="Create Metadata Sidecar..." />
+                          InputGesture="{OnPlatform 'Ctrl+N', macOS='Meta+N'}"
+                          HotKey="{OnPlatform 'Ctrl+N', macOS='Meta+N'}"
+                          Header="{x:Static localization:UI.Menu_Create_metadata_sidecar}" />
                 <MenuItem Command="{Binding EditMetadataCommand, Mode=OneWay}"
-                          Header="Edit Metadata Sidecar..." />
+                          InputGesture="{OnPlatform 'Ctrl+Shift+E', macOS='Meta+E'}"
+                          HotKey="{OnPlatform 'Ctrl+Shift+E', macOS='Meta+E'}"
+                          Header="{x:Static localization:UI.Menu_Edit_metadata_sidecar}" />
             </MenuItem>
             <MenuItem Header="{x:Static localization:UI.Menu_Window}">
                 <MenuItem Header="{x:Static localization:UI.Menu_Console}"
+                          InputGesture="{OnPlatform 'Ctrl+OemTilde', macOS='Meta+Shift+C'}"
+                          HotKey="{OnPlatform 'Ctrl+OemTilde', macOS='Meta+Shift+C'}"
                           Command="{Binding ConsoleCommand, Mode=OneWay}" />
             </MenuItem>
             <MenuItem Header="{x:Static localization:UI.Menu_Help}">
