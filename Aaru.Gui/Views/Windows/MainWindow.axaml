@@ -26,7 +26,7 @@
                           Command="{Binding OpenIbgLogCommand, Mode=OneWay}" />
                 <MenuItem Header="{x:Static localization:UI.Menu_Connect_to_AaruRemote}"
                           Command="{Binding ConnectToRemoteCommand, Mode=OneWay}" />
-                <MenuItem Header="Open device..."
+                <MenuItem Header="{x:Static localization:UI.Menu_Open_device}"
                           Command="{Binding OpenDeviceCommand, Mode=OneWay}"
                           IsVisible="{Binding DevicesSupported, Mode=OneWay}" />
                 <Separator />
@@ -38,7 +38,7 @@
                           IsVisible="{Binding !NativeMenuSupported, Mode=OneWay}"
                           Command="{Binding ExitCommand, Mode=OneWay}" />
             </MenuItem>
-            <MenuItem Header="Image"
+            <MenuItem Header="{x:Static localization:UI.Menu_Image}"
                       IsEnabled="{Binding ImageLoaded, Mode=OneWay}">
                 <MenuItem Command="{Binding CalculateEntropyCommand, Mode=OneWay}"
                           Header="{x:Static localization:UI.ButtonLabel_Calculate_entropy}" />
@@ -54,6 +54,10 @@
                           Header="{x:Static localization:UI.ButtonLabel_View_sectors}" />
                 <MenuItem Command="{Binding DecodeImageMediaTagsCommand, Mode=OneWay}"
                           Header="{x:Static localization:UI.ButtonLabel_Decode_media_tags}" />
+            </MenuItem>
+            <MenuItem Header="{x:Static localization:UI.Menu_Metadata}">
+                <MenuItem Command="{Binding ImageMetadataCommand, Mode=OneWay}"
+                          Header="{x:Static localization:UI.Menu_Edit_image_metadata}" />
             </MenuItem>
             <MenuItem Header="{x:Static localization:UI.Menu_Window}">
                 <MenuItem Header="{x:Static localization:UI.Menu_Console}"

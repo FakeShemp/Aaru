@@ -2137,7 +2137,7 @@ Testers:
     <value>Image information</value>
   </data>
     <data name="Title_Comments" xml:space="preserve">
-    <value>Comments</value>
+    <value>[bold][slateblue1]Comments[/][/]</value>
   </data>
     <data name="Title_Media_information" xml:space="preserve">
     <value>Media information</value>
@@ -2670,13 +2670,13 @@ Do you want to continue?</value>
     <value>Metadata</value>
   </data>
     <data name="Title_Title" xml:space="preserve">
-    <value>Title</value>
+    <value>[bold][slateblue1]Title[/][/]</value>
   </data>
     <data name="Title_Barcode" xml:space="preserve">
     <value>Barcode</value>
   </data>
     <data name="Title_Part_number" xml:space="preserve">
-    <value>Part number</value>
+    <value>[bold][slateblue1]Part number[/][/]</value>
   </data>
     <data name="Title_Number_in_sequence" xml:space="preserve">
     <value>Number in sequence</value>
@@ -2685,10 +2685,10 @@ Do you want to continue?</value>
     <value>Last media of the sequence</value>
   </data>
     <data name="Title_Drive" xml:space="preserve">
-    <value>Drive</value>
+    <value>[bold][red]Drive[/][/]</value>
   </data>
     <data name="Title_Firmware_revision" xml:space="preserve">
-    <value>Firmware revision</value>
+    <value>[bold][slateblue1]Firmware revision[/][/]</value>
   </data>
     <data name="Title_Existing_Aaru_Metadata_sidecar" xml:space="preserve">
     <value>Existing Aaru Metadata sidecar</value>
@@ -3063,7 +3063,7 @@ Do you want to continue?</value>
         <comment>"Attributes" abbreviated to the smallest possible size, if allowed by language rules.</comment>
     </data>
     <data name="Title_Size" xml:space="preserve">
-        <value>[bold][lime]Size[/][/]</value>
+        <value>[bold][slateblue1]Size[/][/]</value>
     </data>
     <data name="Title_Compressed" xml:space="preserve">
         <value>[bold][teal]Compressed[/][/]</value>
@@ -3424,5 +3424,104 @@ Do you want to continue?</value>
     </data>
     <data name="Images_have_identical_contents" xml:space="preserve">
         <value>[green]Images have identical contents.[/]</value>
+    </data>
+    <data name="Menu_Image" xml:space="preserve">
+        <value>_Image</value>
+    </data>
+    <data name="Menu_Metadata" xml:space="preserve">
+        <value>_Metadata</value>
+    </data>
+    <data name="Menu_Edit_image_metadata" xml:space="preserve">
+        <value>Edit _image metadata</value>
+    </data>
+    <data name="Title_Edit_image_metadata" xml:space="preserve">
+        <value>Edit image metadata</value>
+    </data>
+    <data name="Title_Image" xml:space="preserve">
+        <value>[bold][purple_2]Image[/][/]</value>
+    </data>
+    <data name="Title_Image_path" xml:space="preserve">
+        <value>[bold][slateblue1]Image path[/][/]</value>
+    </data>
+    <data name="Title_Creator" xml:space="preserve">
+        <value>[bold][slateblue1]Creator[/][/]</value>
+    </data>
+    <data name="Title_Not_set" xml:space="preserve">
+        <value>Not set</value>
+    </data>
+    <data name="Watermark_Who_created_the_image" xml:space="preserve">
+        <value>Who created the image</value>
+    </data>
+    <data name="Title_Sequence_is_not_set" xml:space="preserve">
+        <value>Sequence is not set</value>
+    </data>
+    <data name="Title_Media_number_no" xml:space="preserve">
+        <value>[bold][slateblue1]Media number[/][/]</value>
+        <comment>Followed by media number</comment>
+    </data>
+    <data name="Title_no_in_a_sequence_of_no" xml:space="preserve">
+        <value>[bold][slateblue1]in a sequence of[/][/]</value>
+        <comment>Follows a media number and is followed by the number of total media</comment>
+    </data>
+    <data name="Title_no_media" xml:space="preserve">
+        <value>[bold][slateblue1]media.[/][/]</value>
+        <comment>Follows the number of total media in the sequence.</comment>
+    </data>
+    <data name="Watermark_Media_title" xml:space="preserve">
+        <value>Media title</value>
+    </data>
+    <data name="Watermark_Media_manufacturer" xml:space="preserve">
+        <value>Media manufacturer</value>
+    </data>
+    <data name="Watermark_Media_model" xml:space="preserve">
+        <value>Media model</value>
+    </data>
+    <data name="Watermark_Media_serial_number" xml:space="preserve">
+        <value>Media serial number</value>
+    </data>
+    <data name="Watermark_Media_part_number" xml:space="preserve">
+        <value>Media part number</value>
+    </data>
+    <data name="Watermark_Drive_manufacturer" xml:space="preserve">
+        <value>Drive manufacturer</value>
+    </data>
+    <data name="Watermark_Drive_model" xml:space="preserve">
+        <value>Drive model</value>
+    </data>
+    <data name="Watermark_Drive_serial_number" xml:space="preserve">
+        <value>Drive serial number</value>
+    </data>
+    <data name="Watermark_Drive_firmware_revision" xml:space="preserve">
+        <value>Drive firmware revision</value>
+    </data>
+    <data name="ButtonLabel_Open" xml:space="preserve">
+        <value>Open</value>
+    </data>
+    <data name="ButtonLabel_Load" xml:space="preserve">
+        <value>Load</value>
+    </data>
+    <data name="AaruFormat_files" xml:space="preserve">
+        <value>AaruFormat files</value>
+    </data>
+    <data name="Error_reopening_image_for_writing" xml:space="preserve">
+        <value>Error reopening image for writing.</value>
+    </data>
+    <data name="There_was_an_error_reopening_the_image_for_writing" xml:space="preserve">
+        <value>There was an error reopening the image for writing. Check the logs for details.</value>
+    </data>
+    <data name="Error_reopening_image_in_read_only_mode_after_writing_metadata" xml:space="preserve">
+        <value>Error reopening image in read-only mode after writing metadata.</value>
+    </data>
+    <data name="There_was_an_error_reopening_the_image_in_read_only_mode_after_writing_metadata" xml:space="preserve">
+        <value>There was an error reopening the image in read-only mode after writing metadata. Check the logs for details.</value>
+    </data>
+    <data name="Metadata_saved_successfully" xml:space="preserve">
+        <value>Metadata saved successfully.</value>
+    </data>
+    <data name="File_is_not_an_AaruFormat_image" xml:space="preserve">
+        <value>File is not an AaruFormat image.</value>
+    </data>
+    <data name="AaruFormat_images_version_1_x_are_read_only" xml:space="preserve">
+        <value>AaruFormat images version 1.x are read-only, convert it to a newer version first.</value>
     </data>
 </root>

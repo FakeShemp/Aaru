@@ -2193,7 +2193,7 @@ Probadores:
     <value>Comandos</value>
   </data>
     <data name="Title_Comments" xml:space="preserve">
-    <value>Comentarios</value>
+    <value>[bold][slateblue1]Comentarios[/][/]</value>
   </data>
     <data name="Title_Connected_by_USB" xml:space="preserve">
     <value>[bold][slateblue1]Conectado por USB[/][/]</value>
@@ -2244,7 +2244,7 @@ Probadores:
     <value>Información del fabricante del disco</value>
   </data>
     <data name="Title_Drive" xml:space="preserve">
-    <value>Unidad</value>
+    <value>[bold][red]Unidad[/][/]</value>
   </data>
     <data name="Title_Drive_firmware_revision" xml:space="preserve">
         <value>[slateblue1]Revisión del firmware de la unidad[/]</value>
@@ -2310,7 +2310,7 @@ Probadores:
         <value>[bold][blue]Dispositivo FireWire[/][/]</value>
     </data>
     <data name="Title_Firmware_revision" xml:space="preserve">
-    <value>Revisión de firmware</value>
+    <value>[bold][slateblue1]Revisión de firmware[/][/]</value>
   </data>
     <data name="Title_First_Media_image" xml:space="preserve">
         <value>[green]1ª imagen[/]</value>
@@ -2478,8 +2478,8 @@ Probadores:
     <value>[bold][blue]Mensaje[/][/]</value>
   </data>
     <data name="Title_Metadata" xml:space="preserve">
-    <value>Metadato</value>
-  </data>
+        <value>Metadatos</value>
+    </data>
     <data name="Title_Miscellaneous" xml:space="preserve">
     <value>[bold][darkorange3]Miscelánea[/][/]</value>
   </data>
@@ -2529,7 +2529,7 @@ Probadores:
     <value>Particiones</value>
   </data>
     <data name="Title_Part_number" xml:space="preserve">
-    <value>Número de parte</value>
+    <value>[bold][slateblue1]Número de parte[/][/]</value>
   </data>
     <data name="Title_PCMCIA" xml:space="preserve">
     <value>PCMCIA</value>
@@ -2631,7 +2631,7 @@ Probadores:
         <value>[bold][teal]Veces usado[/][/]</value>
     </data>
     <data name="Title_Title" xml:space="preserve">
-    <value>Título</value>
+    <value>[bold][slateblue1]Título[/][/]</value>
   </data>
     <data name="Title_TOC" xml:space="preserve">
         <value>[bold][blue]Tabla de contenidos[/][/]</value>
@@ -2988,7 +2988,7 @@ Probadores:
         <value>[bold][blue]Fecha[/][/]</value>
     </data>
     <data name="Title_Size" xml:space="preserve">
-        <value>[bold][lime]Tamaño[/][/]</value>
+        <value>[bold][slateblue1]Tamaño[/][/]</value>
     </data>
     <data name="Unable_to_get_information_about_archive" xml:space="preserve">
         <value>[red]No se pudo obtener información sobre el archivo...[/]</value>
@@ -3349,5 +3349,101 @@ Probadores:
     </data>
     <data name="Images_have_identical_contents" xml:space="preserve">
         <value>[green]Las imágenes tienen idéntico contenido.[/]</value>
+    </data>
+    <data name="Menu_Image" xml:space="preserve">
+        <value>_Imagen</value>
+    </data>
+    <data name="Menu_Metadata" xml:space="preserve">
+        <value>_Metadatos</value>
+    </data>
+    <data name="Menu_Edit_image_metadata" xml:space="preserve">
+        <value>Editar metadatos de _imagen</value>
+    </data>
+    <data name="Title_Edit_image_metadata" xml:space="preserve">
+        <value>Editar metadatos de imagen</value>
+    </data>
+    <data name="Title_Image" xml:space="preserve">
+        <value>[bold][purple_2]Imagen[/][/]</value>
+    </data>
+    <data name="Title_Image_path" xml:space="preserve">
+        <value>[bold][slateblue1]Ruta a la imagen[/][/]</value>
+    </data>
+    <data name="Title_Creator" xml:space="preserve">
+        <value>[bold][slateblue1]Creador[/][/]</value>
+    </data>
+    <data name="Title_Not_set" xml:space="preserve">
+        <value>No establecido</value>
+    </data>
+    <data name="Watermark_Who_created_the_image" xml:space="preserve">
+        <value>Quién creó la imagen</value>
+    </data>
+    <data name="Title_Sequence_is_not_set" xml:space="preserve">
+        <value>Secuencia no establecida</value>
+    </data>
+    <data name="Title_Media_number_no" xml:space="preserve">
+        <value>[bold][slateblue1]Medio número[/][/]</value>
+    </data>
+    <data name="Title_no_in_a_sequence_of_no" xml:space="preserve">
+        <value>[bold][slateblue1]en una secuencia de[/][/]</value>
+    </data>
+    <data name="Title_no_media" xml:space="preserve">
+        <value>[bold][slateblue1]medios.[/][/]</value>
+    </data>
+    <data name="Watermark_Media_title" xml:space="preserve">
+        <value>Título del medio</value>
+    </data>
+    <data name="Watermark_Media_manufacturer" xml:space="preserve">
+        <value>Fabricante del medio</value>
+    </data>
+    <data name="Watermark_Media_model" xml:space="preserve">
+        <value>Modelo del medio</value>
+    </data>
+    <data name="Watermark_Media_serial_number" xml:space="preserve">
+        <value>Número de serie del medio</value>
+    </data>
+    <data name="Watermark_Media_part_number" xml:space="preserve">
+        <value>Número de parte del medio</value>
+    </data>
+    <data name="Watermark_Drive_manufacturer" xml:space="preserve">
+        <value>Fabricante de la unidad</value>
+    </data>
+    <data name="Watermark_Drive_model" xml:space="preserve">
+        <value>Modelo de la unidad</value>
+    </data>
+    <data name="Watermark_Drive_serial_number" xml:space="preserve">
+        <value>Número de serie de la unidad</value>
+    </data>
+    <data name="Watermark_Drive_firmware_revision" xml:space="preserve">
+        <value>Revisión del firmware de la unidad</value>
+    </data>
+    <data name="ButtonLabel_Open" xml:space="preserve">
+        <value>Abrir</value>
+    </data>
+    <data name="ButtonLabel_Load" xml:space="preserve">
+        <value>Cargar</value>
+    </data>
+    <data name="AaruFormat_files" xml:space="preserve">
+        <value>Archivos AaruFormat</value>
+    </data>
+    <data name="Error_reopening_image_for_writing" xml:space="preserve">
+        <value>Error reabriendo la imagen para escritura.</value>
+    </data>
+    <data name="There_was_an_error_reopening_the_image_for_writing" xml:space="preserve">
+        <value>Ocurrió un error al reabrir la imagen para escritura. Consulte el registro para más información.</value>
+    </data>
+    <data name="Error_reopening_image_in_read_only_mode_after_writing_metadata" xml:space="preserve">
+        <value>Error reabriendo la imagen en sólo lectura después de escribir los metadatos.</value>
+    </data>
+    <data name="There_was_an_error_reopening_the_image_in_read_only_mode_after_writing_metadata" xml:space="preserve">
+        <value>Ocurrió un error al reabrir la imagen en sólo lectura después de escribir los metadatos. Consulte el registro para más información.</value>
+    </data>
+    <data name="Metadata_saved_successfully" xml:space="preserve">
+        <value>Metadatos guardados con éxito.</value>
+    </data>
+    <data name="File_is_not_an_AaruFormat_image" xml:space="preserve">
+        <value>El archivo no es una imagen AaruFormat.</value>
+    </data>
+    <data name="AaruFormat_images_version_1_x_are_read_only" xml:space="preserve">
+        <value>Las imágenes AaruFormat versión 1.x son de sólo lectura, conviértala primero a una versión más moderna.</value>
     </data>
 </root>

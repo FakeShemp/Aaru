@@ -118,6 +118,7 @@ public partial class MainWindowViewModel : ViewModelBase
         OpenIbgLogCommand           = new AsyncRelayCommand(OpenIbgLogAsync);
         ConnectToRemoteCommand      = new AsyncRelayCommand(ConnectToRemoteAsync);
         OpenDeviceCommand           = new RelayCommand(OpenDevice);
+        ImageMetadataCommand        = new AsyncRelayCommand(ImageMetadataAsync);
 
         _genericHddIcon =
             new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/drive-harddisk.png")));
@@ -172,6 +173,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand OpenIbgLogCommand           { get; }
     public ICommand ConnectToRemoteCommand      { get; }
     public ICommand OpenDeviceCommand           { get; }
+    public ICommand ImageMetadataCommand        { get; }
 
     public bool NativeMenuSupported
     {
@@ -227,6 +229,14 @@ public partial class MainWindowViewModel : ViewModelBase
                     break;
             }
         }
+    }
+
+    Task ImageMetadataAsync()
+    {
+        var dialog = new ImageMetadata();
+        dialog.DataContext = new ImageMetadataViewModel(dialog);
+
+        return dialog.ShowDialog(_view);
     }
 
     void OpenDevice()

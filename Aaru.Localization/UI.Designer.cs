@@ -6699,5 +6699,197 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Images_have_identical_contents", resourceCulture);
             }
         }
+        
+        public static string Menu_Image {
+            get {
+                return ResourceManager.GetString("Menu_Image", resourceCulture);
+            }
+        }
+        
+        public static string Menu_Metadata {
+            get {
+                return ResourceManager.GetString("Menu_Metadata", resourceCulture);
+            }
+        }
+        
+        public static string Menu_Edit_image_metadata {
+            get {
+                return ResourceManager.GetString("Menu_Edit_image_metadata", resourceCulture);
+            }
+        }
+        
+        public static string Title_Edit_image_metadata {
+            get {
+                return ResourceManager.GetString("Title_Edit_image_metadata", resourceCulture);
+            }
+        }
+        
+        public static string Title_Image {
+            get {
+                return ResourceManager.GetString("Title_Image", resourceCulture);
+            }
+        }
+        
+        public static string Title_Image_path {
+            get {
+                return ResourceManager.GetString("Title_Image_path", resourceCulture);
+            }
+        }
+        
+        public static string Title_Creator {
+            get {
+                return ResourceManager.GetString("Title_Creator", resourceCulture);
+            }
+        }
+        
+        public static string Title_Not_set {
+            get {
+                return ResourceManager.GetString("Title_Not_set", resourceCulture);
+            }
+        }
+        
+        public static string Watermark_Who_created_the_image {
+            get {
+                return ResourceManager.GetString("Watermark_Who_created_the_image", resourceCulture);
+            }
+        }
+        
+        public static string Title_Sequence_is_not_set {
+            get {
+                return ResourceManager.GetString("Title_Sequence_is_not_set", resourceCulture);
+            }
+        }
+        
+        public static string Title_Media_number_no {
+            get {
+                return ResourceManager.GetString("Title_Media_number_no", resourceCulture);
+            }
+        }
+        
+        public static string Title_no_in_a_sequence_of_no {
+            get {
+                return ResourceManager.GetString("Title_no_in_a_sequence_of_no", resourceCulture);
+            }
+        }
+        
+        public static string Title_no_media {
+            get {
+                return ResourceManager.GetString("Title_no_media", resourceCulture);
+            }
+        }
+        
+        public static string Watermark_Media_title {
+            get {
+                return ResourceManager.GetString("Watermark_Media_title", resourceCulture);
+            }
+        }
+        
+        public static string Watermark_Media_manufacturer {
+            get {
+                return ResourceManager.GetString("Watermark_Media_manufacturer", resourceCulture);
+            }
+        }
+        
+        public static string Watermark_Media_model {
+            get {
+                return ResourceManager.GetString("Watermark_Media_model", resourceCulture);
+            }
+        }
+        
+        public static string Watermark_Media_serial_number {
+            get {
+                return ResourceManager.GetString("Watermark_Media_serial_number", resourceCulture);
+            }
+        }
+        
+        public static string Watermark_Media_part_number {
+            get {
+                return ResourceManager.GetString("Watermark_Media_part_number", resourceCulture);
+            }
+        }
+        
+        public static string Watermark_Drive_manufacturer {
+            get {
+                return ResourceManager.GetString("Watermark_Drive_manufacturer", resourceCulture);
+            }
+        }
+        
+        public static string Watermark_Drive_model {
+            get {
+                return ResourceManager.GetString("Watermark_Drive_model", resourceCulture);
+            }
+        }
+        
+        public static string Watermark_Drive_serial_number {
+            get {
+                return ResourceManager.GetString("Watermark_Drive_serial_number", resourceCulture);
+            }
+        }
+        
+        public static string Watermark_Drive_firmware_revision {
+            get {
+                return ResourceManager.GetString("Watermark_Drive_firmware_revision", resourceCulture);
+            }
+        }
+        
+        public static string ButtonLabel_Open {
+            get {
+                return ResourceManager.GetString("ButtonLabel_Open", resourceCulture);
+            }
+        }
+        
+        public static string ButtonLabel_Load {
+            get {
+                return ResourceManager.GetString("ButtonLabel_Load", resourceCulture);
+            }
+        }
+        
+        public static string AaruFormat_files {
+            get {
+                return ResourceManager.GetString("AaruFormat_files", resourceCulture);
+            }
+        }
+        
+        public static string Error_reopening_image_for_writing {
+            get {
+                return ResourceManager.GetString("Error_reopening_image_for_writing", resourceCulture);
+            }
+        }
+        
+        public static string There_was_an_error_reopening_the_image_for_writing {
+            get {
+                return ResourceManager.GetString("There_was_an_error_reopening_the_image_for_writing", resourceCulture);
+            }
+        }
+        
+        public static string Error_reopening_image_in_read_only_mode_after_writing_metadata {
+            get {
+                return ResourceManager.GetString("Error_reopening_image_in_read_only_mode_after_writing_metadata", resourceCulture);
+            }
+        }
+        
+        public static string There_was_an_error_reopening_the_image_in_read_only_mode_after_writing_metadata {
+            get {
+                return ResourceManager.GetString("There_was_an_error_reopening_the_image_in_read_only_mode_after_writing_metadata", resourceCulture);
+            }
+        }
+        
+        public static string Metadata_saved_successfully {
+            get {
+                return ResourceManager.GetString("Metadata_saved_successfully", resourceCulture);
+            }
+        }
+        
+        public static string File_is_not_an_AaruFormat_image {
+            get {
+                return ResourceManager.GetString("File_is_not_an_AaruFormat_image", resourceCulture);
+            }
+        }
+        
+        public static string AaruFormat_images_version_1_x_are_read_only {
+            get {
+                return ResourceManager.GetString("AaruFormat_images_version_1_x_are_read_only", resourceCulture);
+            }
+        }
     }
 }
