@@ -70,12 +70,12 @@ public sealed class AtaInfoViewModel : ViewModelBase
             {
                 AtaMcptText = (ataMcptError.Value.DeviceHead & 0x7) switch
                               {
-                                  0 => Localization.Core.Device_reports_incorrect_media_card_type,
-                                  1 => Localization.Core.Device_contains_SD_card,
-                                  2 => Localization.Core.Device_contains_MMC,
-                                  3 => Localization.Core.Device_contains_SDIO_card,
-                                  4 => Localization.Core.Device_contains_SM_card,
-                                  _ => string.Format(Localization.Core.Device_contains_unknown_media_card_type_0,
+                                  0 => Aaru.Localization.Core.Device_reports_incorrect_media_card_type,
+                                  1 => Aaru.Localization.Core.Device_contains_SD_card,
+                                  2 => Aaru.Localization.Core.Device_contains_MMC,
+                                  3 => Aaru.Localization.Core.Device_contains_SDIO_card,
+                                  4 => Aaru.Localization.Core.Device_contains_SM_card,
+                                  _ => string.Format(Aaru.Localization.Core.Device_contains_unknown_media_card_type_0,
                                                      ataMcptError.Value.DeviceHead & 0x07)
                               };
 
@@ -83,7 +83,7 @@ public sealed class AtaInfoViewModel : ViewModelBase
 
                 var specificData = (ushort)(ataMcptError.Value.CylinderHigh * 0x100 + ataMcptError.Value.CylinderLow);
 
-                AtaMcptSpecificDataText = string.Format(Localization.Core.Card_specific_data_0, specificData);
+                AtaMcptSpecificDataText = string.Format(Aaru.Localization.Core.Card_specific_data_0, specificData);
             }
 
             AtaIdentifyText = Identify.Prettify(_ata);

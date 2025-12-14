@@ -58,6 +58,11 @@
             <MenuItem Header="{x:Static localization:UI.Menu_Metadata}">
                 <MenuItem Command="{Binding ImageMetadataCommand, Mode=OneWay}"
                           Header="{x:Static localization:UI.Menu_Edit_image_metadata}" />
+                <Separator />
+                <MenuItem Command="{Binding CreateMetadataCommand, Mode=OneWay}"
+                          Header="Create Metadata Sidecar..." />
+                <MenuItem Command="{Binding EditMetadataCommand, Mode=OneWay}"
+                          Header="Edit Metadata Sidecar..." />
             </MenuItem>
             <MenuItem Header="{x:Static localization:UI.Menu_Window}">
                 <MenuItem Header="{x:Static localization:UI.Menu_Console}"

@@ -135,8 +135,10 @@ public sealed partial class PcmciaInfoViewModel : ViewModelBase
 
                         break;
                     default:
-                        tupleCode        = $"0x{(byte)tuple.Code:X2}";
-                        tupleDescription = string.Format(Localization.Core.Found_unknown_tuple_ID_0, (byte)tuple.Code);
+                        tupleCode = $"0x{(byte)tuple.Code:X2}";
+
+                        tupleDescription =
+                            string.Format(Aaru.Localization.Core.Found_unknown_tuple_ID_0, (byte)tuple.Code);
 
                         break;
                 }

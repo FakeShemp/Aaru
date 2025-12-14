@@ -58,11 +58,11 @@ public sealed class XboxInfoViewModel
         if(xgdInfo != null)
         {
             XboxInformationVisible = true;
-            XboxL0VideoText        = string.Format(Localization.Core._0_sectors, xgdInfo.L0Video);
-            XboxL1VideoText        = string.Format(Localization.Core._0_sectors, xgdInfo.L1Video);
-            XboxMiddleZoneText     = string.Format(Localization.Core._0_sectors, xgdInfo.MiddleZone);
-            XboxGameSizeText       = string.Format(Localization.Core._0_sectors, xgdInfo.GameSize);
-            XboxTotalSizeText      = string.Format(Localization.Core._0_sectors, xgdInfo.TotalSize);
+            XboxL0VideoText        = string.Format(Aaru.Localization.Core._0_sectors, xgdInfo.L0Video);
+            XboxL1VideoText        = string.Format(Aaru.Localization.Core._0_sectors, xgdInfo.L1Video);
+            XboxMiddleZoneText     = string.Format(Aaru.Localization.Core._0_sectors, xgdInfo.MiddleZone);
+            XboxGameSizeText       = string.Format(Aaru.Localization.Core._0_sectors, xgdInfo.GameSize);
+            XboxTotalSizeText      = string.Format(Aaru.Localization.Core._0_sectors, xgdInfo.TotalSize);
             XboxRealBreakText      = xgdInfo.LayerBreak.ToString();
         }
 

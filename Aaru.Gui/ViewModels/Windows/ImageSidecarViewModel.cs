@@ -153,7 +153,7 @@ public sealed partial class ImageSidecarViewModel : ViewModelBase
         _sidecarClass.EndProgressEvent2    += EndProgress2;
         Metadata sidecar = _sidecarClass.Create();
 
-        AaruLogging.WriteLine(Localization.Core.Writing_metadata_sidecar);
+        AaruLogging.WriteLine(Aaru.Localization.Core.Writing_metadata_sidecar);
 
         var jsonFs = new FileStream(DestinationText, FileMode.Create);
 
@@ -217,7 +217,7 @@ public sealed partial class ImageSidecarViewModel : ViewModelBase
 
     void Stop()
     {
-        ProgressText = Localization.Core.Aborting;
+        ProgressText = Aaru.Localization.Core.Aborting;
         StopEnabled  = false;
         _sidecarClass.Abort();
     }

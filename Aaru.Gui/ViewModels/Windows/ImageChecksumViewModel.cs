@@ -307,7 +307,7 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
 
                             if(errno != ErrorNumber.NoError)
                             {
-                                AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1, errno, i));
+                                AaruLogging.Error(string.Format(Aaru.Localization.Core.Error_0_reading_sector_1, errno, i));
 
                                 _cancel = true;
 
@@ -356,7 +356,7 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
 
                             if(errno != ErrorNumber.NoError)
                             {
-                                AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
+                                AaruLogging.Error(string.Format(Aaru.Localization.Core.Error_0_reading_sector_1,
                                                                 errno,
                                                                 doneSectors));
 
@@ -389,7 +389,7 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
 
                             if(errno != ErrorNumber.NoError)
                             {
-                                AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
+                                AaruLogging.Error(string.Format(Aaru.Localization.Core.Error_0_reading_sector_1,
                                                                 errno,
                                                                 doneSectors));
 
@@ -455,7 +455,7 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
 
                         if(errno != ErrorNumber.NoError)
                         {
-                            AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1, errno, i));
+                            AaruLogging.Error(string.Format(Aaru.Localization.Core.Error_0_reading_sector_1, errno, i));
 
                             _cancel = true;
 
@@ -483,9 +483,9 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
             }
             catch(Exception ex)
             {
-                AaruLogging.Debug(Localization.Core.Could_not_get_tracks_because_0, ex.Message);
+                AaruLogging.Debug(Aaru.Localization.Core.Could_not_get_tracks_because_0, ex.Message);
                 AaruLogging.WriteLine("Unable to get separate tracks, not checksumming them");
-                AaruLogging.Exception(ex, Localization.Core.Could_not_get_tracks_because_0, ex.Message);
+                AaruLogging.Exception(ex, Aaru.Localization.Core.Could_not_get_tracks_because_0, ex.Message);
             }
         }
         else
@@ -518,7 +518,7 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
 
                     if(errno != ErrorNumber.NoError)
                     {
-                        AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
+                        AaruLogging.Error(string.Format(Aaru.Localization.Core.Error_0_reading_sector_1,
                                                         errno,
                                                         doneSectors));
 
@@ -550,7 +550,7 @@ public sealed partial class ImageChecksumViewModel : ViewModelBase
 
                     if(errno != ErrorNumber.NoError)
                     {
-                        AaruLogging.Error(string.Format(Localization.Core.Error_0_reading_sector_1,
+                        AaruLogging.Error(string.Format(Aaru.Localization.Core.Error_0_reading_sector_1,
                                                         errno,
                                                         doneSectors));
 

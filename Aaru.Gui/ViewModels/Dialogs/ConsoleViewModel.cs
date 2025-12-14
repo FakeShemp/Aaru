@@ -98,7 +98,7 @@ public sealed class ConsoleViewModel : ViewModelBase
                                              typeof(AssemblyInformationalVersionAttribute)) as
                     AssemblyInformationalVersionAttribute;
 
-            await logSw.WriteLineAsync(Localization.Core.System_information);
+            await logSw.WriteLineAsync(Aaru.Localization.Core.System_information);
 
             await
                 logSw.WriteLineAsync($"{DetectOS.GetPlatformName(platId, platVer)} {platVer} ({(Environment.Is64BitOperatingSystem ? 64 : 32)}-bit)");
@@ -107,15 +107,15 @@ public sealed class ConsoleViewModel : ViewModelBase
 
             await logSw.WriteLineAsync();
 
-            await logSw.WriteLineAsync(Localization.Core.Program_information);
+            await logSw.WriteLineAsync(Aaru.Localization.Core.Program_information);
             await logSw.WriteLineAsync($"Aaru {assemblyVersion?.InformationalVersion}");
 
-            await logSw.WriteLineAsync(string.Format(Localization.Core.Running_in_0_bit,
+            await logSw.WriteLineAsync(string.Format(Aaru.Localization.Core.Running_in_0_bit,
                                                      Environment.Is64BitProcess ? 64 : 32));
 #if DEBUG
-            await logSw.WriteLineAsync(Localization.Core.DEBUG_version);
+            await logSw.WriteLineAsync(Aaru.Localization.Core.DEBUG_version);
 #endif
-            await logSw.WriteLineAsync(string.Format(Localization.Core.Command_line_0, Environment.CommandLine));
+            await logSw.WriteLineAsync(string.Format(Aaru.Localization.Core.Command_line_0, Environment.CommandLine));
             await logSw.WriteLineAsync();
 
             await logSw.WriteLineAsync(UI.Console_with_ornament);

@@ -203,27 +203,27 @@ public sealed partial class MediaScanViewModel : ViewModelBase
                 _pendingSectorData.Clear();
             }
 
-            TotalTime = string.Format(Localization.Core.Took_a_total_of_0_1_processing_commands,
+            TotalTime = string.Format(Aaru.Localization.Core.Took_a_total_of_0_1_processing_commands,
                                       results.TotalTime.Seconds().Humanize(minUnit: TimeUnit.Second),
                                       results.ProcessingTime.Seconds().Humanize(minUnit: TimeUnit.Second));
 
-            AvgSpeed = string.Format(Localization.Core.Average_speed_0,
+            AvgSpeed = string.Format(Aaru.Localization.Core.Average_speed_0,
                                      ByteSize.FromMegabytes(results.AvgSpeed).Per(1.Seconds()).Humanize());
 
-            MaxSpeed = string.Format(Localization.Core.Fastest_speed_burst_0,
+            MaxSpeed = string.Format(Aaru.Localization.Core.Fastest_speed_burst_0,
                                      ByteSize.FromMegabytes(results.MaxSpeed).Per(1.Seconds()).Humanize());
 
-            MinSpeed = string.Format(Localization.Core.Slowest_speed_burst_0,
+            MinSpeed = string.Format(Aaru.Localization.Core.Slowest_speed_burst_0,
                                      ByteSize.FromMegabytes(results.MinSpeed).Per(1.Seconds()).Humanize());
 
-            A = string.Format(Localization.Core._0_sectors_took_less_than_3_ms,                        results.A);
-            B = string.Format(Localization.Core._0_sectors_took_less_than_10_ms_but_more_than_3_ms,    results.B);
-            C = string.Format(Localization.Core._0_sectors_took_less_than_50_ms_but_more_than_10_ms,   results.C);
-            D = string.Format(Localization.Core._0_sectors_took_less_than_150_ms_but_more_than_50_ms,  results.D);
-            E = string.Format(Localization.Core._0_sectors_took_less_than_500_ms_but_more_than_150_ms, results.E);
-            F = string.Format(Localization.Core._0_sectors_took_more_than_500_ms,                      results.F);
+            A = string.Format(Aaru.Localization.Core._0_sectors_took_less_than_3_ms,                        results.A);
+            B = string.Format(Aaru.Localization.Core._0_sectors_took_less_than_10_ms_but_more_than_3_ms,    results.B);
+            C = string.Format(Aaru.Localization.Core._0_sectors_took_less_than_50_ms_but_more_than_10_ms,   results.C);
+            D = string.Format(Aaru.Localization.Core._0_sectors_took_less_than_150_ms_but_more_than_50_ms,  results.D);
+            E = string.Format(Aaru.Localization.Core._0_sectors_took_less_than_500_ms_but_more_than_150_ms, results.E);
+            F = string.Format(Aaru.Localization.Core._0_sectors_took_more_than_500_ms,                      results.F);
 
-            UnreadableSectors = string.Format(Localization.Core._0_sectors_could_not_be_read,
+            UnreadableSectors = string.Format(Aaru.Localization.Core._0_sectors_could_not_be_read,
                                               results.UnreadableSectors?.Count ?? 0);
         });
 
@@ -364,7 +364,7 @@ public sealed partial class MediaScanViewModel : ViewModelBase
     async void OnScanUnreadable(ulong sector) => await Dispatcher.UIThread.InvokeAsync(() =>
     {
         _localResults.Errored += _blocksToRead;
-        UnreadableSectors     =  string.Format(Localization.Core._0_sectors_could_not_be_read, _localResults.Errored);
+        UnreadableSectors = string.Format(Aaru.Localization.Core._0_sectors_could_not_be_read, _localResults.Errored);
     });
 
     async void OnScanTime(ulong sector, double duration)
@@ -422,28 +422,28 @@ public sealed partial class MediaScanViewModel : ViewModelBase
                                                           BlockMapSectorData.Add(item);
 
                                                       // Update text labels
-                                                      A = string.Format(Localization.Core
-                                                                           ._0_sectors_took_less_than_3_ms,
+                                                      A = string.Format(Aaru.Localization.Core
+                                                                            ._0_sectors_took_less_than_3_ms,
                                                                         _localResults.A);
 
-                                                      B = string.Format(Localization.Core
-                                                                           ._0_sectors_took_less_than_10_ms_but_more_than_3_ms,
+                                                      B = string.Format(Aaru.Localization.Core
+                                                                            ._0_sectors_took_less_than_10_ms_but_more_than_3_ms,
                                                                         _localResults.B);
 
-                                                      C = string.Format(Localization.Core
-                                                                           ._0_sectors_took_less_than_50_ms_but_more_than_10_ms,
+                                                      C = string.Format(Aaru.Localization.Core
+                                                                            ._0_sectors_took_less_than_50_ms_but_more_than_10_ms,
                                                                         _localResults.C);
 
-                                                      D = string.Format(Localization.Core
-                                                                           ._0_sectors_took_less_than_150_ms_but_more_than_50_ms,
+                                                      D = string.Format(Aaru.Localization.Core
+                                                                            ._0_sectors_took_less_than_150_ms_but_more_than_50_ms,
                                                                         _localResults.D);
 
-                                                      E = string.Format(Localization.Core
-                                                                           ._0_sectors_took_less_than_500_ms_but_more_than_150_ms,
+                                                      E = string.Format(Aaru.Localization.Core
+                                                                            ._0_sectors_took_less_than_500_ms_but_more_than_150_ms,
                                                                         _localResults.E);
 
-                                                      F = string.Format(Localization.Core
-                                                                           ._0_sectors_took_more_than_500_ms,
+                                                      F = string.Format(Aaru.Localization.Core
+                                                                            ._0_sectors_took_more_than_500_ms,
                                                                         _localResults.F);
                                                   },
                                                   DispatcherPriority.Background);

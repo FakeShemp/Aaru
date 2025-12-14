@@ -123,109 +123,113 @@ public sealed class ImageInfoViewModel : ViewModelBase
         ImageIdentifiedText = string.Format(UI.Image_format_identified_by_0_1, imageFormat.Name, imageFormat.Id);
 
         ImageFormatText = !string.IsNullOrWhiteSpace(imageFormat.Info.Version)
-                              ? string.Format(Localization.Core.Format_0_version_1_WithMarkup,
+                              ? string.Format(Aaru.Localization.Core.Format_0_version_1_WithMarkup,
                                               imageFormat.Format,
                                               imageFormat.Info.Version)
-                              : string.Format(Localization.Core.Format_0_WithMarkup, imageFormat.Format);
+                              : string.Format(Aaru.Localization.Core.Format_0_WithMarkup, imageFormat.Format);
 
-        ImageSizeText = string.Format(Localization.Core.Image_without_headers_is_0_bytes_long,
+        ImageSizeText = string.Format(Aaru.Localization.Core.Image_without_headers_is_0_bytes_long,
                                       imageFormat.Info.ImageSize);
 
         SectorsText =
-            string.Format(Localization.Core.Contains_a_media_of_0_sectors_with_a_maximum_sector_size_of_1_bytes_etc,
+            string.Format(Aaru.Localization.Core
+                              .Contains_a_media_of_0_sectors_with_a_maximum_sector_size_of_1_bytes_etc,
                           imageFormat.Info.Sectors,
                           imageFormat.Info.SectorSize,
                           ByteSize.FromBytes(imageFormat.Info.Sectors * imageFormat.Info.SectorSize).Humanize());
 
-        MediaTypeText = string.Format(Localization.Core.Contains_a_media_of_type_0_and_XML_type_1_WithMarkup,
+        MediaTypeText = string.Format(Aaru.Localization.Core.Contains_a_media_of_type_0_and_XML_type_1_WithMarkup,
                                       imageFormat.Info.MediaType.Humanize(),
                                       imageFormat.Info.MetadataMediaType);
 
         HasPartitionsText = imageFormat.Info.HasPartitions
-                                ? Localization.Core.Has_partitions
-                                : Localization.Core.Doesnt_have_partitions;
+                                ? Aaru.Localization.Core.Has_partitions
+                                : Aaru.Localization.Core.Doesnt_have_partitions;
 
         HasSessionsText = imageFormat.Info.HasSessions
-                              ? Localization.Core.Has_sessions
-                              : Localization.Core.Doesnt_have_sessions;
+                              ? Aaru.Localization.Core.Has_sessions
+                              : Aaru.Localization.Core.Doesnt_have_sessions;
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.Application))
         {
             ApplicationText = !string.IsNullOrWhiteSpace(imageFormat.Info.ApplicationVersion)
-                                  ? string.Format(Localization.Core.Was_created_with_0_version_1_WithMarkup,
+                                  ? string.Format(Aaru.Localization.Core.Was_created_with_0_version_1_WithMarkup,
                                                   imageFormat.Info.Application,
                                                   imageFormat.Info.ApplicationVersion)
-                                  : string.Format(Localization.Core.Was_created_with_0_WithMarkup,
+                                  : string.Format(Aaru.Localization.Core.Was_created_with_0_WithMarkup,
                                                   imageFormat.Info.Application);
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.Creator))
-            CreatorText = string.Format(Localization.Core.Created_by_0_WithMarkup, imageFormat.Info.Creator);
+            CreatorText = string.Format(Aaru.Localization.Core.Created_by_0_WithMarkup, imageFormat.Info.Creator);
 
         if(imageFormat.Info.CreationTime != DateTime.MinValue)
-            CreationTimeText = string.Format(Localization.Core.Created_on_0, imageFormat.Info.CreationTime);
+            CreationTimeText = string.Format(Aaru.Localization.Core.Created_on_0, imageFormat.Info.CreationTime);
 
         if(imageFormat.Info.LastModificationTime != DateTime.MinValue)
         {
             LastModificationTimeText =
-                string.Format(Localization.Core.Last_modified_on_0, imageFormat.Info.LastModificationTime);
+                string.Format(Aaru.Localization.Core.Last_modified_on_0, imageFormat.Info.LastModificationTime);
         }
 
         if(imageFormat.Info.MediaSequence != 0 && imageFormat.Info.LastMediaSequence != 0)
         {
-            MediaSequenceText = string.Format(Localization.Core.Media_is_number_0_on_a_set_of_1_medias,
+            MediaSequenceText = string.Format(Aaru.Localization.Core.Media_is_number_0_on_a_set_of_1_medias,
                                               imageFormat.Info.MediaSequence,
                                               imageFormat.Info.LastMediaSequence);
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaTitle))
-            MediaTitleText = string.Format(Localization.Core.Media_title_0_WithMarkup, imageFormat.Info.MediaTitle);
+            MediaTitleText =
+                string.Format(Aaru.Localization.Core.Media_title_0_WithMarkup, imageFormat.Info.MediaTitle);
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaManufacturer))
         {
-            MediaManufacturerText = string.Format(Localization.Core.Media_manufacturer_0_WithMarkup,
+            MediaManufacturerText = string.Format(Aaru.Localization.Core.Media_manufacturer_0_WithMarkup,
                                                   imageFormat.Info.MediaManufacturer);
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaModel))
-            MediaModelText = string.Format(Localization.Core.Media_model_0_WithMarkup, imageFormat.Info.MediaModel);
+            MediaModelText =
+                string.Format(Aaru.Localization.Core.Media_model_0_WithMarkup, imageFormat.Info.MediaModel);
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaSerialNumber))
         {
-            MediaSerialNumberText = string.Format(Localization.Core.Media_serial_number_0_WithMarkup,
+            MediaSerialNumberText = string.Format(Aaru.Localization.Core.Media_serial_number_0_WithMarkup,
                                                   imageFormat.Info.MediaSerialNumber);
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaBarcode))
         {
-            MediaBarcodeText =
-                string.Format(Localization.Core.Media_barcode_0_WithMarkup, imageFormat.Info.MediaBarcode);
+            MediaBarcodeText = string.Format(Aaru.Localization.Core.Media_barcode_0_WithMarkup,
+                                             imageFormat.Info.MediaBarcode);
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.MediaPartNumber))
         {
-            MediaPartNumberText = string.Format(Localization.Core.Media_part_number_0_WithMarkup,
+            MediaPartNumberText = string.Format(Aaru.Localization.Core.Media_part_number_0_WithMarkup,
                                                 imageFormat.Info.MediaPartNumber);
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveManufacturer))
         {
-            DriveManufacturerText = string.Format(Localization.Core.Drive_manufacturer_0_WithMarkup,
+            DriveManufacturerText = string.Format(Aaru.Localization.Core.Drive_manufacturer_0_WithMarkup,
                                                   imageFormat.Info.DriveManufacturer);
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveModel))
-            DriveModelText = string.Format(Localization.Core.Drive_model_0_WithMarkup, imageFormat.Info.DriveModel);
+            DriveModelText =
+                string.Format(Aaru.Localization.Core.Drive_model_0_WithMarkup, imageFormat.Info.DriveModel);
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveSerialNumber))
         {
-            DriveSerialNumberText = string.Format(Localization.Core.Drive_serial_number_0_WithMarkup,
+            DriveSerialNumberText = string.Format(Aaru.Localization.Core.Drive_serial_number_0_WithMarkup,
                                                   imageFormat.Info.DriveSerialNumber);
         }
 
         if(!string.IsNullOrWhiteSpace(imageFormat.Info.DriveFirmwareRevision))
         {
-            DriveFirmwareRevisionText = string.Format(Localization.Core.Drive_firmware_info_0_WithMarkup,
+            DriveFirmwareRevisionText = string.Format(Aaru.Localization.Core.Drive_firmware_info_0_WithMarkup,
                                                       imageFormat.Info.DriveFirmwareRevision);
         }
 
@@ -241,9 +245,8 @@ public sealed class ImageInfoViewModel : ViewModelBase
         }
 
         if(imageFormat.Info.ReadableMediaTags is { Count: > 0 })
-        {
-            foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.Order()) MediaTagsList.Add(tag.Humanize());
-        }
+            foreach(MediaTagType tag in imageFormat.Info.ReadableMediaTags.Order())
+                MediaTagsList.Add(tag.Humanize());
 
         if(imageFormat.Info.ReadableSectorTags is { Count: > 0 })
         {
@@ -762,8 +765,9 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Sessions is { Count: > 0 })
-                    foreach(Session session in opticalMediaImage.Sessions)
-                        Sessions.Add(session);
+                {
+                    foreach(Session session in opticalMediaImage.Sessions) Sessions.Add(session);
+                }
             }
             catch(Exception ex)
             {
@@ -773,8 +777,9 @@ public sealed class ImageInfoViewModel : ViewModelBase
             try
             {
                 if(opticalMediaImage.Tracks is { Count: > 0 })
-                    foreach(Track track in opticalMediaImage.Tracks)
-                        Tracks.Add(track);
+                {
+                    foreach(Track track in opticalMediaImage.Tracks) Tracks.Add(track);
+                }
             }
             catch(Exception ex)
             {

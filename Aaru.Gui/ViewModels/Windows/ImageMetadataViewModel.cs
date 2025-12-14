@@ -186,7 +186,7 @@ public sealed partial class ImageMetadataViewModel : ViewModelBase
         if(errno != ErrorNumber.NoError)
         {
             AaruLogging.Error(UI.Error_reopening_image_in_read_only_mode_after_writing_metadata);
-            AaruLogging.Error(Localization.Core.Error_0, errno);
+            AaruLogging.Error(Aaru.Localization.Core.Error_0, errno);
 
             msbox = MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
                                                             UI
@@ -201,7 +201,7 @@ public sealed partial class ImageMetadataViewModel : ViewModelBase
             return;
         }
 
-        msbox = MessageBoxManager.GetMessageBoxStandard(Localization.Core.Success,
+        msbox = MessageBoxManager.GetMessageBoxStandard(Aaru.Localization.Core.Success,
                                                         UI.Metadata_saved_successfully,
                                                         ButtonEnum.Ok,
                                                         Icon.Success);
@@ -339,8 +339,8 @@ public sealed partial class ImageMetadataViewModel : ViewModelBase
                 await msbox.ShowAsync();
 
                 AaruLogging.Error(UI.Unable_to_open_image_format);
-                AaruLogging.Error(Localization.Core.Error_0, ex.Message);
-                AaruLogging.Exception(ex, Localization.Core.Error_0, ex.Message);
+                AaruLogging.Error(Aaru.Localization.Core.Error_0, ex.Message);
+                AaruLogging.Exception(ex, Aaru.Localization.Core.Error_0, ex.Message);
             }
         }
         catch(Exception ex)

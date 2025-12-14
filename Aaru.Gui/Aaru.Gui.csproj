@@ -313,6 +313,10 @@
     <EmbeddedResource Include="Assets\Icons\oxygen\32x32\media-eject.png"/>
     <EmbeddedResource Include="Assets\Icons\oxygen\32x32\media-flash-sd-mmc.png"/>
     <EmbeddedResource Include="Assets\Icons\oxygen\32x32\media-tape.png"/>
+    <EmbeddedResource Update="Localization\GUI.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>GUI.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assets"/>
@@ -409,6 +413,11 @@
     </Compile>
     <Compile Update="Views\Windows\ViewSector.xaml.cs">
       <DependentUpon>ViewSector.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Localization\GUI.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>GUI.resx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

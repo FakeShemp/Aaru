@@ -2,14 +2,14 @@
 // Aaru Data Preservation Suite
 // ----------------------------------------------------------------------------
 //
-// Filename       : PartitionViewModel.cs
+// Filename       : MetadataEditor.axaml.cs
 // Author(s)      : Natalia Portillo <claunia@claunia.com>
 //
-// Component      : GUI view models.
+// Component      : GUI windows.
 //
 // --[ Description ] ----------------------------------------------------------
 //
-//     View model and code for the partition information panel.
+//     Metadata editor window.
 //
 // --[ License ] --------------------------------------------------------------
 //
@@ -30,23 +30,22 @@
 // Copyright © 2011-2025 Natalia Portillo
 // ****************************************************************************/
 
-using Aaru.CommonTypes;
+using Aaru.Gui.ViewModels.Windows;
+using Avalonia.Controls;
 
-namespace Aaru.Gui.ViewModels.Panels;
+namespace Aaru.Gui.Views.Windows;
 
-public sealed class PartitionViewModel(Partition partition)
+public partial class MetadataEditor : Window
 {
-    public string NameText { get; } = string.Format(Aaru.Localization.Core.Partition_name_0, partition.Name);
-    public string TypeText { get; } = string.Format(Aaru.Localization.Core.Partition_type_0, partition.Type);
+    public MetadataEditor()
+    {
+        InitializeComponent();
+        DataContext = new MetadataEditorViewModel(this);
+    }
 
-    public string StartText { get; } = string.Format(Aaru.Localization.Core.Partition_start_sector_0_byte_1,
-                                                     partition.Start,
-                                                     partition.Offset);
-
-    public string LengthText { get; } = string.Format(Aaru.Localization.Core.Partition_length_0_sectors_1_bytes,
-                                                      partition.Length,
-                                                      partition.Size);
-
-    public string DescriptionLabelText { get; } = Aaru.Localization.Core.Title_Partition_description;
-    public string DescriptionText      { get; } = partition.Description;
+    public MetadataEditor(string existingFilePath)
+    {
+        InitializeComponent();
+        DataContext = new MetadataEditorViewModel(this, existingFilePath);
+    }
 }

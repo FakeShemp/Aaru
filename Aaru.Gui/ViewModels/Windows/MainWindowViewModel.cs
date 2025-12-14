@@ -119,6 +119,8 @@ public partial class MainWindowViewModel : ViewModelBase
         ConnectToRemoteCommand      = new AsyncRelayCommand(ConnectToRemoteAsync);
         OpenDeviceCommand           = new RelayCommand(OpenDevice);
         ImageMetadataCommand        = new AsyncRelayCommand(ImageMetadataAsync);
+        CreateMetadataCommand       = new AsyncRelayCommand(CreateMetadataAsync);
+        EditMetadataCommand         = new AsyncRelayCommand(EditMetadataAsync);
 
         _genericHddIcon =
             new Bitmap(AssetLoader.Open(new Uri("avares://Aaru.Gui/Assets/Icons/oxygen/32x32/drive-harddisk.png")));
@@ -174,6 +176,8 @@ public partial class MainWindowViewModel : ViewModelBase
     public ICommand ConnectToRemoteCommand      { get; }
     public ICommand OpenDeviceCommand           { get; }
     public ICommand ImageMetadataCommand        { get; }
+    public ICommand CreateMetadataCommand       { get; }
+    public ICommand EditMetadataCommand         { get; }
 
     public bool NativeMenuSupported
     {
@@ -237,6 +241,43 @@ public partial class MainWindowViewModel : ViewModelBase
         dialog.DataContext = new ImageMetadataViewModel(dialog);
 
         return dialog.ShowDialog(_view);
+    }
+
+    async Task CreateMetadataAsync()
+    {
+        var dialog = new MetadataEditor();
+        await dialog.ShowDialog(_view);
+    }
+
+    async Task EditMetadataAsync()
+    {
+        var    lifetime   = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+        Window mainWindow = lifetime?.MainWindow;
+
+        if(mainWindow == null) return;
+
+        IReadOnlyList<IStorageFile> files =
+            await mainWindow.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title         = "Open Metadata File",
+                AllowMultiple = false,
+                FileTypeFilter = new[]
+                {
+                    new FilePickerFileType("JSON")
+                    {
+                        Patterns = new[]
+                        {
+                            "*.json"
+                        }
+                    }
+                }
+            });
+
+        if(files.Count == 0) return;
+
+        string filePath = files[0].Path.LocalPath;
+        var    dialog   = new MetadataEditor(filePath);
+        await dialog.ShowDialog(_view);
     }
 
     void OpenDevice()
@@ -533,7 +574,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 {
                     var wholePart = new Partition
                     {
-                        Name   = Localization.Core.Whole_device,
+                        Name   = Aaru.Localization.Core.Whole_device,
                         Length = imageFormat.Info.Sectors,
                         Size   = imageFormat.Info.Sectors * imageFormat.Info.SectorSize
                     };
@@ -619,8 +660,8 @@ public partial class MainWindowViewModel : ViewModelBase
                 await msbox.ShowAsync();
 
                 AaruLogging.Error(UI.Unable_to_open_image_format);
-                AaruLogging.Error(Localization.Core.Error_0, ex.Message);
-                AaruLogging.Exception(ex, Localization.Core.Error_0, ex.Message);
+                AaruLogging.Error(Aaru.Localization.Core.Error_0, ex.Message);
+                AaruLogging.Exception(ex, Aaru.Localization.Core.Error_0, ex.Message);
             }
         }
         catch(Exception ex)

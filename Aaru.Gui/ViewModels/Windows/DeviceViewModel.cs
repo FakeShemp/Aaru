@@ -586,8 +586,8 @@ public partial class DeviceViewModel : ViewModelBase
                         if(devInfo.PlextorFeatures.SilentModeEnabled)
                         {
                             PlextorSilentModeAccessTime = devInfo.PlextorFeatures.AccessTimeLimit == 2
-                                                              ? Localization.Core.Access_time_is_slow
-                                                              : Localization.Core.Access_time_is_fast;
+                                                              ? Aaru.Localization.Core.Access_time_is_slow
+                                                              : Aaru.Localization.Core.Access_time_is_fast;
 
                             PlextorSilentModeCdReadSpeedLimit =
                                 devInfo.PlextorFeatures.CdReadSpeedLimit > 0
@@ -669,24 +669,25 @@ public partial class DeviceViewModel : ViewModelBase
 
                         if(blockLimits.Value.minBlockLen == blockLimits.Value.maxBlockLen)
                         {
-                            MinBlockSize = string.Format(Localization.Core.Device_block_size_is_fixed_at_0_bytes,
+                            MinBlockSize = string.Format(Aaru.Localization.Core.Device_block_size_is_fixed_at_0_bytes,
                                                          blockLimits.Value.minBlockLen);
                         }
                         else
                         {
                             MaxBlockSize = blockLimits.Value.maxBlockLen > 0
-                                               ? string.Format(Localization.Core.Device_maximum_block_size_is_0_bytes,
+                                               ? string.Format(Aaru.Localization.Core
+                                                                   .Device_maximum_block_size_is_0_bytes,
                                                                blockLimits.Value.maxBlockLen)
-                                               : Localization.Core.Device_does_not_specify_a_maximum_block_size;
+                                               : Aaru.Localization.Core.Device_does_not_specify_a_maximum_block_size;
 
-                            MinBlockSize = string.Format(Localization.Core.Device_minimum_block_size_is_0_bytes,
+                            MinBlockSize = string.Format(Aaru.Localization.Core.Device_minimum_block_size_is_0_bytes,
                                                          blockLimits.Value.minBlockLen);
 
                             if(blockLimits.Value.granularity > 0)
                             {
                                 BlockSizeGranularity =
-                                    string.Format(Localization.Core
-                                                              .Device_needs_a_block_size_granularity_of_pow_0_1_bytes,
+                                    string.Format(Aaru.Localization.Core
+                                                      .Device_needs_a_block_size_granularity_of_pow_0_1_bytes,
                                                   blockLimits.Value.granularity,
                                                   Math.Pow(2, blockLimits.Value.granularity));
                             }
@@ -773,8 +774,8 @@ public partial class DeviceViewModel : ViewModelBase
                 Dispatcher.UIThread.Invoke(() =>
                 {
                     MediaSize =
-                        string.Format(Localization.Core
-                                                  .Media_has_0_blocks_of_1_bytes_each_for_a_total_of_2,
+                        string.Format(Aaru.Localization.Core
+                                          .Media_has_0_blocks_of_1_bytes_each_for_a_total_of_2,
                                       mediaInfo.Blocks,
                                       mediaInfo.BlockSize,
                                       ByteSize.FromBytes(mediaInfo.Blocks *
@@ -991,7 +992,7 @@ public partial class DeviceViewModel : ViewModelBase
             case CommonTypes.MediaType.GDR or CommonTypes.MediaType.GDROM:
                 await MessageBoxManager
                      .GetMessageBoxStandard(UI.Title_Error,
-                                            Localization.Core.GD_ROM_dump_support_is_not_yet_implemented,
+                                            Aaru.Localization.Core.GD_ROM_dump_support_is_not_yet_implemented,
                                             ButtonEnum.Ok,
                                             Icon.Error)
                      .ShowWindowDialogAsync(_window);
@@ -1001,8 +1002,8 @@ public partial class DeviceViewModel : ViewModelBase
                 when _mediaInfo.DeviceInfo.ScsiInquiry?.KreonPresent != true:
                 await MessageBoxManager
                      .GetMessageBoxStandard(UI.Title_Error,
-                                            Localization.Core
-                                                        .Dumping_Xbox_Game_Discs_requires_a_drive_with_Kreon_firmware,
+                                            Aaru.Localization.Core
+                                                .Dumping_Xbox_Game_Discs_requires_a_drive_with_Kreon_firmware,
                                             ButtonEnum.Ok,
                                             Icon.Error)
                      .ShowWindowDialogAsync(_window);
@@ -1026,7 +1027,7 @@ public partial class DeviceViewModel : ViewModelBase
             case CommonTypes.MediaType.GDROM:
                 await MessageBoxManager
                      .GetMessageBoxStandard(UI.Title_Error,
-                                            Localization.Core.GD_ROM_scan_support_is_not_yet_implemented,
+                                            Aaru.Localization.Core.GD_ROM_scan_support_is_not_yet_implemented,
                                             ButtonEnum.Ok,
                                             Icon.Error)
                      .ShowWindowDialogAsync(_window);
@@ -1038,8 +1039,8 @@ public partial class DeviceViewModel : ViewModelBase
             case CommonTypes.MediaType.XGD2:
             case CommonTypes.MediaType.XGD3:
                 await MessageBoxManager.GetMessageBoxStandard(UI.Title_Error,
-                                                              Localization.Core
-                                                                          .Scanning_Xbox_discs_is_not_yet_supported,
+                                                              Aaru.Localization.Core
+                                                                  .Scanning_Xbox_discs_is_not_yet_supported,
                                                               ButtonEnum.Ok,
                                                               Icon.Error)
                                        .ShowWindowDialogAsync(_window);

@@ -37,51 +37,52 @@ namespace Aaru.Gui.ViewModels.Panels;
 
 public sealed class FileSystemViewModel([NotNull] FileSystem metadata, string information)
 {
-    public string TypeText         { get; } = string.Format(Localization.Core.Filesystem_type_0, metadata.Type);
-    public string VolumeNameText   { get; } = string.Format(Localization.Core.Volume_name_0,     metadata.VolumeName);
-    public string SerialNumberText { get; } = string.Format(Localization.Core.Volume_serial_0,   metadata.VolumeSerial);
+    public string TypeText       { get; } = string.Format(Aaru.Localization.Core.Filesystem_type_0, metadata.Type);
+    public string VolumeNameText { get; } = string.Format(Aaru.Localization.Core.Volume_name_0, metadata.VolumeName);
+    public string SerialNumberText { get; } =
+        string.Format(Aaru.Localization.Core.Volume_serial_0, metadata.VolumeSerial);
 
     public string ApplicationIdentifierText { get; } =
-        string.Format(Localization.Core.Application_identifier_0, metadata.ApplicationIdentifier);
+        string.Format(Aaru.Localization.Core.Application_identifier_0, metadata.ApplicationIdentifier);
 
     public string SystemIdentifierText { get; } =
-        string.Format(Localization.Core.System_identifier_0, metadata.SystemIdentifier);
+        string.Format(Aaru.Localization.Core.System_identifier_0, metadata.SystemIdentifier);
 
     public string VolumeSetIdentifierText { get; } =
-        string.Format(Localization.Core.Volume_set_identifier_0, metadata.VolumeSetIdentifier);
+        string.Format(Aaru.Localization.Core.Volume_set_identifier_0, metadata.VolumeSetIdentifier);
 
     public string DataPreparerIdentifierText { get; } =
-        string.Format(Localization.Core.Data_preparer_identifier_0, metadata.DataPreparerIdentifier);
+        string.Format(Aaru.Localization.Core.Data_preparer_identifier_0, metadata.DataPreparerIdentifier);
 
     public string PublisherIdentifierText { get; } =
-        string.Format(Localization.Core.Publisher_identifier_0, metadata.PublisherIdentifier);
+        string.Format(Aaru.Localization.Core.Publisher_identifier_0, metadata.PublisherIdentifier);
 
     public string CreationDateText { get; } =
-        string.Format(Localization.Core.Volume_created_on_0, metadata.CreationDate);
+        string.Format(Aaru.Localization.Core.Volume_created_on_0, metadata.CreationDate);
 
     public string EffectiveDateText { get; } =
-        string.Format(Localization.Core.Volume_effective_from_0, metadata.EffectiveDate);
+        string.Format(Aaru.Localization.Core.Volume_effective_from_0, metadata.EffectiveDate);
 
     public string ModificationDateText { get; } =
-        string.Format(Localization.Core.Volume_last_modified_on_0, metadata.ModificationDate);
+        string.Format(Aaru.Localization.Core.Volume_last_modified_on_0, metadata.ModificationDate);
 
     public string ExpirationDateText { get; } =
-        string.Format(Localization.Core.Volume_expired_on_0, metadata.ExpirationDate);
+        string.Format(Aaru.Localization.Core.Volume_expired_on_0, metadata.ExpirationDate);
 
     public string BackupDateText { get; } =
-        string.Format(Localization.Core.Volume_last_backed_up_on_0, metadata.BackupDate);
+        string.Format(Aaru.Localization.Core.Volume_last_backed_up_on_0, metadata.BackupDate);
 
     public string ClustersText { get; } =
-        string.Format(Localization.Core.Volume_has_0_clusters_of_1_bytes_each_total_of_2_bytes,
+        string.Format(Aaru.Localization.Core.Volume_has_0_clusters_of_1_bytes_each_total_of_2_bytes,
                       metadata.Clusters,
                       metadata.ClusterSize,
                       metadata.Clusters * metadata.ClusterSize);
 
-    public string FreeClustersText { get; } = string.Format(Localization.Core.Volume_has_0_clusters_free_1,
+    public string FreeClustersText { get; } = string.Format(Aaru.Localization.Core.Volume_has_0_clusters_free_1,
                                                             metadata.FreeClusters,
                                                             metadata.FreeClusters / metadata.Clusters);
 
-    public string FilesText { get; } = string.Format(Localization.Core.Volume_contains_0_files, metadata.Files);
+    public string FilesText { get; } = string.Format(Aaru.Localization.Core.Volume_contains_0_files, metadata.Files);
     public bool   BootableChecked { get; } = metadata.Bootable;
     public bool   DirtyChecked { get; } = metadata.Dirty;
     public string InformationText { get; } = information;

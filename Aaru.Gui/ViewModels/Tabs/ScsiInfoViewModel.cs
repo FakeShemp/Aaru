@@ -370,7 +370,7 @@ public sealed partial class ScsiInfoViewModel : ViewModelBase
                         case 0x30:
                         {
                             if(Modes.IsAppleModePage_30(page.PageResponse))
-                                decodedText = Localization.Core.Drive_identifies_as_Apple_OEM_drive;
+                                decodedText = Aaru.Localization.Core.Drive_identifies_as_Apple_OEM_drive;
                             else
                                 goto default;
 
@@ -608,7 +608,9 @@ public sealed partial class ScsiInfoViewModel : ViewModelBase
                         evpdPageTitle   = string.Format(UI.Page_0_h, page.Key);
                         evpdDecodedPage = UI.Undecoded;
 
-                        AaruLogging.Debug(MODULE_NAME, Localization.Core.Found_undecoded_SCSI_VPD_page_0, page.Key);
+                        AaruLogging.Debug(MODULE_NAME,
+                                          Aaru.Localization.Core.Found_undecoded_SCSI_VPD_page_0,
+                                          page.Key);
 
                         break;
                     }
@@ -627,16 +629,18 @@ public sealed partial class ScsiInfoViewModel : ViewModelBase
 
         Features.SeparatedFeatures ftr = Features.Separate(_configuration);
 
-        AaruLogging.Debug(MODULE_NAME, Localization.Core.GET_CONFIGURATION_length_is_0, ftr.DataLength);
+        AaruLogging.Debug(MODULE_NAME, Aaru.Localization.Core.GET_CONFIGURATION_length_is_0, ftr.DataLength);
 
-        AaruLogging.Debug(MODULE_NAME, Localization.Core.GET_CONFIGURATION_current_profile_is_0, ftr.CurrentProfile);
+        AaruLogging.Debug(MODULE_NAME,
+                          Aaru.Localization.Core.GET_CONFIGURATION_current_profile_is_0,
+                          ftr.CurrentProfile);
 
         if(ftr.Descriptors != null)
         {
             foreach(Features.FeatureDescriptor desc in ftr.Descriptors)
             {
-                var featureNumber = string.Format(Localization.Core.Feature_0, desc.Code);
-                AaruLogging.Debug(MODULE_NAME, Localization.Core.Feature_0, desc.Code);
+                var featureNumber = string.Format(Aaru.Localization.Core.Feature_0, desc.Code);
+                AaruLogging.Debug(MODULE_NAME, Aaru.Localization.Core.Feature_0, desc.Code);
 
                 string featureDescription = desc.Code switch
                                             {
@@ -709,7 +713,7 @@ public sealed partial class ScsiInfoViewModel : ViewModelBase
             }
         }
         else
-            AaruLogging.Debug(MODULE_NAME, Localization.Core.GET_CONFIGURATION_returned_no_feature_descriptors);
+            AaruLogging.Debug(MODULE_NAME, Aaru.Localization.Core.GET_CONFIGURATION_returned_no_feature_descriptors);
     }
 
     public byte[]                              InquiryData              { get; }
