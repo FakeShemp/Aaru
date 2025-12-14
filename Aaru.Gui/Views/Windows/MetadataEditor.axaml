@@ -237,7 +237,7 @@
                                                         Content="{x:Static gui:GUI.Button_Remove}"
                                                         Command="{Binding $parent[Window].DataContext.RemoveDeveloperCommand}"
                                                         CommandParameter="{Binding}" />
-                                                <TextBox Text="{Binding Mode=TwoWay}"
+                                                <TextBox Text="{Binding Value, Mode=TwoWay}"
                                                          Watermark="{x:Static gui:GUI.Watermark_Enter_developer_name}" />
                                             </DockPanel>
                                         </DataTemplate>
@@ -266,7 +266,7 @@
                                                         Content="{x:Static gui:GUI.Button_Remove}"
                                                         Command="{Binding $parent[Window].DataContext.RemovePublisherCommand}"
                                                         CommandParameter="{Binding}" />
-                                                <TextBox Text="{Binding}"
+                                                <TextBox Text="{Binding Value, Mode=TwoWay}"
                                                          Watermark="{x:Static gui:GUI.Watermark_Enter_publisher_name}" />
                                             </DockPanel>
                                         </DataTemplate>
@@ -295,7 +295,7 @@
                                                         Content="{x:Static gui:GUI.Button_Remove}"
                                                         Command="{Binding $parent[Window].DataContext.RemoveAuthorCommand}"
                                                         CommandParameter="{Binding}" />
-                                                <TextBox Text="{Binding}"
+                                                <TextBox Text="{Binding Value, Mode=TwoWay}"
                                                          Watermark="{x:Static gui:GUI.Watermark_Enter_author_name}" />
                                             </DockPanel>
                                         </DataTemplate>
@@ -324,7 +324,7 @@
                                                         Content="{x:Static gui:GUI.Button_Remove}"
                                                         Command="{Binding $parent[Window].DataContext.RemovePerformerCommand}"
                                                         CommandParameter="{Binding}" />
-                                                <TextBox Text="{Binding}"
+                                                <TextBox Text="{Binding Value, Mode=TwoWay}"
                                                          Watermark="{x:Static gui:GUI.Watermark_Enter_performer_name}" />
                                             </DockPanel>
                                         </DataTemplate>
@@ -360,7 +360,7 @@
                                                         Content="{x:Static gui:GUI.Button_Remove}"
                                                         Command="{Binding $parent[Window].DataContext.RemoveKeywordCommand}"
                                                         CommandParameter="{Binding}" />
-                                                <TextBox Text="{Binding}"
+                                                <TextBox Text="{Binding Value, Mode=TwoWay}"
                                                          Watermark="{x:Static gui:GUI.Watermark_Enter_keyword}" />
                                             </DockPanel>
                                         </DataTemplate>
@@ -389,7 +389,7 @@
                                                         Content="{x:Static gui:GUI.Button_Remove}"
                                                         Command="{Binding $parent[Window].DataContext.RemoveCategoryCommand}"
                                                         CommandParameter="{Binding}" />
-                                                <TextBox Text="{Binding}"
+                                                <TextBox Text="{Binding Value, Mode=TwoWay}"
                                                          Watermark="{x:Static gui:GUI.Watermark_Enter_category}" />
                                             </DockPanel>
                                         </DataTemplate>
@@ -418,7 +418,7 @@
                                                         Content="{x:Static gui:GUI.Button_Remove}"
                                                         Command="{Binding $parent[Window].DataContext.RemoveSubcategoryCommand}"
                                                         CommandParameter="{Binding}" />
-                                                <TextBox Text="{Binding}"
+                                                <TextBox Text="{Binding Value, Mode=TwoWay}"
                                                          Watermark="{x:Static gui:GUI.Watermark_Enter_subcategory}" />
                                             </DockPanel>
                                         </DataTemplate>
@@ -447,7 +447,7 @@
                                                         Content="{x:Static gui:GUI.Button_Remove}"
                                                         Command="{Binding $parent[Window].DataContext.RemoveSystemCommand}"
                                                         CommandParameter="{Binding}" />
-                                                <TextBox Text="{Binding}"
+                                                <TextBox Text="{Binding Value, Mode=TwoWay}"
                                                          Watermark="{x:Static gui:GUI.Watermark_Enter_system}" />
                                             </DockPanel>
                                         </DataTemplate>
@@ -488,7 +488,7 @@
                                                         Content="{x:Static gui:GUI.Button_Remove}"
                                                         Command="{Binding $parent[Window].DataContext.RemoveLanguageCommand}"
                                                         CommandParameter="{Binding}" />
-                                                <TextBlock Text="{Binding}"
+                                                <TextBlock Text="{Binding Value, Mode=TwoWay}"
                                                            VerticalAlignment="Center"
                                                            Margin="8,0" />
                                             </DockPanel>
@@ -523,7 +523,7 @@
                                                         Content="{x:Static gui:GUI.Button_Remove}"
                                                         Command="{Binding $parent[Window].DataContext.RemoveArchitectureCommand}"
                                                         CommandParameter="{Binding}" />
-                                                <TextBlock Text="{Binding}"
+                                                <TextBlock Text="{Binding Value, Mode=TwoWay}"
                                                            VerticalAlignment="Center"
                                                            Margin="8,0" />
                                             </DockPanel>
