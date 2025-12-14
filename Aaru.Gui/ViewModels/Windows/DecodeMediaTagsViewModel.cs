@@ -210,6 +210,7 @@ public sealed partial class DecodeMediaTagsViewModel : ViewModelBase
 
                     break;
                 case MediaTagType.DVD_PFI:
+                case MediaTagType.DVD_PFI_2ndLayer:
                     DecodedText = PFI.Prettify(value.Data, _mediaType);
                     if(string.IsNullOrEmpty(DecodedText)) DecodedVisible = false;
 

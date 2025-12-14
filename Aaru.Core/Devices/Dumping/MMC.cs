@@ -420,6 +420,33 @@ partial class Dump
                                       DiskCategory.UMD => MediaType.UMD,
                                       _                => MediaType.DVDROM
                                   };
+
+                        if(nullablePfi.Value.Layers > 1)
+                        {
+                            sense = _dev.ReadDiscStructure(out cmdBuf,
+                                                           out _,
+                                                           MmcDiscStructureMediaType.Dvd,
+                                                           0,
+                                                           1,
+                                                           MmcDiscStructureFormat.PhysicalInformation,
+                                                           0,
+                                                           _dev.Timeout,
+                                                           out _);
+
+                            if(!sense)
+                            {
+                                PFI.PhysicalFormatInformation? layer2Pfi = PFI.Decode(cmdBuf, dskType);
+
+                                if(layer2Pfi.HasValue)
+                                {
+                                    tmpBuf = new byte[cmdBuf.Length - 4];
+                                    Array.Copy(cmdBuf, 4, tmpBuf, 0, cmdBuf.Length - 4);
+                                    mediaTags.Add(MediaTagType.DVD_PFI_2ndLayer, tmpBuf);
+
+                                    UpdateStatus?.Invoke("Layer 2 PFI:\n" + PFI.Prettify(layer2Pfi.Value));
+                                }
+                            }
+                        }
                     }
                 }
 

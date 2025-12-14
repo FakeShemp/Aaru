@@ -3517,4 +3517,7 @@ It has no sense to do it, and it will put too much strain on the tape.</value>
     <data name="Media_identified_as" xml:space="preserve">
         <value>Media identified as</value>
     </data>
+    <data name="DVD_2nd_layer_Physical_Format_Information_contained_in_image_WithMarkup" xml:space="preserve">
+        <value>[bold][blue]DVD 2nd layer Physical Format Information contained in image:[/][/]</value>
+    </data>
 </root>

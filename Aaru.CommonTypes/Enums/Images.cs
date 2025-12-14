@@ -384,7 +384,10 @@ public enum MediaTagType
     MiniDiscDTOC = 72,
     /// <summary>Decrypted DVD disc key</summary>
     [Description("Disc key (Decrypted)")]
-    DVD_DiscKey_Decrypted = 73
+    DVD_DiscKey_Decrypted = 73,
+    /// <summary>Physical Format Information for the 2nd layer of dual-layer DVDs</summary>
+    [Description("Physical Format Information (2nd Layer)")]
+    DVD_PFI_2ndLayer = 74
 }
 
 /// <summary>Enumeration of media types defined in metadata</summary>

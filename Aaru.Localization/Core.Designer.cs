@@ -6892,5 +6892,11 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Media_identified_as", resourceCulture);
             }
         }
+        
+        public static string DVD_2nd_layer_Physical_Format_Information_contained_in_image_WithMarkup {
+            get {
+                return ResourceManager.GetString("DVD_2nd_layer_Physical_Format_Information_contained_in_image_WithMarkup", resourceCulture);
+            }
+        }
     }
 }

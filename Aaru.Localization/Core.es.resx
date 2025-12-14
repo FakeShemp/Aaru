@@ -3496,4 +3496,7 @@ No tiene sentido hacerlo y supondría demasiado esfuerzo para la cinta.</value>
     <data name="XML_type_0" xml:space="preserve">
         <value>[slateblue1]Tipo XML:[/] [italic][rosybrown]{0}[/][/]</value>
     </data>
+    <data name="DVD_2nd_layer_Physical_Format_Information_contained_in_image_WithMarkup" xml:space="preserve">
+        <value>[bold][blue]Información del formato físico del DVD (2ª capa) contenida en la imagen:[/][/]</value>
+    </data>
 </root>

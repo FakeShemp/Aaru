@@ -566,6 +566,20 @@ public static class ImageInfo
             }
         }
 
+        if(imageFormat.Info.ReadableMediaTags?.Contains(MediaTagType.DVD_PFI_2ndLayer) == true)
+        {
+            errno = imageFormat.ReadMediaTag(MediaTagType.DVD_PFI_2ndLayer, out byte[] pfi);
+
+            if(errno == ErrorNumber.NoError)
+            {
+                AaruLogging.WriteLine(Localization.Core
+                                                  .DVD_2nd_layer_Physical_Format_Information_contained_in_image_WithMarkup);
+
+                AaruLogging.Write(PFI.Prettify(pfi, imageFormat.Info.MediaType));
+                AaruLogging.WriteLine();
+            }
+        }
+
         if(imageFormat.Info.ReadableMediaTags?.Contains(MediaTagType.DVDRAM_DDS) == true)
         {
             errno = imageFormat.ReadMediaTag(MediaTagType.DVDRAM_DDS, out byte[] dds);
