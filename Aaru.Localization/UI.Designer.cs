@@ -10479,5 +10479,17 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("BarcodeType_ShotCode", resourceCulture);
             }
         }
+        
+        public static string Menu_Create_metadata_sidecar {
+            get {
+                return ResourceManager.GetString("Menu_Create_metadata_sidecar", resourceCulture);
+            }
+        }
+        
+        public static string Menu_Edit_metadata_sidecar {
+            get {
+                return ResourceManager.GetString("Menu_Edit_metadata_sidecar", resourceCulture);
+            }
+        }
     }
 }

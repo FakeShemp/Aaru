@@ -5240,4 +5240,10 @@ Probadores:
     <data name="BarcodeType_ShotCode" xml:space="preserve">
         <value>ShotCode</value>
     </data>
+    <data name="Menu_Create_metadata_sidecar" xml:space="preserve">
+        <value>_Crear sidecar de metadatos...</value>
+    </data>
+    <data name="Menu_Edit_metadata_sidecar" xml:space="preserve">
+        <value>_Editar sidecar de metadatos...</value>
+    </data>
 </root>
