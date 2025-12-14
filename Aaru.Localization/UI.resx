@@ -3524,4 +3524,40 @@ Do you want to continue?</value>
     <data name="AaruFormat_images_version_1_x_are_read_only" xml:space="preserve">
         <value>AaruFormat images version 1.x are read-only, convert it to a newer version first.</value>
     </data>
+    <data name="ReleaseType_Retail" xml:space="preserve">
+        <value>Retail</value>
+    </data>
+    <data name="ReleaseType_Bundle" xml:space="preserve">
+        <value>Bundle</value>
+    </data>
+    <data name="ReleaseType_Coverdisc" xml:space="preserve">
+        <value>Cover Disc</value>
+    </data>
+    <data name="ReleaseType_Subscription" xml:space="preserve">
+        <value>Subscription</value>
+    </data>
+    <data name="ReleaseType_Demo" xml:space="preserve">
+        <value>Demo</value>
+    </data>
+    <data name="ReleaseType_OEM" xml:space="preserve">
+        <value>OEM</value>
+    </data>
+    <data name="ReleaseType_Shareware" xml:space="preserve">
+        <value>Shareware</value>
+    </data>
+    <data name="ReleaseType_FOSS" xml:space="preserve">
+        <value>FOSS (Free/Open Source)</value>
+    </data>
+    <data name="ReleaseType_Adware" xml:space="preserve">
+        <value>Adware</value>
+    </data>
+    <data name="ReleaseType_Donationware" xml:space="preserve">
+        <value>Donationware</value>
+    </data>
+    <data name="ReleaseType_DigitalDownload" xml:space="preserve">
+        <value>Digital Download</value>
+    </data>
+    <data name="ReleaseType_SaaS" xml:space="preserve">
+        <value>SaaS (Software as a Service)</value>
+    </data>
 </root>

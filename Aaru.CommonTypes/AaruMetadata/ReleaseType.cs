@@ -41,6 +41,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+using Aaru.Localization;
 
 namespace Aaru.CommonTypes.AaruMetadata;
 
@@ -48,16 +49,28 @@ namespace Aaru.CommonTypes.AaruMetadata;
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public enum ReleaseType
 {
+    [LocalizedDescription(nameof(UI.ReleaseType_Retail))]
     Retail,
+    [LocalizedDescription(nameof(UI.ReleaseType_Bundle))]
     Bundle,
+    [LocalizedDescription(nameof(UI.ReleaseType_Coverdisc))]
     Coverdisc,
+    [LocalizedDescription(nameof(UI.ReleaseType_Subscription))]
     Subscription,
+    [LocalizedDescription(nameof(UI.ReleaseType_Demo))]
     Demo,
+    [LocalizedDescription(nameof(UI.ReleaseType_OEM))]
     OEM,
+    [LocalizedDescription(nameof(UI.ReleaseType_Shareware))]
     Shareware,
+    [LocalizedDescription(nameof(UI.ReleaseType_FOSS))]
     FOSS,
+    [LocalizedDescription(nameof(UI.ReleaseType_Adware))]
     Adware,
+    [LocalizedDescription(nameof(UI.ReleaseType_Donationware))]
     Donationware,
+    [LocalizedDescription(nameof(UI.ReleaseType_DigitalDownload))]
     DigitalDownload,
+    [LocalizedDescription(nameof(UI.ReleaseType_SaaS))]
     SaaS
 }

@@ -6891,5 +6891,77 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("AaruFormat_images_version_1_x_are_read_only", resourceCulture);
             }
         }
+        
+        public static string ReleaseType_Retail {
+            get {
+                return ResourceManager.GetString("ReleaseType_Retail", resourceCulture);
+            }
+        }
+        
+        public static string ReleaseType_Bundle {
+            get {
+                return ResourceManager.GetString("ReleaseType_Bundle", resourceCulture);
+            }
+        }
+        
+        public static string ReleaseType_Coverdisc {
+            get {
+                return ResourceManager.GetString("ReleaseType_Coverdisc", resourceCulture);
+            }
+        }
+        
+        public static string ReleaseType_Subscription {
+            get {
+                return ResourceManager.GetString("ReleaseType_Subscription", resourceCulture);
+            }
+        }
+        
+        public static string ReleaseType_Demo {
+            get {
+                return ResourceManager.GetString("ReleaseType_Demo", resourceCulture);
+            }
+        }
+        
+        public static string ReleaseType_OEM {
+            get {
+                return ResourceManager.GetString("ReleaseType_OEM", resourceCulture);
+            }
+        }
+        
+        public static string ReleaseType_Shareware {
+            get {
+                return ResourceManager.GetString("ReleaseType_Shareware", resourceCulture);
+            }
+        }
+        
+        public static string ReleaseType_FOSS {
+            get {
+                return ResourceManager.GetString("ReleaseType_FOSS", resourceCulture);
+            }
+        }
+        
+        public static string ReleaseType_Adware {
+            get {
+                return ResourceManager.GetString("ReleaseType_Adware", resourceCulture);
+            }
+        }
+        
+        public static string ReleaseType_Donationware {
+            get {
+                return ResourceManager.GetString("ReleaseType_Donationware", resourceCulture);
+            }
+        }
+        
+        public static string ReleaseType_DigitalDownload {
+            get {
+                return ResourceManager.GetString("ReleaseType_DigitalDownload", resourceCulture);
+            }
+        }
+        
+        public static string ReleaseType_SaaS {
+            get {
+                return ResourceManager.GetString("ReleaseType_SaaS", resourceCulture);
+            }
+        }
     }
 }

@@ -37,6 +37,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Aaru.CommonTypes.AaruMetadata;
+using Aaru.Gui.Helpers;
 using Aaru.Gui.Localization;
 using Aaru.Localization;
 using Avalonia;
@@ -128,7 +129,7 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
     ObservableCollection<RequiredOperatingSystemViewModel> _requiredOperatingSystems = [];
 
     [ObservableProperty]
-    ReleaseType? _selectedReleaseType;
+    LocalizedEnumValue<ReleaseType> _selectedReleaseType;
 
     [ObservableProperty]
     string _serialNumber;
@@ -159,13 +160,14 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
 
     // Available enum values for ComboBoxes
     [NotNull]
-    public IEnumerable<ReleaseType>  AvailableReleaseTypes  => Enum.GetValues<ReleaseType>();
+    public IEnumerable<LocalizedEnumValue<ReleaseType>> AvailableReleaseTypes =>
+        LocalizedEnumHelper.GetLocalizedValues<ReleaseType>();
     [NotNull]
-    public IEnumerable<Language>     AvailableLanguages     => Enum.GetValues<Language>();
+    public IEnumerable<Language> AvailableLanguages => Enum.GetValues<Language>();
     [NotNull]
     public IEnumerable<Architecture> AvailableArchitectures => Enum.GetValues<Architecture>();
     [NotNull]
-    public IEnumerable<BarcodeType>  AvailableBarcodeTypes  => Enum.GetValues<BarcodeType>();
+    public IEnumerable<BarcodeType> AvailableBarcodeTypes => Enum.GetValues<BarcodeType>();
 
     void LoadMetadata([NotNull] string path)
     {
@@ -179,12 +181,16 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
             Metadata metadata = metadataJson.AaruMetadata;
 
             // Basic fields
-            Name                = metadata.Name;
-            Version             = metadata.Version;
-            SelectedReleaseType = metadata.Release;
-            ReleaseDate         = metadata.ReleaseDate;
-            PartNumber          = metadata.PartNumber;
-            SerialNumber        = metadata.SerialNumber;
+            Name    = metadata.Name;
+            Version = metadata.Version;
+
+            SelectedReleaseType = metadata.Release.HasValue
+                                      ? new LocalizedEnumValue<ReleaseType>(metadata.Release.Value)
+                                      : null;
+
+            ReleaseDate  = metadata.ReleaseDate;
+            PartNumber   = metadata.PartNumber;
+            SerialNumber = metadata.SerialNumber;
 
             // String lists
             LoadStringList(metadata.Developers,    Developers);
@@ -202,19 +208,16 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
 
             // Complex objects
             if(metadata.Barcodes != null)
-            {
-                foreach(Barcode barcode in metadata.Barcodes) Barcodes.Add(new BarcodeViewModel(barcode));
-            }
+                foreach(Barcode barcode in metadata.Barcodes)
+                    Barcodes.Add(new BarcodeViewModel(barcode));
 
             if(metadata.Magazines != null)
-            {
-                foreach(Magazine magazine in metadata.Magazines) Magazines.Add(new MagazineViewModel(magazine));
-            }
+                foreach(Magazine magazine in metadata.Magazines)
+                    Magazines.Add(new MagazineViewModel(magazine));
 
             if(metadata.Books != null)
-            {
-                foreach(Book book in metadata.Books) Books.Add(new BookViewModel(book));
-            }
+                foreach(Book book in metadata.Books)
+                    Books.Add(new BookViewModel(book));
 
             if(metadata.RequiredOperatingSystems != null)
             {
@@ -223,39 +226,32 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
             }
 
             if(metadata.UserManuals != null)
-            {
-                foreach(UserManual manual in metadata.UserManuals) UserManuals.Add(new UserManualViewModel(manual));
-            }
+                foreach(UserManual manual in metadata.UserManuals)
+                    UserManuals.Add(new UserManualViewModel(manual));
 
             if(metadata.OpticalDiscs != null)
-            {
-                foreach(OpticalDisc disc in metadata.OpticalDiscs) OpticalDiscs.Add(new OpticalDiscViewModel(disc));
-            }
+                foreach(OpticalDisc disc in metadata.OpticalDiscs)
+                    OpticalDiscs.Add(new OpticalDiscViewModel(disc));
 
             if(metadata.Advertisements != null)
-            {
-                foreach(Advertisement ad in metadata.Advertisements) Advertisements.Add(new AdvertisementViewModel(ad));
-            }
+                foreach(Advertisement ad in metadata.Advertisements)
+                    Advertisements.Add(new AdvertisementViewModel(ad));
 
             if(metadata.LinearMedias != null)
-            {
-                foreach(LinearMedia media in metadata.LinearMedias) LinearMedias.Add(new LinearMediaViewModel(media));
-            }
+                foreach(LinearMedia media in metadata.LinearMedias)
+                    LinearMedias.Add(new LinearMediaViewModel(media));
 
             if(metadata.PciCards != null)
-            {
-                foreach(Pci pci in metadata.PciCards) PciCards.Add(new PciViewModel(pci));
-            }
+                foreach(Pci pci in metadata.PciCards)
+                    PciCards.Add(new PciViewModel(pci));
 
             if(metadata.BlockMedias != null)
-            {
-                foreach(BlockMedia media in metadata.BlockMedias) BlockMedias.Add(new BlockMediaViewModel(media));
-            }
+                foreach(BlockMedia media in metadata.BlockMedias)
+                    BlockMedias.Add(new BlockMediaViewModel(media));
 
             if(metadata.AudioMedias != null)
-            {
-                foreach(AudioMedia media in metadata.AudioMedias) AudioMedias.Add(new AudioMediaViewModel(media));
-            }
+                foreach(AudioMedia media in metadata.AudioMedias)
+                    AudioMedias.Add(new AudioMediaViewModel(media));
         }
         catch(Exception ex)
         {
@@ -292,7 +288,7 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
             {
                 Name          = Name,
                 Version       = Version,
-                Release       = SelectedReleaseType,
+                Release       = SelectedReleaseType?.Value,
                 ReleaseDate   = ReleaseDate,
                 PartNumber    = PartNumber,
                 SerialNumber  = SerialNumber,
@@ -313,16 +309,13 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
                     RequiredOperatingSystems.Any()
                         ? [..RequiredOperatingSystems.Select(static os => os.ToModel())]
                         : null,
-                UserManuals = UserManuals.Any() ? [..UserManuals.Select(static um => um.ToModel())] : null,
-                OpticalDiscs =
-                    OpticalDiscs.Any() ? [..OpticalDiscs.Select(static od => od.ToModel())] : null,
-                Advertisements =
-                    Advertisements.Any() ? [..Advertisements.Select(static a => a.ToModel())] : null,
-                LinearMedias =
-                    LinearMedias.Any() ? [..LinearMedias.Select(static lm => lm.ToModel())] : null,
-                PciCards    = PciCards.Any() ? [..PciCards.Select(static p => p.ToModel())] : null,
-                BlockMedias = BlockMedias.Any() ? [..BlockMedias.Select(static bm => bm.ToModel())] : null,
-                AudioMedias = AudioMedias.Any() ? [..AudioMedias.Select(static am => am.ToModel())] : null
+                UserManuals    = UserManuals.Any() ? [..UserManuals.Select(static um => um.ToModel())] : null,
+                OpticalDiscs   = OpticalDiscs.Any() ? [..OpticalDiscs.Select(static od => od.ToModel())] : null,
+                Advertisements = Advertisements.Any() ? [..Advertisements.Select(static a => a.ToModel())] : null,
+                LinearMedias   = LinearMedias.Any() ? [..LinearMedias.Select(static lm => lm.ToModel())] : null,
+                PciCards       = PciCards.Any() ? [..PciCards.Select(static p => p.ToModel())] : null,
+                BlockMedias    = BlockMedias.Any() ? [..BlockMedias.Select(static bm => bm.ToModel())] : null,
+                AudioMedias    = AudioMedias.Any() ? [..AudioMedias.Select(static am => am.ToModel())] : null
             };
 
             var metadataJson = new MetadataJson
@@ -346,10 +339,7 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
                     [
                         new FilePickerFileType(GUI.FileType_JSON)
                         {
-                            Patterns =
-                            [
-                                "*.json"
-                            ]
+                            Patterns = ["*.json"]
                         }
                     ],
                     DefaultExtension = "json"
@@ -601,6 +591,7 @@ public sealed partial class BookViewModel : ObservableObject
 
     [ObservableProperty]
     string _editorial;
+
     [ObservableProperty]
     string _name;
 
@@ -609,6 +600,7 @@ public sealed partial class BookViewModel : ObservableObject
 
     [ObservableProperty]
     string _pageSize;
+
 
     [ObservableProperty]
     DateTime? _publicationDate;

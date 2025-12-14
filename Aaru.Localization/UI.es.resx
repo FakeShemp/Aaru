@@ -3446,4 +3446,40 @@ Probadores:
     <data name="AaruFormat_images_version_1_x_are_read_only" xml:space="preserve">
         <value>Las imágenes AaruFormat versión 1.x son de sólo lectura, conviértala primero a una versión más moderna.</value>
     </data>
+    <data name="ReleaseType_Retail" xml:space="preserve">
+        <value>Comercial</value>
+    </data>
+    <data name="ReleaseType_Bundle" xml:space="preserve">
+        <value>Paquete</value>
+    </data>
+    <data name="ReleaseType_Coverdisc" xml:space="preserve">
+        <value>Disco de Portada</value>
+    </data>
+    <data name="ReleaseType_Subscription" xml:space="preserve">
+        <value>Suscripción</value>
+    </data>
+    <data name="ReleaseType_Demo" xml:space="preserve">
+        <value>Demostración</value>
+    </data>
+    <data name="ReleaseType_OEM" xml:space="preserve">
+        <value>OEM</value>
+    </data>
+    <data name="ReleaseType_Shareware" xml:space="preserve">
+        <value>Shareware</value>
+    </data>
+    <data name="ReleaseType_FOSS" xml:space="preserve">
+        <value>FOSS (Software Libre/Código Abierto)</value>
+    </data>
+    <data name="ReleaseType_Adware" xml:space="preserve">
+        <value>Adware</value>
+    </data>
+    <data name="ReleaseType_Donationware" xml:space="preserve">
+        <value>Donationware</value>
+    </data>
+    <data name="ReleaseType_DigitalDownload" xml:space="preserve">
+        <value>Descarga Digital</value>
+    </data>
+    <data name="ReleaseType_SaaS" xml:space="preserve">
+        <value>SaaS (Software como Servicio)</value>
+    </data>
 </root>
