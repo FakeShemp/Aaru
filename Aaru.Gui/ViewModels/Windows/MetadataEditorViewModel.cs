@@ -62,7 +62,7 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
     ObservableCollection<AdvertisementViewModel> _advertisements = [];
 
     [ObservableProperty]
-    ObservableCollection<Architecture> _architectures = [];
+    ObservableCollection<LocalizedEnumValue<Architecture>> _architectures = [];
 
     [ObservableProperty]
     ObservableCollection<AudioMediaViewModel> _audioMedias = [];
@@ -166,7 +166,8 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
     public IEnumerable<LocalizedEnumValue<Language>> AvailableLanguages =>
         LocalizedEnumHelper.GetLocalizedValues<Language>();
     [NotNull]
-    public IEnumerable<Architecture> AvailableArchitectures => Enum.GetValues<Architecture>();
+    public IEnumerable<LocalizedEnumValue<Architecture>> AvailableArchitectures =>
+        LocalizedEnumHelper.GetLocalizedValues<Architecture>();
     [NotNull]
     public IEnumerable<BarcodeType> AvailableBarcodeTypes => Enum.GetValues<BarcodeType>();
 
@@ -206,24 +207,30 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
             // Enum lists
             if(metadata.Languages != null)
             {
-                foreach(Language lang in metadata.Languages)
-                    Languages.Add(new LocalizedEnumValue<Language>(lang));
+                foreach(Language lang in metadata.Languages) Languages.Add(new LocalizedEnumValue<Language>(lang));
             }
 
-            LoadEnumList(metadata.Architectures, Architectures);
+            if(metadata.Architectures != null)
+            {
+                foreach(Architecture arch in metadata.Architectures)
+                    Architectures.Add(new LocalizedEnumValue<Architecture>(arch));
+            }
 
             // Complex objects
             if(metadata.Barcodes != null)
-                foreach(Barcode barcode in metadata.Barcodes)
-                    Barcodes.Add(new BarcodeViewModel(barcode));
+            {
+                foreach(Barcode barcode in metadata.Barcodes) Barcodes.Add(new BarcodeViewModel(barcode));
+            }
 
             if(metadata.Magazines != null)
-                foreach(Magazine magazine in metadata.Magazines)
-                    Magazines.Add(new MagazineViewModel(magazine));
+            {
+                foreach(Magazine magazine in metadata.Magazines) Magazines.Add(new MagazineViewModel(magazine));
+            }
 
             if(metadata.Books != null)
-                foreach(Book book in metadata.Books)
-                    Books.Add(new BookViewModel(book));
+            {
+                foreach(Book book in metadata.Books) Books.Add(new BookViewModel(book));
+            }
 
             if(metadata.RequiredOperatingSystems != null)
             {
@@ -232,32 +239,39 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
             }
 
             if(metadata.UserManuals != null)
-                foreach(UserManual manual in metadata.UserManuals)
-                    UserManuals.Add(new UserManualViewModel(manual));
+            {
+                foreach(UserManual manual in metadata.UserManuals) UserManuals.Add(new UserManualViewModel(manual));
+            }
 
             if(metadata.OpticalDiscs != null)
-                foreach(OpticalDisc disc in metadata.OpticalDiscs)
-                    OpticalDiscs.Add(new OpticalDiscViewModel(disc));
+            {
+                foreach(OpticalDisc disc in metadata.OpticalDiscs) OpticalDiscs.Add(new OpticalDiscViewModel(disc));
+            }
 
             if(metadata.Advertisements != null)
-                foreach(Advertisement ad in metadata.Advertisements)
-                    Advertisements.Add(new AdvertisementViewModel(ad));
+            {
+                foreach(Advertisement ad in metadata.Advertisements) Advertisements.Add(new AdvertisementViewModel(ad));
+            }
 
             if(metadata.LinearMedias != null)
-                foreach(LinearMedia media in metadata.LinearMedias)
-                    LinearMedias.Add(new LinearMediaViewModel(media));
+            {
+                foreach(LinearMedia media in metadata.LinearMedias) LinearMedias.Add(new LinearMediaViewModel(media));
+            }
 
             if(metadata.PciCards != null)
-                foreach(Pci pci in metadata.PciCards)
-                    PciCards.Add(new PciViewModel(pci));
+            {
+                foreach(Pci pci in metadata.PciCards) PciCards.Add(new PciViewModel(pci));
+            }
 
             if(metadata.BlockMedias != null)
-                foreach(BlockMedia media in metadata.BlockMedias)
-                    BlockMedias.Add(new BlockMediaViewModel(media));
+            {
+                foreach(BlockMedia media in metadata.BlockMedias) BlockMedias.Add(new BlockMediaViewModel(media));
+            }
 
             if(metadata.AudioMedias != null)
-                foreach(AudioMedia media in metadata.AudioMedias)
-                    AudioMedias.Add(new AudioMediaViewModel(media));
+            {
+                foreach(AudioMedia media in metadata.AudioMedias) AudioMedias.Add(new AudioMediaViewModel(media));
+            }
         }
         catch(Exception ex)
         {
@@ -306,8 +320,8 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
                 Categories    = Categories.Any() ? [..Categories] : null,
                 Subcategories = Subcategories.Any() ? [..Subcategories] : null,
                 Systems       = Systems.Any() ? [..Systems] : null,
-                Languages     = Languages.Any() ? [..Languages.Select(static l => l.Value)] : null,
-                Architectures = Architectures.Any() ? [..Architectures] : null,
+                Languages     = Languages.Any() ? [..Languages.Select(l => l.Value)] : null,
+                Architectures = Architectures.Any() ? [..Architectures.Select(a => a.Value)] : null,
                 Barcodes      = Barcodes.Any() ? [..Barcodes.Select(static b => b.ToModel())] : null,
                 Magazines     = Magazines.Any() ? [..Magazines.Select(static m => m.ToModel())] : null,
                 Books         = Books.Any() ? [..Books.Select(static b => b.ToModel())] : null,
@@ -441,8 +455,7 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
     {
         if(parameter is LocalizedEnumValue<Language> langValue)
         {
-            if(!Languages.Any(l => l.Value == langValue.Value))
-                Languages.Add(langValue);
+            if(!Languages.Any(l => l.Value == langValue.Value)) Languages.Add(langValue);
         }
     }
 
@@ -450,13 +463,16 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
     void RemoveLanguage(LocalizedEnumValue<Language> language) => Languages.Remove(language);
 
     [RelayCommand]
-    void AddArchitecture(Architecture architecture)
+    void AddArchitecture(object parameter)
     {
-        if(!Architectures.Contains(architecture)) Architectures.Add(architecture);
+        if(parameter is LocalizedEnumValue<Architecture> archValue)
+        {
+            if(!Architectures.Any(a => a.Value == archValue.Value)) Architectures.Add(archValue);
+        }
     }
 
     [RelayCommand]
-    void RemoveArchitecture(Architecture architecture) => Architectures.Remove(architecture);
+    void RemoveArchitecture(LocalizedEnumValue<Architecture> architecture) => Architectures.Remove(architecture);
 
     // Commands for complex objects
     [RelayCommand]

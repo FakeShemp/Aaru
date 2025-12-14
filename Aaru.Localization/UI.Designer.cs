@@ -9879,5 +9879,437 @@ namespace Aaru.Localization {
                 return ResourceManager.GetString("Language_zza", resourceCulture);
             }
         }
+        
+        public static string Architecture_Aarch64 {
+            get {
+                return ResourceManager.GetString("Architecture_Aarch64", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Am29000 {
+            get {
+                return ResourceManager.GetString("Architecture_Am29000", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Amd64 {
+            get {
+                return ResourceManager.GetString("Architecture_Amd64", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Apx432 {
+            get {
+                return ResourceManager.GetString("Architecture_Apx432", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Arm {
+            get {
+                return ResourceManager.GetString("Architecture_Arm", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Avr {
+            get {
+                return ResourceManager.GetString("Architecture_Avr", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Avr32 {
+            get {
+                return ResourceManager.GetString("Architecture_Avr32", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Axp {
+            get {
+                return ResourceManager.GetString("Architecture_Axp", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Clipper {
+            get {
+                return ResourceManager.GetString("Architecture_Clipper", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Cray {
+            get {
+                return ResourceManager.GetString("Architecture_Cray", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Esa390 {
+            get {
+                return ResourceManager.GetString("Architecture_Esa390", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Hobbit {
+            get {
+                return ResourceManager.GetString("Architecture_Hobbit", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_I86 {
+            get {
+                return ResourceManager.GetString("Architecture_I86", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_I860 {
+            get {
+                return ResourceManager.GetString("Architecture_I860", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_I960 {
+            get {
+                return ResourceManager.GetString("Architecture_I960", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Ia32 {
+            get {
+                return ResourceManager.GetString("Architecture_Ia32", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Ia64 {
+            get {
+                return ResourceManager.GetString("Architecture_Ia64", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_M56K {
+            get {
+                return ResourceManager.GetString("Architecture_M56K", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_M6800 {
+            get {
+                return ResourceManager.GetString("Architecture_M6800", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_M6801 {
+            get {
+                return ResourceManager.GetString("Architecture_M6801", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_M6805 {
+            get {
+                return ResourceManager.GetString("Architecture_M6805", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_M6809 {
+            get {
+                return ResourceManager.GetString("Architecture_M6809", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_M68K {
+            get {
+                return ResourceManager.GetString("Architecture_M68K", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_M88K {
+            get {
+                return ResourceManager.GetString("Architecture_M88K", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Mcs41 {
+            get {
+                return ResourceManager.GetString("Architecture_Mcs41", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Mcs48 {
+            get {
+                return ResourceManager.GetString("Architecture_Mcs48", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Mips32 {
+            get {
+                return ResourceManager.GetString("Architecture_Mips32", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Mips64 {
+            get {
+                return ResourceManager.GetString("Architecture_Mips64", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Msp430 {
+            get {
+                return ResourceManager.GetString("Architecture_Msp430", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Nios2 {
+            get {
+                return ResourceManager.GetString("Architecture_Nios2", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Openrisc {
+            get {
+                return ResourceManager.GetString("Architecture_Openrisc", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_PDP1 {
+            get {
+                return ResourceManager.GetString("Architecture_PDP1", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_PDP10 {
+            get {
+                return ResourceManager.GetString("Architecture_PDP10", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_PDP11 {
+            get {
+                return ResourceManager.GetString("Architecture_PDP11", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_PDP7 {
+            get {
+                return ResourceManager.GetString("Architecture_PDP7", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_PDP8 {
+            get {
+                return ResourceManager.GetString("Architecture_PDP8", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Parisc {
+            get {
+                return ResourceManager.GetString("Architecture_Parisc", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Pic {
+            get {
+                return ResourceManager.GetString("Architecture_Pic", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Power {
+            get {
+                return ResourceManager.GetString("Architecture_Power", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Ppc {
+            get {
+                return ResourceManager.GetString("Architecture_Ppc", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Ppc64 {
+            get {
+                return ResourceManager.GetString("Architecture_Ppc64", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Prism {
+            get {
+                return ResourceManager.GetString("Architecture_Prism", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Renesasrx {
+            get {
+                return ResourceManager.GetString("Architecture_Renesasrx", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Riscv {
+            get {
+                return ResourceManager.GetString("Architecture_Riscv", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_S360 {
+            get {
+                return ResourceManager.GetString("Architecture_S360", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_S370 {
+            get {
+                return ResourceManager.GetString("Architecture_S370", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Sh {
+            get {
+                return ResourceManager.GetString("Architecture_Sh", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Sh1 {
+            get {
+                return ResourceManager.GetString("Architecture_Sh1", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Sh2 {
+            get {
+                return ResourceManager.GetString("Architecture_Sh2", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Sh3 {
+            get {
+                return ResourceManager.GetString("Architecture_Sh3", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Sh4 {
+            get {
+                return ResourceManager.GetString("Architecture_Sh4", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Sh5 {
+            get {
+                return ResourceManager.GetString("Architecture_Sh5", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Sh64 {
+            get {
+                return ResourceManager.GetString("Architecture_Sh64", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Sparc {
+            get {
+                return ResourceManager.GetString("Architecture_Sparc", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Sparc64 {
+            get {
+                return ResourceManager.GetString("Architecture_Sparc64", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Transputer {
+            get {
+                return ResourceManager.GetString("Architecture_Transputer", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Vax {
+            get {
+                return ResourceManager.GetString("Architecture_Vax", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_We32000 {
+            get {
+                return ResourceManager.GetString("Architecture_We32000", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_X32 {
+            get {
+                return ResourceManager.GetString("Architecture_X32", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Z80 {
+            get {
+                return ResourceManager.GetString("Architecture_Z80", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Z800 {
+            get {
+                return ResourceManager.GetString("Architecture_Z800", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Z8000 {
+            get {
+                return ResourceManager.GetString("Architecture_Z8000", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Z80000 {
+            get {
+                return ResourceManager.GetString("Architecture_Z80000", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_Zarch {
+            get {
+                return ResourceManager.GetString("Architecture_Zarch", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_4004 {
+            get {
+                return ResourceManager.GetString("Architecture_4004", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_4040 {
+            get {
+                return ResourceManager.GetString("Architecture_4040", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_6502 {
+            get {
+                return ResourceManager.GetString("Architecture_6502", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_65816 {
+            get {
+                return ResourceManager.GetString("Architecture_65816", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_8008 {
+            get {
+                return ResourceManager.GetString("Architecture_8008", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_8051 {
+            get {
+                return ResourceManager.GetString("Architecture_8051", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_8080 {
+            get {
+                return ResourceManager.GetString("Architecture_8080", resourceCulture);
+            }
+        }
+        
+        public static string Architecture_8085 {
+            get {
+                return ResourceManager.GetString("Architecture_8085", resourceCulture);
+            }
+        }
     }
 }

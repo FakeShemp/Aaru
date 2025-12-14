@@ -4940,4 +4940,220 @@ Probadores:
     <data name="Language_zza" xml:space="preserve">
         <value>Zazaki</value>
     </data>
+    <data name="Architecture_Aarch64" xml:space="preserve">
+        <value>ARM 64 bits (AArch64)</value>
+    </data>
+    <data name="Architecture_Am29000" xml:space="preserve">
+        <value>AMD Am29000</value>
+    </data>
+    <data name="Architecture_Amd64" xml:space="preserve">
+        <value>AMD64 (x86-64)</value>
+    </data>
+    <data name="Architecture_Apx432" xml:space="preserve">
+        <value>Intel iAPX 432</value>
+    </data>
+    <data name="Architecture_Arm" xml:space="preserve">
+        <value>ARM</value>
+    </data>
+    <data name="Architecture_Avr" xml:space="preserve">
+        <value>Atmel AVR</value>
+    </data>
+    <data name="Architecture_Avr32" xml:space="preserve">
+        <value>Atmel AVR32</value>
+    </data>
+    <data name="Architecture_Axp" xml:space="preserve">
+        <value>DEC Alpha (AXP)</value>
+    </data>
+    <data name="Architecture_Clipper" xml:space="preserve">
+        <value>Clipper</value>
+    </data>
+    <data name="Architecture_Cray" xml:space="preserve">
+        <value>Cray</value>
+    </data>
+    <data name="Architecture_Esa390" xml:space="preserve">
+        <value>IBM ESA/390</value>
+    </data>
+    <data name="Architecture_Hobbit" xml:space="preserve">
+        <value>AT&amp;T Hobbit</value>
+    </data>
+    <data name="Architecture_I86" xml:space="preserve">
+        <value>Intel 8086</value>
+    </data>
+    <data name="Architecture_I860" xml:space="preserve">
+        <value>Intel i860</value>
+    </data>
+    <data name="Architecture_I960" xml:space="preserve">
+        <value>Intel i960</value>
+    </data>
+    <data name="Architecture_Ia32" xml:space="preserve">
+        <value>IA-32 (x86)</value>
+    </data>
+    <data name="Architecture_Ia64" xml:space="preserve">
+        <value>IA-64 (Itanium)</value>
+    </data>
+    <data name="Architecture_M56K" xml:space="preserve">
+        <value>Motorola 56000</value>
+    </data>
+    <data name="Architecture_M6800" xml:space="preserve">
+        <value>Motorola 6800</value>
+    </data>
+    <data name="Architecture_M6801" xml:space="preserve">
+        <value>Motorola 6801</value>
+    </data>
+    <data name="Architecture_M6805" xml:space="preserve">
+        <value>Motorola 6805</value>
+    </data>
+    <data name="Architecture_M6809" xml:space="preserve">
+        <value>Motorola 6809</value>
+    </data>
+    <data name="Architecture_M68K" xml:space="preserve">
+        <value>Motorola 68000</value>
+    </data>
+    <data name="Architecture_M88K" xml:space="preserve">
+        <value>Motorola 88000</value>
+    </data>
+    <data name="Architecture_Mcs41" xml:space="preserve">
+        <value>Intel MCS-41</value>
+    </data>
+    <data name="Architecture_Mcs48" xml:space="preserve">
+        <value>Intel MCS-48</value>
+    </data>
+    <data name="Architecture_Mips32" xml:space="preserve">
+        <value>MIPS32</value>
+    </data>
+    <data name="Architecture_Mips64" xml:space="preserve">
+        <value>MIPS64</value>
+    </data>
+    <data name="Architecture_Msp430" xml:space="preserve">
+        <value>TI MSP430</value>
+    </data>
+    <data name="Architecture_Nios2" xml:space="preserve">
+        <value>Altera Nios II</value>
+    </data>
+    <data name="Architecture_Openrisc" xml:space="preserve">
+        <value>OpenRISC</value>
+    </data>
+    <data name="Architecture_PDP1" xml:space="preserve">
+        <value>DEC PDP-1</value>
+    </data>
+    <data name="Architecture_PDP10" xml:space="preserve">
+        <value>DEC PDP-10</value>
+    </data>
+    <data name="Architecture_PDP11" xml:space="preserve">
+        <value>DEC PDP-11</value>
+    </data>
+    <data name="Architecture_PDP7" xml:space="preserve">
+        <value>DEC PDP-7</value>
+    </data>
+    <data name="Architecture_PDP8" xml:space="preserve">
+        <value>DEC PDP-8</value>
+    </data>
+    <data name="Architecture_Parisc" xml:space="preserve">
+        <value>PA-RISC</value>
+    </data>
+    <data name="Architecture_Pic" xml:space="preserve">
+        <value>Microchip PIC</value>
+    </data>
+    <data name="Architecture_Power" xml:space="preserve">
+        <value>IBM POWER</value>
+    </data>
+    <data name="Architecture_Ppc" xml:space="preserve">
+        <value>PowerPC</value>
+    </data>
+    <data name="Architecture_Ppc64" xml:space="preserve">
+        <value>PowerPC 64 bits</value>
+    </data>
+    <data name="Architecture_Prism" xml:space="preserve">
+        <value>DEC PRISM</value>
+    </data>
+    <data name="Architecture_Renesasrx" xml:space="preserve">
+        <value>Renesas RX</value>
+    </data>
+    <data name="Architecture_Riscv" xml:space="preserve">
+        <value>RISC-V</value>
+    </data>
+    <data name="Architecture_S360" xml:space="preserve">
+        <value>IBM System/360</value>
+    </data>
+    <data name="Architecture_S370" xml:space="preserve">
+        <value>IBM System/370</value>
+    </data>
+    <data name="Architecture_Sh" xml:space="preserve">
+        <value>SuperH</value>
+    </data>
+    <data name="Architecture_Sh1" xml:space="preserve">
+        <value>SuperH SH-1</value>
+    </data>
+    <data name="Architecture_Sh2" xml:space="preserve">
+        <value>SuperH SH-2</value>
+    </data>
+    <data name="Architecture_Sh3" xml:space="preserve">
+        <value>SuperH SH-3</value>
+    </data>
+    <data name="Architecture_Sh4" xml:space="preserve">
+        <value>SuperH SH-4</value>
+    </data>
+    <data name="Architecture_Sh5" xml:space="preserve">
+        <value>SuperH SH-5</value>
+    </data>
+    <data name="Architecture_Sh64" xml:space="preserve">
+        <value>SuperH SH-64</value>
+    </data>
+    <data name="Architecture_Sparc" xml:space="preserve">
+        <value>SPARC</value>
+    </data>
+    <data name="Architecture_Sparc64" xml:space="preserve">
+        <value>SPARC 64 bits</value>
+    </data>
+    <data name="Architecture_Transputer" xml:space="preserve">
+        <value>Transputer</value>
+    </data>
+    <data name="Architecture_Vax" xml:space="preserve">
+        <value>DEC VAX</value>
+    </data>
+    <data name="Architecture_We32000" xml:space="preserve">
+        <value>AT&amp;T WE32000</value>
+    </data>
+    <data name="Architecture_X32" xml:space="preserve">
+        <value>ABI x32</value>
+    </data>
+    <data name="Architecture_Z80" xml:space="preserve">
+        <value>Zilog Z80</value>
+    </data>
+    <data name="Architecture_Z800" xml:space="preserve">
+        <value>Zilog Z800</value>
+    </data>
+    <data name="Architecture_Z8000" xml:space="preserve">
+        <value>Zilog Z8000</value>
+    </data>
+    <data name="Architecture_Z80000" xml:space="preserve">
+        <value>Zilog Z80000</value>
+    </data>
+    <data name="Architecture_Zarch" xml:space="preserve">
+        <value>IBM z/Architecture</value>
+    </data>
+    <data name="Architecture_4004" xml:space="preserve">
+        <value>Intel 4004</value>
+    </data>
+    <data name="Architecture_4040" xml:space="preserve">
+        <value>Intel 4040</value>
+    </data>
+    <data name="Architecture_6502" xml:space="preserve">
+        <value>MOS 6502</value>
+    </data>
+    <data name="Architecture_65816" xml:space="preserve">
+        <value>WDC 65C816</value>
+    </data>
+    <data name="Architecture_8008" xml:space="preserve">
+        <value>Intel 8008</value>
+    </data>
+    <data name="Architecture_8051" xml:space="preserve">
+        <value>Intel 8051</value>
+    </data>
+    <data name="Architecture_8080" xml:space="preserve">
+        <value>Intel 8080</value>
+    </data>
+    <data name="Architecture_8085" xml:space="preserve">
+        <value>Intel 8085</value>
+    </data>
 </root>
