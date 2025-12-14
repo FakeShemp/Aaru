@@ -161,13 +161,13 @@ public sealed partial class MetadataEditorViewModel : ViewModelBase
     // Available enum values for ComboBoxes
     [NotNull]
     public IEnumerable<LocalizedEnumValue<ReleaseType>> AvailableReleaseTypes =>
-        LocalizedEnumHelper.GetLocalizedValues<ReleaseType>();
+        LocalizedEnumHelper.GetLocalizedValues<ReleaseType>().OrderBy(static x => x.Description);
     [NotNull]
     public IEnumerable<LocalizedEnumValue<Language>> AvailableLanguages =>
-        LocalizedEnumHelper.GetLocalizedValues<Language>();
+        LocalizedEnumHelper.GetLocalizedValues<Language>().OrderBy(static x => x.Description);
     [NotNull]
     public IEnumerable<LocalizedEnumValue<Architecture>> AvailableArchitectures =>
-        LocalizedEnumHelper.GetLocalizedValues<Architecture>();
+        LocalizedEnumHelper.GetLocalizedValues<Architecture>().OrderBy(static x => x.Description);
     [NotNull]
     public IEnumerable<BarcodeType> AvailableBarcodeTypes => Enum.GetValues<BarcodeType>();
 
