@@ -46,6 +46,34 @@
     <Design.DataContext>
         <tabs:PcmciaInfoViewModel />
     </Design.DataContext>
+    <UserControl.Styles>
+        <Style Selector="DataGridRow:nth-child(2n)">
+            <Setter Property="Background">
+                <SolidColorBrush Color="#0CFFFFFF" />
+            </Setter>
+        </Style>
+        <Style Selector="DataGridRow:nth-child(2n) DataGridCell">
+            <Setter Property="Background">
+                <SolidColorBrush Color="#0CFFFFFF" />
+            </Setter>
+        </Style>
+        <Style Selector="DataGridRow:nth-child(2n):pointerover">
+            <Setter Property="Background"
+                    Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+        </Style>
+        <Style Selector="DataGridRow:nth-child(2n):pointerover DataGridCell">
+            <Setter Property="Background"
+                    Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+        </Style>
+        <Style Selector="DataGridRow:nth-child(2n):selected">
+            <Setter Property="Background"
+                    Value="{DynamicResource SystemControlHighlightAccentBrush}" />
+        </Style>
+        <Style Selector="DataGridRow:nth-child(2n):selected DataGridCell">
+            <Setter Property="Background"
+                    Value="{DynamicResource SystemControlHighlightAccentBrush}" />
+        </Style>
+    </UserControl.Styles>
     <Grid RowDefinitions="*, Auto"
           RowSpacing="8"
           Margin="8">
