@@ -25,6 +25,7 @@
     <PackageReference Include="Avalonia.Themes.Fluent"/>
     <PackageReference Include="Claunia.Encoding"/>
     <PackageReference Include="CommunityToolkit.Mvvm"/>
+    <PackageReference Include="FluentIcons.Avalonia"/>
     <PackageReference Include="Humanizer.Core"/>
     <PackageReference Include="JetBrains.Annotations"/>
     <PackageReference Include="MessageBox.Avalonia"/>

@@ -5,6 +5,7 @@
         xmlns:windows="clr-namespace:Aaru.Gui.ViewModels.Windows"
         xmlns:models="clr-namespace:Aaru.Gui.Models"
         xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
+        xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
@@ -21,101 +22,189 @@
                 <MenuItem Header="{x:Static localization:UI.Menu_Open}"
                           InputGesture="{OnPlatform 'Ctrl+O', macOS='Meta+O'}"
                           HotKey="{OnPlatform 'Ctrl+O', macOS='Meta+O'}"
-                          Command="{Binding OpenCommand, Mode=OneWay}" />
+                          Command="{Binding OpenCommand, Mode=OneWay}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="FolderOpen" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="{x:Static localization:UI.Menu_Open_MHDD_log}"
                           InputGesture="Ctrl+M"
                           HotKey="Ctrl+M"
-                          Command="{Binding OpenMhddLogCommand, Mode=OneWay}" />
+                          Command="{Binding OpenMhddLogCommand, Mode=OneWay}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="ClipboardPulse" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="{x:Static localization:UI.Menu_Open_IMGBurn_log}"
                           InputGesture="Ctrl+I"
                           HotKey="Ctrl+I"
-                          Command="{Binding OpenIbgLogCommand, Mode=OneWay}" />
+                          Command="{Binding OpenIbgLogCommand, Mode=OneWay}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="ClipboardDataBar" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="{x:Static localization:UI.Menu_Connect_to_AaruRemote}"
                           InputGesture="{OnPlatform 'Ctrl+R', macOS='Meta+R'}"
                           HotKey="{OnPlatform 'Ctrl+R', macOS='Meta+R'}"
-                          Command="{Binding ConnectToRemoteCommand, Mode=OneWay}" />
+                          Command="{Binding ConnectToRemoteCommand, Mode=OneWay}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="DesktopSignal" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="{x:Static localization:UI.Menu_Open_device}"
                           InputGesture="{OnPlatform 'Ctrl+D', macOS='Meta+D'}"
                           HotKey="{OnPlatform 'Ctrl+D', macOS='Meta+D'}"
                           Command="{Binding OpenDeviceCommand, Mode=OneWay}"
-                          IsVisible="{Binding DevicesSupported, Mode=OneWay}" />
+                          IsVisible="{Binding DevicesSupported, Mode=OneWay}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="UsbPlug" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
                 <MenuItem Header="{x:Static localization:UI.Menu_Settings}"
                           InputGesture="{OnPlatform 'Ctrl+Alt+S', macOS='Meta+OemComma'}"
                           HotKey="{OnPlatform 'Ctrl+Alt+S', macOS='Meta+OemComma'}"
                           IsVisible="{Binding !NativeMenuSupported, Mode=OneWay}"
-                          Command="{Binding SettingsCommand, Mode=OneWay}" />
+                          Command="{Binding SettingsCommand, Mode=OneWay}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="Settings" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
                 <MenuItem Header="{x:Static localization:UI.Menu_Exit}"
                           InputGesture="{OnPlatform 'Alt+F4', macOS='Meta+Q'}"
                           HotKey="{OnPlatform 'Alt+F4', macOS='Meta+Q'}"
                           IsVisible="{Binding !NativeMenuSupported, Mode=OneWay}"
-                          Command="{Binding ExitCommand, Mode=OneWay}" />
+                          Command="{Binding ExitCommand, Mode=OneWay}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="Power" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="{x:Static localization:UI.Menu_Image}"
                       IsEnabled="{Binding ImageLoaded, Mode=OneWay}">
                 <MenuItem Command="{Binding CalculateEntropyCommand, Mode=OneWay}"
                           InputGesture="Ctrl+E"
                           HotKey="Ctrl+E"
-                          Header="{x:Static localization:UI.ButtonLabel_Calculate_entropy}" />
+                          Header="{x:Static localization:UI.ButtonLabel_Calculate_entropy}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="CalculatorArrowClockwise" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Command="{Binding VerifyImageCommand, Mode=OneWay}"
                           InputGesture="Ctrl+V"
                           HotKey="Ctrl+V"
-                          Header="{x:Static localization:UI.ButtonLabel_Verify}" />
+                          Header="{x:Static localization:UI.ButtonLabel_Verify}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="Stethoscope" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Command="{Binding ChecksumImageCommand, Mode=OneWay}"
                           InputGesture="Ctrl+K"
                           HotKey="Ctrl+K"
-                          Header="{x:Static localization:UI.ButtonLabel_Checksum}" />
+                          Header="{x:Static localization:UI.ButtonLabel_Checksum}">
+                    <MenuItem>
+                        <ic:FluentIcon Icon="ShieldAdd" />
+                    </MenuItem>
+                </MenuItem>
                 <MenuItem Command="{Binding ConvertImageCommand, Mode=OneWay}"
                           InputGesture="Ctrl+C"
                           HotKey="Ctrl+C"
-                          Header="{x:Static localization:UI.ButtonLabel_Convert_to}" />
+                          Header="{x:Static localization:UI.ButtonLabel_Convert_to}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="ArrowSwap" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Command="{Binding CreateSidecarCommand, Mode=OneWay}"
                           InputGesture="Ctrl+S"
                           HotKey="Ctrl+S"
-                          Header="{x:Static localization:UI.ButtonLabel_Create_Aaru_Metadata_sidecar}" />
+                          Header="{x:Static localization:UI.ButtonLabel_Create_Aaru_Metadata_sidecar}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="DocumentBulletListMultiple" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Command="{Binding ViewImageSectorsCommand, Mode=OneWay}"
                           InputGesture="Ctrl+T"
                           HotKey="Ctrl+T"
-                          Header="{x:Static localization:UI.ButtonLabel_View_sectors}" />
+                          Header="{x:Static localization:UI.ButtonLabel_View_sectors}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="TableSearch" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Command="{Binding DecodeImageMediaTagsCommand, Mode=OneWay}"
                           InputGesture="Ctrl+G"
                           HotKey="Ctrl+G"
-                          Header="{x:Static localization:UI.ButtonLabel_Decode_media_tags}" />
+                          Header="{x:Static localization:UI.ButtonLabel_Decode_media_tags}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="SaveSearch" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="{x:Static localization:UI.Menu_Metadata}">
                 <MenuItem Command="{Binding ImageMetadataCommand, Mode=OneWay}"
                           InputGesture="{OnPlatform 'Ctrl+Shift+M', macOS='Meta+M'}"
                           HotKey="{OnPlatform 'Ctrl+Shift+M', macOS='Meta+M'}"
-                          Header="{x:Static localization:UI.Menu_Edit_image_metadata}" />
+                          Header="{x:Static localization:UI.Menu_Edit_image_metadata}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="TextBulletListSquareEdit" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
                 <MenuItem Command="{Binding CreateMetadataCommand, Mode=OneWay}"
                           InputGesture="{OnPlatform 'Ctrl+N', macOS='Meta+N'}"
                           HotKey="{OnPlatform 'Ctrl+N', macOS='Meta+N'}"
-                          Header="{x:Static localization:UI.Menu_Create_metadata_sidecar}" />
+                          Header="{x:Static localization:UI.Menu_Create_metadata_sidecar}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="DocumentAdd" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Command="{Binding EditMetadataCommand, Mode=OneWay}"
                           InputGesture="{OnPlatform 'Ctrl+Shift+E', macOS='Meta+E'}"
                           HotKey="{OnPlatform 'Ctrl+Shift+E', macOS='Meta+E'}"
-                          Header="{x:Static localization:UI.Menu_Edit_metadata_sidecar}" />
+                          Header="{x:Static localization:UI.Menu_Edit_metadata_sidecar}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="DocumentEdit" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="{x:Static localization:UI.Menu_Window}">
                 <MenuItem Header="{x:Static localization:UI.Menu_Console}"
                           InputGesture="{OnPlatform 'Ctrl+OemTilde', macOS='Meta+Shift+C'}"
                           HotKey="{OnPlatform 'Ctrl+OemTilde', macOS='Meta+Shift+C'}"
-                          Command="{Binding ConsoleCommand, Mode=OneWay}" />
+                          Command="{Binding ConsoleCommand, Mode=OneWay}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="WindowConsole" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="{x:Static localization:UI.Menu_Help}">
                 <MenuItem Header="{x:Static localization:UI.Menu_Encodings}"
-                          Command="{Binding EncodingsCommand, Mode=OneWay}" />
+                          Command="{Binding EncodingsCommand, Mode=OneWay}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="LocalLanguage" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="{x:Static localization:UI.Menu_Plugins}"
-                          Command="{Binding PluginsCommand, Mode=OneWay}" />
+                          Command="{Binding PluginsCommand, Mode=OneWay}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="PuzzlePiece" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="{x:Static localization:UI.Menu_Statistics}"
-                          Command="{Binding StatisticsCommand, Mode=OneWay}" />
+                          Command="{Binding StatisticsCommand, Mode=OneWay}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="DataPie" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator IsVisible="{Binding !NativeMenuSupported, Mode=OneWay}" />
                 <MenuItem Header="{x:Static localization:UI.Menu_About}"
                           Name="AboutMenuItem"
                           IsVisible="{Binding !NativeMenuSupported, Mode=OneWay}"
-                          Command="{Binding AboutCommand, Mode=OneWay}" />
+                          Command="{Binding AboutCommand, Mode=OneWay}">
+                    <MenuItem.Icon>
+                        <ic:FluentIcon Icon="People" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
         </Menu>
         <Grid ColumnDefinitions="*,5,4*">
