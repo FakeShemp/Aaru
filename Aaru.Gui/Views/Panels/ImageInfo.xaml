@@ -38,6 +38,7 @@
              xmlns:panels="clr-namespace:Aaru.Gui.ViewModels.Panels"
              xmlns:localization="clr-namespace:Aaru.Localization;assembly=Aaru.Localization"
              xmlns:controls="clr-namespace:Aaru.Gui.Controls"
+             xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
@@ -628,25 +629,60 @@
                     VerticalAlignment="Bottom"
                     HorizontalAlignment="Right">
             <Button Command="{Binding EntropyCommand, Mode=OneWay}">
-                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Calculate_entropy}" />
+                <StackPanel Orientation="Horizontal"
+                            Spacing="4">
+                    <ic:FluentIcon Icon="CalculatorArrowClockwise" />
+                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Calculate_entropy}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
             </Button>
             <Button Command="{Binding VerifyCommand, Mode=OneWay}">
-                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Verify}" />
+                <StackPanel Orientation="Horizontal"
+                            Spacing="4">
+                    <ic:FluentIcon Icon="Stethoscope" />
+                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Verify}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
             </Button>
             <Button Command="{Binding ChecksumCommand, Mode=OneWay}">
-                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Checksum}" />
+                <StackPanel Orientation="Horizontal"
+                            Spacing="4">
+                    <ic:FluentIcon Icon="ShieldAdd" />
+                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Checksum}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
             </Button>
             <Button Command="{Binding ConvertCommand, Mode=OneWay}">
-                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Convert_to}" />
+                <StackPanel Orientation="Horizontal"
+                            Spacing="4">
+                    <ic:FluentIcon Icon="ArrowSwap" />
+                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Convert_to}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
             </Button>
             <Button Command="{Binding CreateSidecarCommand, Mode=OneWay}">
-                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Create_Aaru_Metadata_sidecar}" />
+                <StackPanel Orientation="Horizontal"
+                            Spacing="4">
+                    <ic:FluentIcon Icon="DocumentBulletListMultiple" />
+                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Create_Aaru_Metadata_sidecar}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
             </Button>
             <Button Command="{Binding ViewSectorsCommand, Mode=OneWay}">
-                <TextBlock Text="{x:Static localization:UI.ButtonLabel_View_sectors}" />
+                <StackPanel Orientation="Horizontal"
+                            Spacing="4">
+                    <ic:FluentIcon Icon="TableSearch" />
+                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_View_sectors}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
             </Button>
             <Button Command="{Binding DecodeMediaTagCommand, Mode=OneWay}">
-                <TextBlock Text="{x:Static localization:UI.ButtonLabel_Decode_media_tags}" />
+                <StackPanel Orientation="Horizontal"
+                            Spacing="4">
+                    <ic:FluentIcon Icon="SaveSearch" />
+                    <TextBlock Text="{x:Static localization:UI.ButtonLabel_Decode_media_tags}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
             </Button>
         </StackPanel>
     </Grid>
