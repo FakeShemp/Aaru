@@ -104,27 +104,29 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <StackPanel Grid.Row="1"
-                    Orientation="Horizontal"
-                    Spacing="8"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Bottom">
+        <WrapPanel Grid.Row="1"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Bottom">
             <Button Command="{Binding SaveDvdDmiCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveDvdDmiVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveDvdDmiVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Disc_Manufacturer_Information}" />
             </Button>
             <Button Command="{Binding SaveHdDvdCmiCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveHdDvdCmiVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveHdDvdCmiVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Copyright_Management_Information}" />
             </Button>
             <Button Command="{Binding SaveDvdBcaCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveDvdBcaVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveDvdBcaVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Burst_Cutting_Area}" />
             </Button>
             <Button Command="{Binding SaveDvdAacsCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveDvdAacsVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveDvdAacsVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_AACS_Information}" />
             </Button>
-        </StackPanel>
+        </WrapPanel>
     </Grid>
 </UserControl>

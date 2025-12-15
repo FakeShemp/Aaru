@@ -128,63 +128,74 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <StackPanel Grid.Row="1"
-                    Orientation="Horizontal"
-                    Spacing="8"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Bottom">
+        <WrapPanel Grid.Row="1"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Bottom">
             <Button Command="{Binding SaveLastBorderOutRmdCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveLastBorderOutRmdVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveLastBorderOutRmdVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Last_Border_Out_RMD}" />
             </Button>
             <Button Command="{Binding SaveDvdPreRecordedInfoCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveDvdPreRecordedInfoVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveDvdPreRecordedInfoVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Pre_Recorded_Physical_Information}" />
             </Button>
             <Button Command="{Binding SaveDvdrMediaIdentifierCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveDvdrMediaIdentifierVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveDvdrMediaIdentifierVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Media_Identifier}" />
             </Button>
             <Button Command="{Binding SaveDvdrPhysicalInformationCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveDvdrPhysicalInformationVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveDvdrPhysicalInformationVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Recordable_Physical_Information}" />
             </Button>
             <Button Command="{Binding SaveHddvdrMediumStatusCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveHddvdrMediumStatusVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveHddvdrMediumStatusVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Medium_Status}" />
             </Button>
             <Button Command="{Binding SaveHddvdrLastRmdCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveHddvdrLastRmdVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveHddvdrLastRmdVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Last_Border_Out_RMD}" />
             </Button>
             <Button Command="{Binding SaveDvdrLayerCapacityCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveDvdrLayerCapacityVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveDvdrLayerCapacityVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Layer_Capacity}" />
             </Button>
             <Button Command="{Binding SaveDvdrDlMiddleZoneStartCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveDvdrDlMiddleZoneStartVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveDvdrDlMiddleZoneStartVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Middle_Zone_Start}" />
             </Button>
             <Button Command="{Binding SaveDvdrDlJumpIntervalSizeCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveDvdrDlJumpIntervalSizeVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveDvdrDlJumpIntervalSizeVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Jump_Interval_Size}" />
             </Button>
             <Button Command="{Binding SaveDvdrDlManualLayerJumpStartLbaCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveDvdrDlManualLayerJumpStartLbaVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveDvdrDlManualLayerJumpStartLbaVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Manual_Layer_Jump_Start_LBA}" />
             </Button>
             <Button Command="{Binding SaveDvdrDlRemapAnchorPointCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveDvdrDlRemapAnchorPointVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveDvdrDlRemapAnchorPointVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Remap_Anchor_Point}" />
             </Button>
             <Button Command="{Binding SaveDvdPlusAdipCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveDvdPlusAdipVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveDvdPlusAdipVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_ADIP}" />
             </Button>
             <Button Command="{Binding SaveDvdPlusDcbCommand, Mode=OneWay}"
-                    IsVisible="{Binding SaveDvdPlusDcbVisible, Mode=OneWay}">
+                    IsVisible="{Binding SaveDvdPlusDcbVisible, Mode=OneWay}"
+                    Margin="4">
                 <TextBlock Text="{x:Static localization:UI.ButtonLabel_Save_Disc_Control_Blocks}" />
             </Button>
-        </StackPanel>
+        </WrapPanel>
     </Grid>
 </UserControl>
