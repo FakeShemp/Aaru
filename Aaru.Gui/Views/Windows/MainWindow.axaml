@@ -105,9 +105,9 @@
                           InputGesture="Ctrl+K"
                           HotKey="Ctrl+K"
                           Header="{x:Static localization:UI.ButtonLabel_Checksum}">
-                    <MenuItem>
+                    <MenuItem.Icon>
                         <ic:FluentIcon Icon="ShieldAdd" />
-                    </MenuItem>
+                    </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Command="{Binding ConvertImageCommand, Mode=OneWay}"
                           InputGesture="Ctrl+C"
@@ -225,25 +225,53 @@
                                     DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}">
                                     <MenuItem
                                         Command="{Binding $parent[Window].DataContext.CalculateEntropyCommand, Mode=OneWay}"
-                                        Header="{x:Static localization:UI.ButtonLabel_Calculate_entropy}" />
+                                        Header="{x:Static localization:UI.ButtonLabel_Calculate_entropy}">
+                                        <MenuItem.Icon>
+                                            <ic:FluentIcon Icon="CalculatorArrowClockwise" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
                                     <MenuItem
                                         Command="{Binding $parent[Window].DataContext.VerifyImageCommand, Mode=OneWay}"
-                                        Header="{x:Static localization:UI.ButtonLabel_Verify}" />
+                                        Header="{x:Static localization:UI.ButtonLabel_Verify}">
+                                        <MenuItem.Icon>
+                                            <ic:FluentIcon Icon="Stethoscope" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
                                     <MenuItem
                                         Command="{Binding $parent[Window].DataContext.ChecksumImageCommand, Mode=OneWay}"
-                                        Header="{x:Static localization:UI.ButtonLabel_Checksum}" />
+                                        Header="{x:Static localization:UI.ButtonLabel_Checksum}">
+                                        <MenuItem.Icon>
+                                            <ic:FluentIcon Icon="ShieldAdd" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
                                     <MenuItem
                                         Command="{Binding $parent[Window].DataContext.ConvertImageCommand, Mode=OneWay}"
-                                        Header="{x:Static localization:UI.ButtonLabel_Convert_to}" />
+                                        Header="{x:Static localization:UI.ButtonLabel_Convert_to}">
+                                        <MenuItem.Icon>
+                                            <ic:FluentIcon Icon="ArrowSwap" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
                                     <MenuItem
                                         Command="{Binding $parent[Window].DataContext.CreateSidecarCommand, Mode=OneWay}"
-                                        Header="{x:Static localization:UI.ButtonLabel_Create_Aaru_Metadata_sidecar}" />
+                                        Header="{x:Static localization:UI.ButtonLabel_Create_Aaru_Metadata_sidecar}">
+                                        <MenuItem.Icon>
+                                            <ic:FluentIcon Icon="DocumentBulletListMultiple" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
                                     <MenuItem
                                         Command="{Binding $parent[Window].DataContext.ViewImageSectorsCommand, Mode=OneWay}"
-                                        Header="{x:Static localization:UI.ButtonLabel_View_sectors}" />
+                                        Header="{x:Static localization:UI.ButtonLabel_View_sectors}">
+                                        <MenuItem.Icon>
+                                            <ic:FluentIcon Icon="TableSearch" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
                                     <MenuItem
                                         Command="{Binding $parent[Window].DataContext.DecodeImageMediaTagsCommand, Mode=OneWay}"
-                                        Header="{x:Static localization:UI.ButtonLabel_Decode_media_tags}" />
+                                        Header="{x:Static localization:UI.ButtonLabel_Decode_media_tags}">
+                                        <MenuItem.Icon>
+                                            <ic:FluentIcon Icon="SaveSearch" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
                             <Border Width="32"
