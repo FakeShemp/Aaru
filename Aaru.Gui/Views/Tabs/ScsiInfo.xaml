@@ -111,11 +111,10 @@
                   RowSpacing="8"
                   Margin="8">
                 <Grid Grid.Row="0"
-                      ColumnDefinitions="Auto, *"
+                      ColumnDefinitions="0.3*, 0.7*"
                       ColumnSpacing="8">
                     <DataGrid Grid.Column="0"
-                              HorizontalAlignment="Left"
-                              Width="250"
+                              HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"
                               ItemsSource="{Binding ModeSensePages, Mode=OneWay}"
                               SelectedItem="{Binding SelectedModeSensePage, Mode=TwoWay}"
@@ -159,11 +158,10 @@
                   RowSpacing="8"
                   Margin="8">
                 <Grid Grid.Row="0"
-                      ColumnDefinitions="Auto, *"
+                      ColumnDefinitions="0.3*, 0.7*"
                       ColumnSpacing="8">
                     <DataGrid Grid.Column="0"
-                              HorizontalAlignment="Left"
-                              Width="250"
+                              HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"
                               ItemsSource="{Binding EvpdPages, Mode=OneWay}"
                               SelectedItem="{Binding SelectedEvpdPage, Mode=TwoWay}"
@@ -204,11 +202,10 @@
                   RowSpacing="8"
                   Margin="8">
                 <Grid Grid.Row="0"
-                      ColumnDefinitions="Auto, *"
+                      ColumnDefinitions="0.3*, 0.7*"
                       ColumnSpacing="8">
                     <DataGrid Grid.Column="0"
-                              HorizontalAlignment="Left"
-                              Width="250"
+                              HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"
                               ItemsSource="{Binding MmcFeatures, Mode=OneWay}"
                               SelectedItem="{Binding SelectedMmcFeature, Mode=TwoWay}"
