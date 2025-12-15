@@ -245,7 +245,8 @@
                               AutoGenerateColumns="False"
                               IsReadOnly="True">
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="{x:Static localization:Core.Title_Track}">
+                            <DataGridTemplateColumn Header="{x:Static localization:Core.Title_Track}"
+                                                    Width="Auto">
                                 <DataGridTemplateColumn.HeaderTemplate>
                                     <DataTemplate>
                                         <controls:SpectreTextBlock Text="{x:Static localization:Core.Title_Track}" />
@@ -257,7 +258,8 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="{x:Static localization:UI.Title_ISRC}">
+                            <DataGridTemplateColumn Header="{x:Static localization:UI.Title_ISRC}"
+                                                    Width="*">
                                 <DataGridTemplateColumn.HeaderTemplate>
                                     <DataTemplate>
                                         <controls:SpectreTextBlock Text="{x:Static localization:UI.Title_ISRC}" />

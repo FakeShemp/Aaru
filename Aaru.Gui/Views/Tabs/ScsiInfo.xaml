@@ -122,7 +122,8 @@
                               IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="{x:Static localization:UI.Title_Page}"
-                                                Binding="{Binding Page, Mode=OneWay}" />
+                                                Binding="{Binding Page, Mode=OneWay}"
+                                                Width="*" />
                         </DataGrid.Columns>
                     </DataGrid>
                     <Border Grid.Column="1"
@@ -169,7 +170,8 @@
                               IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="{x:Static localization:UI.Title_Page}"
-                                                Binding="{Binding Page, Mode=OneWay}" />
+                                                Binding="{Binding Page, Mode=OneWay}"
+                                                Width="*" />
                         </DataGrid.Columns>
                     </DataGrid>
                     <Border Grid.Column="1"
@@ -213,7 +215,8 @@
                               IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="{x:Static localization:UI.Title_Feature}"
-                                                Binding="{Binding Page, Mode=OneWay}" />
+                                                Binding="{Binding Page, Mode=OneWay}"
+                                                Width="*" />
                         </DataGrid.Columns>
                     </DataGrid>
                     <Border Grid.Column="1"

@@ -85,7 +85,8 @@
                       SelectedItem="{Binding SelectedCis, Mode=TwoWay}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="{x:Static localization:UI.Title_CIS}"
-                                        Binding="{Binding Code, Mode=OneWay}" />
+                                        Binding="{Binding Code, Mode=OneWay}"
+                                        Width="*" />
                 </DataGrid.Columns>
             </DataGrid>
             <Border Grid.Column="1"
