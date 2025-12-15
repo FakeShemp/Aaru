@@ -232,7 +232,11 @@
                              IsReadOnly="True"
                              VerticalAlignment="Center"
                              HorizontalAlignment="Stretch"
-                             Text="{Binding McnText, Mode=OneWay}" />
+                             Text="{Binding McnText, Mode=OneWay}"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             Cursor="Arrow"
+                             Padding="0" />
                 </Grid>
                 <Grid Grid.Row="1"
                       IsVisible="{Binding !!IsrcList.Count, Mode=OneWay}"

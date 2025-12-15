@@ -51,49 +51,81 @@
                         IsVisible="{Binding !!XboxL0VideoText, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:Core.Video_layer_zero_size}" />
                 <TextBox IsReadOnly="True"
-                         Text="{Binding XboxL0VideoText, Mode=OneWay}" />
+                         Text="{Binding XboxL0VideoText, Mode=OneWay}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Cursor="Arrow"
+                         Padding="4,0,0,0" />
             </StackPanel>
             <StackPanel Orientation="Horizontal"
                         IsVisible="{Binding !!XboxL1VideoText, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:Core.Video_layer_one_size}" />
                 <TextBox IsReadOnly="True"
-                         Text="{Binding XboxL1VideoText, Mode=OneWay}" />
+                         Text="{Binding XboxL1VideoText, Mode=OneWay}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Cursor="Arrow"
+                         Padding="4,0,0,0" />
             </StackPanel>
             <StackPanel Orientation="Horizontal"
                         IsVisible="{Binding !!XboxMiddleZoneText, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:Core.Middle_zone_size}" />
                 <TextBox IsReadOnly="True"
-                         Text="{Binding XboxMiddleZoneText, Mode=OneWay}" />
+                         Text="{Binding XboxMiddleZoneText, Mode=OneWay}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Cursor="Arrow"
+                         Padding="4,0,0,0" />
             </StackPanel>
             <StackPanel Orientation="Horizontal"
                         IsVisible="{Binding !!XboxGameSizeText, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:Core.Game_data_size}" />
                 <TextBox IsReadOnly="True"
-                         Text="{Binding XboxGameSizeText, Mode=OneWay}" />
+                         Text="{Binding XboxGameSizeText, Mode=OneWay}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Cursor="Arrow"
+                         Padding="4,0,0,0" />
             </StackPanel>
             <StackPanel Orientation="Horizontal"
                         IsVisible="{Binding !!XboxTotalSizeText, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:Core.Total_size}" />
                 <TextBox IsReadOnly="True"
-                         Text="{Binding XboxTotalSizeText, Mode=OneWay}" />
+                         Text="{Binding XboxTotalSizeText, Mode=OneWay}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Cursor="Arrow"
+                         Padding="4,0,0,0" />
             </StackPanel>
             <StackPanel Orientation="Horizontal"
                         IsVisible="{Binding !!XboxRealBreakText, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:Core.Real_layer_break}" />
                 <TextBox IsReadOnly="True"
-                         Text="{Binding XboxRealBreakText, Mode=OneWay}" />
+                         Text="{Binding XboxRealBreakText, Mode=OneWay}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Cursor="Arrow"
+                         Padding="4,0,0,0" />
             </StackPanel>
         </StackPanel>
         <StackPanel>
             <StackPanel IsVisible="{Binding !!XboxDmiText, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.Title_Disc_Manufacturing_Information}" />
                 <TextBox IsReadOnly="True"
-                         Text="{Binding XboxDmiText, Mode=OneWay}" />
+                         Text="{Binding XboxDmiText, Mode=OneWay}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Cursor="Arrow"
+                         Padding="0" />
             </StackPanel>
             <StackPanel IsVisible="{Binding !!XboxSsText, Mode=OneWay}">
                 <TextBlock Text="{x:Static localization:UI.Title_Security_Sector}" />
                 <TextBox IsReadOnly="True"
-                         Text="{Binding XboxSsText, Mode=OneWay}" />
+                         Text="{Binding XboxSsText, Mode=OneWay}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Cursor="Arrow"
+                         Padding="0" />
             </StackPanel>
             <Button HorizontalAlignment="Right"
                     IsVisible="{Binding SaveXboxSsVisible, Mode=OneWay}"
