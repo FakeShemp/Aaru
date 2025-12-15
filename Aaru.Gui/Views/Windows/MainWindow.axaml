@@ -210,7 +210,6 @@
         <Grid ColumnDefinitions="*,5,4*">
             <TreeView ItemsSource="{Binding TreeRoot, Mode=OneWay}"
                       SelectedItem="{Binding TreeViewSelectedItem, Mode=TwoWay}"
-                      Background="#111111"
                       BorderBrush="LightGray"
                       BorderThickness="1"
                       CornerRadius="4">
